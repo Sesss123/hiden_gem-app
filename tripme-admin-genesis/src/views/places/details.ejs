@@ -1,0 +1,428 @@
+<div class="mb-8 flex items-center justify-between">
+    <a href="/places" class="text-xs font-bold text-gray-400 uppercase tracking-widest hover:text-indigo-600 transition flex items-center gap-2">
+        &larr; Back to Registry
+    </a>
+    <div class="flex items-center gap-3">
+        <a href="/places/<%= place._id %>/edit" class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2.5 px-6 rounded-xl transition">
+            Edit Metadata
+        </a>
+        <% if (place.status === 'pending') { %>
+            <form action="/places/<%= place._id %>/approve" method="POST" class="inline">
+                <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-8 rounded-xl transition shadow-lg shadow-emerald-100 flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"></path></svg> Approve Node
+                </button>
+            </form>
+        <% } %>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+    <!-- Main Detail Area -->
+    <div class="lg:col-span-3 space-y-8">
+        
+        <!-- COVER CARD -->
+        <div class="premium-card p-0 overflow-hidden">
+            <div class="h-96 bg-gray-100 relative group">
+                <% if (place.external_image_url || (place.images && place.images.length > 0)) { %>
+                    <img src="<%= place.external_image_url || place.images[0].image_path %>" class="w-full h-full object-cover">
+                <% } else { %>
+                    <div class="w-full h-full flex flex-col items-center justify-center text-gray-300 bg-gray-50">
+                        <svg class="w-20 h-20 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        <span class="text-xs font-bold uppercase tracking-widest">No Narrative Media Available</span>
+                    </div>
+                <% } %>
+                <div class="absolute inset-0 bg-gradient-to-t from-gray-900/60 to-transparent"></div>
+                <div class="absolute bottom-8 left-8 right-8 text-white">
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="bg-indigo-600 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest shadow-lg shadow-indigo-900/40 border border-indigo-400/30 font-mono"><%= place.smart_id %></span>
+                        <span class="bg-white/20 backdrop-blur-md text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest border border-white/10">Registry Rank: <%= place.score %>/100</span>
+                    </div>
+                    <h1 class="text-4xl font-black tracking-tight"><%= place.name %></h1>
+                    <p class="text-gray-200 text-sm mt-2 max-w-2xl line-clamp-2"><%= place.description %></p>
+                </div>
+            </div>
+
+            <div class="p-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                    <!-- Column 1: Core Logistics -->
+                    <div class="space-y-8">
+                        <section>
+                            <h4 class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4">Node Identity & Location</h4>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="p-4 rounded-2xl bg-gray-50/50 border border-gray-100">
+                                    <p class="text-[9px] font-bold text-gray-400 uppercase">District</p>
+                                    <p class="text-sm font-bold text-gray-800"><%= place.district %></p>
+                                </div>
+                                <div class="p-4 rounded-2xl bg-gray-50/50 border border-gray-100">
+                                    <p class="text-[9px] font-bold text-gray-400 uppercase">Category</p>
+                                    <p class="text-sm font-bold text-gray-800"><%= place.category %></p>
+                                </div>
+                                <div class="p-4 rounded-2xl bg-gray-50/50 border border-gray-100">
+                                    <p class="text-[9px] font-bold text-gray-400 uppercase">Latitude</p>
+                                    <p class="text-sm font-mono font-bold text-gray-800"><%= place.lat || 'N/A' %></p>
+                                </div>
+                                <div class="p-4 rounded-2xl bg-gray-50/50 border border-gray-100">
+                                    <p class="text-[9px] font-bold text-gray-400 uppercase">Longitude</p>
+                                    <p class="text-sm font-mono font-bold text-gray-800"><%= place.lng || 'N/A' %></p>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section>
+                            <h4 class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4">Financial Intelligence</h4>
+                            <div class="space-y-3">
+                                <div class="flex justify-between items-center p-3 px-5 rounded-xl bg-emerald-50/30 border border-emerald-100">
+                                    <span class="text-xs font-bold text-emerald-800">Primary Ticket Price</span>
+                                    <span class="text-sm font-black text-emerald-700">LKR <%= place.ticket_price %></span>
+                                </div>
+                                <div class="flex justify-between items-center p-3 px-5 rounded-xl bg-gray-50 border border-gray-100">
+                                    <span class="text-xs font-bold text-gray-500">Valuation Range</span>
+                                    <span class="text-xs font-bold text-gray-800"><%= place.ticket_range || 'Standard' %></span>
+                                </div>
+                                <div class="flex justify-between items-center p-3 px-5 rounded-xl bg-gray-50 border border-gray-100">
+                                    <span class="text-xs font-bold text-gray-500">Parking Fee</span>
+                                    <span class="text-xs font-bold text-gray-800">LKR <%= place.parking_fee %></span>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+
+                    <!-- Column 2: Analytical Metrics -->
+                    <div class="space-y-8">
+                        <section>
+                            <h4 class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4">Operational Accessibility</h4>
+                            <div class="flex flex-wrap gap-2">
+                                <div class="insight-pill <%= place.parking_avail ? 'active' : '' %>">Parking Avail</div>
+                                <div class="insight-pill <%= place.toilets ? 'active' : '' %>">Toilets Onsite</div>
+                                <div class="insight-pill <%= place.food_nearby ? 'active' : '' %>">Food Nearby</div>
+                                <div class="insight-pill <%= place.wheelchair_access ? 'active' : '' %>">Wheelchair Access</div>
+                                <div class="insight-pill <%= place.stairs_heavy ? 'active' : '' %>">No Heavy Stairs</div>
+                                <div class="insight-pill <%= place.ar_supported ? 'active' : 'ar' %>">AR Supported</div>
+                            </div>
+                            <div class="mt-6 space-y-3">
+                                <div class="flex justify-between items-center text-xs">
+                                    <span class="text-gray-400">Road Class</span>
+                                    <span class="font-bold text-gray-800"><%= place.road_type %></span>
+                                </div>
+                                <div class="flex justify-between items-center text-xs">
+                                    <span class="text-gray-400">Environment</span>
+                                    <span class="font-bold text-gray-800"><%= place.is_indoor ? 'Indoor Facility' : 'Outdoor Landmark' %></span>
+                                </div>
+                                <div class="flex justify-between items-center text-xs">
+                                    <span class="text-gray-400">Mobile Coverage</span>
+                                    <span class="font-bold text-gray-800 text-indigo-600"><%= place.mobile_signal %></span>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section>
+                            <h4 class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4">Climate & Risk Mitigation</h4>
+                            <div class="p-5 rounded-2xl bg-amber-50/30 border border-amber-100 space-y-4">
+                                <div>
+                                    <p class="text-[9px] font-black text-amber-600 uppercase">Rain Sensitivity</p>
+                                    <p class="text-xs font-bold text-amber-800 mt-1"><%= place.rain_sensitivity %></p>
+                                </div>
+                                <div>
+                                    <p class="text-[9px] font-black text-amber-600 uppercase">Monsoon Alert</p>
+                                    <p class="text-[11px] text-amber-900 mt-1 leading-relaxed"><%= place.monsoon_note || 'No specific monsoon restrictions logged.' %></p>
+                                </div>
+                                <div class="pt-3 border-t border-amber-100">
+                                    <p class="text-[9px] font-black text-amber-600 uppercase">Scam Warnings</p>
+                                    <p class="text-[11px] text-amber-900 mt-1"><%= place.scam_warning || 'Registry clear of known scams.' %></p>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FULL WIDTH DETAILS -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="premium-card p-8">
+                <h4 class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4">Narrative & Tags</h4>
+                <div class="space-y-6">
+                    <div>
+                        <p class="text-xs text-gray-500 leading-relaxed"><%= place.description %></p>
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        <% if (place.tags) { %>
+                            <% place.tags.split(',').forEach(tag => { %>
+                                <span class="px-3 py-1 bg-gray-100 rounded-full text-[10px] font-bold text-gray-500 uppercase tracking-tight">#<%= tag.trim() %></span>
+                            <% }) %>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+
+            <div class="premium-card p-8 bg-gray-900 text-white">
+                <h4 class="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-4">System Telemetry</h4>
+                <div class="space-y-4">
+                    <div class="flex justify-between items-center border-b border-white/10 pb-2">
+                        <span class="text-xs text-gray-500">Node Status</span>
+                        <span class="text-xs font-black uppercase text-<%= place.status === 'approved' ? 'emerald' : 'amber' %>-400"><%= place.status %></span>
+                    </div>
+                    <!-- Smart ID Breakdown -->
+                    <div class="space-y-3 py-4 border-b border-white/10">
+                        <p class="text-[9px] font-black text-indigo-400 uppercase tracking-widest">Registry Provenance (Smart ID Decoding)</p>
+                        <div class="grid grid-cols-2 gap-2">
+                             <div class="bg-white/5 rounded p-2 border border-white/5">
+                                 <p class="text-[8px] text-gray-500">Region</p>
+                                 <p class="text-[10px] font-bold uppercase"><%= place.province_code %>-<%= place.district_code %></p>
+                             </div>
+                             <div class="bg-white/5 rounded p-2 border border-white/5">
+                                 <p class="text-[8px] text-gray-500">Taxonomy</p>
+                                 <p class="text-[10px] font-bold uppercase"><%= place.category_code %>-<%= place.subcategory_code %></p>
+                             </div>
+                             <div class="bg-white/5 rounded p-2 border border-white/5">
+                                 <p class="text-[8px] text-gray-500">NameCode</p>
+                                 <p class="text-[10px] font-bold uppercase"><%= place.smart_id ? place.smart_id.split('-')[5] : 'GEN' %></p>
+                             </div>
+                             <div class="bg-white/5 rounded p-2 border border-white/5">
+                                 <p class="text-[8px] text-gray-500">Sequence</p>
+                                 <p class="text-[10px] font-bold text-indigo-400">#<%= String(place.sequence_no).padStart(4, '0') %></p>
+                             </div>
+                        </div>
+                    </div>
+                     <div class="flex justify-between items-center border-b border-white/10 py-2">
+                        <span class="text-xs text-gray-500">Registry Source</span>
+                        <span class="text-xs font-black uppercase"><%= place.source %></span>
+                    </div>
+                    <div class="flex justify-between items-center border-b border-white/10 py-2">
+                        <span class="text-xs text-gray-500">Contributor</span>
+                        <span class="text-xs font-black"><%= place.createdBy ? place.createdBy.name : 'Pipeline' %></span>
+                    </div>
+                    <div class="flex justify-between items-center pt-2">
+                        <span class="text-xs text-gray-500">Registry Sync At</span>
+                        <span class="text-xs font-black"><%= place.updatedAt.toLocaleString() %></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SIDEBAR: AUDIT LOG -->
+    <div class="space-y-6">
+        <div class="premium-card p-8">
+            <h4 class="font-bold text-gray-800 mb-6">Administrative Audit</h4>
+            <div class="space-y-6">
+                <div>
+                    <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Moderator Feedback</p>
+                    <div class="mt-3 p-4 bg-gray-50 border border-gray-100 rounded-2xl italic text-xs text-gray-600 leading-safe">
+                        "<%= place.reviewerNotes || 'System generated: Node awaiting primary review cycle.' %>"
+                    </div>
+                </div>
+                <% if (place.reviewedBy) { %>
+                    <div class="pt-4 border-t border-gray-100 flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-black text-xs uppercase">
+                            <%= place.reviewedBy.name.substring(0,1) %>
+                        </div>
+                        <div>
+                            <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest">Validated By</p>
+                            <p class="text-xs font-black text-gray-800"><%= place.reviewedBy.name %></p>
+                        </div>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+
+        <!-- AI VISION AUDIT -->
+        <% if (place.vision_metadata && place.vision_metadata.aesthetic_score) { %>
+            <div class="premium-card p-8 border-l-4 border-indigo-500">
+                <div class="flex items-center justify-between mb-6">
+                    <h4 class="font-bold text-gray-800">Vision Intelligence</h4>
+                    <span class="px-2 py-0.5 bg-indigo-50 text-[9px] font-black text-indigo-600 rounded uppercase">AI Guardrail</span>
+                </div>
+                <div class="space-y-5">
+                    <div class="flex items-center justify-between">
+                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Aesthetic Score</span>
+                        <span class="text-sm font-black <%= place.vision_metadata.aesthetic_score >= 60 ? 'text-indigo-600' : 'text-rose-500' %>"><%= place.vision_metadata.aesthetic_score %>/100</span>
+                    </div>
+                    <div class="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                        <div class="h-full bg-indigo-500" style="width: <%= place.vision_metadata.aesthetic_score %>%"></div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-3 pt-2">
+                        <div class="p-3 rounded-xl bg-gray-50 border border-gray-100">
+                            <p class="text-[8px] font-bold text-gray-400调节 uppercase">Lighting</p>
+                            <p class="text-[10px] font-black text-gray-700 uppercase mt-0.5"><%= place.vision_metadata.lighting %></p>
+                        </div>
+                        <div class="p-3 rounded-xl bg-gray-50 border border-gray-100">
+                            <p class="text-[8px] font-bold text-gray-400 uppercase">Blur Check</p>
+                            <p class="text-[10px] font-black <%= place.vision_metadata.is_blurry ? 'text-rose-500' : 'text-emerald-500' %> uppercase mt-0.5">
+                                <%= place.vision_metadata.is_blurry ? 'Detected' : 'Clear' %>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="pt-4 border-t border-gray-100">
+                        <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-2">AI Visual Interpretation</p>
+                        <p class="text-[10px] text-gray-600 italic leading-relaxed">
+                            "<%= place.vision_metadata.visual_description || 'No visual analysis recorded.' %>"
+                        </p>
+                    </div>
+                </div>
+            </div>
+        <% } %>
+
+        <% if (place.enrichment_metadata && place.enrichment_metadata.google_place_id) { %>
+            <div class="premium-card p-8 border-l-4 border-emerald-500">
+                <div class="flex items-center justify-between mb-6">
+                    <h4 class="font-bold text-gray-800 tracking-tight">External Intel (Google Maps)</h4>
+                    <a href="<%= place.enrichment_metadata.google_maps_url %>" target="_blank" class="text-[9px] font-black text-emerald-600 hover:underline">VIEW ON MAPS &rarr;</a>
+                </div>
+                
+                <div class="space-y-4">
+                    <div class="flex items-center gap-3">
+                        <div class="p-3 bg-emerald-50 rounded-xl">
+                            <span class="text-xl">⭐</span>
+                        </div>
+                        <div>
+                            <p class="text-[9px] font-black text-gray-400 uppercase">Google Rating</p>
+                            <p class="text-lg font-black text-gray-800"><%= place.enrichment_metadata.google_rating %> <span class="text-[10px] text-gray-400 font-bold ml-1">/ 5 (<%= place.enrichment_metadata.google_user_ratings_total %> reviews)</span></p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 gap-2 border-t border-gray-100 pt-4">
+                        <div class="flex justify-between items-center text-[10px]">
+                            <span class="text-gray-400 font-bold uppercase">Official Phone</span>
+                            <span class="font-black text-gray-700"><%= place.enrichment_metadata.google_phone || 'N/A' %></span>
+                        </div>
+                        <div class="flex justify-between items-center text-[10px]">
+                            <span class="text-gray-400 font-bold uppercase">Website</span>
+                            <a href="<%= place.enrichment_metadata.google_website %>" target="_blank" class="font-black text-indigo-600 truncate max-w-[150px]"><%= place.enrichment_metadata.google_website || 'N/A' %></a>
+                        </div>
+                    </div>
+
+                    <% if (place.enrichment_metadata.opening_hours && place.enrichment_metadata.opening_hours.length > 0) { %>
+                        <div class="pt-4">
+                            <p class="text-[9px] font-black text-gray-400 uppercase mb-2 text-center">Opening Hours (Google Verified)</p>
+                            <div class="p-3 bg-gray-50 border border-gray-100 rounded-xl space-y-1">
+                                <% place.enrichment_metadata.opening_hours.forEach(day => { %>
+                                    <p class="text-[9px] text-gray-600 font-medium"><%= day %></p>
+                                <% }) %>
+                            </div>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        <% } %>
+
+        <% if (place.enrichment_metadata && place.enrichment_metadata.wiki_summary) { %>
+            <div class="premium-card p-8 border-l-4 border-amber-500">
+                <div class="flex items-center gap-2 mb-4">
+                    <span class="p-1.5 bg-amber-50 rounded text-amber-600">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2L1 21h22L12 2zm0 3.45l8.15 14.1H3.85L12 5.45zM11 10v4h2v-4h-2zm0 6v2h2v-2h-2z"/></svg>
+                    </span>
+                    <h4 class="font-bold text-gray-800 uppercase text-[10px] tracking-widest">Wikipedia Context</h4>
+                </div>
+                <p class="text-[11px] text-gray-600 leading-relaxed italic line-clamp-6">
+                    "<%= place.enrichment_metadata.wiki_summary %>"
+                </p>
+                <p class="text-[8px] text-gray-400 mt-4 text-right">Last Enriched: <%= place.enrichment_metadata.last_enriched_at ? place.enrichment_metadata.last_enriched_at.toLocaleDateString() : 'N/A' %></p>
+            </div>
+        <% } %>
+
+        <% if (place.enrichment_metadata && place.enrichment_metadata.nearby_facilities && place.enrichment_metadata.nearby_facilities.length > 0) { %>
+            <div class="premium-card p-8 border-l-4 border-sky-500 shadow-sm">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h4 class="font-bold text-gray-800 tracking-tight">Nearby Network</h4>
+                        <p class="text-[9px] text-gray-400 font-bold uppercase tracking-wider">Geospatial Awareness (OSM)</p>
+                    </div>
+                    <span class="px-2 py-1 bg-sky-50 text-sky-600 rounded text-[9px] font-black">~1.5KM RADIUS</span>
+                </div>
+
+                <div class="grid grid-cols-1 gap-3">
+                    <% place.enrichment_metadata.nearby_facilities.forEach(item => { %>
+                        <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-gray-100/50 hover:bg-white transition-all cursor-default group">
+                            <div class="w-8 h-8 rounded-lg flex items-center justify-center text-lg bg-white shadow-sm border border-gray-100">
+                                <% if(item.type === 'restaurant' || item.type === 'cafe') { %>🍴<% } 
+                                   else if(item.type === 'bus_stop') { %>🚌<% }
+                                   else if(item.type === 'hospital') { %>🏥<% }
+                                   else if(item.type === 'atm') { %>🏧<% }
+                                   else if(item.type === 'fuel') { %>⛽<% }
+                                   else { %>📍<% } %>
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-[10px] font-black text-gray-700 leading-tight group-hover:text-sky-600 transition-colors"><%= item.name %></p>
+                                <p class="text-[8px] font-bold text-gray-400 uppercase"><%= item.type %></p>
+                            </div>
+                            <div class="text-right">
+                                <a href="https://www.openstreetmap.org/?mlat=<%= item.lat %>&mlon=<%= item.lng %>" target="_blank" class="text-[8px] font-black text-sky-500 hover:underline">MAPS &rarr;</a>
+                            </div>
+                        </div>
+                    <% }) %>
+                </div>
+            </div>
+        <% } %>
+
+        <% if (place.enrichment_metadata && place.enrichment_metadata.social_signals) { %>
+            <div class="premium-card p-8 border-l-4 border-pink-500 overflow-hidden relative">
+                <div class="absolute top-0 right-0 p-4">
+                    <% if (place.enrichment_metadata.social_signals.is_trending) { %>
+                        <span class="flex h-3 w-3 relative">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-pink-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-3 w-3 bg-pink-500"></span>
+                        </span>
+                    <% } %>
+                </div>
+
+                <div class="flex items-center gap-2 mb-6">
+                    <h4 class="font-bold text-gray-800 tracking-tight">Social Trend Matrix</h4>
+                    <% if (place.enrichment_metadata.social_signals.is_trending) { %>
+                        <span class="text-[8px] font-black bg-pink-100 text-pink-600 px-2 py-0.5 rounded-full uppercase tracking-tighter">VIRAL TREND</span>
+                    <% } %>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="p-4 bg-pink-50 rounded-2xl border border-pink-100/50 text-center">
+                        <p class="text-[9px] font-black text-pink-400 uppercase mb-1">Popularity Index</p>
+                        <p class="text-3xl font-black text-pink-600"><%= place.enrichment_metadata.social_signals.popularity_index %>%</p>
+                    </div>
+                    <div class="p-4 bg-gray-50 rounded-2xl border border-gray-100 text-center">
+                        <p class="text-[9px] font-black text-gray-400 uppercase mb-1">Top Platform</p>
+                        <p class="text-xl font-bold text-gray-800"><%= place.enrichment_metadata.social_signals.top_platform %></p>
+                    </div>
+                </div>
+
+                <div class="mt-6 flex justify-between items-center text-[10px] border-t border-gray-100 pt-4">
+                    <div class="flex flex-col">
+                        <span class="text-gray-400 font-bold uppercase">Cloud Mentions</span>
+                        <span class="font-black text-gray-700"><%= place.enrichment_metadata.social_signals.social_mentions %> Total Signals</span>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-[8px] text-gray-300 font-bold">MONITORED: <%= place.enrichment_metadata.social_signals.last_monitored ? place.enrichment_metadata.social_signals.last_monitored.toLocaleDateString() : 'REALTIME' %></p>
+                    </div>
+                </div>
+            </div>
+        <% } %>
+
+        <div class="premium-card p-8 bg-indigo-600 text-white">
+            <h4 class="font-bold text-white mb-2">Safety Monitoring</h4>
+            <p class="text-[11px] text-indigo-100 mb-6">Current safety protocols for <%= place.name %>.</p>
+            <div class="space-y-4">
+                <div class="p-4 rounded-xl bg-white/10 border border-white/10">
+                    <p class="text-[10px] font-black text-indigo-200 uppercase">Global Safety Protocol</p>
+                    <p class="text-xs font-bold mt-1"><%= place.safety_level %></p>
+                </div>
+                <div class="p-4 rounded-xl bg-white/10 border border-white/10">
+                    <p class="text-[10px] font-black text-indigo-200 uppercase">Operational Note</p>
+                    <p class="text-xs mt-1 leading-relaxed"><%= place.safety_note || 'Standard protocol applies.' %></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .insight-pill {
+        @apply px-3 py-1.5 rounded-lg border border-gray-100 text-[10px] font-black text-gray-300 transition-all;
+    }
+    .insight-pill.active {
+        @apply bg-indigo-50 border-indigo-100 text-indigo-600 shadow-sm shadow-indigo-100;
+    }
+    .insight-pill.ar {
+         @apply bg-fuchsia-50 border-fuchsia-100 text-fuchsia-600;
+    }
+</style>

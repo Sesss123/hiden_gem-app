@@ -1,0 +1,325 @@
+<div x-data="bulkRegistry()" class="relative">
+    <div class="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div>
+            <h1 class="text-2xl font-black text-gray-900 tracking-tight">Places Registry</h1>
+            <p class="text-gray-500 text-sm">Manage the source of truth for the TripMeAI tourism map.</p>
+        </div>
+        <div class="flex items-center gap-3">
+            <a href="/places/create" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 px-6 rounded-xl transition shadow-lg shadow-indigo-100 flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg> Create New Node
+            </a>
+        </div>
+    </div>
+
+    <!-- Quick Filter Tabs -->
+    <div class="mb-6 flex items-center gap-2 overflow-x-auto pb-2 no-scrollbar">
+        <% ['all', 'pending', 'approved', 'rejected'].forEach(status => { %>
+            <a href="/places?status=<%= status %>&category=<%= filters.category || 'all' %>&district=<%= filters.district || 'all' %>" 
+               class="px-5 py-2 rounded-full text-xs font-black uppercase tracking-widest transition border-2
+               <%= (filters.status === status || (!filters.status && status === 'all')) ? 'bg-gray-900 border-gray-900 text-white shadow-xl shadow-gray-200' : 'bg-white border-gray-100 text-gray-400 hover:border-gray-300' %>">
+               <%= status %> Review
+            </a>
+        <% }) %>
+    </div>
+
+    <!-- Neural Command Center -->
+    <div class="mb-8 premium-card p-6 bg-gradient-to-br from-indigo-900/90 to-black overflow-hidden relative group">
+        <div class="absolute -right-20 -top-20 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl group-hover:bg-indigo-500/20 transition-all duration-700"></div>
+        
+        <div class="relative z-10">
+            <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center gap-3">
+                    <div class="p-2 bg-indigo-500/20 rounded-xl border border-indigo-500/30">
+                        <i class="fas fa-brain text-indigo-400 text-xl animate-pulse"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-lg font-black text-white tracking-tight uppercase">Neural Command Center</h2>
+                        <p class="text-[10px] text-indigo-300/60 font-medium uppercase tracking-widest">Autonomous Data Ingestion Hub</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-2 bg-white/5 border border-white/10 px-3 py-1.5 rounded-full">
+                        <div class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></div>
+                        <span class="text-[9px] font-bold text-emerald-400 tracking-tighter uppercase">AI Pipeline: Active</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Mode 1: AI Prompt Discovery -->
+                <div class="space-y-2">
+                    <label class="text-[9px] font-black text-indigo-300 uppercase tracking-widest ml-1">AI Discovery Prompt</label>
+                    <div class="relative">
+                        <input type="text" x-model="neuralPrompt" placeholder="Find all hidden gems in Ella..." 
+                               class="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-4 pr-12 text-sm text-white focus:ring-2 focus:ring-indigo-500 transition-all placeholder:text-gray-600">
+                        <button @click="triggerNeuralDiscovery()" class="absolute right-2 top-1.5 p-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg transition-transform active:scale-95">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Mode 2: Direct URL Intake -->
+                <div class="space-y-2">
+                    <label class="text-[9px] font-black text-indigo-300 uppercase tracking-widest ml-1">Smart URL Intake</label>
+                    <div class="relative">
+                        <input type="url" x-model="intakeUrl" placeholder="https://en.wikipedia.org/wiki/Sigiriya..." 
+                               class="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-4 pr-12 text-sm text-white focus:ring-2 focus:ring-indigo-500 transition-all placeholder:text-gray-600">
+                        <button @click="triggerUrlIntake()" class="absolute right-2 top-1.5 p-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition-transform active:scale-95">
+                            <i class="fas fa-link"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Discovery Filters -->
+    <div class="premium-card p-6 mb-8">
+        <form action="/places" method="GET" class="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-5 gap-4">
+            <input type="hidden" name="status" value="<%= filters.status || 'all' %>">
+            
+            <div class="space-y-1">
+                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-1">Neural Search</label>
+                <input type="text" name="search" value="<%= filters.search || '' %>" placeholder="Name or Smart ID" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition">
+            </div>
+
+            <div class="space-y-1">
+                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-1">Category Domain</label>
+                <select name="category" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition">
+                    <option value="all">All Categories</option>
+                    <option value="Temple" <%= filters.category === 'Temple' ? 'selected' : '' %>>Religious / Temples</option>
+                    <option value="Lake" <%= filters.category === 'Lake' ? 'selected' : '' %>>Lakes / Reservoirs</option>
+                    <option value="Beach" <%= filters.category === 'Beach' ? 'selected' : '' %>>Beaches / Coastal</option>
+                    <option value="Nature" <%= filters.category === 'Nature' ? 'selected' : '' %>>Nature / Wildlife</option>
+                    <option value="Historical" <%= filters.category === 'Historical' ? 'selected' : '' %>>Historical Sites</option>
+                </select>
+            </div>
+
+            <div class="space-y-1">
+                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-1">Geographic Intel</label>
+                <select name="district" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition">
+                    <option value="all">All Districts</option>
+                    <option value="Anuradhapura" <%= filters.district === 'Anuradhapura' ? 'selected' : '' %>>Anuradhapura</option>
+                    <option value="Kandy" <%= filters.district === 'Kandy' ? 'selected' : '' %>>Kandy</option>
+                    <option value="Galle" <%= filters.district === 'Galle' ? 'selected' : '' %>>Galle</option>
+                    <option value="Matara" <%= filters.district === 'Matara' ? 'selected' : '' %>>Matara</option>
+                    <option value="Colombo" <%= filters.district === 'Colombo' ? 'selected' : '' %>>Colombo</option>
+                </select>
+            </div>
+
+            <div class="flex items-end gap-2">
+                <button type="submit" class="w-full bg-gray-900 hover:bg-black text-white font-bold py-2 rounded-lg transition uppercase text-xs tracking-widest">Apply Discovery</button>
+                <% if (filters.district && filters.district !== 'all') { %>
+                    <button type="button" @click="triggerDeepDiscovery('<%= filters.district %>')" class="px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 rounded-lg transition uppercase text-xs tracking-widest flex items-center gap-2 whitespace-nowrap">
+                        <i class="fas fa-radar"></i> Deep Discover
+                    </button>
+                <% } %>
+            </div>
+            <div class="flex items-end text-right">
+                <a href="/places?status=all&category=all&district=all" class="text-[9px] font-black text-gray-400 hover:text-rose-500 transition uppercase underline underline-offset-4">Reset Neural Net</a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Registry Table -->
+    <div class="premium-card overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left">
+                <thead class="bg-gray-50 text-[10px] uppercase font-bold text-gray-500 tracking-widest border-b border-gray-100">
+                    <tr>
+                        <th class="px-6 py-4 w-10">
+                            <input type="checkbox" @change="toggleAll($event)" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                        </th>
+                        <th class="px-6 py-4">Smart Identity & Narrative</th>
+                        <th class="px-6 py-4">District</th>
+                        <th class="px-6 py-4">Category</th>
+                        <th class="px-6 py-4">Analytics Status</th>
+                        <th class="px-6 py-4">Moderation</th>
+                        <th class="px-6 py-4 text-right">Registry Operations</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-50">
+                    <% places.forEach(place => { %>
+                        <tr class="hover:bg-gray-50/50 transition <%= place.status === 'pending' ? 'bg-indigo-50/20' : '' %>" :class="selected.includes('<%= place._id %>') ? 'bg-indigo-50' : ''">
+                            <td class="px-6 py-4">
+                                <input type="checkbox" value="<%= place._id %>" x-model="selected" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-10 h-10 rounded-lg bg-gray-100 overflow-hidden flex-shrink-0 border border-gray-100 relative group">
+                                        <% if (place.external_image_url || (place.images && place.images.length > 0)) { %>
+                                            <img src="<%= place.external_image_url || place.images[0].image_path %>" class="w-full h-full object-cover">
+                                            <% if (place.vision_metadata && place.vision_metadata.aesthetic_score) { %>
+                                                <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
+                                                    <span class="text-[8px] font-bold text-white"><%= place.vision_metadata.aesthetic_score %></span>
+                                                </div>
+                                                <% 
+                                                    const score = place.vision_metadata.aesthetic_score;
+                                                    let dotColor = 'bg-rose-500';
+                                                    if (score >= 80) dotColor = 'bg-emerald-500';
+                                                    else if (score >= 60) dotColor = 'bg-amber-500';
+                                                %>
+                                                <div class="absolute top-0.5 right-0.5 w-2 h-2 rounded-full border-2 border-white <%= dotColor %>"></div>
+                                            <% } %>
+                                        <% } %>
+                                    </div>
+                                    <div>
+                                        <div class="flex items-center gap-2">
+                                            <h5 class="font-bold text-gray-800 text-sm"><%= place.name %></h5>
+                                            <% if (place.vision_metadata && place.vision_metadata.match_confidence >= 80) { %>
+                                                <span class="inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-green-100 text-green-700 border border-green-200" title="AI Verified (Confidence: <%= place.vision_metadata.match_confidence %>%)">
+                                                    <i class="fas fa-check-circle mr-0.5"></i>Verified
+                                                </span>
+                                            <% } %>
+                                        </div>
+                                        <div class="flex items-center gap-2 mt-0.5">
+                                            <span class="px-1.5 py-0.5 bg-indigo-50 text-[9px] font-black text-indigo-500 rounded uppercase tracking-tighter"><%= place.source || 'Manual' %></span>
+                                            <div class="cursor-pointer text-[10px] text-gray-700 font-mono font-bold bg-gray-50 px-2 py-0.5 rounded border border-gray-200">
+                                                <%= place.smart_id || 'ID_PENDING' %>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4">
+                                <span class="text-xs font-bold text-gray-600"><%= place.district %></span>
+                            </td>
+                            <td class="px-6 py-4">
+                                <span class="px-2 py-0.5 bg-gray-100 text-[10px] font-bold text-gray-500 rounded-full border border-gray-200"><%= place.category %></span>
+                            </td>
+                                 <td class="px-6 py-4">
+                                     <div class="flex flex-col gap-1.5">
+                                         <div class="flex items-center gap-1">
+                                             <span class="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Reliability:</span>
+                                             <div class="w-16 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                                                 <div class="h-full bg-indigo-500 rounded-full" style="--p: <%= place.score || 0 %>%; width: var(--p);"></div>
+                                             </div>
+                                             <span class="text-[9px] font-bold text-gray-600"><%= place.score || 0 %>%</span>
+                                         </div>
+                                         <div class="mt-1">
+                                             <% if (place.is_defective) { %>
+                                                 <span class="inline-flex items-center px-1.5 py-0.5 rounded bg-amber-50 text-amber-600 border border-amber-100 text-[8px] font-black uppercase tracking-tighter animate-pulse">
+                                                     <i class="fas fa-sync-alt fa-spin mr-1"></i>Refining Intel
+                                                 </span>
+                                             <% } else if (place.score >= 80) { %>
+                                                 <span class="inline-flex items-center px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-600 border border-emerald-100 text-[8px] font-black uppercase tracking-tighter">
+                                                     <i class="fas fa-gem mr-1"></i>High Fidelity
+                                                 </span>
+                                             <% } else if (place.score >= 50) { %>
+                                                 <span class="inline-flex items-center px-1.5 py-0.5 rounded bg-blue-50 text-blue-600 border border-blue-100 text-[8px] font-black uppercase tracking-tighter">
+                                                     <i class="fas fa-search mr-1"></i>Calibrated
+                                                 </span>
+                                             <% } else { %>
+                                                 <span class="inline-flex items-center px-1.5 py-0.5 rounded bg-rose-50 text-rose-600 border border-rose-100 text-[8px] font-black uppercase tracking-tighter">
+                                                     <i class="fas fa-exclamation-triangle mr-1"></i>Data Anemic
+                                                 </span>
+                                             <% } %>
+                                         </div>
+                                         <% if (place.vision_metadata && place.vision_metadata.aesthetic_score) { %>
+                                            <div class="flex items-center gap-1">
+                                                <span class="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Vision Q:</span>
+                                                <span class="text-[9px] font-black <%= place.vision_metadata.aesthetic_score >= 80 ? 'text-emerald-500' : (place.vision_metadata.aesthetic_score >= 60 ? 'text-amber-500' : 'text-rose-500') %>">
+                                                    <%= place.vision_metadata.aesthetic_score %>% 
+                                                    <span class="font-bold text-gray-400 opacity-50 ml-1">(L: <%= place.vision_metadata.lighting %>)</span>
+                                                </span>
+                                            </div>
+                                         <% } %>
+                                     </div>
+                                 </td>
+                            <td class="px-6 py-4">
+                                 <% 
+                                    const statusClasses = {
+                                        'approved': 'bg-emerald-50 text-emerald-600',
+                                        'pending': 'bg-indigo-50 text-indigo-500',
+                                        'rejected': 'bg-rose-50 text-rose-600'
+                                    };
+                                    const baseClasses = 'text-[9px] font-black uppercase tracking-tighter px-2 py-0.5 rounded';
+                                    const activeStatusClass = statusClasses[place.status] || 'bg-gray-100 text-gray-500';
+                                 %>
+                                <span class="<%= baseClasses %> <%= activeStatusClass %>"><%= place.status %></span>
+                            </td>
+                            <td class="px-6 py-4 text-right">
+                                <div class="flex items-center justify-end gap-2">
+                                    <a href="/places/<%= place._id %>" class="p-2 bg-gray-50 rounded-lg text-gray-400 hover:text-indigo-600 transition">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination Omitted for clarity in multi-replace targeting -->
+    </div>
+
+    <!-- Floating Bulk Actions Bar -->
+    <div x-show="selected.length > 0" 
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0 translate-y-10"
+         x-transition:enter-end="opacity-100 translate-y-0"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100 translate-y-0"
+         x-transition:leave-end="opacity-0 translate-y-10"
+         class="fixed bottom-8 left-1/2 -translate-x-1/2 z-50">
+        <div class="bg-gray-900 text-white rounded-2xl shadow-2xl px-6 py-4 flex items-center gap-6 border border-white/10 backdrop-blur-md">
+            <div class="flex items-center gap-2 border-r border-white/20 pr-6">
+                <span class="w-6 h-6 bg-indigo-600 rounded-full flex items-center justify-center text-[10px] font-black" x-text="selected.length"></span>
+                <span class="text-xs font-bold uppercase tracking-widest">Nodes Selected</span>
+            </div>
+            <div class="flex items-center gap-3">
+                <button @click="performBulk('approve')" class="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 rounded-lg text-[10px] font-black uppercase transition">Approve All</button>
+                <button @click="performBulk('reject')" class="px-4 py-2 bg-amber-500 hover:bg-amber-600 rounded-lg text-[10px] font-black uppercase transition">Reject Selection</button>
+                <button @click="performBulk('delete')" class="px-4 py-2 bg-red-500 hover:bg-red-600 rounded-lg text-[10px] font-black uppercase transition">Delete Mass</button>
+            </div>
+            <button @click="selected = []" class="text-gray-400 hover:text-white transition">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function bulkRegistry() {
+        return {
+            selected: [],
+            toggleAll(e) {
+                if (e.target.checked) {
+                    this.selected = Array.from(document.querySelectorAll('input[type="checkbox"][value]')).map(i => i.value);
+                } else {
+                    this.selected = [];
+                }
+            },
+            async performBulk(action) {
+                const result = await Swal.fire({
+                    title: `Confirm Bulk ${action.toUpperCase()}?`,
+                    text: `You are about to modify ${this.selected.length} nodes simultaneously.`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Execute Sync'
+                });
+
+                if (result.isConfirmed) {
+                    try {
+                        const response = await fetch('/places/bulk-action', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ action, ids: this.selected })
+                        });
+                        const data = await response.json();
+                        if (data.success) {
+                            Swal.fire('Registry Updated', data.message, 'success').then(() => location.reload());
+                        } else {
+                            Swal.fire('Registry Error', data.message, 'error');
+                        }
+                    } catch (err) {
+                        Swal.fire('Connection Error', 'Failed to reach Neural Bridge', 'error');
+                    }
+                }
+            }
+        }
+    }
+</script>
+
+

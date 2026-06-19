@@ -1,0 +1,102 @@
+<div class="flex items-center justify-between mb-8">
+    <p class="text-gray-500 text-sm">Monitor harvesting, AI extraction, and system synchronization tasks.</p>
+    <form action="/pipeline/trigger" method="POST">
+        <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 px-6 rounded-xl transition shadow-lg shadow-indigo-100 flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg> Run Pipeline Now
+        </button>
+    </form>
+</div>
+
+<div class="space-y-8">
+    <!-- Active / Last Run Details -->
+    <% if (runs.length > 0) { %>
+        <% const latest = runs[0]; %>
+        <div class="premium-card p-0 overflow-hidden">
+            <div class="p-6 border-b border-gray-100 bg-gray-50/50 flex items-center justify-between">
+                <div>
+                    <h3 class="font-bold text-gray-800">Operational Log: #<%= latest._id.toString().substring(18) %></h3>
+                    <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-1">
+                        Triggered by <span class="text-indigo-600"><%= latest.triggeredBy ? latest.triggeredBy.name : 'System' %></span> &bull; 
+                        <%= latest.startedAt.toLocaleString() %>
+                    </p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="px-3 py-1 bg-<%= latest.status === 'completed' ? 'green' : (latest.status === 'running' ? 'indigo' : 'red') %>-500 text-white text-[10px] uppercase font-black tracking-widest rounded-lg">
+                        <%= latest.status %>
+                    </span>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-gray-100 border-b border-gray-100 bg-white">
+                <div class="p-6 text-center">
+                    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Scraped</p>
+                    <p class="text-2xl font-bold text-gray-800"><%= latest.pagesScraped %></p>
+                </div>
+                <div class="p-6 text-center">
+                    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Extracted</p>
+                    <p class="text-2xl font-bold text-gray-800"><%= latest.recordsExtracted %></p>
+                </div>
+                <div class="p-6 text-center">
+                    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Auto-Apprv</p>
+                    <p class="text-2xl font-bold text-green-600"><%= latest.autoApprovedCount %></p>
+                </div>
+                <div class="p-6 text-center">
+                    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Pending</p>
+                    <p class="text-2xl font-bold text-orange-500"><%= latest.pendingCount %></p>
+                </div>
+            </div>
+
+            <div class="p-6 bg-[#1a1917] font-mono text-xs text-green-400/90 max-h-64 overflow-y-auto space-y-1">
+                <p class="text-gray-600 mb-2">// PIPELINE_EXECUTION_STREAM_START</p>
+                <% if (latest.logs && latest.logs.length > 0) { %>
+                    <% latest.logs.forEach(log => { %>
+                        <div class="flex gap-4">
+                            <span class="text-gray-700 select-none">[<%= log.timestamp.toISOString().split('T')[1].split('.')[0] %>]</span>
+                            <span class="<%= log.level === 'error' ? 'text-red-400' : (log.level === 'warn' ? 'text-yellow-400' : '') %>">
+                                <%= log.message %>
+                            </span>
+                        </div>
+                    <% }) %>
+                <% } else { %>
+                    <div class="flex gap-4">
+                        <span class="text-gray-700">[SYSTEM]</span>
+                        <span>Initializing core data harvesting phase...</span>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    <% } %>
+
+    <!-- Run History Table -->
+    <div class="premium-card overflow-hidden">
+        <div class="p-6 border-b border-gray-100">
+            <h4 class="font-bold text-gray-800">Execution History</h4>
+        </div>
+        <table class="w-full text-left">
+            <thead class="bg-gray-50 text-[10px] uppercase font-bold text-gray-500 tracking-widest border-b border-gray-100">
+                <tr>
+                    <th class="px-6 py-4">Run ID</th>
+                    <th class="px-6 py-4">Status</th>
+                    <th class="px-6 py-4">Trigger</th>
+                    <th class="px-6 py-4">Start Time</th>
+                    <th class="px-6 py-4 text-right">Yield</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-50 text-xs">
+                <% runs.slice(1).forEach(run => { %>
+                    <tr class="hover:bg-gray-50/50 transition">
+                        <td class="px-6 py-4 font-mono text-gray-500">#<%= run._id.toString().substring(18) %></td>
+                        <td class="px-6 py-4">
+                            <span class="px-2 py-0.5 rounded uppercase font-black tracking-tighter text-[9px] <%= run.status === 'completed' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' %>">
+                                <%= run.status %>
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 text-gray-600 uppercase font-bold tracking-tight text-[10px]"><%= run.triggeredBy ? run.triggeredBy.name : 'System' %></td>
+                        <td class="px-6 py-4 text-gray-400"><%= run.startedAt.toLocaleString() %></td>
+                        <td class="px-6 py-4 text-right font-bold text-gray-700"><%= run.recordsExtracted %> Nodes</td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
+</div>

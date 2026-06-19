@@ -1,0 +1,43 @@
+{
+  "firestore": {
+    "rules": "firestore.rules"
+  },
+  "hosting": {
+    "public": "web",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "/privacy",
+        "destination": "/privacy_policy.html"
+      },
+      {
+        "source": "/terms",
+        "destination": "/terms_of_service.html"
+      }
+    ]
+  },
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "tripme-89742",
+          "appId": "1:932776629360:android:81538bd1d9573aed19d0b5",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "tripme-89742",
+          "configurations": {
+            "android": "1:932776629360:android:81538bd1d9573aed19d0b5",
+            "ios": "1:932776629360:ios:777c4c3ad1db53a619d0b5"
+          }
+        }
+      }
+    }
+  }
+}

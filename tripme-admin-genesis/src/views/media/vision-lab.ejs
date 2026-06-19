@@ -1,0 +1,354 @@
+
+<div class="min-h-screen bg-[#0b0c10] text-gray-100 -m-4 lg:-m-8 p-4 lg:p-8">
+<div class="max-w-7xl mx-auto py-8 px-4">
+  <!-- Lab Header: High-Tech Vision aesthetic -->
+  <div class="mb-10 flex items-end justify-between border-b border-white/5 pb-8">
+    <div>
+        <div class="flex items-center gap-3 mb-2">
+            <div class="w-10 h-10 bg-indigo-500/10 border border-indigo-500/30 rounded-lg flex items-center justify-center">
+                <svg class="w-6 h-6 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                </svg>
+            </div>
+            <h1 class="text-2xl font-black text-white tracking-tight uppercase">Neural Vision Lab</h1>
+        </div>
+        <p class="text-gray-400 text-sm max-w-xl">
+            Specialized laboratory workspace for image-based feature detection, accessibility auditing, and autonomous visual intelligence extraction.
+        </p>
+    </div>
+    <div class="flex items-center gap-4 text-xs font-bold text-gray-500 uppercase tracking-widest">
+        <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></span>
+            <span>Gemini Vision 1.5 Pro</span>
+        </div>
+        <div class="w-px h-4 bg-white/10"></div>
+        <span>Status: Synced</span>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+    <!-- Left: Laboratory Inputs (4 cols) -->
+    <div class="lg:col-span-4 space-y-6">
+      <div class="ai-card-glass p-6">
+        <h3 class="text-[10px] font-black text-indigo-400 uppercase tracking-[0.2em] mb-6">Laboratory Controls</h3>
+        
+        <!-- Drop Zone -->
+        <div id="drop-zone" class="drop-zone mb-6 group" onclick="document.getElementById('vision-url-input').focus()">
+          <div id="drop-placeholder">
+            <svg class="w-10 h-10 text-gray-600 mx-auto mb-3 group-hover:text-indigo-400 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+            </svg>
+            <p class="text-[9px] font-black text-gray-500 uppercase tracking-widest">Input Stream</p>
+          </div>
+          <img id="preview-img" class="hidden w-full h-56 object-cover rounded-lg border border-white/10" alt="Preview">
+        </div>
+
+        <div class="space-y-4">
+          <div class="mb-4">
+            <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-2">Target Place Name (Optional)</label>
+            <input id="vision-place-input" type="text" placeholder="e.g. Sigiriya Rock Fortress"
+              autocomplete="off" spellcheck="false"
+              class="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-indigo-500/50 transition">
+          </div>
+          <div>
+            <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-2">Image Source URI</label>
+            <input id="vision-url-input" type="text" placeholder="Paste image object URI..."
+              autocomplete="off" spellcheck="false"
+              class="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-indigo-500/50 transition">
+          </div>
+          
+          <button id="analyze-btn" onclick="triggerVisionAnalysis()"
+            class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-black text-xs py-4 rounded-lg transition-all flex items-center justify-center gap-2 group border border-indigo-400/20">
+            <span id="btn-text">INITIATE NEURAL SWEEP</span>
+            <div id="vision-loading" class="hidden">
+              <svg class="w-4 h-4 animate-spin" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      <!-- Quick Tips -->
+      <div class="ai-card-glass p-5 border-l-4 border-l-amber-500/50">
+          <div class="flex gap-3">
+              <div class="text-amber-500"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>
+              <div>
+                  <h4 class="text-[10px] font-black text-amber-400 uppercase tracking-widest mb-1">Laboratory Protocol</h4>
+                  <p class="text-[11px] text-gray-400">Analysis tokens are consumed per sweep. Ensure image URIs are public and high-resolution for optimal feature detection accuracy.</p>
+              </div>
+          </div>
+      </div>
+    </div>
+
+    <!-- Right: Analysis Laboratory (8 cols) -->
+    <div class="lg:col-span-8">
+      <div class="ai-card-glass p-0 overflow-hidden h-full min-h-[500px] flex flex-col">
+        <div class="px-6 py-4 border-b border-white/5 flex items-center justify-between">
+          <h3 class="text-xs font-black text-gray-400 uppercase tracking-widest">Neural Telemetry Output</h3>
+          <div class="flex items-center gap-3">
+              <div id="cache-tag" class="hidden">
+                <div class="flex items-center gap-2 px-2 py-1 bg-amber-500/10 border border-amber-500/30 rounded text-[9px] font-black text-amber-500 uppercase tracking-tighter">
+                  <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                  Cached Result
+                </div>
+              </div>
+              <div id="status-tag" class="hidden">
+                  <div class="flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
+                    <span class="text-[9px] font-black text-indigo-400 uppercase">Analysis Complete</span>
+                  </div>
+              </div>
+          </div>
+        </div>
+
+        <div class="flex-grow p-6 flex flex-col">
+            <div id="vision-empty" class="flex-grow flex flex-col items-center justify-center text-center opacity-40">
+              <div class="w-24 h-24 bg-white/5 rounded-full flex items-center justify-center mb-6">
+                 <svg class="w-10 h-10 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                 </svg>
+              </div>
+              <p class="text-sm font-medium text-gray-500 italic max-w-xs">Awaiting image URI to engage vision processing unit. Neural inference will initialize upon source confirmation.</p>
+            </div>
+
+            <div id="vision-results" class="hidden space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+              <!-- Scene Interpretation -->
+              <div class="ai-card-glass bg-indigo-500/5 p-6 border-indigo-500/20">
+                <h4 class="text-[9px] font-black text-indigo-400 uppercase tracking-[0.2em] mb-4">Scene Interpretation</h4>
+                <p id="scene-description" class="text-gray-200 text-sm leading-relaxed font-medium"></p>
+              </div>
+
+              <!-- Feature Grid -->
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div>
+                  <h4 class="text-[9px] font-black text-gray-400 uppercase tracking-[0.2em] mb-4">Facility Audit Features</h4>
+                  <div id="feature-badges" class="grid grid-cols-2 gap-3"></div>
+                </div>
+                
+                <div id="auto-tags-container" class="hidden">
+                  <h4 class="text-[9px] font-black text-gray-400 uppercase tracking-[0.2em] mb-4">Autonomous Feature Tags</h4>
+                  <div id="auto-tags" class="flex flex-wrap gap-2"></div>
+                </div>
+              </div>
+
+              <!-- Metadata -->
+              <div class="mt-auto pt-8 border-t border-white/5 grid grid-cols-3 gap-4">
+                  <div class="ai-card-glass p-3 text-center border-white/5">
+                      <p class="text-[8px] font-black text-gray-500 uppercase mb-1">Confidence</p>
+                      <p id="meta-confidence" class="text-lg font-black text-white">--%</p>
+                  </div>
+                  <div class="ai-card-glass p-3 text-center border-white/5">
+                      <p class="text-[8px] font-black text-gray-500 uppercase mb-1">Aesthetic</p>
+                      <p id="meta-aesthetic" class="text-lg font-black text-white">--</p>
+                  </div>
+                  <div id="meta-relevance" class="ai-card-glass p-3 text-center border-white/5">
+                      <p class="text-[8px] font-black text-gray-500 uppercase mb-1">Analyzed</p>
+                      <p class="text-[10px] font-black text-gray-300 mt-1 uppercase">Just Now</p>
+                  </div>
+              </div>
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .ai-card-glass {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+  }
+  .ai-card-glass:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(99, 102, 241, 0.2);
+  }
+  .drop-zone {
+    border: 1px dashed rgba(255,255,255,0.1);
+    background: rgba(0,0,0,0.2);
+    border-radius: 12px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    min-height: 224px;
+    display: flex; align-items: center; justify-content: center; flex-direction: column;
+  }
+  .drop-zone:hover {
+    border-color: rgba(99, 102, 241, 0.4);
+    background: rgba(99, 102, 241, 0.03);
+    box-shadow: 0 0 25px rgba(99, 102, 241, 0.1);
+  }
+
+  .feat-pill {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 12px; border-radius: 8px;
+    font-size: 11px; font-weight: 700;
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
+  }
+  .feat-pill.detected { 
+      background: rgba(16, 185, 129, 0.1); 
+      color: #10b981; 
+      border-color: rgba(16, 185, 129, 0.2); 
+      box-shadow: 0 2px 8px rgba(16, 185, 129, 0.05);
+  }
+  .feat-pill.absent { 
+      background: rgba(255,255,255,0.03); 
+      color: rgba(255,255,255,0.2); 
+      border-color: rgba(255,255,255,0.05);
+      text-decoration: line-through;
+  }
+
+  .tag-crystal {
+    padding: 4px 10px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 800;
+    color: rgba(255,255,255,0.6);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+</style>
+
+<script>
+const featureMap = {
+    wheelchair_access: '♿ Wheelchair',
+    stairs_heavy: '🪜 Heavy Stairs',
+    parking_visible: '🅿️ Parking',
+    toilets_visible: '🚻 Toilets',
+    food_stalls_visible: '🍜 Food Nearby',
+    crowded: '👥 Crowded',
+    indoor: '🏠 Indoor',
+    water_body: '💧 Water Body',
+    natural_landscape: '🌿 Nature',
+    cultural_religious: '🏛️ Cultural',
+    well_maintained: '✨ Well Maintained',
+    lighting_good: '💡 Good Lighting',
+};
+
+async function triggerVisionAnalysis() {
+  const input = document.getElementById('vision-url-input');
+  const btn = document.getElementById('analyze-btn');
+  const btnText = document.getElementById('btn-text');
+  const loader = document.getElementById('vision-loading');
+  const results = document.getElementById('vision-results');
+  const empty = document.getElementById('vision-empty');
+  const preview = document.getElementById('preview-img');
+  const placeholder = document.getElementById('drop-placeholder');
+  const statusTag = document.getElementById('status-tag');
+  
+  const url = input.value.trim();
+  if (!url) {
+      showToast('Neural Error: Destination URI required.', 'error');
+      return;
+  }
+
+  // Pre-analysis UI state
+  preview.src = url;
+  preview.classList.remove('hidden');
+  placeholder.classList.add('hidden');
+  btn.disabled = true;
+  btnText.textContent = 'NEURAL INFERENCE IN PROGRESS...';
+  loader.classList.remove('hidden');
+  statusTag.classList.add('hidden');
+
+  try {
+    const res = await fetch('/pipeline/vision-analyze', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        image_url: url,
+        place_name: document.getElementById('vision-place-input').value.trim() || null
+      })
+    });
+    
+    const data = await res.json();
+    
+    if (data.success && data.features) {
+      empty.classList.add('hidden');
+      results.classList.remove('hidden');
+      statusTag.classList.remove('hidden');
+      
+      // Handle Cache Tag
+      const cacheTag = document.getElementById('cache-tag');
+      if (data.cache_hit) {
+          cacheTag.classList.remove('hidden');
+      } else {
+          cacheTag.classList.add('hidden');
+      }
+      
+      const features = data.features;
+      document.getElementById('scene-description').textContent = features.scene_description || 'No scene description provided.';
+      document.getElementById('meta-confidence').textContent = (features.match_confidence || 100) + '%';
+      document.getElementById('meta-aesthetic').textContent = (features.aesthetic_score || 'N/A');
+      
+      // Feature Pills
+      const featContainer = document.getElementById('feature-badges');
+      featContainer.innerHTML = '';
+      
+      for (const [key, label] of Object.entries(featureMap)) {
+        const detected = features[key] === 1;
+        const pill = document.createElement('div');
+        pill.className = `feat-pill ${detected ? 'detected' : 'absent'}`;
+        pill.innerHTML = `<span>${label}</span>`;
+        featContainer.appendChild(pill);
+      }
+
+      // Tags
+      const tagsContainer = document.getElementById('auto-tags-container');
+      const tagsEl = document.getElementById('auto-tags');
+      const tags = features.auto_tags || [];
+      if (tags.length > 0) {
+        tagsContainer.classList.remove('hidden');
+        tagsEl.innerHTML = tags.map(t => `<span class="tag-crystal">#${t}</span>`).join('');
+      } else {
+        tagsContainer.classList.add('hidden');
+      }
+
+      showToast('Vision Sweep Complete', 'success');
+    } else {
+      showToast(data.message || 'Neural Link Error.', 'error');
+    }
+  } catch (err) {
+    showToast('Infrastructure Network Failure.', 'error');
+    console.error(err);
+  } finally {
+    btn.disabled = false;
+    btnText.textContent = 'INITIATE NEURAL SWEEP';
+    loader.classList.add('hidden');
+  }
+}
+
+// Support for paste events
+document.getElementById('vision-url-input').addEventListener('paste', () => {
+    setTimeout(triggerVisionAnalysis, 150);
+});
+
+function showToast(msg, type) {
+    if (window.Swal) {
+        Swal.fire({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            icon: type,
+            title: msg,
+            background: '#1a1917',
+            color: '#fff',
+            customClass: {
+                popup: 'ai-card-glass border border-white/10'
+            }
+        });
+    } else {
+        alert(msg);
+    }
+}
+</script>
+</div>

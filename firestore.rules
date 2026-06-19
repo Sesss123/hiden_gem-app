@@ -1,0 +1,248 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── Core Auth Functions ──────────────────────────────────────────────────
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isSignedIn() &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role
+          in ['admin', 'super_admin'];
+    }
+
+    function isVerifiedGuide() {
+      return isSignedIn() &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role
+          in ['guide_approved', 'admin', 'super_admin'];
+    }
+
+    // ── User Profiles ────────────────────────────────────────────────────────
+    // •  Users read/write THEIR OWN profile only.
+    // •  Admins can read all profiles.
+    // •  Users CANNOT change role, isPremium, isBanned, or any premium/flag fields.
+    //    Only admins or backend service accounts elevate these fields.
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow create: if isOwner(userId);
+      allow update: if (isOwner(userId) &&
+                        !request.resource.data.diff(resource.data)
+                          .affectedKeys().hasAny([
+                            'role', 'isPremium', 'isBanned', 'expiryDate', 'premiumPlan',
+                            'isFlagged', 'flagReason', 'flaggedAt',
+                            'premiumRevokedAt', 'premiumRevokedReason',
+                            'reviewCount', 'ratingAverage', 'ratingRecalcNeededAt'
+                          ])) ||
+                       isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // ── Subscriptions ────────────────────────────────────────────────────────
+    match /subscriptions/{subId} {
+      allow read: if isSignedIn() && request.auth.uid == resource.data.accountId;
+      allow write: if false; // Backend/Admin SDK only
+    }
+
+    // ── Guide Listings (Marketplace) ─────────────────────────────────────────
+    // •  Anyone authenticated can read published & approved listings.
+    // •  Only the guide owning the listing or admins can write.
+    match /guide_listings/{listingId} {
+      allow read: if isSignedIn() &&
+        (resource.data.status == 'published' && resource.data.moderationStatus == 'approved'
+         || isOwner(resource.data.guideId) || isAdmin());
+      allow create: if isVerifiedGuide() &&
+        request.resource.data.guideId == request.auth.uid;
+      allow update: if (isOwner(resource.data.guideId) &&
+        !request.resource.data.diff(resource.data).affectedKeys()
+          .hasAny(['moderationStatus', 'isFeatured', 'ratingAverage', 'profileViews'])) ||
+        isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // ── Tour Packages ────────────────────────────────────────────────────────
+    match /tour_packages/{packageId} {
+      allow read: if isSignedIn();
+      allow create: if isVerifiedGuide() &&
+        request.resource.data.ownerId == request.auth.uid;
+      allow update, delete: if isOwner(resource.data.ownerId) || isAdmin();
+    }
+
+    // ── Tour Reviews ─────────────────────────────────────────────────────────
+    // •  Reviews are public (any authenticated user can read active reviews).
+    // •  Creating a review requires auth. Server-side logic verifies eligibility.
+    // •  Moderation fields (status, flag, hidden) can only be changed by admins.
+    match /tour_reviews/{reviewId} {
+      allow read: if isSignedIn() && resource.data.moderationStatus == 'active';
+      allow create: if isSignedIn() &&
+        request.resource.data.touristId == request.auth.uid;
+      allow update: if (isOwner(resource.data.touristId) &&
+        !request.resource.data.diff(resource.data).affectedKeys()
+          .hasAny(['moderationStatus', 'isFlagged', 'flagReason', 'hiddenByAdmin', 'hiddenReason',
+                   'isVerifiedSession', 'reviewWindowValidated'])) ||
+        isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // ── Tour Sessions ────────────────────────────────────────────────────────
+    match /tour_sessions/{sessionId} {
+      allow read: if isSignedIn();
+      allow create: if isVerifiedGuide() &&
+        request.resource.data.guideId == request.auth.uid;
+      allow update: if isSignedIn() && (
+        resource.data.guideId == request.auth.uid ||
+        (!resource.data.isLocked && resource.data.currentPhase == 'assembling')
+      );
+      allow delete: if isAdmin();
+
+      match /presence/{presenceId} {
+        allow read: if isSignedIn();
+        allow write: if isSignedIn() &&
+          (presenceId == request.auth.uid || presenceId.startsWith('vehicle_'));
+      }
+    }
+
+    // ── Tour Links (QR Connect) ──────────────────────────────────────────────
+    match /tour_links/{linkId} {
+      allow read: if isSignedIn();
+      allow create: if isVerifiedGuide();
+      allow update: if isSignedIn(); // Tourist redeeming the token
+      allow delete: if isAdmin();
+    }
+
+    // ── Vehicles ─────────────────────────────────────────────────────────────
+    match /vehicles/{vehicleId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && (
+        request.resource.data.guideId == request.auth.uid ||
+        request.resource.data.operatorId == request.auth.uid
+      );
+      allow update, delete: if isOwner(resource.data.guideId) ||
+        isOwner(resource.data.operatorId) || isAdmin();
+    }
+
+    // ── Guide Applications ───────────────────────────────────────────────────
+    match /guide_applications/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow create: if isOwner(userId);
+      allow update, delete: if isAdmin();
+    }
+
+    // ── Places & Events (Discovery) ──────────────────────────────────────────
+    match /places/{placeId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    match /events/{eventId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    // ── Saved Plans ──────────────────────────────────────────────────────────
+    match /saved_plans/{planId} {
+      allow read: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if isSignedIn() && resource.data.userId == request.auth.uid;
+    }
+
+    // ── Business Partners ────────────────────────────────────────────────────
+    match /partners/{partnerId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    // ── AR Sessions ─────────────────────────────────────────────────────────
+    match /ar_sessions/{sessionId} {
+      allow read, write: if isSignedIn();
+    }
+
+    // ── Knowledge Base Config ────────────────────────────────────────────────
+    match /kb_config/{configId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    // ── App Config (Remote Config Cache) ────────────────────────────────────
+    match /app_config/{configId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    // ── AI Logs (Immutable Audit Trail) ─────────────────────────────────────
+    // Writes are by backend Admin SDK only. No client writes.
+    match /ai_logs/{logId} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+
+    // ── Location Pings (Anti-Spoof Telemetry) ───────────────────────────────
+    // Users write their own (for server audit). Only admins can read.
+    // Immutable after creation.
+    match /location_pings/{pingId} {
+      allow create: if isSignedIn() &&
+        request.resource.data.uid == request.auth.uid;
+      allow read: if isAdmin();
+      allow update, delete: if false;
+    }
+
+    // ── Incident Reports ───────────────────────────────────────────────────
+    match /incident_reports/{reportId} {
+      allow create: if isSignedIn() &&
+        request.resource.data.reportedBy == request.auth.uid;
+      allow read, update, delete: if isAdmin();
+    }
+
+    // ── Abuse Reports ───────────────────────────────────────────────────────
+    match /abuse_reports/{reportId} {
+      allow create: if isSignedIn();
+      allow read, update, delete: if isAdmin();
+    }
+
+    // ── Security Events (Phase 3: Behavioral Telemetry) ───────────────────
+    // Users can CREATE their own security events (client-side telemetry).
+    // Only admins can READ (forensic review).
+    // No updates or deletes — immutable audit trail.
+    match /security_events/{eventId} {
+      allow create: if isSignedIn() &&
+        request.resource.data.uid == request.auth.uid;
+      allow read: if isAdmin();
+      allow update, delete: if false;
+    }
+
+    // ── Security Alerts (Point 13: Incident Response) ────────────────────
+    match /security_alerts/{alertId} {
+      allow create: if isSignedIn();
+      allow read: if isAdmin();
+      allow update, delete: if false;
+    }
+
+    // ── Pending Notifications (Point 13: FCM Escalation) ─────────────────
+    match /pending_notifications/{notiId} {
+      allow create: if isSignedIn();
+      allow read: if isAdmin();
+      allow update, delete: if false;
+    }
+
+    // ── Device Trust Graph (Phase 3: Account-Device Bindings) ────────────
+    match /device_trust/{bindingId} {
+      allow create, update: if isSignedIn() &&
+        request.resource.data.uid == request.auth.uid;
+      allow read: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // ── Quarantined Sessions (Phase 3: Auto-Containment Records) ─────────
+    match /quarantined_sessions/{uid} {
+      allow read: if isAdmin();
+      allow write: if false; // Admin SDK only
+    }
+  }
+}
+

@@ -1,0 +1,103 @@
+<%# views/scheduler/_job_card.ejs — Individual job card partial %>
+<%
+  const typeLabel = {
+    pipeline_full:  { label: 'AI Pipeline', icon: '🤖', cls: 'jtype-pipeline' },
+    cache_clear:    { label: 'Cache Clear', icon: '🗑️', cls: 'jtype-cache' },
+    key_status_log: { label: 'Key Logger', icon: '🔑', cls: 'jtype-key' },
+  }[job.job_type] || { label: job.job_type, icon: '⚙️', cls: 'jtype-pipeline' };
+
+  const scheduleText = job.schedule_type === 'cron'
+    ? `Cron: ${job.cron}`
+    : `Every ${job.interval_value} ${job.interval_unit}`;
+
+  const nextRun = job.next_run
+    ? new Date(job.next_run).toLocaleString('en-GB', { hour12: false, timeZone: 'UTC' }) + ' UTC'
+    : '—';
+
+  const lastRun = job.last_run
+    ? new Date(job.last_run).toLocaleString('en-GB', { hour12: false, timeZone: 'UTC' }) + ' UTC'
+    : 'Never';
+
+  const statusCls = {
+    success: 'sbadge-success',
+    error:   'sbadge-error',
+    running: 'sbadge-running',
+    skipped: 'sbadge-skipped',
+  }[job.last_status] || 'sbadge-disabled';
+%>
+<div class="scard p-5 flex flex-col" id="jcard-<%= job.id %>">
+  <!-- Header -->
+  <div class="flex items-start justify-between mb-3">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl border flex items-center justify-center text-lg <%= typeLabel.cls %>">
+        <%= typeLabel.icon %>
+      </div>
+      <div>
+        <h4 class="text-white font-bold text-sm leading-tight"><%= job.name %></h4>
+        <p class="text-[10px] text-gray-600 uppercase tracking-widest mt-0.5"><%= typeLabel.label %></p>
+      </div>
+    </div>
+    <span class="sbadge <%= job.enabled ? 'sbadge-enabled' : 'sbadge-disabled' %>">
+      <span class="w-1.5 h-1.5 rounded-full <%= job.enabled ? 'bg-emerald-400' : 'bg-gray-500' %>"></span>
+      <%= job.enabled ? 'Active' : 'Paused' %>
+    </span>
+  </div>
+
+  <!-- Description -->
+  <% if (job.description) { %>
+    <p class="text-xs text-gray-500 mb-3 flex-grow leading-relaxed"><%= job.description %></p>
+  <% } else { %>
+    <div class="flex-grow"></div>
+  <% } %>
+
+  <!-- Schedule Info Grid -->
+  <div class="grid grid-cols-2 gap-2 mb-4">
+    <div class="scard-glass px-3 py-2">
+      <p class="text-[9px] text-gray-600 uppercase tracking-widest">Schedule</p>
+      <p class="text-[11px] text-white font-mono font-bold mt-0.5 truncate"><%= scheduleText %></p>
+    </div>
+    <div class="scard-glass px-3 py-2">
+      <p class="text-[9px] text-gray-600 uppercase tracking-widest">Runs</p>
+      <p class="text-[11px] text-white font-bold mt-0.5"><%= job.run_count || 0 %> total</p>
+    </div>
+    <div class="scard-glass px-3 py-2">
+      <p class="text-[9px] text-gray-600 uppercase tracking-widest">Next Run</p>
+      <p class="text-[10px] text-indigo-300 font-mono mt-0.5 truncate"><%= nextRun %></p>
+    </div>
+    <div class="scard-glass px-3 py-2">
+      <p class="text-[9px] text-gray-600 uppercase tracking-widest">Last Run</p>
+      <% if (job.last_status) { %>
+        <span class="sbadge <%= statusCls %>" style="font-size:9px"><%= job.last_status %></span>
+      <% } else { %>
+        <p class="text-[10px] text-gray-600 mt-0.5"><%= lastRun %></p>
+      <% } %>
+    </div>
+  </div>
+
+  <!-- Action Buttons -->
+  <div class="flex items-center gap-1.5 pt-3 border-t border-white/[0.04]">
+    <!-- Run Now -->
+    <button class="sact sact-run flex-1 text-center"
+      data-id="<%= job.id %>" data-name="<%= job.name %>" onclick="handleRunNow(this)">
+      ▶ Run Now
+    </button>
+    <!-- Toggle -->
+    <button class="sact sact-pause"
+      data-id="<%= job.id %>" data-name="<%= job.name %>" onclick="handleToggle(this)"
+      title="<%= job.enabled ? 'Pause this job' : 'Resume this job' %>">
+      <%= job.enabled ? '⏸' : '▶' %>
+    </button>
+    <!-- Edit -->
+    <button class="sact sact-pause flex-none"
+      onclick="openEditModal('<%= job.id %>')"
+      title="Edit Configuration">
+      ✏️
+    </button>
+    <!-- Delete -->
+    <button class="sact sact-delete"
+      data-id="<%= job.id %>" data-name="<%= job.name %>" onclick="handleDelete(this)"
+      title="Delete job">
+      🗑
+    </button>
+  </div>
+</div>

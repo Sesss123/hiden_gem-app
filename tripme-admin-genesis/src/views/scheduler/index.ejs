@@ -1,0 +1,530 @@
+<%# views/scheduler/index.ejs — TripMeAI Job Scheduler Dashboard %>
+<style>
+  /* ── Scheduler CSS ── */
+  .scard {
+    background: linear-gradient(135deg, rgba(15,14,26,0.9) 0%, rgba(22,20,40,0.85) 100%);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 16px;
+    backdrop-filter: blur(12px);
+  }
+  .scard-glass {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 12px;
+  }
+
+  /* Job type icons */
+  .jtype-pipeline { background: rgba(99,102,241,0.15); color: #818cf8; border-color: rgba(99,102,241,0.3); }
+  .jtype-cache    { background: rgba(52,211,153,0.12); color: #34d399; border-color: rgba(52,211,153,0.3); }
+  .jtype-key      { background: rgba(251,191,36,0.12); color: #fbbf24; border-color: rgba(251,191,36,0.3); }
+
+  /* Status badges */
+  .sbadge { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px;
+            border-radius: 99px; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; }
+  .sbadge-enabled  { background: rgba(52,211,153,0.12); color: #34d399; border: 1px solid rgba(52,211,153,0.3); }
+  .sbadge-disabled { background: rgba(100,116,139,0.12); color: #64748b; border: 1px solid rgba(100,116,139,0.2); }
+  .sbadge-success  { background: rgba(52,211,153,0.12); color: #34d399; border: 1px solid rgba(52,211,153,0.3); }
+  .sbadge-error    { background: rgba(248,113,113,0.12); color: #f87171; border: 1px solid rgba(248,113,113,0.3); }
+  .sbadge-running  { background: rgba(99,102,241,0.15); color: #818cf8; border: 1px solid rgba(99,102,241,0.35); }
+  .sbadge-skipped  { background: rgba(100,116,139,0.1); color: #94a3b8; border: 1px solid rgba(100,116,139,0.2); }
+
+  /* Action buttons */
+  .sact { padding: 5px 12px; border-radius: 8px; font-size: 11px; font-weight: 700; cursor: pointer;
+          transition: all 0.2s; border: 1px solid; text-transform: uppercase; letter-spacing: 0.04em; }
+  .sact-run    { background: rgba(52,211,153,0.1); color: #34d399; border-color: rgba(52,211,153,0.3); }
+  .sact-run:hover { background: rgba(52,211,153,0.25); }
+  .sact-pause  { background: rgba(251,191,36,0.1); color: #fbbf24; border-color: rgba(251,191,36,0.25); }
+  .sact-pause:hover { background: rgba(251,191,36,0.2); }
+  .sact-delete { background: rgba(248,113,113,0.08); color: #f87171; border-color: rgba(248,113,113,0.2); }
+  .sact-delete:hover { background: rgba(248,113,113,0.2); }
+
+  /* Modal */
+  .smodal-overlay {
+    position: fixed; inset: 0; z-index: 1000;
+    background: rgba(0,0,0,0.75); backdrop-filter: blur(4px);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none; transition: opacity 0.25s;
+  }
+  .smodal-overlay.open { opacity: 1; pointer-events: all; }
+  .smodal-box {
+    background: linear-gradient(135deg, #0f0e1a 0%, #1a1835 100%);
+    border: 1px solid rgba(99,102,241,0.3); border-radius: 20px;
+    padding: 28px; width: min(520px, 95vw);
+    max-height: 90vh; overflow-y: auto;
+    transform: translateY(20px); transition: transform 0.25s;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.6), 0 0 40px rgba(99,102,241,0.08);
+  }
+  .smodal-overlay.open .smodal-box { transform: translateY(0); }
+
+  /* Neon glow text */
+  .neon-green { color: #34d399; text-shadow: 0 0 12px rgba(52,211,153,0.5); }
+  .neon-indigo { color: #818cf8; text-shadow: 0 0 12px rgba(129,140,248,0.4); }
+
+  /* Pulsing dot for running status */
+  .pulse-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+  .pulse-green { background: #34d399; box-shadow: 0 0 0 0 rgba(52,211,153,0.5); animation: pulse-a 1.5s infinite; }
+  .pulse-gray  { background: #475569; }
+  @keyframes pulse-a {
+    0%   { box-shadow: 0 0 0 0 rgba(52,211,153,0.5); }
+    70%  { box-shadow: 0 0 0 7px rgba(52,211,153,0); }
+    100% { box-shadow: 0 0 0 0 rgba(52,211,153,0); }
+  }
+
+  /* Form inputs */
+  .sf-input {
+    width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px; padding: 10px 14px; font-size: 13px; color: #fff;
+    transition: border-color 0.2s; outline: none;
+  }
+  .sf-input:focus { border-color: rgba(99,102,241,0.6); }
+  .sf-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: #94a3b8; display: block; margin-bottom: 6px; }
+  .sf-select { width: 100%; background: rgba(30,28,50,0.9); border: 1px solid rgba(255,255,255,0.1);
+               border-radius: 10px; padding: 10px 14px; font-size: 13px; color: #fff;
+               outline: none; transition: border-color 0.2s; }
+  .sf-select:focus { border-color: rgba(99,102,241,0.6); }
+
+  /* Toast */
+  @keyframes slideUp { from { transform: translateY(20px); opacity:0; } to { transform: translateY(0); opacity:1; } }
+</style>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     PAGE HEADER
+══════════════════════════════════════════════════════════════════════ -->
+<div class="flex items-center justify-between mb-6">
+  <div>
+    <p class="text-sm text-gray-400 mt-1">Automate AI pipeline runs • Cache clearing • Quota checks</p>
+  </div>
+  <div class="flex items-center gap-3">
+    <!-- Scheduler health pill -->
+    <div id="sched-health" class="flex items-center gap-2 px-3 py-1.5 rounded-full border text-xs font-bold
+         <%- pythonOnline ? 'bg-emerald-900/30 border-emerald-500/30 text-emerald-400' : 'bg-red-900/20 border-red-500/20 text-red-400' %>">
+      <span class="pulse-dot <%- pythonOnline ? 'pulse-green' : 'pulse-gray' %>"></span>
+      <%- pythonOnline ? 'Scheduler Online' : 'Python Offline' %>
+    </div>
+    <button onclick="openCreateModal()"
+      class="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition shadow-lg shadow-indigo-900/40">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
+      </svg>
+      New Job
+    </button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     STATS ROW
+══════════════════════════════════════════════════════════════════════ -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+  <div class="scard p-4">
+    <p class="text-[10px] text-gray-500 uppercase tracking-widest mb-1">Total Jobs</p>
+    <p id="stat-total" class="text-2xl font-bold text-white"><%= jobs.length %></p>
+  </div>
+  <div class="scard p-4">
+    <p class="text-[10px] text-gray-500 uppercase tracking-widest mb-1">Active</p>
+    <p id="stat-active" class="text-2xl font-bold neon-green"><%= jobs.filter(j=>j.enabled).length %></p>
+  </div>
+  <div class="scard p-4">
+    <p class="text-[10px] text-gray-500 uppercase tracking-widest mb-1">Paused</p>
+    <p id="stat-paused" class="text-2xl font-bold text-gray-500"><%= jobs.filter(j=>!j.enabled).length %></p>
+  </div>
+  <div class="scard p-4">
+    <p class="text-[10px] text-gray-500 uppercase tracking-widest mb-1">Executions</p>
+    <p id="stat-runs" class="text-2xl font-bold neon-indigo"><%= jobs.reduce((s,j)=>s+(j.run_count||0),0) %></p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     JOB CARDS
+══════════════════════════════════════════════════════════════════════ -->
+<div id="job-cards" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 mb-8">
+  <% if (!jobs.length) { %>
+    <div class="col-span-full" id="no-jobs-msg">
+      <div class="scard p-12 text-center border-2 border-dashed border-white/5">
+        <svg class="w-12 h-12 mx-auto mb-3 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <p class="text-gray-500 font-medium mb-1">No jobs configured yet.</p>
+        <p class="text-gray-700 text-sm">Click <strong class="text-indigo-400">New Job</strong> to schedule your first automated task.</p>
+      </div>
+    </div>
+  <% } %>
+  <% jobs.forEach(job => { %>
+    <%- include('_job_card', { job }) %>
+  <% }) %>
+</div>
+
+<!-- Data for JS (Golden Standard for EJS to avoid parser conflicts) -->
+<script id="jobs-data" type="application/json"><%- JSON.stringify(jobs) %></script>
+<script>
+  window.__JOBS__ = JSON.parse(document.getElementById('jobs-data').textContent);
+</script>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     RUN LOGS TABLE
+══════════════════════════════════════════════════════════════════════ -->
+<div class="scard p-5" id="run-log-panel">
+  <div class="flex items-center justify-between mb-4">
+    <div class="flex items-center gap-3">
+      <div class="w-8 h-8 rounded-xl bg-indigo-900/40 border border-indigo-500/25 flex items-center justify-center">
+        <svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+        </svg>
+      </div>
+      <div>
+        <h3 class="text-sm font-bold text-white">Execution Log</h3>
+        <p class="text-[10px] text-gray-600 uppercase tracking-widest">Last 30 runs • Auto-refreshes every 30s</p>
+      </div>
+    </div>
+    <button onclick="fetchLogs()" class="text-xs text-indigo-400 hover:text-indigo-300 font-bold transition">↻ Refresh</button>
+  </div>
+
+  <div id="log-table-wrap" class="overflow-x-auto">
+    <table class="w-full text-xs">
+      <thead>
+        <tr class="border-b border-white/5">
+          <th class="text-left text-gray-600 font-bold uppercase tracking-widest py-2 pr-4 text-[10px]">Job</th>
+          <th class="text-left text-gray-600 font-bold uppercase tracking-widest py-2 pr-4 text-[10px]">Status</th>
+          <th class="text-left text-gray-600 font-bold uppercase tracking-widest py-2 pr-4 text-[10px]">Duration</th>
+          <th class="text-left text-gray-600 font-bold uppercase tracking-widest py-2 pr-4 text-[10px]">Started</th>
+          <th class="text-left text-gray-600 font-bold uppercase tracking-widest py-2 text-[10px]">Detail</th>
+        </tr>
+      </thead>
+      <tbody id="log-tbody">
+        <% if (!runLogs.length) { %>
+          <tr><td colspan="5" class="py-8 text-center text-gray-700">No executions yet.</td></tr>
+        <% } %>
+        <% runLogs.forEach(log => { %>
+          <tr class="border-b border-white/[0.03] hover:bg-white/[0.02] transition">
+            <td class="py-2.5 pr-4 text-white font-medium"><%= log.job_name %></td>
+            <td class="py-2.5 pr-4">
+              <span class="sbadge sbadge-<%= log.status %>"><%= log.status %></span>
+            </td>
+            <td class="py-2.5 pr-4 text-gray-500 font-mono"><%= log.duration_seconds %>s</td>
+            <td class="py-2.5 pr-4 text-gray-600 font-mono whitespace-nowrap text-[10px]">
+              <%= log.started_at ? new Date(log.started_at).toLocaleString('en-GB', {hour12:false}) : '—' %>
+            </td>
+            <td class="py-2.5 text-gray-500 max-w-xs truncate"><%= log.detail || '—' %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     CREATE/EDIT JOB MODAL
+══════════════════════════════════════════════════════════════════════ -->
+<div class="smodal-overlay" id="job-modal">
+  <div class="smodal-box">
+    <div class="flex items-center justify-between mb-5">
+      <h3 class="text-white font-bold text-base" id="modal-title">⏰ Schedule New Job</h3>
+      <button onclick="closeModal()" class="text-gray-500 hover:text-white transition">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+
+    <input type="hidden" id="f-job-id">
+    <div class="space-y-4">
+      <!-- Name -->
+      <div>
+        <label class="sf-label">Job Name *</label>
+        <input id="f-name" type="text" placeholder="e.g. Nightly AI Harvest"
+          class="sf-input" maxlength="80">
+      </div>
+
+      <!-- Job Type (Disabled on Edit) -->
+      <div id="type-container">
+        <label class="sf-label">Task Type</label>
+        <select id="f-type" class="sf-select" onchange="onTypeChange()">
+          <option value="pipeline_full">🤖 Full AI Pipeline (Scrape + Extract + Store)</option>
+          <option value="cache_clear">🗑️ Clear HTML Cache</option>
+          <option value="key_status_log">🔑 Log API Key Usage Status</option>
+        </select>
+        <p id="f-type-hint" class="text-[10px] text-gray-600 mt-1.5">Runs the complete AI harvesting pipeline end-to-end.</p>
+      </div>
+
+      <!-- Description -->
+      <div>
+        <label class="sf-label">Description (optional)</label>
+        <input id="f-desc" type="text" placeholder="Short note about this schedule…" class="sf-input">
+      </div>
+
+      <!-- Schedule Type -->
+      <div>
+        <label class="sf-label">Schedule Type</label>
+        <div class="grid grid-cols-2 gap-2">
+          <label class="flex items-center gap-2.5 scard-glass px-3 py-2.5 cursor-pointer rounded-xl border border-transparent has-[:checked]:border-indigo-500/50 has-[:checked]:bg-indigo-900/20 transition">
+            <input type="radio" name="sched-type" value="interval" checked onchange="onSchedChange()" class="accent-indigo-500">
+            <div>
+              <p class="text-xs text-white font-bold">Interval</p>
+              <p class="text-[10px] text-gray-500">Every N minutes/hours/days</p>
+            </div>
+          </label>
+          <label class="flex items-center gap-2.5 scard-glass px-3 py-2.5 cursor-pointer rounded-xl border border-transparent has-[:checked]:border-amber-500/50 has-[:checked]:bg-amber-900/20 transition">
+            <input type="radio" name="sched-type" value="cron" onchange="onSchedChange()" class="accent-amber-500">
+            <div>
+              <p class="text-xs text-white font-bold">Cron</p>
+              <p class="text-[10px] text-gray-500">Cron expression (e.g. 0 2 * * *)</p>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <!-- Interval Controls -->
+      <div id="interval-controls" class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="sf-label">Every</label>
+          <input id="f-interval-val" type="number" min="1" max="999" value="6" class="sf-input">
+        </div>
+        <div>
+          <label class="sf-label">Unit</label>
+          <select id="f-interval-unit" class="sf-select">
+            <option value="minutes">Minutes</option>
+            <option value="hours" selected>Hours</option>
+            <option value="days">Days</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Cron Controls (hidden by default) -->
+      <div id="cron-controls" class="hidden">
+        <label class="sf-label">Cron Expression</label>
+        <input id="f-cron" type="text" value="0 2 * * *" placeholder="0 2 * * *" class="sf-input font-mono">
+        <div class="flex flex-wrap gap-2 mt-2">
+          <button type="button" onclick="setCron('0 2 * * *')"
+            class="text-[10px] px-2 py-1 rounded bg-white/5 text-gray-400 hover:bg-white/10 transition">Daily 2 AM</button>
+          <button type="button" onclick="setCron('0 */6 * * *')"
+            class="text-[10px] px-2 py-1 rounded bg-white/5 text-gray-400 hover:bg-white/10 transition">Every 6h</button>
+          <button type="button" onclick="setCron('0 9 * * 1')"
+            class="text-[10px] px-2 py-1 rounded bg-white/5 text-gray-400 hover:bg-white/10 transition">Mon 9 AM</button>
+          <button type="button" onclick="setCron('*/30 * * * *')"
+            class="text-[10px] px-2 py-1 rounded bg-white/5 text-gray-400 hover:bg-white/10 transition">Every 30 min</button>
+        </div>
+      </div>
+
+      <!-- Error -->
+      <div id="create-error" class="hidden text-xs text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2"></div>
+
+      <!-- Buttons -->
+      <div class="flex gap-2 pt-2">
+        <button type="button" onclick="closeModal()"
+          class="flex-1 py-2.5 rounded-xl text-sm font-bold bg-white/5 text-gray-400 hover:bg-white/10 transition">Cancel</button>
+        <button type="button" onclick="submitJob()" id="create-submit-btn"
+          class="flex-1 py-2.5 rounded-xl text-sm font-bold bg-indigo-600 hover:bg-indigo-500 text-white transition">
+          Save Job →
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     CLIENT SCRIPT
+══════════════════════════════════════════════════════════════════════ -->
+<script>
+// ── Job type descriptions ─────────────────────────────────────────────────────
+const TYPE_HINTS = {
+  pipeline_full:   'Runs the complete AI harvesting pipeline end-to-end (scrape → extract → store).',
+  cache_clear:     'Deletes all locally cached HTML files so the next pipeline run does fresh scraping.',
+  key_status_log:  'Logs current Gemini API key usage to the server — useful for daily quota monitoring.',
+};
+
+function onTypeChange() {
+  const t = document.getElementById('f-type').value;
+  document.getElementById('f-type-hint').textContent = TYPE_HINTS[t] || '';
+}
+
+function onSchedChange() {
+  const isCron = document.querySelector('input[name="sched-type"]:checked')?.value === 'cron';
+  document.getElementById('interval-controls').classList.toggle('hidden', isCron);
+  document.getElementById('cron-controls').classList.toggle('hidden', !isCron);
+}
+
+function setCron(expr) {
+  document.getElementById('f-cron').value = expr;
+}
+
+// ── Modal controls ────────────────────────────────────────────────────────────
+function openCreateModal() {
+  document.getElementById('modal-title').textContent = '⏰ Schedule New Job';
+  document.getElementById('f-job-id').value = '';
+  document.getElementById('f-name').value = '';
+  document.getElementById('f-desc').value = '';
+  document.getElementById('type-container').classList.remove('opacity-50', 'pointer-events-none');
+  document.getElementById('create-error').classList.add('hidden');
+  document.getElementById('job-modal').classList.add('open');
+}
+
+async function openEditModal(jobId) {
+  const job = window.__JOBS__.find(j => j.id === jobId);
+  if (!job) return;
+
+  document.getElementById('modal-title').textContent = '✏️ Edit Job Config';
+  document.getElementById('f-job-id').value = job.id;
+  document.getElementById('f-name').value = job.name;
+  document.getElementById('f-desc').value = job.description || '';
+  document.getElementById('f-type').value = job.job_type;
+  
+  // Disable type change on edit
+  document.getElementById('type-container').classList.add('opacity-50', 'pointer-events-none');
+  
+  // Set schedule
+  const isCron = job.schedule_type === 'cron';
+  document.querySelector(`input[name="sched-type"][value="${job.schedule_type}"]`).checked = true;
+  onSchedChange();
+  
+  if (isCron) {
+    document.getElementById('f-cron').value = job.cron;
+  } else {
+    document.getElementById('f-interval-val').value = job.interval_value;
+    document.getElementById('f-interval-unit').value = job.interval_unit;
+  }
+
+  document.getElementById('create-error').classList.add('hidden');
+  document.getElementById('job-modal').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('job-modal').classList.remove('open');
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+// ── Submit Job (Create or Update) ─────────────────────────────────────────────
+async function submitJob() {
+  const jobId      = document.getElementById('f-job-id').value;
+  const name       = document.getElementById('f-name').value.trim();
+  const job_type   = document.getElementById('f-type').value;
+  const description= document.getElementById('f-desc').value.trim();
+  const schedType  = document.querySelector('input[name="sched-type"]:checked')?.value || 'interval';
+  const errEl      = document.getElementById('create-error');
+  const btn        = document.getElementById('create-submit-btn');
+
+  if (!name) { errEl.textContent = 'Job name is required.'; errEl.classList.remove('hidden'); return; }
+
+  const body = { name, job_type, description, schedule_type: schedType };
+  if (schedType === 'interval') {
+    body.interval_value = parseInt(document.getElementById('f-interval-val').value) || 6;
+    body.interval_unit  = document.getElementById('f-interval-unit').value;
+  } else {
+    body.cron = document.getElementById('f-cron').value.trim() || '0 2 * * *';
+  }
+
+  const method = jobId ? 'PUT' : 'POST';
+  const url = jobId ? `/admin/scheduler/jobs/${jobId}` : '/admin/scheduler/jobs';
+
+  btn.textContent = 'Processing…'; btn.disabled = true;
+  try {
+    const res  = await fetch(url, {
+      method: method,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    const data = await res.json();
+    if (data.success) {
+      closeModal();
+      toast(jobId ? '✅ Job updated' : '✅ Job scheduled', 'success');
+      setTimeout(() => location.reload(), 800);
+    } else {
+      errEl.textContent = data.message || JSON.stringify(data);
+      errEl.classList.remove('hidden');
+    }
+  } catch (e) {
+    errEl.textContent = 'Connection error. Is the Python API running?';
+    errEl.classList.remove('hidden');
+  } finally { btn.textContent = 'Save Job →'; btn.disabled = false; }
+}
+
+// ── Handle Wrappers (for data-attributes) ────────────────────────────────────
+function handleRunNow(btn) { runNow(btn.dataset.id, btn.dataset.name); }
+function handleToggle(btn) { toggleJob(btn.dataset.id, btn.dataset.name); }
+function handleDelete(btn) { deleteJob(btn.dataset.id, btn.dataset.name); }
+
+// ── Toggle Job ────────────────────────────────────────────────────────────────
+async function toggleJob(jobId, name) {
+  try {
+    const res  = await fetch(`/admin/scheduler/jobs/${jobId}/toggle`, { method: 'POST' });
+    const data = await res.json();
+    if (data.success) {
+      toast(`${data.enabled ? '▶️ Enabled' : '⏸ Paused'}: ${name}`, data.enabled ? 'success' : 'warn');
+      setTimeout(() => location.reload(), 600);
+    } else {
+      toast('Failed: ' + (data.message || ''), 'error');
+    }
+  } catch (e) { toast('Connection error.', 'error'); }
+}
+
+// ── Run Now ───────────────────────────────────────────────────────────────────
+async function runNow(jobId, name) {
+  if (!confirm(`Run "${name}" right now?\nThis will start the job immediately.`)) return;
+  try {
+    const res  = await fetch(`/admin/scheduler/jobs/${jobId}/run-now`, { method: 'POST' });
+    const data = await res.json();
+    if (data.success) {
+      toast('🚀 Job triggered: ' + name, 'info');
+    } else {
+      toast('Failed: ' + (data.message || ''), 'error');
+    }
+  } catch (e) { toast('Connection error.', 'error'); }
+}
+
+// ── Delete Job ────────────────────────────────────────────────────────────────
+async function deleteJob(jobId, name) {
+  if (!confirm(`Delete job "${name}"?\n\nThis will permanently remove the schedule.`)) return;
+  try {
+    const res  = await fetch(`/admin/scheduler/jobs/${jobId}`, { method: 'DELETE' });
+    const data = await res.json();
+    if (data.success) {
+      toast('🗑️ Deleted: ' + name, 'warn');
+      setTimeout(() => location.reload(), 600);
+    } else {
+      toast('Failed: ' + (data.message || ''), 'error');
+    }
+  } catch (e) { toast('Connection error.', 'error'); }
+}
+
+// ── Fetch & refresh run logs ──────────────────────────────────────────────────
+async function fetchLogs() {
+  try {
+    const res  = await fetch('/admin/scheduler/logs');
+    const data = await res.json();
+    if (!data.success) return;
+    const tbody = document.getElementById('log-tbody');
+    if (!tbody) return;
+    if (!data.logs.length) {
+      tbody.innerHTML = '<tr><td colspan="5" class="py-8 text-center text-gray-700">No executions yet.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = data.logs.map(log => {
+      const started = log.started_at
+        ? new Date(log.started_at).toLocaleString('en-GB', { hour12: false })
+        : '—';
+      return `<tr class="border-b border-white/[0.03] hover:bg-white/[0.02] transition">
+        <td class="py-2.5 pr-4 text-white font-medium">${log.job_name}</td>
+        <td class="py-2.5 pr-4"><span class="sbadge sbadge-${log.status}">${log.status}</span></td>
+        <td class="py-2.5 pr-4 text-gray-500 font-mono">${log.duration_seconds}s</td>
+        <td class="py-2.5 pr-4 text-gray-600 font-mono whitespace-nowrap text-[10px]">${started}</td>
+        <td class="py-2.5 text-gray-500 max-w-xs truncate">${log.detail || '—'}</td>
+      </tr>`;
+    }).join('');
+  } catch (e) { /* silent */ }
+}
+
+// ── Toast ─────────────────────────────────────────────────────────────────────
+function toast(msg, type = 'info') {
+  const colors = { success: '#059669', info: '#6366f1', warn: '#d97706', error: '#dc2626' };
+  const t = document.createElement('div');
+  t.style.cssText = `position:fixed;bottom:24px;right:24px;z-index:9999;padding:10px 18px;
+    border-radius:12px;background:${colors[type]||colors.info};color:#fff;font-size:13px;
+    font-weight:700;box-shadow:0 8px 24px rgba(0,0,0,0.4);animation:slideUp 0.3s ease`;
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 4000);
+}
+
+// Auto-refresh logs every 30s
+setInterval(fetchLogs, 30000);
+</script>

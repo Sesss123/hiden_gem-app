@@ -1,0 +1,153 @@
+### ================================================================
+### 🔑 Hidden Gems SL — API Key Validation Tests
+### VS Code REST Client Extension හරහා run කරන්න
+### Extension: humao.rest-client
+###
+### 📌 How to Use:
+###   1. ඔයාගේ real API keys පහළ @variables ගෙ fill කරන්න
+###   2. Test කරන්නට "Send Request" click කරන්න (request ඉහළ "▶ Send Request" button)
+###   3. ✅ = 200/OK, ❌ = 401/403 = Key invalid
+### ================================================================
+
+### ── 🔧 Variables (ඔයාගේ real keys මෙතෙන් දාන්න) ─────────────────
+@gemini_api_key     = YOUR_GEMINI_API_KEY_HERE
+@weather_api_key    = YOUR_WEATHER_API_KEY_HERE
+@tripme_api_key     = dev-key-local
+@backend_url        = http://localhost:8000/api
+@firebase_api_key   = YOUR_FIREBASE_API_KEY_HERE
+@firebase_project   = YOUR_FIREBASE_PROJECT_ID
+
+
+### ================================================================
+### 1️⃣  GEMINI API KEY TEST
+###    ✅ Success: HTTP 200 + JSON with "candidates" field
+###    ❌ Fail:    HTTP 400 = "API_KEY_INVALID" or "PERMISSION_DENIED"
+### ================================================================
+
+# @name gemini_key_test
+POST https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={{gemini_api_key}}
+Content-Type: application/json
+
+{
+  "contents": [
+    {
+      "parts": [
+        {
+          "text": "Say hello in one word"
+        }
+      ]
+    }
+  ]
+}
+
+###
+
+### ================================================================
+### 2️⃣  WEATHER API KEY TEST (OpenWeatherMap)
+###    ✅ Success: HTTP 200 + weather JSON
+###    ❌ Fail:    HTTP 401 = {"cod":401, "message":"Invalid API key"}
+### ================================================================
+
+# @name weather_key_test
+GET https://api.openweathermap.org/data/2.5/weather?q=Colombo&appid={{weather_api_key}}&units=metric
+
+###
+
+### ================================================================
+### 3️⃣  FIREBASE AUTH — API KEY TEST
+###    (Anonymous sign-in — key test කරන fastest ක්‍රමය)
+###    ✅ Success: HTTP 200 + {"kind": "identitytoolkit..."}
+###    ❌ Fail:    HTTP 400 = "INVALID_API_KEY"
+### ================================================================
+
+# @name firebase_key_test
+POST https://identitytoolkit.googleapis.com/v1/accounts:signUp?key={{firebase_api_key}}
+Content-Type: application/json
+
+{
+  "returnSecureToken": true
+}
+
+###
+
+### ================================================================
+### 4️⃣  FIRESTORE — READ TEST (Firebase API key)
+###    ✅ Success: HTTP 200 + Firestore collection data
+###    ❌ Fail:    HTTP 403 = "PERMISSION_DENIED" (rules issue)
+###               HTTP 400 = API key invalid
+### ================================================================
+
+# @name firestore_read_test
+GET https://firestore.googleapis.com/v1/projects/{{firebase_project}}/databases/(default)/documents/gems?pageSize=1&key={{firebase_api_key}}
+
+###
+
+### ================================================================
+### 5️⃣  BACKEND API (TripMe / Hidden Gems Backend) — KEY TEST
+###    App config ගෙ `baseUrl` හරහා backend check
+###    ✅ Success: HTTP 200 or 404 (server alive)
+###    ❌ Fail:    HTTP 401 = "Unauthorized" (key wrong)
+###               Connection refused = Server down
+### ================================================================
+
+# @name backend_health_test
+GET {{backend_url}}/health
+X-API-Key: {{tripme_api_key}}
+X-Zenith-Version: 1.0
+
+###
+
+### ================================================================
+### 6️⃣  BACKEND — AUTH ENDPOINT TEST
+###    ✅ Success: HTTP 200 + valid response
+###    ❌ Fail:    HTTP 401 = key invalid
+### ================================================================
+
+# @name backend_auth_test
+POST {{backend_url}}/auth/validate
+Content-Type: application/json
+X-TripMe-Version: 1.0.0-Hardened
+
+{
+  "apiKey": "{{tripme_api_key}}",
+  "clientVersion": "1.0.0"
+}
+
+###
+
+### ================================================================
+### 7️⃣  REVENUECAT — ANDROID KEY TEST
+###    ✅ Success: HTTP 200 + subscriber info
+###    ❌ Fail:    HTTP 401 = "This app does not exist"
+###
+### 📌 Note: RevenueCat keys test කරන්න subscriber ID දෙන්න ඕනේ
+### ================================================================
+
+@revenuecat_android_key = YOUR_REVENUECAT_ANDROID_KEY_HERE
+@test_user_id           = test_user_001
+
+# @name revenuecat_key_test
+GET https://api.revenuecat.com/v1/subscribers/{{test_user_id}}
+Authorization: Bearer {{revenuecat_android_key}}
+X-Platform: android
+Content-Type: application/json
+
+###
+
+### ================================================================
+### 🧪 QUICK STATUS SUMMARY — All At A Glance
+###
+### Expected Results:
+###   ✅ Gemini:     200 OK  → API key valid
+###   ✅ Weather:    200 OK  → API key valid
+###   ✅ Firebase:   200 OK  → API key valid
+###   ✅ Firestore:  200 OK  → API key valid + rules OK
+###   ✅ Backend:    200 OK  → Server running, key accepted
+###   ✅ RevenueCat: 200 OK  → Key valid
+###
+### Common Errors:
+###   400 INVALID_API_KEY   → Key wrong/missing
+###   401 Unauthorized      → Key wrong or missing header
+###   403 PERMISSION_DENIED → Key valid but no access (rules/restrictions)
+###   Connection refused    → Backend server not running
+### ================================================================

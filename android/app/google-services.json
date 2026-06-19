@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "932776629360",
+    "project_id": "tripme-89742",
+    "storage_bucket": "tripme-89742.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:932776629360:android:81538bd1d9573aed19d0b5",
+        "android_client_info": {
+          "package_name": "com.hidden.gems.hidden_gems_sl"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDi1Yp-582aNUP1yn05zaq1SOvWXLu61nU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

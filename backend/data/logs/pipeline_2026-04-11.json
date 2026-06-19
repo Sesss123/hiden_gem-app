@@ -1,0 +1,6 @@
+{"timestamp": "2026-04-11T19:13:09.577847Z", "level": "WARNING", "logger": "AIExtractor", "message": "[AIExtractor] No active Gemini API key. Gemini disabled.", "module": "ai_extractor", "line": 99}
+{"timestamp": "2026-04-11T19:17:32.986374Z", "level": "WARNING", "logger": "AIExtractor", "message": "[AIExtractor] No active Gemini API key. Gemini disabled.", "module": "ai_extractor", "line": 99}
+{"timestamp": "2026-04-11T19:18:20.306810Z", "level": "WARNING", "logger": "AIExtractor", "message": "[AIExtractor] No active Gemini API key. Gemini disabled.", "module": "ai_extractor", "line": 99}
+{"timestamp": "2026-04-11T19:49:31.857839Z", "level": "INFO", "logger": "AIDiscovery", "message": "[Discovery] Identifying targets for: 'Find all beaches in Matara with surfing potential.'", "module": "discovery", "line": 46}
+{"timestamp": "2026-04-11T19:51:47.603935Z", "level": "INFO", "logger": "AIDiscovery", "message": "[Discovery] Identifying targets for: 'Find all beaches in Matara with surfing potential.'", "module": "discovery", "line": 46}
+{"timestamp": "2026-04-11T19:51:47.606093Z", "level": "INFO", "logger": "AIDiscovery", "message": "[Discovery] Identifying targets for: 'Beautiful botanical gardens in Kandy and Nuwara Eliya.'", "module": "discovery", "line": 46}

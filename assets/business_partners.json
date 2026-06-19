@@ -1,0 +1,41 @@
+[
+  {
+    "id": "h_001",
+    "name": "Sigiri Sky Hotel",
+    "category": "hotel",
+    "description": "Luxury stay with an unmatched view of the Lion Rock.",
+    "imageUrl": "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?q=80&w=2070",
+    "rating": 4.8,
+    "priceRange": "$$$",
+    "lat": 7.957,
+    "lng": 80.760,
+    "bookingUrl": "https://example.com/book/sigiri-sky",
+    "isVerified": true
+  },
+  {
+    "id": "g_001",
+    "name": "Kamal - Heritage Guide",
+    "category": "guide",
+    "description": "Certified guide specializing in ancient Sri Lankan art and architecture.",
+    "imageUrl": "https://images.unsplash.com/photo-1590005354167-6da97870c91d?q=80&w=2000",
+    "rating": 4.9,
+    "priceRange": "$$",
+    "lat": 7.955,
+    "lng": 80.762,
+    "bookingUrl": "https://wa.me/94771234567",
+    "isVerified": true
+  },
+  {
+    "id": "c_001",
+    "name": "The Lion's Cafe",
+    "category": "cafe",
+    "description": "Authentic Sri Lankan breakfast and herbal teas.",
+    "imageUrl": "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?q=80&w=2078",
+    "rating": 4.5,
+    "priceRange": "$",
+    "lat": 7.958,
+    "lng": 80.764,
+    "bookingUrl": "https://example.com/menu/lions-cafe",
+    "isVerified": false
+  }
+]

@@ -1,0 +1,69 @@
+{
+  "system_branding": {
+    "name": "The Oracle of Hidden Gems SL",
+    "tone": "Cinematic, educational, protective of culture, and deeply local.",
+    "mission": "To transform every journey into a legend while preserving the spirit of Sri Lanka."
+  },
+  "cultural_etiquette": {
+    "temples": [
+      "Remove shoes and hats before entering.",
+      "Dress modestly: cover shoulders and knees.",
+      "Never pose for photos with your back to an image of the Buddha.",
+      "Ask permission before photographing monks or devotees."
+    ],
+    "social": [
+      "Use your right hand for giving and receiving.",
+      "A head waggle (shaking side to side) usually means 'yes' or 'I agree'.",
+      "Public displays of affection are culturally sensitive."
+    ]
+  },
+  "sustainable_tips": [
+    "Say 'No' to single-use plastics. Use a refillable bottle.",
+    "Eat local. Support village vendors over international chains.",
+    "Respect the wild. Do not feed monkeys or disturb nesting turtles.",
+    "Leave only footprints. Pack out all trash from hiking trails."
+  ],
+  "village_experiences": [
+    {
+      "type": "Culinary",
+      "activities": ["Clay pot cooking", "Coconut scraping", "Traditional sweets making"],
+      "vibe": "Authentic, flavorful, communal"
+    },
+    {
+      "type": "Agriculture",
+      "activities": ["Paddy harvesting (Seasonal)", "Cinnamon peeling", "Tea plucking"],
+      "vibe": "Physical, grounded, hereditary"
+    },
+    {
+      "type": "Crafts",
+      "activities": ["Handloom weaving", "Pottery wheel", "Mask carving"],
+      "vibe": "Creative, artistic, historical"
+    }
+  ],
+  "hidden_gems_grounding": [
+    {
+      "name": "Namunukula Secret Falls",
+      "logic": "Offer as Plan B if Narangala is too crowded or mist-heavy.",
+      "tags": ["off-the-beaten-path", "serene"]
+    },
+    {
+      "name": "Kandyan Forest Homestay",
+      "logic": "Suggest if user interests include 'Village Experiences' and 'Nature'.",
+      "tags": ["authentic", "peaceful"]
+    }
+  ],
+  "real_time_event_triggers": {
+    "Kandy": {
+      "August": "Esala Perahera. Traffic will be heavy. Reroute evening plans to walkable areas.",
+      "Poya": "Full moon day. Alcohol and meat sales are restricted. Plan for temple visits."
+    },
+    "Jaffna": {
+      "September": "Nallur Festival. Pure white or modest clothing is strictly required."
+    }
+  },
+  "sinhala_learning_segments": [
+    {"phrase": "Ayubowan", "meaning": "May you live long (Greeting)", "usage": "Anytime"},
+    {"phrase": "Istuti", "meaning": "Thank you", "usage": "After being served"},
+    {"phrase": "Meeka kiyada?", "meaning": "How much is this?", "usage": "Shopping/Tuk-tuks"}
+  ]
+}

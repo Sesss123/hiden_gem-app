@@ -1,0 +1,58 @@
+<div class="mb-8">
+    <p class="text-gray-500 text-sm">Reviewing and moderating fresh nodes from the AI pipeline.</p>
+</div>
+
+<% if (places.length === 0) { %>
+    <div class="premium-card p-12 text-center">
+        <div class="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+        </div>
+        <h3 class="text-xl font-bold text-gray-800 mb-2">Queue Empty</h3>
+        <p class="text-gray-500 max-w-xs mx-auto">All recent harvesting runs have been processed. New items will appear here after the next pipeline run.</p>
+    </div>
+<% } else { %>
+    <div class="grid grid-cols-1 gap-6">
+        <% places.forEach(place => { %>
+            <div class="premium-card p-6 flex flex-col md:flex-row gap-8 items-start hover:border-indigo-200 transition">
+                <div class="w-full md:w-64 h-48 bg-gray-100 rounded-xl overflow-hidden flex-shrink-0 relative group">
+                    <% if (place.thumbnail_path) { %>
+                        <img src="<%= place.thumbnail_path %>" class="w-full h-full object-cover">
+                    <% } else { %>
+                        <div class="w-full h-full flex items-center justify-center text-gray-300">No Preview</div>
+                    <% } %>
+                    <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent p-4">
+                        <span class="text-[10px] font-bold text-white uppercase tracking-widest bg-indigo-600 px-2 py-0.5 rounded"><%= place.score %>/100 Quality</span>
+                    </div>
+                </div>
+
+                <div class="flex-1">
+                    <div class="flex items-center justify-between mb-2">
+                        <h3 class="text-xl font-bold text-gray-800"><%= place.name %></h3>
+                        <span class="text-[10px] font-bold text-orange-600 uppercase tracking-widest px-2 py-1 bg-orange-50 rounded border border-orange-100 italic">Moderation Required</span>
+                    </div>
+                    <div class="flex gap-4 text-xs text-gray-400 mb-4 font-medium">
+                        <span class="flex items-center gap-1"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg> <%= place.district %></span>
+                        <span class="flex items-center gap-1"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path></svg> <%= place.category %></span>
+                    </div>
+                    <p class="text-gray-600 text-sm line-clamp-3 mb-6 leading-relaxed">
+                        <%= place.description || 'No description extracted yet. Automated extraction may have faced issues with the source data.' %>
+                    </p>
+
+                    <div class="border-t border-gray-100 pt-6 flex flex-wrap items-center gap-4">
+                        <form action="/reviews/<%= place._id %>/approve" method="POST" class="flex-1 min-w-[200px]">
+                            <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-xl transition shadow-lg shadow-indigo-100 flex items-center justify-center gap-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"></path></svg> Approve Node
+                            </button>
+                        </form>
+                        <form action="/reviews/<%= place._id %>/reject" method="POST" class="flex-1 min-w-[200px]">
+                            <button type="submit" class="w-full bg-white hover:bg-red-50 text-red-600 border border-gray-200 font-bold py-3 px-6 rounded-xl transition flex items-center justify-center gap-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"></path></svg> Reject Item
+                            </button>
+                        </form>
+                        <a href="/places/<%= place._id %>" class="px-6 py-3 text-gray-400 font-bold text-xs uppercase tracking-widest hover:text-gray-600">Full Details</a>
+                    </div>
+                </div>
+            </div>
+        <% }) %>
+    </div>
+<% } %>

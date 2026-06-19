@@ -1,0 +1,1267 @@
+<%# ═══════════════════════════════════════════════════════════════════════════
+    AI COMMAND CENTER — 3-Panel Intelligence Dashboard
+    Left: Vision AI Analysis | Right: Real-time Monitor | Bottom: Pipeline Steps
+    ═══════════════════════════════════════════════════════════════════════════ %>
+
+<style>
+  /* ── AI Command Center custom styles ── */
+  .ai-card {
+    background: linear-gradient(135deg, #0f0e1a 0%, #1a1835 100%);
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    border-radius: 16px;
+    color: #e2e8f0;
+  }
+  .ai-card-glass {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    backdrop-filter: blur(10px);
+  }
+  .neon-text { color: #818cf8; }
+  .neon-green { color: #34d399; }
+  .neon-yellow { color: #fbbf24; }
+  .neon-red { color: #f87171; }
+
+  /* Progress bar glow */
+  .progress-bar-fill {
+    background: linear-gradient(90deg, #6366f1, #8b5cf6);
+    border-radius: 999px;
+    transition: width 1s ease;
+    box-shadow: 0 0 8px rgba(99,102,241,0.6);
+  }
+  .progress-bar-fill.green {
+    background: linear-gradient(90deg, #059669, #34d399);
+    box-shadow: 0 0 8px rgba(52,211,153,0.6);
+  }
+
+  /* Step timeline */
+  .step-node {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 700;
+    flex-shrink: 0;
+    transition: all 0.4s ease;
+  }
+  .step-node.done    { background: #059669; color: white; box-shadow: 0 0 12px rgba(5,150,105,0.5); }
+  .step-node.active  { background: #6366f1; color: white; box-shadow: 0 0 16px rgba(99,102,241,0.8); animation: pulse-node 1.5s infinite; }
+  .step-node.pending { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.3); border: 1px solid rgba(255,255,255,0.1); }
+  .step-node.error   { background: #dc2626; color: white; box-shadow: 0 0 12px rgba(220,38,38,0.5); }
+
+  .step-connector {
+    flex: 1; height: 2px;
+    background: rgba(255,255,255,0.08);
+    position: relative; overflow: hidden;
+  }
+  .step-connector.filled { background: linear-gradient(90deg, #059669, #34d399); }
+  .step-connector::after {
+    content: '';
+    position: absolute; top: 0; left: -100%; right: 0; bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    animation: shimmer 2s infinite;
+  }
+
+  @keyframes shimmer {
+    0% { left: -100%; }
+    100% { left: 100%; }
+  }
+  @keyframes spin-slow {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+  }
+  .spin-slow { animation: spin-slow 3s linear infinite; }
+
+  /* Status badge */
+  .status-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 12px; border-radius: 99px;
+    font-size: 10px; font-weight: 800;
+    text-transform: uppercase; letter-spacing: 0.1em;
+  }
+  .status-idle     { background: rgba(100,116,139,0.2); color: #94a3b8; border: 1px solid rgba(100,116,139,0.3); }
+  .status-running  { background: rgba(99,102,241,0.2); color: #818cf8; border: 1px solid rgba(99,102,241,0.4); }
+  .status-done     { background: rgba(52,211,153,0.15); color: #34d399; border: 1px solid rgba(52,211,153,0.3); }
+  .status-failed   { background: rgba(248,113,113,0.15); color: #f87171; border: 1px solid rgba(248,113,113,0.3); }
+
+  /* Key Manager Modal */
+  .modal-overlay {
+    position: fixed; inset: 0; z-index: 1000;
+    background: rgba(0,0,0,0.75); backdrop-filter: blur(4px);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none; transition: opacity 0.25s ease;
+  }
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
+  .modal-box {
+    background: linear-gradient(135deg, #0f0e1a 0%, #1a1835 100%);
+    border: 1px solid rgba(99,102,241,0.3);
+    border-radius: 20px;
+    padding: 28px;
+    width: min(480px, 95vw);
+    max-height: 90vh; overflow-y: auto;
+    transform: translateY(20px); transition: transform 0.25s ease;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.6), 0 0 40px rgba(99,102,241,0.1);
+  }
+  .modal-overlay.open .modal-box { transform: translateY(0); }
+
+  /* Key card row — NOW GRID CARDS */
+  .key-row {
+    background: rgba(15, 23, 42, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    padding: 20px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 160px;
+  }
+  .key-row:hover {
+    transform: translateY(-4px);
+    background: rgba(30, 41, 59, 0.5);
+    border-color: rgba(99, 102, 241, 0.3);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.4), 0 0 15px rgba(99,102,241,0.1);
+  }
+  .key-row::after {
+    content: '';
+    position: absolute; top: 0; right: 0; width: 80px; height: 80px;
+    background: radial-gradient(circle at top right, rgba(99,102,241,0.1), transparent 70%);
+  }
+
+  .key-row.active-key    { border-color: rgba(52,211,153,0.3); background: linear-gradient(135deg, rgba(16,185,129,0.05) 0%, transparent 100%); }
+  .key-row.exhausted-key { border-color: rgba(248,113,113,0.2); background: linear-gradient(135deg, rgba(239,68,68,0.05) 0%, transparent 100%); }
+  .key-row.env-key       { border-color: rgba(99,102,241,0.2); }
+
+  .key-action-btn {
+    padding: 6px 14px; border-radius: 10px; font-size: 10px; font-weight: 800;
+    cursor: pointer; transition: all 0.2s ease; border: 1px solid;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .btn-replace { background: rgba(99,102,241,0.1); color: #818cf8; border-color: rgba(99,102,241,0.2); }
+  .btn-replace:hover { background: #6366f1; color: white; border-color: #6366f1; }
+  .btn-delete  { background: rgba(248,113,113,0.05); color: #f87171; border-color: rgba(248,113,113,0.2); }
+  .btn-delete:hover  { background: #dc2626; color: white; border-color: #dc2626; }
+  .btn-rename  { background: rgba(251,191,36,0.05); color: #fbbf24; border-color: rgba(251,191,36,0.2); }
+  .btn-rename:hover  { background: #d97706; color: white; border-color: #d97706; }
+
+  /* Provider crystal badge */
+  .provider-badge {
+    padding: 3px 8px; border-radius: 6px; font-size: 9px; font-weight: 900;
+    text-transform: uppercase; letter-spacing: 0.05em;
+    background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+  }
+
+  /* Eye toggle for password-style input */
+  .pw-wrap { position: relative; }
+  .pw-wrap input { padding-right: 40px; }
+  .pw-eye {
+    position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+    cursor: pointer; color: #6b7280;
+  }
+  .pw-eye:hover { color: #818cf8; }
+  /* Discovery Bar Glow */
+  .discovery-card {
+    background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+    border: 1px solid rgba(129, 140, 248, 0.3);
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.4), 0 0 20px rgba(99,102,241,0.1);
+  }
+  .prompt-input {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: white;
+    transition: all 0.3s;
+  }
+  .prompt-input:focus {
+    border-color: #818cf8;
+    box-shadow: 0 0 15px rgba(129, 140, 248, 0.2);
+    background: rgba(15, 23, 42, 0.8);
+  }
+
+  /* Live Terminal Console */
+  .system-console {
+    background: #020617;
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    border-radius: 12px;
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    font-size: 11px;
+    padding: 12px;
+    height: 140px;
+    overflow-y: auto;
+    color: #94a3b8;
+    box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);
+  }
+  .console-line { border-bottom: 1px solid rgba(255,255,255,0.03); padding: 2px 0; }
+  .console-time { color: #6366f1; margin-right: 8px; font-weight: bold; }
+  .console-msg  { color: #cbd5e1; }
+  .console-error { color: #f87171; background: rgba(239, 68, 68, 0.05); }
+  
+  /* Error Banner */
+  .error-banner {
+    background: rgba(220, 38, 38, 0.1);
+    border: 1px solid rgba(220, 38, 38, 0.3);
+    border-radius: 12px;
+    padding: 12px 16px;
+    color: #f87171;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    animation: slideInDown 0.4s ease;
+  }
+</style>
+
+<!-- ── Page Header ── -->
+<div class="flex items-center justify-between mb-6">
+  <div>
+    <p class="text-sm text-gray-400 mt-1">Real-time Monitoring • Pipeline Execution View</p>
+  </div>
+  <div class="flex items-center gap-3">
+    <span id="pipeline-status-badge" class="status-badge status-idle">
+      <span id="status-dot" class="w-1.5 h-1.5 rounded-full bg-gray-400"></span>
+      <span id="status-text"><%= pipelineStatus.status.toUpperCase() %></span>
+    </span>
+    <form action="/pipeline/trigger" method="POST" id="trigger-form">
+      <button type="submit" id="trigger-btn"
+        class="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-bold px-5 py-2.5 rounded-xl transition shadow-lg shadow-indigo-900/40">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+        Run AI Pipeline
+      </button>
+    </form>
+  </div>
+</div>
+
+<!-- ── NEW: AI INTELLIGENCE DISCOVERY MODE ── -->
+<div class="discovery-card p-6 mb-8 overflow-hidden relative">
+  <!-- Decorative Background Glow -->
+  <div class="absolute -top-24 -right-24 w-64 h-64 bg-indigo-500/10 blur-[100px] rounded-full"></div>
+  <div class="absolute -bottom-24 -left-24 w-64 h-64 bg-purple-500/10 blur-[100px] rounded-full"></div>
+
+  <div class="relative z-10">
+    <div class="flex items-center gap-3 mb-4">
+      <div class="w-10 h-10 rounded-2xl bg-indigo-500 flex items-center justify-center shadow-lg shadow-indigo-500/20">
+        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+      </div>
+      <div>
+        <h2 class="text-xl font-bold text-white tracking-tight">AI Intelligence Discovery Mode</h2>
+        <p class="text-xs text-indigo-300 font-medium uppercase tracking-wider">A to Z Automated Tourism Data Engine</p>
+      </div>
+    </div>
+
+    <div class="flex flex-col md:flex-row gap-4">
+      <div class="flex-1 pw-wrap">
+        <textarea id="discovery-prompt" rows="2" 
+          class="prompt-input w-full p-4 rounded-xl text-sm outline-none resize-none"
+          placeholder="Describe what you want to discover (e.g. 'All surfing spots in Arugam Bay with equipment rental info', 'Boutique hotels in Galle Fort with pool access')"></textarea>
+      </div>
+      <div class="flex flex-col gap-2 min-w-[180px]">
+        <button id="discover-btn" onclick="startDiscovery()"
+          class="h-full bg-white hover:bg-gray-100 text-indigo-900 font-black text-sm px-6 py-4 rounded-xl transition flex items-center justify-center gap-2 group">
+          <span>ENGAGE AI</span>
+          <svg class="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7"/></svg>
+        </button>
+        <button id="stop-btn" onclick="abortMission()"
+          class="hidden bg-red-600/20 hover:bg-red-600/40 text-red-500 border border-red-500/30 font-bold text-[10px] px-4 py-2 rounded-xl transition flex items-center justify-center gap-2">
+          <span>ABORT MISSION</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Live Console Display (New) -->
+    <div id="live-console-wrap" class="mt-4 hidden animate-pulse">
+      <p class="text-[10px] text-indigo-300 font-bold uppercase tracking-widest mb-2 flex items-center gap-2">
+        <span class="w-1.5 h-1.5 bg-indigo-500 rounded-full"></span>
+        Neural Telemetry Stream
+      </p>
+      <div id="system-console" class="system-console">
+        <!-- Logs injected here -->
+        <div class="console-line"><span class="console-time">[00:00:00]</span> <span class="console-msg">System ready. Awaiting engagement...</span></div>
+      </div>
+    </div>
+
+    <!-- Error Banner (New) -->
+    <div id="pipeline-error-banner" class="hidden error-banner mt-4">
+      <svg class="w-6 h-6 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+      <div>
+        <p class="text-xs font-black uppercase tracking-widest">Pipeline Fault Detected</p>
+        <p id="error-message-text" class="text-sm opacity-90">An unexpected error occurred during execution.</p>
+      </div>
+      <button onclick="document.getElementById('pipeline-error-banner').classList.add('hidden')" class="ml-auto opacity-50 hover:opacity-100">✕</button>
+    </div>
+
+    <!-- Discovery Activity Tracker -->
+    <div id="discovery-status" class="hidden mt-4 p-4 ai-card-glass flex items-center justify-between">
+      <div class="flex items-center gap-4">
+        <div class="w-2 h-2 rounded-full bg-indigo-500 animate-ping"></div>
+        <div class="flex flex-col">
+          <span class="text-xs font-bold text-indigo-300 uppercase tracking-widest">AI Reasoning Layer</span>
+          <span id="discovery-log-text" class="text-sm text-gray-300 mt-0.5">Initializing neural discovery...</span>
+        </div>
+      </div>
+      <div class="flex gap-2">
+         <span class="status-badge status-running text-[9px]">Analyzing Prompt</span>
+         <span class="status-badge status-idle text-[9px] opacity-40">Identifying URLs</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="mb-6">
+  <!-- ── REAL-TIME MONITORING PANEL ── -->
+  <div class="ai-card p-6">
+    <div class="flex items-center justify-between mb-5">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl bg-emerald-600/20 border border-emerald-500/30 flex items-center justify-center">
+          <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+          </svg>
+        </div>
+        <div>
+          <h3 class="font-bold text-white text-sm">System Telemetry</h3>
+          <p class="text-[10px] text-gray-500 uppercase tracking-widest">Live • Auto-refresh 3s</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-1.5">
+        <div class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></div>
+        <span class="text-[10px] text-emerald-400 font-bold uppercase">LIVE</span>
+      </div>
+    </div>
+
+    <!-- Metrics Grid -->
+    <div class="grid grid-cols-2 gap-3 mb-5">
+      <!-- Health Score -->
+      <div class="ai-card-glass p-4">
+        <p class="text-[10px] text-gray-500 uppercase tracking-widest mb-1">Pipeline Health</p>
+        <p id="health-score" class="text-3xl font-bold text-emerald-400">
+          <%= pipelineStatus.health_score %>%
+        </p>
+        <div class="w-full bg-white/10 rounded-full h-1.5 mt-2">
+          <div id="health-bar" class="progress-bar-fill green h-1.5 rounded-full"
+            :style="'width: <%= pipelineStatus.health_score %>%'"></div>
+        </div>
+      </div>
+      <!-- Validation Pass Rate -->
+      <div class="ai-card-glass p-4">
+        <p class="text-[10px] text-gray-500 uppercase tracking-widest mb-1">Validation Pass</p>
+        <p id="pass-rate" class="text-3xl font-bold text-indigo-400">
+          <%= pipelineStatus.validation_pass_rate %>%
+        </p>
+        <div class="w-full bg-white/10 rounded-full h-1.5 mt-2">
+          <div id="pass-bar" class="progress-bar-fill h-1.5 rounded-full"
+            :style="'width: <%= pipelineStatus.validation_pass_rate %>%'"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Log Summary -->
+    <div class="ai-card-glass p-4 mb-4">
+      <p class="text-[10px] text-gray-500 uppercase tracking-widest mb-3">Today's Log Activity</p>
+      <div class="grid grid-cols-4 gap-2">
+        <div class="text-center">
+          <p id="log-info" class="text-xl font-bold neon-green"><%= pipelineStatus.log_summary.INFO || 0 %></p>
+          <p class="text-[9px] text-gray-600 uppercase">Info</p>
+        </div>
+        <div class="text-center">
+          <p id="log-warn" class="text-xl font-bold neon-yellow"><%= pipelineStatus.log_summary.WARNING || 0 %></p>
+          <p class="text-[9px] text-gray-600 uppercase">Warn</p>
+        </div>
+        <div class="text-center">
+          <p id="log-error" class="text-xl font-bold neon-red"><%= pipelineStatus.log_summary.ERROR || 0 %></p>
+          <p class="text-[9px] text-gray-600 uppercase">Error</p>
+        </div>
+        <div class="text-center">
+          <p id="log-critical" class="text-xl font-bold" style="color:#c084fc"><%= pipelineStatus.log_summary.CRITICAL || 0 %></p>
+          <p class="text-[9px] text-gray-600 uppercase">Critical</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Alert Status -->
+    <div class="ai-card-glass p-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-[10px] text-gray-500 uppercase tracking-widest mb-1">Alert System</p>
+          <p class="text-sm text-white font-semibold">
+            <span id="fail-count"><%= pipelineStatus.alert_status.consecutive_failures || 0 %></span>
+            <span class="text-gray-500 font-normal text-xs"> consecutive failures</span>
+          </p>
+        </div>
+        <span id="webhook-status"
+          class="feat-badge <%= pipelineStatus.alert_status.webhook_configured ? 'detected' : 'absent' %>">
+          <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+          Webhook <%= pipelineStatus.alert_status.webhook_configured ? 'Active' : 'Not Set' %>
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     BOTTOM: 7-STEP PIPELINE EXECUTION VIEW
+     ═══════════════════════════════════════════════════════════════════════════ -->
+<div class="ai-card p-6">
+  <div class="flex items-center justify-between mb-6">
+    <div class="flex items-center gap-3">
+      <div class="w-9 h-9 rounded-xl bg-purple-600/20 border border-purple-500/30 flex items-center justify-center">
+        <svg class="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+        </svg>
+      </div>
+      <div>
+        <h3 class="font-bold text-white text-sm">Pipeline Execution View</h3>
+        <p class="text-[10px] text-gray-500 uppercase tracking-widest">7-Step Intelligence Flow</p>
+      </div>
+    </div>
+    <div>
+      <span class="text-xs text-gray-500">Current Step: <span id="current-step-display" class="text-indigo-400 font-bold"><%= pipelineStatus.current_step %></span></span>
+    </div>
+  </div>
+
+  <!-- Step Timeline — Desktop Horizontal -->
+  <div class="hidden md:flex items-center gap-0 mb-6 overflow-x-auto pb-2">
+    <% 
+    const steps = [
+      { num: 1, label: 'Trigger', icon: '⚡', desc: 'Pipeline initiated' },
+      { num: 2, label: 'Scrape', icon: '🌐', desc: 'Web harvesting' },
+      { num: 3, label: 'Cache', icon: '💾', desc: '24hr cache check' },
+      { num: 4, label: 'Extract', icon: '🧠', desc: 'Claude AI parsing' },
+      { num: 5, label: 'Validate', icon: '🔍', desc: 'Gemini cross-check' },
+      { num: 6, label: 'Score', icon: '📊', desc: 'Quality threshold' },
+      { num: 7, label: 'Commit', icon: '✅', desc: 'Genesis registry' },
+    ];
+    const stepsCompleted = pipelineStatus.steps_completed || 0;
+    %>
+    <% steps.forEach((step, idx) => { %>
+      <% 
+        let stateClass = 'pending';
+        if (step.num <= stepsCompleted) stateClass = 'done';
+        else if (step.num === stepsCompleted + 1 && pipelineStatus.status === 'running') stateClass = 'active';
+        if (pipelineStatus.status === 'failed' && step.num === stepsCompleted + 1) stateClass = 'error';
+      %>
+      <div class="flex items-center" id="step-wrapper-<%= step.num %>">
+        <div class="flex flex-col items-center min-w-[70px]">
+          <div class="step-node <%= stateClass %>" id="step-node-<%= step.num %>" title="<%= step.desc %>">
+            <% if (stateClass === 'active') { %>
+              <svg class="w-4 h-4 spin-slow" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2.5" stroke-dasharray="30 10"/></svg>
+            <% } else if (stateClass === 'done') { %>
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+            <% } else if (stateClass === 'error') { %>
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+            <% } else { %>
+              <span class="text-base"><%= step.icon %></span>
+            <% } %>
+          </div>
+          <p class="text-[10px] font-bold mt-2 text-center whitespace-nowrap
+            <%= stateClass === 'done' ? 'text-emerald-400' : (stateClass === 'active' ? 'text-indigo-400' : (stateClass === 'error' ? 'text-red-400' : 'text-gray-600')) %>">
+            <%= step.label %>
+          </p>
+          <p class="text-[9px] text-gray-700 text-center whitespace-nowrap"><%= step.desc %></p>
+        </div>
+        <% if (idx < steps.length - 1) { %>
+          <div class="step-connector <%= step.num <= stepsCompleted ? 'filled' : '' %>" id="connector-<%= step.num %>"></div>
+        <% } %>
+      </div>
+    <% }) %>
+  </div>
+
+  <!-- Mobile Vertical Steps -->
+  <div class="md:hidden space-y-3 mb-6">
+    <% steps.forEach((step) => { %>
+      <% 
+        let stateClass = 'pending';
+        if (step.num <= stepsCompleted) stateClass = 'done';
+        else if (step.num === stepsCompleted + 1 && pipelineStatus.status === 'running') stateClass = 'active';
+      %>
+      <div class="flex items-center gap-3 ai-card-glass p-3">
+        <div class="step-node <%= stateClass %> w-8 h-8 text-sm">
+          <% if (stateClass === 'done') { %>✓<% } else if (stateClass === 'active') { %>⟳<% } else { %><%= step.icon %><% } %>
+        </div>
+        <div>
+          <p class="text-xs font-bold text-white"><%= step.label %></p>
+          <p class="text-[10px] text-gray-500"><%= step.desc %></p>
+        </div>
+      </div>
+    <% }) %>
+  </div>
+
+  <!-- Step Details Cards -->
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+    <div class="ai-card-glass p-3 text-center">
+      <p class="text-[9px] text-gray-600 uppercase tracking-widest mb-1">Processed</p>
+      <p id="steps-done" class="text-2xl font-bold text-white"><%= pipelineStatus.steps_completed %></p>
+      <p class="text-[9px] text-gray-600">of <%= pipelineStatus.total_steps %> steps</p>
+    </div>
+    <div class="ai-card-glass p-3 text-center">
+      <p class="text-[9px] text-gray-600 uppercase tracking-widest mb-1">Duration</p>
+      <p id="pipeline-duration" class="text-2xl font-bold neon-text">—</p>
+      <p class="text-[9px] text-gray-600">seconds elapsed</p>
+    </div>
+    <div class="ai-card-glass p-3 text-center border-indigo-500/20" id="confidence-card">
+      <p class="text-[9px] text-gray-600 uppercase tracking-widest mb-1">Agent Confidence</p>
+      <p id="agent-confidence-display" class="text-2xl font-bold neon-green">100%</p>
+      <div class="w-full bg-white/5 h-1 rounded-full mt-1 overflow-hidden">
+        <div id="agent-confidence-bar" class="h-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)] transition-all duration-500" style="width: 100%"></div>
+      </div>
+    </div>
+    <div class="ai-card-glass p-3 text-center border-purple-500/20" id="tool-card">
+      <p class="text-[9px] text-gray-600 uppercase tracking-widest mb-1">Intelligence Tool</p>
+      <p id="agent-tool-display" class="text-lg font-bold neon-text">Neural Core</p>
+      <p class="text-[9px] text-gray-600 uppercase tracking-tighter" id="agent-status-label">Standby</p>
+    </div>
+  
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     API KEY MANAGEMENT PANEL
+     ═══════════════════════════════════════════════════════════════════════════ -->
+<!-- ── API KEY MANAGEMENT PANEL ── -->
+<div class="ai-card p-0 mt-6 overflow-hidden" id="key-manager-panel">
+  <!-- Premium Header -->
+  <div class="p-6 border-b border-white/5 bg-white/[0.02]">
+    <div class="flex items-start justify-between gap-6 mb-6">
+      <div class="flex items-center gap-4">
+        <div class="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center shadow-lg shadow-amber-500/5">
+          <svg class="w-6 h-6 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/>
+          </svg>
+        </div>
+        <div>
+          <h3 class="text-lg font-black text-white tracking-tight uppercase">AI Intelligence Vault</h3>
+          <p class="text-xs text-gray-400 mt-1">Managed Provider Keys & Quota Orchestration</p>
+        </div>
+      </div>
+      
+      <button onclick="openAddModal()"
+        class="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-black px-5 py-3 rounded-xl transition shadow-xl shadow-emerald-500/20 uppercase tracking-widest border border-emerald-400/20">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+        Provision New Key
+      </button>
+    </div>
+
+    <!-- Usage Intelligence Matrix -->
+    <div id="usage-matrix" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+      <!-- Dynamic Content -->
+    </div>
+  </div>
+
+  <div class="p-6 bg-black/20">
+    <!-- Worker Pool Section (Optional/Hidden if empty) -->
+    <div id="worker-pool-container" class="hidden mb-6 p-4 bg-indigo-500/5 border border-indigo-500/10 rounded-2xl">
+      <div class="flex items-center gap-2 mb-3">
+        <div class="w-2 h-2 rounded-full bg-indigo-400 animate-pulse"></div>
+        <h4 class="text-[10px] font-black text-indigo-300 uppercase tracking-widest">Active Reasoning Threads</h4>
+      </div>
+      <div id="worker-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+        <!-- Workers inject here -->
+      </div>
+    </div>
+
+    <!-- Key Card Grid -->
+    <div id="key-rows" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div class="col-span-full py-12 flex flex-col items-center justify-center opacity-40">
+        <svg class="w-12 h-12 mb-4 animate-spin-slow" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" stroke-dasharray="32 8"/></svg>
+        <p class="text-sm font-bold tracking-widest uppercase">Initializing Neural Vault...</p>
+      </div>
+    </div>
+
+    <div class="mt-8 pt-6 border-t border-white/5 flex items-center justify-center">
+      <p class="text-[10px] text-gray-600 font-medium uppercase tracking-[0.2em] flex items-center gap-4">
+        <span>🔒 Secure Key Hash Injection</span>
+        <span class="w-1 h-1 rounded-full bg-gray-800"></span>
+        <span>🟢 Read-only ENV Protection</span>
+        <span class="w-1 h-1 rounded-full bg-gray-800"></span>
+        <span>📊 Local Telemetry Logging</span>
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     ADD KEY MODAL
+     ═══════════════════════════════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="add-key-modal">
+  <div class="modal-box">
+    <div class="flex items-center justify-between mb-5">
+      <h3 class="text-white font-bold text-base">➕ Add New API Key</h3>
+      <button onclick="closeModal('add-key-modal')" class="text-gray-500 hover:text-white transition">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="space-y-4">
+      <div>
+        <label class="text-[11px] text-gray-400 uppercase tracking-widest block mb-1.5">Provider</label>
+        <select id="new-key-provider" class="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500/60 transition">
+          <option value="google" class="bg-indigo-900">Google Gemini (Free/Pro)</option>
+          <option value="openai" class="bg-indigo-900">OpenAI (GPT-4o/o1)</option>
+          <option value="anthropic" class="bg-indigo-900">Anthropic (Claude 3.5)</option>
+          <option value="deepseek" class="bg-indigo-900">DeepSeek (V3/R1)</option>
+          <option value="groq" class="bg-indigo-900">Groq (Llama 3.1)</option>
+        </select>
+      </div>
+      <div>
+        <label class="text-[11px] text-gray-400 uppercase tracking-widest block mb-1.5">API Key *</label>
+        <div class="pw-wrap">
+          <input id="new-key-input" type="password" placeholder="sk-..."
+            class="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-indigo-500/60 transition font-mono">
+          <button type="button" class="pw-eye" onclick="toggleKeyVisibility('new-key-input', this)">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+          </button>
+        </div>
+      </div>
+      <div>
+        <label class="text-[11px] text-gray-400 uppercase tracking-widest block mb-1.5">Nickname (optional)</label>
+        <input id="new-key-nick" type="text" placeholder="e.g. My Primary GPT Key"
+          class="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-indigo-500/60 transition">
+      </div>
+      <div id="add-key-error" class="hidden text-xs text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2"></div>
+      <div class="flex gap-2 pt-2">
+        <button type="button" onclick="closeModal('add-key-modal')"
+          class="flex-1 py-2.5 rounded-xl text-sm font-bold bg-white/5 text-gray-400 hover:bg-white/10 transition">Cancel</button>
+        <button type="button" onclick="submitAddKey()"
+          class="flex-1 py-2.5 rounded-xl text-sm font-bold bg-emerald-600 hover:bg-emerald-500 text-white transition" id="add-submit-btn">
+          Add Key →
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- REPLACE KEY MODAL -->
+<div class="modal-overlay" id="replace-key-modal">
+  <div class="modal-box">
+    <div class="flex items-center justify-between mb-5">
+      <h3 class="text-white font-bold text-base">🔄 Replace API Key</h3>
+      <button onclick="closeModal('replace-key-modal')" class="text-gray-500 hover:text-white transition">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <p class="text-xs text-gray-400 mb-4">Replacing key: <span id="replace-key-label" class="text-indigo-400 font-mono font-bold"></span></p>
+    <div class="space-y-4">
+      <div>
+        <label class="text-[11px] text-gray-400 uppercase tracking-widest block mb-1.5">New API Key *</label>
+        <div class="pw-wrap">
+          <input id="replace-key-input" type="password" placeholder="AIzaSy…"
+            class="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-indigo-500/60 transition font-mono">
+          <button type="button" class="pw-eye" onclick="toggleKeyVisibility('replace-key-input', this)">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+          </button>
+        </div>
+      </div>
+      <div>
+        <label class="text-[11px] text-gray-400 uppercase tracking-widest block mb-1.5">Nickname (optional)</label>
+        <input id="replace-key-nick" type="text" placeholder="Leave blank to keep current"
+          class="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-indigo-500/60 transition">
+      </div>
+      <div id="replace-key-error" class="hidden text-xs text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2"></div>
+      <div class="flex gap-2 pt-2">
+        <button onclick="closeModal('replace-key-modal')"
+          class="flex-1 py-2.5 rounded-xl text-sm font-bold bg-white/5 text-gray-400 hover:bg-white/10 transition">Cancel</button>
+        <button onclick="submitReplaceKey()"
+          class="flex-1 py-2.5 rounded-xl text-sm font-bold bg-indigo-600 hover:bg-indigo-500 text-white transition">
+          Replace →
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- RENAME MODAL -->
+<div class="modal-overlay" id="rename-key-modal">
+  <div class="modal-box">
+    <div class="flex items-center justify-between mb-5">
+      <h3 class="text-white font-bold text-base">✏️ Rename Key</h3>
+      <button onclick="closeModal('rename-key-modal')" class="text-gray-500 hover:text-white transition">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <input id="rename-input" type="text" placeholder="New nickname"
+      class="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white mb-4 focus:outline-none focus:border-indigo-500/60 transition">
+    <div class="flex gap-2">
+      <button onclick="closeModal('rename-key-modal')"
+        class="flex-1 py-2.5 rounded-xl text-sm font-bold bg-white/5 text-gray-400 hover:bg-white/10 transition">Cancel</button>
+      <button onclick="submitRename()"
+        class="flex-1 py-2.5 rounded-xl text-sm font-bold bg-amber-600 hover:bg-amber-500 text-white transition">Rename →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     CLIENT-SIDE LOGIC
+     ═══════════════════════════════════════════════════════════════════════════ -->
+<script>
+// ── 2. SSE REAL-TIME MONITORING ─────────────────────────────────────────────────
+let pipelineStartTime = null;
+const durationEl = document.getElementById('pipeline-duration');
+
+const evtSource = new EventSource('/pipeline/live-status');
+
+evtSource.onmessage = (e) => {
+  const data = JSON.parse(e.data);
+  if (data.type === 'status_update' || data.status) {
+    updateMonitoringPanel(data);
+    updatePipelineSteps(data);
+    updateStatusBadge(data.status || 'idle');
+    updateWorkerPool(data.active_workers || {});
+
+    // Refresh keys if pipeline is active to show real-time usage
+    if (data.status === 'running') {
+      fetchAndRenderKeys();
+    }
+
+    if ((data.status === 'running') && !pipelineStartTime) {
+      pipelineStartTime = Date.now();
+    }
+    if (data.status !== 'running') {
+      pipelineStartTime = null;
+    }
+  }
+};
+evtSource.onerror = () => { /* Silent reconnect */ };
+
+// Update duration ticker
+setInterval(() => {
+  if (pipelineStartTime) {
+    const elapsed = Math.floor((Date.now() - pipelineStartTime) / 1000);
+    if (durationEl) durationEl.textContent = elapsed + 's';
+  }
+}, 1000);
+
+function updateMonitoringPanel(data) {
+  const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+  const setWidth = (id, pct) => { const el = document.getElementById(id); if (el) el.style.width = Math.min(pct, 100) + '%'; };
+
+  if (data.health_score !== undefined) {
+    set('health-score', data.health_score + '%');
+    setWidth('health-bar', data.health_score);
+  }
+  if (data.validation_pass_rate !== undefined) {
+    set('pass-rate', data.validation_pass_rate + '%');
+    setWidth('pass-bar', data.validation_pass_rate);
+  }
+  
+  // Agent Intelligence Telemetry
+  if (data.agent_confidence !== undefined) {
+    set('agent-confidence-display', data.agent_confidence + '%');
+    setWidth('agent-confidence-bar', data.agent_confidence);
+    
+    const card = document.getElementById('confidence-card');
+    if (card) {
+      if (data.agent_confidence > 80) card.className = 'ai-card-glass p-3 text-center border-emerald-500/30';
+      else if (data.agent_confidence > 50) card.className = 'ai-card-glass p-3 text-center border-amber-500/30';
+      else card.className = 'ai-card-glass p-3 text-center border-red-500/30';
+    }
+  }
+  
+  if (data.agent_tool) {
+    set('agent-tool-display', data.agent_tool);
+    set('agent-status-label', data.status === 'running' ? 'Active Reasoning' : 'Standby');
+  }
+
+  if (data.log_summary) {
+    set('log-info', data.log_summary.INFO || 0);
+    set('log-warn', data.log_summary.WARNING || 0);
+    set('log-error', data.log_summary.ERROR || 0);
+    set('log-critical', data.log_summary.CRITICAL || 0);
+  }
+  if (data.alert_status) {
+    set('fail-count', data.alert_status.consecutive_failures || 0);
+  }
+}
+
+function updatePipelineSteps(data) {
+  const stepsCompleted = data.steps_completed || 0;
+  const status = data.status || 'idle';
+
+  const stepsDoneEl = document.getElementById('steps-done');
+  if (stepsDoneEl) stepsDoneEl.textContent = stepsCompleted;
+  
+  const currentStepEl = document.getElementById('current-step-display');
+  if (currentStepEl) currentStepEl.textContent = data.current_step || status;
+
+  // UI feedback for Discovery
+  const discoveryLog = document.getElementById('discovery-log-text');
+  const consoleWrap = document.getElementById('live-console-wrap');
+  const consoleEl = document.getElementById('system-console');
+  const errorBanner = document.getElementById('pipeline-error-banner');
+  const errorText = document.getElementById('error-message-text');
+
+  if (status === 'running') {
+    if (consoleWrap && consoleWrap.classList) consoleWrap.classList.remove('hidden');
+    if (errorBanner && errorBanner.classList) errorBanner.classList.add('hidden');
+  } else if (status === 'failed') {
+    if (errorBanner && errorBanner.classList) {
+      errorBanner.classList.remove('hidden');
+      if (errorText) errorText.textContent = data.last_error || 'Unknown Pipeline Error';
+    }
+  } else if (status === 'idle' || status === 'completed') {
+    if (errorBanner && errorBanner.classList) errorBanner.classList.add('hidden');
+    if (status === 'completed') {
+      if (consoleWrap && consoleWrap.classList) consoleWrap.classList.add('hidden');
+    }
+  }
+
+  // --- NEURAL MONOLOGUE RENDERING ---
+  const monologue = data.agent_monologue || [];
+  const logs = data.last_logs || [];
+
+  if (consoleEl) {
+    let content = '';
+    
+    // First, render the Agent's Thoughts (Indigo)
+    if (monologue.length > 0) {
+      content += `<div class="p-2 mb-2 bg-indigo-500/5 border-l-2 border-indigo-500 rounded-r">
+                   <p class="text-[9px] text-indigo-400 font-bold uppercase tracking-widest mb-1 italic">Agent Thought Feed</p>`;
+      content += monologue.map(m => {
+        const time = m.timestamp ? m.timestamp.split('T')[1].split('.')[0] : '--:--';
+        return `<div class="console-line mb-1">
+                  <span class="console-time">[${time}]</span> 
+                  <span class="text-indigo-300 font-semibold">[${m.stage}]</span> 
+                  <span class="text-gray-200 italic">"${m.monologue}"</span>
+                </div>`;
+      }).join('');
+      content += `</div>`;
+    }
+
+    // Second, render the System Logs (Slate)
+    if (logs.length > 0) {
+      content += `<div class="mt-2">`;
+      content += logs.map(log => {
+        const parts = log.split('] ');
+        const time = parts[0].replace('[', '');
+        const msg = parts[1] || '';
+        return `<div class="console-line opacity-70"><span class="console-time">[${time}]</span> <span class="console-msg">${msg}</span></div>`;
+      }).join('');
+      content += `</div>`;
+    }
+    
+    if (consoleEl.innerHTML !== content) {
+      consoleEl.innerHTML = content;
+      consoleEl.scrollTop = consoleEl.scrollHeight;
+    }
+  }
+
+  if (discoveryLog && data.current_step && data.current_step.includes('Discovery')) {
+    discoveryLog.textContent = data.current_step;
+    document.getElementById('discovery-status').classList.remove('hidden');
+  }
+
+  for (let i = 1; i <= 7; i++) {
+    const nodeEl = document.getElementById(`step-node-${i}`);
+    const connEl = document.getElementById(`connector-${i}`);
+    if (!nodeEl) continue;
+
+    nodeEl.className = 'step-node ';
+    let stateClass = 'pending';
+    if (i <= stepsCompleted) stateClass = 'done';
+    else if (i === stepsCompleted + 1 && status === 'running') stateClass = 'active';
+    else if (status === 'failed' && i === stepsCompleted + 1) stateClass = 'error';
+
+    nodeEl.classList.add(stateClass);
+
+    if (connEl) {
+      connEl.className = 'step-connector' + (i <= stepsCompleted ? ' filled' : '');
+    }
+  }
+}
+
+function updateWorkerPool(workers) {
+  const container = document.getElementById('worker-pool-container');
+  const grid = document.getElementById('worker-grid');
+  if (!container || !grid) return;
+
+  const workerEntries = Object.entries(workers);
+  if (workerEntries.length === 0) {
+    container.classList.add('hidden');
+    return;
+  }
+
+  container.classList.remove('hidden');
+  grid.innerHTML = workerEntries.map(([url, info]) => {
+    const siteName = url.split('/').pop().replace(/_/g, ' ');
+    const isCached = info.cache_hit;
+    
+    return `
+      <div class="p-3 bg-white/5 border border-white/10 rounded-xl flex flex-col gap-2">
+        <div class="flex justify-between items-start">
+          <span class="text-[10px] font-bold text-white truncate w-40">${siteName}</span>
+          ${isCached ? 
+            '<span class="px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 text-[8px] font-bold border border-emerald-500/30">⚡ CACHED</span>' : 
+            '<span class="px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 text-[8px] font-bold border border-indigo-500/30">🌐 LIVE</span>'
+          }
+        </div>
+        <div class="flex items-center gap-2">
+          <div class="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse"></div>
+          <span class="text-[9px] text-gray-500 uppercase tracking-tighter">${info.step}...</span>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function updateStatusBadge(status) {
+  const badge = document.getElementById('pipeline-status-badge');
+  const dot = document.getElementById('status-dot');
+  const text = document.getElementById('status-text');
+  if (!badge) return;
+
+  badge.className = 'status-badge ';
+  const map = {
+    idle: ['status-idle', 'bg-gray-400'],
+    running: ['status-running', 'bg-indigo-400'],
+    completed: ['status-done', 'bg-emerald-400'],
+    failed: ['status-failed', 'bg-red-400'],
+  };
+  const [cls, dotColor] = map[status] || map['idle'];
+  badge.classList.add(cls);
+  dot.className = `w-1.5 h-1.5 rounded-full ${dotColor} ${status === 'running' ? 'animate-pulse' : ''}`;
+  text.textContent = status.toUpperCase();
+}
+
+// ── 3. API KEY MANAGER ─────────────────────────────────────────────────────────
+let _keysData   = [];   // cached key list
+let _activeModal  = null; // currently open modal
+let _editIndex    = 0;    // index of key being edited
+
+// ---- Fetch & Render Keys ----
+async function fetchAndRenderKeys() {
+  try {
+    const res = await fetch('/pipeline/keys');
+    if (!res.ok) return;
+    const data = await res.json();
+    _keysData = data.keys || [];
+
+    renderUsageMatrix(data);
+    renderKeyRows(_keysData);
+  } catch (e) { /* Python offline — silent */ }
+}
+
+function renderUsageMatrix(data) {
+  const container = document.getElementById('usage-matrix');
+  if (!container || !data.provider_stats) return;
+
+  const pMap = { 
+    'google': { color: '#4285F4', label: 'Google' },
+    'openai': { color: '#10a37f', label: 'OpenAI' },
+    'anthropic': { color: '#ffffff', label: 'Anthropic' },
+    'deepseek': { color: '#00e5ff', label: 'DeepSeek' },
+    'groq': { color: '#f55036', label: 'Groq' }
+  };
+
+  container.innerHTML = Object.entries(data.provider_stats).map(([prov, stats]) => {
+    if (stats.count === 0) return '';
+    const pInfo = pMap[prov] || { color: '#888', label: prov };
+    const pUsed = ((stats.used / stats.limit) * 100) || 0;
+    
+    return `
+      <div class="p-3 border border-white/5 rounded-xl bg-white/5 backdrop-blur-sm transition-all hover:border-white/10 hover:bg-white/[0.08]">
+        <div class="flex justify-between items-center mb-2">
+          <span class="text-[9px] font-black uppercase tracking-wider" style="color:${pInfo.color}">${pInfo.label}</span>
+          <span class="text-[9px] text-gray-500 font-bold">${stats.count} ACTIVE</span>
+        </div>
+        <div class="text-sm font-black text-white mb-2 flex items-baseline gap-1">
+          ${stats.used.toLocaleString()} 
+          <span class="text-[10px] text-gray-600 font-bold">/ ${stats.limit.toLocaleString()}</span>
+        </div>
+        <div class="w-full bg-white/10 rounded-full h-1 overflow-hidden">
+          <div class="progress-bar h-1 rounded-full transition-all duration-700" style="width:${pUsed}%; background:${pInfo.color}; box-shadow: 0 0 10px ${pInfo.color}66"></div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderKeyRows(keys) {
+  const container = document.getElementById('key-rows');
+  if (!container) return;
+  if (!keys.length) {
+    container.innerHTML = '<div class="col-span-full text-center py-12 text-gray-600 text-sm">No API keys registered in the vault yet. Click <strong class="text-emerald-400 uppercase tracking-widest">Provision New Key</strong> to authorize.</div>';
+    return;
+  }
+
+  container.innerHTML = keys.map(k => {
+    const softLimit = k.provider === 'google' ? 2400 : (k.provider === 'openai' ? 5000 : 1000);
+    const usedPct = Math.min(100, (k.count / softLimit) * 100);
+    const barColor = usedPct < 50
+      ? 'linear-gradient(90deg,#059669,#34d399)'
+      : usedPct < 85
+      ? 'linear-gradient(90deg,#d97706,#fbbf24)'
+      : 'linear-gradient(90deg,#dc2626,#f87171)';
+    const barGlow = usedPct < 50
+      ? '0 0 10px rgba(52,211,153,0.3)'
+      : usedPct < 85
+      ? '0 0 10px rgba(251,191,36,0.2)'
+      : '0 0 10px rgba(248,113,113,0.3)';
+
+    const rowClass = k.active ? 'key-row active-key' : k.exhausted ? 'key-row exhausted-key' : 'key-row';
+    
+    // Status Badge Logic
+    let statusBadge = '';
+    if (k.active) {
+      statusBadge = '<span class="status-badge status-running text-[8px] border-emerald-500/30 text-emerald-400 bg-emerald-500/10">ACTIVE</span>';
+    } else if (k.exhausted) {
+      statusBadge = '<span class="status-badge status-failed text-[8px] border-red-500/30 text-red-400 bg-red-500/10 uppercase">Exhausted</span>';
+    } else if (k.source === 'env_var') {
+      statusBadge = '<span class="text-[8px] font-black text-indigo-400 uppercase tracking-widest bg-indigo-500/10 px-2 py-0.5 rounded border border-indigo-500/20">ENV PROTECTED</span>';
+    } else {
+      statusBadge = '<span class="text-[8px] font-bold text-gray-500 uppercase tracking-widest">Standby</span>';
+    }
+
+    // Provider Config
+    const pMap = { 
+      'google': { color: '#4285F4', label: 'Google' },
+      'openai': { color: '#10a37f', label: 'OpenAI' },
+      'anthropic': { color: '#ffffff', label: 'Anthropic' },
+      'deepseek': { color: '#00e5ff', label: 'DeepSeek' },
+      'groq': { color: '#f55036', label: 'Groq' }
+    };
+    const pInfo = pMap[k.provider] || { color: '#888', label: k.provider };
+
+    const deleteBtn = k.can_delete
+      ? `<button class="key-action-btn btn-delete flex-1 justify-center" onclick="confirmDeleteKey(${k.index},'${k.nickname}')">Remove</button>`
+      : `<button class="key-action-btn flex-1 justify-center opacity-30 cursor-not-allowed grayscale" title="ENV Protected" disabled>Secure</button>`;
+
+    return `
+      <div class="${rowClass}" id="krow-${k.index}">
+        <div class="flex flex-col h-full">
+          <!-- Top Section: Provider & Status -->
+          <div class="flex items-center justify-between mb-4">
+            <span class="provider-badge" style="color:${pInfo.color}; border-color:${pInfo.color}33">${pInfo.label}</span>
+            ${statusBadge}
+          </div>
+
+          <!-- Mid Section: Identity -->
+          <div class="mb-5 flex-grow">
+            <h4 class="text-white font-black text-sm tracking-tight truncate mb-1" title="${k.nickname || 'Unnamed Key'}">
+              ${k.nickname || 'Unnamed Machine Key'}
+            </h4>
+            <p class="font-mono text-[10px] text-gray-500 tracking-tighter opacity-70">${k.label}</p>
+          </div>
+
+          <!-- Stats Section: Progress -->
+          <div class="mb-5">
+            <div class="flex justify-between items-end mb-2">
+              <span class="text-[9px] font-black text-gray-500 uppercase tracking-widest">Quota Consumption</span>
+              <span class="text-[10px] font-black text-white">${k.count.toLocaleString()} <span class="text-gray-600 font-bold">/ ${k.limit.toLocaleString()}</span></span>
+            </div>
+            <div class="w-full bg-white/5 rounded-full h-1.5 overflow-hidden">
+              <div style="width:${usedPct}%; background:${barColor}; box-shadow:${barGlow}" class="h-full rounded-full transition-all duration-1000"></div>
+            </div>
+          </div>
+
+          <!-- Bottom Section: Actions -->
+          <div class="flex gap-2">
+            ${deleteBtn}
+            <button class="key-action-btn btn-replace flex-1 justify-center" onclick="openReplaceModal(${k.index}, '${k.label}')">Replace</button>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+// ---- Modal Controls ----
+function openModal(id) {
+  document.getElementById(id).classList.add('open');
+  _activeModal = id;
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+  _activeModal = null;
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && _activeModal) closeModal(_activeModal); });
+
+function openAddModal() {
+  document.getElementById('new-key-input').value = '';
+  document.getElementById('new-key-nick').value = '';
+  document.getElementById('add-key-error').classList.add('hidden');
+  openModal('add-key-modal');
+}
+function openReplaceModal(index, label) {
+  _editIndex = index;
+  document.getElementById('replace-key-label').textContent = label;
+  document.getElementById('replace-key-input').value = '';
+  document.getElementById('replace-key-nick').value = '';
+  document.getElementById('replace-key-error').classList.add('hidden');
+  openModal('replace-key-modal');
+}
+function openRenameModal(index, currentNick) {
+  _editIndex = index;
+  document.getElementById('rename-input').value = currentNick;
+  openModal('rename-key-modal');
+}
+
+// ---- Show/Hide key text ----
+function toggleKeyVisibility(inputId, btn) {
+  const inp = document.getElementById(inputId);
+  if (inp.type === 'password') {
+    inp.type = 'text';
+    btn.style.color = '#818cf8';
+  } else {
+    inp.type = 'password';
+    btn.style.color = '';
+  }
+}
+
+// ---- Submit: Add ----
+async function submitAddKey() {
+  const key  = document.getElementById('new-key-input').value.trim();
+  const provider = document.getElementById('new-key-provider').value;
+  const nick = document.getElementById('new-key-nick').value.trim();
+  const errEl = document.getElementById('add-key-error');
+  const btn   = document.getElementById('add-submit-btn');
+
+  if (!key) { errEl.textContent = 'API key is required.'; errEl.classList.remove('hidden'); return; }
+
+  btn.textContent = 'Adding…'; btn.disabled = true;
+  try {
+    const res = await fetch('/pipeline/keys', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ api_key: key, provider: provider, nickname: nick })
+    });
+    const data = await res.json();
+    if (data.success) {
+      closeModal('add-key-modal');
+      showToast('✅ Key added: ' + data.label, 'success');
+      fetchAndRenderKeys();
+    } else {
+      errEl.textContent = data.message || 'Failed to add key.';
+      errEl.classList.remove('hidden');
+    }
+  } catch (e) {
+    errEl.textContent = 'Connection error. Is the Python API running?';
+    errEl.classList.remove('hidden');
+  } finally { btn.textContent = 'Add Key →'; btn.disabled = false; }
+}
+
+// ---- Submit: Replace ----
+async function submitReplaceKey() {
+  const key  = document.getElementById('replace-key-input').value.trim();
+  const nick = document.getElementById('replace-key-nick').value.trim();
+  const errEl = document.getElementById('replace-key-error');
+
+  if (!key || !key.startsWith('AIza')) {
+    errEl.textContent = 'Enter a valid Google API key (starts with AIza).';
+    errEl.classList.remove('hidden');
+    return;
+  }
+  try {
+    const res = await fetch(`/pipeline/keys/${_editIndex}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ api_key: key, nickname: nick || undefined })
+    });
+    const data = await res.json();
+    if (data.success) {
+      closeModal('replace-key-modal');
+      showToast('🔄 Key replaced: ' + (data.label || ''), 'info');
+      fetchAndRenderKeys();
+    } else {
+      errEl.textContent = data.message || 'Failed.';
+      errEl.classList.remove('hidden');
+    }
+  } catch (e) { errEl.textContent = 'Connection error.'; errEl.classList.remove('hidden'); }
+}
+
+// ---- Submit: Rename ----
+async function submitRename() {
+  const nick = document.getElementById('rename-input').value.trim();
+  if (!nick) return;
+  try {
+    await fetch(`/pipeline/keys/${_editIndex}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ nickname: nick })
+    });
+    closeModal('rename-key-modal');
+    fetchAndRenderKeys();
+  } catch (e) { /* ignore */ }
+}
+
+// ---- Confirm: Delete ----
+async function confirmDeleteKey(index, nickname) {
+  if (!confirm(`Delete "${nickname}"?\n\nThis key will be removed from the rotation pool immediately.`)) return;
+  try {
+    const res = await fetch(`/pipeline/keys/${index}`, { method: 'DELETE' });
+    const data = await res.json();
+    if (data.success) {
+      showToast('🗑️ Key removed.', 'warn');
+      fetchAndRenderKeys();
+    } else {
+      alert(data.message || 'Could not delete key.');
+    }
+  } catch (e) { alert('Connection error.'); }
+}
+
+// ---- Toast ----
+function showToast(msg, type = 'info') {
+  const colors = { success: '#059669', info: '#6366f1', warn: '#d97706', error: '#dc2626' };
+  const t = document.createElement('div');
+  t.style.cssText = `position:fixed;bottom:24px;right:24px;z-index:9999;padding:10px 18px;border-radius:12px;
+    background:${colors[type] || colors.info};color:#fff;font-size:13px;font-weight:700;
+    box-shadow:0 8px 24px rgba(0,0,0,0.4);animation:slideUp 0.3s ease`;
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 4000);
+}
+
+// Load keys on page ready + refresh every 30s
+fetchAndRenderKeys();
+setInterval(fetchAndRenderKeys, 30000);
+
+// ── 4. AI DISCOVERY MODE ───────────────────────────────────────────────────────
+async function startDiscovery() {
+  const promptInp = document.getElementById('discovery-prompt');
+  const btn = document.getElementById('discover-btn');
+  const statusEl = document.getElementById('discovery-status');
+  const logEl = document.getElementById('discovery-log-text');
+  
+  const prompt = promptInp.value.trim();
+  if (!prompt) {
+    showToast('Please enter a description for discovery.', 'warn');
+    return;
+  }
+
+  // UI States
+  btn.disabled = true;
+  btn.innerHTML = `<span>ENGAGING...</span> <svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>`;
+  statusEl.classList.remove('hidden');
+  logEl.textContent = 'Enabling Discovery AI Engine...';
+
+  try {
+    const res = await fetch('/pipeline/discover', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt })
+    });
+    
+    const data = await res.json();
+    
+    if (data.success) {
+      showToast('🚀 AI Discovery Engaged!', 'success');
+      logEl.textContent = 'AI is analyzing your request...';
+    } else {
+      showToast('❌ Discovery failed: ' + data.message, 'error');
+      statusEl.classList.add('hidden');
+    }
+  } catch (err) {
+    showToast('❌ Backend connection lost.', 'error');
+    statusEl.classList.add('hidden');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = `<span>ENGAGE AI</span> <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7"/></svg>`;
+    document.getElementById('stop-btn').classList.remove('hidden');
+  }
+}
+
+async function abortMission() {
+  if (!confirm('ABORT MISSION: Are you sure? All current reasoning and discovery for this task will be terminated.')) return;
+  try {
+    const res = await fetch('/pipeline/stop', { method: 'POST' });
+    const data = await res.json();
+    if (data.success) {
+      showToast('⚠️ MISSION ABORTED. Signal sent to Neural Agent.', 'warn');
+      document.getElementById('stop-btn').classList.add('hidden');
+    }
+  } catch (err) { showToast('Abort signal failed.', 'error'); }
+}
+</script>

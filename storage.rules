@@ -1,0 +1,84 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // ── Helper: Is the requester authenticated? ──────────────────────────────
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // ── Helper: Is the requester a premium user? ─────────────────────────────
+    // Reads from Firestore to verify live premium status.
+    function isPremiumUser() {
+      return isAuthenticated() &&
+        firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.isPremium == true;
+    }
+
+    // ── Helper: Is the requester an admin? ───────────────────────────────────
+    function isAdmin() {
+      return isAuthenticated() &&
+        firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.role
+          in ['admin', 'super_admin'];
+    }
+
+    // ── 3D AR Models ─────────────────────────────────────────────────────────
+    // Any signed-in user can load models (needed for free demo AR).
+    // No public (unauthenticated) reads — prevents scraping without an account.
+    // Write blocked — only Admin SDK (Cloud Functions) can upload.
+    match /models/{fileName} {
+      allow read: if isAuthenticated();
+      allow write: if false;
+    }
+
+    // ── Premium Audio Guides ──────────────────────────────────────────────────
+    // Exclusive to premium users only.
+    match /audio_guides/{fileName} {
+      allow read: if isPremiumUser() || isAdmin();
+      allow write: if false;
+    }
+
+    // ── Premium Offline Packs ─────────────────────────────────────────────────
+    // Downloadable AR content for offline use — premium only.
+    match /offline_packs/{fileName} {
+      allow read: if isPremiumUser() || isAdmin();
+      allow write: if false;
+    }
+
+    // ── Location Historical Images ────────────────────────────────────────────
+    // Public authenticated read — shown in location cards.
+    match /location_images/{fileName} {
+      allow read: if isAuthenticated();
+      allow write: if false;
+    }
+
+    // ── User Avatars ──────────────────────────────────────────────────────────
+    // Users can upload their own avatar only.
+    match /avatars/{userId}/{fileName} {
+      allow read: if isAuthenticated();
+      allow write: if request.auth.uid == userId
+                   && request.resource.size < 5 * 1024 * 1024   // Max 5MB
+                   && request.resource.contentType.matches('image/.*');
+    }
+
+    // ── Admin Uploads ─────────────────────────────────────────────────────────
+    // Admin-only bucket for raw assets before processing.
+    match /admin_uploads/{fileName} {
+      allow read, write: if isAdmin();
+    }
+    
+    // ── Guide Enrollment Documents ───────────────────────────────────────────
+    // Users can upload their own license/NIC/selfie for review.
+    // Read only for the user themselves and admins.
+    match /guide_documents/{userId}/{fileName} {
+      allow read: if request.auth.uid == userId || isAdmin();
+      allow write: if request.auth.uid == userId
+                   && request.resource.size < 10 * 1024 * 1024   // Max 10MB
+                   && request.resource.contentType.matches('image/.*');
+    }
+
+    // ── Catch-All: Deny Everything Else ──────────────────────────────────────
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

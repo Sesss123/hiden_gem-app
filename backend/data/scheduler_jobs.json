@@ -1,0 +1,20 @@
+{
+  "jobs": [
+    {
+      "id": "job_becba077",
+      "name": "Initial Job",
+      "job_type": "pipeline_full",
+      "description": "Initial Desc",
+      "schedule_type": "interval",
+      "interval_value": 6,
+      "interval_unit": "hours",
+      "cron": "0 2 * * *",
+      "enabled": true,
+      "created_at": "2026-04-11T19:26:24.779921",
+      "last_run": null,
+      "last_status": null,
+      "run_count": 0
+    }
+  ],
+  "updated_at": "2026-04-11T19:26:24.781325"
+}

@@ -1,0 +1,81 @@
+<div class="mb-8">
+    <p class="text-gray-500 text-sm">Trace administrative operations and system-wide state changes.</p>
+</div>
+
+<div class="premium-card overflow-hidden">
+    <table class="w-full text-left">
+        <thead class="bg-gray-50 text-[10px] uppercase font-bold text-gray-500 tracking-widest border-b border-gray-100">
+            <tr>
+                <th class="px-6 py-4">Actor</th>
+                <th class="px-6 py-4">Action</th>
+                <th class="px-6 py-4">Details / Changes</th>
+                <th class="px-6 py-4">Identity Info</th>
+                <th class="px-6 py-4 text-right">Timestamp</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-50 text-[11px] font-medium">
+            <% logs.forEach(log => { %>
+                <tr class="hover:bg-gray-50/50 transition">
+                    <td class="px-6 py-4">
+                        <div class="flex items-center gap-2">
+                            <span class="text-gray-800 font-bold"><%= log.actorName %></span>
+                            <span class="text-[9px] text-gray-400 border border-gray-200 px-1 rounded uppercase"><%= log.actorRole %></span>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="flex flex-col gap-1">
+                            <span class="text-indigo-600 font-bold tracking-tight uppercase"><%= log.action.replace(/_/g, ' ') %></span>
+                            <span class="text-[9px] text-gray-400 uppercase tracking-widest"><%= log.entityType %></span>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="flex flex-col gap-1.5 max-w-md">
+                            <% if (log.details && log.details.changes) { %>
+                                <% Object.entries(log.details.changes).forEach(([field, val]) => { %>
+                                    <div class="flex items-center gap-1.5 flex-wrap">
+                                        <span class="text-gray-900 font-bold"><%= field.replace(/_/g, ' ') %>:</span>
+                                        <span class="text-red-500 line-through opacity-60"><%= val.old || 'none' %></span>
+                                        <svg class="w-2.5 h-2.5 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="9 5l7 7-7 7"/></svg>
+                                        <span class="text-emerald-600 font-bold"><%= val.new %></span>
+                                    </div>
+                                <% }) %>
+                            <% } else if (log.details && log.details.status_change) { %>
+                                <div class="flex items-center gap-1.5">
+                                    <span class="text-gray-900 font-bold">Status:</span>
+                                    <span class="text-red-500 line-through opacity-60"><%= log.details.status_change.old %></span>
+                                    <svg class="w-2.5 h-2.5 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="9 5l7 7-7 7"/></svg>
+                                    <span class="text-emerald-600 font-bold"><%= log.details.status_change.new %></span>
+                                </div>
+                                <% if (log.details.notes) { %>
+                                    <p class="text-[10px] text-gray-400 mt-1 italic italic">"<%= log.details.notes %>"</p>
+                                <% } %>
+                            <% } else { %>
+                                <span class="text-gray-400 italic">No detailed changes recorded.</span>
+                            <% } %>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 font-mono text-gray-400">
+                        <%= log.ipAddress || 'Internal' %>
+                    </td>
+                    <td class="px-6 py-4 text-right text-gray-400 font-mono">
+                        <%= log.createdAt.toLocaleString() %>
+                    </td>
+                </tr>
+            <% }) %>
+        </tbody>
+    </table>
+
+    <% if (pages > 1) { %>
+        <div class="p-6 border-t border-gray-100 bg-gray-50 flex items-center justify-between">
+            <span class="text-xs text-gray-500 font-medium">Page <%= page %> of <%= pages %></span>
+            <div class="flex gap-2">
+                <% if (page > 1) { %>
+                    <a href="/logs?page=<%= page - 1 %>" class="px-4 py-1.5 bg-white border border-gray-200 text-gray-600 text-[10px] font-bold uppercase rounded-lg">Prev</a>
+                <% } %>
+                <% if (page < pages) { %>
+                    <a href="/logs?page=<%= page + 1 %>" class="px-4 py-1.5 bg-white border border-gray-200 text-gray-600 text-[10px] font-bold uppercase rounded-lg">Next</a>
+                <% } %>
+            </div>
+        </div>
+    <% } %>
+</div>

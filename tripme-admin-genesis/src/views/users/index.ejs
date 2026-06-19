@@ -1,0 +1,45 @@
+<div class="mb-8">
+    <p class="text-gray-500 text-sm">Manage administrative personnel and their system permissions.</p>
+</div>
+
+<div class="premium-card overflow-hidden">
+    <table class="w-full text-left">
+        <thead class="bg-gray-50 text-[10px] uppercase font-bold text-gray-500 tracking-widest border-b border-gray-100">
+            <tr>
+                <th class="px-6 py-4">Administrator</th>
+                <th class="px-6 py-4">Role</th>
+                <th class="px-6 py-4">Status</th>
+                <th class="px-6 py-4">Last Active</th>
+                <th class="px-6 py-4 text-right">Settings</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-50 text-sm">
+            <% users.forEach(admin => { %>
+                <tr class="hover:bg-gray-50/50 transition">
+                    <td class="px-6 py-4 font-bold text-gray-800"><%= admin.name %></td>
+                    <td class="px-6 py-4">
+                        <span class="bg-indigo-50 text-indigo-600 text-[10px] font-bold px-2 py-0.5 rounded border border-indigo-100 uppercase tracking-tight">
+                            <%= admin.role.replace('_', ' ') %>
+                        </span>
+                    </td>
+                    <td class="px-6 py-4">
+                        <span class="flex items-center gap-1.5">
+                            <div class="w-1.5 h-1.5 rounded-full <%= admin.isActive ? 'bg-green-500' : 'bg-red-400' %>"></div>
+                            <span class="text-xs font-medium text-gray-600 capitalize"><%= admin.isActive ? 'Active' : 'Disabled' %></span>
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 text-gray-400 font-mono text-xs">
+                        <%= admin.lastLogin ? admin.lastLogin.toLocaleString() : 'Never' %>
+                    </td>
+                    <td class="px-6 py-4 text-right">
+                        <form action="/users/<%= admin._id %>/toggle" method="POST" class="inline">
+                            <button type="submit" class="text-xs font-bold <%= admin.isActive ? 'text-red-500 hover:text-red-700' : 'text-green-500 hover:text-green-700' %> uppercase tracking-widest">
+                                <%= admin.isActive ? 'Disable' : 'Enable' %>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            <% }) %>
+        </tbody>
+    </table>
+</div>

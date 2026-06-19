@@ -1,0 +1,285 @@
+<div class="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-6">
+    <div>
+        <p class="text-gray-500 text-sm">System Process Controls for TripMeAI Backend Architecture.</p>
+    </div>
+</div>
+
+<% if (locals.success_msg && locals.success_msg.length > 0) { %>
+    <div class="bg-emerald-50 border border-emerald-200 text-emerald-700 px-4 py-3 rounded-lg relative mb-6 shadow-sm" role="alert">
+        <span class="block sm:inline text-sm font-medium"><%= success_msg %></span>
+    </div>
+<% } %>
+
+<% if (locals.error_msg && locals.error_msg.length > 0) { %>
+    <div class="bg-rose-50 border border-rose-200 text-rose-700 px-4 py-3 rounded-lg relative mb-6 shadow-sm" role="alert">
+        <span class="block sm:inline text-sm font-medium"><%= error_msg %></span>
+    </div>
+<% } %>
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+    <!-- Node.js Genesis Host Server -->
+    <div class="premium-card overflow-hidden flex flex-col h-full">
+        <div class="bg-gray-900 border-b border-gray-800 px-6 py-4">
+            <h5 class="text-white font-bold text-sm tracking-wide flex items-center gap-2">
+                <svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"></path></svg>
+                Genesis Core (Node.js)
+            </h5>
+        </div>
+        <div class="bg-gray-50 p-6 flex-1 border-b border-gray-100">
+            <div class="flex items-center gap-3 mb-6">
+                <div class="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
+                <h4 class="text-emerald-600 font-black tracking-widest uppercase text-sm">Online</h4>
+            </div>
+            <p class="text-gray-500 text-xs leading-relaxed mb-6">The core operational server managing web hooks, scheduling, and database registries. This host cannot be stopped remotely.</p>
+            
+            <div class="space-y-3">
+                <div class="flex justify-between items-center py-2 border-b border-gray-200/50">
+                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Host</span>
+                    <span class="text-xs font-mono text-gray-700 font-medium">localhost:3006</span>
+                </div>
+                <div class="flex justify-between items-center py-2 border-b border-gray-200/50">
+                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Process ID</span>
+                    <span class="text-xs font-mono text-gray-700 font-medium"><%= process.pid %></span>
+                </div>
+                <div class="flex justify-between items-center py-2">
+                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Status</span>
+                    <span class="px-2 py-0.5 bg-emerald-100 text-[9px] font-black text-emerald-600 rounded uppercase tracking-tighter">Active</span>
+                </div>
+            </div>
+        </div>
+        <div class="bg-white p-6 mt-auto">
+            <button class="w-full py-2.5 bg-gray-100 text-gray-400 font-bold text-xs uppercase tracking-widest rounded-lg cursor-not-allowed border border-gray-200 flex items-center justify-center gap-2" disabled>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                Host Managed
+            </button>
+        </div>
+    </div>
+
+    <!-- Python AI Pipeline Server -->
+    <div class="premium-card overflow-hidden flex flex-col h-full <%= pyActive ? 'ring-2 ring-indigo-500' : 'ring-2 ring-rose-500' %>">
+        <div class="<%= pyActive ? 'bg-indigo-600 border-indigo-700' : 'bg-rose-600 border-rose-700' %> border-b px-6 py-4">
+             <h5 class="text-white font-bold text-sm tracking-wide flex items-center gap-2">
+                <svg class="w-4 h-4 text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
+                AI Pipeline Target (Python/Uvicorn)
+            </h5>
+        </div>
+        <div class="bg-gray-50 p-6 flex-1 border-b border-gray-100">
+            <div class="flex items-center gap-3 mb-6">
+                <% if(pyActive) { %>
+                    <div class="w-2.5 h-2.5 bg-indigo-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(99,102,241,0.5)]"></div>
+                    <h4 class="text-indigo-600 font-black tracking-widest uppercase text-sm">Online</h4>
+                <% } else { %>
+                    <div class="w-2.5 h-2.5 bg-rose-500 rounded-full"></div>
+                    <h4 class="text-rose-600 font-black tracking-widest uppercase text-sm">Offline</h4>
+                <% } %>
+            </div>
+            
+            <p class="text-gray-500 text-xs leading-relaxed mb-6">The FastAPI backend controlling deep neural network processes, Media generation, and scraping scripts.</p>
+            
+            <div class="space-y-3">
+                <div class="flex justify-between items-center py-2 border-b border-gray-200/50">
+                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Host</span>
+                    <span class="text-xs font-mono text-gray-700 font-medium">localhost:8000</span>
+                </div>
+                <div class="flex justify-between items-center py-2 border-b border-gray-200/50">
+                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Process ID</span>
+                    <span class="text-xs font-mono text-gray-700 font-medium"><%= pyPid %></span>
+                </div>
+                <div class="flex justify-between items-center py-2">
+                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Mode</span>
+                    <span class="px-2 py-0.5 <%= pyActive ? 'bg-indigo-100 text-indigo-600' : 'bg-gray-200 text-gray-500' %> text-[9px] font-black rounded uppercase tracking-tighter">--reload</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white p-6 mt-auto">
+            <% if(pyActive) { %>
+                <form action="/admin/system/stop-ai" method="POST">
+                    <button type="submit" class="w-full py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs uppercase tracking-widest rounded-lg transition shadow-lg shadow-rose-200 flex items-center justify-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        Halt Subsystem
+                    </button>
+                </form>
+            <% } else { %>
+                <form action="/admin/system/start-ai" method="POST">
+                    <button type="submit" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs uppercase tracking-widest rounded-lg transition shadow-lg shadow-indigo-200 flex items-center justify-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        Initialize Subsystem
+                    </button>
+                </form>
+            <% } %>
+        </div>
+    </div>
+</div>
+
+<div class="mt-8" x-data="dataGuard()">
+    <div class="premium-card overflow-hidden">
+        <div class="bg-indigo-900 border-b border-indigo-800 px-6 py-4 flex items-center justify-between">
+            <h5 class="text-white font-bold text-sm tracking-wide flex items-center gap-2">
+                <svg class="w-4 h-4 text-indigo-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                Data Guard (Backup & Recovery)
+            </h5>
+            <button @click="triggerBackup()" :disabled="loading" class="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-500 disabled:bg-gray-700 text-white text-[10px] font-black uppercase tracking-widest rounded-lg transition border border-indigo-500/50 flex items-center gap-2 shadow-lg shadow-indigo-900/20">
+                <template x-if="!loading">
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                </template>
+                <template x-if="loading">
+                    <svg class="w-3 h-3 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                </template>
+                Backup Now
+            </button>
+        </div>
+        
+        <div class="p-0">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead>
+                        <tr class="bg-gray-50 border-b border-gray-100">
+                            <th class="px-6 py-3 text-[10px] font-black text-gray-400 uppercase tracking-widest">Snapshot ID</th>
+                            <th class="px-6 py-3 text-[10px] font-black text-gray-400 uppercase tracking-widest">Date / Time</th>
+                            <th class="px-6 py-3 text-[10px] font-black text-gray-400 uppercase tracking-widest">Files</th>
+                            <th class="px-6 py-3 text-right text-[10px] font-black text-gray-400 uppercase tracking-widest">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100">
+                        <template x-for="backup in backups" :key="backup.folder">
+                            <tr class="hover:bg-gray-50/50 transition">
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-2 h-2 bg-indigo-500 rounded-full"></div>
+                                        <span class="text-xs font-mono font-bold text-gray-700" x-text="backup.folder"></span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="text-xs text-gray-500" x-text="formatDate(backup.created)"></span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex gap-1">
+                                        <template x-for="file in backup.files">
+                                            <span class="px-1.5 py-0.5 bg-gray-100 text-[9px] text-gray-500 rounded border border-gray-200 font-mono" x-text="file"></span>
+                                        </template>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 text-right">
+                                    <button @click="triggerRestore(backup.folder)" :disabled="loading" class="px-3 py-1 bg-amber-50 hover:bg-amber-100 text-amber-700 text-[10px] font-black uppercase tracking-tighter rounded border border-amber-200 transition disabled:opacity-50">
+                                        Restore
+                                    </button>
+                                </td>
+                            </tr>
+                        </template>
+                        <template x-if="backups.length === 0 && !fetching">
+                            <tr>
+                                <td colspan="4" class="px-6 py-12 text-center">
+                                    <p class="text-gray-400 text-xs italic">No system snapshots found. Trigger a manual backup to begin.</p>
+                                </td>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function dataGuard() {
+        return {
+            backups: [],
+            loading: false,
+            fetching: false,
+            
+            init() {
+                this.fetchBackups();
+            },
+            
+            async fetchBackups() {
+                this.fetching = true;
+                try {
+                    const res = await fetch('/admin/system/backups');
+                    const data = await res.json();
+                    this.backups = data.backups || [];
+                } catch (err) {
+                    console.error('Fetch failed:', err);
+                } finally {
+                    this.fetching = false;
+                }
+            },
+            
+            async triggerBackup() {
+                this.loading = true;
+                try {
+                    const res = await fetch('/admin/system/backup', { method: 'POST' });
+                    const data = await res.json();
+                    if (data.success) {
+                        Swal.fire({
+                            title: 'Snapshot Created',
+                            text: `Successfully backed up to ${data.folder}`,
+                            icon: 'success',
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 3000
+                        });
+                        this.fetchBackups();
+                    } else {
+                        throw new Error(data.message);
+                    }
+                } catch (err) {
+                    Swal.fire('Backup Failed', err.message, 'error');
+                } finally {
+                    this.loading = false;
+                }
+            },
+            
+            async triggerRestore(folder) {
+                const result = await Swal.fire({
+                    title: 'System Restoration',
+                    html: `<div class="text-left">
+                        <p class="mb-4">You are about to restore the system from snapshot <strong>${folder}</strong>.</p>
+                        <div class="p-3 bg-rose-50 border border-rose-100 rounded text-rose-700 text-xs">
+                            <strong>Warning:</strong> This will overwrite the current database and MongoDB collections. All data added after this backup will be lost.
+                        </div>
+                    </div>`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Yes, Restore System',
+                    cancelButtonText: 'Cancel',
+                    loaderHtml: '<div class="spinner-border text-primary"></div>',
+                    preConfirm: async () => {
+                        try {
+                            const res = await fetch('/admin/system/restore', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ folder })
+                            });
+                            const data = await res.json();
+                            if (!data.success) throw new Error(data.message);
+                            return data;
+                        } catch (error) {
+                            Swal.showValidationMessage(`Restoration failed: ${error}`);
+                        }
+                    }
+                });
+
+                if (result.isConfirmed) {
+                    Swal.fire('Restored', 'System has been rolled back successfully.', 'success').then(() => {
+                        window.location.reload();
+                    });
+                }
+            },
+            
+            formatDate(isoString) {
+                if (!isoString) return 'N/A';
+                return new Date(isoString).toLocaleString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+            }
+        }
+    }
+</script>

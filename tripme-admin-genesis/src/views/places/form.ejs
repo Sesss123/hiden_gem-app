@@ -1,0 +1,317 @@
+<div class="mb-8">
+    <a href="/places" class="text-xs font-bold text-gray-400 uppercase tracking-widest hover:text-indigo-600 transition flex items-center gap-2 mb-4">
+        &larr; Back to Registry
+    </a>
+    <h2 class="text-2xl font-black text-gray-800 tracking-tight">
+        <%= isEdit ? 'Edit Node: ' + place.name : 'Create New Tourism Node' %>
+    </h2>
+    <p class="text-sm text-gray-500 mt-1">Populate high-fidelity data for the TripMeAI ecosystem.</p>
+</div>
+
+<form action="<%= isEdit ? '/places/' + place._id + '/edit' : '/places/create' %>" method="POST">
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        
+        <!-- MAIN CONTENT AREA (Col 1-3) -->
+        <div class="lg:col-span-3 space-y-8">
+            
+            <!-- SECTION: IDENTITY -->
+            <div class="premium-card p-8">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                    </div>
+                    <h4 class="font-bold text-gray-800">Identity & Location</h4>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="md:col-span-2 space-y-2">
+                        <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-1">Name (ස්ථානයේ නම)</label>
+                        <input type="text" name="name" value="<%= place.name || '' %>" required class="premium-input w-full">
+                    </div>
+                    
+                    <div class="md:col-span-2 space-y-2">
+                        <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-1">Description (විස්තරය)</label>
+                        <textarea name="description" rows="4" class="premium-input w-full"><%= place.description || '' %></textarea>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-1">Latitude</label>
+                        <input type="number" step="any" name="lat" value="<%= place.lat || '' %>" class="premium-input w-full font-mono">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-1">Longitude</label>
+                        <input type="number" step="any" name="lng" value="<%= place.lng || '' %>" class="premium-input w-full font-mono">
+                    </div>
+                    
+                    <div class="md:col-span-2 space-y-2">
+                        <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-1">Address (සම්පූර්ණ ලිපිනය)</label>
+                        <input type="text" name="address" value="<%= place.address || '' %>" class="premium-input w-full">
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION: OPERATIONAL & FINANCIALS -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Financials Card -->
+                <div class="premium-card p-8">
+                    <h5 class="font-bold text-gray-800 mb-6 flex items-center gap-2">
+                        <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        Financials
+                    </h5>
+                    <div class="space-y-4">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="space-y-1">
+                                <label class="text-[9px] font-bold text-gray-400 uppercase">Min Cost</label>
+                                <input type="number" name="cost_min" value="<%= place.cost_min || 0 %>" class="premium-input py-2 text-xs w-full">
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-[9px] font-bold text-gray-400 uppercase">Max Cost</label>
+                                <input type="number" name="cost_max" value="<%= place.cost_max || 0 %>" class="premium-input py-2 text-xs w-full">
+                            </div>
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[9px] font-bold text-gray-400 uppercase">Ticket Price</label>
+                            <input type="number" name="ticket_price" value="<%= place.ticket_price || 0 %>" class="premium-input py-2 text-xs w-full">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[9px] font-bold text-gray-400 uppercase">Ticket Range (Description)</label>
+                            <input type="text" name="ticket_range" value="<%= place.ticket_range || '' %>" placeholder="LKR 500 - 1500" class="premium-input py-2 text-xs w-full">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[9px] font-bold text-gray-400 uppercase">Parking Fee</label>
+                            <input type="number" name="parking_fee" value="<%= place.parking_fee || 0 %>" class="premium-input py-2 text-xs w-full">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Logistics Card -->
+                <div class="premium-card p-8">
+                    <h5 class="font-bold text-gray-800 mb-6 flex items-center gap-2">
+                        <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        Logistics & Access
+                    </h5>
+                    <div class="space-y-4">
+                        <div class="space-y-1">
+                            <label class="text-[9px] font-bold text-gray-400 uppercase">Open Hours</label>
+                            <input type="text" name="open_hours" value="<%= place.open_hours || '' %>" placeholder="8 AM - 5 PM" class="premium-input py-2 text-xs w-full">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[9px] font-bold text-gray-400 uppercase">Duration (Minutes)</label>
+                            <input type="number" name="duration_min" value="<%= place.duration_min || 60 %>" class="premium-input py-2 text-xs w-full">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[9px] font-bold text-gray-400 uppercase">Road Type</label>
+                            <select name="road_type" class="premium-input py-2 text-xs w-full">
+                                <option value="Carpet" <%= place.road_type === 'Carpet' ? 'selected' : '' %>>Carpet</option>
+                                <option value="Gravel" <%= place.road_type === 'Gravel' ? 'selected' : '' %>>Gravel</option>
+                                <option value="Hiking Path" <%= place.road_type === 'Hiking Path' ? 'selected' : '' %>>Hiking Path</option>
+                            </select>
+                        </div>
+                        <div class="flex items-center gap-2 py-2">
+                            <input type="checkbox" name="is_indoor" <%= place.is_indoor === 1 ? 'checked' : '' %> class="w-4 h-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                            <label class="text-xs font-semibold text-gray-600">Indoor Place</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION: FACILITIES & SAFETY -->
+            <div class="premium-card p-8">
+                <h4 class="font-bold text-gray-800 mb-6">Facilities, Weather & Safety</h4>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <label class="checkbox-toggle">
+                        <input type="checkbox" name="wheelchair_access" <%= place.wheelchair_access === 1 ? 'checked' : '' %>>
+                        <span>Wheelchair Access</span>
+                    </label>
+                    <label class="checkbox-toggle">
+                        <input type="checkbox" name="stairs_heavy" <%= place.stairs_heavy === 1 ? 'checked' : '' %>>
+                        <span>Heavy Stairs</span>
+                    </label>
+                    <label class="checkbox-toggle">
+                        <input type="checkbox" name="parking_avail" <%= place.parking_avail === 1 ? 'checked' : '' %>>
+                        <span>Parking Available</span>
+                    </label>
+                    <label class="checkbox-toggle">
+                        <input type="checkbox" name="toilets" <%= place.toilets === 1 ? 'checked' : '' %>>
+                        <span>Toilets On-site</span>
+                    </label>
+                    <label class="checkbox-toggle">
+                        <input type="checkbox" name="food_nearby" <%= place.food_nearby === 1 ? 'checked' : '' %>>
+                        <span>Food Nearby</span>
+                    </label>
+                    <label class="checkbox-toggle">
+                        <input type="checkbox" name="dress_code_req" <%= place.dress_code_req === 1 ? 'checked' : '' %>>
+                        <span>Dress Code Required</span>
+                    </label>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-4">
+                        <div class="space-y-1">
+                            <label class="text-[9px] font-bold text-gray-400 uppercase">Mobile Signal Strength</label>
+                            <input type="text" name="mobile_signal" value="<%= place.mobile_signal || '' %>" placeholder="High (Dialog/Mobitel)" class="premium-input py-2 text-xs w-full">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[9px] font-bold text-gray-400 uppercase">Rain Sensitivity</label>
+                            <select name="rain_sensitivity" class="premium-input py-2 text-xs w-full">
+                                <option value="Low" <%= place.rain_sensitivity === 'Low' ? 'selected' : '' %>>Low (Safe when raining)</option>
+                                <option value="Medium" <%= place.rain_sensitivity === 'Medium' ? 'selected' : '' %>>Medium</option>
+                                <option value="High" <%= place.rain_sensitivity === 'High' ? 'selected' : '' %>>High (Outdoor/Avoid)</option>
+                            </select>
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[9px] font-bold text-gray-400 uppercase">Monsoon Note</label>
+                            <textarea name="monsoon_note" rows="2" class="premium-input py-2 text-xs w-full"><%= place.monsoon_note || '' %></textarea>
+                        </div>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="space-y-1">
+                            <label class="text-[9px] font-bold text-gray-400 uppercase">Safety Level</label>
+                            <input type="text" name="safety_level" value="<%= place.safety_level || 'Safe' %>" class="premium-input py-2 text-xs w-full">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[9px] font-bold text-gray-400 uppercase">Safety Note ( Monkeys, Guides etc.)</label>
+                            <textarea name="safety_note" rows="2" class="premium-input py-2 text-xs w-full"><%= place.safety_note || '' %></textarea>
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[9px] font-bold text-gray-400 uppercase">Scam Warning</label>
+                            <input type="text" name="scam_warning" value="<%= place.scam_warning || '' %>" class="premium-input py-2 text-xs w-full">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION: CONTEXT & TAGS -->
+            <div class="premium-card p-8">
+                <h4 class="font-bold text-gray-800 mb-6">Engagement & Context</h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-1">Tags (Comma Separated)</label>
+                        <input type="text" name="tags" value="<%= place.tags || '' %>" placeholder="Hiking, History, Nature" class="premium-input w-full">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-1">AR Supported</label>
+                        <label class="checkbox-toggle mt-2">
+                            <input type="checkbox" name="ar_supported" <%= place.ar_supported === 1 ? 'checked' : '' %>>
+                            <span>Enable AR Preview for this place</span>
+                        </label>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-1">External Image URL</label>
+                        <input type="text" name="external_image_url" value="<%= place.external_image_url || '' %>" class="premium-input w-full">
+                    </div>
+                     <div class="space-y-2">
+                        <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-1">Crowd Level</label>
+                        <select name="crowd_level" class="premium-input w-full">
+                            <option value="Low" <%= place.crowd_level === 'Low' ? 'selected' : '' %>>Low</option>
+                            <option value="Medium" <%= place.crowd_level === 'Medium' ? 'selected' : '' %>>Medium</option>
+                            <option value="High" <%= place.crowd_level === 'High' ? 'selected' : '' %>>High</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- SIDEBAR CONFIG (Col 4) -->
+        <div class="space-y-6">
+            <div class="premium-card p-8">
+                <h4 class="font-bold text-gray-800 mb-6">Node Config</h4>
+                <div class="space-y-4">
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">District</label>
+                        <select name="district" required class="premium-input w-full py-2.5">
+                            <option value="Colombo" <%= place.district === 'Colombo' ? 'selected' : '' %>>Colombo</option>
+                            <option value="Kandy" <%= place.district === 'Kandy' ? 'selected' : '' %>>Kandy</option>
+                            <option value="Galle" <%= place.district === 'Galle' ? 'selected' : '' %>>Galle</option>
+                            <option value="Matale" <%= place.district === 'Matale' ? 'selected' : '' %>>Matale</option>
+                            <option value="Polonnaruwa" <%= place.district === 'Polonnaruwa' ? 'selected' : '' %>>Polonnaruwa</option>
+                            <option value="Anuradhapura" <%= place.district === 'Anuradhapura' ? 'selected' : '' %>>Anuradhapura</option>
+                        </select>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Category</label>
+                        <select name="category" required class="premium-input w-full py-2.5">
+                            <option value="Heritage" <%= place.category === 'Heritage' ? 'selected' : '' %>>Heritage</option>
+                            <option value="Nature" <%= place.category === 'Nature' ? 'selected' : '' %>>Nature</option>
+                            <option value="Adventure" <%= place.category === 'Adventure' ? 'selected' : '' %>>Adventure</option>
+                            <option value="Urban" <%= place.category === 'Urban' ? 'selected' : '' %>>Urban</option>
+                        </select>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Registry Status</label>
+                        <select name="status" class="premium-input w-full py-2.5 border-indigo-200 bg-indigo-50/30">
+                            <option value="pending" <%= place.status === 'pending' ? 'selected' : '' %>>Pending Review</option>
+                            <option value="approved" <%= place.status === 'approved' ? 'selected' : '' %>>Live (Approved)</option>
+                            <option value="rejected" <%= place.status === 'rejected' ? 'selected' : '' %>>Rejected</option>
+                            <option value="archived" <%= place.status === 'archived' ? 'selected' : '' %>>Archived</option>
+                        </select>
+                    </div>
+                    <div class="pt-4 space-y-2">
+                        <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-1">Category UUID (Optional)</label>
+                        <input type="text" name="category_id" value="<%= place.category_id || '' %>" class="premium-input w-full py-2 text-[10px] font-mono">
+                    </div>
+                     <div class="space-y-2">
+                        <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-1">District UUID (Optional)</label>
+                        <input type="text" name="district_id" value="<%= place.district_id || '' %>" class="premium-input w-full py-2 text-[10px] font-mono">
+                    </div>
+                </div>
+            </div>
+
+            <!-- SMART ID PREVIEW -->
+            <div class="premium-card p-6 border-indigo-100 bg-indigo-50/20">
+                <h5 class="text-[9px] font-bold text-indigo-400 uppercase tracking-widest mb-3">Live Digital Signature</h5>
+                <div class="bg-white rounded-lg px-4 py-3 border border-indigo-100 shadow-sm shadow-indigo-100/50">
+                    <code id="smart-id-preview" class="text-xs font-black text-indigo-600 tracking-tighter">
+                        <%= place.smart_id || 'SL-PRO-DIS-CAT-SUB-NAM-0000' %>
+                    </code>
+                </div>
+                <% if (place.smart_id_locked) { %>
+                    <p class="text-[9px] text-indigo-400 mt-2 flex items-center gap-1.5">
+                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path></svg>
+                        Identity Locked
+                    </p>
+                <% } %>
+            </div>
+
+            <!-- ADVANCED IDENTITY TOGGLE -->
+            <div class="space-y-3">
+                <button type="button" onclick="document.getElementById('advanced-identity').classList.toggle('hidden')" class="w-full text-center text-[10px] font-bold text-gray-400 uppercase tracking-tighter hover:text-indigo-600 transition">
+                    Advanced Identity Options &darr;
+                </button>
+                <div id="advanced-identity" class="hidden premium-card p-6 border-amber-100 bg-amber-50/10 space-y-4">
+                    <div class="space-y-1">
+                        <label class="text-[9px] font-bold text-amber-600 uppercase">NAME3 Override</label>
+                        <input type="text" name="name_code_override" value="<%= place.name_code_override || '' %>" placeholder="e.g. DAL" maxlength="3" class="premium-input p-2.5 text-xs w-full border-amber-200">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[9px] font-bold text-amber-400 uppercase">Override Reason</label>
+                        <textarea name="name_code_reason" placeholder="Why is this override necessary?" class="premium-input p-2.5 text-[10px] w-full border-amber-100 h-16"><%= place.name_code_reason || '' %></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex flex-col gap-3">
+                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-xl transition shadow-xl shadow-indigo-100 flex items-center justify-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"></path></svg> Commit to Registry
+                </button>
+                <a href="/places" class="w-full bg-white hover:bg-gray-50 text-gray-500 font-bold py-4 rounded-xl transition border border-gray-200 text-center">
+                    Discard & Exit
+                </a>
+            </div>
+        </div>
+
+    </div>
+</form>
+
+<style>
+    .premium-input {
+        @apply bg-gray-50/50 border border-gray-100 rounded-xl px-4 py-3 text-sm focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition;
+    }
+    .checkbox-toggle {
+        @apply flex items-center gap-3 p-3 rounded-xl border border-gray-50 bg-gray-50/30 hover:bg-white hover:shadow-sm transition cursor-pointer text-xs font-bold text-gray-500;
+    }
+    .checkbox-toggle input:checked + span {
+        @apply text-indigo-600;
+    }
+</style>
