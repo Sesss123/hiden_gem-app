@@ -56,7 +56,7 @@ app.use(helmet({
 }));
 
 // MongoDB Connection
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/tripme_genesis')
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/hiddengems')
   .then(() => console.log('[GENESIS] Neural Link Established (MongoDB Connected)'))
   .catch(err => console.error('[GENESIS] Connection Failure:', err));
 

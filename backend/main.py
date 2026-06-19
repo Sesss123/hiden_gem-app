@@ -1,7 +1,7 @@
 import sys
 from pipeline.logger import get_pipeline_logger
 # Configure root logger and app logger
-logger = get_pipeline_logger("TripMeBackend")
+logger = get_pipeline_logger("HiddenGemsBackend")
 
 print(">>> BACKEND STARTING: Initializing core modules...", flush=True)
 from fastapi import FastAPI, Depends, Request, HTTPException
@@ -31,7 +31,7 @@ async def lifespan(app: FastAPI):
     print(">>> Shutdown: Cleaning up resources...", flush=True)
 
 app = FastAPI(
-    title="TripMeAI Hardened API", 
+    title="Hidden Gems SL API", 
     version="2.5.0",
     lifespan=lifespan
 )
@@ -82,7 +82,7 @@ app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 
 @app.get("/")
 async def root():
-    return {"message": "TripMeAI Secure API is running", "version": "2.5.0-hardened"}
+    return {"message": "Hidden Gems SL Secure API is running", "version": "2.5.0-hardened"}
 
 @app.get("/admin/stats")
 async def legacy_admin_stats(user=Depends(get_current_user)):

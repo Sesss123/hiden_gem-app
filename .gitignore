@@ -69,5 +69,11 @@ backend/serviceAccountKey.json
 backend/data/api_keys_config.json
 backend/data/key_usage.json
 
+# Runtime Data and Artifacts
+backend/tripme.db
+backend/uploads/
+data/cache/
+analysis_full.txt
+
 # Obsolete large media tracker
 assets/videos/splash.mp4

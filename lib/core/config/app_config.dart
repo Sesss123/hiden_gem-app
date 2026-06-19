@@ -6,14 +6,14 @@ class AppConfig {
     defaultValue: kReleaseMode ? "https://api.hiddengemssl.com/api" : "http://10.0.2.2:8000/api",
   );
 
-  static const String tripMeApiKey = String.fromEnvironment(
-    'TRIPME_API_KEY',
+  static const String hiddenGemsApiKey = String.fromEnvironment(
+    'HIDDEN_GEMS_API_KEY',
     defaultValue: "dev-key-local",
   );
 
   static void validate() {
-    if (kReleaseMode && (tripMeApiKey == "" || tripMeApiKey == "dev-key-local")) {
-      throw AssertionError("CRITICAL: Production builds must configure a valid TRIPME_API_KEY.");
+    if (kReleaseMode && (hiddenGemsApiKey == "" || hiddenGemsApiKey == "dev-key-local")) {
+      throw AssertionError("CRITICAL: Production builds must configure a valid HIDDEN_GEMS_API_KEY.");
     }
   }
 

@@ -1,7 +1,7 @@
 {
-  "name": "tripme-admin-genesis",
+  "name": "hidden-gems-admin",
   "version": "1.0.0",
-  "description": "Premium Genesis Admin Dashboard for TripMeAI",
+  "description": "Premium Genesis Admin Dashboard for Hidden Gems SL",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

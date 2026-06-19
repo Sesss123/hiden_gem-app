@@ -6,3 +6,4 @@
 {"timestamp": "2026-06-19T15:01:18.235610Z", "level": "DEBUG", "logger": "rustls.webpki.anchors", "message": "add_parsable_certificates processed 38 valid and 0 invalid certs", "module": "anchors", "line": 54}
 {"timestamp": "2026-06-19T15:01:27.417225Z", "level": "INFO", "logger": "AIExtractor", "message": "[AIExtractor] Gemini ready (gemini-flash-latest) — 8 key(s), managed via unified rotator.", "module": "ai_extractor", "line": 205}
 {"timestamp": "2026-06-19T15:01:27.880386Z", "level": "INFO", "logger": "AIExtractor", "message": "[AIExtractor] Gemini ready (gemini-flash-latest) — 8 key(s), managed via unified rotator.", "module": "ai_extractor", "line": 205}
+{"timestamp": "2026-06-19T17:10:46.793631Z", "level": "INFO", "logger": "AIExtractor", "message": "[AIExtractor] Gemini ready (gemini-flash-latest) — 8 key(s), managed via unified rotator.", "module": "ai_extractor", "line": 205}
