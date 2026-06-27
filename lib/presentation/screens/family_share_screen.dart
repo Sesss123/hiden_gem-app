@@ -4,7 +4,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../core/theme/oracle_ui_system.dart';
 import '../../data/models/family_share_link.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 class FamilyShareScreen extends ConsumerStatefulWidget {
   const FamilyShareScreen({super.key});
@@ -234,7 +233,7 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
           Text(label, style: GoogleFonts.inter(color: Colors.white70, fontSize: 14)),
           Switch(
             value: value,
-            activeColor: const Color(0xFF00E676),
+            activeThumbColor: const Color(0xFF00E676),
             onChanged: (v) {},
           ),
         ],

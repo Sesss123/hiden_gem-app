@@ -15,8 +15,13 @@ import '../../../../core/theme/app_theme.dart';
 
 class ARVideoScreen extends StatefulWidget {
   final ARVideoContent content;
+  final NarrationLang initialLang;
 
-  const ARVideoScreen({super.key, required this.content});
+  const ARVideoScreen({
+    super.key,
+    required this.content,
+    this.initialLang = NarrationLang.english,
+  });
 
   @override
   State<ARVideoScreen> createState() => _ARVideoScreenState();
@@ -58,10 +63,11 @@ class _ARVideoScreenState extends State<ARVideoScreen>
 
     _videoService = ARVideoService();
     _audioPlayer = AudioPlayer();
+    _lang = widget.initialLang;
 
     _subtitleService = SubtitleService(
       syncPoints: widget.content.syncPoints,
-      initialLang: NarrationLang.english,
+      initialLang: widget.initialLang,
     );
 
     // Portal entry animation
@@ -116,11 +122,27 @@ class _ARVideoScreenState extends State<ARVideoScreen>
   void _onArCoreViewCreated(ArCoreController controller) {
     _arController = controller;
     _arController!.onPlaneTap = _handlePlaneTap;
-    setState(() => _surfaceDetected = true);
+    
+    // Simulate initial environment scanning feedback before showing tap action hint
+    Timer(const Duration(seconds: 4), () {
+      if (mounted && !_videoPlaced) {
+        setState(() => _surfaceDetected = true);
+      }
+    });
   }
 
   void _handlePlaneTap(List<ArCoreHitTestResult> hits) async {
-    if (_videoPlaced || !_isReady || hits.isEmpty) return;
+    if (_videoPlaced || !_isReady) return;
+    if (hits.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('No surface detected here. Try tapping directly on the dotted grid lines.'),
+          backgroundColor: Colors.amber,
+          duration: Duration(seconds: 3),
+        ),
+      );
+      return;
+    }
     setState(() => _videoPlaced = true);
     _portalController.forward();
 
@@ -179,6 +201,9 @@ class _ARVideoScreenState extends State<ARVideoScreen>
 
           // Error overlay
           if (_hasError) _buildErrorOverlay(),
+
+          // Scanning overlay (before surface detected)
+          if (!_surfaceDetected && !_videoPlaced && _isReady) _buildScanningOverlay(),
 
           // Scan hint (before tap)
           if (_surfaceDetected && !_videoPlaced && _isReady) _buildScanHint(),
@@ -382,6 +407,48 @@ class _ARVideoScreenState extends State<ARVideoScreen>
           border: Border.all(color: Colors.white24),
         ),
         child: Icon(icon, color: Colors.white, size: 20),
+      ),
+    );
+  }
+
+  Widget _buildScanningOverlay() {
+    return Center(
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+        margin: const EdgeInsets.symmetric(horizontal: 32),
+        decoration: BoxDecoration(
+          color: Colors.black.withValues(alpha: 0.8),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: AppTheme.sigiriyaOchre(context).withValues(alpha: 0.3)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(
+              width: 32, height: 32,
+              child: CircularProgressIndicator(
+                color: AppTheme.sigiriyaOchre(context),
+                strokeWidth: 3,
+              ),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              '🔍 SCANNING ENVIRONMENT...',
+              style: GoogleFonts.outfit(
+                color: Colors.white,
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1.5,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Move your phone slowly side-to-side to detect flat horizontal surfaces (like floor or table).',
+              textAlign: TextAlign.center,
+              style: GoogleFonts.inter(color: Colors.white60, fontSize: 11),
+            ),
+          ],
+        ),
       ),
     );
   }

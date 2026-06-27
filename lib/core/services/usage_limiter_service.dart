@@ -12,16 +12,19 @@ class UsageLimiterService {
     'user': {
       'ai_plans_per_month': 3,
       'saved_plans': 2,
+      'offline_downloads_per_month': 2,
       'ar_sessions_per_month': 1,
     },
     'explorer': {
       'ai_plans_per_month': 20,
       'saved_plans': 10,
+      'offline_downloads_per_month': 10,
       'ar_sessions_per_month': 3,
     },
     'premium': {
       'ai_plans_per_month': 50,
       'saved_plans': 25,
+      'offline_downloads_per_month': 9999, // Unlimited
       'ar_sessions_per_month': 9999, // Unlimited
     }
   };
@@ -174,8 +177,8 @@ class UsageLimiterService {
     if (_isPremiumValid(profile)) return true;
     
     await checkAndResetLimits(profile);
-    // Use 'saved_plans' as the proxy for offline downloads if not explicitly defined in DB
-    final limit = await _getLimitForFeature('saved_plans', profile);
+    // Use 'offline_downloads_per_month' explicitly rather than 'saved_plans' key
+    final limit = await _getLimitForFeature('offline_downloads_per_month', profile);
     return profile.offlineDownloadsUsed < limit;
   }
 

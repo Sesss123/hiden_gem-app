@@ -846,17 +846,16 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
       if (!canAccess) {
         showDialog(
           context: context,
-          builder: (context) => LimitReachedDialog(
+          builder: (_) => LimitReachedDialog(
             featureName: 'Heritage Sessions',
             onWatchAd: () {
               MonetizationService().showRewardedAd(
                 onRewardEarned: (reward) async {
                   await UsageLimiterService.provideBonusArSession();
-                  if (mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text("Bonus Session Unlocked! Try launching again.")),
-                    );
-                  }
+                  if (!mounted || !context.mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("Bonus Session Unlocked! Try launching again.")),
+                  );
                 },
               );
             },
@@ -876,6 +875,23 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
             Navigator.push(context, MaterialPageRoute(builder: (context) => const PremiumHubScreen()));
           },
           onPreview: () => _navigateToAR(context, isDemo: true),
+          onWatchAd: () {
+            MonetizationService().showRewardedAd(
+              context: context,
+              onRewardEarned: (reward) async {
+                await UsageLimiterService.provideBonusArSession();
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('✨ Oracle reward active! AR session unlocked.'),
+                      backgroundColor: Colors.green,
+                    ),
+                  );
+                  _navigateToAR(context);
+                }
+              },
+            );
+          },
         );
       }
     }
@@ -1293,20 +1309,20 @@ class _DownloadButtonState extends State<_DownloadButton> {
       onTap: isDownloading ? null : () async {
         // Check Limits
         final canDownload = await UsageLimiterService.canDownloadOffline();
-        if (!canDownload && mounted) {
+        if (!context.mounted) return;
+        if (!canDownload) {
           showDialog(
             context: context,
-            builder: (context) => LimitReachedDialog(
+            builder: (_) => LimitReachedDialog(
               featureName: 'Offline Downloads',
               onWatchAd: () {
                 MonetizationService().showRewardedAd(
                   onRewardEarned: (reward) async {
                     await UsageLimiterService.provideBonusOfflineDownload();
-                    if (mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text("Bonus Download Unlocked! Try downloading again.")),
-                      );
-                    }
+                    if (!mounted || !context.mounted) return;
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text("Bonus Download Unlocked! Try downloading again.")),
+                    );
                   },
                 );
               },

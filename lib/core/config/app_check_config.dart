@@ -27,7 +27,7 @@ class AppCheckConfig {
         // Web: reCAPTCHA v3
         // Note: Site key matched with web/index.html
         await FirebaseAppCheck.instance.activate(
-          webProvider: ReCaptchaV3Provider('6Lfm-GsqAAAAAHA_-Wj_P_X_X_X_X_X_X_X_X'),
+          providerWeb: ReCaptchaV3Provider('6Lfm-GsqAAAAAHA_-Wj_P_X_X_X_X_X_X_X_X'),
         );
         debugPrint('[AppCheck] ✅ Web: reCAPTCHA v3 activated.');
       } else if (kDebugMode) {
@@ -35,15 +35,15 @@ class AppCheckConfig {
         // This allows testing without Play Integrity setup.
         // The debug token will be printed to the console.
         await FirebaseAppCheck.instance.activate(
-          androidProvider: AndroidProvider.debug,
-          appleProvider: AppleProvider.debug,
+          providerAndroid: const AndroidDebugProvider(),
+          providerApple: const AppleDebugProvider(),
         );
         debugPrint('[AppCheck] ⚠️ DEBUG: Using debug providers (not for production).');
       } else {
         // Release Mode: Real attestation
         await FirebaseAppCheck.instance.activate(
-          androidProvider: AndroidProvider.playIntegrity,
-          appleProvider: AppleProvider.deviceCheck,
+          providerAndroid: const AndroidPlayIntegrityProvider(),
+          providerApple: const AppleDeviceCheckProvider(),
         );
         debugPrint('[AppCheck] ✅ Release: Play Integrity + DeviceCheck activated.');
       }

@@ -11,6 +11,8 @@ class AppConfig {
     defaultValue: "dev-key-local",
   );
 
+  static String get tripMeApiKey => hiddenGemsApiKey;
+
   static void validate() {
     if (kReleaseMode && (hiddenGemsApiKey == "" || hiddenGemsApiKey == "dev-key-local")) {
       throw AssertionError("CRITICAL: Production builds must configure a valid HIDDEN_GEMS_API_KEY.");

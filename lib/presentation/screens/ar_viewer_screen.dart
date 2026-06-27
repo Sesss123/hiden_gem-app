@@ -34,6 +34,8 @@ import '../../core/services/memory_service.dart';
 import '../../data/models/community_memory.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/services/usage_limiter_service.dart';
+import '../../data/datasources/monetization_service.dart';
 
 // ignore_for_file: unused_import
 class ARViewerScreen extends StatefulWidget {
@@ -289,6 +291,31 @@ class _ARViewerScreenState extends State<ARViewerScreen>
                 isDemo: true,
               ),
             ),
+          );
+        },
+        onWatchAd: () {
+          MonetizationService().showRewardedAd(
+            context: context,
+            onRewardEarned: (reward) async {
+              await UsageLimiterService.provideBonusArSession();
+              if (!mounted) return;
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('✨ Oracle reward active! AR session unlocked.'),
+                  backgroundColor: Colors.green,
+                ),
+              );
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ARViewerScreen(
+                    arData: widget.arData,
+                    placeName: widget.placeName,
+                    isDemo: false,
+                  ),
+                ),
+              );
+            },
           );
         },
       );
@@ -1263,12 +1290,12 @@ class _ARViewerScreenState extends State<ARViewerScreen>
             _shareOption(Icons.camera, "Instagram", const Color(0xFFE4405F), () {
               AnalyticsService().logARPhotoShared(
                   placeName: widget.placeName, platform: "instagram");
-              Share.shareXFiles([XFile(path)], text: "Exploring ${widget.placeName} in AR with #HiddenGemsSL");
+              SharePlus.instance.share(ShareParams(files: [XFile(path)], text: "Exploring ${widget.placeName} in AR with #HiddenGemsSL"));
             }),
             _shareOption(Icons.music_note, "TikTok", Colors.white, () {
               AnalyticsService().logARPhotoShared(
                   placeName: widget.placeName, platform: "tiktok");
-              Share.shareXFiles([XFile(path)], text: "History comes alive! #HiddenGemsSL #HeritageAR");
+              SharePlus.instance.share(ShareParams(files: [XFile(path)], text: "History comes alive! #HiddenGemsSL #HeritageAR"));
             }),
             _shareOption(Icons.check_circle_outline, "Saved", Colors.green, () {
               ScaffoldMessenger.of(context).showSnackBar(

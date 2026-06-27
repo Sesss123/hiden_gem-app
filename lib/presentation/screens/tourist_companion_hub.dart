@@ -3,9 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../core/theme/oracle_ui_system.dart';
 import '../../data/models/tour_session.dart';
-import '../../data/models/vehicle.dart';
 import '../../data/repositories/tour_session_repository.dart';
-import '../../data/repositories/vehicle_repository.dart';
 import 'package:flutter/services.dart';
 import '../../data/repositories/broadcast_repository.dart';
 import '../../data/repositories/presence_repository.dart';
@@ -30,7 +28,6 @@ class TouristCompanionHub extends StatefulWidget {
 
 class _TouristCompanionHubState extends State<TouristCompanionHub> {
   final _sessionRepo = TourSessionRepository();
-  final _vehicleRepo = VehicleRepository();
   final _broadcastRepo = BroadcastRepository();
   final _presenceRepo = PresenceRepository();
   DateTime? _lastSosTime;
@@ -163,7 +160,7 @@ class _TouristCompanionHubState extends State<TouristCompanionHub> {
       child: Row(
         children: [
           CircleAvatar(
-            backgroundColor: session.status == 'active' ? Colors.greenAccent.withOpacity(0.2) : Colors.white10,
+            backgroundColor: session.status == 'active' ? Colors.greenAccent.withValues(alpha: 0.2) : Colors.white10,
             child: Icon(
               session.status == 'active' ? Icons.verified : Icons.hourglass_empty,
               color: session.status == 'active' ? Colors.greenAccent : Colors.white38,
@@ -208,7 +205,7 @@ class _TouristCompanionHubState extends State<TouristCompanionHub> {
         children: [
           Container(
             padding: const EdgeInsets.all(4),
-            decoration: BoxDecoration(color: (current['color'] as Color).withOpacity(0.2), shape: BoxShape.circle),
+            decoration: BoxDecoration(color: (current['color'] as Color).withValues(alpha: 0.2), shape: BoxShape.circle),
             child: Icon(current['icon'] as IconData, size: 14, color: current['color'] as Color),
           ),
           const SizedBox(width: 12),
@@ -292,7 +289,7 @@ class _TouristCompanionHubState extends State<TouristCompanionHub> {
   }
 
   Widget _buildMeetingPointCard(TourSession session) {
-    if (session.meetingPointName == null) return const SizedBox.shrink();
+    if (session.meetingPointName.isEmpty) return const SizedBox.shrink();
 
     return OracleUI.glassContainer(
       padding: const EdgeInsets.all(20),
@@ -308,7 +305,7 @@ class _TouristCompanionHubState extends State<TouristCompanionHub> {
           ),
           const SizedBox(height: 12),
           Text(
-            session.meetingPointName!,
+            session.meetingPointName,
             style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
           ),
           const SizedBox(height: 4),
@@ -325,7 +322,7 @@ class _TouristCompanionHubState extends State<TouristCompanionHub> {
               onPressed: () => _openMap(session, 'meeting'),
               style: TextButton.styleFrom(
                 foregroundColor: Colors.greenAccent,
-                backgroundColor: Colors.greenAccent.withOpacity(0.05),
+                backgroundColor: Colors.greenAccent.withValues(alpha: 0.05),
               ),
             ),
           ),
@@ -478,7 +475,7 @@ class _TouristCompanionHubState extends State<TouristCompanionHub> {
           height: 80,
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.redAccent.withOpacity(0.1),
+              backgroundColor: Colors.redAccent.withValues(alpha: 0.1),
               side: const BorderSide(color: Colors.redAccent, width: 2),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
             ),
@@ -500,7 +497,7 @@ class _TouristCompanionHubState extends State<TouristCompanionHub> {
               ],
             ),
           ),
-        ).animate().shimmer(duration: 2.seconds, color: Colors.redAccent.withOpacity(0.2)),
+        ).animate().shimmer(duration: 2.seconds, color: Colors.redAccent.withValues(alpha: 0.2)),
         const SizedBox(height: 16),
         Text(
           "Instant alert to Admin, Police, and Hub.",
@@ -513,7 +510,7 @@ class _TouristCompanionHubState extends State<TouristCompanionHub> {
   Future<void> _triggerImLost(TourSession session) async {
     HapticFeedback.heavyImpact();
     try {
-      final pos = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+      final pos = await Geolocator.getCurrentPosition(locationSettings: const LocationSettings(accuracy: LocationAccuracy.high));
       
       // Update presence so guide sees them on the map
       await _presenceRepo.updateParticipantPresence(

@@ -168,7 +168,8 @@ class _GuideMarketplaceScreenState extends ConsumerState<GuideMarketplaceScreen>
       onTap: () async {
         // Mini-Guard B: Deep Nexus check for Elite Profile Navigation
         final isAuthorized = await SecurityOrchestrator().verifyPremiumNexus();
-        if (!isAuthorized && mounted) {
+        if (!mounted) return;
+        if (!isAuthorized) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text("Subscription Verification Failed. Try again.")),
           );
@@ -311,7 +312,13 @@ class _GuideMarketplaceScreenState extends ConsumerState<GuideMarketplaceScreen>
           ));
         }
         
-        final guides = snapshot.data?.listings ?? [];
+        final guides = (snapshot.data?.listings ?? []).where((g) {
+          if (_searchQuery.isEmpty) return true;
+          final q = _searchQuery.toLowerCase();
+          return g.displayName.toLowerCase().contains(q) ||
+                 (g.bio?.toLowerCase().contains(q) ?? false) ||
+                 g.specializations.any((s) => s.toLowerCase().contains(q));
+        }).toList();
         if (guides.isEmpty) {
           return Center(
             child: Padding(
@@ -607,7 +614,7 @@ class _GuideMarketplaceScreenState extends ConsumerState<GuideMarketplaceScreen>
                 Text("EXCELLENT TIERS ONLY", style: GoogleFonts.inter(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold)),
                 Switch(
                   value: _hideLowerTiers,
-                  activeColor: const Color(0xFF00E676),
+                  activeThumbColor: const Color(0xFF00E676),
                   onChanged: (v) => setState(() => _hideLowerTiers = v),
                 ),
               ],

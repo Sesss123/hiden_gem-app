@@ -149,13 +149,13 @@ class _SearchInputField extends StatelessWidget {
       duration: const Duration(milliseconds: 200),
       decoration: BoxDecoration(
         color: isDark
-            ? Colors.white.withOpacity(0.08)
-            : Colors.black.withOpacity(0.05),
+            ? Colors.white.withValues(alpha: 0.08)
+            : Colors.black.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: isCooldown
-              ? Colors.orange.withOpacity(0.6)
-              : theme.colorScheme.outline.withOpacity(0.2),
+              ? Colors.orange.withValues(alpha: 0.6)
+              : theme.colorScheme.outline.withValues(alpha: 0.2),
           width: isCooldown ? 1.5 : 1.0,
         ),
       ),
@@ -170,8 +170,8 @@ class _SearchInputField extends StatelessWidget {
               : hintText,
           hintStyle: TextStyle(
             color: isCooldown
-                ? Colors.orange.withOpacity(0.8)
-                : theme.colorScheme.onSurface.withOpacity(0.4),
+                ? Colors.orange.withValues(alpha: 0.8)
+                : theme.colorScheme.onSurface.withValues(alpha: 0.4),
           ),
           prefixIcon: isLoading
               ? const Padding(
@@ -186,7 +186,7 @@ class _SearchInputField extends StatelessWidget {
                   isCooldown ? Icons.timer_outlined : Icons.search_rounded,
                   color: isCooldown
                       ? Colors.orange
-                      : theme.colorScheme.onSurface.withOpacity(0.5),
+                      : theme.colorScheme.onSurface.withValues(alpha: 0.5),
                 ),
           suffixIcon: controller.text.isNotEmpty
               ? IconButton(
@@ -214,7 +214,7 @@ class _MinCharsHint extends StatelessWidget {
       child: Text(
         'Type at least 2 characters to search',
         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
             ),
       ),
     );

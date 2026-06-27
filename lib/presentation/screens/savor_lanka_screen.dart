@@ -1,13 +1,11 @@
 import 'dart:io';
 import 'package:share_plus/share_plus.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:camera/camera.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_animate/flutter_animate.dart';
-import '../../core/localization/locale_provider.dart';
 import '../../core/theme/oracle_ui_system.dart';
 import '../../core/services/savor_lanka_service.dart';
 import '../../data/models/food_model.dart';
@@ -31,9 +29,8 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
   late final SavorLankaService _savorService;
   final VoiceRecipeService _voiceRecipeService = VoiceRecipeService();
   bool _isSaved = false;
-  FlashMode _flashMode = FlashMode.off;
-  String _spicePreference = 'Medium';
-  String _userMode = 'Tourist';
+  final String _spicePreference = 'Medium';
+  final String _userMode = 'Tourist';
 
   @override
   void initState() {
@@ -1403,9 +1400,11 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
           icon: Icons.share_rounded,
           color: Colors.white10,
           onTap: () {
-            Share.share(
-              "Check out this ${res.name} recipe I found on TripMe.ai! It's an authentic Sri Lankan delicacy. \n\nOracle Score: ${res.hygieneScore}%",
-              subject: "TripMe.ai - Savor Lanka Recipe",
+            SharePlus.instance.share(
+              ShareParams(
+                text: "Check out this ${res.name} recipe I found on TripMe.ai! It's an authentic Sri Lankan delicacy. \n\nOracle Score: ${res.hygieneScore}%",
+                subject: "TripMe.ai - Savor Lanka Recipe",
+              ),
             );
           },
         ),

@@ -140,7 +140,7 @@ class _GuideBroadcastScreenState extends State<GuideBroadcastScreen> {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: BoxDecoration(
-              color: isSelected ? Theme.of(context).colorScheme.primary.withOpacity(0.2) : Colors.white.withOpacity(0.05),
+              color: isSelected ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.2) : Colors.white.withValues(alpha: 0.05),
               borderRadius: BorderRadius.circular(8),
               border: Border.all(color: isSelected ? Theme.of(context).colorScheme.primary : Colors.white10),
             ),
@@ -171,7 +171,7 @@ class _GuideBroadcastScreenState extends State<GuideBroadcastScreen> {
               label: Text(p.name.toUpperCase(), style: const TextStyle(fontSize: 10)),
               selected: isSelected,
               onSelected: (val) => setState(() => _selectedPriority = p),
-              selectedColor: _getPriorityColor(p).withOpacity(0.3),
+              selectedColor: _getPriorityColor(p).withValues(alpha: 0.3),
               labelStyle: TextStyle(color: isSelected ? _getPriorityColor(p) : Colors.white54),
               backgroundColor: Colors.transparent,
               side: BorderSide(color: isSelected ? _getPriorityColor(p) : Colors.white10),
@@ -246,7 +246,7 @@ class _GuideBroadcastScreenState extends State<GuideBroadcastScreen> {
                         ),
                         TextButton(
                           onPressed: () => _broadcastRepo.deactivateBroadcast(widget.sessionId, msg.messageId),
-                          child: Text("EXPIRE", style: GoogleFonts.outfit(fontSize: 10, color: Colors.redAccent.withOpacity(0.5))),
+                          child: Text("EXPIRE", style: GoogleFonts.outfit(fontSize: 10, color: Colors.redAccent.withValues(alpha: 0.5))),
                         ),
                       ],
                     ),

@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:typed_data';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -690,7 +689,7 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> {
         final directory = await getApplicationDocumentsDirectory();
         final imagePath = await File('${directory.path}/temporal_oracle.png').create();
         await imagePath.writeAsBytes(image);
-        await Share.shareXFiles([XFile(imagePath.path)], text: "Consulting the Temporal Oracle... 🇱🇰🌌");
+        await SharePlus.instance.share(ShareParams(files: [XFile(imagePath.path)], text: "Consulting the Temporal Oracle... 🇱🇰🌌"));
       }
     } catch (_) {}
   }

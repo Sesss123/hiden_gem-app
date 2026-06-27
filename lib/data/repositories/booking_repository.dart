@@ -77,6 +77,6 @@ class BookingRepository {
         .where('touristId', isEqualTo: touristId)
         .orderBy('createdAt', descending: true)
         .snapshots()
-        .map((snapshot) => snapshot.docs.map((doc) => BookingRequest.fromJson(doc.data() as Map<String, dynamic>)).toList());
+        .map((snapshot) => snapshot.docs.map((doc) => BookingRequest.fromJson(doc.data())).toList());
   }
 }

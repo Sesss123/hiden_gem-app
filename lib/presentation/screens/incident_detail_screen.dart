@@ -202,12 +202,12 @@ class _IncidentDetailScreenState extends ConsumerState<IncidentDetailScreen> {
   }
 
   List<Widget> _buildTimeline(IncidentReport incident) {
-    if (incident.timelineEvents == null || incident.timelineEvents!.isEmpty) {
+    if (incident.timelineEvents.isEmpty) {
       return [const Text("No timeline active.", style: TextStyle(color: Colors.white12))];
     }
 
-    return incident.timelineEvents!.map((e) {
-      final isLast = incident.timelineEvents!.last == e;
+    return incident.timelineEvents.map((e) {
+      final isLast = incident.timelineEvents.last == e;
       return IntrinsicHeight(
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,

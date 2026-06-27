@@ -35,9 +35,11 @@ class ScreenshotService {
         final imagePath = await File('${directory.path}/screenshot.png').create();
         await imagePath.writeAsBytes(imageBytes);
 
-        await Share.shareXFiles(
-          [XFile(imagePath.path)],
-          text: 'Check out my Sri Lanka trip plan from TripMe.ai!',
+        await SharePlus.instance.share(
+          ShareParams(
+            files: [XFile(imagePath.path)],
+            text: 'Check out my Sri Lanka trip plan from TripMe.ai!',
+          ),
         );
       }
     } catch (e) {

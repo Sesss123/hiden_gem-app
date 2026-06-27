@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:qr_flutter/qr_flutter.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../core/theme/oracle_ui_system.dart';
 import '../../data/models/tour_session.dart';
 import '../../data/models/vehicle.dart';
@@ -16,7 +15,6 @@ import 'package:flutter/services.dart';
 import 'dart:async';
 import 'dart:ui';
 import '../../data/repositories/presence_repository.dart';
-import '../../data/repositories/broadcast_repository.dart';
 import 'guide_broadcast_screen.dart';
 
 import '../../data/repositories/meeting_point_repository.dart';
@@ -34,7 +32,6 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
   List<Vehicle> _vehicles = [];
   bool _isLoading = true;
   Timer? _locationTimer;
-  DateTime? _lastSosTime;
   
   final _sessionRepo = TourSessionRepository();
   final _vehicleRepo = VehicleRepository();
@@ -82,8 +79,7 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
 
     try {
       final pos = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high,
-        timeLimit: const Duration(seconds: 5),
+        locationSettings: const LocationSettings(accuracy: LocationAccuracy.high, timeLimit: Duration(seconds: 5)),
       );
       
       await _presenceRepo.updateGuidePresence(_activeSession!.sessionId, pos);
@@ -127,7 +123,7 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
     final sessionId = const Uuid().v4();
     final uid = AuthService().currentUser?.uid ?? "unknown";
     
-    final pos = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    final pos = await Geolocator.getCurrentPosition(locationSettings: const LocationSettings(accuracy: LocationAccuracy.high));
     
     final newSession = TourSession(
       sessionId: sessionId,
@@ -179,7 +175,7 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
       builder: (context) => BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
         child: AlertDialog(
-          backgroundColor: Colors.white.withOpacity(0.05),
+          backgroundColor: Colors.white.withValues(alpha: 0.05),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20), side: const BorderSide(color: Colors.white10)),
           title: OracleUI.neonText("SET MEETING POINT", style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.bold)),
           content: TextField(
@@ -208,7 +204,7 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
 
     setState(() => _isLoading = true);
     try {
-      final pos = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+      final pos = await Geolocator.getCurrentPosition(locationSettings: const LocationSettings(accuracy: LocationAccuracy.high));
       final checkpoint = MeetingCheckpoint(
         checkpointId: const Uuid().v4(),
         sessionId: _activeSession!.sessionId,
@@ -219,12 +215,7 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
         createdBy: AuthService().currentUser?.uid ?? "unknown",
       );
 
-      await _sessionRepo.updateMeetingPoint(
-        _activeSession!.sessionId, 
-        name, 
-        pos.latitude, 
-        pos.longitude,
-      );
+      await _meetingRepo.updateMeetingPoint(checkpoint);
       
       // Update local state for immediate UI feedback
       setState(() {
@@ -245,8 +236,9 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
   Future<void> _updateVehicleLocation() async {
     setState(() => _isLoading = true);
     try {
-      final pos = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+      final pos = await Geolocator.getCurrentPosition(locationSettings: const LocationSettings(accuracy: LocationAccuracy.high));
       await _presenceRepo.updateVehiclePresence(_activeSession!.sessionId, pos.latitude, pos.longitude);
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("VEHICLE POSITION MARKED"), backgroundColor: Colors.orangeAccent),
       );
@@ -315,7 +307,7 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
     return Column(
       children: [
         const SizedBox(height: 100),
-        Icon(Icons.tour_outlined, size: 80, color: Theme.of(context).colorScheme.primary.withOpacity(0.5)),
+        Icon(Icons.tour_outlined, size: 80, color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5)),
         const SizedBox(height: 24),
         Text(
           "NO ACTIVE TOUR",
@@ -325,7 +317,7 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
         Text(
           "Start a new tour and generate a QR for your travelers to connect.",
           textAlign: TextAlign.center,
-          style: GoogleFonts.inter(color: Colors.white.withOpacity(0.6)),
+          style: GoogleFonts.inter(color: Colors.white.withValues(alpha: 0.6)),
         ),
         const SizedBox(height: 48),
         SizedBox(
@@ -374,7 +366,7 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
             Expanded(
               child: OutlinedButton.icon(
                 icon: const Icon(Icons.add_location_alt_outlined, size: 18),
-                label: Text(_activeSession!.meetingPointName != null ? "UPDATE POINT" : "SET POINT"),
+                label: Text(_activeSession!.meetingPointName.isNotEmpty ? "UPDATE POINT" : "SET POINT"),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: Colors.greenAccent,
                   side: const BorderSide(color: Colors.greenAccent, width: 1),
@@ -416,7 +408,7 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
             ),
             Switch(
               value: _activeSession!.isJoinOpen,
-              activeColor: Colors.greenAccent,
+              activeThumbColor: Colors.greenAccent,
               onChanged: (val) => _sessionRepo.toggleJoinStatus(_activeSession!.sessionId, val),
             ),
           ],
@@ -485,7 +477,7 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
         ),
         const SizedBox(height: 16),
         _activeSession!.touristIds.isEmpty 
-          ? Text("Waiting for scans...", style: GoogleFonts.inter(color: Colors.white.withOpacity(0.4)))
+          ? Text("Waiting for scans...", style: GoogleFonts.inter(color: Colors.white.withValues(alpha: 0.4)))
           : ListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
@@ -523,7 +515,7 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
                 margin: const EdgeInsets.only(right: 12),
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 decoration: BoxDecoration(
-                  color: isSelected ? Theme.of(context).colorScheme.primary : Colors.white.withOpacity(0.05),
+                  color: isSelected ? Theme.of(context).colorScheme.primary : Colors.white.withValues(alpha: 0.05),
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(color: isSelected ? Colors.transparent : Colors.white10),
                 ),

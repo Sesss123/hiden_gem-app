@@ -4,6 +4,8 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../core/analytics/analytics_service.dart';
 import '../../data/models/ar_place_data.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/services/usage_limiter_service.dart';
+import '../../data/datasources/monetization_service.dart';
 
 class ARFallbackScreen extends StatefulWidget {
   final ARPlaceData arData;
@@ -172,14 +174,45 @@ class _ARFallbackScreenState extends State<ARFallbackScreen> {
                           ),
                         ),
                         const SizedBox(height: 24),
-                        OutlinedButton(
-                          onPressed: () => Navigator.pop(context),
-                          style: OutlinedButton.styleFrom(
-                            side: BorderSide(color: AppTheme.warningAmber),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                            foregroundColor: AppTheme.warningAmber,
-                          ),
-                          child: const Text("CLOSE VIEW"),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            OutlinedButton(
+                              onPressed: () => Navigator.pop(context),
+                              style: OutlinedButton.styleFrom(
+                                side: BorderSide(color: AppTheme.warningAmber),
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                foregroundColor: AppTheme.warningAmber,
+                              ),
+                              child: const Text("CLOSE VIEW"),
+                            ),
+                            const SizedBox(width: 12),
+                            ElevatedButton.icon(
+                              onPressed: () {
+                                MonetizationService().showRewardedAd(
+                                  context: context,
+                                  onRewardEarned: (reward) async {
+                                    await UsageLimiterService.provideBonusArSession();
+                                    if (context.mounted) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                          content: Text('✨ Oracle reward active! Fallback modes and premium content unlocked.'),
+                                          backgroundColor: Colors.green,
+                                        ),
+                                      );
+                                    }
+                                  },
+                                );
+                              },
+                              icon: const Icon(Icons.play_circle_fill, color: Colors.black, size: 16),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppTheme.warningAmber,
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                foregroundColor: Colors.black,
+                              ),
+                              label: const Text("WATCH AD (UNLOCK)"),
+                            ),
+                          ],
                         ),
                       ],
                     ),

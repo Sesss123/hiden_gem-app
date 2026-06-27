@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:geolocator/geolocator.dart';
 import '../../core/theme/app_theme.dart';
 import 'package:hidden_gems_sl/data/repositories/discovery_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -27,7 +26,6 @@ class _MapExplorerScreenState extends ConsumerState<MapExplorerScreen> {
   final Set<Marker> _markers = {};
   List<DiscoveryPlace> _places = [];
   DiscoveryPlace? _selectedPlace;
-  bool _isLoading = true;
   StreamSubscription? _guideSubscription;
   LatLng? _guideLocation;
   LatLng? _vehicleLocation;
@@ -49,8 +47,6 @@ class _MapExplorerScreenState extends ConsumerState<MapExplorerScreen> {
   }
 
   Future<void> _loadData() async {
-    setState(() => _isLoading = true);
-    
     // Load all places (proximity handled by DiscoveryRepository)
     final repo = ref.read(discoveryRepositoryProvider);
     final places = await repo.getDiscoveryPlaces(
@@ -62,7 +58,6 @@ class _MapExplorerScreenState extends ConsumerState<MapExplorerScreen> {
       setState(() {
         _places = places;
         _createMarkers();
-        _isLoading = false;
       });
     }
   }
@@ -125,7 +120,7 @@ class _MapExplorerScreenState extends ConsumerState<MapExplorerScreen> {
           position: _guideLocation!,
           icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueCyan),
           infoWindow: const InfoWindow(title: "YOUR GUIDE (LIVE)"),
-          zIndex: 15,
+          zIndexInt: 15,
         ),
       );
     }
@@ -137,7 +132,7 @@ class _MapExplorerScreenState extends ConsumerState<MapExplorerScreen> {
           position: _vehicleLocation!,
           icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange),
           infoWindow: const InfoWindow(title: "YOUR VEHICLE"),
-          zIndex: 12,
+          zIndexInt: 12,
         ),
       );
     }
@@ -149,7 +144,7 @@ class _MapExplorerScreenState extends ConsumerState<MapExplorerScreen> {
           position: _meetingPointLocation!,
           icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
           infoWindow: InfoWindow(title: "MEETING POINT: $_meetingPointName"),
-          zIndex: 10,
+          zIndexInt: 10,
         ),
       );
     }
@@ -221,7 +216,7 @@ class _MapExplorerScreenState extends ConsumerState<MapExplorerScreen> {
     return BackdropFilter(
       filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
       child: Container(
-        color: Colors.red.withOpacity(0.2),
+        color: Colors.red.withValues(alpha: 0.2),
         width: double.infinity,
         height: double.infinity,
         child: Column(
@@ -268,7 +263,7 @@ class _MapExplorerScreenState extends ConsumerState<MapExplorerScreen> {
           ],
         ),
       ).animate(onPlay: (c) => c.repeat())
-       .shimmer(color: Colors.red.withOpacity(0.3), duration: 2.seconds),
+       .shimmer(color: Colors.red.withValues(alpha: 0.3), duration: 2.seconds),
     );
   }
 

@@ -9,6 +9,7 @@ import '../widgets/limit_reached_dialog.dart';
 import '../../core/services/usage_limiter_service.dart';
 import '../../data/datasources/monetization_service.dart';
 import 'loading_plan_screen.dart';
+import '../widgets/soft_upgrade_nudge_card.dart';
 
 class TripFormScreen extends StatefulWidget {
   const TripFormScreen({super.key});
@@ -231,6 +232,7 @@ class _TripFormScreenState extends State<TripFormScreen> {
       subtitle: "The Essentials",
       content: Column(
         children: [
+          const SoftUpgradeNudgeCard(featureName: 'AI Travel Plans'),
           _cityAutocomplete(
             label: "Starting Point",
             hint: "Airport, Colombo...",
@@ -567,17 +569,16 @@ class _TripFormScreenState extends State<TripFormScreen> {
       if (mounted) {
         showDialog(
           context: context,
-          builder: (context) => LimitReachedDialog(
+          builder: (_) => LimitReachedDialog(
             featureName: 'AI Trips',
             onWatchAd: () {
               MonetizationService().showRewardedAd(
                 onRewardEarned: (reward) async {
                   await UsageLimiterService.provideBonusAiTrip();
-                  if (mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text("Bonus Trip Unlocked! Try submitting again.")),
-                    );
-                  }
+                  if (!mounted || !context.mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("Bonus Trip Unlocked! Try submitting again.")),
+                  );
                 },
               );
             },

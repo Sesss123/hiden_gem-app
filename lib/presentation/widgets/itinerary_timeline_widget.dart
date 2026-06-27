@@ -87,10 +87,9 @@ class _ItineraryTimelineWidgetState extends State<ItineraryTimelineWidget> {
           physics: const NeverScrollableScrollPhysics(),
           buildDefaultDragHandles: false,
           itemCount: _items.length,
-          onReorder: (oldIndex, newIndex) {
+          onReorderItem: (oldIndex, newIndex) {
             HapticFeedback.mediumImpact();
             setState(() {
-              if (newIndex > oldIndex) newIndex--;
               final item = _items.removeAt(oldIndex);
               _items.insert(newIndex, item);
             });

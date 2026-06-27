@@ -6,17 +6,20 @@ import 'package:google_fonts/google_fonts.dart';
 class ARUpgradeDialog extends StatelessWidget {
   final VoidCallback onUpgrade;
   final VoidCallback onPreview;
+  final VoidCallback? onWatchAd;
 
   const ARUpgradeDialog({
     super.key,
     required this.onUpgrade,
     required this.onPreview,
+    this.onWatchAd,
   });
 
   static Future<void> show(
     BuildContext context, {
     required VoidCallback onUpgrade,
     required VoidCallback onPreview,
+    VoidCallback? onWatchAd,
   }) {
     return showModalBottomSheet(
       context: context,
@@ -25,6 +28,7 @@ class ARUpgradeDialog extends StatelessWidget {
       builder: (_) => ARUpgradeDialog(
         onUpgrade: onUpgrade,
         onPreview: onPreview,
+        onWatchAd: onWatchAd,
       ),
     );
   }
@@ -188,6 +192,34 @@ class ARUpgradeDialog extends StatelessWidget {
               ),
             ),
           ),
+          if (onWatchAd != null) ...[
+            const SizedBox(height: 12),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  Navigator.pop(context);
+                  onWatchAd!();
+                },
+                icon: const Icon(Icons.play_circle_fill, color: Colors.black, size: 20),
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  backgroundColor: const Color(0xFFFFB300),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                ),
+                label: Text(
+                  'Watch Ad to Unlock Session',
+                  style: GoogleFonts.outfit(
+                    color: Colors.black,
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+          ],
           const SizedBox(height: 8),
 
           // Not now

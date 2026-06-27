@@ -7,8 +7,6 @@ import '../../core/theme/oracle_ui_system.dart';
 import '../../data/repositories/operator_repository.dart';
 import '../../data/models/operator_account.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
-import '../../data/datasources/user_preference_service.dart';
 import '../../data/models/guide_application.dart';
 import '../../data/models/guide_status.dart';
 import '../../data/models/incident_report.dart';

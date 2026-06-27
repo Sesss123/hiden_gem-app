@@ -20,11 +20,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   int _currentPage = 0;
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   void dispose() {
     _pageController.dispose();
     super.dispose();
@@ -32,7 +27,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   void _next() {
     HapticFeedback.lightImpact();
-    if (_currentPage < 2) {
+    if (_currentPage < 4) {
       _pageController.nextPage(
         duration: const Duration(milliseconds: 500),
         curve: Curves.easeInOutCubic,
@@ -94,12 +89,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     _buildSlide1(),
                     _buildSlide2(),
                     _buildSlide3(),
+                    _buildSlide4(),
+                    _buildSlide5(),
                   ],
                 ),
               ),
               // Dots + Button
               _buildBottomControls(),
-              SizedBox(height: 32),
+              const SizedBox(height: 32),
             ],
           ),
         ),
@@ -107,39 +104,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     );
   }
 
-  // ── Slide 1: AI Planning ──────────────────────────────────
+  // ── Slide 1: Discover Hidden Gems ─────────────────────────
   Widget _buildSlide1() {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 32),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          OracleUI.glassContainer(
-            padding: EdgeInsets.all(32),
-            borderRadius: BorderRadius.circular(50),
-            borderColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
-            child: Icon(Icons.auto_awesome_rounded, size: 64, color: Theme.of(context).colorScheme.primary),
-          ).animate(onPlay: (c) => c.repeat()).shimmer(duration: 3.seconds, color: Colors.white10),
-          SizedBox(height: 60),
-          OracleUI.neonText(
-            "Plan Smarter with AI",
-            style: GoogleFonts.outfit(
-              fontSize: 32, fontWeight: FontWeight.w800, color: Colors.white, height: 1.1,
-            ),
-          ),
-          SizedBox(height: 24),
-          Text(
-            "Tell the Oracle where you want to go.\nGet a full personalized itinerary for Sri Lanka in seconds.",
-            textAlign: TextAlign.center,
-            style: GoogleFonts.inter(fontSize: 16, color: Colors.white54, height: 1.6),
-          ),
-        ],
-      ).animate().fadeIn(duration: 600.ms).slideY(begin: 0.1, end: 0),
-    );
-  }
-
-  // ── Slide 2: Hidden Gems ──────────────────────────────────
-  Widget _buildSlide2() {
     final gems = [
       (Icons.park_outlined, "Nature Trails"),
       (Icons.temple_buddhist_outlined, "Ancient Temples"),
@@ -147,7 +113,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       (Icons.landscape_outlined, "Hill Country"),
     ];
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 32),
+      padding: const EdgeInsets.symmetric(horizontal: 32),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -157,14 +123,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             alignment: WrapAlignment.center,
             children: gems.asMap().entries.map((e) => _gemBubble(e.value.$1, e.value.$2, e.key)).toList(),
           ),
-          SizedBox(height: 60),
+          const SizedBox(height: 60),
           OracleUI.neonText(
             "Discover Hidden Gems",
             style: GoogleFonts.outfit(
               fontSize: 32, fontWeight: FontWeight.w800, color: Colors.white, height: 1.1,
             ),
           ),
-          SizedBox(height: 24),
+          const SizedBox(height: 24),
           Text(
             "Explore over 500 off-the-beaten-path locations curated by locals — places you won't find in any guidebook.",
             textAlign: TextAlign.center,
@@ -178,14 +144,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   Widget _gemBubble(IconData icon, String label, int index) {
     return OracleUI.glassContainer(
       width: 120,
-      padding: EdgeInsets.symmetric(vertical: 20, horizontal: 12),
+      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 12),
       borderRadius: BorderRadius.circular(20),
       borderColor: Colors.white.withValues(alpha: 0.05),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(icon, color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.8), size: 28),
-          SizedBox(height: 12),
+          const SizedBox(height: 12),
           Text(
             label, 
             textAlign: TextAlign.center,
@@ -196,29 +162,122 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     ).animate().fadeIn(delay: (200 * index).ms).scale(begin: const Offset(0.8, 0.8));
   }
 
-  // ── Slide 3: Your Journey ─────────────────────────────────
-  Widget _buildSlide3() {
+  // ── Slide 2: AI Travel Planner ────────────────────────────
+  Widget _buildSlide2() {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 32),
+      padding: const EdgeInsets.symmetric(horizontal: 32),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           OracleUI.glassContainer(
-            padding: EdgeInsets.all(32),
-            borderRadius: BorderRadius.circular(60),
+            padding: const EdgeInsets.all(32),
+            borderRadius: BorderRadius.circular(50),
             borderColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
-            child: Text("🇱🇰", style: TextStyle(fontSize: 64)),
+            child: Icon(Icons.auto_awesome_rounded, size: 64, color: Theme.of(context).colorScheme.primary),
           ).animate(onPlay: (c) => c.repeat()).shimmer(duration: 3.seconds, color: Colors.white10),
-          SizedBox(height: 60),
+          const SizedBox(height: 60),
           OracleUI.neonText(
-            "Your Journey,\nYour Way",
+            "Plan Smarter with AI",
             style: GoogleFonts.outfit(
               fontSize: 32, fontWeight: FontWeight.w800, color: Colors.white, height: 1.1,
             ),
           ),
-          SizedBox(height: 24),
+          const SizedBox(height: 24),
           Text(
-            "Sinhala, English, Tamil and more.\nOffline maps, SOS, and AI concierge — everything for the perfect adventure.",
+            "Tell the Oracle where you want to go.\nGet a full personalized itinerary for Sri Lanka in seconds.",
+            textAlign: TextAlign.center,
+            style: GoogleFonts.inter(fontSize: 16, color: Colors.white54, height: 1.6),
+          ),
+        ],
+      ).animate().fadeIn(duration: 600.ms).slideY(begin: 0.1, end: 0),
+    );
+  }
+
+  // ── Slide 3: Immersive AR Viewer ──────────────────────────
+  Widget _buildSlide3() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 32),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          OracleUI.glassContainer(
+            padding: const EdgeInsets.all(32),
+            borderRadius: BorderRadius.circular(50),
+            borderColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
+            child: Icon(Icons.view_in_ar_rounded, size: 64, color: Theme.of(context).colorScheme.primary),
+          ).animate(onPlay: (c) => c.repeat()).shimmer(duration: 3.seconds, color: Colors.white10),
+          const SizedBox(height: 60),
+          OracleUI.neonText(
+            "Step Into History",
+            style: GoogleFonts.outfit(
+              fontSize: 32, fontWeight: FontWeight.w800, color: Colors.white, height: 1.1,
+            ),
+          ),
+          const SizedBox(height: 24),
+          Text(
+            "Unlock detailed 3D historical reconstructions of monuments. Watch past eras come alive in real-time.",
+            textAlign: TextAlign.center,
+            style: GoogleFonts.inter(fontSize: 16, color: Colors.white54, height: 1.6),
+          ),
+        ],
+      ).animate().fadeIn(duration: 600.ms).slideY(begin: 0.1, end: 0),
+    );
+  }
+
+  // ── Slide 4: Guide Marketplace ────────────────────────────
+  Widget _buildSlide4() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 32),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          OracleUI.glassContainer(
+            padding: const EdgeInsets.all(32),
+            borderRadius: BorderRadius.circular(50),
+            borderColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
+            child: Icon(Icons.person_pin_circle_rounded, size: 64, color: Theme.of(context).colorScheme.primary),
+          ).animate(onPlay: (c) => c.repeat()).shimmer(duration: 3.seconds, color: Colors.white10),
+          const SizedBox(height: 60),
+          OracleUI.neonText(
+            "Verified Local Guides",
+            style: GoogleFonts.outfit(
+              fontSize: 32, fontWeight: FontWeight.w800, color: Colors.white, height: 1.1,
+            ),
+          ),
+          const SizedBox(height: 24),
+          Text(
+            "Connect with certified regional tour guides. Request custom bookings and secure narrative tours directly.",
+            textAlign: TextAlign.center,
+            style: GoogleFonts.inter(fontSize: 16, color: Colors.white54, height: 1.6),
+          ),
+        ],
+      ).animate().fadeIn(duration: 600.ms).slideY(begin: 0.1, end: 0),
+    );
+  }
+
+  // ── Slide 5: Zenith Safety Shield ─────────────────────────
+  Widget _buildSlide5() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 32),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          OracleUI.glassContainer(
+            padding: const EdgeInsets.all(32),
+            borderRadius: BorderRadius.circular(50),
+            borderColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
+            child: Icon(Icons.security_rounded, size: 64, color: Theme.of(context).colorScheme.primary),
+          ).animate(onPlay: (c) => c.repeat()).shimmer(duration: 3.seconds, color: Colors.white10),
+          const SizedBox(height: 60),
+          OracleUI.neonText(
+            "Zenith Safety Shield",
+            style: GoogleFonts.outfit(
+              fontSize: 32, fontWeight: FontWeight.w800, color: Colors.white, height: 1.1,
+            ),
+          ),
+          const SizedBox(height: 24),
+          Text(
+            "Explore with peace of mind. Live local safety alerts, offline map backups, and one-tap emergency SOS broadcasts.",
             textAlign: TextAlign.center,
             style: GoogleFonts.inter(fontSize: 16, color: Colors.white54, height: 1.6),
           ),
@@ -234,12 +293,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         // Page dots
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: List.generate(3, (i) => _dot(i)),
+          children: List.generate(5, (i) => _dot(i)),
         ),
-        SizedBox(height: 32),
+        const SizedBox(height: 32),
         // CTA button
         Padding(
-          padding: EdgeInsets.symmetric(horizontal: 32),
+          padding: const EdgeInsets.symmetric(horizontal: 32),
           child: SizedBox(
             width: double.infinity,
             height: 60,
@@ -252,7 +311,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
               ),
               child: OracleUI.neonText(
-                _currentPage == 2 ? "BEGIN JOURNEY 🚀" : "CONTINUE",
+                _currentPage == 4 ? "BEGIN JOURNEY 🚀" : "CONTINUE",
                 style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 14, color: Colors.black, letterSpacing: 1),
                 glowColor: Colors.white24,
               ),
@@ -267,7 +326,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     final active = _currentPage == index;
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
-      margin: EdgeInsets.symmetric(horizontal: 4),
+      margin: const EdgeInsets.symmetric(horizontal: 4),
       width: active ? 28 : 8,
       height: 6,
       decoration: BoxDecoration(

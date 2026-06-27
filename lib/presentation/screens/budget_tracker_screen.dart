@@ -142,7 +142,7 @@ class _BudgetTrackerScreenState extends State<BudgetTrackerScreen> {
       borderRadius: BorderRadius.circular(16),
       borderColor: Theme.of(context).dividerColor.withValues(alpha: 0.1),
       child: DropdownButtonFormField<String>(
-        value: current,
+        initialValue: current,
         dropdownColor: Theme.of(context).scaffoldBackgroundColor,
         style: GoogleFonts.inter(color: AppTheme.textPrimary(context), fontSize: 14, fontWeight: FontWeight.w600),
         decoration: InputDecoration(

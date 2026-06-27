@@ -132,7 +132,7 @@ class PremiumNotifier extends _$PremiumNotifier {
           );
         }
         
-        PurchaseResult purchaseResult = await Purchases.purchasePackage(package);
+        PurchaseResult purchaseResult = await Purchases.purchase(PurchaseParams.package(package));
         _updateStateFromCustomerInfo(purchaseResult.customerInfo);
       }
     } on PlatformException catch (e) {

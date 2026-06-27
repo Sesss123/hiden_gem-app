@@ -5,7 +5,6 @@ import '../../core/services/oracle_guardian.dart';
 import '../../core/theme/oracle_ui_system.dart';
 import '../../core/theme/app_theme.dart';
 import '../../data/datasources/user_preference_service.dart';
-import '../../data/datasources/auth_service.dart';
 import '../../data/datasources/firebase_storage_service.dart';
 import '../../data/repositories/guide_application_repository.dart';
 import '../../data/models/guide_application.dart';
@@ -113,7 +112,7 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.05),
+              color: Colors.white.withValues(alpha: 0.05),
               shape: BoxShape.circle,
               border: Border.all(color: Colors.white10),
             ),
@@ -373,7 +372,7 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
                             textAlign: TextAlign.center,
                             style: GoogleFonts.inter(
                               fontSize: 13,
-                              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                               height: 1.5,
                             ),
                           ),
@@ -471,7 +470,7 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
               label: Text(cat),
               selected: isSelected,
               onSelected: (val) => setState(() => _selectedCategory = cat),
-              selectedColor: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+              selectedColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
               labelStyle: GoogleFonts.inter(
                 color: isSelected ? Colors.white : Colors.white60,
                 fontSize: 12,
@@ -537,7 +536,7 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
             style: GoogleFonts.inter(color: Colors.white),
             decoration: InputDecoration(
               hintText: hint,
-              hintStyle: GoogleFonts.inter(color: Colors.white.withOpacity(0.3)),
+              hintStyle: GoogleFonts.inter(color: Colors.white.withValues(alpha: 0.3)),
               border: InputBorder.none,
             ),
           ),

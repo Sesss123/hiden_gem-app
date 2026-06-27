@@ -27,7 +27,7 @@ class _ReviewSubmissionScreenState extends ConsumerState<ReviewSubmissionScreen>
   double _communicationRating = 5.0;
   double _punctualityRating = 5.0;
   double _safetyRating = 5.0;
-  double _friendlinessRating = 5.0;
+  final double _friendlinessRating = 5.0;
   final TextEditingController _commentController = TextEditingController();
   bool _isSubmitting = false;
 

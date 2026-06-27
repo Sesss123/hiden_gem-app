@@ -1,14 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter/services.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/theme/oracle_ui_system.dart';
-import '../../data/repositories/marketplace_repository.dart';
-import '../../data/models/guide_listing.dart';
 import '../../core/services/oracle_guardian.dart';
-import 'guide_public_profile_screen.dart';
 
 class SmartMatchScreen extends StatefulWidget {
   const SmartMatchScreen({super.key});

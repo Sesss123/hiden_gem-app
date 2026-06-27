@@ -1,6 +1,35 @@
 
+## Active Milestone: Complete remaining dashboard UI & limit issues
+- [x] Decouple offline download limits from saved_plans key (`usage_limiter_service.dart`)
+- [x] Create and embed UsageMeterWidget in Home and Profile screens (`usage_meter_widget.dart`, `home_screen.dart`, `profile_screen.dart`)
+- [x] Implement SoftUpgradeNudgeCard inline warning in step 1 trip creator (`soft_upgrade_nudge_card.dart`, `trip_form_screen.dart`)
+- [x] Resolve subscription routing confusion between tourist PremiumHubScreen and guide SubscriptionScreen (`profile_screen.dart`, `limit_reached_dialog.dart`)
+- [x] Turn OnboardingScreen into a 5-step Interactive Onboarding Tour (`onboarding_screen.dart`)
+
+## Active Milestone: Resolve AR Flow Gaps (Surface Detection & Rewarded Ad)
+- [x] Harden surface detection instructions and tap feedback (`ar_video_screen.dart`)
+- [x] Integrate rewarded ad path in upgrade dialog and fallback view (`ar_upgrade_dialog.dart`, `place_details_screen.dart`, `ar_viewer_screen.dart`, `ar_fallback_screen.dart`)
+
+## Active Milestone: Fix 6 Issues in AR Content Preview Screen
+- [x] Implement ARVideoContent model enhancements (`ar_video_content.dart`)
+- [x] Add initialLang property to ARVideoScreen (`ar_video_screen.dart`)
+- [x] Redesign Hero Banner with location images & gradient overlays (`ar_content_preview_screen.dart`)
+- [x] Show description, duration, and guide information (`ar_content_preview_screen.dart`)
+- [x] Harden loading state with spinner, timeout, and retry button (`ar_content_preview_screen.dart`)
+- [x] Add Share, Bookmark, and Add-to-Itinerary actions row (`ar_content_preview_screen.dart`)
+- [x] Integrate language selector toggle (`ar_content_preview_screen.dart`)
+- [x] Enhance timeline cards (interactive details bottom sheet & bilingual texts) (`ar_content_preview_screen.dart`)
+
 ## Active Milestone: Project Documentation & Enhancement
 - [x] Add a comprehensive, premium project README (`README.md`)
+
+## Active Milestone: Fix Remaining Static Analysis Issues
+- [x] Clean up unused imports across data, presentation, and core layers
+- [x] Remove dead code, unused private fields/methods, and unnecessary casts
+- [x] Fix AppCheck type errors (`AndroidAppCheckProvider` / `AppleAppCheckProvider`) and UI deprecations (`activeThumbColor`, `zIndexInt`, `initialValue`)
+- [x] Fix Share / shareXFiles deprecation warnings by updating to SharePlus.instance.share(ShareParams(...))
+- [x] Fix Geolocator deprecations (`locationSettings`) and resolve BuildContext async gap warnings (`use_build_context_synchronously`)
+- [x] Fix all remaining `withOpacity` deprecations across the codebase by updating to `withValues(alpha: ...)`
 
 ## Active Milestone: Complete 47-Bug Audit Fixes
 
@@ -59,6 +88,11 @@
 
 # Completed
 
+- [x] **Fix Remaining Static Analysis Issues**: Resolved unused imports, dead code, unused private fields/methods, and unnecessary casts across `incident_detail_screen.dart`, `language_selection_screen.dart`, `map_explorer_screen.dart`, `operator_dashboard_screen.dart`, `profile_screen.dart`, `results_screen.dart`, `savor_lanka_screen.dart`, and `smart_match_screen.dart`. (Completed on 2026-06-27)
+- [x] **Fix AppConfig tripMeApiKey Compiler Errors**: Added a backwards-compatible `tripMeApiKey` getter inside `AppConfig` to solve undefined getter compiler issues. (Completed on 2026-06-27)
+- [x] **Complete remaining dashboard UI & limit issues**: Decoupled offline downloads from saved_plans, built and embedded `UsageMeterWidget` in Home and Profile, created and embedded `SoftUpgradeNudgeCard` in the trip creator step 1, resolved routing confusion for PremiumHub and Subscription screens based on user roles, and updated `OnboardingScreen` into a 5-step interactive tour (Discovery, Planner, AR, Guides, Safety). (Completed on 2026-06-27)
+- [x] **Resolve AR Flow Gaps (Surface Detection & Rewarded Ad)**: Hardened surface detection flow by adding an environment scanning step, detailed instructions, and plane hit validation. Surfaced the rewarded ad unlock path directly in `ARUpgradeDialog` (invoked in place details and AR viewer screens) and `ARFallbackScreen` to prevent dead ends for free tier users. (Completed on 2026-06-27)
+- [x] **Fix 6 Issues in AR Content Preview Screen**: Hardened and enhanced the preview screen by adding a premium hero banner, descriptions/durations, loading timeouts and retry widgets, share/bookmark/itinerary action flows, language switching, and interactive timeline sync cards. (Completed on 2026-06-27)
 - [x] **Add a comprehensive, premium project README**: Created the root `README.md` containing features, project architecture layout, setup prerequisites, build instructions, and security details. (Completed on 2026-06-27)
 - [x] **Initialized Task Tracking File**: Created and formatted the main `task.md` in the project root. (Completed on 2026-06-19)
 

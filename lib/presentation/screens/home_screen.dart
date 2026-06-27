@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
@@ -30,6 +29,7 @@ import '../../data/datasources/monetization_service.dart';
 import '../../data/models/discovery_place.dart';
 import '../../data/repositories/discovery_repository.dart';
 import 'place_details_screen.dart';
+import '../widgets/usage_meter_widget.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   final bool isOffline;
@@ -185,6 +185,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           ),
                           children: [
                             _journalUnfold(child: _buildWelcomeCard()),
+                            const SizedBox(height: 24),
+                            const UsageMeterWidget(),
                             const SizedBox(height: 24),
                             // Phase 8: Kinetic Pulse Hub (Bridge to Travel)
                             const PulseHubWidget(),
@@ -447,7 +449,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       style: GoogleFonts.inter(
                         fontSize: 10,
                         fontWeight: FontWeight.w900,
-                        color: Colors.white.withOpacity(0.6),
+                        color: Colors.white.withValues(alpha: 0.6),
                         letterSpacing: 3,
                       ),
                     ),

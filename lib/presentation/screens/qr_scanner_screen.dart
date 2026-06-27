@@ -91,7 +91,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
           child: Container(
             padding: const EdgeInsets.all(32),
             decoration: BoxDecoration(
-              color: const Color(0xFF0F172A).withOpacity(0.9),
+              color: const Color(0xFF0F172A).withValues(alpha: 0.9),
               borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
               border: Border.all(color: Colors.white10),
             ),
@@ -170,7 +170,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                   height: 60,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: _hasConsent ? Theme.of(context).colorScheme.primary : Colors.white.withOpacity(0.05),
+                      backgroundColor: _hasConsent ? Theme.of(context).colorScheme.primary : Colors.white.withValues(alpha: 0.05),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                     ),
                     onPressed: _hasConsent ? () => _finalJoin(session) : null,

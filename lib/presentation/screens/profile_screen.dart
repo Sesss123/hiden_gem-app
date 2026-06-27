@@ -8,7 +8,6 @@ import 'package:hidden_gems_sl/core/theme/theme_provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:hidden_gems_sl/l10n/app_localizations.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../core/theme/oracle_ui_system.dart';
@@ -24,13 +23,13 @@ import 'package:url_launcher/url_launcher.dart';
 import '../widgets/explorer_progress_card.dart';
 import 'emergency_kit_screen.dart';
 import 'premium_hub_screen.dart';
+import '../widgets/usage_meter_widget.dart';
 import 'heritage_passport_screen.dart';
 import 'budget_concierge_screen.dart';
 import 'login_screen.dart';
 import '../../core/services/ethical_travel_service.dart';
 import '../../core/rating/rating_service.dart';
 import 'guide_enrollment_screen.dart';
-import 'guide_dashboard_screen.dart';
 import 'qr_scanner_screen.dart';
 import 'package:hidden_gems_sl/data/models/guide_status.dart';
 import 'package:hidden_gems_sl/presentation/screens/guide_reviews_screen.dart';
@@ -216,6 +215,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     _buildVibeSelector(),
                     SizedBox(height: 32),
                     _buildPremiumARStatus(isPremium),
+                    SizedBox(height: 32),
+                    const UsageMeterWidget(),
                     SizedBox(height: 32),
                     _buildHeritageHub(),
                     SizedBox(height: 40),
@@ -559,34 +560,31 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 if (user != null) {
                   final doc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
                   if (doc.exists) {
-                    final data = doc.data() as Map<String, dynamic>? ?? {};
+                    final data = doc.data() ?? {};
                     final role = data['role'] ?? 'user';
                     final guideStatus = data['guideStatus'] ?? 'none';
                     if (role == 'admin' || guideStatus == 'approved') {
-                      if (context.mounted) Navigator.pop(context); // Close loader
-                      if (context.mounted) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => const OperatorDashboardScreen()),
-                        );
-                      }
+                      if (!mounted) return;
+                      Navigator.pop(context); // Close loader
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const OperatorDashboardScreen()),
+                      );
                       return;
                     }
                   }
                 }
-                if (context.mounted) Navigator.pop(context); // Close loader
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text("Unauthorized: Access restricted to operators/admins.")),
-                  );
-                }
+                if (!mounted) return;
+                Navigator.pop(context); // Close loader
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text("Unauthorized: Access restricted to operators/admins.")),
+                );
               } catch (e) {
-                if (context.mounted) Navigator.pop(context);
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text("Verification failed: $e")),
-                  );
-                }
+                if (!mounted) return;
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text("Verification failed: $e")),
+                );
               }
             },
           ),
@@ -747,9 +745,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           Icons.share_rounded, 
           l10n.inviteFriends,
           onTap: () {
-            Share.share(
-              "Join the Aethereal Oracle on TripMe! 🌍 Download now: https://tripme-ai.web.app",
-              subject: "Join me on TripMe!",
+            SharePlus.instance.share(
+              ShareParams(
+                text: "Join the Aethereal Oracle on TripMe! 🌍 Download now: https://tripme-ai.web.app",
+                subject: "Join me on TripMe!",
+              ),
             );
           },
         ),

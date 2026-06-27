@@ -53,7 +53,7 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> {
         guideId: 'GLOBAL',
         touristId: userId,
         reportedBy: userId,
-        reportedByRole: profile.role ?? 'tourist',
+        reportedByRole: profile.role,
         type: 'sos_alert',
         severity: 'critical',
         title: "CRITICAL SOS ALERT",

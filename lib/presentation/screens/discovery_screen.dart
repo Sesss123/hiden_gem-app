@@ -368,7 +368,7 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
                         ),
                         Switch(
                           value: _onlyAR,
-                          activeColor: Theme.of(context).colorScheme.secondary,
+                          activeThumbColor: Theme.of(context).colorScheme.secondary,
                           onChanged: (val) => setModalState(() => _onlyAR = val),
                         ),
                       ],

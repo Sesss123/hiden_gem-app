@@ -5,7 +5,6 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../core/theme/oracle_ui_system.dart';
 import '../../data/datasources/user_preference_service.dart';
-import '../../core/theme/app_theme.dart';
 import 'home_screen.dart';
 import 'login_screen.dart';
 
