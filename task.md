@@ -1,4 +1,7 @@
 
+## Active Milestone: Project Documentation & Enhancement
+- [x] Add a comprehensive, premium project README (`README.md`)
+
 ## Active Milestone: Complete 47-Bug Audit Fixes
 
 - [x] **Critical Fixes (11 bugs)**
@@ -56,6 +59,7 @@
 
 # Completed
 
+- [x] **Add a comprehensive, premium project README**: Created the root `README.md` containing features, project architecture layout, setup prerequisites, build instructions, and security details. (Completed on 2026-06-27)
 - [x] **Initialized Task Tracking File**: Created and formatted the main `task.md` in the project root. (Completed on 2026-06-19)
 
 ### Flutter Analyze Fixes (Audit)
