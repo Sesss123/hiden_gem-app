@@ -27,5 +27,9 @@
   "aiReason": "なぜこの場所？",
   "filters": "フィルター",
   "distance": "距離",
-  "openOnMap": "地図で開く"
+  "openOnMap": "地図で開く",
+  "searchHint": "隠れた名所を検索...",
+  "planNewTrip": "新しい旅行を計画",
+  "privacyPolicy": "プライバシーポリシー",
+  "termsOfService": "利用規約"
 }

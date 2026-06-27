@@ -44,7 +44,7 @@ class _BudgetConciergeScreenState extends ConsumerState<BudgetConciergeScreen> {
     if (AppConfig.geminiApiKey.isEmpty) return;
 
     try {
-      final model = GenerativeModel(model: 'gemini-1.5-flash', apiKey: AppConfig.geminiApiKey);
+      final model = GenerativeModel(model: AppConfig.llmModelName, apiKey: AppConfig.geminiApiKey);
       final prompt = """
         You are 'Oracle Budget Concierge' for a traveler in Sri Lanka.
         The user has spent total $_totalSpent LKR so far.

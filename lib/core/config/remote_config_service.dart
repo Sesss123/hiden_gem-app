@@ -1,4 +1,5 @@
 import 'package:firebase_remote_config/firebase_remote_config.dart';
+import '../../core/config/app_config.dart';
 import '../../core/utils/secure_logger.dart';
 
 class RemoteConfigService {
@@ -28,7 +29,7 @@ class RemoteConfigService {
         'api_version': '1.0.0',
         'min_app_version': '1.0.0',
         'latest_app_version': '1.0.0',
-        'model_name': 'gemini-1.5-flash',
+        'model_name': AppConfig.llmModelName,
         'is_rag_enabled': true,
         'theme_config': 'default',
         'data_refresh_timestamp': 0,

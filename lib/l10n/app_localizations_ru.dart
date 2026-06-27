@@ -96,16 +96,16 @@ class AppLocalizationsRu extends AppLocalizations {
   String get openOnMap => 'Открыть на карте';
 
   @override
-  String get planNewTrip => 'Plan New Trip';
+  String get planNewTrip => 'Запланировать поездку';
 
   @override
   String get localGemsOffline => 'Local Gems (Offline)';
 
   @override
-  String get privacyPolicy => 'Privacy Policy';
+  String get privacyPolicy => 'Политика конфиденциальности';
 
   @override
-  String get termsOfService => 'Terms of Service';
+  String get termsOfService => 'Условия использования';
 
   @override
   String get supportCenter => 'Support Center';
@@ -133,7 +133,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get discoveryHeader => 'Discover';
 
   @override
-  String get searchHint => 'Search for hidden gems...';
+  String get searchHint => 'Поиск скрытых жемчужин...';
 
   @override
   String get picksForYou => 'TripMe Picks for you';

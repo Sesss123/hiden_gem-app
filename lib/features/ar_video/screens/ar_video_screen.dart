@@ -1,4 +1,6 @@
+import 'dart:io';
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:arcore_flutter_plugin/arcore_flutter_plugin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -187,11 +189,23 @@ class _ARVideoScreenState extends State<ARVideoScreen>
       body: Stack(
         children: [
           // AR Camera background
-          ArCoreView(
-            onArCoreViewCreated: _onArCoreViewCreated,
-            enableTapRecognizer: true,
-            enablePlaneRenderer: true,
-          ),
+          if (!kIsWeb && Platform.isAndroid)
+            ArCoreView(
+              onArCoreViewCreated: _onArCoreViewCreated,
+              enableTapRecognizer: true,
+              enablePlaneRenderer: true,
+            )
+          else
+            const Center(
+              child: Padding(
+                padding: EdgeInsets.all(32.0),
+                child: Text(
+                  'AR Core is only supported on Android devices. Enjoy fallback view or check compatibility.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Colors.white, fontSize: 16),
+                ),
+              ),
+            ),
 
           // Cinematic video portal overlay
           if (_videoPlaced && _isReady) _buildVideoPortal(),

@@ -1,4 +1,13 @@
 
+## Active Milestone: Resolve 10-Bug Audit Report
+- [x] Fix double-call to `performInitialization()` in `main.dart`
+- [x] Fix kill-switch triggered `runApp()` double call in `main.dart`
+- [x] Fix `pubspec.yaml` iOS launcher icon typo
+- [x] Complete missing basic translations for KO/JA/RU/TA
+- [x] Add `Platform.isAndroid` check to ARCore usages to prevent iOS crash
+- [x] Decouple LLM configuration in `AppConfig` and validate in production
+- [x] Upgrade hardcoded model references from `gemini-1.5-flash` to use `AppConfig.llmModelName`
+
 ## Active Milestone: Complete remaining dashboard UI & limit issues
 - [x] Decouple offline download limits from saved_plans key (`usage_limiter_service.dart`)
 - [x] Create and embed UsageMeterWidget in Home and Profile screens (`usage_meter_widget.dart`, `home_screen.dart`, `profile_screen.dart`)
@@ -87,7 +96,6 @@
 
 
 # Completed
-
 - [x] **Fix Remaining Static Analysis Issues**: Resolved unused imports, dead code, unused private fields/methods, and unnecessary casts across `incident_detail_screen.dart`, `language_selection_screen.dart`, `map_explorer_screen.dart`, `operator_dashboard_screen.dart`, `profile_screen.dart`, `results_screen.dart`, `savor_lanka_screen.dart`, and `smart_match_screen.dart`. (Completed on 2026-06-27)
 - [x] **Fix AppConfig tripMeApiKey Compiler Errors**: Added a backwards-compatible `tripMeApiKey` getter inside `AppConfig` to solve undefined getter compiler issues. (Completed on 2026-06-27)
 - [x] **Complete remaining dashboard UI & limit issues**: Decoupled offline downloads from saved_plans, built and embedded `UsageMeterWidget` in Home and Profile, created and embedded `SoftUpgradeNudgeCard` in the trip creator step 1, resolved routing confusion for PremiumHub and Subscription screens based on user roles, and updated `OnboardingScreen` into a 5-step interactive tour (Discovery, Planner, AR, Guides, Safety). (Completed on 2026-06-27)

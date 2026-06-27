@@ -96,16 +96,16 @@ class AppLocalizationsJa extends AppLocalizations {
   String get openOnMap => '地図で開く';
 
   @override
-  String get planNewTrip => 'Plan New Trip';
+  String get planNewTrip => '新しい旅行を計画';
 
   @override
   String get localGemsOffline => 'Local Gems (Offline)';
 
   @override
-  String get privacyPolicy => 'Privacy Policy';
+  String get privacyPolicy => 'プライバシーポリシー';
 
   @override
-  String get termsOfService => 'Terms of Service';
+  String get termsOfService => '利用規約';
 
   @override
   String get supportCenter => 'Support Center';
@@ -133,7 +133,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get discoveryHeader => 'Discover';
 
   @override
-  String get searchHint => 'Search for hidden gems...';
+  String get searchHint => '隠れた名所を検索...';
 
   @override
   String get picksForYou => 'TripMe Picks for you';

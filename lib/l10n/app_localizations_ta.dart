@@ -133,7 +133,7 @@ class AppLocalizationsTa extends AppLocalizations {
   String get discoveryHeader => 'Discover';
 
   @override
-  String get searchHint => 'Search for hidden gems...';
+  String get searchHint => 'மறைக்கப்பட்ட ரத்தினங்களைத் தேடுங்கள்...';
 
   @override
   String get picksForYou => 'TripMe Picks for you';

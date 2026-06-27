@@ -64,7 +64,7 @@ class DynamicContentService {
       'showBanner': false,
       'bannerText': '',
       'enableOracleVision': true,
-      'aiModel': 'gemini-1.5-flash',
+      'aiModel': AppConfig.llmModelName,
     };
   }
 }

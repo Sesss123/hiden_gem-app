@@ -13,12 +13,6 @@ class AppConfig {
 
   static String get tripMeApiKey => hiddenGemsApiKey;
 
-  static void validate() {
-    if (kReleaseMode && (hiddenGemsApiKey == "" || hiddenGemsApiKey == "dev-key-local")) {
-      throw AssertionError("CRITICAL: Production builds must configure a valid HIDDEN_GEMS_API_KEY.");
-    }
-  }
-
   static const String nodeProxyUrl = String.fromEnvironment(
     'NODE_PROXY_URL',
     defaultValue: "http://localhost:8000/api",
@@ -44,11 +38,33 @@ class AppConfig {
     defaultValue: "",
   );
 
+  static const String llmModelName = String.fromEnvironment(
+    'LLM_MODEL_NAME',
+    defaultValue: "gemini-2.0-flash",
+  );
+
+  static const String llmApiBaseUrl = String.fromEnvironment(
+    'LLM_API_BASE_URL',
+    defaultValue: "https://generativelanguage.googleapis.com/v1beta",
+  );
+
   static const String weatherApiKey = String.fromEnvironment(
     'WEATHER_API_KEY',
     defaultValue: "",
   );
 
   static const bool ragEnabled = true;
+
+  static void validate() {
+    if (kReleaseMode && (hiddenGemsApiKey == "" || hiddenGemsApiKey == "dev-key-local")) {
+      throw AssertionError("CRITICAL: Production builds must configure a valid HIDDEN_GEMS_API_KEY.");
+    }
+    if (kReleaseMode && geminiApiKey == "") {
+      throw AssertionError("CRITICAL: Production builds must configure a valid GEMINI_API_KEY.");
+    }
+    if (kReleaseMode && (revenueCatApiKeyAndroid == "goog_example_key" || revenueCatApiKeyIos == "appl_example_key")) {
+      throw AssertionError("CRITICAL: Production builds must configure valid RevenueCat API Keys.");
+    }
+  }
 }
 

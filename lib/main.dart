@@ -50,16 +50,20 @@ class InitializationResult {
   final bool hiveSuccess;
   final bool firebaseSuccess;
   final bool isCompromised;
+  final bool isKillSwitchActive;
+  final String? maintenanceMessage;
   final String? error;
 
   InitializationResult({
     required this.hiveSuccess,
     required this.firebaseSuccess,
     this.isCompromised = false,
+    this.isKillSwitchActive = false,
+    this.maintenanceMessage,
     this.error,
   });
 
-  bool get canProceed => hiveSuccess && (kIsWeb || !isCompromised);
+  bool get canProceed => hiveSuccess && (kIsWeb || !isCompromised) && !isKillSwitchActive;
 }
 
 // SecureNetwork from core/network/secure_network.dart is used instead.
@@ -121,8 +125,7 @@ void main() async {
   // FLAG_SECURE is now handled directly in android/app/src/main/kotlin/com/hidden/gems/hidden_gems_sl/MainActivity.kt
   // for better compatibility and build reliability.
 
-  // Kick off the rest of initialization in background — SplashScreen will wait for it.
-  performInitialization();
+  // Initialization is kicked off by appInitializationProvider which is observed by TripMeApp.
 
   runApp(
     const ProviderScope(
@@ -258,24 +261,12 @@ Future<InitializationResult> performInitialization() async {
 
         // 🚨 PANIC ROOM: Check for global kill-switch before mounting UI
         if (emergency.isKillSwitchActive) {
-          runApp(
-            MaterialApp(
-              home: Scaffold(
-                backgroundColor: Colors.black,
-                body: Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(40),
-                    child: Text(
-                      emergency.maintenanceMessage,
-                      style: const TextStyle(color: Colors.white, fontSize: 18),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                ),
-              ),
-            ),
+          return InitializationResult(
+            hiveSuccess: true,
+            firebaseSuccess: true,
+            isKillSwitchActive: true,
+            maintenanceMessage: emergency.maintenanceMessage,
           );
-          return InitializationResult(hiveSuccess: true, firebaseSuccess: false);
         }
 
         // 🛡️ Initialize security stack AFTER Firebase is ready
@@ -440,6 +431,21 @@ class _TripMeAppState extends ConsumerState<TripMeApp> with WidgetsBindingObserv
   }
 
   Widget _buildHomeModule(InitializationResult result) {
+    if (result.isKillSwitchActive) {
+      return Scaffold(
+        backgroundColor: Colors.black,
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(40),
+            child: Text(
+              result.maintenanceMessage ?? "System maintenance is in progress.",
+              style: const TextStyle(color: Colors.white, fontSize: 18),
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ),
+      );
+    }
     if (!result.canProceed) {
       return Scaffold(
         backgroundColor: AppTheme.primaryBlue(context),

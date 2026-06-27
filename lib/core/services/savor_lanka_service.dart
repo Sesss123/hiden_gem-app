@@ -3,14 +3,18 @@ import 'dart:io';
 import 'package:google_generative_ai/google_generative_ai.dart';
 import '../utils/secure_logger.dart';
 import '../../data/models/food_model.dart';
+import '../../core/config/app_config.dart';
 
 class SavorLankaService {
   // Uses Firebase AI Logic pipeline with Gemini Multimodal Model
-  static const String _modelName = 'gemini-1.5-flash'; 
+  static final String _modelName = AppConfig.llmModelName; 
   final String apiKey;
   late final GenerativeModel _model;
 
   SavorLankaService({required this.apiKey}) {
+    if (apiKey.isEmpty) {
+      SecureLogger.error('SavorLankaService: API Key is empty! AI identification will fail.');
+    }
     _model = GenerativeModel(
       model: _modelName,
       apiKey: apiKey,
@@ -24,6 +28,10 @@ class SavorLankaService {
     String spicePreference = 'Medium',
     String userMode = 'Tourist',
   }) async {
+    if (apiKey.isEmpty) {
+      SecureLogger.error('Savor Lanka: Cannot identify food because API Key is empty.');
+      return null;
+    }
     try {
       final bytes = await imageFile.readAsBytes();
       final content = [

@@ -96,16 +96,16 @@ class AppLocalizationsKo extends AppLocalizations {
   String get openOnMap => '지도에서 열기';
 
   @override
-  String get planNewTrip => 'Plan New Trip';
+  String get planNewTrip => '새로운 여행 계획';
 
   @override
   String get localGemsOffline => 'Local Gems (Offline)';
 
   @override
-  String get privacyPolicy => 'Privacy Policy';
+  String get privacyPolicy => '개인정보 처리방침';
 
   @override
-  String get termsOfService => 'Terms of Service';
+  String get termsOfService => '서비스 이용약관';
 
   @override
   String get supportCenter => 'Support Center';
@@ -133,7 +133,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get discoveryHeader => 'Discover';
 
   @override
-  String get searchHint => 'Search for hidden gems...';
+  String get searchHint => '숨겨진 명소 검색...';
 
   @override
   String get picksForYou => 'TripMe Picks for you';

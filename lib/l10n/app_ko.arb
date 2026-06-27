@@ -27,5 +27,9 @@
   "aiReason": "이 장소의 매력",
   "filters": "필터",
   "distance": "거리",
-  "openOnMap": "지도에서 열기"
+  "openOnMap": "지도에서 열기",
+  "searchHint": "숨겨진 명소 검색...",
+  "planNewTrip": "새로운 여행 계획",
+  "privacyPolicy": "개인정보 처리방침",
+  "termsOfService": "서비스 이용약관"
 }

@@ -1,6 +1,7 @@
+import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:arcore_flutter_plugin/arcore_flutter_plugin.dart';
 import 'package:vector_math/vector_math_64.dart' as vector;
-import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'asset_cache_service.dart';
@@ -38,11 +39,13 @@ class ARService {
 
   /// Check if the device hardware supports ARCore.
   static Future<bool> isSupported() async {
+    if (kIsWeb || !Platform.isAndroid) return false;
     return await ArCoreController.checkArCoreAvailability();
   }
 
   /// Check if ARCore services are installed.
   static Future<bool> isInstalled() async {
+    if (kIsWeb || !Platform.isAndroid) return false;
     return await ArCoreController.checkIsArCoreInstalled();
   }
 

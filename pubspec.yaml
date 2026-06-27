@@ -175,6 +175,6 @@ flutter:
 
 flutter_launcher_icons:
   android: "launcher_icon"
-  ios: trueokey
+  ios: true
   image_path: "assets/images/sri_lanka_live_base.jpg"
   min_sdk_android: 21

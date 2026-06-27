@@ -1,9 +1,6 @@
 {
   "ja": [
-    "planNewTrip",
     "localGemsOffline",
-    "privacyPolicy",
-    "termsOfService",
     "supportCenter",
     "deleteAccount",
     "inviteFriends",
@@ -12,7 +9,6 @@
     "cancel",
     "deleteForever",
     "discoveryHeader",
-    "searchHint",
     "picksForYou",
     "exploreInAr",
     "bestNatureNearby",
@@ -85,10 +81,7 @@
   ],
 
   "ko": [
-    "planNewTrip",
     "localGemsOffline",
-    "privacyPolicy",
-    "termsOfService",
     "supportCenter",
     "deleteAccount",
     "inviteFriends",
@@ -97,7 +90,6 @@
     "cancel",
     "deleteForever",
     "discoveryHeader",
-    "searchHint",
     "picksForYou",
     "exploreInAr",
     "bestNatureNearby",
@@ -170,10 +162,7 @@
   ],
 
   "ru": [
-    "planNewTrip",
     "localGemsOffline",
-    "privacyPolicy",
-    "termsOfService",
     "supportCenter",
     "deleteAccount",
     "inviteFriends",
@@ -182,7 +171,6 @@
     "cancel",
     "deleteForever",
     "discoveryHeader",
-    "searchHint",
     "picksForYou",
     "exploreInAr",
     "bestNatureNearby",
@@ -256,7 +244,6 @@
 
   "ta": [
     "discoveryHeader",
-    "searchHint",
     "picksForYou",
     "exploreInAr",
     "bestNatureNearby",
