@@ -4,7 +4,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import '../../core/theme/oracle_ui_system.dart';
+
 import '../../core/theme/app_theme.dart';
 import '../../data/datasources/premium_service.dart';
 
@@ -103,11 +103,10 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> with WidgetsBindi
     final isPremium = ref.watch(premiumNotifierProvider);
 
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      body: OracleUI.auraBackground(
-        child: Stack(
-          children: [
-            // Full Screen Camera or Placeholder
+      backgroundColor: Colors.black, // Keep camera background black
+      body: Stack(
+        children: [
+          // Full Screen Camera or Placeholder
             Positioned.fill(
               child: _isInit && _controller != null
                 ? CameraPreview(_controller!)
@@ -152,16 +151,16 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> with WidgetsBindi
                           icon: Icon(Icons.arrow_back_rounded, color: AppTheme.textPrimary(context)),
                           onPressed: () => Navigator.pop(context),
                         ),
-                        OracleUI.neonText(
+                        Text(
                           "ORACLE VISION",
                           style: GoogleFonts.outfit(
-                            color: AppTheme.textPrimary(context),
+                            color: Colors.white,
                             fontWeight: FontWeight.w900,
                             letterSpacing: 4,
                             fontSize: 16,
                           ),
                         ),
-                        SizedBox(width: 48), // Spacer
+                        const SizedBox(width: 48), // Spacer
                       ],
                     ),
                     const Spacer(),
@@ -186,10 +185,9 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> with WidgetsBindi
                             children: [
                               Icon(_isScanning ? Icons.sync_rounded : Icons.filter_center_focus_rounded),
                               SizedBox(width: 12),
-                              OracleUI.neonText(
+                              Text(
                                 _isScanning ? "IDENTIFYING..." : "ANALYZE LANDMARK",
                                 style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 13, letterSpacing: 1),
-                                glowColor: Colors.black12,
                               ),
                             ],
                           ),
@@ -209,7 +207,7 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> with WidgetsBindi
                   height: 300,
                   margin: EdgeInsets.symmetric(horizontal: 32),
                   decoration: BoxDecoration(
-                    border: Border.all(color: AppTheme.accentOchre(context).withValues(alpha: 0.5), width: 2),
+                    border: Border.all(color: AppPalette.rust.withValues(alpha: 0.5), width: 2),
                     borderRadius: BorderRadius.circular(24),
                   ),
                   child: _ScanningOverlay(),
@@ -217,32 +215,41 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> with WidgetsBindi
               ),
           ],
         ),
-      ),
     );
   }
 
   Widget _buildPremiumGate() {
-    return OracleUI.glassContainer(
-      padding: EdgeInsets.all(32),
-      borderRadius: BorderRadius.circular(30),
-      borderColor: AppTheme.borderColor(context),
+    return Container(
+      padding: const EdgeInsets.all(32),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(30),
+        border: Border.all(color: AppTheme.secondaryBorder(context)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.1),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
       child: Column(
         children: [
           Icon(Icons.lock_person_rounded, color: Theme.of(context).colorScheme.primary, size: 56)
               .animate(onPlay: (c) => c.repeat())
               .shimmer(duration: 2.seconds),
-          SizedBox(height: 24),
-          OracleUI.neonText(
+          const SizedBox(height: 24),
+          Text(
             "VISION RESERVED",
             style: GoogleFonts.outfit(fontSize: 22, fontWeight: FontWeight.w900, color: AppTheme.textPrimary(context), letterSpacing: 1),
           ),
-          SizedBox(height: 12),
+          const SizedBox(height: 12),
           Text(
             "Access the Aethereal Database to identify landmarks and reveal hidden history through your lens.",
             textAlign: TextAlign.center,
             style: GoogleFonts.inter(color: AppTheme.textSecondary(context), height: 1.6, fontSize: 13),
           ),
-          SizedBox(height: 32),
+          const SizedBox(height: 32),
           SizedBox(
             width: double.infinity,
             height: 56,
@@ -252,7 +259,7 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> with WidgetsBindi
                 side: BorderSide(color: Theme.of(context).colorScheme.primary),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
               ),
-              child: OracleUI.neonText(
+              child: Text(
                 "UPGRADE TO LUXURY",
                 style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 12, color: Theme.of(context).colorScheme.primary),
               ),
@@ -264,21 +271,31 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> with WidgetsBindi
   }
 
   Widget _buildResultCard() {
-    return OracleUI.glassContainer(
-      padding: EdgeInsets.all(24),
-      borderRadius: BorderRadius.circular(24),
-      borderColor: AppTheme.warningAmber.withValues(alpha: 0.3),
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: AppPalette.rust.withValues(alpha: 0.3)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.1),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(Icons.verified_rounded, color: AppTheme.warningAmber, size: 20),
-              SizedBox(width: 12),
-              OracleUI.neonText(
+              const Icon(Icons.verified_rounded, color: AppPalette.rust, size: 20),
+              const SizedBox(width: 12),
+              Text(
                 "ORACLE VERIFIED",
                 style: GoogleFonts.outfit(
-                  color: AppTheme.warningAmber,
+                  color: AppPalette.rust,
                   fontWeight: FontWeight.w900,
                   fontSize: 12,
                   letterSpacing: 2,
@@ -286,7 +303,7 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> with WidgetsBindi
               ),
             ],
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           Text(
             _result!,
             style: GoogleFonts.inter(color: AppTheme.textPrimary(context), height: 1.7, fontSize: 14),

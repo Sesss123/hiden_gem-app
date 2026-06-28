@@ -144,9 +144,10 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/places.json
-    - assets/business_partners.json
+    - assets/
     - assets/images/
+    - assets/videos/
+    - assets/ai/
     - assets/ai/grounding_context.json
     
   # An image asset can refer to one or more resolution-specific "variants", see

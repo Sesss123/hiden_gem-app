@@ -3,7 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import '../../core/theme/oracle_ui_system.dart';
+
 import '../../core/theme/app_theme.dart';
 import '../../data/models/trip_plan_model.dart';
 import '../../data/datasources/trip_cache_service.dart';
@@ -36,9 +36,18 @@ class _BudgetTrackerScreenState extends State<BudgetTrackerScreen> {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) => StatefulBuilder(
-          builder: (context, setModalState) => OracleUI.glassContainer(
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(36)),
-          borderColor: Theme.of(context).dividerColor.withValues(alpha: 0.15),
+          builder: (context, setModalState) => Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(36)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.1),
+                blurRadius: 20,
+                offset: const Offset(0, -5),
+              ),
+            ],
+          ),
           padding: EdgeInsets.only(
             bottom: MediaQuery.of(context).viewInsets.bottom + 32,
             left: 32, right: 32, top: 32,
@@ -53,23 +62,23 @@ class _BudgetTrackerScreenState extends State<BudgetTrackerScreen> {
                   decoration: BoxDecoration(color: Theme.of(context).dividerColor.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(2)),
                 ),
               ),
-              SizedBox(height: 32),
-              OracleUI.neonText(
+              const SizedBox(height: 32),
+              Text(
                 "DOCUMENT EXPENSE",
                 style: GoogleFonts.inter(
                   fontSize: 12, 
                   fontWeight: FontWeight.w900, 
                   letterSpacing: 2, 
-                  color: Theme.of(context).colorScheme.primary
+                  color: AppTheme.textSecondary(context),
                 ),
               ),
-              SizedBox(height: 32),
+              const SizedBox(height: 32),
               _buildModernInput("Resource Description", (v) => title = v),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               _buildModernInput("Amount (LKR)", (v) => amount = int.tryParse(v) ?? 0, isNumber: true),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               _buildModernDropdown(category, (v) => setModalState(() => category = v!)),
-              SizedBox(height: 48),
+              const SizedBox(height: 48),
               SizedBox(
                 width: double.infinity,
                 height: 64,
@@ -99,14 +108,13 @@ class _BudgetTrackerScreenState extends State<BudgetTrackerScreen> {
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Theme.of(context).colorScheme.primary,
-                    foregroundColor: Colors.black,
+                    foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                     elevation: 0,
                   ),
-                  child: OracleUI.neonText(
-                    "SYNC TO VAULT",
-                    style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w900, color: Colors.black, letterSpacing: 1.5),
-                    glowColor: Colors.black26,
+                  child: Text(
+                    "SAVE RECORD",
+                    style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w900, color: Colors.white, letterSpacing: 1.5),
                   ),
                 ),
               ),
@@ -118,10 +126,13 @@ class _BudgetTrackerScreenState extends State<BudgetTrackerScreen> {
   }
 
   Widget _buildModernInput(String label, Function(String) onChanged, {bool isNumber = false}) {
-    return OracleUI.glassContainer(
-      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 4),
-      borderRadius: BorderRadius.circular(16),
-      borderColor: Theme.of(context).dividerColor.withValues(alpha: 0.1),
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+      decoration: BoxDecoration(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppTheme.secondaryBorder(context)),
+      ),
       child: TextField(
         style: GoogleFonts.inter(color: AppTheme.textPrimary(context), fontSize: 14, fontWeight: FontWeight.w600),
         keyboardType: isNumber ? TextInputType.number : TextInputType.text,
@@ -137,13 +148,16 @@ class _BudgetTrackerScreenState extends State<BudgetTrackerScreen> {
   }
 
   Widget _buildModernDropdown(String current, Function(String?) onChanged) {
-    return OracleUI.glassContainer(
-      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-      borderRadius: BorderRadius.circular(16),
-      borderColor: Theme.of(context).dividerColor.withValues(alpha: 0.1),
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+      decoration: BoxDecoration(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppTheme.secondaryBorder(context)),
+      ),
       child: DropdownButtonFormField<String>(
         initialValue: current,
-        dropdownColor: Theme.of(context).scaffoldBackgroundColor,
+        dropdownColor: Colors.white,
         style: GoogleFonts.inter(color: AppTheme.textPrimary(context), fontSize: 14, fontWeight: FontWeight.w600),
         decoration: InputDecoration(
           labelText: "Category",
@@ -167,10 +181,16 @@ class _BudgetTrackerScreenState extends State<BudgetTrackerScreen> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors.white,
         elevation: 0,
-        title: OracleUI.neonText(
-          "BUDGET VAULT",
+        scrolledUnderElevation: 0,
+        shape: Border(bottom: BorderSide(color: AppTheme.secondaryBorder(context))),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_ios_new, size: 20, color: AppTheme.textPrimary(context)),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: Text(
+          "BUDGET TRACKER",
           style: GoogleFonts.outfit(
             fontSize: 18,
             fontWeight: FontWeight.w900,
@@ -183,19 +203,28 @@ class _BudgetTrackerScreenState extends State<BudgetTrackerScreen> {
             icon: Icon(Icons.add_circle_outline, color: Theme.of(context).colorScheme.primary), 
             onPressed: _addExpense
           ),
-          SizedBox(width: 8),
+          const SizedBox(width: 8),
         ],
       ),
-      body: OracleUI.auraBackground(
-        child: SingleChildScrollView(
-          padding: EdgeInsets.all(28),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(28),
         child: Column(
           children: [
             // Visualization Card
-            OracleUI.glassContainer(
-              padding: EdgeInsets.all(32),
-              borderRadius: BorderRadius.circular(32),
-              borderColor: Theme.of(context).dividerColor.withValues(alpha: 0.1),
+            Container(
+              padding: const EdgeInsets.all(32),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(32),
+                border: Border.all(color: AppTheme.secondaryBorder(context)),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.03),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
               child: Column(
                 children: [
                   Stack(
@@ -222,9 +251,9 @@ class _BudgetTrackerScreenState extends State<BudgetTrackerScreen> {
                             )
                           ),
                           Text(
-                            "EXHAUSTED", 
+                            "USED", 
                             style: GoogleFonts.inter(
-                              color: AppTheme.textSecondary(context).withValues(alpha: 0.6), 
+                              color: AppTheme.textSecondary(context), 
                               fontSize: 10, 
                               fontWeight: FontWeight.w900, 
                               letterSpacing: 2
@@ -234,7 +263,7 @@ class _BudgetTrackerScreenState extends State<BudgetTrackerScreen> {
                       ),
                     ],
                   ),
-                  SizedBox(height: 48),
+                  const SizedBox(height: 48),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -246,17 +275,17 @@ class _BudgetTrackerScreenState extends State<BudgetTrackerScreen> {
               ),
             ).animate().fadeIn(duration: 600.ms).scale(begin: const Offset(0.95, 0.95)),
 
-            SizedBox(height: 48),
+            const SizedBox(height: 48),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                OracleUI.neonText(
+                Text(
                   "EXPENSE LEDGER",
                   style: GoogleFonts.inter(
                     fontSize: 12, 
                     fontWeight: FontWeight.w900, 
                     letterSpacing: 2, 
-                    color: AppTheme.textPrimary(context)
+                    color: AppTheme.textSecondary(context),
                   ),
                 ),
                 Text(
@@ -265,7 +294,7 @@ class _BudgetTrackerScreenState extends State<BudgetTrackerScreen> {
                 ),
               ],
             ),
-            SizedBox(height: 24),
+            const SizedBox(height: 24),
 
             if (widget.plan.realizedExpenses.isEmpty)
               _buildEmptyState()
@@ -273,7 +302,6 @@ class _BudgetTrackerScreenState extends State<BudgetTrackerScreen> {
               ...widget.plan.realizedExpenses.reversed.map((e) => _buildExpenseItem(e)),
           ],
         ),
-      ),
       ),
     );
   }
@@ -290,26 +318,28 @@ class _BudgetTrackerScreenState extends State<BudgetTrackerScreen> {
   }
 
   Widget _buildEmptyState() {
-    return OracleUI.glassContainer(
+    return Container(
       width: double.infinity,
-      padding: EdgeInsets.all(48),
-      borderRadius: BorderRadius.circular(32),
-      borderColor: Theme.of(context).dividerColor.withValues(alpha: 0.1),
+      padding: const EdgeInsets.all(48),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(32),
+        border: Border.all(color: AppTheme.secondaryBorder(context)),
+      ),
       child: Column(
         children: [
           Icon(Icons.receipt_long_outlined, size: 48, color: AppTheme.textSecondary(context).withValues(alpha: 0.3)),
-          SizedBox(height: 24),
+          const SizedBox(height: 24),
           Text(
             "NO ENTRIES DISCOVERED", 
             style: GoogleFonts.inter(color: AppTheme.textSecondary(context).withValues(alpha: 0.6), fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: 2)
           ),
-          SizedBox(height: 24),
+          const SizedBox(height: 24),
           TextButton(
             onPressed: _addExpense, 
-            child: OracleUI.neonText(
+            child: Text(
               "SYNC FIRST ENTRY", 
               style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w900, color: Theme.of(context).colorScheme.primary),
-              glowColor: Theme.of(context).colorScheme.primary,
             )
           ),
         ],
@@ -318,15 +348,25 @@ class _BudgetTrackerScreenState extends State<BudgetTrackerScreen> {
   }
 
   Widget _buildExpenseItem(Expense e) {
-    return OracleUI.glassContainer(
-      margin: EdgeInsets.only(bottom: 16),
-      padding: EdgeInsets.all(20),
-      borderRadius: BorderRadius.circular(20),
-      borderColor: Theme.of(context).dividerColor.withValues(alpha: 0.1),
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppTheme.secondaryBorder(context)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.02),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
       child: Row(
         children: [
           _categoryIcon(e.category),
-          SizedBox(width: 20),
+          const SizedBox(width: 20),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -335,7 +375,7 @@ class _BudgetTrackerScreenState extends State<BudgetTrackerScreen> {
                   e.title.toUpperCase(), 
                   style: GoogleFonts.inter(color: AppTheme.textPrimary(context), fontWeight: FontWeight.w900, fontSize: 13, letterSpacing: 0.5)
                 ),
-                SizedBox(height: 4),
+                const SizedBox(height: 4),
                 Text(
                   DateFormat('MMM dd, HH:mm').format(e.timestamp), 
                   style: GoogleFonts.inter(color: AppTheme.textSecondary(context).withValues(alpha: 0.6), fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 1)
@@ -343,7 +383,7 @@ class _BudgetTrackerScreenState extends State<BudgetTrackerScreen> {
               ],
             ),
           ),
-          OracleUI.neonText(
+          Text(
             _currencyFormat.format(e.amountLkr), 
             style: GoogleFonts.outfit(fontWeight: FontWeight.w900, color: AppTheme.textPrimary(context), fontSize: 16, letterSpacing: -0.5)
           ),
@@ -361,10 +401,12 @@ class _BudgetTrackerScreenState extends State<BudgetTrackerScreen> {
       case 'tickets': icon = Icons.confirmation_number; color = Colors.purpleAccent; break;
       default: icon = Icons.shopping_bag; color = Colors.tealAccent;
     }
-    return OracleUI.glassContainer(
-      padding: EdgeInsets.all(10),
-      borderRadius: BorderRadius.circular(10),
-      borderColor: color.withValues(alpha: 0.1),
+    return Container(
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(10),
+      ),
       child: Icon(icon, size: 18, color: color),
     );
   }

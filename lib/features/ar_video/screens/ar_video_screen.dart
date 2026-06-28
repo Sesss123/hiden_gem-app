@@ -246,10 +246,10 @@ class _ARVideoScreenState extends State<ARVideoScreen>
             constraints: const BoxConstraints(maxHeight: 420),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(32),
-              border: Border.all(color: AppTheme.sigiriyaOchre(context).withValues(alpha: 0.7), width: 2),
+              border: Border.all(color: AppPalette.rust.withValues(alpha: 0.7), width: 2),
               boxShadow: [
                 BoxShadow(
-                  color: AppTheme.sigiriyaOchre(context).withValues(alpha: 0.4),
+                  color: AppPalette.rust.withValues(alpha: 0.4),
                   blurRadius: 40, spreadRadius: 5,
                 ),
               ],
@@ -274,7 +274,7 @@ class _ARVideoScreenState extends State<ARVideoScreen>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const CircularProgressIndicator(color: Color(0xFFFFB300)),
+            const CircularProgressIndicator(color: AppPalette.rust),
             const SizedBox(height: 20),
             Text(
               'Preparing time portal…',
@@ -299,7 +299,7 @@ class _ARVideoScreenState extends State<ARVideoScreen>
           const SizedBox(height: 24),
           TextButton(
             onPressed: () { setState(() { _hasError = false; }); _initVideo(); },
-            child: const Text('Retry', style: TextStyle(color: Color(0xFFFFB300))),
+            child: const Text('Retry', style: TextStyle(color: AppPalette.rust)),
           ),
         ]),
       ),
@@ -337,12 +337,12 @@ class _ARVideoScreenState extends State<ARVideoScreen>
                 decoration: BoxDecoration(
                   color: Colors.black54,
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: AppTheme.sigiriyaOchre(context).withValues(alpha: 0.4)),
+                  border: Border.all(color: AppPalette.rust.withValues(alpha: 0.4)),
                 ),
                 child: Text(
                   widget.content.name.toUpperCase(),
                   style: GoogleFonts.outfit(
-                    color: AppTheme.sigiriyaOchre(context),
+                    color: AppPalette.rust,
                     fontSize: 12, fontWeight: FontWeight.bold, letterSpacing: 2,
                   ),
                 ),
@@ -433,15 +433,15 @@ class _ARVideoScreenState extends State<ARVideoScreen>
         decoration: BoxDecoration(
           color: Colors.black.withValues(alpha: 0.8),
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: AppTheme.sigiriyaOchre(context).withValues(alpha: 0.3)),
+          border: Border.all(color: AppPalette.rust.withValues(alpha: 0.3)),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            SizedBox(
+            const SizedBox(
               width: 32, height: 32,
               child: CircularProgressIndicator(
-                color: AppTheme.sigiriyaOchre(context),
+                color: AppPalette.rust,
                 strokeWidth: 3,
               ),
             ),

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import '../../core/theme/oracle_ui_system.dart';
+import '../../core/theme/app_theme.dart';
 import '../../data/repositories/marketplace_repository.dart';
 import '../../data/models/guide_listing.dart';
 import 'guide_public_profile_screen.dart';
@@ -35,12 +35,11 @@ class _GuideMarketplaceScreenState extends ConsumerState<GuideMarketplaceScreen>
     );
 
     return Scaffold(
-      backgroundColor: Colors.transparent,
-      body: OracleUI.auraBackground(
-        child: CustomScrollView(
-          physics: const BouncingScrollPhysics(),
-          slivers: [
-            _buildAppBar(),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      body: CustomScrollView(
+        physics: const BouncingScrollPhysics(),
+        slivers: [
+          _buildAppBar(),
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
@@ -67,7 +66,6 @@ class _GuideMarketplaceScreenState extends ConsumerState<GuideMarketplaceScreen>
             ),
           ],
         ),
-      ),
       bottomNavigationBar: const BannerAdWidget(),
     );
   }
@@ -78,21 +76,21 @@ class _GuideMarketplaceScreenState extends ConsumerState<GuideMarketplaceScreen>
       backgroundColor: Colors.transparent,
       elevation: 0,
       leading: IconButton(
-        icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 20),
+        icon: Icon(Icons.arrow_back_ios_new_rounded, color: AppTheme.textPrimary(context), size: 20),
         onPressed: () => Navigator.pop(context),
       ),
-      title: OracleUI.neonText(
+      title: Text(
         "EXPLORE MISSIONS",
         style: GoogleFonts.outfit(
           fontSize: 16,
           fontWeight: FontWeight.w900,
           letterSpacing: 4,
-          color: Colors.white,
+          color: AppTheme.textPrimary(context),
         ),
       ),
       actions: [
         IconButton(
-          icon: const Icon(Icons.tune_rounded, color: Colors.white70),
+          icon: Icon(Icons.tune_rounded, color: AppTheme.textSecondary(context)),
           onPressed: _showFilterSheet,
         ),
       ],
@@ -100,17 +98,22 @@ class _GuideMarketplaceScreenState extends ConsumerState<GuideMarketplaceScreen>
   }
 
   Widget _buildSearchHeader() {
-    return OracleUI.glassContainer(
+    return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20),
-      borderRadius: BorderRadius.circular(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppTheme.secondaryBorder(context)),
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4))],
+      ),
       child: TextField(
         onChanged: (v) => setState(() => _searchQuery = v),
-        style: const TextStyle(color: Colors.white),
+        style: GoogleFonts.inter(color: AppTheme.textPrimary(context)),
         decoration: InputDecoration(
           hintText: "Find your perfect guide...",
-          hintStyle: GoogleFonts.inter(color: Colors.white24, fontSize: 14),
+          hintStyle: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 14),
           border: InputBorder.none,
-          icon: const Icon(Icons.search_rounded, color: Colors.white38),
+          icon: Icon(Icons.search_rounded, color: AppTheme.textSecondary(context)),
         ),
       ),
     );
@@ -132,12 +135,12 @@ class _GuideMarketplaceScreenState extends ConsumerState<GuideMarketplaceScreen>
           children: [
             Row(
               children: [
-                const Icon(Icons.auto_awesome_rounded, color: Colors.amberAccent, size: 16),
+                Icon(Icons.auto_awesome_rounded, color: AppPalette.rust, size: 16),
                 const SizedBox(width: 8),
                 Text(
                   "FEATURED ELITE",
                   style: GoogleFonts.inter(
-                    color: Colors.white38,
+                    color: AppPalette.rust,
                     fontSize: 11,
                     fontWeight: FontWeight.w900,
                     letterSpacing: 2,
@@ -181,27 +184,17 @@ class _GuideMarketplaceScreenState extends ConsumerState<GuideMarketplaceScreen>
           MaterialPageRoute(builder: (context) => GuidePublicProfileScreen(guideId: guide.guideId)),
         );
       },
-      child: OracleUI.glassContainer(
+      child: Container(
         width: 280,
         margin: const EdgeInsets.only(right: 16),
-        padding: EdgeInsets.zero,
-        borderRadius: BorderRadius.circular(24),
-        borderColor: Colors.amberAccent.withValues(alpha: 0.1),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: AppTheme.secondaryBorder(context)),
+          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4))],
+        ),
         child: Stack(
           children: [
-            // Background Image/Gradient
-            Positioned.fill(
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(24),
-                  gradient: LinearGradient(
-                    colors: [Colors.black.withValues(alpha: 0.8), Colors.transparent],
-                    begin: Alignment.bottomCenter,
-                    end: Alignment.topCenter,
-                  ),
-                ),
-              ),
-            ),
             // Info
             Padding(
               padding: const EdgeInsets.all(20),
@@ -214,30 +207,30 @@ class _GuideMarketplaceScreenState extends ConsumerState<GuideMarketplaceScreen>
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                         decoration: BoxDecoration(
-                          color: Colors.amberAccent.withValues(alpha: 0.2),
+                          color: AppPalette.rust.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: Colors.amberAccent.withValues(alpha: 0.3)),
+                          border: Border.all(color: AppPalette.rust.withValues(alpha: 0.2)),
                         ),
                         child: Text(
                           guide.trustTierPublic.toUpperCase(),
-                          style: GoogleFonts.inter(color: Colors.amberAccent, fontSize: 9, fontWeight: FontWeight.w900),
+                          style: GoogleFonts.inter(color: AppPalette.rust, fontSize: 9, fontWeight: FontWeight.w900),
                         ),
                       ),
                       const Spacer(),
                       Text(
                         "${guide.currency} ${guide.hourlyRate}/hr",
-                        style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
+                        style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.bold, fontSize: 13),
                       ),
                     ],
                   ),
                   const SizedBox(height: 8),
                   Text(
                     guide.displayName,
-                    style: GoogleFonts.outfit(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                    style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   Text(
                     guide.specializations.take(2).join(" • "),
-                    style: GoogleFonts.inter(color: Colors.white54, fontSize: 11),
+                    style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 11),
                   ),
                 ],
               ),
@@ -255,7 +248,7 @@ class _GuideMarketplaceScreenState extends ConsumerState<GuideMarketplaceScreen>
         Text(
           "GUIDE FLEET",
           style: GoogleFonts.inter(
-            color: Colors.white,
+            color: AppTheme.textPrimary(context),
             fontSize: 14,
             fontWeight: FontWeight.w900,
             letterSpacing: 2,
@@ -264,7 +257,7 @@ class _GuideMarketplaceScreenState extends ConsumerState<GuideMarketplaceScreen>
         Text(
           "VERIFIED TRUST",
           style: GoogleFonts.inter(
-            color: Colors.white24,
+            color: AppTheme.textSecondary(context),
             fontSize: 10,
             fontWeight: FontWeight.bold,
           ),
@@ -284,11 +277,13 @@ class _GuideMarketplaceScreenState extends ConsumerState<GuideMarketplaceScreen>
           final isSelected = _selectedCategory == cat;
           return Padding(
             padding: const EdgeInsets.only(right: 10),
-            child: OracleUI.glassChip(
-              context: context,
-              label: cat,
-              isSelected: isSelected,
-              onTap: () => setState(() => _selectedCategory = isSelected ? null : cat),
+            child: FilterChip(
+              label: Text(cat, style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.bold, color: isSelected ? Colors.white : AppTheme.textPrimary(context))),
+              selected: isSelected,
+              onSelected: (_) => setState(() => _selectedCategory = isSelected ? null : cat),
+              selectedColor: Theme.of(context).primaryColor,
+              backgroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12), side: BorderSide(color: AppTheme.secondaryBorder(context))),
             ),
           );
         },
@@ -325,7 +320,7 @@ class _GuideMarketplaceScreenState extends ConsumerState<GuideMarketplaceScreen>
               padding: const EdgeInsets.all(40.0),
               child: Text(
                 "No guides match your query",
-                style: GoogleFonts.inter(color: Colors.white24),
+                style: GoogleFonts.inter(color: AppTheme.textSecondary(context)),
               ),
             ),
           );
@@ -369,10 +364,13 @@ class _GuideMarketplaceScreenState extends ConsumerState<GuideMarketplaceScreen>
           context,
           MaterialPageRoute(builder: (context) => GuidePublicProfileScreen(guideId: guide.guideId)),
         ),
-        child: OracleUI.glassContainer(
-          padding: EdgeInsets.zero,
-          borderRadius: BorderRadius.circular(28),
-          borderColor: tierColor.withValues(alpha: 0.08),
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(28),
+            border: Border.all(color: AppTheme.secondaryBorder(context)),
+            boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4))],
+          ),
           child: IntrinsicHeight(
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -443,7 +441,7 @@ class _GuideMarketplaceScreenState extends ConsumerState<GuideMarketplaceScreen>
                                       Flexible(
                                         child: Text(
                                           guide.displayName,
-                                          style: GoogleFonts.outfit(color: Colors.white, fontSize: 17, fontWeight: FontWeight.w800),
+                                          style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontSize: 17, fontWeight: FontWeight.w800),
                                           overflow: TextOverflow.ellipsis,
                                         ),
                                       ),
@@ -454,7 +452,7 @@ class _GuideMarketplaceScreenState extends ConsumerState<GuideMarketplaceScreen>
                                   const SizedBox(height: 4),
                                   Text(
                                     "${guide.guideCategory} • ${guide.regions.first}",
-                                    style: GoogleFonts.inter(color: Colors.white30, fontSize: 11, fontWeight: FontWeight.w500),
+                                    style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 11, fontWeight: FontWeight.w500),
                                   ),
                                 ],
                               ),
@@ -472,11 +470,11 @@ class _GuideMarketplaceScreenState extends ConsumerState<GuideMarketplaceScreen>
                                 children: [
                                   Text(
                                     "${guide.currency} ${guide.hourlyRate}",
-                                    style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 15),
+                                    style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.w900, fontSize: 15),
                                   ),
                                   Text(
                                     "/hr",
-                                    style: GoogleFonts.inter(color: Colors.white24, fontSize: 9, fontWeight: FontWeight.w700),
+                                    style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 9, fontWeight: FontWeight.w700),
                                   ),
                                 ],
                               ),
@@ -532,13 +530,13 @@ class _GuideMarketplaceScreenState extends ConsumerState<GuideMarketplaceScreen>
                               margin: const EdgeInsets.only(right: 6),
                               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                               decoration: BoxDecoration(
-                                color: Colors.white.withValues(alpha: 0.04),
+                                color: Colors.grey.shade100,
                                 borderRadius: BorderRadius.circular(10),
-                                border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
+                                border: Border.all(color: AppTheme.secondaryBorder(context)),
                               ),
                               child: Text(
                                 s,
-                                style: GoogleFonts.inter(color: Colors.white38, fontSize: 10, fontWeight: FontWeight.w600),
+                                style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 10, fontWeight: FontWeight.w600),
                               ),
                             )),
                             
@@ -584,34 +582,40 @@ class _GuideMarketplaceScreenState extends ConsumerState<GuideMarketplaceScreen>
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
-      builder: (context) => OracleUI.glassContainer(
+      builder: (context) => Container(
         padding: const EdgeInsets.all(32),
-        borderRadius: const BorderRadius.only(topLeft: Radius.circular(32), topRight: Radius.circular(32)),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.1), blurRadius: 20)],
+        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            OracleUI.neonText(
+            Text(
               "ADVANCED FILTERS",
-              style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.w900, letterSpacing: 2, color: Colors.white),
+              style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.w900, letterSpacing: 2, color: AppTheme.textPrimary(context)),
             ),
             const SizedBox(height: 24),
-            Text("REGION", style: GoogleFonts.inter(color: Colors.white24, fontSize: 10, fontWeight: FontWeight.w900)),
+            Text("REGION", style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 10, fontWeight: FontWeight.w900)),
             const SizedBox(height: 12),
             Wrap(
               spacing: 8,
-              children: _regions.map((r) => OracleUI.glassChip(
-                context: context,
-                label: r,
-                isSelected: _selectedRegion == r,
-                onTap: () => setState(() => _selectedRegion = _selectedRegion == r ? null : r),
+              children: _regions.map((r) => FilterChip(
+                label: Text(r, style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.bold, color: _selectedRegion == r ? Colors.white : AppTheme.textPrimary(context))),
+                selected: _selectedRegion == r,
+                onSelected: (_) => setState(() => _selectedRegion = _selectedRegion == r ? null : r),
+                selectedColor: Theme.of(context).primaryColor,
+                backgroundColor: Colors.white,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12), side: BorderSide(color: AppTheme.secondaryBorder(context))),
               )).toList(),
             ),
             const SizedBox(height: 32),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text("EXCELLENT TIERS ONLY", style: GoogleFonts.inter(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold)),
+                Text("EXCELLENT TIERS ONLY", style: GoogleFonts.inter(color: AppTheme.textPrimary(context), fontSize: 13, fontWeight: FontWeight.bold)),
                 Switch(
                   value: _hideLowerTiers,
                   activeThumbColor: const Color(0xFF00E676),
@@ -626,7 +630,7 @@ class _GuideMarketplaceScreenState extends ConsumerState<GuideMarketplaceScreen>
                 onPressed: () => Navigator.pop(context),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Theme.of(context).colorScheme.primary,
-                  foregroundColor: Colors.black,
+                  foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   padding: const EdgeInsets.symmetric(vertical: 16),
                 ),

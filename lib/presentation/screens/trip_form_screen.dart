@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../core/theme/oracle_ui_system.dart';
+
 import '../../core/theme/app_theme.dart';
 import '../widgets/custom_buttons.dart';
 import '../widgets/limit_reached_dialog.dart';
@@ -144,12 +144,13 @@ class _TripFormScreenState extends State<TripFormScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors.white,
         elevation: 0,
+        scrolledUnderElevation: 0,
+        shape: Border(bottom: BorderSide(color: AppTheme.secondaryBorder(context))),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new, size: 20, color: Theme.of(context).colorScheme.primary),
+          icon: Icon(Icons.arrow_back_ios_new, size: 20, color: AppTheme.textPrimary(context)),
           onPressed: () {
             HapticFeedback.lightImpact();
             _prevStep();
@@ -164,61 +165,45 @@ class _TripFormScreenState extends State<TripFormScreen> {
             },
             child: Text(
               "Exit", 
-              style: TextStyle(color: AppTheme.textSecondary(context)),
+              style: TextStyle(color: AppTheme.textSecondary(context), fontWeight: FontWeight.bold),
             ),
           ),
         ],
       ),
-      body: OracleUI.auraBackground(
-        child: Stack(
-          children: [
-            PageView(
-            controller: _pageController,
-            physics: const NeverScrollableScrollPhysics(),
-            onPageChanged: (i) {
-              setState(() => _currentStep = i);
-            },
-            children: [
-              _buildStep1(),
-              _buildStep2(),
-              _buildStep3(),
-              _buildStep4(),
-            ],
-          ),
-          ],
-        ),
+      body: PageView(
+        controller: _pageController,
+        physics: const NeverScrollableScrollPhysics(),
+        onPageChanged: (i) {
+          setState(() => _currentStep = i);
+        },
+        children: [
+          _buildStep1(),
+          _buildStep2(),
+          _buildStep3(),
+          _buildStep4(),
+        ],
       ),
       bottomNavigationBar: _buildBottomBar(),
     );
   }
 
   Widget _buildProgressBar() {
-    return OracleUI.glassContainer(
+    return Container(
       width: 140,
-      height: 8,
-      borderRadius: BorderRadius.circular(4),
-      borderColor: AppTheme.primaryBorder(context),
+      height: 6,
+      decoration: BoxDecoration(
+        color: AppTheme.secondaryBorder(context),
+        borderRadius: BorderRadius.circular(3),
+      ),
       child: Stack(
         children: [
           AnimatedContainer(
-            duration: const Duration(milliseconds: 600),
+            duration: const Duration(milliseconds: 400),
             curve: Curves.easeOutCubic,
             width: 140 * ((_currentStep + 1) / _totalSteps),
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
-                  Theme.of(context).colorScheme.primary,
-                ],
-              ),
-              borderRadius: BorderRadius.circular(4),
-              boxShadow: [
-                BoxShadow(
-                  color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.4),
-                  blurRadius: 8,
-                  spreadRadius: 1,
-                ),
-              ],
+              color: Theme.of(context).colorScheme.primary,
+              borderRadius: BorderRadius.circular(3),
             ),
           ),
         ],
@@ -228,7 +213,7 @@ class _TripFormScreenState extends State<TripFormScreen> {
 
   Widget _buildStep1() {
     return _stepLayout(
-      title: "Where should the\nOracle guide you?",
+      title: "Where should we\nguide you?",
       subtitle: "The Essentials",
       content: Column(
         children: [
@@ -241,7 +226,7 @@ class _TripFormScreenState extends State<TripFormScreen> {
             onChanged: (v) => _origin = v,
             initialText: _origin,
           ),
-          SizedBox(height: 24),
+          const SizedBox(height: 16),
           _cityAutocomplete(
             label: "Destination",
             hint: "Ella, Galle, Kandy...",
@@ -250,7 +235,7 @@ class _TripFormScreenState extends State<TripFormScreen> {
             onChanged: (v) => _destination = v,
             initialText: _destination,
           ),
-          SizedBox(height: 32),
+          const SizedBox(height: 16),
           _outlinedTile(icon: Icons.calendar_month, label: "Start Date", value: _formatDate(_startDate), onTap: _pickDate),
         ],
       ),
@@ -268,19 +253,19 @@ class _TripFormScreenState extends State<TripFormScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text("How many days?", style: GoogleFonts.inter(fontSize: 14, color: AppTheme.textSecondary(context))),
-              Text("$_days Days", style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.bold, color: AppTheme.modernGreen(context))),
+              Text("$_days Days", style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.primary)),
             ],
           ),
           Slider(
             value: _days.toDouble(),
             min: 1, max: 21, divisions: 20,
-            activeColor: AppTheme.modernGreen(context),
-            inactiveColor: AppTheme.modernGreen(context).withValues(alpha: 0.1),
+            activeColor: Theme.of(context).colorScheme.primary,
+            inactiveColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
             onChanged: (v) => setState(() => _days = v.toInt()),
           ),
-          SizedBox(height: 32),
+          const SizedBox(height: 24),
           _choiceGroup("Travel Standard", _styleOptions, _style, (v) => setState(() => _style = v)),
-          SizedBox(height: 32),
+          const SizedBox(height: 24),
           _budgetField(),
         ],
       ),
@@ -289,12 +274,12 @@ class _TripFormScreenState extends State<TripFormScreen> {
 
   Widget _buildStep3() {
     return _stepLayout(
-      title: "With whom do you\ntread the path?",
+      title: "With whom do you\ntravel?",
       subtitle: "Companions & Pace",
       content: Column(
         children: [
           _choiceGroup("Companions", _groupOptions, _groupType, (v) => setState(() => _groupType = v)),
-          SizedBox(height: 32),
+          const SizedBox(height: 24),
           _choiceGroup("Travel Pace", _paceOptions, _pace, (v) => setState(() => _pace = v)),
         ],
       ),
@@ -303,28 +288,36 @@ class _TripFormScreenState extends State<TripFormScreen> {
 
   Widget _buildStep4() {
     return _stepLayout(
-      title: "What stirs the soul\nof your traveler?",
+      title: "What stirs your\nsoul?",
       subtitle: "Interests & Passions",
       content: Wrap(
-        spacing: 12,
+        spacing: 8,
         runSpacing: 12,
         children: _interestOptions.map((opt) {
           final isSelected = _interests.contains(opt);
-          return FilterChip(
-            label: Text(opt, style: GoogleFonts.outfit(
-              color: isSelected ? Theme.of(context).colorScheme.onPrimary : Theme.of(context).colorScheme.onSurface,
-              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-            )),
-            selected: isSelected,
-            onSelected: (val) {
+          return GestureDetector(
+            onTap: () {
               HapticFeedback.selectionClick();
-              setState(() => val ? _interests.add(opt) : _interests.remove(opt));
+              setState(() => isSelected ? _interests.remove(opt) : _interests.add(opt));
             },
-            selectedColor: Theme.of(context).colorScheme.primary,
-            backgroundColor: Theme.of(context).cardColor,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-              side: BorderSide(color: isSelected ? Theme.of(context).colorScheme.primary : Theme.of(context).dividerColor.withValues(alpha: 0.2)),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              decoration: BoxDecoration(
+                color: isSelected ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.1) : Colors.white,
+                border: Border.all(
+                  color: isSelected ? Theme.of(context).colorScheme.primary : AppTheme.secondaryBorder(context),
+                  width: 1.5,
+                ),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Text(
+                opt,
+                style: GoogleFonts.inter(
+                  color: isSelected ? Theme.of(context).colorScheme.primary : AppTheme.textSecondary(context),
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
+                  fontSize: 12,
+                ),
+              ),
             ),
           );
         }).toList(),
@@ -334,29 +327,31 @@ class _TripFormScreenState extends State<TripFormScreen> {
 
   Widget _stepLayout({required String title, required String subtitle, required Widget content}) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(24, 140, 24, 40),
+      padding: const EdgeInsets.fromLTRB(24, 24, 24, 40),
+      physics: const BouncingScrollPhysics(),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             subtitle.toUpperCase(), 
             style: GoogleFonts.inter(
-              fontSize: 12, 
-              fontWeight: FontWeight.bold, 
-              color: Theme.of(context).colorScheme.primary, 
+              fontSize: 10, 
+              fontWeight: FontWeight.w800, 
+              color: AppTheme.textSecondary(context), 
               letterSpacing: 2,
             ),
           ).animate().fadeIn(duration: 400.ms).slideX(begin: -0.2),
-          SizedBox(height: 8),
-          OracleUI.neonText(
+          const SizedBox(height: 4),
+          Text(
             title, 
             style: GoogleFonts.outfit(
               fontSize: 28,
               color: AppTheme.textPrimary(context),
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w900,
+              height: 1.1,
             ),
           ).animate().fadeIn(duration: 600.ms, delay: 100.ms).slideX(begin: -0.1),
-          SizedBox(height: 48),
+          const SizedBox(height: 32),
           content.animate().fadeIn(duration: 800.ms, delay: 300.ms).slideY(begin: 0.1),
         ],
       ),
@@ -384,20 +379,23 @@ class _TripFormScreenState extends State<TripFormScreen> {
         onChanged(selection);
       },
       fieldViewBuilder: (context, controller, focusNode, onFieldSubmitted) {
-        return OracleUI.glassContainer(
-          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-          borderRadius: BorderRadius.circular(16),
-          borderColor: AppTheme.primaryBorder(context),
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: AppTheme.secondaryBorder(context)),
+          ),
           child: TextField(
             controller: controller,
             focusNode: focusNode,
             onChanged: onChanged,
             autofillHints: const [AutofillHints.addressCity],
-            style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontSize: 16),
+            style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontSize: 16, fontWeight: FontWeight.bold),
             decoration: InputDecoration(
               icon: Icon(icon, color: Theme.of(context).colorScheme.primary, size: 20),
               labelText: label,
-              labelStyle: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 13),
+              labelStyle: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 13, fontWeight: FontWeight.w600),
               hintText: hint,
               hintStyle: GoogleFonts.inter(color: AppTheme.textSecondary(context).withValues(alpha: 0.3), fontSize: 14),
               border: InputBorder.none,
@@ -411,11 +409,21 @@ class _TripFormScreenState extends State<TripFormScreen> {
           alignment: Alignment.topLeft,
           child: Material(
             color: Colors.transparent,
-            child: OracleUI.glassContainer(
-              margin: EdgeInsets.only(top: 4),
-              width: MediaQuery.of(context).size.width - 64,
-              borderRadius: BorderRadius.circular(16),
-              borderColor: AppTheme.primaryBorder(context),
+            child: Container(
+              margin: const EdgeInsets.only(top: 4),
+              width: MediaQuery.of(context).size.width - 48,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: AppTheme.secondaryBorder(context)),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.05),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
               child: ListView.builder(
                 padding: EdgeInsets.zero,
                 shrinkWrap: true,
@@ -425,12 +433,12 @@ class _TripFormScreenState extends State<TripFormScreen> {
                   return InkWell(
                     onTap: () => onSelected(city),
                     child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                       child: Row(
                         children: [
                           Icon(Icons.location_on, size: 14, color: Theme.of(context).colorScheme.primary),
-                          SizedBox(width: 10),
-                          Text(city, style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontSize: 14)),
+                          const SizedBox(width: 10),
+                          Text(city, style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontSize: 14, fontWeight: FontWeight.w600)),
                         ],
                       ),
                     ),
@@ -445,10 +453,13 @@ class _TripFormScreenState extends State<TripFormScreen> {
   }
 
   Widget _budgetField() {
-    return OracleUI.glassContainer(
-      padding: EdgeInsets.all(20),
-      borderRadius: BorderRadius.circular(16),
-      borderColor: AppTheme.primaryBorder(context),
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppTheme.secondaryBorder(context)),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -460,14 +471,14 @@ class _TripFormScreenState extends State<TripFormScreen> {
               color: AppTheme.textSecondary(context),
             ),
           ),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
           TextFormField(
             controller: _budgetController,
             autofillHints: const [AutofillHints.transactionAmount],
             style: GoogleFonts.outfit(
               fontSize: 32, 
-              fontWeight: FontWeight.bold, 
-              color: Theme.of(context).colorScheme.primary,
+              fontWeight: FontWeight.w900, 
+              color: AppTheme.textPrimary(context),
             ),
             keyboardType: TextInputType.number,
             decoration: InputDecoration(
@@ -486,17 +497,34 @@ class _TripFormScreenState extends State<TripFormScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _itemHeader(label),
-        SizedBox(height: 12),
+        const SizedBox(height: 12),
         Wrap(
-          spacing: 12,
+          spacing: 8,
           runSpacing: 12,
           children: options.map((opt) {
             final isSelected = current == opt;
-            return OracleUI.glassChip(
-              context: context,
-              label: opt.toUpperCase(),
-              isSelected: isSelected,
+            return GestureDetector(
               onTap: () => onSelect(opt),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                decoration: BoxDecoration(
+                  color: isSelected ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.1) : Colors.white,
+                  border: Border.all(
+                    color: isSelected ? Theme.of(context).colorScheme.primary : AppTheme.secondaryBorder(context),
+                    width: 1.5,
+                  ),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  opt.toUpperCase(),
+                  style: GoogleFonts.inter(
+                    color: isSelected ? Theme.of(context).colorScheme.primary : AppTheme.textSecondary(context),
+                    fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
+                    fontSize: 11,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+              ),
             );
           }).toList(),
         ),
@@ -518,16 +546,19 @@ class _TripFormScreenState extends State<TripFormScreen> {
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(16),
-      child: OracleUI.glassContainer(
-        padding: EdgeInsets.all(16),
-        borderRadius: BorderRadius.circular(16),
-        borderColor: AppTheme.primaryBorder(context),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: AppTheme.secondaryBorder(context)),
+        ),
         child: Row(
           children: [
             Icon(icon, color: Theme.of(context).colorScheme.primary),
-            SizedBox(width: 16),
+            const SizedBox(width: 16),
             Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text(label, style: TextStyle(fontSize: 12, color: AppTheme.textSecondary(context))),
+              Text(label, style: TextStyle(fontSize: 12, color: AppTheme.textSecondary(context), fontWeight: FontWeight.w600)),
               Text(value, style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 16, color: AppTheme.textPrimary(context))),
             ]),
           ],
@@ -537,10 +568,12 @@ class _TripFormScreenState extends State<TripFormScreen> {
   }
 
   Widget _buildBottomBar() {
-    return OracleUI.glassContainer(
-      padding: const EdgeInsets.fromLTRB(24, 12, 24, 32),
-      borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-      borderColor: AppTheme.primaryBorder(context),
+    return Container(
+      padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border(top: BorderSide(color: AppTheme.secondaryBorder(context))),
+      ),
       child: PrimaryButton(
         label: _currentStep == _totalSteps - 1 ? "CONSULT ORACLE" : "CONTINUE",
         onPressed: () {
@@ -556,7 +589,7 @@ class _TripFormScreenState extends State<TripFormScreen> {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (_) => Center(child: CircularProgressIndicator()),
+      builder: (_) => Center(child: CircularProgressIndicator(color: Theme.of(context).colorScheme.primary)),
     );
 
     // AI Trip Limits check

@@ -1,0 +1,1524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hidden Gems SL — UI Design System</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* Core Palette */
+    --bg: #080B0F;
+    --surface: #0F1419;
+    --card: #141C24;
+    --card-hover: #1A2430;
+    --border: rgba(255,255,255,0.07);
+    --border-accent: rgba(74,222,128,0.2);
+
+    /* Brand Colors */
+    --gem: #22C55E;         /* Primary — Emerald Green */
+    --gem-dim: #16A34A;
+    --gem-glow: rgba(34,197,94,0.15);
+    --gem-glow-strong: rgba(34,197,94,0.3);
+    --gold: #C19A6B;        /* Heritage Gold */
+    --gold-glow: rgba(193,154,107,0.2);
+    --blue: #3B82F6;        /* Accent Blue */
+
+    /* Text */
+    --text: #F8FAFC;
+    --text-sub: rgba(248,250,252,0.55);
+    --text-dim: rgba(248,250,252,0.3);
+
+    /* Status */
+    --success: #22C55E;
+    --warning: #F59E0B;
+    --error: #EF4444;
+
+    /* Spacing */
+    --r-sm: 12px;
+    --r-md: 18px;
+    --r-lg: 24px;
+    --r-xl: 32px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #050709;
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── COVER PAGE ── */
+  .cover {
+    min-height: 100vh;
+    background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(34,197,94,0.12) 0%, transparent 60%),
+                radial-gradient(ellipse 40% 40% at 80% 80%, rgba(193,154,107,0.07) 0%, transparent 50%),
+                #050709;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  .cover::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg, transparent, transparent 39px,
+      rgba(34,197,94,0.03) 39px, rgba(34,197,94,0.03) 40px
+    ), repeating-linear-gradient(
+      90deg, transparent, transparent 39px,
+      rgba(34,197,94,0.03) 39px, rgba(34,197,94,0.03) 40px
+    );
+  }
+  .cover-tag {
+    font-family: 'Outfit', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 4px;
+    color: var(--gem);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    position: relative;
+  }
+  .cover-title {
+    font-family: 'Outfit', sans-serif;
+    font-size: clamp(44px, 8vw, 88px);
+    font-weight: 900;
+    line-height: 0.95;
+    text-align: center;
+    position: relative;
+  }
+  .cover-title .gem-word {
+    color: var(--gem);
+    text-shadow: 0 0 60px rgba(34,197,94,0.4);
+  }
+  .cover-sub {
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    color: var(--text-sub);
+    margin-top: 20px;
+    letter-spacing: 0.5px;
+    text-align: center;
+    position: relative;
+  }
+  .cover-chips {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 40px;
+    position: relative;
+  }
+  .chip {
+    background: rgba(34,197,94,0.08);
+    border: 1px solid rgba(34,197,94,0.2);
+    border-radius: 100px;
+    padding: 7px 16px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gem);
+    letter-spacing: 0.5px;
+  }
+  .chip.gold {
+    background: rgba(193,154,107,0.08);
+    border-color: rgba(193,154,107,0.2);
+    color: var(--gold);
+  }
+  .chip.blue {
+    background: rgba(59,130,246,0.08);
+    border-color: rgba(59,130,246,0.2);
+    color: var(--blue);
+  }
+
+  /* ── SECTION WRAPPER ── */
+  .section {
+    padding: 80px 32px;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+  .section-header {
+    margin-bottom: 48px;
+  }
+  .section-eyebrow {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    color: var(--gem);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .section-title {
+    font-family: 'Outfit', sans-serif;
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--text);
+    line-height: 1.2;
+  }
+  .section-desc {
+    font-size: 14px;
+    color: var(--text-sub);
+    margin-top: 8px;
+    max-width: 600px;
+    line-height: 1.7;
+  }
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border), transparent);
+    margin: 0 32px;
+  }
+
+  /* ── COLORS ── */
+  .color-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 16px;
+  }
+  .color-swatch {
+    border-radius: var(--r-md);
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .swatch-block {
+    height: 80px;
+  }
+  .swatch-info {
+    background: var(--card);
+    padding: 12px 14px;
+  }
+  .swatch-name {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 2px;
+  }
+  .swatch-hex {
+    font-size: 11px;
+    color: var(--text-dim);
+    font-family: monospace;
+  }
+  .swatch-role {
+    font-size: 10px;
+    color: var(--text-sub);
+    margin-top: 4px;
+  }
+
+  /* ── TYPE SCALE ── */
+  .type-row {
+    display: flex;
+    align-items: baseline;
+    gap: 24px;
+    padding: 20px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .type-meta {
+    width: 120px;
+    flex-shrink: 0;
+  }
+  .type-label { font-size: 10px; font-weight: 700; letter-spacing: 2px; color: var(--gem); text-transform: uppercase; }
+  .type-spec { font-size: 10px; color: var(--text-dim); margin-top: 2px; }
+
+  /* ── COMPONENTS ── */
+  .comp-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 24px;
+  }
+  .comp-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    padding: 28px;
+  }
+  .comp-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+
+  /* Button variants */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    border-radius: 100px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    border: none;
+    letter-spacing: 0.3px;
+    transition: all 0.2s;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, #22C55E, #16A34A);
+    color: #000;
+    box-shadow: 0 0 24px rgba(34,197,94,0.3);
+  }
+  .btn-glass {
+    background: rgba(255,255,255,0.05);
+    color: var(--text);
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+  .btn-gold {
+    background: linear-gradient(135deg, #C19A6B, #A0784A);
+    color: #fff;
+  }
+  .btn-ghost {
+    background: transparent;
+    color: var(--gem);
+    border: 1px solid rgba(34,197,94,0.3);
+  }
+  .btn-danger {
+    background: rgba(239,68,68,0.1);
+    color: #EF4444;
+    border: 1px solid rgba(239,68,68,0.2);
+  }
+  .btn-sm { padding: 8px 16px; font-size: 12px; }
+  .btn-lg { padding: 16px 36px; font-size: 16px; }
+
+  /* Glass card */
+  .glass-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: var(--r-lg);
+    backdrop-filter: blur(20px);
+  }
+
+  /* Input */
+  .input-field {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+    padding: 14px 18px 14px 44px;
+    color: var(--text);
+    font-size: 14px;
+    width: 100%;
+    font-family: 'Inter', sans-serif;
+    position: relative;
+  }
+  .input-field:focus { outline: none; border-color: rgba(34,197,94,0.4); }
+  .input-wrap { position: relative; }
+  .input-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-dim); font-size: 16px; }
+
+  /* Badge */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    border-radius: 100px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+  .badge-gem { background: var(--gem-glow); color: var(--gem); border: 1px solid rgba(34,197,94,0.25); }
+  .badge-gold { background: var(--gold-glow); color: var(--gold); border: 1px solid rgba(193,154,107,0.25); }
+  .badge-blue { background: rgba(59,130,246,0.1); color: var(--blue); border: 1px solid rgba(59,130,246,0.2); }
+  .badge-dim { background: rgba(255,255,255,0.05); color: var(--text-sub); border: 1px solid var(--border); }
+
+  /* Rating stars */
+  .stars { color: var(--gold); font-size: 14px; letter-spacing: 1px; }
+
+  /* ── PHONE FRAMES ── */
+  .screens-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 40px;
+    align-items: start;
+  }
+  .phone-frame {
+    background: #0A0D12;
+    border-radius: 44px;
+    border: 1.5px solid rgba(255,255,255,0.08);
+    box-shadow:
+      0 0 0 1px rgba(0,0,0,0.6),
+      0 32px 64px rgba(0,0,0,0.6),
+      inset 0 1px 0 rgba(255,255,255,0.04);
+    overflow: hidden;
+    position: relative;
+    aspect-ratio: 9/19.5;
+    max-width: 300px;
+    margin: 0 auto;
+  }
+  .phone-notch {
+    position: absolute;
+    top: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90px;
+    height: 26px;
+    background: #0A0D12;
+    border-radius: 30px;
+    z-index: 10;
+    border: 1.5px solid rgba(255,255,255,0.06);
+  }
+  .phone-screen {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    border-radius: 43px;
+    position: relative;
+  }
+
+  /* ── SCREEN CONTENT STYLES ── */
+  .sc-bg {
+    width: 100%; height: 100%;
+    background: var(--bg);
+    position: absolute;
+    inset: 0;
+  }
+  .sc-hero-img {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 48%;
+    background: linear-gradient(180deg, rgba(34,197,94,0.06) 0%, transparent 100%);
+    overflow: hidden;
+  }
+  .sc-content { position: absolute; inset: 0; display: flex; flex-direction: column; }
+  .sc-status { height: 44px; display: flex; align-items: flex-end; padding: 0 20px 6px; justify-content: space-between; }
+  .sc-status-time { font-size: 10px; font-weight: 700; color: var(--text); }
+  .sc-status-icons { display: flex; gap: 4px; align-items: center; }
+  .sc-status-dot { width: 3px; height: 3px; border-radius: 50%; background: var(--text); }
+
+  /* ONBOARDING */
+  .ob-screen {
+    background: radial-gradient(ellipse 100% 70% at 50% -10%, rgba(34,197,94,0.15) 0%, transparent 60%), #080B0F;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    padding: 50px 24px 36px;
+    text-align: center;
+  }
+  .ob-orb {
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, rgba(34,197,94,0.4), rgba(34,197,94,0.05));
+    border: 1px solid rgba(34,197,94,0.25);
+    box-shadow: 0 0 40px rgba(34,197,94,0.2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 32px;
+    margin: 0 auto 24px;
+  }
+  .ob-title { font-family: 'Outfit', sans-serif; font-size: 22px; font-weight: 900; color: #fff; line-height: 1.2; margin-bottom: 12px; }
+  .ob-sub { font-size: 11px; color: var(--text-sub); line-height: 1.6; margin-bottom: 28px; }
+  .ob-dots { display: flex; gap: 6px; justify-content: center; margin-bottom: 24px; }
+  .ob-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--border); }
+  .ob-dot.active { background: var(--gem); width: 18px; border-radius: 3px; }
+  .ob-btn { background: linear-gradient(135deg,#22C55E,#16A34A); color:#000; border:none; padding:14px 40px; border-radius:100px; font-family:'Outfit',sans-serif; font-size:13px; font-weight:800; width:100%; }
+
+  /* HOME SCREEN */
+  .hs-content { display: flex; flex-direction: column; height: 100%; }
+  .hs-hero {
+    height: 42%;
+    background:
+      linear-gradient(180deg, rgba(0,0,0,0.3) 0%, rgba(8,11,15,0.9) 80%, #080B0F 100%),
+      linear-gradient(135deg, #0d3b2e, #1a4a3a, #0a2a20);
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    padding: 16px;
+    flex-shrink: 0;
+  }
+  .hs-hero-text { }
+  .hs-hero-eyebrow { font-size: 7px; font-weight: 800; letter-spacing: 3px; color: var(--gem); margin-bottom: 4px; }
+  .hs-hero-title { font-family: 'Outfit',sans-serif; font-size: 18px; font-weight: 900; color: #fff; line-height: 1.1; }
+  .hs-hero-sub { font-size: 8px; color: rgba(255,255,255,0.5); letter-spacing: 2px; margin-top: 3px; }
+  .hs-search {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 100px;
+    padding: 8px 14px;
+    display: flex; align-items: center; gap: 8px;
+    margin: 10px 14px 0;
+  }
+  .hs-search-icon { color: var(--gem); font-size: 11px; }
+  .hs-search-text { font-size: 9px; color: var(--text-dim); }
+  .hs-body { flex: 1; overflow: auto; padding: 14px 14px 0; }
+  .hs-section-title { font-family:'Outfit',sans-serif; font-size: 11px; font-weight: 800; color: var(--text); margin-bottom: 10px; letter-spacing: 0.5px; }
+  .hs-gem-row { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 8px; }
+  .hs-gem-card {
+    flex-shrink: 0;
+    width: 110px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+  }
+  .hs-gem-img { height: 65px; position: relative; overflow: hidden; }
+  .hs-gem-img-bg {
+    width: 100%; height: 100%;
+    background: linear-gradient(135deg, #1a3a28, #0d2a1e);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+  }
+  .hs-gem-info { padding: 8px 8px 10px; }
+  .hs-gem-name { font-family:'Outfit',sans-serif; font-size: 9px; font-weight: 800; color: var(--text); line-height: 1.2; }
+  .hs-gem-loc { font-size: 7px; color: var(--text-dim); margin-top: 2px; }
+  .hs-gem-rating { font-size: 7px; color: var(--gold); margin-top: 3px; }
+  .hs-bottom-nav {
+    height: 56px;
+    background: rgba(8,11,15,0.95);
+    border-top: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-around;
+    flex-shrink: 0;
+  }
+  .hs-nav-item { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+  .hs-nav-icon { font-size: 14px; color: var(--text-dim); }
+  .hs-nav-icon.active { color: var(--gem); }
+  .hs-nav-label { font-size: 7px; color: var(--text-dim); }
+  .hs-nav-label.active { color: var(--gem); }
+  .hs-fab {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, rgba(34,197,94,0.7), rgba(22,163,74,0.9));
+    border: 1px solid rgba(34,197,94,0.4);
+    box-shadow: 0 0 20px rgba(34,197,94,0.3);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+    color: #000;
+  }
+
+  /* DISCOVERY SCREEN */
+  .disc-header { padding: 48px 14px 12px; }
+  .disc-title { font-family:'Outfit',sans-serif; font-size: 16px; font-weight: 900; color: var(--text); }
+  .disc-filters { display: flex; gap: 6px; overflow-x: auto; padding: 0 14px 12px; }
+  .disc-filter { padding: 6px 12px; border-radius: 100px; font-size: 8px; font-weight: 700; border: 1px solid var(--border); color: var(--text-sub); flex-shrink: 0; }
+  .disc-filter.active { background: var(--gem-glow); border-color: rgba(34,197,94,0.3); color: var(--gem); }
+  .disc-map-preview {
+    height: 100px;
+    margin: 0 14px;
+    border-radius: 14px;
+    background:
+      radial-gradient(circle at 40% 50%, rgba(34,197,94,0.08) 0%, transparent 60%),
+      repeating-linear-gradient(0deg, rgba(255,255,255,0.02) 0px, rgba(255,255,255,0.02) 1px, transparent 1px, transparent 20px),
+      repeating-linear-gradient(90deg, rgba(255,255,255,0.02) 0px, rgba(255,255,255,0.02) 1px, transparent 1px, transparent 20px),
+      #0F1419;
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+    margin-bottom: 14px;
+  }
+  .disc-map-pin {
+    position: absolute;
+    width: 10px; height: 10px; border-radius: 50%;
+    background: var(--gem);
+    box-shadow: 0 0 8px rgba(34,197,94,0.6);
+  }
+  .disc-map-pin:nth-child(1) { top: 30%; left: 40%; }
+  .disc-map-pin:nth-child(2) { top: 55%; left: 60%; background: var(--gold); box-shadow: 0 0 8px rgba(193,154,107,0.6); }
+  .disc-map-pin:nth-child(3) { top: 40%; left: 25%; }
+  .disc-list { padding: 0 14px; display: flex; flex-direction: column; gap: 10px; }
+  .disc-item {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    display: flex;
+    overflow: hidden;
+  }
+  .disc-item-img { width: 64px; flex-shrink: 0; background: linear-gradient(135deg, #1a3a28, #0d2a1e); display: flex; align-items: center; justify-content: center; font-size: 20px; }
+  .disc-item-info { padding: 10px 12px; flex: 1; }
+  .disc-item-name { font-family:'Outfit',sans-serif; font-size: 10px; font-weight: 800; color: var(--text); }
+  .disc-item-loc { font-size: 8px; color: var(--text-dim); margin-top: 2px; }
+  .disc-item-tags { display: flex; gap: 4px; margin-top: 6px; }
+  .disc-tag { background: var(--gem-glow); color: var(--gem); font-size: 7px; font-weight: 700; padding: 2px 6px; border-radius: 100px; }
+
+  /* PLACE DETAILS */
+  .pd-hero {
+    height: 45%;
+    background: linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(8,11,15,0.95) 90%, #080B0F 100%),
+                linear-gradient(135deg, #1a4a30, #0a2a1c);
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    padding: 14px;
+    flex-shrink: 0;
+  }
+  .pd-back { position: absolute; top: 48px; left: 14px; width: 28px; height: 28px; border-radius: 50%; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; font-size: 11px; }
+  .pd-badge-row { display: flex; gap: 6px; }
+  .pd-ar-badge { background: rgba(193,154,107,0.15); border: 1px solid rgba(193,154,107,0.3); border-radius: 100px; padding: 4px 10px; font-size: 7px; font-weight: 800; color: var(--gold); letter-spacing: 1px; }
+  .pd-body { flex: 1; overflow: auto; padding: 14px; }
+  .pd-title { font-family:'Outfit',sans-serif; font-size: 16px; font-weight: 900; color: var(--text); }
+  .pd-location { font-size: 9px; color: var(--text-dim); margin-top: 3px; }
+  .pd-stats { display: flex; gap: 10px; margin-top: 12px; }
+  .pd-stat { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 8px 12px; text-align: center; flex: 1; }
+  .pd-stat-val { font-family:'Outfit',sans-serif; font-size: 13px; font-weight: 900; color: var(--gem); }
+  .pd-stat-label { font-size: 7px; color: var(--text-dim); margin-top: 2px; }
+  .pd-ai-card { background: var(--gem-glow); border: 1px solid rgba(34,197,94,0.15); border-radius: 12px; padding: 10px 12px; margin-top: 12px; }
+  .pd-ai-eyebrow { font-size: 7px; font-weight: 800; color: var(--gem); letter-spacing: 2px; margin-bottom: 5px; }
+  .pd-ai-text { font-size: 8px; color: rgba(255,255,255,0.7); line-height: 1.6; }
+
+  /* PROFILE SCREEN */
+  .prof-header { padding: 48px 14px 14px; text-align: center; }
+  .prof-avatar { width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, rgba(34,197,94,0.3), rgba(22,163,74,0.1)); border: 2px solid rgba(34,197,94,0.4); display: flex; align-items: center; justify-content: center; font-size: 22px; margin: 0 auto 10px; }
+  .prof-name { font-family:'Outfit',sans-serif; font-size: 14px; font-weight: 800; color: var(--text); }
+  .prof-level { font-size: 8px; color: var(--gem); font-weight: 700; letter-spacing: 2px; margin-top: 3px; }
+  .prof-passport { background: var(--gold-glow); border: 1px solid rgba(193,154,107,0.2); border-radius: 12px; padding: 10px 14px; margin: 12px 14px; display: flex; align-items: center; gap: 10px; }
+  .prof-passport-icon { font-size: 20px; }
+  .prof-passport-text { flex: 1; }
+  .prof-passport-title { font-size: 9px; font-weight: 800; color: var(--gold); }
+  .prof-passport-sub { font-size: 7px; color: var(--text-sub); margin-top: 1px; }
+  .prof-menu { padding: 0 14px; display: flex; flex-direction: column; gap: 8px; }
+  .prof-menu-item { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; display: flex; align-items: center; gap: 10px; }
+  .prof-menu-icon { font-size: 14px; color: var(--gem); width: 24px; }
+  .prof-menu-label { font-size: 10px; font-weight: 600; color: var(--text); flex: 1; }
+  .prof-menu-arrow { font-size: 10px; color: var(--text-dim); }
+
+  /* LOGIN SCREEN */
+  .login-content {
+    display: flex; flex-direction: column; height: 100%;
+    padding: 52px 20px 28px;
+    background: radial-gradient(ellipse 80% 50% at 50% -5%, rgba(34,197,94,0.1) 0%, transparent 55%), #080B0F;
+  }
+  .login-logo { display: flex; align-items: center; gap: 8px; margin-bottom: 32px; }
+  .login-logo-orb { width: 32px; height: 32px; border-radius: 50%; background: radial-gradient(circle, rgba(34,197,94,0.5), rgba(34,197,94,0.1)); border: 1px solid rgba(34,197,94,0.3); display: flex; align-items: center; justify-content: center; font-size: 14px; }
+  .login-logo-text { font-family:'Outfit',sans-serif; font-size: 14px; font-weight: 900; color: var(--text); }
+  .login-title { font-family:'Outfit',sans-serif; font-size: 22px; font-weight: 900; color: var(--text); line-height: 1.2; margin-bottom: 6px; }
+  .login-sub { font-size: 10px; color: var(--text-sub); margin-bottom: 24px; line-height: 1.5; }
+  .login-input-wrap { position: relative; margin-bottom: 10px; }
+  .login-input { background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 12px; padding: 11px 14px 11px 36px; color: var(--text); font-size: 10px; width: 100%; font-family:'Inter',sans-serif; }
+  .login-input-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 11px; color: var(--text-dim); }
+  .login-btn { background: linear-gradient(135deg,#22C55E,#16A34A); color:#000; border:none; padding:13px; border-radius:12px; font-family:'Outfit',sans-serif; font-size:12px; font-weight:800; width:100%; margin-top:4px; box-shadow: 0 0 20px rgba(34,197,94,0.25); }
+  .login-or { text-align: center; font-size: 9px; color: var(--text-dim); margin: 12px 0; }
+  .login-google { background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 12px; padding: 11px; font-size: 10px; color: var(--text); width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; }
+
+  /* PREMIUM SCREEN */
+  .prem-content { display: flex; flex-direction: column; height: 100%; padding: 44px 14px 14px; }
+  .prem-header-row { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
+  .prem-crown { font-size: 18px; }
+  .prem-header-title { font-family:'Outfit',sans-serif; font-size: 15px; font-weight: 900; }
+  .prem-tier-cards { display: flex; flex-direction: column; gap: 8px; }
+  .prem-tier {
+    border-radius: 14px;
+    padding: 14px;
+    border: 1px solid;
+  }
+  .prem-tier.gem { background: var(--gem-glow); border-color: rgba(34,197,94,0.25); }
+  .prem-tier.gold { background: var(--gold-glow); border-color: rgba(193,154,107,0.25); }
+  .prem-tier.abyss { background: rgba(59,130,246,0.06); border-color: rgba(59,130,246,0.2); }
+  .prem-tier-name { font-family:'Outfit',sans-serif; font-size: 12px; font-weight: 900; margin-bottom: 4px; }
+  .prem-tier-price { font-size: 9px; color: var(--text-sub); margin-bottom: 8px; }
+  .prem-tier-features { display: flex; flex-direction: column; gap: 4px; }
+  .prem-feature { font-size: 8px; color: rgba(255,255,255,0.7); display: flex; gap: 5px; align-items: center; }
+  .prem-feature::before { content: '✓'; color: var(--gem); font-weight: 800; }
+
+  /* BOOKING SCREEN */
+  .book-content { padding: 44px 14px 14px; display: flex; flex-direction: column; height: 100%; }
+  .book-guide-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 12px; display: flex; gap: 10px; margin-bottom: 12px; }
+  .book-guide-avatar { width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, rgba(34,197,94,0.3), rgba(34,197,94,0.05)); border: 1px solid rgba(34,197,94,0.2); display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+  .book-guide-name { font-family:'Outfit',sans-serif; font-size: 11px; font-weight: 800; color: var(--text); }
+  .book-guide-tag { font-size: 8px; color: var(--gem); font-weight: 700; margin-top: 2px; }
+  .book-guide-rating { font-size: 8px; color: var(--gold); margin-top: 4px; }
+  .book-form-label { font-size: 8px; font-weight: 700; color: var(--text-sub); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; margin-top: 10px; }
+  .book-date-picker { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; display: flex; align-items: center; gap: 8px; font-size: 9px; color: var(--text-sub); }
+  .book-submit { background: linear-gradient(135deg,#22C55E,#16A34A); color:#000; border:none; padding:13px; border-radius:12px; font-family:'Outfit',sans-serif; font-size:12px; font-weight:800; width:100%; margin-top: 16px; }
+
+  /* SCREEN LABELS */
+  .screen-wrap { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+  .screen-label { font-size: 11px; font-weight: 700; color: var(--text-sub); text-align: center; letter-spacing: 0.5px; }
+  .screen-name { font-family:'Outfit',sans-serif; font-size: 13px; font-weight: 800; color: var(--text); text-align: center; }
+
+  /* ── ICON SYSTEM ── */
+  .icon-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 16px; }
+  .icon-item { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 16px 8px; background: var(--card); border: 1px solid var(--border); border-radius: 14px; }
+  .icon-glyph { font-size: 24px; }
+  .icon-label { font-size: 9px; color: var(--text-dim); text-align: center; }
+
+  /* ── SPACING SCALE ── */
+  .spacing-row { display: flex; align-items: center; gap: 16px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+  .spacing-block { background: var(--gem); border-radius: 3px; height: 16px; }
+  .spacing-info { font-size: 12px; color: var(--text-sub); }
+  .spacing-name { font-size: 11px; font-weight: 700; color: var(--text); }
+
+  /* ── MOTION NOTES ── */
+  .motion-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
+  .motion-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--r-md); padding: 20px; }
+  .motion-icon { font-size: 28px; margin-bottom: 12px; }
+  .motion-title { font-family:'Outfit',sans-serif; font-size: 14px; font-weight: 800; color: var(--text); margin-bottom: 6px; }
+  .motion-desc { font-size: 12px; color: var(--text-sub); line-height: 1.6; }
+  .motion-spec { font-size: 11px; color: var(--gem); margin-top: 8px; font-family: monospace; }
+
+  /* ── GLOW UTIL ── */
+  .glow-gem { box-shadow: 0 0 30px rgba(34,197,94,0.2); }
+  .glow-gold { box-shadow: 0 0 30px rgba(193,154,107,0.2); }
+
+  /* ── RESPONSIVE COLUMNS ── */
+  @media (max-width: 768px) {
+    .screens-grid { grid-template-columns: repeat(2, 1fr); }
+    .comp-grid { grid-template-columns: 1fr; }
+    .color-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══ COVER ══ -->
+<div class="cover">
+  <div class="cover-tag">🇱🇰 UI Design System v2.0</div>
+  <h1 class="cover-title">
+    HIDDEN<br><span class="gem-word">GEMS</span><br>SRI LANKA
+  </h1>
+  <p class="cover-sub">Complete design system · 46 screens · Natural dark theme</p>
+  <div class="cover-chips">
+    <span class="chip">Outfit + Inter</span>
+    <span class="chip gold">Heritage Gold</span>
+    <span class="chip">Emerald Green</span>
+    <span class="chip blue">AR Blue</span>
+    <span class="chip">Dark Native</span>
+  </div>
+</div>
+
+<!-- ══ 1. COLOR PALETTE ══ -->
+<div class="divider"></div>
+<div class="section">
+  <div class="section-header">
+    <div class="section-eyebrow">01 — Tokens</div>
+    <h2 class="section-title">Color Palette</h2>
+    <p class="section-desc">Natural-dark aesthetic. Backgrounds stay true black, green stays organic not neon, gold is warm earth — never flashy.</p>
+  </div>
+  <div class="color-grid">
+    <div class="color-swatch">
+      <div class="swatch-block" style="background:#080B0F;"></div>
+      <div class="swatch-info">
+        <div class="swatch-name">Background</div>
+        <div class="swatch-hex">#080B0F</div>
+        <div class="swatch-role">Main scaffold</div>
+      </div>
+    </div>
+    <div class="color-swatch">
+      <div class="swatch-block" style="background:#0F1419;"></div>
+      <div class="swatch-info">
+        <div class="swatch-name">Surface</div>
+        <div class="swatch-hex">#0F1419</div>
+        <div class="swatch-role">Sheets, drawers</div>
+      </div>
+    </div>
+    <div class="color-swatch">
+      <div class="swatch-block" style="background:#141C24;"></div>
+      <div class="swatch-info">
+        <div class="swatch-name">Card</div>
+        <div class="swatch-hex">#141C24</div>
+        <div class="swatch-role">All card faces</div>
+      </div>
+    </div>
+    <div class="color-swatch">
+      <div class="swatch-block" style="background:#22C55E;"></div>
+      <div class="swatch-info">
+        <div class="swatch-name">Gem Green</div>
+        <div class="swatch-hex">#22C55E</div>
+        <div class="swatch-role">Primary / CTA</div>
+      </div>
+    </div>
+    <div class="color-swatch">
+      <div class="swatch-block" style="background:#16A34A;"></div>
+      <div class="swatch-info">
+        <div class="swatch-name">Gem Deep</div>
+        <div class="swatch-hex">#16A34A</div>
+        <div class="swatch-role">Button gradient end</div>
+      </div>
+    </div>
+    <div class="color-swatch">
+      <div class="swatch-block" style="background:#C19A6B;"></div>
+      <div class="swatch-info">
+        <div class="swatch-name">Heritage Gold</div>
+        <div class="swatch-hex">#C19A6B</div>
+        <div class="swatch-role">Premium / Heritage</div>
+      </div>
+    </div>
+    <div class="color-swatch">
+      <div class="swatch-block" style="background:#3B82F6;"></div>
+      <div class="swatch-info">
+        <div class="swatch-name">AR Blue</div>
+        <div class="swatch-hex">#3B82F6</div>
+        <div class="swatch-role">AR overlays</div>
+      </div>
+    </div>
+    <div class="color-swatch">
+      <div class="swatch-block" style="background:rgba(34,197,94,0.12);border:1px solid rgba(34,197,94,0.2);"></div>
+      <div class="swatch-info">
+        <div class="swatch-name">Gem Glow</div>
+        <div class="swatch-hex">rgba(34,197,94,0.12)</div>
+        <div class="swatch-role">AI cards, tints</div>
+      </div>
+    </div>
+    <div class="color-swatch">
+      <div class="swatch-block" style="background:rgba(255,255,255,0.55);"></div>
+      <div class="swatch-info">
+        <div class="swatch-name">Text Sub</div>
+        <div class="swatch-hex">rgba(255,255,255,0.55)</div>
+        <div class="swatch-role">Secondary text</div>
+      </div>
+    </div>
+    <div class="color-swatch">
+      <div class="swatch-block" style="background:#EF4444;"></div>
+      <div class="swatch-info">
+        <div class="swatch-name">Error</div>
+        <div class="swatch-hex">#EF4444</div>
+        <div class="swatch-role">Errors, alerts</div>
+      </div>
+    </div>
+    <div class="color-swatch">
+      <div class="swatch-block" style="background:#F59E0B;"></div>
+      <div class="swatch-info">
+        <div class="swatch-name">Warning</div>
+        <div class="swatch-hex">#F59E0B</div>
+        <div class="swatch-role">Caution states</div>
+      </div>
+    </div>
+    <div class="color-swatch">
+      <div class="swatch-block" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);"></div>
+      <div class="swatch-info">
+        <div class="swatch-name">Glass</div>
+        <div class="swatch-hex">rgba(255,255,255,0.05)</div>
+        <div class="swatch-role">Glassmorphic cards</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 2. TYPOGRAPHY ══ -->
+<div class="divider"></div>
+<div class="section">
+  <div class="section-header">
+    <div class="section-eyebrow">02 — Typography</div>
+    <h2 class="section-title">Type Scale</h2>
+    <p class="section-desc">Outfit for display & brand — heavy, wide, confident. Inter for body — precise and readable at small sizes.</p>
+  </div>
+  <div class="type-row">
+    <div class="type-meta"><div class="type-label">Hero</div><div class="type-spec">Outfit 900 / 32px / LS 4</div></div>
+    <span style="font-family:'Outfit',sans-serif;font-size:32px;font-weight:900;letter-spacing:4px;color:#fff">DISCOVER SRI LANKA</span>
+  </div>
+  <div class="type-row">
+    <div class="type-meta"><div class="type-label">Display</div><div class="type-spec">Outfit 800 / 26px</div></div>
+    <span style="font-family:'Outfit',sans-serif;font-size:26px;font-weight:800;color:#fff">Sigiriya Rock Fortress</span>
+  </div>
+  <div class="type-row">
+    <div class="type-meta"><div class="type-label">Heading</div><div class="type-spec">Outfit 700 / 20px</div></div>
+    <span style="font-family:'Outfit',sans-serif;font-size:20px;font-weight:700;color:#fff">Nearby Hidden Gems</span>
+  </div>
+  <div class="type-row">
+    <div class="type-meta"><div class="type-label">Title</div><div class="type-spec">Outfit 600 / 16px</div></div>
+    <span style="font-family:'Outfit',sans-serif;font-size:16px;font-weight:600;color:#fff">Ella Nine Arch Bridge</span>
+  </div>
+  <div class="type-row">
+    <div class="type-meta"><div class="type-label">Body</div><div class="type-spec">Inter 400 / 14px</div></div>
+    <span style="font-size:14px;color:rgba(255,255,255,0.8);line-height:1.6">A hidden waterfall trail through tea estate jungle, discovered by the Oracle for adventurous travellers.</span>
+  </div>
+  <div class="type-row">
+    <div class="type-meta"><div class="type-label">Caption</div><div class="type-spec">Inter 500 / 12px</div></div>
+    <span style="font-size:12px;color:rgba(255,255,255,0.55)">2.3 km · Moderate · Best at sunrise</span>
+  </div>
+  <div class="type-row">
+    <div class="type-meta"><div class="type-label">Label</div><div class="type-spec">Outfit 700 / 10px / LS 2</div></div>
+    <span style="font-family:'Outfit',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;color:#22C55E;text-transform:uppercase">AI RECOMMENDED</span>
+  </div>
+  <div class="type-row">
+    <div class="type-meta"><div class="type-label">Micro</div><div class="type-spec">Outfit 800 / 9px / LS 3</div></div>
+    <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:800;letter-spacing:3px;color:rgba(255,255,255,0.3);text-transform:uppercase">HERITAGE TIER · PREMIUM</span>
+  </div>
+</div>
+
+<!-- ══ 3. COMPONENTS ══ -->
+<div class="divider"></div>
+<div class="section">
+  <div class="section-header">
+    <div class="section-eyebrow">03 — Components</div>
+    <h2 class="section-title">UI Component Library</h2>
+    <p class="section-desc">Every component scales from the same token set. Border-radius tokens: sm=12 md=18 lg=24 xl=32 pill=100.</p>
+  </div>
+  <div class="comp-grid">
+
+    <!-- Buttons -->
+    <div class="comp-card">
+      <div class="comp-label">Buttons</div>
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <button class="btn btn-primary">🌿 Explore Gem</button>
+        <button class="btn btn-primary btn-lg">Start Discovery</button>
+        <button class="btn btn-gold">✨ Go Premium</button>
+        <button class="btn btn-glass">🗺️ View on Map</button>
+        <button class="btn btn-ghost">Learn More</button>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-primary btn-sm">Book</button>
+          <button class="btn btn-glass btn-sm">Save</button>
+          <button class="btn btn-danger btn-sm">Remove</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Badges -->
+    <div class="comp-card">
+      <div class="comp-label">Badges & Tags</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;">
+        <span class="badge badge-gem">🌿 NATURE</span>
+        <span class="badge badge-gem">AI PICK</span>
+        <span class="badge badge-gold">👑 PREMIUM</span>
+        <span class="badge badge-gold">HERITAGE</span>
+        <span class="badge badge-blue">AR ENABLED</span>
+        <span class="badge badge-dim">MODERATE</span>
+        <span class="badge badge-dim">2.3 KM</span>
+        <span class="badge" style="background:rgba(239,68,68,0.1);color:#EF4444;border:1px solid rgba(239,68,68,0.2)">RESTRICTED</span>
+        <span class="badge" style="background:rgba(245,158,11,0.1);color:#F59E0B;border:1px solid rgba(245,158,11,0.2)">SEASONAL</span>
+      </div>
+      <div style="margin-top:16px;">
+        <div style="font-size:11px;color:var(--text-dim);margin-bottom:10px;text-transform:uppercase;letter-spacing:1.5px;font-weight:700">Ratings</div>
+        <div style="display:flex;gap:4px;align-items:center">
+          <span class="stars">★★★★★</span>
+          <span style="font-size:13px;font-weight:800;font-family:'Outfit',sans-serif;color:#fff;margin-left:6px">4.9</span>
+          <span style="font-size:11px;color:var(--text-dim);margin-left:4px">(284 reviews)</span>
+        </div>
+        <div style="display:flex;gap:4px;align-items:center;margin-top:6px">
+          <span class="stars">★★★★☆</span>
+          <span style="font-size:13px;font-weight:800;font-family:'Outfit',sans-serif;color:#fff;margin-left:6px">4.2</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Form Inputs -->
+    <div class="comp-card">
+      <div class="comp-label">Form Inputs</div>
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div class="input-wrap">
+          <span class="input-icon">🔍</span>
+          <input class="input-field" placeholder="Search hidden gems…" style="outline:none;"/>
+        </div>
+        <div class="input-wrap">
+          <span class="input-icon">📧</span>
+          <input class="input-field" placeholder="Email address" style="outline:none;"/>
+        </div>
+        <div class="input-wrap">
+          <span class="input-icon">🗓️</span>
+          <input class="input-field" placeholder="Select dates" style="outline:none;"/>
+        </div>
+        <div class="input-wrap" style="border:1px solid rgba(34,197,94,0.4);border-radius:var(--r-md);">
+          <span class="input-icon">📍</span>
+          <input class="input-field" value="Kandy, Central Province" style="border:none;outline:none;background:rgba(34,197,94,0.05);"/>
+        </div>
+        <div class="input-wrap" style="border:1px solid rgba(239,68,68,0.3);border-radius:var(--r-md);">
+          <span class="input-icon">⚠️</span>
+          <input class="input-field" placeholder="Invalid field" style="border:none;outline:none;"/>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cards -->
+    <div class="comp-card">
+      <div class="comp-label">Place Cards</div>
+      <!-- Horizontal card -->
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;display:flex;margin-bottom:12px;">
+        <div style="width:80px;flex-shrink:0;background:linear-gradient(135deg,#1a4a30,#0a2a1c);display:flex;align-items:center;justify-content:center;font-size:28px;">🌊</div>
+        <div style="padding:12px 14px;">
+          <div style="font-family:'Outfit',sans-serif;font-size:13px;font-weight:800;color:var(--text)">Secret Lagoon</div>
+          <div style="font-size:10px;color:var(--text-dim);margin-top:2px">Trincomalee, East</div>
+          <div style="display:flex;gap:6px;margin-top:8px">
+            <span class="badge badge-gem" style="font-size:8px;padding:2px 8px">HIDDEN</span>
+            <span class="badge badge-blue" style="font-size:8px;padding:2px 8px">AR</span>
+          </div>
+        </div>
+      </div>
+      <!-- Vertical card -->
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;">
+        <div style="height:100px;background:linear-gradient(160deg,#1a4a30,#0a2a1c,#1a3830);display:flex;align-items:center;justify-content:center;font-size:44px;position:relative;">
+          🏔️
+          <div style="position:absolute;bottom:8px;left:10px;"><span class="badge badge-gold" style="font-size:8px">HERITAGE SITE</span></div>
+        </div>
+        <div style="padding:12px 14px 14px">
+          <div style="font-family:'Outfit',sans-serif;font-size:14px;font-weight:800;color:var(--text)">Dambulla Caves</div>
+          <div style="font-size:10px;color:var(--text-dim);margin:3px 0 8px">Matale District · 8.2 km</div>
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <span class="stars" style="font-size:12px">★★★★★</span>
+            <span style="font-size:11px;color:var(--text-sub)">4.9 · 1.2k visits</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Glassmorphic Cards -->
+    <div class="comp-card">
+      <div class="comp-label">Glass / AI Cards</div>
+      <!-- AI Reason card -->
+      <div style="background:var(--gem-glow);border:1px solid rgba(34,197,94,0.15);border-radius:16px;padding:16px;margin-bottom:12px;">
+        <div style="font-size:9px;font-weight:800;letter-spacing:2px;color:var(--gem);text-transform:uppercase;margin-bottom:8px">🤖 Oracle Says</div>
+        <p style="font-size:12px;color:rgba(255,255,255,0.75);line-height:1.7">"Ideal for sunrise visits — fewer than 30 tourists per day. Strong cultural significance with accessible terrain for all fitness levels."</p>
+      </div>
+      <!-- Event banner -->
+      <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:16px;padding:14px;display:flex;gap:12px;align-items:center;">
+        <div style="width:40px;height:40px;border-radius:50%;background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.2);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">🎉</div>
+        <div>
+          <div style="font-size:9px;font-weight:800;letter-spacing:2px;color:var(--gem);margin-bottom:3px">TODAY IN SRI LANKA 🇱🇰</div>
+          <div style="font-family:'Outfit',sans-serif;font-size:13px;font-weight:800;color:var(--text)">Vesak Festival</div>
+          <div style="font-size:10px;color:var(--text-sub);margin-top:2px">Colombo · All day event</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <div class="comp-card">
+      <div class="comp-label">Navigation</div>
+      <div style="background:#0A0D12;border-top:1px solid var(--border);border-radius:16px;padding:12px 20px;display:flex;justify-content:space-around;align-items:center;margin-bottom:16px;">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+          <span style="font-size:20px;color:var(--gem)">🏠</span>
+          <span style="font-size:9px;color:var(--gem);font-weight:700">Home</span>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+          <span style="font-size:20px;color:var(--text-dim)">🔍</span>
+          <span style="font-size:9px;color:var(--text-dim)">Discover</span>
+        </div>
+        <div style="width:52px;height:52px;border-radius:50%;background:radial-gradient(circle at 35% 35%,rgba(34,197,94,0.7),rgba(22,163,74,0.9));border:1px solid rgba(34,197,94,0.4);box-shadow:0 0 24px rgba(34,197,94,0.3);display:flex;align-items:center;justify-content:center;font-size:20px;margin-top:-20px;">🌿</div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+          <span style="font-size:20px;color:var(--text-dim)">📅</span>
+          <span style="font-size:9px;color:var(--text-dim)">Events</span>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+          <span style="font-size:20px;color:var(--text-dim)">👤</span>
+          <span style="font-size:9px;color:var(--text-dim)">Profile</span>
+        </div>
+      </div>
+      <!-- Progress / Usage meter -->
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 14px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <span style="font-size:10px;font-weight:700;color:var(--text)">Daily Discoveries</span>
+          <span style="font-size:10px;color:var(--text-sub)">3 / 5</span>
+        </div>
+        <div style="height:5px;background:rgba(255,255,255,0.06);border-radius:100px;overflow:hidden">
+          <div style="height:100%;width:60%;background:linear-gradient(90deg,#22C55E,#16A34A);border-radius:100px"></div>
+        </div>
+        <div style="font-size:9px;color:var(--text-dim);margin-top:6px">Upgrade for unlimited access</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══ 4. SCREEN DESIGNS ══ -->
+<div class="divider"></div>
+<div class="section">
+  <div class="section-header">
+    <div class="section-eyebrow">04 — Screens</div>
+    <h2 class="section-title">Key Screen Designs</h2>
+    <p class="section-desc">Core user flows: Onboarding → Login → Home → Discovery → Place Details → Booking → Profile → Premium. All dark-native with emerald accents.</p>
+  </div>
+
+  <div class="screens-grid">
+
+    <!-- ONBOARDING -->
+    <div class="screen-wrap">
+      <div class="phone-frame">
+        <div class="phone-notch"></div>
+        <div class="phone-screen">
+          <div class="ob-screen">
+            <div class="ob-orb">🌿</div>
+            <div class="ob-title">Find Sri Lanka's Best-Kept Secrets</div>
+            <div class="ob-sub">The Oracle AI learns your travel style and reveals hidden places crowds never find.</div>
+            <div class="ob-dots">
+              <div class="ob-dot active"></div>
+              <div class="ob-dot"></div>
+              <div class="ob-dot"></div>
+              <div class="ob-dot"></div>
+              <div class="ob-dot"></div>
+            </div>
+            <button class="ob-btn">Continue →</button>
+            <div style="font-size:8px;color:rgba(255,255,255,0.2);margin-top:12px;letter-spacing:2px">SKIP</div>
+          </div>
+        </div>
+      </div>
+      <div class="screen-name">Onboarding</div>
+      <div class="screen-label">5-page flow · Oracle intro</div>
+    </div>
+
+    <!-- LOGIN -->
+    <div class="screen-wrap">
+      <div class="phone-frame">
+        <div class="phone-notch"></div>
+        <div class="phone-screen">
+          <div class="login-content">
+            <div class="login-logo">
+              <div class="login-logo-orb">🌿</div>
+              <div class="login-logo-text">Hidden Gems SL</div>
+            </div>
+            <div class="login-title">Welcome<br>Back.</div>
+            <div class="login-sub">Sign in to continue your journey through Sri Lanka's hidden world.</div>
+            <div class="login-input-wrap">
+              <span class="login-input-icon">📧</span>
+              <input class="login-input" placeholder="Email address" style="outline:none"/>
+            </div>
+            <div class="login-input-wrap">
+              <span class="login-input-icon">🔒</span>
+              <input class="login-input" type="password" placeholder="Password" style="outline:none"/>
+            </div>
+            <button class="login-btn">Sign In</button>
+            <div class="login-or">— or continue with —</div>
+            <div class="login-google">
+              <span>G</span> Google
+            </div>
+            <div style="text-align:center;margin-top:12px;font-size:8px;color:rgba(255,255,255,0.3)">Don't have an account? <span style="color:var(--gem)">Sign up</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="screen-name">Login / Register</div>
+      <div class="screen-label">Email + Google OAuth</div>
+    </div>
+
+    <!-- HOME -->
+    <div class="screen-wrap">
+      <div class="phone-frame">
+        <div class="phone-notch"></div>
+        <div class="phone-screen" style="background:#080B0F;">
+          <div style="height:100%;display:flex;flex-direction:column;">
+            <div class="hs-hero">
+              <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0.25) 0%,rgba(8,11,15,0.9) 75%,#080B0F 100%);"></div>
+              <div style="position:absolute;inset:0;background:linear-gradient(135deg,rgba(34,197,94,0.04),rgba(0,0,0,0));"></div>
+              <div style="position:absolute;top:48px;right:14px;width:28px;height:28px;border-radius:50%;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;font-size:12px;">👤</div>
+              <div style="position:relative;z-index:1;">
+                <div class="hs-hero-eyebrow">DISCOVER SRI LANKA</div>
+                <div class="hs-hero-title">Let The Oracle<br>Guide Your Path</div>
+              </div>
+            </div>
+            <div class="hs-search">
+              <span class="hs-search-icon">🔍</span>
+              <span class="hs-search-text">Search hidden gems, places…</span>
+            </div>
+            <div class="hs-body">
+              <div class="hs-section-title">📍 Near You Today</div>
+              <div class="hs-gem-row">
+                <div class="hs-gem-card">
+                  <div class="hs-gem-img"><div class="hs-gem-img-bg">🌊</div></div>
+                  <div class="hs-gem-info">
+                    <div class="hs-gem-name">Secret Lagoon</div>
+                    <div class="hs-gem-loc">Trincomalee</div>
+                    <div class="hs-gem-rating">★★★★★</div>
+                  </div>
+                </div>
+                <div class="hs-gem-card">
+                  <div class="hs-gem-img"><div class="hs-gem-img-bg">🏔️</div></div>
+                  <div class="hs-gem-info">
+                    <div class="hs-gem-name">Knuckles Trail</div>
+                    <div class="hs-gem-loc">Kandy</div>
+                    <div class="hs-gem-rating">★★★★☆</div>
+                  </div>
+                </div>
+                <div class="hs-gem-card">
+                  <div class="hs-gem-img"><div class="hs-gem-img-bg">🌿</div></div>
+                  <div class="hs-gem-info">
+                    <div class="hs-gem-name">Tea Cave</div>
+                    <div class="hs-gem-loc">Nuwara Eliya</div>
+                    <div class="hs-gem-rating">★★★★★</div>
+                  </div>
+                </div>
+              </div>
+              <div class="hs-section-title" style="margin-top:12px;">🤖 Oracle Picks</div>
+              <div style="background:var(--gem-glow);border:1px solid rgba(34,197,94,0.15);border-radius:12px;padding:10px 12px;display:flex;gap:8px;align-items:center;">
+                <span style="font-size:20px">🌺</span>
+                <div>
+                  <div style="font-size:9px;font-weight:800;color:var(--gem);letter-spacing:1px">AI RECOMMENDED</div>
+                  <div style="font-size:10px;font-weight:700;color:var(--text);margin-top:1px">Ravana Falls · Ella</div>
+                  <div style="font-size:8px;color:var(--text-sub)">Perfect for your style</div>
+                </div>
+              </div>
+            </div>
+            <div class="hs-bottom-nav">
+              <div class="hs-nav-item">
+                <span class="hs-nav-icon active">🏠</span>
+                <span class="hs-nav-label active">Home</span>
+              </div>
+              <div class="hs-nav-item">
+                <span class="hs-nav-icon">🔍</span>
+                <span class="hs-nav-label">Discover</span>
+              </div>
+              <div class="hs-fab">🌿</div>
+              <div class="hs-nav-item">
+                <span class="hs-nav-icon">📅</span>
+                <span class="hs-nav-label">Events</span>
+              </div>
+              <div class="hs-nav-item">
+                <span class="hs-nav-icon">👤</span>
+                <span class="hs-nav-label">Profile</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="screen-name">Home Feed</div>
+      <div class="screen-label">Oracle orb FAB · AI picks</div>
+    </div>
+
+    <!-- DISCOVERY -->
+    <div class="screen-wrap">
+      <div class="phone-frame">
+        <div class="phone-notch"></div>
+        <div class="phone-screen" style="background:#080B0F;overflow:hidden;">
+          <div style="height:100%;display:flex;flex-direction:column;overflow:hidden;">
+            <div class="disc-header">
+              <div class="disc-title">Explore Sri Lanka</div>
+              <div style="font-size:9px;color:var(--text-sub);margin-top:2px">247 hidden gems found</div>
+            </div>
+            <div class="disc-filters">
+              <div class="disc-filter active">All</div>
+              <div class="disc-filter">🌿 Nature</div>
+              <div class="disc-filter">🏛️ Heritage</div>
+              <div class="disc-filter">🌊 Water</div>
+              <div class="disc-filter">🍃 Tea</div>
+              <div class="disc-filter">🦁 Wildlife</div>
+            </div>
+            <div class="disc-map-preview">
+              <div class="disc-map-pin"></div>
+              <div class="disc-map-pin"></div>
+              <div class="disc-map-pin"></div>
+              <div style="position:absolute;bottom:8px;right:10px;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:4px 8px;font-size:8px;color:var(--text-sub)">📍 Map View</div>
+            </div>
+            <div class="disc-list" style="overflow:auto;flex:1;padding-bottom:10px;">
+              <div class="disc-item">
+                <div class="disc-item-img">🏔️</div>
+                <div class="disc-item-info">
+                  <div class="disc-item-name">Sigiriya Rock Fortress</div>
+                  <div class="disc-item-loc">📍 Matale · 8km · ★★★★★</div>
+                  <div class="disc-item-tags"><span class="disc-tag">HERITAGE</span><span class="disc-tag">UNESCO</span></div>
+                </div>
+              </div>
+              <div class="disc-item">
+                <div class="disc-item-img">🌊</div>
+                <div class="disc-item-info">
+                  <div class="disc-item-name">Pigeon Island</div>
+                  <div class="disc-item-loc">📍 Trinco · 24km · ★★★★☆</div>
+                  <div class="disc-item-tags"><span class="disc-tag">MARINE</span><span style="background:rgba(59,130,246,0.1);color:var(--blue);font-size:7px;font-weight:700;padding:2px 6px;border-radius:100px">AR</span></div>
+                </div>
+              </div>
+              <div class="disc-item">
+                <div class="disc-item-img">🌺</div>
+                <div class="disc-item-info">
+                  <div class="disc-item-name">Ravana Falls Cave</div>
+                  <div class="disc-item-loc">📍 Ella · 12km · ★★★★★</div>
+                  <div class="disc-item-tags"><span class="disc-tag">HIDDEN</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="hs-bottom-nav">
+              <div class="hs-nav-item"><span class="hs-nav-icon">🏠</span><span class="hs-nav-label">Home</span></div>
+              <div class="hs-nav-item"><span class="hs-nav-icon active">🔍</span><span class="hs-nav-label active">Discover</span></div>
+              <div class="hs-fab">🌿</div>
+              <div class="hs-nav-item"><span class="hs-nav-icon">📅</span><span class="hs-nav-label">Events</span></div>
+              <div class="hs-nav-item"><span class="hs-nav-icon">👤</span><span class="hs-nav-label">Profile</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="screen-name">Discovery / Search</div>
+      <div class="screen-label">Map + list · filter chips</div>
+    </div>
+
+    <!-- PLACE DETAILS -->
+    <div class="screen-wrap">
+      <div class="phone-frame">
+        <div class="phone-notch"></div>
+        <div class="phone-screen" style="background:#080B0F;overflow:hidden;">
+          <div style="height:100%;display:flex;flex-direction:column;overflow:hidden;">
+            <div class="pd-hero">
+              <div style="position:absolute;inset:0;background:linear-gradient(160deg,rgba(34,197,94,0.04),rgba(0,0,0,0)),linear-gradient(180deg,rgba(0,0,0,0.3) 0%,rgba(8,11,15,0.95) 85%,#080B0F 100%);"></div>
+              <div class="pd-back" style="color:rgba(255,255,255,0.7)">‹</div>
+              <div style="position:absolute;top:48px;right:14px;display:flex;gap:6px">
+                <div style="width:28px;height:28px;border-radius:50%;background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;font-size:10px;">♥</div>
+                <div style="width:28px;height:28px;border-radius:50%;background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;font-size:10px;">⬆</div>
+              </div>
+              <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:48px">🏔️</div>
+              <div style="position:relative;z-index:1;">
+                <div class="pd-badge-row">
+                  <div class="pd-ar-badge">AR ENABLED</div>
+                  <div style="background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.2);border-radius:100px;padding:4px 10px;font-size:7px;font-weight:800;color:var(--gem);letter-spacing:1px;">UNESCO</div>
+                </div>
+              </div>
+            </div>
+            <div class="pd-body">
+              <div class="pd-title">Sigiriya Rock Fortress</div>
+              <div class="pd-location">📍 Matale District, Central Province</div>
+              <div class="pd-stats">
+                <div class="pd-stat">
+                  <div class="pd-stat-val">★4.9</div>
+                  <div class="pd-stat-label">Rating</div>
+                </div>
+                <div class="pd-stat">
+                  <div class="pd-stat-val">3.2km</div>
+                  <div class="pd-stat-label">Distance</div>
+                </div>
+                <div class="pd-stat">
+                  <div class="pd-stat-val">4hr</div>
+                  <div class="pd-stat-label">Visit time</div>
+                </div>
+              </div>
+              <div class="pd-ai-card">
+                <div class="pd-ai-eyebrow">🤖 ORACLE SAYS</div>
+                <div class="pd-ai-text">Best visited at 6am — watch the mist clear from the summit. Fewer than 50 visitors at this hour.</div>
+              </div>
+            </div>
+            <div style="padding:10px 14px;background:rgba(8,11,15,0.95);border-top:1px solid var(--border);flex-shrink:0;display:flex;gap:8px;">
+              <button style="flex:1;background:linear-gradient(135deg,#22C55E,#16A34A);color:#000;border:none;padding:11px;border-radius:12px;font-family:'Outfit',sans-serif;font-size:11px;font-weight:800;">Book Guide</button>
+              <button style="width:44px;background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.25);border-radius:12px;font-size:14px;">🔭</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="screen-name">Place Details</div>
+      <div class="screen-label">Hero · Oracle AI · AR button</div>
+    </div>
+
+    <!-- BOOKING -->
+    <div class="screen-wrap">
+      <div class="phone-frame">
+        <div class="phone-notch"></div>
+        <div class="phone-screen" style="background:#080B0F;overflow:hidden;">
+          <div class="book-content" style="overflow:hidden;">
+            <div style="font-size:8px;font-weight:800;letter-spacing:2px;color:var(--gem);text-transform:uppercase;margin-bottom:8px">Book a Local Guide</div>
+            <div class="book-guide-card">
+              <div class="book-guide-avatar">👨‍🦱</div>
+              <div>
+                <div class="book-guide-name">Nimal Perera</div>
+                <div class="book-guide-tag">🇱🇰 Certified Heritage Guide</div>
+                <div class="book-guide-rating">★★★★★ 4.9 · 142 tours</div>
+              </div>
+            </div>
+            <div class="book-form-label">Select Date</div>
+            <div class="book-date-picker">📅 <span>July 14, 2026</span></div>
+            <div class="book-form-label">Group Size</div>
+            <div class="book-date-picker">👥 <span>2 people</span></div>
+            <div class="book-form-label">Language</div>
+            <div class="book-date-picker">🌐 <span>English</span></div>
+            <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px;margin-top:14px;">
+              <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+                <span style="font-size:10px;color:var(--text-sub)">Guide fee · 2 persons</span>
+                <span style="font-size:10px;font-weight:700;color:var(--text)">LKR 8,500</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;">
+                <span style="font-size:10px;color:var(--text-sub)">Entry tickets</span>
+                <span style="font-size:10px;font-weight:700;color:var(--text)">LKR 3,000</span>
+              </div>
+              <div style="height:1px;background:var(--border);margin:8px 0;"></div>
+              <div style="display:flex;justify-content:space-between;">
+                <span style="font-size:11px;font-weight:800;color:var(--text)">Total</span>
+                <span style="font-size:11px;font-weight:800;color:var(--gem)">LKR 11,500</span>
+              </div>
+            </div>
+            <button class="book-submit">Confirm Booking</button>
+          </div>
+        </div>
+      </div>
+      <div class="screen-name">Guide Booking</div>
+      <div class="screen-label">Date · Group · Pricing summary</div>
+    </div>
+
+    <!-- PROFILE -->
+    <div class="screen-wrap">
+      <div class="phone-frame">
+        <div class="phone-notch"></div>
+        <div class="phone-screen" style="background:#080B0F;overflow:hidden;">
+          <div style="height:100%;display:flex;flex-direction:column;overflow:hidden;">
+            <div class="prof-header">
+              <div class="prof-avatar">🌿</div>
+              <div class="prof-name">Kavindi Silva</div>
+              <div class="prof-level">🌿 GEM SEEKER · LEVEL 7</div>
+              <div style="display:flex;gap:16px;justify-content:center;margin-top:12px;">
+                <div style="text-align:center"><div style="font-family:'Outfit',sans-serif;font-size:16px;font-weight:900;color:var(--gem)">23</div><div style="font-size:8px;color:var(--text-dim)">Places</div></div>
+                <div style="width:1px;background:var(--border)"></div>
+                <div style="text-align:center"><div style="font-family:'Outfit',sans-serif;font-size:16px;font-weight:900;color:var(--gold)">7</div><div style="font-size:8px;color:var(--text-dim)">Stamps</div></div>
+                <div style="width:1px;background:var(--border)"></div>
+                <div style="text-align:center"><div style="font-family:'Outfit',sans-serif;font-size:16px;font-weight:900;color:var(--blue)">3</div><div style="font-size:8px;color:var(--text-dim)">AR Tours</div></div>
+              </div>
+            </div>
+            <div class="prof-passport">
+              <div class="prof-passport-icon">📜</div>
+              <div class="prof-passport-text">
+                <div class="prof-passport-title">Heritage Passport</div>
+                <div class="prof-passport-sub">7 stamps collected · 3 to next tier</div>
+              </div>
+              <span style="font-size:10px;color:var(--gold)">›</span>
+            </div>
+            <div class="prof-menu">
+              <div class="prof-menu-item"><span class="prof-menu-icon">📍</span><span class="prof-menu-label">Saved Places</span><span class="prof-menu-arrow">›</span></div>
+              <div class="prof-menu-item"><span class="prof-menu-icon">📋</span><span class="prof-menu-label">Trip Plans</span><span class="prof-menu-arrow">›</span></div>
+              <div class="prof-menu-item"><span class="prof-menu-icon">💰</span><span class="prof-menu-label">Budget Tracker</span><span class="prof-menu-arrow">›</span></div>
+              <div class="prof-menu-item"><span class="prof-menu-icon">👑</span><span class="prof-menu-label">Premium Hub</span><span style="font-size:8px;background:var(--gold-glow);color:var(--gold);padding:2px 8px;border-radius:100px;font-weight:700">UPGRADE</span></div>
+              <div class="prof-menu-item"><span class="prof-menu-icon">⚙️</span><span class="prof-menu-label">Settings</span><span class="prof-menu-arrow">›</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="screen-name">Profile</div>
+      <div class="screen-label">Heritage Passport · Stats</div>
+    </div>
+
+    <!-- PREMIUM -->
+    <div class="screen-wrap">
+      <div class="phone-frame">
+        <div class="phone-notch"></div>
+        <div class="phone-screen" style="background:radial-gradient(ellipse 80% 40% at 50% -5%,rgba(193,154,107,0.08) 0%,transparent 50%),#080B0F;overflow:hidden;">
+          <div class="prem-content">
+            <div class="prem-header-row">
+              <div class="prem-crown">👑</div>
+              <div class="prem-header-title" style="font-family:'Outfit',sans-serif;color:var(--gold)">Premium Plans</div>
+            </div>
+            <div style="font-size:9px;color:var(--text-sub);margin-bottom:14px;line-height:1.5">Unlock the full Oracle experience. Unlimited gems, AR, offline maps and more.</div>
+            <div class="prem-tier-cards">
+              <div class="prem-tier gem">
+                <div class="prem-tier-name" style="color:var(--gem)">🌿 Gem Seeker</div>
+                <div class="prem-tier-price">LKR 990 / month</div>
+                <div class="prem-tier-features">
+                  <div class="prem-feature">Unlimited gem discoveries</div>
+                  <div class="prem-feature">Offline maps &amp; guides</div>
+                  <div class="prem-feature">AI trip planning</div>
+                </div>
+              </div>
+              <div class="prem-tier gold">
+                <div class="prem-tier-name" style="color:var(--gold)">✨ Heritage Explorer</div>
+                <div class="prem-tier-price">LKR 1,990 / month</div>
+                <div class="prem-tier-features">
+                  <div class="prem-feature">Everything in Gem Seeker</div>
+                  <div class="prem-feature">AR heritage experiences</div>
+                  <div class="prem-feature">Heritage Passport stamps</div>
+                  <div class="prem-feature">Priority guide booking</div>
+                </div>
+              </div>
+              <div class="prem-tier abyss">
+                <div class="prem-tier-name" style="color:var(--blue)">🔭 Oracle Abyss</div>
+                <div class="prem-tier-price">LKR 3,490 / month</div>
+                <div class="prem-tier-features">
+                  <div class="prem-feature">Full AR ancestral portal</div>
+                  <div class="prem-feature">Private guide sessions</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="screen-name">Premium Hub</div>
+      <div class="screen-label">3-tier subscription</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══ 5. MOTION ══ -->
+<div class="divider"></div>
+<div class="section">
+  <div class="section-header">
+    <div class="section-eyebrow">05 — Motion</div>
+    <h2 class="section-title">Animation System</h2>
+    <p class="section-desc">All animations use flutter_animate. Orchestrated reveals, not scattered effects. Motion is ambient — the app breathes.</p>
+  </div>
+  <div class="motion-grid">
+    <div class="motion-card">
+      <div class="motion-icon">🌊</div>
+      <div class="motion-title">Page Entrance</div>
+      <div class="motion-desc">Cards slide up with staggered fade-in using AnimationConfiguration.staggeredList. Each item adds 100ms delay.</div>
+      <div class="motion-spec">fadeIn(600ms) + slideY(50px → 0)</div>
+    </div>
+    <div class="motion-card">
+      <div class="motion-icon">🌿</div>
+      <div class="motion-title">Oracle Orb Pulse</div>
+      <div class="motion-desc">The FAB orb gently pulses with a radial glow. Scale 1.0 → 1.06 → 1.0 on loop, synchronized to a 2.5s cycle.</div>
+      <div class="motion-spec">scale loop(2500ms) + glow shimmer</div>
+    </div>
+    <div class="motion-card">
+      <div class="motion-icon">🔄</div>
+      <div class="motion-title">Hero Image Crossfade</div>
+      <div class="motion-desc">Background images on HomeScreen rotate every 4 seconds with AnimatedSwitcher crossfade at 1500ms.</div>
+      <div class="motion-spec">AnimatedSwitcher(1500ms crossfade)</div>
+    </div>
+    <div class="motion-card">
+      <div class="motion-icon">✨</div>
+      <div class="motion-title">Premium Shimmer</div>
+      <div class="motion-desc">Heritage and premium cards shimmer on first appear after 2s delay, drawing attention without being disruptive.</div>
+      <div class="motion-spec">shimmer(delay: 2s, 1500ms)</div>
+    </div>
+    <div class="motion-card">
+      <div class="motion-icon">📍</div>
+      <div class="motion-title">Detail Stagger</div>
+      <div class="motion-desc">Place Details sections load in sequence: header → AI reason → stats → details. Each +200ms delay from previous.</div>
+      <div class="motion-spec">fadeIn + slideX, 200ms stagger</div>
+    </div>
+    <div class="motion-card">
+      <div class="motion-icon">🎯</div>
+      <div class="motion-title">Haptic Feedback</div>
+      <div class="motion-desc">All nav taps and confirmations use HapticFeedback.lightImpact(). Errors use mediumImpact. Never heavy unless destructive.</div>
+      <div class="motion-spec">lightImpact on tap · mediumImpact on error</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 6. SPACING ══ -->
+<div class="divider"></div>
+<div class="section">
+  <div class="section-header">
+    <div class="section-eyebrow">06 — Spacing</div>
+    <h2 class="section-title">Spacing Scale</h2>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:0;">
+    <div class="spacing-row"><div class="spacing-block" style="width:4px;"></div><div><div class="spacing-name">4px — xs</div><div class="spacing-info">Icon-to-label gaps, micro spacing</div></div></div>
+    <div class="spacing-row"><div class="spacing-block" style="width:8px;"></div><div><div class="spacing-name">8px — sm</div><div class="spacing-info">Badge padding, chip gaps</div></div></div>
+    <div class="spacing-row"><div class="spacing-block" style="width:12px;"></div><div><div class="spacing-name">12px — md</div><div class="spacing-info">Card inner padding (mobile), row gaps</div></div></div>
+    <div class="spacing-row"><div class="spacing-block" style="width:16px;"></div><div><div class="spacing-name">16px — base</div><div class="spacing-info">Standard component gap, list item height buffer</div></div></div>
+    <div class="spacing-row"><div class="spacing-block" style="width:20px;"></div><div><div class="spacing-name">20px — lg</div><div class="spacing-info">Screen horizontal padding, section padding</div></div></div>
+    <div class="spacing-row"><div class="spacing-block" style="width:24px;"></div><div><div class="spacing-name">24px — xl</div><div class="spacing-info">Card padding (desktop), section gaps</div></div></div>
+    <div class="spacing-row"><div class="spacing-block" style="width:32px;"></div><div><div class="spacing-name">32px — 2xl</div><div class="spacing-info">Section-to-section, hero padding top</div></div></div>
+    <div class="spacing-row"><div class="spacing-block" style="width:48px;"></div><div><div class="spacing-name">48px — 3xl</div><div class="spacing-info">Status bar offset, page top padding</div></div></div>
+  </div>
+</div>
+
+<!-- ══ 7. DESIGN RULES ══ -->
+<div class="divider"></div>
+<div class="section">
+  <div class="section-header">
+    <div class="section-eyebrow">07 — Rules</div>
+    <h2 class="section-title">Design Principles</h2>
+  </div>
+  <div class="comp-grid">
+    <div class="comp-card">
+      <div style="font-size:28px;margin-bottom:12px">🌑</div>
+      <div style="font-family:'Outfit',sans-serif;font-size:16px;font-weight:800;color:var(--text);margin-bottom:8px">Natural Dark First</div>
+      <p style="font-size:13px;color:var(--text-sub);line-height:1.7">Background is <code style="color:var(--gem);font-size:12px">#080B0F</code> — not pure black (#000). This gives depth without harshness. Never use black fills or harsh contrast. The darkness feels organic, like being in a jungle at night.</p>
+    </div>
+    <div class="comp-card">
+      <div style="font-size:28px;margin-bottom:12px">🌿</div>
+      <div style="font-family:'Outfit',sans-serif;font-size:16px;font-weight:800;color:var(--text);margin-bottom:8px">Green is Earth, Not Electric</div>
+      <p style="font-size:13px;color:var(--text-sub);line-height:1.7"><code style="color:var(--gem);font-size:12px">#22C55E</code> is a leaf green — rich, alive, not fluorescent. Glow is always subtle: <code style="color:var(--gem);font-size:12px">rgba(34,197,94,0.15)</code> max. Primary actions only. Secondary elements use the tint, never the full green.</p>
+    </div>
+    <div class="comp-card">
+      <div style="font-size:28px;margin-bottom:12px">🪟</div>
+      <div style="font-family:'Outfit',sans-serif;font-size:16px;font-weight:800;color:var(--text);margin-bottom:8px">Glass Sparingly</div>
+      <p style="font-size:13px;color:var(--text-sub);line-height:1.7">Glassmorphism only for Oracle AI cards, hero overlays, and floating elements. Standard cards use solid <code style="color:var(--gem);font-size:12px">#141C24</code>. Too much glass = no depth. Glass is reserved for "magical" moments.</p>
+    </div>
+    <div class="comp-card">
+      <div style="font-size:28px;margin-bottom:12px">📐</div>
+      <div style="font-family:'Outfit',sans-serif;font-size:16px;font-weight:800;color:var(--text);margin-bottom:8px">Border Radius System</div>
+      <p style="font-size:13px;color:var(--text-sub);line-height:1.7">Small elements: 12px. Cards: 18–24px. Buttons: pill (100px). Avatars: full circle. Consistency is identity — never mix arbitrary radius values within the same screen.</p>
+    </div>
+    <div class="comp-card">
+      <div style="font-size:28px;margin-bottom:12px">🔤</div>
+      <div style="font-family:'Outfit',sans-serif;font-size:16px;font-weight:800;color:var(--text);margin-bottom:8px">Typography Hierarchy</div>
+      <p style="font-size:13px;color:var(--text-sub);line-height:1.7">Outfit 900 for hero titles (UPPERCASE + letter-spacing). Outfit 700–800 for card titles. Inter 400–500 for body. NEVER use Inter for headings or Outfit for body copy. Each font has one role.</p>
+    </div>
+    <div class="comp-card">
+      <div style="font-size:28px;margin-bottom:12px">✋</div>
+      <div style="font-family:'Outfit',sans-serif;font-size:16px;font-weight:800;color:var(--text);margin-bottom:8px">One Primary Action</div>
+      <p style="font-size:13px;color:var(--text-sub);line-height:1.7">Each screen has exactly one primary green CTA. Secondary actions use glass or ghost style. Gold is exclusively for premium/heritage CTAs. Never two green buttons on the same screen.</p>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<div class="divider"></div>
+<div style="padding:48px 32px;text-align:center;">
+  <div style="font-family:'Outfit',sans-serif;font-size:11px;font-weight:800;color:var(--gem);letter-spacing:3px;text-transform:uppercase;margin-bottom:8px">HIDDEN GEMS SL</div>
+  <div style="font-size:12px;color:var(--text-dim)">UI Design System v2.0 · 46 Screens · Flutter / Dart · 2026</div>
+  <div style="font-size:11px;color:rgba(255,255,255,0.15);margin-top:8px">Outfit · Inter · Natural Dark · Emerald Green · Heritage Gold</div>
+</div>
+
+</body>
+</html>

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:qr_flutter/qr_flutter.dart';
-import '../../core/theme/oracle_ui_system.dart';
+import '../../core/theme/app_theme.dart';
 import '../../data/models/tour_session.dart';
 import '../../data/models/vehicle.dart';
 import '../../data/datasources/user_preference_service.dart';
@@ -176,20 +176,20 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
         filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
         child: AlertDialog(
           backgroundColor: Colors.white.withValues(alpha: 0.05),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20), side: const BorderSide(color: Colors.white10)),
-          title: OracleUI.neonText("SET MEETING POINT", style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.bold)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20), side: BorderSide(color: AppTheme.secondaryBorder(context))),
+          title: Text("SET MEETING POINT", style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.bold, color: AppTheme.textPrimary(context))),
           content: TextField(
             controller: nameController,
             autofocus: true,
-            style: GoogleFonts.inter(color: Colors.white),
+            style: GoogleFonts.inter(color: AppTheme.textPrimary(context)),
             decoration: InputDecoration(
               hintText: "e.g., Temple Entrance, Bus Stand",
-              hintStyle: GoogleFonts.inter(color: Colors.white24),
-              enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.white10)),
+              hintStyle: GoogleFonts.inter(color: AppTheme.textSecondary(context)),
+              enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: AppTheme.secondaryBorder(context))),
             ),
           ),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(context), child: Text("CANCEL", style: GoogleFonts.outfit(color: Colors.white54))),
+            TextButton(onPressed: () => Navigator.pop(context), child: Text("CANCEL", style: GoogleFonts.outfit(color: AppTheme.textSecondary(context)))),
             ElevatedButton(
               onPressed: () => Navigator.pop(context, nameController.text),
               style: ElevatedButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.primary),
@@ -268,26 +268,27 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: OracleUI.auraBackground(
-        child: CustomScrollView(
-          slivers: [
-            SliverAppBar(
-              backgroundColor: Colors.transparent,
-              elevation: 0,
-              leading: IconButton(
-                icon: const Icon(Icons.arrow_back_ios_new, size: 20),
-                onPressed: () => Navigator.pop(context),
-              ),
-              title: OracleUI.neonText(
-                "GUIDE COMMAND",
-                style: GoogleFonts.outfit(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 2,
-                ),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back_ios_new, size: 20, color: AppTheme.textPrimary(context)),
+              onPressed: () => Navigator.pop(context),
+            ),
+            title: Text(
+              "GUIDE COMMAND",
+              style: GoogleFonts.outfit(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 2,
+                color: AppTheme.textPrimary(context),
               ),
             ),
-            SliverToBoxAdapter(
+          ),
+          SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.all(24.0),
                 child: _isLoading 
@@ -299,8 +300,7 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
             ),
           ],
         ),
-      ),
-    );
+      );
   }
 
   Widget _buildEmptyState() {
@@ -311,13 +311,13 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
         const SizedBox(height: 24),
         Text(
           "NO ACTIVE TOUR",
-          style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+          style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.bold, color: AppTheme.textPrimary(context)),
         ),
         const SizedBox(height: 12),
         Text(
           "Start a new tour and generate a QR for your travelers to connect.",
           textAlign: TextAlign.center,
-          style: GoogleFonts.inter(color: Colors.white.withValues(alpha: 0.6)),
+          style: GoogleFonts.inter(color: AppTheme.textSecondary(context)),
         ),
         const SizedBox(height: 48),
         SizedBox(
@@ -401,7 +401,7 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                OracleUI.neonText("JOIN STATUS", style: GoogleFonts.outfit(fontSize: 12, fontWeight: FontWeight.bold)),
+                Text("JOIN STATUS", style: GoogleFonts.outfit(fontSize: 12, fontWeight: FontWeight.bold, color: AppTheme.textPrimary(context))),
                 Text(_activeSession!.isJoinOpen ? "OPEN TO SCANS" : "LOCKED", 
                   style: GoogleFonts.inter(fontSize: 10, color: _activeSession!.isJoinOpen ? Colors.greenAccent : Colors.redAccent)),
               ],
@@ -415,8 +415,14 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
         ),
         const SizedBox(height: 12),
 
-        OracleUI.glassContainer(
+        Container(
           padding: const EdgeInsets.all(32),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(color: AppTheme.secondaryBorder(context)),
+            boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4))],
+          ),
           child: Column(
             children: [
               if (_activeSession!.joinToken != null && _activeSession!.isJoinOpen)
@@ -471,7 +477,7 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            OracleUI.neonText("CONNECTED TRAVELERS", style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.bold)),
+            Text("CONNECTED TRAVELERS", style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.bold, color: AppTheme.textPrimary(context))),
             Text("${_activeSession!.touristIds.length} ACTIVE", style: GoogleFonts.inter(fontSize: 12, color: Colors.greenAccent)),
           ],
         ),
@@ -501,8 +507,14 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
       {'id': 'returning', 'label': 'RETURNING', 'icon': Icons.keyboard_return_rounded},
     ];
 
-    return OracleUI.glassContainer(
+    return Container(
       padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: AppTheme.secondaryBorder(context)),
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4))],
+      ),
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Row(
@@ -592,7 +604,7 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            OracleUI.neonText("SELECT VEHICLE", style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold)),
+            Text("SELECT VEHICLE", style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
             const SizedBox(height: 24),
               ..._vehicles.map((v) => ListTile(
                 leading: const Icon(Icons.garage_rounded, color: Colors.orangeAccent),
@@ -612,8 +624,14 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
 
   Widget _buildStatCard(String label, String value, IconData icon) {
     return Expanded(
-      child: OracleUI.glassContainer(
+      child: Container(
         padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: AppTheme.secondaryBorder(context)),
+          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4))],
+        ),
         child: Column(
           children: [
             Icon(icon, size: 16, color: Colors.white54),
@@ -630,10 +648,15 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
   Widget _buildTouristTile(String uid) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
-      child: OracleUI.glassContainer(
-        padding: const EdgeInsets.all(12),
-        child: Row(
-          children: [
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppTheme.secondaryBorder(context)),
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4))],
+      ),
+      padding: const EdgeInsets.all(12),
+      child: Row(
+        children: [
             const CircleAvatar(backgroundColor: Colors.white10, child: Icon(Icons.person, size: 20, color: Colors.white)),
             const SizedBox(width: 16),
             Text("Traveler ${uid.substring(0, 6)}", style: GoogleFonts.inter(color: Colors.white)),
@@ -641,7 +664,6 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
             const Icon(Icons.location_on, size: 16, color: Colors.greenAccent),
           ],
         ),
-      ),
-    );
+      );
   }
 }

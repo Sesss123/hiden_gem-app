@@ -71,8 +71,8 @@ class _ARContentPreviewScreenState extends State<ARContentPreviewScreen> {
           _isBookmarked = true;
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('${_currentContent.name} saved to bookmarks!'),
-              backgroundColor: AppTheme.sigiriyaOchre(context),
+              content: Text('${_currentContent.name} bookmarked!'),
+              backgroundColor: AppPalette.rust,
             ),
           );
         }
@@ -191,7 +191,7 @@ class _ARContentPreviewScreenState extends State<ARContentPreviewScreen> {
                         const SizedBox(height: 20),
                         Icon(
                           Icons.history_edu,
-                          color: AppTheme.sigiriyaOchre(context),
+                          color: AppPalette.rust,
                           size: 64,
                           shadows: const [
                             Shadow(color: Colors.black, blurRadius: 10, offset: Offset(2, 2))
@@ -215,14 +215,14 @@ class _ARContentPreviewScreenState extends State<ARContentPreviewScreen> {
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                           decoration: BoxDecoration(
-                            color: AppTheme.sigiriyaOchre(context).withValues(alpha: 0.2),
+                            color: AppPalette.rust.withValues(alpha: 0.2),
                             borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: AppTheme.sigiriyaOchre(context).withValues(alpha: 0.4)),
+                            border: Border.all(color: AppPalette.rust.withValues(alpha: 0.4)),
                           ),
                           child: Text(
                             _currentContent.duration.toUpperCase(),
                             style: GoogleFonts.outfit(
-                              color: AppTheme.sigiriyaOchre(context),
+                              color: AppPalette.rust,
                               fontSize: 11,
                               fontWeight: FontWeight.bold,
                               letterSpacing: 1.5,
@@ -298,7 +298,7 @@ class _ARContentPreviewScreenState extends State<ARContentPreviewScreen> {
                         Text(
                           'PORTAL DESCRIPTION',
                           style: GoogleFonts.outfit(
-                            color: AppTheme.sigiriyaOchre(context),
+                            color: AppPalette.rust,
                             fontWeight: FontWeight.bold,
                             fontSize: 11,
                             letterSpacing: 2,
@@ -324,7 +324,7 @@ class _ARContentPreviewScreenState extends State<ARContentPreviewScreen> {
                             Text(
                               'TIMELINE HIGHLIGHTS',
                               style: GoogleFonts.outfit(
-                                color: AppTheme.sigiriyaOchre(context),
+                                color: AppPalette.rust,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 11,
                                 letterSpacing: 2,
@@ -353,7 +353,7 @@ class _ARContentPreviewScreenState extends State<ARContentPreviewScreen> {
                         SizedBox(
                           height: 125,
                           child: _isLoading 
-                            ? Center(child: CircularProgressIndicator(color: AppTheme.sigiriyaOchre(context)))
+                            ? Center(child: CircularProgressIndicator(color: AppPalette.rust))
                             : _hasError
                               ? _buildErrorWidget()
                               : _currentContent.syncPoints.isEmpty 
@@ -377,7 +377,7 @@ class _ARContentPreviewScreenState extends State<ARContentPreviewScreen> {
                                 icon: _isBookmarked ? Icons.bookmark : Icons.bookmark_border_rounded,
                                 label: 'Bookmark',
                                 active: _isBookmarked,
-                                color: AppTheme.sigiriyaOchre(context),
+                                color: AppPalette.rust,
                                 onTap: _toggleBookmark,
                               ),
                             ),
@@ -425,7 +425,7 @@ class _ARContentPreviewScreenState extends State<ARContentPreviewScreen> {
                             },
                             icon: const Icon(Icons.blur_on, color: Colors.black, size: 24),
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: AppTheme.sigiriyaOchre(context),
+                              backgroundColor: AppPalette.rust,
                               disabledBackgroundColor: Colors.white10,
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                               elevation: 5,
@@ -466,7 +466,7 @@ class _ARContentPreviewScreenState extends State<ARContentPreviewScreen> {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
-          color: active ? AppTheme.sigiriyaOchre(context) : Colors.transparent,
+          color: active ? AppPalette.rust : Colors.transparent,
           borderRadius: BorderRadius.circular(8),
         ),
         child: Text(
@@ -583,7 +583,7 @@ class _ARContentPreviewScreenState extends State<ARContentPreviewScreen> {
           color: Colors.white.withValues(alpha: 0.05),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: AppTheme.sigiriyaOchre(context).withValues(alpha: 0.15),
+            color: AppPalette.rust.withValues(alpha: 0.15),
           ),
         ),
         child: Column(
@@ -595,14 +595,14 @@ class _ARContentPreviewScreenState extends State<ARContentPreviewScreen> {
                 Text(
                   '${sp.timeSeconds}s',
                   style: GoogleFonts.outfit(
-                    color: AppTheme.sigiriyaOchre(context),
+                    color: AppPalette.rust,
                     fontWeight: FontWeight.bold,
                     fontSize: 13,
                   ),
                 ),
                 Icon(
                   Icons.play_circle_outline,
-                  color: AppTheme.sigiriyaOchre(context).withValues(alpha: 0.6),
+                  color: AppPalette.rust.withValues(alpha: 0.6),
                   size: 14,
                 ),
               ],
@@ -664,14 +664,14 @@ class _ARContentPreviewScreenState extends State<ARContentPreviewScreen> {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                     decoration: BoxDecoration(
-                      color: AppTheme.sigiriyaOchre(context).withValues(alpha: 0.15),
+                      color: AppPalette.rust.withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: AppTheme.sigiriyaOchre(context).withValues(alpha: 0.3)),
+                      border: Border.all(color: AppPalette.rust.withValues(alpha: 0.3)),
                     ),
                     child: Text(
                       'TIMESTAMP: ${sp.timeSeconds} SECONDS',
                       style: GoogleFonts.outfit(
-                        color: AppTheme.sigiriyaOchre(context),
+                        color: AppPalette.rust,
                         fontWeight: FontWeight.bold,
                         fontSize: 11,
                         letterSpacing: 1,

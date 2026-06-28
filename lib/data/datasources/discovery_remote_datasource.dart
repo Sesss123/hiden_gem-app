@@ -74,6 +74,11 @@ class DiscoveryRemoteDataSource {
     return snapshots.map((doc) => DiscoveryPlace.fromFirestore(doc)).toList();
   }
 
+  Future<List<DiscoveryPlace>> fetchAllPlacesFirestore() async {
+    final querySnapshot = await FirebaseFirestore.instance.collection('places').get();
+    return querySnapshot.docs.map((doc) => DiscoveryPlace.fromFirestore(doc)).toList();
+  }
+
   Future<List<Map<String, dynamic>>> getAiRecommendationsRaw({
     required List<DiscoveryPlace> nearbyPlaces,
     required String vibeText,

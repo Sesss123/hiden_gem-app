@@ -101,35 +101,28 @@ class _OracleOrbState extends State<OracleOrb> {
     return GestureDetector(
       onTap: _toggleOracle,
       child: Container(
-        width: 76,
-        height: 76,
+        width: 72,
+        height: 72,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
+          color: AppPalette.rust,
           boxShadow: [
             BoxShadow(
-              color: AppTheme.modernGreen(context).withValues(alpha: _isListening ? 0.6 : 0.2),
-              blurRadius: 30,
-              spreadRadius: 5,
+              color: AppPalette.rust.withValues(alpha: _isListening ? 0.4 : 0.2),
+              blurRadius: _isListening ? 30 : 20,
+              spreadRadius: _isListening ? 10 : 0,
+              offset: const Offset(0, 8),
             )
           ],
-          gradient: RadialGradient(
-            colors: [
-              Colors.white,
-              AppTheme.modernGreen(context).withValues(alpha: 0.8),
-              AppTheme.scaffoldColor(context).withValues(alpha: 0.6),
-            ],
-            stops: const [0.0, 0.5, 1.0],
-          ),
         ),
         child: Icon(
-          _isListening ? Icons.mic_rounded : Icons.auto_awesome_rounded,
-          color: _isListening ? (Theme.of(context).brightness == Brightness.dark ? Colors.black : Colors.white) : Colors.white,
-          size: 36,
+          _isListening ? Icons.graphic_eq_rounded : Icons.auto_awesome_rounded,
+          color: Colors.white,
+          size: 32,
         ),
       )
       .animate(onPlay: (c) => c.repeat(reverse: true))
-      .scale(begin: const Offset(0.92, 0.92), end: const Offset(1.08, 1.08), duration: 2.seconds, curve: Curves.easeInOut)
-      .shimmer(duration: 3.seconds, color: Colors.white24),
+      .scale(begin: const Offset(0.95, 0.95), end: const Offset(1.05, 1.05), duration: 2.seconds, curve: Curves.easeInOut),
     );
   }
 }

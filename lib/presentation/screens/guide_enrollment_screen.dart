@@ -1,9 +1,10 @@
+
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/services/oracle_guardian.dart';
-import '../../core/theme/oracle_ui_system.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/theme/oracle_ui_system.dart';
 import '../../data/datasources/user_preference_service.dart';
 import '../../data/datasources/firebase_storage_service.dart';
 import '../../data/repositories/guide_application_repository.dart';
@@ -71,16 +72,22 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
-      builder: (context) => OracleUI.glassContainer(
+      builder: (context) => Container(
         margin: const EdgeInsets.all(16),
         padding: const EdgeInsets.symmetric(vertical: 24),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: AppTheme.secondaryBorder(context)),
+          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4))],
+        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            OracleUI.neonText(
+            Text(
               type == 'selfie' ? "IDENTIFY SELFIE" : "UPLOAD DOCUMENT",
               style: GoogleFonts.outfit(
-                color: Theme.of(context).colorScheme.primary, 
+                color: AppPalette.rust, 
                 fontSize: 16, 
                 fontWeight: FontWeight.bold, 
                 letterSpacing: 2
@@ -112,17 +119,17 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.05),
+              color: Theme.of(context).scaffoldBackgroundColor,
               shape: BoxShape.circle,
-              border: Border.all(color: Colors.white10),
+              border: Border.all(color: AppTheme.secondaryBorder(context)),
             ),
-            child: Icon(icon, color: Colors.white, size: 28),
+            child: Icon(icon, color: AppTheme.textPrimary(context), size: 28),
           ),
           const SizedBox(height: 12),
           Text(
             label,
             style: GoogleFonts.outfit(
-              color: Colors.white70,
+              color: AppTheme.textSecondary(context),
               fontSize: 10,
               fontWeight: FontWeight.bold,
               letterSpacing: 1,
@@ -250,7 +257,7 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
           ],
         ),
         const SizedBox(height: 24),
-        OracleUI.neonText(
+        Text(
           _loadingStatus,
           style: GoogleFonts.outfit(
             fontSize: 12,
@@ -265,7 +272,7 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
           textAlign: TextAlign.center,
           style: GoogleFonts.inter(
             fontSize: 10,
-            color: Colors.white38,
+            color: AppTheme.textSecondary(context),
           ),
         ),
       ],
@@ -279,9 +286,15 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
       builder: (context) => BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
         child: Center(
-          child: OracleUI.glassContainer(
+          child: Container(
             width: 300,
             padding: const EdgeInsets.all(32),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(color: AppTheme.secondaryBorder(context)),
+              boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4))],
+            ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -289,15 +302,15 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
                     .animate()
                     .scale(duration: 600.ms, curve: Curves.elasticOut),
                 const SizedBox(height: 24),
-                OracleUI.neonText(
+                Text(
                   "SUBMITTED",
-                  style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.bold),
+                  style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.bold, color: AppTheme.textPrimary(context)),
                 ),
                 const SizedBox(height: 16),
                 Text(
                   "The Oracle Council will review your application soon.",
                   textAlign: TextAlign.center,
-                  style: GoogleFonts.inter(color: Colors.white70),
+                  style: GoogleFonts.inter(color: AppTheme.textSecondary(context)),
                 ),
                 const SizedBox(height: 32),
                 ElevatedButton(
@@ -322,25 +335,26 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: OracleUI.auraBackground(
-        child: CustomScrollView(
-          slivers: [
-            SliverAppBar(
-              backgroundColor: Colors.transparent,
-              elevation: 0,
-              leading: IconButton(
-                icon: const Icon(Icons.arrow_back_ios_new, size: 20),
-                onPressed: () => Navigator.pop(context),
-              ),
-              title: OracleUI.neonText(
-                "ENROLL AS GUIDE",
-                style: GoogleFonts.outfit(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 2,
-                ),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back_ios_new, size: 20, color: AppTheme.textPrimary(context)),
+              onPressed: () => Navigator.pop(context),
+            ),
+            title: Text(
+              "ENROLL AS GUIDE",
+              style: GoogleFonts.outfit(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 2,
+                color: AppTheme.textPrimary(context),
               ),
             ),
+          ),
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.all(24.0),
@@ -348,8 +362,14 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SizedBox(height: 20),
-                    OracleUI.glassContainer(
+                    Container(
                       padding: const EdgeInsets.all(24),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(24),
+                        border: Border.all(color: AppTheme.secondaryBorder(context)),
+                        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4))],
+                      ),
                       child: Column(
                         children: [
                           Icon(
@@ -363,7 +383,7 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
                             style: GoogleFonts.outfit(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
-                              color: Theme.of(context).colorScheme.onSurface,
+                              color: AppTheme.textPrimary(context),
                             ),
                           ),
                           const SizedBox(height: 12),
@@ -372,7 +392,7 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
                             textAlign: TextAlign.center,
                             style: GoogleFonts.inter(
                               fontSize: 13,
-                              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+                              color: AppTheme.textSecondary(context),
                               height: 1.5,
                             ),
                           ),
@@ -395,7 +415,7 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
                       maxLines: 4,
                     ).animate().fadeIn(delay: 400.ms, duration: 800.ms).slideX(begin: 0.1, end: 0),
                     const SizedBox(height: 32),
-                    OracleUI.neonText(
+                    Text(
                       "DOCUMENT VERIFICATION",
                       style: GoogleFonts.outfit(
                         fontSize: 12,
@@ -412,8 +432,14 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
                     _buildDocPicker("SELFIE FOR IDENTITY", _selfieFile, () => _showPhotoPicker('selfie')),
                     const SizedBox(height: 48),
                     _isLoading
-                        ? OracleUI.glassContainer(
+                        ? Container(
                             padding: const EdgeInsets.all(32),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(24),
+                              border: Border.all(color: AppTheme.secondaryBorder(context)),
+                              boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4))],
+                            ),
                             child: _buildLoadingAura(),
                           ).animate().fadeIn().scale(begin: const Offset(0.95, 0.95))
                         : SizedBox(
@@ -444,15 +470,14 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
             ),
           ],
         ),
-      ),
-    );
+      );
   }
 
   Widget _buildCategorySelector() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        OracleUI.neonText(
+        Text(
           "GUIDE CATEGORY",
           style: GoogleFonts.outfit(
             fontSize: 12,
@@ -472,7 +497,7 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
               onSelected: (val) => setState(() => _selectedCategory = cat),
               selectedColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
               labelStyle: GoogleFonts.inter(
-                color: isSelected ? Colors.white : Colors.white60,
+                color: isSelected ? Colors.white : AppTheme.textSecondary(context),
                 fontSize: 12,
               ),
             );
@@ -486,19 +511,25 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(12),
-      child: OracleUI.glassContainer(
+      child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: AppTheme.secondaryBorder(context)),
+          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4))],
+        ),
         child: Row(
           children: [
             Icon(
               file == null ? Icons.add_a_photo_outlined : Icons.check_circle_rounded,
-              color: file == null ? Colors.white38 : Colors.greenAccent,
+              color: file == null ? AppTheme.textSecondary(context).withValues(alpha: 0.3) : Colors.greenAccent,
             ),
             const SizedBox(width: 16),
             Expanded(
               child: Text(
                 label,
-                style: GoogleFonts.inter(color: Colors.white, fontSize: 13),
+                style: GoogleFonts.inter(color: AppTheme.textPrimary(context), fontSize: 13),
               ),
             ),
             if (file != null)
@@ -518,7 +549,7 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        OracleUI.neonText(
+        Text(
           label,
           style: GoogleFonts.outfit(
             fontSize: 12,
@@ -528,15 +559,21 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
           ),
         ),
         const SizedBox(height: 12),
-        OracleUI.glassContainer(
+        Container(
           padding: const EdgeInsets.symmetric(horizontal: 16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: AppTheme.secondaryBorder(context)),
+            boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4))],
+          ),
           child: TextField(
             controller: controller,
             maxLines: maxLines,
-            style: GoogleFonts.inter(color: Colors.white),
+            style: GoogleFonts.inter(color: AppTheme.textPrimary(context)),
             decoration: InputDecoration(
               hintText: hint,
-              hintStyle: GoogleFonts.inter(color: Colors.white.withValues(alpha: 0.3)),
+              hintStyle: GoogleFonts.inter(color: AppTheme.textSecondary(context).withValues(alpha: 0.5)),
               border: InputBorder.none,
             ),
           ),

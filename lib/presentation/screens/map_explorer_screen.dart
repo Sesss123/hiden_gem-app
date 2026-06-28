@@ -8,7 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/models/discovery_place.dart';
 import 'place_details_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../../core/theme/oracle_ui_system.dart';
+
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../data/datasources/user_preference_service.dart';
@@ -167,7 +167,6 @@ class _MapExplorerScreenState extends ConsumerState<MapExplorerScreen> {
               target: LatLng(widget.initialPosition.latitude, widget.initialPosition.longitude),
               zoom: 12,
             ),
-            style: _cinematicMapStyle,
             markers: _markers,
             myLocationEnabled: true,
             myLocationButtonEnabled: false,
@@ -183,10 +182,17 @@ class _MapExplorerScreenState extends ConsumerState<MapExplorerScreen> {
               onTap: () => Navigator.pop(context),
               child: Container(
                 padding: const EdgeInsets.all(12),
-                decoration: AppTheme.glassDecoration(
-                  context,
-                  opacity: 0.1, 
-                  radius: BorderRadius.circular(16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.1),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                  border: Border.all(color: AppTheme.secondaryBorder(context)),
                 ),
                 child: Icon(Icons.arrow_back_ios_new, color: AppTheme.textPrimary(context), size: 20),
               ),
@@ -202,7 +208,7 @@ class _MapExplorerScreenState extends ConsumerState<MapExplorerScreen> {
               child: _buildPlaceCard(_selectedPlace!),
             ),
 
-            Center(child: CircularProgressIndicator(color: AppTheme.modernGreen(context))),
+            Center(child: CircularProgressIndicator(color: AppPalette.rust)),
 
           // 4. SOS Overlay (Zenith Refinement)
           if (_isSosActive)
@@ -227,9 +233,9 @@ class _MapExplorerScreenState extends ConsumerState<MapExplorerScreen> {
                 .scale(begin: const Offset(1, 1), end: const Offset(1.2, 1.2), duration: 500.ms)
                 .tint(color: Colors.redAccent),
             const SizedBox(height: 24),
-            OracleUI.neonText(
+            Text(
               "EMERGENCY SIGNAL",
-              style: GoogleFonts.outfit(fontSize: 28, fontWeight: FontWeight.bold),
+              style: GoogleFonts.outfit(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white),
             ),
             const SizedBox(height: 16),
             Text(
@@ -238,8 +244,13 @@ class _MapExplorerScreenState extends ConsumerState<MapExplorerScreen> {
               style: GoogleFonts.inter(color: Colors.white, fontWeight: FontWeight.bold, letterSpacing: 1),
             ),
             const SizedBox(height: 48),
-            OracleUI.glassContainer(
+            Container(
               padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                color: Colors.black.withValues(alpha: 0.7),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: Colors.redAccent.withValues(alpha: 0.5)),
+              ),
               child: Column(
                 children: [
                    Text("SAFETY PROTOCOLS", style: GoogleFonts.outfit(color: Colors.redAccent, fontWeight: FontWeight.bold)),
@@ -279,13 +290,17 @@ class _MapExplorerScreenState extends ConsumerState<MapExplorerScreen> {
       onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => PlaceDetailsScreen(place: place))),
       child: Container(
         padding: const EdgeInsets.all(16),
-        decoration: AppTheme.glassDecoration(
-          context,
-          opacity: 0.15, 
-          blur: 40,
-        ).copyWith(
+        decoration: BoxDecoration(
+          color: Colors.white,
           borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: AppTheme.modernGreen(context).withValues(alpha: 0.3)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.1),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+          border: Border.all(color: AppTheme.secondaryBorder(context)),
         ),
         child: Row(
           children: [
@@ -317,9 +332,9 @@ class _MapExplorerScreenState extends ConsumerState<MapExplorerScreen> {
                   const SizedBox(height: 8),
                   Row(
                     children: [
-                      Icon(Icons.directions_car_filled, color: AppTheme.modernGreen(context), size: 14),
+                      const Icon(Icons.directions_car_filled, color: AppPalette.rust, size: 14),
                       const SizedBox(width: 4),
-                      Text("${place.distanceKm.toStringAsFixed(1)} km away", style: GoogleFonts.inter(color: AppTheme.modernGreen(context), fontSize: 12, fontWeight: FontWeight.bold)),
+                      Text("${place.distanceKm.toStringAsFixed(1)} km away", style: GoogleFonts.inter(color: AppPalette.rust, fontSize: 12, fontWeight: FontWeight.bold)),
                     ],
                   ),
                 ],
@@ -332,7 +347,7 @@ class _MapExplorerScreenState extends ConsumerState<MapExplorerScreen> {
                   onPressed: () => setState(() => _selectedPlace = null),
                 ),
                 IconButton(
-                  icon: Icon(Icons.navigation_rounded, color: AppTheme.modernGreen(context)),
+                  icon: const Icon(Icons.navigation_rounded, color: AppPalette.rust),
                   onPressed: () => _launchTransport(place),
                 ),
               ],
@@ -342,151 +357,4 @@ class _MapExplorerScreenState extends ConsumerState<MapExplorerScreen> {
       ),
     );
   }
-
-  // Dark Cinematic Map Style
-  static const String _cinematicMapStyle = r'''
-[
-  {
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#121212"
-      }
-    ]
-  },
-  {
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#746855"
-      }
-    ]
-  },
-  {
-    "elementType": "labels.text.stroke",
-    "stylers": [
-      {
-        "color": "#242f3e"
-      }
-    ]
-  },
-  {
-    "featureType": "administrative.locality",
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#d59563"
-      }
-    ]
-  },
-  {
-    "featureType": "poi",
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#d59563"
-      }
-    ]
-  },
-  {
-    "featureType": "poi.park",
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#1b3022"
-      }
-    ]
-  },
-  {
-    "featureType": "poi.park",
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#6b9a76"
-      }
-    ]
-  },
-  {
-    "featureType": "road",
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#2c2c2c"
-      }
-    ]
-  },
-  {
-    "featureType": "road",
-    "elementType": "geometry.stroke",
-    "stylers": [
-      {
-        "color": "#212121"
-      }
-    ]
-  },
-  {
-    "featureType": "road",
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#9ca5b3"
-      }
-    ]
-  },
-  {
-    "featureType": "road.highway",
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#3c3c3c"
-      }
-    ]
-  },
-  {
-    "featureType": "road.highway",
-    "elementType": "geometry.stroke",
-    "stylers": [
-      {
-        "color": "#1f2835"
-      }
-    ]
-  },
-  {
-    "featureType": "road.highway",
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#f3d19c"
-      }
-    ]
-  },
-  {
-    "featureType": "water",
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "color": "#0a1722"
-      }
-    ]
-  },
-  {
-    "featureType": "water",
-    "elementType": "labels.text.fill",
-    "stylers": [
-      {
-        "color": "#515c6d"
-      }
-    ]
-  },
-  {
-    "featureType": "water",
-    "elementType": "labels.text.stroke",
-    "stylers": [
-      {
-        "color": "#17263c"
-      }
-    ]
-  }
-]
-''';
 }

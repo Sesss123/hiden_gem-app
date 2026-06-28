@@ -189,8 +189,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
           color: Theme.of(context).scaffoldBackgroundColor,
           child: Stack(
             children: [
-              OracleUI.auraBackground(
-                child: NestedScrollView(
+              NestedScrollView(
             headerSliverBuilder: (context, innerBoxIsScrolled) {
               return [
                 SliverAppBar(
@@ -199,10 +198,11 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
                   stretch: true,
                   backgroundColor: Theme.of(context).scaffoldBackgroundColor,
                   elevation: 0,
+                  scrolledUnderElevation: 0,
                   leading: Padding(
-                    padding: EdgeInsets.all(8.0),
+                    padding: const EdgeInsets.all(8.0),
                     child: CircleAvatar(
-                      backgroundColor: Colors.white10,
+                      backgroundColor: Colors.white.withValues(alpha: 0.8),
                       child: IconButton(
                         icon: Icon(Icons.arrow_back_ios_new, color: AppTheme.textPrimary(context), size: 18),
                         onPressed: () {
@@ -294,10 +294,10 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
                   bottom: PreferredSize(
                     preferredSize: const Size.fromHeight(60),
                     child: Container(
-                      padding: EdgeInsets.symmetric(vertical: 8),
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).scaffoldBackgroundColor.withValues(alpha: 0.8),
-                        borderRadius: const BorderRadius.only(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.only(
                           topLeft: Radius.circular(32),
                           topRight: Radius.circular(32),
                         ),
@@ -307,19 +307,18 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
                         isScrollable: true,
                         dividerColor: Colors.transparent,
                         indicator: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [Theme.of(context).colorScheme.primary, Theme.of(context).colorScheme.secondary],
-                          ),
+                          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+                          border: Border.all(color: Theme.of(context).colorScheme.primary),
                           borderRadius: BorderRadius.circular(30),
                         ),
-                        indicatorPadding: EdgeInsets.symmetric(horizontal: -16, vertical: 8),
+                        indicatorPadding: const EdgeInsets.symmetric(horizontal: -16, vertical: 8),
                         labelColor: Theme.of(context).colorScheme.primary,
-                        unselectedLabelColor: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
-                        labelStyle: GoogleFonts.outfit(fontWeight: FontWeight.w900, fontSize: 11, letterSpacing: 2),
+                        unselectedLabelColor: AppTheme.textSecondary(context),
+                        labelStyle: GoogleFonts.inter(fontWeight: FontWeight.bold, fontSize: 11, letterSpacing: 1.5),
                         tabs: [
                           Tab(text: l10n.itinerary.toUpperCase()),
-                          Tab(text: "BUDGET"),
-                          Tab(text: "MAP"),
+                          const Tab(text: "BUDGET"),
+                          const Tab(text: "MAP"),
                           Tab(text: l10n.planB.toUpperCase()),
                           Tab(text: l10n.tips.toUpperCase()),
                         ],
@@ -341,7 +340,6 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
                     ],
                   ).animate().fadeIn(duration: 800.ms)
                 : const ResultsTabSkeleton(),
-          ),
           ),
 
           // Oracle Aura Overlay (Granular Rebuild Pattern)
@@ -506,19 +504,30 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
         // Oracle's Summary & Voice Guide
         Padding(
           padding: const EdgeInsets.fromLTRB(20, 24, 20, 0),
-          child: OracleUI.glassContainer(
-            showGlow: true,
-            padding: EdgeInsets.all(20),
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(color: AppTheme.secondaryBorder(context)),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.03),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
                   children: [
                     Icon(Icons.auto_awesome, color: Theme.of(context).colorScheme.primary, size: 20),
-                    SizedBox(width: 12),
-                    OracleUI.neonText(
+                    const SizedBox(width: 12),
+                    Text(
                       "ORACLE'S VISION",
-                      style: GoogleFonts.outfit(
+                      style: GoogleFonts.inter(
                         color: Theme.of(context).colorScheme.primary, 
                         fontWeight: FontWeight.w900, 
                         letterSpacing: 4, 
@@ -621,11 +630,18 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
 
   Widget _buildHeroBudgetCard(BuildContext context, int total, int userBudget, double progress, bool isOver) {
     return Container(
-      padding: EdgeInsets.all(24),
-      decoration: AppTheme.glassDecoration(
-        context,
-        color: Theme.of(context).cardColor,
-        opacity: Theme.of(context).brightness == Brightness.light ? 0.9 : 0.15,
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: AppTheme.secondaryBorder(context)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -696,12 +712,12 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
   Widget _buildBudgetRow(BuildContext context, String label, int amount, int total) {
     final percent = (amount / total * 100).toInt();
     return Container(
-      margin: EdgeInsets.only(bottom: 12),
-      padding: EdgeInsets.all(16),
-      decoration: AppTheme.glassDecoration(
-        context,
-        color: Theme.of(context).cardColor,
-        opacity: Theme.of(context).brightness == Brightness.light ? 0.7 : 0.05,
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppTheme.secondaryBorder(context)),
       ),
       child: Row(
         children: [
@@ -862,15 +878,20 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
   Widget _buildRewardedGate() {
     return Center(
       child: Padding(
-        padding: EdgeInsets.all(32.0),
+        padding: const EdgeInsets.all(32.0),
         child: Container(
-          padding: EdgeInsets.all(24),
-          decoration: AppTheme.glassDecoration(
-            context,
-            color: Theme.of(context).cardColor,
-            opacity: Theme.of(context).brightness == Brightness.light ? 0.9 : 0.2,
-          ).copyWith(
-            border: Border.all(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3)),
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(color: AppTheme.secondaryBorder(context)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.05),
+                blurRadius: 15,
+                offset: const Offset(0, 4),
+              ),
+            ],
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -925,13 +946,18 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
 
   Widget _buildPremiumCTA() {
     return Container(
-      padding: EdgeInsets.all(28),
-      decoration: AppTheme.glassDecoration(
-        context,
-        color: Theme.of(context).cardColor,
-        opacity: Theme.of(context).brightness == Brightness.light ? 1.0 : 0.2, // Make it pop in light mode
-      ).copyWith(
+      padding: const EdgeInsets.all(28),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
         border: Border.all(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5), width: 2),
+        boxShadow: [
+          BoxShadow(
+            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+            blurRadius: 20,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Column(
         children: [
@@ -1014,18 +1040,23 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
   }
 
   Widget _buildPlanBCard(PlanBItem item) {
-    return Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
         borderRadius: BorderRadius.circular(20),
-        side: BorderSide(color: AppTheme.primaryBorder(context)),
+        border: Border.all(color: AppTheme.secondaryBorder(context)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
-      color: AppTheme.glassBackground(context),
-      child: Padding(
-        padding: EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
             Text(
               item.title, 
               style: GoogleFonts.outfit(
@@ -1060,7 +1091,6 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
             ),
           ],
         ),
-      ),
     );
   }
 

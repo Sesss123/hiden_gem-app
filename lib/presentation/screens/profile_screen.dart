@@ -10,7 +10,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hidden_gems_sl/l10n/app_localizations.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import '../../core/theme/oracle_ui_system.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/localization/locale_provider.dart';
 import '../../core/providers/screenshot_provider.dart';
@@ -62,13 +61,19 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
-      builder: (context) => OracleUI.glassContainer(
+      builder: (context) => Container(
         margin: EdgeInsets.all(16),
         padding: EdgeInsets.symmetric(vertical: 24),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: AppTheme.secondaryBorder(context)),
+          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10)],
+        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            OracleUI.neonText(
+            Text(
               AppLocalizations.of(context)!.selectLanguage.toUpperCase(),
               style: GoogleFonts.outfit(
                 fontSize: 18,
@@ -109,13 +114,19 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     final source = await showModalBottomSheet<ImageSource>(
       context: context,
       backgroundColor: Colors.transparent,
-      builder: (context) => OracleUI.glassContainer(
+      builder: (context) => Container(
         margin: EdgeInsets.all(16),
         padding: EdgeInsets.symmetric(vertical: 24),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: AppTheme.secondaryBorder(context)),
+          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10)],
+        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            OracleUI.neonText(
+            Text(
               "MANIFEST AVATAR",
               style: GoogleFonts.outfit(color: Theme.of(context).colorScheme.primary, fontSize: 16, fontWeight: FontWeight.bold, letterSpacing: 2)
             ),
@@ -182,8 +193,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      body: OracleUI.auraBackground(
-        child: CustomScrollView(
+      body: CustomScrollView(
           physics: const BouncingScrollPhysics(),
           slivers: [
             _buildAppBar(isPremium, l10n),
@@ -193,7 +203,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    OracleUI.neonText(
+                    Text(
                       "ASCENSION STATUS",
                       style: GoogleFonts.outfit(
                         fontSize: 12,
@@ -228,8 +238,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             ),
           ],
         ),
-      ),
-    );
+      );
   }
 
   Widget _buildAppBar(bool isPremium, AppLocalizations l10n) {
@@ -317,7 +326,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   ).animate(onPlay: (c) => c.repeat()).shimmer(duration: 3.seconds, delay: 2.seconds),
                 ),
                 SizedBox(height: 20),
-                OracleUI.neonText(
+                Text(
                   isPremium ? "PREMIUM TRAVELER" : "ORACLE TRAVELER",
                   style: GoogleFonts.outfit(
                     fontSize: 24,
@@ -356,9 +365,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   }
 
   Widget _buildStatsRow() {
-    return OracleUI.glassContainer(
+    return Container(
       padding: EdgeInsets.symmetric(vertical: 24),
-      showGlow: true,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: AppTheme.secondaryBorder(context)),
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4))],
+      ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
@@ -405,7 +419,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        OracleUI.neonText(
+        Text(
           "DESTINY VIBE",
           style: GoogleFonts.outfit(
             fontSize: 12,
@@ -470,7 +484,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        OracleUI.neonText(
+        Text(
           "LUMINANCE GRID", 
           style: GoogleFonts.outfit(fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: 4, color: Theme.of(context).colorScheme.primary)
         ),
@@ -776,15 +790,21 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           onTap: () async {
             final confirm = await showDialog<bool>(
               context: context,
-              builder: (context) => OracleUI.glassContainer(
+              builder: (context) => Container(
                 margin: EdgeInsets.symmetric(horizontal: 40, vertical: 240),
                 padding: EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(color: AppTheme.secondaryBorder(context)),
+                  boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10)],
+                ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(Icons.warning_amber_rounded, color: Colors.redAccent, size: 48),
                     SizedBox(height: 20),
-                    OracleUI.neonText("PERMANENT ERASE", style: GoogleFonts.outfit(color: Colors.redAccent, fontWeight: FontWeight.bold, fontSize: 18)),
+                    Text("PERMANENT ERASE", style: GoogleFonts.outfit(color: Colors.redAccent, fontWeight: FontWeight.bold, fontSize: 18)),
                     SizedBox(height: 16),
                     Text(
                       l10n.confirmDeleteMessage,
@@ -850,9 +870,15 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           onTap: () async {
             final confirm = await showDialog<bool>(
               context: context,
-              builder: (context) => OracleUI.glassContainer(
+              builder: (context) => Container(
                  margin: EdgeInsets.symmetric(horizontal: 40, vertical: 260),
                 padding: EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(color: AppTheme.secondaryBorder(context)),
+                  boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10)],
+                ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -884,10 +910,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   Widget _settingsTile(IconData icon, String title, {VoidCallback? onTap, Widget? trailing, Color? textColor, Color? iconColor}) {
     return Container(
       margin: EdgeInsets.only(bottom: 12),
-      child: OracleUI.glassContainer(
-        padding: EdgeInsets.zero,
+      decoration: BoxDecoration(
+        color: Colors.white,
         borderRadius: BorderRadius.circular(20),
-        child: ListTile(
+        border: Border.all(color: AppTheme.secondaryBorder(context)),
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4))],
+      ),
+      child: ListTile(
           contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 4),
           leading: Container(
             width: 42,
@@ -913,15 +942,19 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               HapticFeedback.selectionClick();
           },
         ),
-      ),
-    );
+      );
   }
 
 
   Widget _buildPremiumARStatus(bool isPremium) {
-    return OracleUI.glassContainer(
+    return Container(
       padding: EdgeInsets.all(20),
-      showGlow: isPremium,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: AppTheme.secondaryBorder(context)),
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4))],
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -1024,21 +1057,24 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-            OracleUI.neonText(
+        Text(
           "FUTURE HORIZONS HUB",
           style: GoogleFonts.outfit(
             fontSize: 12,
             fontWeight: FontWeight.w900,
-            color: AppTheme.sigiriyaOchre(context),
+            color: AppPalette.rust,
             letterSpacing: 4,
           ),
         ),
         SizedBox(height: 24),
-        OracleUI.glassContainer(
+        Container(
           padding: EdgeInsets.all(24),
-          borderRadius: BorderRadius.circular(32),
-          showGlow: true,
-          glowColor: AppTheme.sigiriyaOchre(context),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(32),
+            border: Border.all(color: AppTheme.secondaryBorder(context)),
+            boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4))],
+          ),
           child: Column(
             children: [
               _buildHubItem(

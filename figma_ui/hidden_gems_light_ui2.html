@@ -1,0 +1,1603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hidden Gems SL — All 46 Screens</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#F7F5F2; --bg2:#EFEDE9; --card:#FFFFFF;
+  --border:rgba(0,0,0,0.07); --border2:rgba(0,0,0,0.12);
+  --rust:#C0580A; --rust-d:#A04508; --rtint:#FDEBD8;
+  --earth:#7C6A55; --sand:#D9C9B0; --sand2:#EDE3D6;
+  --ink:#1A1512; --ink2:rgba(26,21,18,0.55); --ink3:rgba(26,21,18,0.3);
+  --ochre:#ECC89A;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#E8E4DF;font-family:'Inter',sans-serif;color:var(--ink);}
+
+/* COVER */
+.cover{min-height:100vh;background:radial-gradient(ellipse 60% 40% at 70% 20%,rgba(192,88,10,0.07) 0%,transparent 60%),#F7F5F2;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 24px;text-align:center;}
+.cover-eye{font-size:10px;font-weight:700;letter-spacing:3px;color:var(--rust);text-transform:uppercase;margin-bottom:16px;}
+.cover-title{font-family:'Outfit',sans-serif;font-size:clamp(50px,8vw,90px);font-weight:900;line-height:.9;letter-spacing:-2px;color:var(--ink);}
+.cover-title em{color:var(--rust);font-style:normal;}
+.cover-sub{font-size:15px;color:var(--ink2);margin-top:18px;max-width:500px;line-height:1.7;}
+.cover-pills{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:32px;}
+.pill{padding:7px 16px;border-radius:100px;font-size:12px;font-weight:600;}
+.pr{background:rgba(192,88,10,0.08);color:var(--rust);border:1px solid rgba(192,88,10,0.2);}
+.pe{background:rgba(124,106,85,0.08);color:var(--earth);border:1px solid rgba(124,106,85,0.18);}
+
+/* LAYOUT */
+.section{padding:72px 36px;max-width:1600px;margin:0 auto;}
+.divider{height:1px;background:linear-gradient(90deg,transparent,var(--sand),transparent);margin:0 36px;}
+.sec-eye{font-size:10px;font-weight:700;letter-spacing:3px;color:var(--rust);text-transform:uppercase;margin-bottom:8px;}
+.sec-title{font-family:'Outfit',sans-serif;font-size:28px;font-weight:800;color:var(--ink);margin-bottom:6px;}
+.sec-desc{font-size:13px;color:var(--ink2);margin-bottom:40px;line-height:1.7;max-width:640px;}
+
+/* CATEGORY ROW */
+.cat-row{display:flex;align-items:center;gap:12px;margin-bottom:24px;margin-top:40px;}
+.cat-label{font-family:'Outfit',sans-serif;font-size:13px;font-weight:800;color:var(--ink);white-space:nowrap;}
+.cat-line{flex:1;height:1px;background:var(--border2);}
+.cat-count{font-size:11px;color:var(--ink3);font-weight:600;white-space:nowrap;}
+
+/* PHONE GRID */
+.phones{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:32px 24px;align-items:start;}
+.pw{display:flex;flex-direction:column;align-items:center;gap:10px;}
+.pf{background:#fff;border-radius:40px;border:1.5px solid rgba(0,0,0,0.09);box-shadow:0 2px 0 1px rgba(0,0,0,0.05),0 16px 40px rgba(0,0,0,0.1);overflow:hidden;position:relative;aspect-ratio:9/19.5;width:100%;max-width:220px;margin:0 auto;}
+.notch{position:absolute;top:10px;left:50%;transform:translateX(-50%);width:70px;height:21px;background:#fff;border-radius:30px;z-index:10;border:1.5px solid rgba(0,0,0,0.07);}
+.ps{width:100%;height:100%;overflow:hidden;border-radius:39px;position:relative;background:var(--bg);}
+.sname{font-family:'Outfit',sans-serif;font-size:12px;font-weight:800;color:var(--ink);text-align:center;}
+.ssub{font-size:10px;color:var(--ink3);text-align:center;}
+
+/* ── COMMON SCREEN PARTS ── */
+.status{height:38px;display:flex;align-items:flex-end;padding:0 16px 5px;justify-content:space-between;flex-shrink:0;}
+.st{font-size:9px;font-weight:700;color:var(--ink);}
+.si{font-size:8px;color:var(--ink3);}
+.bnav{height:52px;background:#fff;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-around;flex-shrink:0;box-shadow:0 -2px 10px rgba(0,0,0,0.04);}
+.bni{display:flex;flex-direction:column;align-items:center;gap:3px;}
+.bnico{font-size:14px;color:var(--ink3);}
+.bnico.a{color:var(--rust);}
+.bnlbl{font-size:6px;color:var(--ink3);}
+.bnlbl.a{color:var(--rust);font-weight:700;}
+.fab{width:38px;height:38px;border-radius:50%;background:var(--rust);display:flex;align-items:center;justify-content:center;font-size:16px;margin-top:-14px;box-shadow:0 4px 14px rgba(192,88,10,0.3);}
+
+/* ── SPLASH ── */
+.splash{height:100%;background:linear-gradient(160deg,#1A0E08,#2A1608,#1A0E08);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;}
+.splash-orb{width:72px;height:72px;border-radius:50%;background:radial-gradient(circle at 35% 35%,rgba(192,88,10,0.8),rgba(192,88,10,0.1));border:1px solid rgba(192,88,10,0.4);box-shadow:0 0 40px rgba(192,88,10,0.3);display:flex;align-items:center;justify-content:center;font-size:30px;}
+.splash-brand{font-family:'Outfit',sans-serif;font-size:20px;font-weight:900;letter-spacing:4px;color:#fff;text-transform:uppercase;}
+.splash-sub{font-size:8px;letter-spacing:3px;color:rgba(255,255,255,0.3);text-transform:uppercase;}
+
+/* ── ONBOARDING ── */
+.ob{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:44px 18px 28px;text-align:center;background:var(--bg);}
+.ob-ill{width:72px;height:72px;border-radius:22px;background:linear-gradient(145deg,#FDEBD8,#ECC89A);border:1px solid rgba(192,88,10,0.12);display:flex;align-items:center;justify-content:center;font-size:30px;margin:0 auto 16px;box-shadow:0 6px 20px rgba(192,88,10,0.1);}
+.ob-t{font-family:'Outfit',sans-serif;font-size:17px;font-weight:900;color:var(--ink);line-height:1.2;margin-bottom:8px;}
+.ob-s{font-size:9px;color:var(--ink2);line-height:1.6;margin-bottom:20px;}
+.ob-dots{display:flex;gap:5px;justify-content:center;margin-bottom:18px;}
+.dot{width:5px;height:5px;border-radius:50%;background:var(--sand);}
+.dot.a{background:var(--rust);width:14px;border-radius:3px;}
+.ob-btn{background:var(--rust);color:#fff;border:none;padding:11px;border-radius:100px;font-family:'Outfit',sans-serif;font-size:11px;font-weight:800;width:100%;box-shadow:0 4px 14px rgba(192,88,10,0.2);}
+
+/* ── LANGUAGE SELECTION ── */
+.lang{height:100%;display:flex;flex-direction:column;align-items:center;padding:44px 16px 24px;background:var(--bg);}
+.lang-orb{width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,#FDEBD8,#ECC89A);border:1px solid rgba(192,88,10,0.2);display:flex;align-items:center;justify-content:center;font-size:24px;margin-bottom:14px;}
+.lang-t{font-family:'Outfit',sans-serif;font-size:16px;font-weight:900;color:var(--ink);margin-bottom:4px;}
+.lang-s{font-size:9px;color:var(--ink2);margin-bottom:18px;text-align:center;}
+.lang-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%;}
+.lang-item{background:#fff;border:1.5px solid var(--border2);border-radius:12px;padding:10px 8px;text-align:center;}
+.lang-item.a{border-color:var(--rust);background:var(--rtint);}
+.lang-flag{font-size:18px;margin-bottom:3px;}
+.lang-name{font-size:8px;font-weight:700;color:var(--ink);}
+.lang-native{font-size:7px;color:var(--ink3);margin-top:1px;}
+.lang-btn{background:var(--rust);color:#fff;border:none;padding:10px;border-radius:10px;font-family:'Outfit',sans-serif;font-size:11px;font-weight:800;width:100%;margin-top:14px;}
+
+/* ── TERMS ── */
+.terms{height:100%;display:flex;flex-direction:column;padding:44px 0 0;background:var(--bg);}
+.terms-hd{padding:0 16px 12px;}
+.terms-t{font-family:'Outfit',sans-serif;font-size:15px;font-weight:900;color:var(--ink);margin-bottom:4px;}
+.terms-s{font-size:9px;color:var(--ink2);}
+.terms-body{flex:1;overflow:hidden;padding:0 16px;display:flex;flex-direction:column;gap:8px;}
+.terms-sec{background:#fff;border:1px solid var(--border);border-radius:12px;padding:10px 12px;}
+.terms-sh{font-size:9px;font-weight:800;color:var(--rust);margin-bottom:4px;}
+.terms-txt{font-size:7px;color:var(--ink2);line-height:1.6;}
+.terms-footer{padding:12px 16px;background:#fff;border-top:1px solid var(--border);}
+.terms-agree{background:var(--rust);color:#fff;border:none;padding:11px;border-radius:10px;font-family:'Outfit',sans-serif;font-size:11px;font-weight:800;width:100%;}
+
+/* ── LOGIN ── */
+.login{display:flex;flex-direction:column;height:100%;padding:44px 16px 20px;background:var(--bg);}
+.login-logo{display:flex;align-items:center;gap:8px;margin-bottom:24px;}
+.login-ico{width:26px;height:26px;border-radius:8px;background:var(--rust);display:flex;align-items:center;justify-content:center;font-size:12px;}
+.login-brand{font-family:'Outfit',sans-serif;font-size:12px;font-weight:900;color:var(--ink);}
+.login-h{font-family:'Outfit',sans-serif;font-size:20px;font-weight:900;color:var(--ink);line-height:1.2;margin-bottom:4px;}
+.login-sub{font-size:9px;color:var(--ink2);margin-bottom:18px;line-height:1.5;}
+.linput{position:relative;margin-bottom:8px;}
+.linput input{background:#fff;border:1.5px solid var(--border2);border-radius:10px;padding:10px 12px 10px 32px;color:var(--ink);font-size:9px;width:100%;font-family:'Inter',sans-serif;outline:none;}
+.linput-ico{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:11px;color:var(--ink3);}
+.login-btn{background:var(--rust);color:#fff;border:none;padding:11px;border-radius:10px;font-family:'Outfit',sans-serif;font-size:11px;font-weight:800;width:100%;margin-top:4px;box-shadow:0 4px 14px rgba(192,88,10,0.2);}
+.login-or{text-align:center;font-size:8px;color:var(--ink3);margin:10px 0;}
+.login-g{background:#fff;border:1.5px solid var(--border2);border-radius:10px;padding:9px;font-size:9px;color:var(--ink2);width:100%;display:flex;align-items:center;justify-content:center;gap:6px;}
+.login-reg{text-align:center;margin-top:10px;font-size:7px;color:var(--ink3);}
+.login-reg span{color:var(--rust);font-weight:700;}
+
+/* ── HOME ── */
+.home-hero{height:44%;flex-shrink:0;position:relative;background:linear-gradient(160deg,#FDEBD8 0%,#F5D5B4 50%,#ECC89A 100%);display:flex;align-items:flex-end;padding:12px 14px;}
+.home-av{position:absolute;top:38px;right:12px;width:26px;height:26px;border-radius:50%;background:rgba(192,88,10,0.12);border:1.5px solid rgba(192,88,10,0.2);display:flex;align-items:center;justify-content:center;font-size:11px;}
+.home-eye{font-size:6px;font-weight:800;letter-spacing:2px;color:var(--rust);text-transform:uppercase;margin-bottom:3px;}
+.home-h{font-family:'Outfit',sans-serif;font-size:16px;font-weight:900;color:var(--ink);line-height:1.1;}
+.home-search{background:#fff;border:1px solid var(--border2);border-radius:100px;padding:8px 12px;display:flex;align-items:center;gap:7px;margin:9px 12px 0;box-shadow:0 2px 8px rgba(0,0,0,0.06);}
+.home-body{flex:1;overflow:hidden;padding:12px 12px 0;}
+.home-sec{font-family:'Outfit',sans-serif;font-size:10px;font-weight:800;color:var(--ink);margin-bottom:8px;}
+.gem-row{display:flex;gap:8px;overflow-x:hidden;}
+.gem-card{flex-shrink:0;width:90px;background:#fff;border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:0 1px 6px rgba(0,0,0,0.05);}
+.gem-img{height:54px;display:flex;align-items:center;justify-content:center;font-size:22px;}
+.gem-info{padding:6px 7px 8px;}
+.gem-n{font-family:'Outfit',sans-serif;font-size:8px;font-weight:800;color:var(--ink);line-height:1.2;}
+.gem-l{font-size:6px;color:var(--ink3);margin-top:1px;}
+.gem-r{font-size:6px;color:var(--rust);margin-top:2px;}
+.ai-pill{background:var(--rtint);border:1px solid rgba(192,88,10,0.12);border-radius:10px;padding:8px 10px;margin-top:10px;display:flex;gap:7px;align-items:center;}
+.ai-dot{width:5px;height:5px;border-radius:50%;background:var(--rust);flex-shrink:0;}
+.ai-txt{font-size:7px;color:var(--ink);font-weight:600;flex:1;}
+
+/* ── DISCOVERY ── */
+.disc-hd{padding:38px 12px 8px;}
+.disc-t{font-family:'Outfit',sans-serif;font-size:14px;font-weight:900;color:var(--ink);}
+.disc-c{font-size:8px;color:var(--ink3);margin-top:1px;}
+.disc-chips{display:flex;gap:5px;overflow-x:hidden;padding:0 12px 10px;}
+.dchip{padding:5px 10px;border-radius:100px;font-size:7px;font-weight:700;border:1px solid var(--border2);color:var(--ink2);background:#fff;flex-shrink:0;}
+.dchip.a{background:var(--rust);color:#fff;border-color:var(--rust);}
+.disc-map{height:80px;margin:0 12px 10px;border-radius:12px;background:linear-gradient(135deg,#F0E8DE,#E8DDD0);border:1px solid var(--border);position:relative;overflow:hidden;}
+.disc-map::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 15px,rgba(192,88,10,0.04) 15px,rgba(192,88,10,0.04) 16px),repeating-linear-gradient(90deg,transparent,transparent 15px,rgba(192,88,10,0.04) 15px,rgba(192,88,10,0.04) 16px);}
+.dpin{position:absolute;width:8px;height:8px;border-radius:50%;background:var(--rust);box-shadow:0 0 6px rgba(192,88,10,0.5);}
+.disc-list{padding:0 12px;display:flex;flex-direction:column;gap:7px;overflow:hidden;}
+.di{background:#fff;border:1px solid var(--border);border-radius:11px;display:flex;overflow:hidden;}
+.di-img{width:52px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:20px;background:var(--bg2);}
+.di-info{padding:8px 10px;flex:1;}
+.di-n{font-family:'Outfit',sans-serif;font-size:9px;font-weight:800;color:var(--ink);}
+.di-l{font-size:7px;color:var(--ink3);margin-top:1px;}
+.di-tags{display:flex;gap:3px;margin-top:4px;}
+.di-tag{background:rgba(192,88,10,0.08);color:var(--rust);font-size:6px;font-weight:700;padding:2px 5px;border-radius:100px;}
+
+/* ── TRIP FORM ── */
+.tripf{display:flex;flex-direction:column;height:100%;padding:40px 14px 14px;background:var(--bg);}
+.tf-t{font-family:'Outfit',sans-serif;font-size:15px;font-weight:900;color:var(--ink);margin-bottom:4px;}
+.tf-s{font-size:9px;color:var(--ink2);margin-bottom:16px;}
+.tf-lbl{font-size:8px;font-weight:700;color:var(--ink3);letter-spacing:1px;text-transform:uppercase;margin-bottom:5px;margin-top:10px;}
+.tf-in{background:#fff;border:1.5px solid var(--border2);border-radius:10px;padding:9px 12px;font-size:9px;color:var(--ink);width:100%;}
+.tf-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.tf-btn{background:var(--rust);color:#fff;border:none;padding:12px;border-radius:10px;font-family:'Outfit',sans-serif;font-size:11px;font-weight:800;width:100%;margin-top:16px;box-shadow:0 4px 14px rgba(192,88,10,0.2);}
+
+/* ── LOADING PLAN ── */
+.loading{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;background:var(--bg);}
+.loading-orb{width:70px;height:70px;border-radius:50%;background:radial-gradient(circle at 35% 35%,rgba(192,88,10,0.6),rgba(192,88,10,0.05));border:1px solid rgba(192,88,10,0.2);display:flex;align-items:center;justify-content:center;font-size:28px;margin-bottom:18px;}
+.loading-t{font-family:'Outfit',sans-serif;font-size:13px;font-weight:900;color:var(--ink);margin-bottom:8px;text-align:center;}
+.loading-bar{width:100%;height:4px;background:var(--sand2);border-radius:100px;margin-bottom:8px;overflow:hidden;}
+.loading-fill{height:100%;width:65%;background:linear-gradient(90deg,var(--rust-d),var(--rust));border-radius:100px;}
+.loading-step{font-size:8px;color:var(--ink3);text-align:center;}
+
+/* ── RESULTS ── */
+.results{display:flex;flex-direction:column;height:100%;background:var(--bg);}
+.results-hero{height:36%;flex-shrink:0;background:linear-gradient(160deg,#FDEBD8,#ECC89A);display:flex;align-items:flex-end;padding:10px 12px;}
+.results-t{font-family:'Outfit',sans-serif;font-size:15px;font-weight:900;color:var(--ink);}
+.results-s{font-size:8px;color:rgba(26,21,18,0.6);margin-top:2px;}
+.results-tabs{display:flex;gap:0;border-bottom:1px solid var(--border);padding:0 12px;flex-shrink:0;background:#fff;}
+.rtab{padding:8px 8px;font-size:7px;font-weight:700;color:var(--ink3);border-bottom:2px solid transparent;}
+.rtab.a{color:var(--rust);border-bottom-color:var(--rust);}
+.results-body{flex:1;overflow:hidden;padding:10px 12px;}
+.day-block{margin-bottom:10px;}
+.day-lbl{font-size:7px;font-weight:800;color:var(--rust);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;}
+.itm{display:flex;gap:8px;align-items:flex-start;margin-bottom:6px;}
+.itm-ico{width:28px;height:28px;border-radius:8px;background:var(--rtint);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;}
+.itm-info{flex:1;}
+.itm-t{font-size:8px;font-weight:700;color:var(--ink);}
+.itm-s{font-size:7px;color:var(--ink3);margin-top:1px;}
+
+/* ── PLACE DETAILS ── */
+.pd-hero{height:42%;flex-shrink:0;background:linear-gradient(155deg,#FDEBD8,#ECC89A);display:flex;align-items:flex-end;padding:10px 12px;position:relative;}
+.pd-back{position:absolute;top:38px;left:12px;width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,0.6);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;font-size:11px;border:1px solid rgba(0,0,0,0.08);}
+.pd-ill{position:absolute;top:50%;left:50%;transform:translate(-50%,-60%);font-size:44px;}
+.pd-body{flex:1;overflow:hidden;padding:12px;}
+.pd-n{font-family:'Outfit',sans-serif;font-size:14px;font-weight:900;color:var(--ink);}
+.pd-l{font-size:8px;color:var(--ink3);margin-top:1px;}
+.pd-stats{display:flex;gap:6px;margin-top:10px;}
+.pd-stat{background:var(--bg2);border:1px solid var(--border);border-radius:9px;padding:6px 9px;text-align:center;flex:1;}
+.pd-sv{font-family:'Outfit',sans-serif;font-size:11px;font-weight:900;color:var(--rust);}
+.pd-sl{font-size:6px;color:var(--ink3);margin-top:1px;}
+.pd-ai{background:var(--rtint);border:1px solid rgba(192,88,10,0.12);border-radius:10px;padding:9px 11px;margin-top:10px;}
+.pd-aie{font-size:7px;font-weight:800;color:var(--rust);letter-spacing:1.5px;margin-bottom:4px;}
+.pd-ait{font-size:7px;color:var(--ink2);line-height:1.6;}
+.pd-actions{padding:8px 12px;background:#fff;border-top:1px solid var(--border);flex-shrink:0;display:flex;gap:7px;}
+.pd-btn{flex:1;background:var(--rust);color:#fff;border:none;padding:10px;border-radius:10px;font-family:'Outfit',sans-serif;font-size:10px;font-weight:800;}
+.pd-ar{width:38px;background:var(--rtint);border:1px solid rgba(192,88,10,0.2);border-radius:10px;font-size:13px;}
+
+/* ── MAP EXPLORER ── */
+.map{height:100%;display:flex;flex-direction:column;}
+.map-area{flex:1;background:linear-gradient(135deg,#F0E8DE,#E8DDD0);position:relative;overflow:hidden;}
+.map-area::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 24px,rgba(192,88,10,0.04) 24px,rgba(192,88,10,0.04) 25px),repeating-linear-gradient(90deg,transparent,transparent 24px,rgba(192,88,10,0.04) 24px,rgba(192,88,10,0.04) 25px);}
+.map-pin{position:absolute;display:flex;flex-direction:column;align-items:center;}
+.map-dot{width:12px;height:12px;border-radius:50%;background:var(--rust);box-shadow:0 0 8px rgba(192,88,10,0.5);border:2px solid #fff;}
+.map-pin-lbl{background:#fff;border:1px solid var(--border2);border-radius:6px;padding:2px 5px;font-size:6px;font-weight:700;color:var(--ink);margin-top:2px;white-space:nowrap;box-shadow:0 1px 4px rgba(0,0,0,0.1);}
+.map-bar{padding:10px 12px 8px;background:var(--bg);}
+.map-search{background:#fff;border:1px solid var(--border2);border-radius:100px;padding:8px 12px;display:flex;align-items:center;gap:7px;}
+.map-popup{position:absolute;bottom:12px;left:12px;right:12px;background:#fff;border:1px solid var(--border);border-radius:14px;padding:10px;display:flex;gap:8px;align-items:center;box-shadow:0 4px 16px rgba(0,0,0,0.1);}
+.map-popup-ico{width:36px;height:36px;border-radius:10px;background:var(--rtint);display:flex;align-items:center;justify-content:center;font-size:16px;}
+
+/* ── MAP ROUTE ── */
+.route{height:100%;display:flex;flex-direction:column;}
+.route-header{padding:38px 12px 10px;background:#fff;border-bottom:1px solid var(--border);}
+.route-t{font-family:'Outfit',sans-serif;font-size:13px;font-weight:900;color:var(--ink);}
+.route-s{font-size:8px;color:var(--ink2);margin-top:2px;}
+.route-map{flex:1;background:linear-gradient(135deg,#F0E8DE,#E8DDD0);position:relative;overflow:hidden;}
+.route-map::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 24px,rgba(192,88,10,0.03) 24px,rgba(192,88,10,0.03) 25px),repeating-linear-gradient(90deg,transparent,transparent 24px,rgba(192,88,10,0.03) 24px,rgba(192,88,10,0.03) 25px);}
+.route-line{position:absolute;top:20%;left:50%;width:2px;height:60%;background:linear-gradient(180deg,var(--rust),rgba(192,88,10,0.3));transform:translateX(-50%);border-radius:2px;}
+.route-bar{padding:10px 12px;background:var(--bg);}
+.route-offline-btn{background:var(--rtint);border:1px solid rgba(192,88,10,0.2);border-radius:10px;padding:9px;font-family:'Outfit',sans-serif;font-size:9px;font-weight:800;color:var(--rust);width:100%;}
+
+/* ── HERITAGE PASSPORT ── */
+.passport{height:100%;display:flex;flex-direction:column;background:var(--bg);}
+.pass-hero{height:34%;background:linear-gradient(155deg,#FDEBD8,#ECC89A);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:38px 12px 12px;}
+.pass-ico{font-size:36px;margin-bottom:8px;}
+.pass-t{font-family:'Outfit',sans-serif;font-size:16px;font-weight:900;color:var(--ink);}
+.pass-s{font-size:8px;color:rgba(26,21,18,0.6);margin-top:2px;}
+.pass-body{flex:1;overflow:hidden;padding:12px;}
+.pass-stamps{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.stamp{background:#fff;border:1px solid var(--border);border-radius:12px;padding:9px;text-align:center;}
+.stamp.earned{background:var(--rtint);border-color:rgba(192,88,10,0.2);}
+.stamp-ico{font-size:18px;margin-bottom:3px;}
+.stamp-n{font-size:7px;font-weight:800;color:var(--ink);}
+.stamp-l{font-size:6px;color:var(--ink3);margin-top:1px;}
+.stamp-badge{font-size:6px;color:var(--rust);font-weight:700;margin-top:2px;}
+.pass-tier{background:#fff;border:1px solid var(--border);border-radius:12px;padding:10px 12px;margin-top:10px;display:flex;align-items:center;gap:10px;}
+.pass-tier-bar-wrap{flex:1;}
+.pass-tier-lbl{display:flex;justify-content:space-between;margin-bottom:4px;}
+.pass-tier-name{font-size:8px;font-weight:800;color:var(--rust);}
+.pass-tier-num{font-size:8px;color:var(--ink3);}
+.pass-tier-bar{height:4px;background:var(--sand2);border-radius:100px;overflow:hidden;}
+.pass-tier-fill{height:100%;width:70%;background:var(--rust);border-radius:100px;}
+
+/* ── PREMIUM HUB ── */
+.prem{display:flex;flex-direction:column;padding:38px 12px 12px;height:100%;background:var(--bg);overflow:hidden;}
+.prem-t{font-family:'Outfit',sans-serif;font-size:15px;font-weight:900;color:var(--ink);margin-bottom:3px;}
+.prem-s{font-size:8px;color:var(--ink2);margin-bottom:12px;}
+.ptier{border-radius:12px;padding:11px;border:1.5px solid;margin-bottom:7px;}
+.ptier-r{background:var(--rtint);border-color:rgba(192,88,10,0.18);}
+.ptier-e{background:rgba(124,106,85,0.06);border-color:rgba(124,106,85,0.18);}
+.ptier-s{background:var(--bg2);border-color:var(--border2);}
+.pt-n{font-family:'Outfit',sans-serif;font-size:11px;font-weight:900;margin-bottom:2px;}
+.pt-p{font-size:8px;color:var(--ink2);margin-bottom:7px;}
+.pt-f{font-size:7px;color:var(--ink2);display:flex;gap:4px;align-items:center;margin-bottom:2px;}
+.pt-f::before{content:'✓';color:var(--rust);font-weight:800;}
+.prem-cta{background:var(--rust);color:#fff;border:none;padding:11px;border-radius:10px;font-family:'Outfit',sans-serif;font-size:11px;font-weight:800;width:100%;margin-top:4px;}
+
+/* ── SUBSCRIPTION ── */
+.sub{display:flex;flex-direction:column;height:100%;padding:40px 12px 14px;background:var(--bg);}
+.sub-t{font-family:'Outfit',sans-serif;font-size:14px;font-weight:900;color:var(--ink);margin-bottom:4px;}
+.sub-s{font-size:9px;color:var(--ink2);margin-bottom:14px;}
+.sub-toggle{display:flex;background:#fff;border:1px solid var(--border2);border-radius:100px;padding:3px;margin-bottom:14px;}
+.sub-tog{flex:1;padding:6px;border-radius:100px;font-size:8px;font-weight:700;text-align:center;color:var(--ink2);}
+.sub-tog.a{background:var(--rust);color:#fff;}
+.sub-card{background:#fff;border:1.5px solid var(--border2);border-radius:13px;padding:12px;margin-bottom:8px;}
+.sub-card.a{border-color:var(--rust);background:var(--rtint);}
+.sub-cn{font-family:'Outfit',sans-serif;font-size:12px;font-weight:900;color:var(--ink);margin-bottom:2px;}
+.sub-cp{font-size:10px;font-weight:800;color:var(--rust);margin-bottom:6px;}
+.sub-cf{font-size:7px;color:var(--ink2);display:flex;gap:4px;margin-bottom:2px;}
+.sub-cf::before{content:'•';color:var(--rust);}
+.sub-btn{background:var(--rust);color:#fff;border:none;padding:10px;border-radius:10px;font-family:'Outfit',sans-serif;font-size:10px;font-weight:800;width:100%;margin-top:8px;}
+
+/* ── PROFILE ── */
+.prof{height:100%;display:flex;flex-direction:column;overflow:hidden;}
+.prof-hd{padding:40px 12px 10px;text-align:center;}
+.prof-av{width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,#FDEBD8,#ECC89A);border:2px solid rgba(192,88,10,0.2);display:flex;align-items:center;justify-content:center;font-size:20px;margin:0 auto 8px;}
+.prof-n{font-family:'Outfit',sans-serif;font-size:13px;font-weight:800;color:var(--ink);}
+.prof-lv{font-size:7px;color:var(--rust);font-weight:700;letter-spacing:1.5px;margin-top:2px;}
+.prof-stats{display:flex;gap:14px;justify-content:center;margin-top:10px;}
+.prof-stat{text-align:center;}
+.prof-sv{font-family:'Outfit',sans-serif;font-size:14px;font-weight:900;color:var(--rust);}
+.prof-sl{font-size:7px;color:var(--ink3);}
+.prof-divv{width:1px;background:var(--border2);}
+.prof-pp{background:linear-gradient(135deg,#FDEBD8,#F5D5B4);border:1px solid rgba(192,88,10,0.15);border-radius:12px;padding:9px 12px;margin:10px 12px;display:flex;align-items:center;gap:8px;}
+.prof-menu{padding:0 12px;display:flex;flex-direction:column;gap:7px;flex:1;overflow:hidden;}
+.pm-item{background:#fff;border:1px solid var(--border);border-radius:11px;padding:10px 12px;display:flex;align-items:center;gap:9px;}
+.pm-ico{font-size:12px;width:20px;}
+.pm-lbl{font-size:9px;font-weight:600;color:var(--ink);flex:1;}
+.pm-arr{font-size:9px;color:var(--ink3);}
+
+/* ── GUIDE MARKETPLACE ── */
+.gm{display:flex;flex-direction:column;height:100%;background:var(--bg);}
+.gm-hd{padding:38px 12px 10px;}
+.gm-t{font-family:'Outfit',sans-serif;font-size:14px;font-weight:900;color:var(--ink);}
+.gm-filters{display:flex;gap:5px;overflow-x:hidden;padding:0 12px 10px;}
+.gm-chip{padding:5px 10px;border-radius:100px;font-size:7px;font-weight:700;border:1px solid var(--border2);color:var(--ink2);background:#fff;flex-shrink:0;}
+.gm-chip.a{background:var(--rust);color:#fff;border-color:var(--rust);}
+.gm-featured{padding:0 12px 10px;}
+.gm-feat-lbl{font-size:8px;font-weight:800;color:var(--rust);letter-spacing:1.5px;margin-bottom:8px;}
+.gm-feat-row{display:flex;gap:8px;overflow-x:hidden;}
+.gm-feat-card{flex-shrink:0;width:100px;background:#fff;border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.gm-feat-img{height:52px;background:linear-gradient(135deg,#FDEBD8,#ECC89A);display:flex;align-items:center;justify-content:center;font-size:22px;}
+.gm-feat-info{padding:6px 7px;}
+.gm-feat-n{font-size:8px;font-weight:800;color:var(--ink);}
+.gm-feat-r{font-size:6px;color:var(--rust);}
+.gm-list{padding:0 12px;display:flex;flex-direction:column;gap:7px;flex:1;overflow:hidden;}
+.gm-item{background:#fff;border:1px solid var(--border);border-radius:11px;display:flex;gap:10px;padding:9px;}
+.gm-av{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#FDEBD8,#ECC89A);border:1px solid rgba(192,88,10,0.15);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;}
+.gm-info{flex:1;}
+.gm-n{font-size:9px;font-weight:800;color:var(--ink);}
+.gm-tg{font-size:7px;color:var(--rust);font-weight:700;margin-top:1px;}
+.gm-r{font-size:7px;color:var(--rust);margin-top:3px;}
+
+/* ── GUIDE PROFILE ── */
+.gprof{display:flex;flex-direction:column;height:100%;background:var(--bg);}
+.gprof-hero{height:36%;background:linear-gradient(155deg,#FDEBD8,#ECC89A);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:36px 12px 12px;}
+.gprof-av{width:60px;height:60px;border-radius:50%;background:#fff;border:2px solid rgba(192,88,10,0.2);display:flex;align-items:center;justify-content:center;font-size:24px;margin-bottom:8px;}
+.gprof-n{font-family:'Outfit',sans-serif;font-size:15px;font-weight:900;color:var(--ink);}
+.gprof-tg{font-size:8px;color:var(--rust);font-weight:700;margin-top:2px;}
+.gprof-r{font-size:9px;color:var(--rust);margin-top:4px;}
+.gprof-body{flex:1;overflow:hidden;padding:12px;}
+.gprof-packages{display:flex;flex-direction:column;gap:7px;margin-bottom:10px;}
+.gprof-pkg{background:#fff;border:1px solid var(--border);border-radius:11px;padding:10px 12px;display:flex;justify-content:space-between;align-items:center;}
+.gprof-pkg-n{font-size:9px;font-weight:800;color:var(--ink);}
+.gprof-pkg-p{font-size:9px;font-weight:800;color:var(--rust);}
+.gprof-pkg-s{font-size:7px;color:var(--ink3);margin-top:1px;}
+.gprof-btn{background:var(--rust);color:#fff;border:none;padding:10px;border-radius:10px;font-family:'Outfit',sans-serif;font-size:10px;font-weight:800;width:100%;}
+
+/* ── BOOKING REQUEST ── */
+.book{display:flex;flex-direction:column;height:100%;padding:40px 12px 12px;background:var(--bg);overflow:hidden;}
+.book-step{font-size:7px;font-weight:800;color:var(--rust);letter-spacing:2px;text-transform:uppercase;margin-bottom:5px;}
+.book-gc{background:#fff;border:1px solid var(--border);border-radius:12px;padding:10px;display:flex;gap:9px;margin-bottom:10px;}
+.book-av{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#FDEBD8,#ECC89A);border:1.5px solid rgba(192,88,10,0.15);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.book-gn{font-family:'Outfit',sans-serif;font-size:10px;font-weight:800;color:var(--ink);}
+.book-gt{font-size:7px;color:var(--rust);font-weight:700;margin-top:1px;}
+.book-lbl{font-size:7px;font-weight:700;color:var(--ink3);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;margin-top:8px;}
+.book-dp{background:#fff;border:1px solid var(--border2);border-radius:9px;padding:8px 10px;display:flex;align-items:center;gap:7px;font-size:8px;color:var(--ink2);}
+.book-sum{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:10px;margin-top:10px;}
+.book-row{display:flex;justify-content:space-between;margin-bottom:4px;}
+.book-k{font-size:8px;color:var(--ink2);}
+.book-v{font-size:8px;font-weight:700;color:var(--ink);}
+.book-div{height:1px;background:var(--border);margin:6px 0;}
+.book-btn{background:var(--rust);color:#fff;border:none;padding:10px;border-radius:10px;font-family:'Outfit',sans-serif;font-size:10px;font-weight:800;width:100%;margin-top:10px;}
+
+/* ── GUIDE DASHBOARD ── */
+.gdash{display:flex;flex-direction:column;height:100%;background:var(--bg);padding:40px 12px 14px;}
+.gdash-hd{margin-bottom:12px;}
+.gdash-t{font-family:'Outfit',sans-serif;font-size:14px;font-weight:900;color:var(--ink);}
+.gdash-s{font-size:8px;color:var(--ink2);margin-top:2px;}
+.gdash-session{background:var(--rtint);border:1.5px solid rgba(192,88,10,0.18);border-radius:13px;padding:12px;margin-bottom:10px;}
+.gdash-sess-t{font-size:8px;font-weight:800;color:var(--rust);letter-spacing:1.5px;margin-bottom:6px;}
+.gdash-sess-n{font-family:'Outfit',sans-serif;font-size:12px;font-weight:900;color:var(--ink);}
+.gdash-sess-s{font-size:7px;color:var(--ink2);margin-top:2px;}
+.gdash-qr{margin-top:8px;background:#fff;border-radius:10px;padding:8px;display:flex;align-items:center;justify-content:center;gap:8px;}
+.gdash-qr-box{width:40px;height:40px;background:linear-gradient(135deg,var(--ink),rgba(26,21,18,0.8));border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:18px;}
+.gdash-qr-info{flex:1;}
+.gdash-qr-t{font-size:9px;font-weight:800;color:var(--ink);}
+.gdash-qr-s{font-size:7px;color:var(--ink3);}
+.gdash-cards{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+.gdash-card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:10px;text-align:center;}
+.gdash-cv{font-family:'Outfit',sans-serif;font-size:16px;font-weight:900;color:var(--rust);}
+.gdash-cl{font-size:7px;color:var(--ink3);margin-top:2px;}
+
+/* ── GUIDE ENROLLMENT ── */
+.genroll{display:flex;flex-direction:column;height:100%;padding:40px 12px 14px;background:var(--bg);}
+.ge-t{font-family:'Outfit',sans-serif;font-size:14px;font-weight:900;color:var(--ink);margin-bottom:3px;}
+.ge-s{font-size:9px;color:var(--ink2);margin-bottom:14px;}
+.ge-step{background:#fff;border:1px solid var(--border);border-radius:12px;padding:10px 12px;margin-bottom:8px;}
+.ge-step-n{font-size:7px;font-weight:800;color:var(--rust);letter-spacing:1.5px;margin-bottom:4px;}
+.ge-in{background:var(--bg);border:1.5px solid var(--border2);border-radius:9px;padding:8px 10px;font-size:8px;color:var(--ink);width:100%;margin-bottom:6px;}
+.ge-upload{background:var(--rtint);border:1.5px dashed rgba(192,88,10,0.3);border-radius:9px;padding:10px;text-align:center;font-size:8px;color:var(--rust);font-weight:700;}
+.ge-btn{background:var(--rust);color:#fff;border:none;padding:10px;border-radius:10px;font-family:'Outfit',sans-serif;font-size:10px;font-weight:800;width:100%;margin-top:8px;}
+
+/* ── GUIDE REVIEWS ── */
+.grev{display:flex;flex-direction:column;height:100%;background:var(--bg);}
+.grev-hd{padding:38px 12px 12px;background:#fff;border-bottom:1px solid var(--border);}
+.grev-t{font-family:'Outfit',sans-serif;font-size:14px;font-weight:900;color:var(--ink);}
+.grev-stats{display:flex;gap:10px;margin-top:10px;}
+.grev-stat{text-align:center;}
+.grev-sv{font-family:'Outfit',sans-serif;font-size:18px;font-weight:900;color:var(--rust);}
+.grev-sl{font-size:7px;color:var(--ink3);}
+.grev-body{flex:1;overflow:hidden;padding:10px 12px;display:flex;flex-direction:column;gap:7px;}
+.rev-item{background:#fff;border:1px solid var(--border);border-radius:11px;padding:10px 12px;}
+.rev-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;}
+.rev-n{font-size:9px;font-weight:800;color:var(--ink);}
+.rev-r{font-size:9px;color:var(--rust);}
+.rev-t{font-size:7px;color:var(--ink2);line-height:1.6;}
+
+/* ── GUIDE BROADCAST ── */
+.gbcast{display:flex;flex-direction:column;height:100%;padding:40px 12px 14px;background:var(--bg);}
+.gb-t{font-family:'Outfit',sans-serif;font-size:14px;font-weight:900;color:var(--ink);margin-bottom:3px;}
+.gb-s{font-size:9px;color:var(--ink2);margin-bottom:12px;}
+.gb-types{display:flex;gap:5px;margin-bottom:10px;}
+.gb-type{padding:6px 10px;border-radius:100px;font-size:7px;font-weight:700;border:1px solid var(--border2);color:var(--ink2);background:#fff;}
+.gb-type.a{background:var(--rust);color:#fff;border-color:var(--rust);}
+.gb-msg{background:#fff;border:1.5px solid var(--border2);border-radius:11px;padding:10px 12px;font-size:9px;color:var(--ink2);height:70px;width:100%;font-family:'Inter',sans-serif;}
+.gb-priority{display:flex;gap:6px;margin-top:8px;}
+.gb-pri{padding:5px 10px;border-radius:8px;font-size:7px;font-weight:700;border:1px solid var(--border2);color:var(--ink2);}
+.gb-pri.a{background:rgba(192,88,10,0.1);color:var(--rust);border-color:rgba(192,88,10,0.2);}
+.gb-btn{background:var(--rust);color:#fff;border:none;padding:10px;border-radius:10px;font-family:'Outfit',sans-serif;font-size:10px;font-weight:800;width:100%;margin-top:12px;}
+.gb-history{flex:1;overflow:hidden;margin-top:10px;display:flex;flex-direction:column;gap:6px;}
+.gb-msg-item{background:#fff;border:1px solid var(--border);border-radius:9px;padding:8px 10px;}
+.gb-mi-t{font-size:8px;font-weight:700;color:var(--ink);}
+.gb-mi-s{font-size:7px;color:var(--ink3);margin-top:1px;}
+
+/* ── EVENT CALENDAR ── */
+.events{display:flex;flex-direction:column;height:100%;background:var(--bg);}
+.ev-hd{padding:38px 12px 10px;}
+.ev-t{font-family:'Outfit',sans-serif;font-size:14px;font-weight:900;color:var(--ink);}
+.ev-cal{background:#fff;border:1px solid var(--border);border-radius:12px;padding:10px;margin:0 12px 10px;}
+.ev-cal-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.ev-cal-m{font-size:10px;font-weight:800;color:var(--ink);}
+.ev-cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;}
+.ev-day{width:100%;aspect-ratio:1;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:7px;color:var(--ink2);}
+.ev-day.a{background:var(--rust);color:#fff;font-weight:800;}
+.ev-day.dot::after{content:'';display:block;width:3px;height:3px;border-radius:50%;background:var(--rust);margin-top:1px;}
+.ev-list{padding:0 12px;display:flex;flex-direction:column;gap:7px;overflow:hidden;flex:1;}
+.ev-item{background:#fff;border:1px solid var(--border);border-radius:11px;display:flex;gap:10px;padding:9px;}
+.ev-date{background:var(--rtint);border-radius:8px;padding:5px 7px;text-align:center;flex-shrink:0;}
+.ev-dm{font-size:7px;font-weight:700;color:var(--rust);}
+.ev-dd{font-family:'Outfit',sans-serif;font-size:14px;font-weight:900;color:var(--rust);}
+.ev-info{flex:1;}
+.ev-n{font-size:9px;font-weight:800;color:var(--ink);}
+.ev-l{font-size:7px;color:var(--ink3);margin-top:1px;}
+.ev-tag{display:inline-block;background:rgba(192,88,10,0.08);color:var(--rust);font-size:6px;font-weight:700;padding:2px 5px;border-radius:100px;margin-top:4px;}
+
+/* ── AUDIO GUIDE ── */
+.audio{display:flex;flex-direction:column;height:100%;background:var(--bg);}
+.audio-hero{height:38%;background:linear-gradient(155deg,#FDEBD8,#ECC89A);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:38px 12px 12px;}
+.audio-ico{font-size:40px;margin-bottom:8px;}
+.audio-t{font-family:'Outfit',sans-serif;font-size:14px;font-weight:900;color:var(--ink);}
+.audio-s{font-size:8px;color:rgba(26,21,18,0.6);}
+.audio-body{flex:1;overflow:hidden;padding:12px;}
+.audio-player{background:#fff;border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:10px;}
+.audio-waveform{height:32px;background:linear-gradient(90deg,rgba(192,88,10,0.3),rgba(192,88,10,0.1),rgba(192,88,10,0.4),rgba(192,88,10,0.1),rgba(192,88,10,0.5),rgba(192,88,10,0.1),rgba(192,88,10,0.3));border-radius:4px;margin-bottom:8px;}
+.audio-progress{height:3px;background:var(--sand2);border-radius:100px;margin-bottom:8px;overflow:hidden;}
+.audio-pfill{height:100%;width:35%;background:var(--rust);border-radius:100px;}
+.audio-controls{display:flex;justify-content:center;align-items:center;gap:16px;}
+.audio-ctrl{font-size:16px;color:var(--ink2);}
+.audio-play{width:36px;height:36px;border-radius:50%;background:var(--rust);display:flex;align-items:center;justify-content:center;font-size:14px;}
+.audio-chapters{display:flex;flex-direction:column;gap:6px;}
+.audio-ch{background:#fff;border:1px solid var(--border);border-radius:9px;padding:8px 10px;display:flex;gap:8px;align-items:center;}
+.audio-ch-n{font-size:9px;font-weight:700;color:var(--ink);flex:1;}
+.audio-ch-t{font-size:7px;color:var(--ink3);}
+
+/* ── AR VIEWER ── */
+.arv{height:100%;display:flex;flex-direction:column;}
+.ar-viewfinder{flex:1;background:linear-gradient(160deg,#1A0E08,#0A0804);position:relative;overflow:hidden;}
+.ar-overlay-corner{position:absolute;width:20px;height:20px;border-color:rgba(192,88,10,0.6);border-style:solid;}
+.ar-tl{top:12%;left:15%;border-width:2px 0 0 2px;}
+.ar-tr{top:12%;right:15%;border-width:2px 2px 0 0;}
+.ar-bl{bottom:28%;left:15%;border-width:0 0 2px 2px;}
+.ar-br{bottom:28%;right:15%;border-width:0 2px 2px 0;}
+.ar-subject{position:absolute;top:22%;left:50%;transform:translateX(-50%);font-size:50px;opacity:0.6;}
+.ar-info-card{position:absolute;bottom:18%;left:12px;right:12px;background:rgba(255,255,255,0.12);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.15);border-radius:12px;padding:10px 12px;}
+.ar-info-t{font-family:'Outfit',sans-serif;font-size:11px;font-weight:900;color:#fff;margin-bottom:3px;}
+.ar-info-s{font-size:8px;color:rgba(255,255,255,0.6);line-height:1.5;}
+.ar-bar{height:52px;background:rgba(26,14,8,0.95);display:flex;align-items:center;justify-content:space-around;padding:0 16px;}
+.ar-btn{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;font-size:14px;}
+.ar-capture{width:44px;height:44px;border-radius:50%;background:rgba(192,88,10,0.9);display:flex;align-items:center;justify-content:center;font-size:18px;border:2px solid rgba(192,88,10,0.4);}
+
+/* ── ANCESTRAL PORTAL ── */
+.portal{height:100%;display:flex;flex-direction:column;background:linear-gradient(180deg,#1A0E08,#0A0804);}
+.portal-header{padding:40px 12px 12px;text-align:center;}
+.portal-orb{width:64px;height:64px;border-radius:50%;background:radial-gradient(circle at 35% 35%,rgba(192,88,10,0.7),rgba(192,88,10,0.05));border:1px solid rgba(192,88,10,0.3);box-shadow:0 0 30px rgba(192,88,10,0.2);display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 10px;}
+.portal-t{font-family:'Outfit',sans-serif;font-size:15px;font-weight:900;color:#fff;}
+.portal-s{font-size:8px;color:rgba(255,255,255,0.4);margin-top:2px;}
+.portal-body{flex:1;overflow:hidden;padding:12px;}
+.portal-era{background:rgba(255,255,255,0.04);border:1px solid rgba(192,88,10,0.2);border-radius:12px;padding:10px 12px;margin-bottom:8px;}
+.portal-era-t{font-family:'Outfit',sans-serif;font-size:10px;font-weight:900;color:rgba(192,88,10,0.9);margin-bottom:3px;}
+.portal-era-s{font-size:7px;color:rgba(255,255,255,0.5);line-height:1.5;}
+.portal-btn{background:rgba(192,88,10,0.9);color:#fff;border:none;padding:10px;border-radius:10px;font-family:'Outfit',sans-serif;font-size:9px;font-weight:800;width:100%;margin-top:6px;}
+
+/* ── AR VIDEO ── */
+.arvid{height:100%;display:flex;flex-direction:column;background:#000;}
+.arvid-player{flex:1;background:linear-gradient(160deg,#1A0E08,#080400);display:flex;align-items:center;justify-content:center;position:relative;}
+.arvid-play{width:48px;height:48px;border-radius:50%;background:rgba(192,88,10,0.8);display:flex;align-items:center;justify-content:center;font-size:20px;}
+.arvid-badge{position:absolute;top:40px;left:12px;background:rgba(0,0,0,0.5);border:1px solid rgba(192,88,10,0.3);border-radius:100px;padding:4px 10px;font-size:7px;font-weight:700;color:rgba(192,88,10,0.9);letter-spacing:1px;}
+.arvid-controls{background:rgba(10,6,4,0.95);padding:12px;}
+.arvid-bar{height:3px;background:rgba(255,255,255,0.1);border-radius:100px;margin-bottom:10px;overflow:hidden;}
+.arvid-fill{height:100%;width:40%;background:var(--rust);border-radius:100px;}
+.arvid-btns{display:flex;justify-content:space-around;align-items:center;}
+.arvid-ctrl{font-size:16px;color:rgba(255,255,255,0.4);}
+.arvid-pl{width:40px;height:40px;border-radius:50%;background:var(--rust);display:flex;align-items:center;justify-content:center;font-size:16px;}
+
+/* ── AR FALLBACK ── */
+.arfall{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:44px 18px;background:var(--bg);text-align:center;}
+.arfall-ico{font-size:48px;margin-bottom:16px;opacity:0.5;}
+.arfall-t{font-family:'Outfit',sans-serif;font-size:14px;font-weight:900;color:var(--ink);margin-bottom:6px;}
+.arfall-s{font-size:9px;color:var(--ink2);line-height:1.6;margin-bottom:20px;}
+.arfall-btn{background:var(--rust);color:#fff;border:none;padding:11px 28px;border-radius:100px;font-family:'Outfit',sans-serif;font-size:11px;font-weight:800;}
+.arfall-alt{margin-top:10px;font-size:8px;color:var(--ink3);}
+
+/* ── QR SCANNER ── */
+.qrscan{height:100%;display:flex;flex-direction:column;background:#0A0804;}
+.qrscan-viewfinder{flex:1;position:relative;display:flex;align-items:center;justify-content:center;}
+.qrscan-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.6);}
+.qrscan-box{width:160px;height:160px;border-radius:16px;border:2px solid rgba(192,88,10,0.8);position:relative;z-index:1;box-shadow:0 0 0 9999px rgba(0,0,0,0.6);}
+.qrscan-line{position:absolute;top:50%;left:0;right:0;height:2px;background:rgba(192,88,10,0.8);box-shadow:0 0 8px rgba(192,88,10,0.6);}
+.qrscan-t{text-align:center;padding:16px 12px;background:#0A0804;}
+.qrscan-info{font-family:'Outfit',sans-serif;font-size:11px;font-weight:800;color:#fff;margin-bottom:4px;}
+.qrscan-sub{font-size:8px;color:rgba(255,255,255,0.3);}
+
+/* ── SCANNER (Oracle Orb) ── */
+.scanner-sc{height:100%;display:flex;flex-direction:column;background:var(--bg);}
+.scanner-hd{padding:38px 12px 12px;}
+.scanner-t{font-family:'Outfit',sans-serif;font-size:14px;font-weight:900;color:var(--ink);}
+.scanner-orb{margin:16px auto;width:100px;height:100px;border-radius:50%;background:radial-gradient(circle at 35% 35%,rgba(192,88,10,0.5),rgba(192,88,10,0.05));border:1px solid rgba(192,88,10,0.3);box-shadow:0 0 40px rgba(192,88,10,0.15);display:flex;align-items:center;justify-content:center;font-size:38px;}
+.scanner-prompt{text-align:center;font-size:9px;color:var(--ink2);margin-bottom:16px;line-height:1.6;}
+.scanner-methods{display:flex;flex-direction:column;gap:8px;padding:0 12px;}
+.scanner-method{background:#fff;border:1px solid var(--border);border-radius:12px;padding:12px;display:flex;align-items:center;gap:10px;}
+.sm-ico{font-size:18px;width:28px;}
+.sm-t{font-size:9px;font-weight:800;color:var(--ink);}
+.sm-s{font-size:7px;color:var(--ink3);margin-top:1px;}
+
+/* ── SAVED PLANS ── */
+.saved{display:flex;flex-direction:column;height:100%;background:var(--bg);}
+.saved-hd{padding:38px 12px 12px;}
+.saved-t{font-family:'Outfit',sans-serif;font-size:14px;font-weight:900;color:var(--ink);}
+.saved-list{flex:1;overflow:hidden;padding:0 12px;display:flex;flex-direction:column;gap:8px;}
+.saved-card{background:#fff;border:1px solid var(--border);border-radius:13px;overflow:hidden;box-shadow:0 1px 8px rgba(0,0,0,0.04);}
+.saved-card-hero{height:60px;background:linear-gradient(135deg,#FDEBD8,#ECC89A);display:flex;align-items:center;justify-content:center;font-size:28px;}
+.saved-card-body{padding:9px 11px;}
+.saved-card-t{font-family:'Outfit',sans-serif;font-size:10px;font-weight:800;color:var(--ink);}
+.saved-card-s{font-size:7px;color:var(--ink3);margin-top:1px;}
+.saved-card-tags{display:flex;gap:4px;margin-top:5px;}
+.saved-tag{background:rgba(192,88,10,0.08);color:var(--rust);font-size:6px;font-weight:700;padding:2px 5px;border-radius:100px;}
+
+/* ── BUDGET TRACKER ── */
+.budget{display:flex;flex-direction:column;height:100%;background:var(--bg);}
+.budget-hd{padding:38px 12px 12px;background:linear-gradient(155deg,#FDEBD8,#ECC89A);}
+.budget-t{font-family:'Outfit',sans-serif;font-size:14px;font-weight:900;color:var(--ink);}
+.budget-amt{font-family:'Outfit',sans-serif;font-size:24px;font-weight:900;color:var(--rust);margin-top:4px;}
+.budget-s{font-size:8px;color:rgba(26,21,18,0.6);margin-top:2px;}
+.budget-bar{height:6px;background:rgba(26,21,18,0.1);border-radius:100px;margin-top:10px;overflow:hidden;}
+.budget-fill{height:100%;width:62%;background:var(--rust-d);border-radius:100px;}
+.budget-body{flex:1;overflow:hidden;padding:12px;}
+.budget-cats{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:10px;}
+.budget-cat{background:#fff;border:1px solid var(--border);border-radius:11px;padding:9px;text-align:center;}
+.budget-cat-ico{font-size:16px;margin-bottom:3px;}
+.budget-cat-n{font-size:7px;font-weight:700;color:var(--ink);}
+.budget-cat-a{font-size:9px;font-weight:900;color:var(--rust);margin-top:2px;}
+.budget-txns{display:flex;flex-direction:column;gap:5px;}
+.budget-txn{background:#fff;border:1px solid var(--border);border-radius:9px;padding:8px 10px;display:flex;justify-content:space-between;align-items:center;}
+.budget-txn-n{font-size:8px;font-weight:600;color:var(--ink);}
+.budget-txn-a{font-size:8px;font-weight:800;color:var(--rust);}
+
+/* ── BUDGET CONCIERGE ── */
+.concierge{display:flex;flex-direction:column;height:100%;padding:40px 12px 14px;background:var(--bg);}
+.con-t{font-family:'Outfit',sans-serif;font-size:14px;font-weight:900;color:var(--ink);margin-bottom:3px;}
+.con-s{font-size:9px;color:var(--ink2);margin-bottom:14px;}
+.con-chat{flex:1;overflow:hidden;display:flex;flex-direction:column;gap:8px;margin-bottom:10px;}
+.con-msg{max-width:80%;padding:9px 11px;border-radius:12px;font-size:8px;line-height:1.5;}
+.con-msg.ai{background:var(--rtint);border:1px solid rgba(192,88,10,0.12);color:var(--ink);align-self:flex-start;border-radius:12px 12px 12px 3px;}
+.con-msg.me{background:var(--rust);color:#fff;align-self:flex-end;border-radius:12px 12px 3px 12px;}
+.con-input{background:#fff;border:1.5px solid var(--border2);border-radius:10px;padding:9px 12px;display:flex;gap:8px;align-items:center;}
+.con-in-txt{flex:1;font-size:9px;color:var(--ink2);}
+.con-send{width:28px;height:28px;border-radius:50%;background:var(--rust);display:flex;align-items:center;justify-content:center;font-size:12px;}
+
+/* ── SMART MATCH ── */
+.smart{display:flex;flex-direction:column;height:100%;padding:40px 12px 14px;background:var(--bg);}
+.sm2-t{font-family:'Outfit',sans-serif;font-size:14px;font-weight:900;color:var(--ink);margin-bottom:3px;}
+.sm2-s{font-size:9px;color:var(--ink2);margin-bottom:14px;}
+.sm2-prefs{display:flex;flex-direction:column;gap:8px;margin-bottom:14px;}
+.sm2-pref{background:#fff;border:1px solid var(--border);border-radius:11px;padding:10px 12px;}
+.sm2-pref-t{font-size:8px;font-weight:700;color:var(--ink3);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;}
+.sm2-opts{display:flex;flex-wrap:wrap;gap:5px;}
+.sm2-opt{padding:4px 9px;border-radius:100px;font-size:7px;font-weight:700;border:1px solid var(--border2);color:var(--ink2);}
+.sm2-opt.a{background:var(--rtint);border-color:rgba(192,88,10,0.2);color:var(--rust);}
+.sm2-btn{background:var(--rust);color:#fff;border:none;padding:11px;border-radius:10px;font-family:'Outfit',sans-serif;font-size:11px;font-weight:800;width:100%;}
+
+/* ── SAVOR LANKA (Food) ── */
+.savor{display:flex;flex-direction:column;height:100%;background:var(--bg);}
+.savor-hd{padding:38px 12px 10px;}
+.savor-t{font-family:'Outfit',sans-serif;font-size:14px;font-weight:900;color:var(--ink);}
+.savor-cats{display:flex;gap:5px;overflow-x:hidden;padding-bottom:10px;}
+.savor-cat{padding:5px 10px;border-radius:100px;font-size:7px;font-weight:700;border:1px solid var(--border2);color:var(--ink2);background:#fff;flex-shrink:0;}
+.savor-cat.a{background:var(--rust);color:#fff;border-color:var(--rust);}
+.savor-list{flex:1;overflow:hidden;padding:0 12px;display:flex;flex-direction:column;gap:7px;}
+.savor-item{background:#fff;border:1px solid var(--border);border-radius:11px;display:flex;overflow:hidden;}
+.savor-img{width:58px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:24px;background:linear-gradient(135deg,#FDEBD8,#ECC89A);}
+.savor-info{padding:8px 10px;flex:1;}
+.savor-n{font-family:'Outfit',sans-serif;font-size:9px;font-weight:800;color:var(--ink);}
+.savor-l{font-size:7px;color:var(--ink3);margin-top:1px;}
+.savor-r{font-size:7px;color:var(--rust);margin-top:3px;}
+
+/* ── TOURIST COMPANION HUB ── */
+.hub{display:flex;flex-direction:column;height:100%;padding:40px 12px 14px;background:var(--bg);}
+.hub-t{font-family:'Outfit',sans-serif;font-size:14px;font-weight:900;color:var(--ink);margin-bottom:3px;}
+.hub-s{font-size:9px;color:var(--ink2);margin-bottom:14px;}
+.hub-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.hub-card{background:#fff;border:1px solid var(--border);border-radius:13px;padding:13px;text-align:center;}
+.hub-ico{font-size:22px;margin-bottom:6px;}
+.hub-n{font-size:9px;font-weight:800;color:var(--ink);}
+.hub-s2{font-size:7px;color:var(--ink3);margin-top:2px;}
+.hub-sos{background:rgba(198,40,40,0.08);border-color:rgba(198,40,40,0.2);}
+.hub-sos .hub-n{color:#C62828;}
+
+/* ── EMERGENCY KIT ── */
+.emerg{display:flex;flex-direction:column;height:100%;background:var(--bg);}
+.emerg-hd{padding:38px 12px 12px;background:rgba(198,40,40,0.06);border-bottom:2px solid rgba(198,40,40,0.12);}
+.emerg-t{font-family:'Outfit',sans-serif;font-size:14px;font-weight:900;color:#C62828;}
+.emerg-s{font-size:8px;color:var(--ink2);margin-top:2px;}
+.emerg-body{flex:1;overflow:hidden;padding:12px;display:flex;flex-direction:column;gap:7px;}
+.emerg-item{background:#fff;border:1px solid var(--border);border-radius:11px;display:flex;gap:10px;padding:10px 12px;align-items:center;}
+.emerg-ico{font-size:18px;flex-shrink:0;}
+.emerg-n{font-size:9px;font-weight:800;color:var(--ink);flex:1;}
+.emerg-s2{font-size:7px;color:var(--ink3);margin-top:1px;}
+.emerg-act{background:rgba(198,40,40,0.1);color:#C62828;border:1px solid rgba(198,40,40,0.2);border-radius:8px;padding:4px 8px;font-size:7px;font-weight:800;}
+.emerg-sos{background:#C62828;color:#fff;border:none;padding:12px;border-radius:12px;font-family:'Outfit',sans-serif;font-size:12px;font-weight:800;width:100%;margin:12px 12px 0;}
+
+/* ── INCIDENT CENTER ── */
+.incident{display:flex;flex-direction:column;height:100%;background:var(--bg);}
+.inc-hd{padding:38px 12px 12px;}
+.inc-t{font-family:'Outfit',sans-serif;font-size:14px;font-weight:900;color:var(--ink);}
+.inc-list{flex:1;overflow:hidden;padding:0 12px;display:flex;flex-direction:column;gap:7px;}
+.inc-item{background:#fff;border:1px solid var(--border);border-radius:11px;padding:10px 12px;}
+.inc-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;}
+.inc-n{font-size:9px;font-weight:800;color:var(--ink);}
+.inc-badge{padding:2px 6px;border-radius:100px;font-size:6px;font-weight:800;}
+.inc-badge.open{background:rgba(198,40,40,0.1);color:#C62828;}
+.inc-badge.closed{background:rgba(46,125,50,0.08);color:#2E7D32;}
+.inc-s{font-size:7px;color:var(--ink2);line-height:1.5;}
+.inc-meta{display:flex;gap:8px;margin-top:4px;}
+.inc-m{font-size:6px;color:var(--ink3);}
+.inc-report{background:rgba(198,40,40,0.08);border:1px solid rgba(198,40,40,0.15);color:#C62828;border-radius:10px;padding:10px;font-family:'Outfit',sans-serif;font-size:9px;font-weight:800;width:calc(100% - 24px);margin:10px 12px 0;}
+
+/* ── INCIDENT DETAIL ── */
+.incdet{display:flex;flex-direction:column;height:100%;background:var(--bg);}
+.incdet-hd{padding:38px 12px 12px;background:#fff;border-bottom:1px solid var(--border);}
+.incdet-t{font-family:'Outfit',sans-serif;font-size:13px;font-weight:900;color:var(--ink);}
+.incdet-body{flex:1;overflow:hidden;padding:12px;display:flex;flex-direction:column;gap:8px;}
+.incdet-status{background:rgba(198,40,40,0.08);border:1px solid rgba(198,40,40,0.12);border-radius:11px;padding:10px 12px;}
+.incdet-st{font-size:8px;font-weight:800;color:#C62828;letter-spacing:1.5px;margin-bottom:3px;}
+.incdet-desc{font-size:8px;color:var(--ink2);line-height:1.6;}
+.incdet-sec{background:#fff;border:1px solid var(--border);border-radius:11px;padding:10px 12px;}
+.incdet-sec-t{font-size:8px;font-weight:800;color:var(--ink);margin-bottom:6px;}
+.incdet-upd{font-size:7px;color:var(--ink2);line-height:1.5;padding:5px 0;border-bottom:1px solid var(--border);}
+.incdet-upd:last-child{border:none;}
+
+/* ── FAMILY SHARE ── */
+.family{display:flex;flex-direction:column;height:100%;padding:40px 12px 14px;background:var(--bg);}
+.fam-t{font-family:'Outfit',sans-serif;font-size:14px;font-weight:900;color:var(--ink);margin-bottom:3px;}
+.fam-s{font-size:9px;color:var(--ink2);margin-bottom:14px;}
+.fam-info{background:var(--rtint);border:1px solid rgba(192,88,10,0.12);border-radius:12px;padding:10px 12px;margin-bottom:12px;}
+.fam-info-t{font-size:8px;font-weight:800;color:var(--rust);margin-bottom:4px;}
+.fam-info-s{font-size:7px;color:var(--ink2);line-height:1.5;}
+.fam-links{display:flex;flex-direction:column;gap:8px;flex:1;overflow:hidden;}
+.fam-link{background:#fff;border:1px solid var(--border);border-radius:11px;padding:10px 12px;display:flex;align-items:center;gap:10px;}
+.fam-link-ico{font-size:16px;}
+.fam-link-n{font-size:9px;font-weight:700;color:var(--ink);flex:1;}
+.fam-link-s{font-size:7px;color:var(--ink3);margin-top:1px;}
+.fam-link-status{font-size:6px;font-weight:700;padding:2px 6px;border-radius:100px;}
+.fam-link-status.active{background:rgba(46,125,50,0.08);color:#2E7D32;}
+.fam-btn{background:var(--rust);color:#fff;border:none;padding:11px;border-radius:10px;font-family:'Outfit',sans-serif;font-size:10px;font-weight:800;width:100%;margin-top:12px;}
+
+/* ── OPERATOR DASHBOARD ── */
+.opdash{display:flex;flex-direction:column;height:100%;padding:40px 12px 14px;background:var(--bg);}
+.op-t{font-family:'Outfit',sans-serif;font-size:14px;font-weight:900;color:var(--ink);margin-bottom:2px;}
+.op-s{font-size:8px;color:var(--ink2);margin-bottom:12px;}
+.op-stats{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:10px;}
+.op-stat{background:#fff;border:1px solid var(--border);border-radius:11px;padding:10px;text-align:center;}
+.op-sv{font-family:'Outfit',sans-serif;font-size:18px;font-weight:900;color:var(--rust);}
+.op-sl{font-size:7px;color:var(--ink3);margin-top:2px;}
+.op-sections{display:flex;flex-direction:column;gap:7px;flex:1;overflow:hidden;}
+.op-sec{background:#fff;border:1px solid var(--border);border-radius:11px;padding:10px 12px;}
+.op-sec-t{font-size:9px;font-weight:800;color:var(--ink);margin-bottom:6px;}
+.op-item{display:flex;justify-content:space-between;align-items:center;padding:4px 0;}
+.op-item-n{font-size:7px;color:var(--ink2);}
+.op-item-v{font-size:8px;font-weight:700;color:var(--ink);}
+
+/* ── REVIEW SUBMISSION ── */
+.review{display:flex;flex-direction:column;height:100%;padding:40px 12px 14px;background:var(--bg);}
+.rev-t{font-family:'Outfit',sans-serif;font-size:14px;font-weight:900;color:var(--ink);margin-bottom:3px;}
+.rev-s{font-size:9px;color:var(--ink2);margin-bottom:12px;}
+.rev-place{background:linear-gradient(135deg,#FDEBD8,#ECC89A);border-radius:12px;padding:12px;display:flex;gap:10px;align-items:center;margin-bottom:12px;}
+.rev-place-ico{font-size:26px;}
+.rev-place-n{font-family:'Outfit',sans-serif;font-size:11px;font-weight:900;color:var(--ink);}
+.rev-place-l{font-size:8px;color:rgba(26,21,18,0.6);margin-top:2px;}
+.rev-stars{display:flex;justify-content:center;gap:8px;margin-bottom:14px;}
+.rev-star{font-size:26px;color:var(--rust);}
+.rev-star.e{opacity:0.25;}
+.rev-lbl{font-size:8px;font-weight:700;color:var(--ink3);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;}
+.rev-textarea{background:#fff;border:1.5px solid var(--border2);border-radius:11px;padding:10px 12px;font-size:9px;color:var(--ink);width:100%;font-family:'Inter',sans-serif;height:64px;}
+.rev-btn{background:var(--rust);color:#fff;border:none;padding:11px;border-radius:10px;font-family:'Outfit',sans-serif;font-size:11px;font-weight:800;width:100%;margin-top:12px;}
+
+/* ── UPDATE SCREEN ── */
+.update{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:44px 20px;background:var(--bg);text-align:center;}
+.update-ico{font-size:52px;margin-bottom:16px;}
+.update-t{font-family:'Outfit',sans-serif;font-size:17px;font-weight:900;color:var(--ink);margin-bottom:8px;}
+.update-s{font-size:9px;color:var(--ink2);line-height:1.6;margin-bottom:24px;}
+.update-ver{background:var(--rtint);border:1px solid rgba(192,88,10,0.12);border-radius:10px;padding:8px 16px;font-size:9px;font-weight:700;color:var(--rust);margin-bottom:20px;}
+.update-btn{background:var(--rust);color:#fff;border:none;padding:13px 32px;border-radius:100px;font-family:'Outfit',sans-serif;font-size:12px;font-weight:800;box-shadow:0 4px 16px rgba(192,88,10,0.25);}
+
+@media(max-width:768px){.phones{grid-template-columns:repeat(2,1fr);}}
+</style>
+</head>
+<body>
+
+<!-- COVER -->
+<div class="cover">
+  <div class="cover-eye">🇱🇰 Hidden Gems SL · Complete UI · Light Edition</div>
+  <h1 class="cover-title">ALL<br><em>46</em><br>SCREENS</h1>
+  <p class="cover-sub">Every screen in the app — warm cream, terracotta rust. Light & Airy design system, Figma-ready.</p>
+  <div class="cover-pills">
+    <span class="pill pr">46 Screens</span>
+    <span class="pill pe">Warm Cream</span>
+    <span class="pill pr">Terracotta Rust</span>
+    <span class="pill pe">Flutter Ready</span>
+  </div>
+</div>
+
+<div class="section">
+<div class="sec-eye">All Screens</div>
+<div class="sec-title">Complete Screen Library</div>
+<div class="sec-desc">Every screen grouped by user flow. Warm cream bg, white cards, terracotta CTAs throughout.</div>
+
+<!-- ── FLOW 1: AUTH ── -->
+<div class="cat-row"><div class="cat-label">Auth & Onboarding</div><div class="cat-line"></div><div class="cat-count">6 screens</div></div>
+<div class="phones">
+
+  <!-- SPLASH -->
+  <div class="pw">
+    <div class="pf"><div class="notch"></div><div class="ps">
+      <div class="splash">
+        <div class="splash-orb">🌿</div>
+        <div class="splash-brand">Hidden Gems</div>
+        <div class="splash-sub">Sri Lanka</div>
+        <div style="width:60px;height:2px;background:rgba(192,88,10,0.2);border-radius:100px;margin-top:16px;overflow:hidden;"><div style="height:100%;width:70%;background:var(--rust);"></div></div>
+      </div>
+    </div></div>
+    <div class="sname">Splash Screen</div><div class="ssub">Logo · cinematic 4s load</div>
+  </div>
+
+  <!-- ONBOARDING 1 -->
+  <div class="pw">
+    <div class="pf"><div class="notch"></div><div class="ps">
+      <div class="ob">
+        <div class="ob-ill">🌿</div>
+        <div class="ob-t">Find Sri Lanka's Best-Kept Secrets</div>
+        <div class="ob-s">The Oracle AI learns your travel style and reveals hidden places crowds never find.</div>
+        <div class="ob-dots"><div class="dot a"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+        <button class="ob-btn">Continue →</button>
+        <div style="font-size:7px;color:var(--ink3);margin-top:10px;letter-spacing:2px">SKIP</div>
+      </div>
+    </div></div>
+    <div class="sname">Onboarding 1/5</div><div class="ssub">Oracle intro</div>
+  </div>
+
+  <!-- ONBOARDING 3 -->
+  <div class="pw">
+    <div class="pf"><div class="notch"></div><div class="ps">
+      <div class="ob">
+        <div class="ob-ill">🗺️</div>
+        <div class="ob-t">AI Trip Planning in Seconds</div>
+        <div class="ob-s">Tell the Oracle your style — adventure, heritage, or relaxation — and get a full personalised itinerary.</div>
+        <div class="ob-dots"><div class="dot"></div><div class="dot"></div><div class="dot a"></div><div class="dot"></div><div class="dot"></div></div>
+        <button class="ob-btn">Continue →</button>
+        <div style="font-size:7px;color:var(--ink3);margin-top:10px;letter-spacing:2px">SKIP</div>
+      </div>
+    </div></div>
+    <div class="sname">Onboarding 3/5</div><div class="ssub">AI trip planning</div>
+  </div>
+
+  <!-- LANGUAGE SELECTION -->
+  <div class="pw">
+    <div class="pf"><div class="notch"></div><div class="ps">
+      <div class="lang">
+        <div class="lang-orb">🌐</div>
+        <div class="lang-t">Select Your Language</div>
+        <div class="lang-s">Choose how the Oracle speaks to you</div>
+        <div class="lang-grid">
+          <div class="lang-item a"><div class="lang-flag">🇬🇧</div><div class="lang-name">English</div><div class="lang-native">English</div></div>
+          <div class="lang-item"><div class="lang-flag">🇱🇰</div><div class="lang-name">Sinhala</div><div class="lang-native">සිංහල</div></div>
+          <div class="lang-item"><div class="lang-flag">🇱🇰</div><div class="lang-name">Tamil</div><div class="lang-native">தமிழ்</div></div>
+          <div class="lang-item"><div class="lang-flag">🇩🇪</div><div class="lang-name">Deutsch</div><div class="lang-native">Deutsch</div></div>
+          <div class="lang-item"><div class="lang-flag">🇫🇷</div><div class="lang-name">French</div><div class="lang-native">Français</div></div>
+          <div class="lang-item"><div class="lang-flag">🇨🇳</div><div class="lang-name">Chinese</div><div class="lang-native">中文</div></div>
+        </div>
+        <button class="lang-btn">Confirm Language</button>
+      </div>
+    </div></div>
+    <div class="sname">Language Selection</div><div class="ssub">Multi-language oracle</div>
+  </div>
+
+  <!-- TERMS -->
+  <div class="pw">
+    <div class="pf"><div class="notch"></div><div class="ps">
+      <div class="terms">
+        <div class="terms-hd"><div class="terms-t">Before We Begin</div><div class="terms-s">Please review our terms</div></div>
+        <div class="terms-body">
+          <div class="terms-sec"><div class="terms-sh">📍 Location Access</div><div class="terms-txt">We use your location to find hidden gems nearby and provide accurate distance information. Location is never sold to third parties.</div></div>
+          <div class="terms-sec"><div class="terms-sh">🤖 AI Processing</div><div class="terms-txt">Your travel preferences are processed by the Oracle AI to personalise recommendations. Data is anonymised and encrypted.</div></div>
+          <div class="terms-sec"><div class="terms-sh">🔒 Privacy</div><div class="terms-txt">Your personal data is stored securely on Firebase with industry-standard encryption. You may request deletion at any time.</div></div>
+        </div>
+        <div class="terms-footer"><button class="terms-agree">I Agree & Continue</button></div>
+      </div>
+    </div></div>
+    <div class="sname">Terms & Privacy</div><div class="ssub">Consent before login</div>
+  </div>
+
+  <!-- LOGIN -->
+  <div class="pw">
+    <div class="pf"><div class="notch"></div><div class="ps">
+      <div class="login">
+        <div class="login-logo"><div class="login-ico">🌿</div><div class="login-brand">Hidden Gems SL</div></div>
+        <div class="login-h">Welcome<br>Back.</div>
+        <div class="login-sub">Sign in to continue your journey through Sri Lanka's hidden world.</div>
+        <div class="linput"><span class="linput-ico">📧</span><input style="outline:none" placeholder="Email address"/></div>
+        <div class="linput"><span class="linput-ico">🔒</span><input type="password" style="outline:none" placeholder="Password"/></div>
+        <button class="login-btn">Sign In</button>
+        <div class="login-or">— or —</div>
+        <div class="login-g">G &nbsp; Continue with Google</div>
+        <div class="login-reg">New? <span>Create account</span></div>
+      </div>
+    </div></div>
+    <div class="sname">Login / Register</div><div class="ssub">Email + Google OAuth</div>
+  </div>
+
+</div><!-- /phones -->
+
+<!-- ── FLOW 2: CORE ── -->
+<div class="cat-row"><div class="cat-label">Core Navigation</div><div class="cat-line"></div><div class="cat-count">5 screens</div></div>
+<div class="phones">
+
+  <!-- HOME -->
+  <div class="pw">
+    <div class="pf"><div class="notch"></div><div class="ps">
+      <div style="height:100%;display:flex;flex-direction:column;">
+        <div class="home-hero">
+          <div class="home-av">👤</div>
+          <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-60%);font-size:36px;opacity:0.2;">🏺</div>
+          <div style="position:relative;z-index:1;"><div class="home-eye">DISCOVER SRI LANKA</div><div class="home-h">Let The Oracle<br>Guide Your Path</div></div>
+        </div>
+        <div class="home-search"><span style="font-size:10px;color:var(--ink3)">🔍</span><span style="font-size:8px;color:var(--ink3)">Search hidden gems…</span></div>
+        <div class="home-body">
+          <div class="home-sec">📍 Near You</div>
+          <div class="gem-row">
+            <div class="gem-card"><div class="gem-img" style="background:linear-gradient(135deg,#FDEBD8,#ECC89A)">🌊</div><div class="gem-info"><div class="gem-n">Secret Lagoon</div><div class="gem-l">Trinco</div><div class="gem-r">★★★★★</div></div></div>
+            <div class="gem-card"><div class="gem-img" style="background:linear-gradient(135deg,#EDE3D6,#D9C9B0)">🏔️</div><div class="gem-info"><div class="gem-n">Knuckles</div><div class="gem-l">Kandy</div><div class="gem-r">★★★★☆</div></div></div>
+            <div class="gem-card"><div class="gem-img" style="background:linear-gradient(135deg,#FDEBD8,#F5D5B4)">🌺</div><div class="gem-info"><div class="gem-n">Tea Cave</div><div class="gem-l">Nuwara Eliya</div><div class="gem-r">★★★★★</div></div></div>
+          </div>
+          <div class="ai-pill"><div class="ai-dot"></div><div class="ai-txt">Oracle: Ravana Falls · Ella — matches your style</div></div>
+        </div>
+        <div class="bnav">
+          <div class="bni"><span class="bnico a">🏠</span><span class="bnlbl a">Home</span></div>
+          <div class="bni"><span class="bnico">🔍</span><span class="bnlbl">Discover</span></div>
+          <div class="fab">🗺️</div>
+          <div class="bni"><span class="bnico">📅</span><span class="bnlbl">Events</span></div>
+          <div class="bni"><span class="bnico">👤</span><span class="bnlbl">Profile</span></div>
+        </div>
+      </div>
+    </div></div>
+    <div class="sname">Home Screen</div><div class="ssub">Oracle orb FAB · AI picks</div>
+  </div>
+
+  <!-- DISCOVERY -->
+  <div class="pw">
+    <div class="pf"><div class="notch"></div><div class="ps">
+      <div style="height:100%;display:flex;flex-direction:column;">
+        <div class="disc-hd"><div class="disc-t">Explore Sri Lanka</div><div class="disc-c">247 hidden gems</div></div>
+        <div class="disc-chips"><div class="dchip a">All</div><div class="dchip">🌿 Nature</div><div class="dchip">🏛️ Heritage</div><div class="dchip">🌊 Water</div><div class="dchip">🍃 Tea</div></div>
+        <div class="disc-map"><div class="dpin" style="top:30%;left:42%"></div><div class="dpin" style="top:55%;left:60%;background:var(--earth)"></div><div class="dpin" style="top:42%;left:25%"></div><div style="position:absolute;bottom:6px;right:8px;background:#fff;border:1px solid var(--border);border-radius:6px;padding:3px 7px;font-size:6px;color:var(--ink2)">📍 Map</div></div>
+        <div class="disc-list">
+          <div class="di"><div class="di-img">🏔️</div><div class="di-info"><div class="di-n">Sigiriya Rock Fortress</div><div class="di-l">📍 Matale · ★★★★★</div><div class="di-tags"><span class="di-tag">UNESCO</span><span class="di-tag">HERITAGE</span></div></div></div>
+          <div class="di"><div class="di-img">🌊</div><div class="di-info"><div class="di-n">Pigeon Island</div><div class="di-l">📍 Trinco · ★★★★☆</div><div class="di-tags"><span class="di-tag">MARINE</span><span class="di-tag">AR</span></div></div></div>
+          <div class="di"><div class="di-img">🌺</div><div class="di-info"><div class="di-n">Ravana Falls</div><div class="di-l">📍 Ella · ★★★★★</div><div class="di-tags"><span class="di-tag">HIDDEN</span></div></div></div>
+        </div>
+        <div class="bnav"><div class="bni"><span class="bnico">🏠</span><span class="bnlbl">Home</span></div><div class="bni"><span class="bnico a">🔍</span><span class="bnlbl a">Discover</span></div><div class="fab">🗺️</div><div class="bni"><span class="bnico">📅</span><span class="bnlbl">Events</span></div><div class="bni"><span class="bnico">👤</span><span class="bnlbl">Profile</span></div></div>
+      </div>
+    </div></div>
+    <div class="sname">Discovery Screen</div><div class="ssub">Map + list · filters</div>
+  </div>
+
+  <!-- MAP EXPLORER -->
+  <div class="pw">
+    <div class="pf"><div class="notch"></div><div class="ps">
+      <div class="map">
+        <div class="map-bar"><div class="map-search"><span style="font-size:10px;color:var(--ink3)">🔍</span><span style="font-size:8px;color:var(--ink3)">Search places…</span></div></div>
+        <div class="map-area">
+          <div class="map-pin" style="top:28%;left:42%"><div class="map-dot"></div><div class="map-pin-lbl">Sigiriya</div></div>
+          <div class="map-pin" style="top:50%;left:60%"><div class="map-dot" style="background:var(--earth)"></div><div class="map-pin-lbl">Ella</div></div>
+          <div class="map-pin" style="top:38%;left:24%"><div class="map-dot"></div><div class="map-pin-lbl">Kandy</div></div>
+          <div class="map-pin" style="top:65%;left:35%"><div class="map-dot"></div><div class="map-pin-lbl">Galle</div></div>
+          <div class="map-popup">
+            <div class="map-popup-ico">🏔️</div>
+            <div style="flex:1;"><div style="font-size:9px;font-weight:800;color:var(--ink)">Sigiriya Rock</div><div style="font-size:7px;color:var(--ink3)">3.2km · ★4.9</div></div>
+            <div style="background:var(--rust);color:#fff;border-radius:8px;padding:5px 8px;font-size:7px;font-weight:800">View</div>
+          </div>
+        </div>
+      </div>
+    </div></div>
+    <div class="sname">Map Explorer</div><div class="ssub">Google Maps · place pins · SOS</div>
+  </div>
+
+  <!-- EVENT CALENDAR -->
+  <div class="pw">
+    <div class="pf"><div class="notch"></div><div class="ps">
+      <div class="events">
+        <div class="ev-hd"><div class="ev-t">Events & Festivals</div></div>
+        <div class="ev-cal">
+          <div class="ev-cal-hd"><span class="ev-cal-m">July 2026</span><span style="font-size:10px;color:var(--ink3)">‹  ›</span></div>
+          <div class="ev-cal-grid">
+            <div class="ev-day" style="color:var(--ink3);font-size:6px">S</div><div class="ev-day" style="color:var(--ink3);font-size:6px">M</div><div class="ev-day" style="color:var(--ink3);font-size:6px">T</div><div class="ev-day" style="color:var(--ink3);font-size:6px">W</div><div class="ev-day" style="color:var(--ink3);font-size:6px">T</div><div class="ev-day" style="color:var(--ink3);font-size:6px">F</div><div class="ev-day" style="color:var(--ink3);font-size:6px">S</div>
+            <div class="ev-day"></div><div class="ev-day">1</div><div class="ev-day">2</div><div class="ev-day">3</div><div class="ev-day">4</div><div class="ev-day">5</div><div class="ev-day dot">6</div>
+            <div class="ev-day">7</div><div class="ev-day">8</div><div class="ev-day">9</div><div class="ev-day dot">10</div><div class="ev-day">11</div><div class="ev-day">12</div><div class="ev-day">13</div>
+            <div class="ev-day a">14</div><div class="ev-day">15</div><div class="ev-day">16</div><div class="ev-day">17</div><div class="ev-day">18</div><div class="ev-day dot">19</div><div class="ev-day">20</div>
+          </div>
+        </div>
+        <div class="ev-list">
+          <div class="ev-item"><div class="ev-date"><div class="ev-dm">JUL</div><div class="ev-dd">14</div></div><div class="ev-info"><div class="ev-n">Esala Perahera</div><div class="ev-l">📍 Kandy</div><div class="ev-tag">HERITAGE</div></div></div>
+          <div class="ev-item"><div class="ev-date"><div class="ev-dm">JUL</div><div class="ev-dd">19</div></div><div class="ev-info"><div class="ev-n">Kataragama Festival</div><div class="ev-l">📍 Kataragama</div><div class="ev-tag">RELIGIOUS</div></div></div>
+        </div>
+        <div class="bnav"><div class="bni"><span class="bnico">🏠</span><span class="bnlbl">Home</span></div><div class="bni"><span class="bnico">🔍</span><span class="bnlbl">Discover</span></div><div class="fab">🗺️</div><div class="bni"><span class="bnico a">📅</span><span class="bnlbl a">Events</span></div><div class="bni"><span class="bnico">👤</span><span class="bnlbl">Profile</span></div></div>
+      </div>
+    </div></div>
+    <div class="sname">Event Calendar</div><div class="ssub">Festivals · calendar grid</div>
+  </div>
+
+  <!-- PROFILE -->
+  <div class="pw">
+    <div class="pf"><div class="notch"></div><div class="ps">
+      <div class="prof">
+        <div class="prof-hd">
+          <div class="prof-av">🌿</div>
+          <div class="prof-n">Kavindi Silva</div>
+          <div class="prof-lv">🏺 GEM SEEKER · LEVEL 7</div>
+          <div class="prof-stats"><div class="prof-stat"><div class="prof-sv">23</div><div class="prof-sl">Places</div></div><div class="prof-divv"></div><div class="prof-stat"><div class="prof-sv">7</div><div class="prof-sl">Stamps</div></div><div class="prof-divv"></div><div class="prof-stat"><div class="prof-sv">3</div><div class="prof-sl">AR</div></div></div>
+        </div>
+        <div class="prof-pp"><span style="font-size:16px">📜</span><div><div style="font-size:8px;font-weight:800;color:var(--rust)">Heritage Passport</div><div style="font-size:7px;color:var(--ink2)">7 stamps · 3 to next tier</div></div><span style="color:var(--rust);font-size:10px">›</span></div>
+        <div class="prof-menu">
+          <div class="pm-item"><span class="pm-ico">📍</span><span class="pm-lbl">Saved Places</span><span class="pm-arr">›</span></div>
+          <div class="pm-item"><span class="pm-ico">📋</span><span class="pm-lbl">Trip Plans</span><span class="pm-arr">›</span></div>
+          <div class="pm-item"><span class="pm-ico">💰</span><span class="pm-lbl">Budget Tracker</span><span class="pm-arr">›</span></div>
+          <div class="pm-item"><span class="pm-ico">👑</span><span class="pm-lbl">Premium Hub</span><span style="font-size:7px;background:var(--rtint);color:var(--rust);padding:2px 6px;border-radius:100px;font-weight:700">UPGRADE</span></div>
+          <div class="pm-item"><span class="pm-ico">⚙️</span><span class="pm-lbl">Settings</span><span class="pm-arr">›</span></div>
+        </div>
+      </div>
+    </div></div>
+    <div class="sname">Profile Screen</div><div class="ssub">Stats · menu · passport</div>
+  </div>
+
+</div>
+
+<!-- ── FLOW 3: PLACE & TRIP ── -->
+<div class="cat-row"><div class="cat-label">Place Details & Trip Planning</div><div class="cat-line"></div><div class="cat-count">6 screens</div></div>
+<div class="phones">
+
+  <!-- PLACE DETAILS -->
+  <div class="pw">
+    <div class="pf"><div class="notch"></div><div class="ps">
+      <div style="height:100%;display:flex;flex-direction:column;">
+        <div class="pd-hero"><div class="pd-back">‹</div><div class="pd-ill">🏔️</div><div style="position:relative;z-index:1;display:flex;gap:4px;"><span style="background:rgba(124,106,85,0.15);color:var(--earth);border:1px solid rgba(124,106,85,0.2);border-radius:100px;padding:3px 8px;font-size:6px;font-weight:800">UNESCO</span><span style="background:var(--rtint);color:var(--rust);border:1px solid rgba(192,88,10,0.2);border-radius:100px;padding:3px 8px;font-size:6px;font-weight:800">AR ENABLED</span></div></div>
+        <div class="pd-body"><div class="pd-n">Sigiriya Rock Fortress</div><div class="pd-l">📍 Matale District</div><div class="pd-stats"><div class="pd-stat"><div class="pd-sv">★4.9</div><div class="pd-sl">Rating</div></div><div class="pd-stat"><div class="pd-sv">3.2km</div><div class="pd-sl">Away</div></div><div class="pd-stat"><div class="pd-sv">4hr</div><div class="pd-sl">Visit</div></div></div><div class="pd-ai"><div class="pd-aie">🪄 ORACLE SAYS</div><div class="pd-ait">Best at 6am — mist clears from summit. Under 50 visitors at dawn.</div></div></div>
+        <div class="pd-actions"><button class="pd-btn">Book Guide</button><button class="pd-ar">🔭</button></div>
+      </div>
+    </div></div>
+    <div class="sname">Place Details</div><div class="ssub">Hero · AI · AR · booking</div>
+  </div>
+
+  <!-- TRIP FORM -->
+  <div class="pw">
+    <div class="pf"><div class="notch"></div><div class="ps">
+      <div class="tripf">
+        <div class="tf-t">Plan My Trip</div>
+        <div class="tf-s">Tell the Oracle your preferences</div>
+        <div class="tf-lbl">Destination</div>
+        <div class="tf-in" style="background:#fff;border:1.5px solid var(--border2);border-radius:10px;padding:9px 12px;font-size:9px;color:var(--ink)">Sri Lanka — Ella & Hill Country</div>
+        <div class="tf-row">
+          <div><div class="tf-lbl">Start Date</div><div class="tf-in" style="background:#fff;border:1.5px solid var(--border2);border-radius:10px;padding:9px 12px;font-size:9px;color:var(--ink)">Jul 14</div></div>
+          <div><div class="tf-lbl">Days</div><div class="tf-in" style="background:#fff;border:1.5px solid var(--border2);border-radius:10px;padding:9px 12px;font-size:9px;color:var(--ink)">5 days</div></div>
+        </div>
+        <div class="tf-lbl">Travel Style</div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap;">
+          <span style="padding:5px 9px;border-radius:100px;font-size:7px;font-weight:700;background:var(--rtint);border:1px solid rgba(192,88,10,0.2);color:var(--rust)">🌿 Nature</span>
+          <span style="padding:5px 9px;border-radius:100px;font-size:7px;font-weight:700;background:#fff;border:1px solid var(--border2);color:var(--ink2)">🏛️ Heritage</span>
+          <span style="padding:5px 9px;border-radius:100px;font-size:7px;font-weight:700;background:#fff;border:1px solid var(--border2);color:var(--ink2)">🍃 Budget</span>
+        </div>
+        <button class="tf-btn">Generate Itinerary ✨</button>
+      </div>
+    </div></div>
+    <div class="sname">Trip Form</div><div class="ssub">Oracle AI trip builder</div>
+  </div>
+
+  <!-- LOADING PLAN -->
+  <div class="pw">
+    <div class="pf"><div class="notch"></div><div class="ps">
+      <div class="loading">
+        <div class="loading-orb">🪄</div>
+        <div class="loading-t">Oracle is Planning<br>Your Journey…</div>
+        <div class="loading-bar"><div class="loading-fill"></div></div>
+        <div class="loading-step">Finding hidden gems near Ella…</div>
+        <div style="margin-top:20px;display:flex;flex-direction:column;gap:6px;width:100%;">
+          <div style="display:flex;align-items:center;gap:8px;"><span style="color:var(--rust);font-size:12px">✓</span><span style="font-size:8px;color:var(--ink2)">Analysing travel preferences</span></div>
+          <div style="display:flex;align-items:center;gap:8px;"><span style="color:var(--rust);font-size:12px">✓</span><span style="font-size:8px;color:var(--ink2)">Mapping route options</span></div>
+          <div style="display:flex;align-items:center;gap:8px;"><span style="color:var(--ink3);font-size:10px">◌</span><span style="font-size:8px;color:var(--ink3)">Securing local guides…</span></div>
+        </div>
+      </div>
+    </div></div>
+    <div class="sname">Loading Plan</div><div class="ssub">Oracle AI generation</div>
+  </div>
+
+  <!-- RESULTS -->
+  <div class="pw">
+    <div class="pf"><div class="notch"></div><div class="ps">
+      <div class="results">
+        <div class="results-hero"><div><div class="results-t">Ella & Hill Country</div><div class="results-s">5 days · 3 hidden gems · Budget LKR 45,000</div></div></div>
+        <div class="results-tabs"><div class="rtab a">Itinerary</div><div class="rtab">Map</div><div class="rtab">Budget</div><div class="rtab">Guides</div><div class="rtab">Tips</div></div>
+        <div class="results-body">
+          <div class="day-block"><div class="day-lbl">DAY 1 · ARRIVAL</div><div class="itm"><div class="itm-ico">🚂</div><div class="itm-info"><div class="itm-t">Train: Colombo → Ella</div><div class="itm-s">9:00 AM · 9hr scenic route</div></div></div><div class="itm"><div class="itm-ico">🏨</div><div class="itm-info"><div class="itm-t">Check in: Ella Eco Hut</div><div class="itm-s">7:00 PM · LKR 4,500/night</div></div></div></div>
+          <div class="day-block"><div class="day-lbl">DAY 2 · HIKING</div><div class="itm"><div class="itm-ico">🌅</div><div class="itm-info"><div class="itm-t">Little Adam's Peak sunrise</div><div class="itm-s">5:30 AM · Oracle hidden gem</div></div></div></div>
+        </div>
+      </div>
+    </div></div>
+    <div class="sname">Results / Itinerary</div><div class="ssub">5-tab trip plan view</div>
+  </div>
+
+  <!-- SAVED PLANS -->
+  <div class="pw">
+    <div class="pf"><div class="notch"></div><div class="ps">
+      <div class="saved">
+        <div class="saved-hd"><div class="saved-t">My Saved Plans</div></div>
+        <div class="saved-list">
+          <div class="saved-card"><div class="saved-card-hero">🏔️</div><div class="saved-card-body"><div class="saved-card-t">Ella & Hill Country — 5 days</div><div class="saved-card-s">Jul 14–19 · LKR 45,000</div><div class="saved-card-tags"><span class="saved-tag">OFFLINE READY</span><span class="saved-tag">GUIDED</span></div></div></div>
+          <div class="saved-card"><div class="saved-card-hero">🌊</div><div class="saved-card-body"><div class="saved-card-t">East Coast — Trincomalee</div><div class="saved-card-s">Aug 2–5 · LKR 28,000</div><div class="saved-card-tags"><span class="saved-tag">NATURE</span></div></div></div>
+          <div class="saved-card"><div class="saved-card-hero">🏛️</div><div class="saved-card-body"><div class="saved-card-t">Cultural Triangle Heritage</div><div class="saved-card-s">Sep 10–14 · LKR 62,000</div><div class="saved-card-tags"><span class="saved-tag">UNESCO</span></div></div></div>
+        </div>
+      </div>
+    </div></div>
+    <div class="sname">Saved Plans</div><div class="ssub">Offline-ready saved trips</div>
+  </div>
+
+  <!-- MAP ROUTE -->
+  <div class="pw">
+    <div class="pf"><div class="notch"></div><div class="ps">
+      <div class="route">
+        <div class="route-header"><div class="route-t">Ella & Hill Country Route</div><div class="route-s">5 stops · 220 km · estimated 9hrs</div></div>
+        <div class="route-map">
+          <div class="route-line"></div>
+          <div class="map-pin" style="top:14%;left:50%;"><div class="map-dot"></div><div class="map-pin-lbl">Colombo</div></div>
+          <div class="map-pin" style="top:35%;left:46%;"><div class="map-dot"></div><div class="map-pin-lbl">Kandy</div></div>
+          <div class="map-pin" style="top:56%;left:52%;"><div class="map-dot"></div><div class="map-pin-lbl">Nuwara Eliya</div></div>
+          <div class="map-pin" style="top:74%;left:48%;"><div class="map-dot" style="background:var(--rust)"></div><div class="map-pin-lbl">Ella ⭐</div></div>
+        </div>
+        <div class="route-bar"><button class="route-offline-btn">💾 Save for Offline</button></div>
+      </div>
+    </div></div>
+    <div class="sname">Map Route Screen</div><div class="ssub">Trip route · offline save</div>
+  </div>
+
+</div>
+
+<!-- ── FLOW 4: AR & EXPERIENCES ── -->
+<div class="cat-row"><div class="cat-label">AR & Immersive Experiences</div><div class="cat-line"></div><div class="cat-count">6 screens</div></div>
+<div class="phones">
+
+  <!-- AR VIEWER -->
+  <div class="pw">
+    <div class="pf"><div class="notch"></div><div class="ps">
+      <div class="arv">
+        <div class="ar-viewfinder">
+          <div class="ar-overlay-corner ar-tl"></div><div class="ar-overlay-corner ar-tr"></div><div class="ar-overlay-corner ar-bl"></div><div class="ar-overlay-corner ar-br"></div>
+          <div class="ar-subject">🏔️</div>
+          <div class="ar-info-card">
+            <div class="ar-info-t">Sigiriya Rock — 5th Century</div>
+            <div class="ar-info-s">Built by King Kashyapa I as a royal palace. The frescoes on the western face depict celestial maidens.</div>
+          </div>
+        </div>
+        <div class="ar-bar"><div class="ar-btn">💡</div><div class="ar-capture">📸</div><div class="ar-btn">🔊</div></div>
+      </div>
+    </div></div>
+    <div class="sname">AR Viewer</div><div class="ssub">Camera overlay · heritage info</div>
+  </div>
+
+  <!-- ANCESTRAL PORTAL -->
+  <div class="pw">
+    <div class="pf"><div class="notch"></div><div class="ps">
+      <div class="portal">
+        <div class="portal-header">
+          <div class="portal-orb">🌀</div>
+          <div class="portal-t">Ancestral Portal</div>
+          <div class="portal-s">Travel through Sri Lanka's ancient eras</div>
+        </div>
+        <div class="portal-body">
+          <div class="portal-era"><div class="portal-era-t">🏛️ Anuradhapura Era · 4th Century BC</div><div class="portal-era-s">Witness the founding of Sri Lanka's first hydraulic civilisation. Experience the sacred Bodhi tree's arrival from India.</div><button class="portal-btn">Enter this Era</button></div>
+          <div class="portal-era"><div class="portal-era-t">👑 Polonnaruwa Kingdom · 10–13th AD</div><div class="portal-era-s">Walk through the golden age of Sri Lankan architecture and Buddhist scholarship.</div></div>
+        </div>
+      </div>
+    </div></div>
+    <div class="sname">Ancestral Portal</div><div class="ssub">Historical AR eras</div>
+  </div>
+
+  <!-- AR VIDEO -->
+  <div class="pw">
+    <div class="pf"><div class="notch"></div><div class="ps">
+      <div class="arvid">
+        <div class="arvid-player">
+          <div class="arvid-badge">AR EXPERIENCE</div>
+          <div class="arvid-play">▶</div>
+          <div style="position:absolute;bottom:16px;left:50%;transform:translateX(-50%);font-size:9px;color:rgba(255,255,255,0.5)">Sigiriya · 360° Heritage Walk</div>
+        </div>
+        <div class="arvid-controls">
+          <div class="arvid-bar"><div class="arvid-fill"></div></div>
+          <div class="arvid-btns"><div class="arvid-ctrl">⏮</div><div class="arvid-ctrl">⏪</div><div class="arvid-pl">⏸</div><div class="arvid-ctrl">⏩</div><div class="arvid-ctrl">⏭</div></div>
+        </div>
+      </div>
+    </div></div>
+    <div class="sname">AR Video Screen</div><div class="ssub">360° heritage video playback</div>
+  </div>
+
+  <!-- AR FALLBACK -->
+  <div class="pw">
+    <div class="pf"><div class="notch"></div><div class="ps">
+      <div class="arfall">
+        <div class="arfall-ico">📵</div>
+        <div class="arfall-t">AR Not Available</div>
+        <div class="arfall-s">Your device doesn't support AR features. You can still explore the heritage content in 2D mode with full information and photos.</div>
+        <button class="arfall-btn">View in 2D Mode</button>
+        <div class="arfall-alt">Or upgrade your device for the full AR experience</div>
+      </div>
+    </div></div>
+    <div class="sname">AR Fallback</div><div class="ssub">Unsupported / denied / failed</div>
+  </div>
+
+  <!-- AUDIO GUIDE -->
+  <div class="pw">
+    <div class="pf"><div class="notch"></div><div class="ps">
+      <div class="audio">
+        <div class="audio-hero"><div class="audio-ico">🎧</div><div class="audio-t">Audio Guide</div><div class="audio-s">Sigiriya Rock Fortress</div></div>
+        <div class="audio-body">
+          <div class="audio-player">
+            <div style="font-size:9px;font-weight:800;color:var(--ink);margin-bottom:6px">History of the Lion Rock</div>
+            <div class="audio-waveform"></div>
+            <div class="audio-progress"><div class="audio-pfill"></div></div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:8px;"><span style="font-size:7px;color:var(--ink3)">4:23</span><span style="font-size:7px;color:var(--ink3)">12:40</span></div>
+            <div class="audio-controls"><div class="audio-ctrl">⏮</div><div class="audio-ctrl">⏪</div><div class="audio-play">⏸</div><div class="audio-ctrl">⏩</div><div class="audio-ctrl">⏭</div></div>
+          </div>
+          <div class="audio-chapters">
+            <div class="audio-ch"><div style="font-size:7px;font-weight:800;color:var(--rust)">01</div><div class="audio-ch-n">Origins & Construction</div><div class="audio-ch-t">0:00</div></div>
+            <div class="audio-ch" style="background:var(--rtint);border-color:rgba(192,88,10,0.15)"><div style="font-size:7px;font-weight:800;color:var(--rust)">02</div><div class="audio-ch-n" style="color:var(--rust)">The Frescoes</div><div class="audio-ch-t" style="color:var(--rust)">4:23</div></div>
+            <div class="audio-ch"><div style="font-size:7px;font-weight:800;color:var(--rust)">03</div><div class="audio-ch-n">Hydraulic Engineering</div><div class="audio-ch-t">8:15</div></div>
+          </div>
+        </div>
+      </div>
+    </div></div>
+    <div class="sname">Audio Guide</div><div class="ssub">Waveform · chapters · narrator</div>
+  </div>
+
+  <!-- QR SCANNER -->
+  <div class="pw">
+    <div class="pf"><div class="notch"></div><div class="ps">
+      <div class="qrscan">
+        <div class="qrscan-viewfinder">
+          <div class="qrscan-overlay"></div>
+          <div class="qrscan-box"><div class="qrscan-line"></div></div>
+        </div>
+        <div class="qrscan-t"><div class="qrscan-info">Scan Heritage QR Code</div><div class="qrscan-sub">Point camera at any Hidden Gems QR marker</div></div>
+      </div>
+    </div></div>
+    <div class="sname">QR Scanner</div><div class="ssub">Heritage marker scanning</div>
+  </div>
+
+</div>
+
+<!-- ── FLOW 5: GUIDES ── -->
+<div class="cat-row"><div class="cat-label">Guide Marketplace & Dashboard</div><div class="cat-line"></div><div class="cat-count">7 screens</div></div>
+<div class="phones">
+
+  <!-- GUIDE MARKETPLACE -->
+  <div class="pw">
+    <div class="pf"><div class="notch"></div><div class="ps">
+      <div class="gm">
+        <div class="gm-hd"><div class="gm-t">Find a Local Guide</div></div>
+        <div class="gm-filters"><div class="gm-chip a">All</div><div class="gm-chip">Chauffeur</div><div class="gm-chip">Heritage</div><div class="gm-chip">Adventure</div><div class="gm-chip">Wildlife</div></div>
+        <div class="gm-featured"><div class="gm-feat-lbl">FEATURED GUIDES</div><div class="gm-feat-row"><div class="gm-feat-card"><div class="gm-feat-img">👨‍🦱</div><div class="gm-feat-info"><div class="gm-feat-n">Nimal P.</div><div class="gm-feat-r">★4.9 · 142</div></div></div><div class="gm-feat-card"><div class="gm-feat-img">👩‍🦰</div><div class="gm-feat-info"><div class="gm-feat-n">Amali S.</div><div class="gm-feat-r">★4.8 · 98</div></div></div><div class="gm-feat-card"><div class="gm-feat-img">👨‍🦳</div><div class="gm-feat-info"><div class="gm-feat-n">Ranjit K.</div><div class="gm-feat-r">★5.0 · 67</div></div></div></div></div>
+        <div class="gm-list"><div class="gm-item"><div class="gm-av">👨‍🦱</div><div class="gm-info"><div class="gm-n">Nimal Perera</div><div class="gm-tg">🇱🇰 Heritage Guide · Kandy</div><div class="gm-r">★★★★★ 4.9 · 142 tours</div></div></div><div class="gm-item"><div class="gm-av">👩</div><div class="gm-info"><div class="gm-n">Sanduni Abeynayake</div><div class="gm-tg">🌿 Nature Guide · Ella</div><div class="gm-r">★★★★☆ 4.7 · 89 tours</div></div></div></div>
+        <div class="bnav"><div class="bni"><span class="bnico">🏠</span><span class="bnlbl">Home</span></div><div class="bni"><span class="bnico">🔍</span><span class="bnlbl">Discover</span></div><div class="fab">🗺️</div><div class="bni"><span class="bnico">📅</span><span class="bnlbl">Events</span></div><div class="bni"><span class="bnico">👤</span><span class="bnlbl">Profile</span></div></div>
+      </div>
+    </div></div>
+    <div class="sname">Guide Marketplace</div><div class="ssub">Featured · filters · search</div>
+  </div>
+
+  <!-- GUIDE PUBLIC PROFILE -->
+  <div class="pw">
+    <div class="pf"><div class="notch"></div><div class="ps">
+      <div class="gprof">
+        <div class="gprof-hero"><div class="gprof-av">👨‍🦱</div><div class="gprof-n">Nimal Perera</div><div class="gprof-tg">🇱🇰 Certified Heritage Guide</div><div class="gprof-r">★★★★★ 4.9 · 142 tours · 8 years</div></div>
+        <div class="gprof-body">
+          <div style="font-size:8px;font-weight:700;color:var(--ink3);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">PACKAGES</div>
+          <div class="gprof-packages">
+            <div class="gprof-pkg"><div><div class="gprof-pkg-n">Heritage Half Day</div><div class="gprof-pkg-s">4hrs · up to 4 guests</div></div><div class="gprof-pkg-p">LKR 6,000</div></div>
+            <div class="gprof-pkg"><div><div class="gprof-pkg-n">Full Day Heritage Tour</div><div class="gprof-pkg-s">8hrs · Sigiriya + Dambulla</div></div><div class="gprof-pkg-p">LKR 12,000</div></div>
+            <div class="gprof-pkg"><div><div class="gprof-pkg-n">Private Overnight Expedition</div><div class="gprof-pkg-s">2 days · all inclusive</div></div><div class="gprof-pkg-p">LKR 28,000</div></div>
+          </div>
+          <button class="gprof-btn">Book This Guide</button>
+        </div>
+      </div>
+    </div></div>
+    <div class="sname">Guide Public Profile</div><div class="ssub">Bio · packages · book</div>
+  </div>
+
+  <!-- BOOKING REQUEST -->
+  <div class="pw">
+    <div class="pf"><div class="notch"></div><div class="ps">
+      <div class="book">
+        <div class="book-step">BOOKING REQUEST</div>
+        <div class="book-gc"><div class="book-av">👨‍🦱</div><div><div class="book-gn">Nimal Perera</div><div class="book-gt">🇱🇰 Heritage Guide</div><div style="font-size:7px;color:var(--rust)">★★★★★ 4.9</div></div></div>
+        <div class="book-lbl">Mission Date</div><div class="book-dp">📅 July 14, 2026</div>
+        <div class="book-lbl">Group Size</div><div class="book-dp">👥 2 guests</div>
+        <div class="book-lbl">Special Notes</div><div style="background:#fff;border:1.5px solid var(--border2);border-radius:9px;padding:8px 10px;font-size:7px;color:var(--ink3)">Sunrise visit preferred…</div>
+        <div class="book-sum">
+          <div class="book-row"><span class="book-k">Guide fee</span><span class="book-v">LKR 8,500</span></div>
+          <div class="book-row"><span class="book-k">Entry tickets</span><span class="book-v">LKR 3,000</span></div>
+          <div class="book-div"></div>
+          <div class="book-row"><span style="font-size:9px;font-weight:800;color:var(--ink)">Total</span><span style="font-size:9px;font-weight:800;color:var(--rust)">LKR 11,500</span></div>
+        </div>
+        <button class="book-btn">Confirm Booking</button>
+      </div>
+    </div></div>
+    <div class="sname">Booking Request</div><div class="ssub">Date · group · summary</div>
+  </div>
+
+  <!-- GUIDE REVIEWS -->
+  <div class="pw">
+    <div class="pf"><div class="notch"></div><div class="ps">
+      <div class="grev">
+        <div class="grev-hd"><div class="grev-t">Nimal Perera · Reviews</div><div class="grev-stats"><div class="grev-stat"><div class="grev-sv">4.9</div><div class="grev-sl">Rating</div></div><div class="grev-stat"><div class="grev-sv">142</div><div class="grev-sl">Tours</div></div><div class="grev-stat"><div class="grev-sv">98%</div><div class="grev-sl">Positive</div></div></div></div>
+        <div class="grev-body"><div class="rev-item"><div class="rev-top"><div class="rev-n">Sarah M. 🇬🇧</div><div class="rev-r">★★★★★</div></div><div class="rev-t">Nimal's knowledge of Sri Lankan heritage is extraordinary. He showed us places no tourist would ever find. Absolutely magical morning at Sigiriya.</div></div><div class="rev-item"><div class="rev-top"><div class="rev-n">Kenji T. 🇯🇵</div><div class="rev-r">★★★★★</div></div><div class="rev-t">Perfect communication, punctual, and the sunrise at the rock fortress was unforgettable. Highly recommended.</div></div></div>
+      </div>
+    </div></div>
+    <div class="sname">Guide Reviews</div><div class="ssub">Trust · ratings · testimonials</div>
+  </div>
+
+  <!-- GUIDE DASHBOARD -->
+  <div class="pw">
+    <div class="pf"><div class="notch"></div><div class="ps">
+      <div class="gdash">
+        <div class="gdash-hd"><div class="gdash-t">Guide Dashboard</div><div class="gdash-s">Welcome back, Nimal 👋</div></div>
+        <div class="gdash-session">
+          <div class="gdash-sess-t">ACTIVE SESSION</div>
+          <div class="gdash-sess-n">Heritage Tour · Group of 6</div>
+          <div class="gdash-sess-s">Started 8:32 AM · Sigiriya</div>
+          <div class="gdash-qr"><div class="gdash-qr-box">⬛</div><div class="gdash-qr-info"><div class="gdash-qr-t">Session QR Active</div><div class="gdash-qr-s">Show guests to join</div></div></div>
+        </div>
+        <div class="gdash-cards"><div class="gdash-card"><div class="gdash-cv">LKR 48,500</div><div class="gdash-cl">This month</div></div><div class="gdash-card"><div class="gdash-cv">4.9 ★</div><div class="gdash-cl">Avg rating</div></div><div class="gdash-card"><div class="gdash-cv">142</div><div class="gdash-cl">Total tours</div></div><div class="gdash-card"><div class="gdash-cv">6</div><div class="gdash-cl">Bookings pending</div></div></div>
+      </div>
+    </div></div>
+    <div class="sname">Guide Dashboard</div><div class="ssub">QR · sessions · earnings</div>
+  </div>
+
+  <!-- GUIDE ENROLLMENT -->
+  <div class="pw">
+    <div class="pf"><div class="notch"></div><div class="ps">
+      <div class="genroll">
+        <div class="ge-t">Become a Guide</div>
+        <div class="ge-s">Apply to join the Hidden Gems guide network</div>
+        <div class="ge-step"><div class="ge-step-n">01 · PERSONAL INFO</div><input class="ge-in" placeholder="Full name"/><input class="ge-in" placeholder="License number"/><select class="ge-in"><option>National Guide</option><option>Heritage Specialist</option><option>Adventure Guide</option></select></div>
+        <div class="ge-step"><div class="ge-step-n">02 · DOCUMENTS</div><div class="ge-upload">📎 Upload License Photo</div></div>
+        <button class="ge-btn">Submit Application</button>
+      </div>
+    </div></div>
+    <div class="sname">Guide Enrollment</div><div class="ssub">Application · verification</div>
+  </div>
+
+  <!-- GUIDE BROADCAST -->
+  <div class="pw">
+    <div class="pf"><div class="notch"></div><div class="ps">
+      <div class="gbcast">
+        <div class="gb-t">Broadcast Message</div>
+        <div class="gb-s">Send updates to your group</div>
+        <div class="gb-types"><div class="gb-type a">📢 General</div><div class="gb-type">⚠️ Alert</div><div class="gb-type">📍 Location</div></div>
+        <textarea class="gb-msg" placeholder="Type message to group…"></textarea>
+        <div class="gb-priority"><div class="gb-pri">Normal</div><div class="gb-pri a">Urgent</div><div class="gb-pri">Critical</div></div>
+        <div class="gb-history">
+          <div class="gb-msg-item"><div class="gb-mi-t">📍 We're at the Lion Gate</div><div class="gb-mi-s">8:45 AM · General</div></div>
+          <div class="gb-msg-item"><div class="gb-mi-t">⚠️ Stay on the marked path</div><div class="gb-mi-s">9:02 AM · Alert</div></div>
+        </div>
+        <button class="gb-btn">Send to Group</button>
+      </div>
+    </div></div>
+    <div class="sname">Guide Broadcast</div><div class="ssub">Group messaging · priority</div>
+  </div>
+
+</div>
+
+<!-- ── FLOW 6: PREMIUM & SCANNER ── -->
+<div class="cat-row"><div class="cat-label">Premium, Heritage & Scanner</div><div class="cat-line"></div><div class="cat-count">6 screens</div></div>
+<div class="phones">
+
+  <!-- PREMIUM HUB -->
+  <div class="pw">
+    <div class="pf"><div class="notch"></div><div class="ps">
+      <div class="prem">
+        <div class="prem-t">✨ Premium Plans</div>
+        <div class="prem-s">Unlock the full Oracle experience</div>
+        <div class="ptier ptier-r"><div class="pt-n" style="color:var(--rust)">🌿 Gem Seeker</div><div class="pt-p">LKR 990 / month</div><div class="pt-f">Unlimited gem discoveries</div><div class="pt-f">Offline maps & guides</div><div class="pt-f">AI trip planning</div></div>
+        <div class="ptier ptier-e"><div class="pt-n" style="color:var(--earth)">📜 Heritage Explorer</div><div class="pt-p">LKR 1,990 / month</div><div class="pt-f">Everything in Gem Seeker</div><div class="pt-f">AR heritage experiences</div><div class="pt-f">Priority guide booking</div></div>
+        <div class="ptier ptier-s"><div class="pt-n" style="color:var(--ink2)">🔭 Oracle Abyss</div><div class="pt-p">LKR 3,490 / month</div><div class="pt-f">Full AR ancestral portal</div><div class="pt-f">Private guide sessions</div></div>
+        <button class="prem-cta">Choose Plan</button>
+      </div>
+    </div></div>
+    <div class="sname">Premium Hub</div><div class="ssub">3-tier subscription</div>
+  </div>
+
+  <!-- SUBSCRIPTION -->
+  <div class="pw">
+    <div class="pf"><div class="notch"></div><div class="ps">
+      <div class="sub">
+        <div class="sub-t">Subscribe to Oracle</div>
+        <div class="sub-s">Choose billing period — save 30% annually</div>
+        <div class="sub-toggle"><div class="sub-tog a">Monthly</div><div class="sub-tog">Annual <span style="color:rgba(255,255,255,0.5);font-size:6px">SAVE 30%</span></div></div>
+        <div class="sub-card a"><div class="sub-cn">🌿 Gem Seeker</div><div class="sub-cp">LKR 990 / month</div><div class="sub-cf">Unlimited discoveries</div><div class="sub-cf">Offline maps</div><div class="sub-cf">AI planning</div><button class="sub-btn">Start Free Trial</button></div>
+        <div class="sub-card"><div class="sub-cn">📜 Heritage Explorer</div><div class="sub-cp">LKR 1,990 / month</div><div class="sub-cf">AR experiences</div><div class="sub-cf">Heritage stamps</div></div>
+      </div>
+    </div></div>
+    <div class="sname">Subscription Screen</div><div class="ssub">Monthly / annual billing</div>
+  </div>
+
+  <!-- HERITAGE PASSPORT -->
+  <div class="pw">
+    <div class="pf"><div class="notch"></div><div class="ps">
+      <div class="passport">
+        <div class="pass-hero"><div class="pass-ico">📜</div><div class="pass-t">Heritage Passport</div><div class="pass-s">7 stamps collected · Tier 2</div></div>
+        <div class="pass-body">
+          <div class="pass-stamps">
+            <div class="stamp earned"><div class="stamp-ico">🏔️</div><div class="stamp-n">Sigiriya</div><div class="stamp-badge">EARNED ✓</div></div>
+            <div class="stamp earned"><div class="stamp-ico">🏛️</div><div class="stamp-n">Dambulla</div><div class="stamp-badge">EARNED ✓</div></div>
+            <div class="stamp earned"><div class="stamp-ico">🌊</div><div class="stamp-n">Galle Fort</div><div class="stamp-badge">EARNED ✓</div></div>
+            <div class="stamp"><div class="stamp-ico" style="opacity:0.3">🕌</div><div class="stamp-n" style="color:var(--ink3)">Anuradhapura</div><div class="stamp-l">Locked</div></div>
+            <div class="stamp"><div class="stamp-ico" style="opacity:0.3">⛰️</div><div class="stamp-n" style="color:var(--ink3)">Adam's Peak</div><div class="stamp-l">Locked</div></div>
+            <div class="stamp"><div class="stamp-ico" style="opacity:0.3">🦁</div><div class="stamp-n" style="color:var(--ink3)">Yala Safari</div><div class="stamp-l">Locked</div></div>
+          </div>
+          <div class="pass-tier"><div style="font-size:18px">🏅</div><div class="pass-tier-bar-wrap"><div class="pass-tier-lbl"><span class="pass-tier-name">TIER 2 → TIER 3</span><span class="pass-tier-num">7/10</span></div><div class="pass-tier-bar"><div class="pass-tier-fill"></div></div></div></div>
+        </div>
+      </div>
+    </div></div>
+    <div class="sname">Heritage Passport</div><div class="ssub">Web3 stamps · tier progress</div>
+  </div>
+
+  <!-- SCANNER / ORACLE ORB -->
+  <div class="pw">
+    <div class="pf"><div class="notch"></div><div class="ps">
+      <div class="scanner-sc">
+        <div class="scanner-hd"><div class="scanner-t">Oracle Scanner</div></div>
+        <div class="scanner-orb">👁️</div>
+        <div class="scanner-prompt">Point at any Hidden Gems marker,<br>location QR, or place sign</div>
+        <div class="scanner-methods">
+          <div class="scanner-method"><span class="sm-ico">📷</span><div><div class="sm-t">Camera Scan</div><div class="sm-s">Point at QR or place marker</div></div></div>
+          <div class="scanner-method"><span class="sm-ico">📍</span><div><div class="sm-t">Location Detect</div><div class="sm-s">Auto-detect nearby gems</div></div></div>
+          <div class="scanner-method"><span class="sm-ico">🔑</span><div><div class="sm-t">Enter Code</div><div class="sm-s">Type heritage location code</div></div></div>
+        </div>
+      </div>
+    </div></div>
+    <div class="sname">Oracle Scanner</div><div class="ssub">Multi-mode gem detection</div>
+  </div>
+
+  <!-- SMART MATCH -->
+  <div class="pw">
+    <div class="pf"><div class="notch"></div><div class="ps">
+      <div class="smart">
+        <div class="sm2-t">Smart Match</div>
+        <div class="sm2-s">Tell Oracle your preferences for a perfect itinerary match</div>
+        <div class="sm2-prefs">
+          <div class="sm2-pref"><div class="sm2-pref-t">Travel Style</div><div class="sm2-opts"><span class="sm2-opt a">🌿 Nature</span><span class="sm2-opt a">🏛️ Heritage</span><span class="sm2-opt">🌊 Beach</span><span class="sm2-opt">🍃 Budget</span></div></div>
+          <div class="sm2-pref"><div class="sm2-pref-t">Budget Range</div><div class="sm2-opts"><span class="sm2-opt">Economy</span><span class="sm2-opt a">Mid-range</span><span class="sm2-opt">Luxury</span></div></div>
+          <div class="sm2-pref"><div class="sm2-pref-t">Group Type</div><div class="sm2-opts"><span class="sm2-opt a">Solo</span><span class="sm2-opt">Couple</span><span class="sm2-opt">Family</span></div></div>
+        </div>
+        <button class="sm2-btn">Find My Perfect Match ✨</button>
+      </div>
+    </div></div>
+    <div class="sname">Smart Match</div><div class="ssub">AI preference matching</div>
+  </div>
+
+  <!-- SAVOR LANKA -->
+  <div class="pw">
+    <div class="pf"><div class="notch"></div><div class="ps">
+      <div class="savor">
+        <div class="savor-hd"><div class="savor-t">Savor Sri Lanka 🍛</div></div>
+        <div class="savor-cats"><div class="savor-cat a">All</div><div class="savor-cat">🍛 Rice & Curry</div><div class="savor-cat">🥘 Seafood</div><div class="savor-cat">🍵 Tea</div><div class="savor-cat">🍰 Sweets</div></div>
+        <div class="savor-list">
+          <div class="savor-item"><div class="savor-img">🍛</div><div class="savor-info"><div class="savor-n">Kottu Roti</div><div class="savor-l">📍 Kandy Street Food</div><div class="savor-r">★★★★★ Unmissable</div></div></div>
+          <div class="savor-item"><div class="savor-img">🦞</div><div class="savor-info"><div class="savor-n">Jaffna Crab Curry</div><div class="savor-l">📍 Jaffna Authentic</div><div class="savor-r">★★★★★ Heritage dish</div></div></div>
+          <div class="savor-item"><div class="savor-img">🍵</div><div class="savor-info"><div class="savor-n">Ceylon High Tea</div><div class="savor-l">📍 Nuwara Eliya</div><div class="savor-r">★★★★☆ Colonial era</div></div></div>
+        </div>
+        <div class="bnav"><div class="bni"><span class="bnico">🏠</span><span class="bnlbl">Home</span></div><div class="bni"><span class="bnico">🔍</span><span class="bnlbl">Discover</span></div><div class="fab">🗺️</div><div class="bni"><span class="bnico">📅</span><span class="bnlbl">Events</span></div><div class="bni"><span class="bnico">👤</span><span class="bnlbl">Profile</span></div></div>
+      </div>
+    </div></div>
+    <div class="sname">Savor Lanka</div><div class="ssub">Food discovery · local cuisine</div>
+  </div>
+
+</div>
+
+<!-- ── FLOW 7: TOOLS & SAFETY ── -->
+<div class="cat-row"><div class="cat-label">Travel Tools, Safety & Budget</div><div class="cat-line"></div><div class="cat-count">8 screens</div></div>
+<div class="phones">
+
+  <!-- TOURIST COMPANION HUB -->
+  <div class="pw">
+    <div class="pf"><div class="notch"></div><div class="ps">
+      <div class="hub">
+        <div class="hub-t">Companion Hub</div>
+        <div class="hub-s">All your travel tools in one place</div>
+        <div class="hub-grid">
+          <div class="hub-card"><div class="hub-ico">📋</div><div class="hub-n">Trip Planner</div><div class="hub-s2">AI itinerary</div></div>
+          <div class="hub-card"><div class="hub-ico">🗺️</div><div class="hub-n">Offline Maps</div><div class="hub-s2">No data needed</div></div>
+          <div class="hub-card"><div class="hub-ico">💰</div><div class="hub-n">Budget</div><div class="hub-s2">Track expenses</div></div>
+          <div class="hub-card"><div class="hub-ico">🌐</div><div class="hub-n">Translator</div><div class="hub-s2">Sinhala · Tamil</div></div>
+          <div class="hub-card"><div class="hub-ico">🎧</div><div class="hub-n">Audio Guide</div><div class="hub-s2">Heritage narration</div></div>
+          <div class="hub-card hub-sos"><div class="hub-ico">🆘</div><div class="hub-n">SOS & Safety</div><div class="hub-s2">Emergency kit</div></div>
+        </div>
+      </div>
+    </div></div>
+    <div class="sname">Tourist Companion Hub</div><div class="ssub">All tools in one hub</div>
+  </div>
+
+  <!-- BUDGET TRACKER -->
+  <div class="pw">
+    <div class="pf"><div class="notch"></div><div class="ps">
+      <div class="budget">
+        <div class="budget-hd"><div class="budget-t">Trip Budget</div><div class="budget-amt">LKR 32,450</div><div class="budget-s">of LKR 45,000 budget</div><div class="budget-bar"><div class="budget-fill"></div></div></div>
+        <div class="budget-body">
+          <div class="budget-cats"><div class="budget-cat"><div class="budget-cat-ico">🚗</div><div class="budget-cat-n">Transport</div><div class="budget-cat-a">LKR 12,400</div></div><div class="budget-cat"><div class="budget-cat-ico">🏨</div><div class="budget-cat-n">Lodging</div><div class="budget-cat-a">LKR 9,000</div></div><div class="budget-cat"><div class="budget-cat-ico">🍛</div><div class="budget-cat-n">Food</div><div class="budget-cat-a">LKR 6,050</div></div><div class="budget-cat"><div class="budget-cat-ico">🎫</div><div class="budget-cat-n">Tickets</div><div class="budget-cat-a">LKR 5,000</div></div></div>
+          <div class="budget-txns"><div class="budget-txn"><div class="budget-txn-n">🚂 Train Colombo–Ella</div><div class="budget-txn-a">LKR 3,200</div></div><div class="budget-txn"><div class="budget-txn-n">🏨 Ella Eco Hut x2 nights</div><div class="budget-txn-a">LKR 9,000</div></div><div class="budget-txn"><div class="budget-txn-n">🎫 Sigiriya Entry</div><div class="budget-txn-a">LKR 5,000</div></div></div>
+        </div>
+      </div>
+    </div></div>
+    <div class="sname">Budget Tracker</div><div class="ssub">Categories · transactions</div>
+  </div>
+
+  <!-- BUDGET CONCIERGE -->
+  <div class="pw">
+    <div class="pf"><div class="notch"></div><div class="ps">
+      <div class="concierge">
+        <div class="con-t">Budget Concierge</div>
+        <div class="con-s">Chat with Oracle about your travel budget</div>
+        <div class="con-chat">
+          <div class="con-msg ai">Hello! I'm your budget concierge. Tell me your total budget and destination and I'll optimise your entire trip.</div>
+          <div class="con-msg me">I have LKR 45,000 for 5 days in Ella</div>
+          <div class="con-msg ai">Perfect! For 5 days in Ella with LKR 45,000 I recommend: 2 budget guesthouses (LKR 9,000), 3 meals/day local (LKR 8,000), train transport (LKR 4,500). That leaves LKR 23,500 for activities!</div>
+        </div>
+        <div class="con-input"><div class="con-in-txt">Ask Oracle about your budget…</div><div class="con-send">↑</div></div>
+      </div>
+    </div></div>
+    <div class="sname">Budget Concierge</div><div class="ssub">AI budget chat assistant</div>
+  </div>
+
+  <!-- EMERGENCY KIT -->
+  <div class="pw">
+    <div class="pf"><div class="notch"></div><div class="ps">
+      <div class="emerg">
+        <div class="emerg-hd"><div class="emerg-t">🆘 Emergency Kit</div><div class="emerg-s">Quick access to emergency resources</div></div>
+        <div class="emerg-body">
+          <div class="emerg-item"><div class="emerg-ico">🚑</div><div style="flex:1;"><div class="emerg-n">Suwa Seriya Ambulance</div><div class="emerg-s2">National emergency: 1990</div></div><div class="emerg-act">Call</div></div>
+          <div class="emerg-item"><div class="emerg-ico">👮</div><div style="flex:1;"><div class="emerg-n">Police Emergency</div><div class="emerg-s2">Emergency hotline: 119</div></div><div class="emerg-act">Call</div></div>
+          <div class="emerg-item"><div class="emerg-ico">🏥</div><div style="flex:1;"><div class="emerg-n">Nearest Hospital</div><div class="emerg-s2">Kandy General · 2.4km</div></div><div class="emerg-act">Navigate</div></div>
+          <div class="emerg-item"><div class="emerg-ico">🇱🇰</div><div style="flex:1;"><div class="emerg-n">Tourist Police</div><div class="emerg-s2">1912 · English support</div></div><div class="emerg-act">Call</div></div>
+        </div>
+        <button class="emerg-sos">🆘 ACTIVATE SOS BEACON</button>
+      </div>
+    </div></div>
+    <div class="sname">Emergency Kit</div><div class="ssub">SOS · hospitals · police</div>
+  </div>
+
+  <!-- INCIDENT CENTER -->
+  <div class="pw">
+    <div class="pf"><div class="notch"></div><div class="ps">
+      <div class="incident">
+        <div class="inc-hd"><div class="inc-t">Incident Center</div></div>
+        <div class="inc-list">
+          <div class="inc-item"><div class="inc-top"><div class="inc-n">Road Closure — A9 Highway</div><span class="inc-badge open">OPEN</span></div><div class="inc-s">Landslide reported near Kadugannawa. Alternate route via B-road recommended.</div><div class="inc-meta"><span class="inc-m">📍 Kandy District</span><span class="inc-m">2hrs ago</span></div></div>
+          <div class="inc-item"><div class="inc-top"><div class="inc-n">Wild Elephant Crossing</div><span class="inc-badge open">ACTIVE</span></div><div class="inc-s">Reported sighting near Kaudulla NP entrance. Approach with caution.</div><div class="inc-meta"><span class="inc-m">📍 Polonnaruwa</span><span class="inc-m">45min ago</span></div></div>
+          <div class="inc-item"><div class="inc-top"><div class="inc-n">Sigiriya Path Slippery</div><span class="inc-badge closed">RESOLVED</span></div><div class="inc-s">Morning rain cleared. Path conditions normal as of 11 AM.</div><div class="inc-meta"><span class="inc-m">📍 Matale</span><span class="inc-m">3hrs ago</span></div></div>
+        </div>
+        <button class="inc-report">+ Report an Incident</button>
+      </div>
+    </div></div>
+    <div class="sname">Incident Center</div><div class="ssub">Safety alerts · traveller reports</div>
+  </div>
+
+  <!-- INCIDENT DETAIL -->
+  <div class="pw">
+    <div class="pf"><div class="notch"></div><div class="ps">
+      <div class="incdet">
+        <div class="incdet-hd"><div class="incdet-t">Road Closure — A9 Highway</div></div>
+        <div class="incdet-body">
+          <div class="incdet-status"><div class="incdet-st">⚠️ ACTIVE INCIDENT</div><div class="incdet-desc">Landslide reported 2km north of Kadugannawa junction. Road expected to reopen by 6PM. Use Galagedara Road alternate route.</div></div>
+          <div class="incdet-sec"><div class="incdet-sec-t">Timeline</div><div class="incdet-upd">9:15 AM — Landslide reported by 3 travellers</div><div class="incdet-upd">9:30 AM — Road Department notified</div><div class="incdet-upd">10:45 AM — Alternate route confirmed open</div><div class="incdet-upd">Est. 6:00 PM — Full reopening</div></div>
+          <div style="background:var(--rtint);border:1px solid rgba(192,88,10,0.12);border-radius:10px;padding:9px 11px;"><div style="font-size:8px;font-weight:800;color:var(--rust);margin-bottom:3px">🪄 Oracle Alternate Route</div><div style="font-size:7px;color:var(--ink2)">Galagedara Road adds 20min but is fully clear. Oracle has updated your itinerary automatically.</div></div>
+        </div>
+      </div>
+    </div></div>
+    <div class="sname">Incident Detail</div><div class="ssub">Timeline · Oracle reroute</div>
+  </div>
+
+  <!-- FAMILY SHARE -->
+  <div class="pw">
+    <div class="pf"><div class="notch"></div><div class="ps">
+      <div class="family">
+        <div class="fam-t">Family Share</div>
+        <div class="fam-s">Share your trip with family at home</div>
+        <div class="fam-info"><div class="fam-info-t">🔗 Share your live journey</div><div class="fam-info-s">Family members can track your location and itinerary in real time. No app needed for them — just a link.</div></div>
+        <div class="fam-links">
+          <div class="fam-link"><div class="fam-link-ico">👩‍👧</div><div><div class="fam-link-n">Mum — Colombo</div><div class="fam-link-s">Shared Jul 12 · expires Jul 19</div></div><span class="fam-link-status active">ACTIVE</span></div>
+          <div class="fam-link"><div class="fam-link-ico">👨</div><div><div class="fam-link-n">Thaththa — Work</div><div class="fam-link-s">Shared Jul 14 · expires Jul 19</div></div><span class="fam-link-status active">ACTIVE</span></div>
+        </div>
+        <button class="fam-btn">+ Generate New Share Link</button>
+      </div>
+    </div></div>
+    <div class="sname">Family Share</div><div class="ssub">Live location sharing links</div>
+  </div>
+
+  <!-- REVIEW SUBMISSION -->
+  <div class="pw">
+    <div class="pf"><div class="notch"></div><div class="ps">
+      <div class="review">
+        <div class="rev-t">Leave a Review</div>
+        <div class="rev-s">How was your experience at this gem?</div>
+        <div class="rev-place"><div class="rev-place-ico">🏔️</div><div><div class="rev-place-n">Sigiriya Rock Fortress</div><div class="rev-place-l">Matale District</div></div></div>
+        <div class="rev-stars"><span class="rev-star">★</span><span class="rev-star">★</span><span class="rev-star">★</span><span class="rev-star">★</span><span class="rev-star e">★</span></div>
+        <div class="rev-lbl">Your Experience</div>
+        <textarea class="rev-textarea" placeholder="Tell other travellers what made this gem special…"></textarea>
+        <button class="rev-btn">Submit Review</button>
+      </div>
+    </div></div>
+    <div class="sname">Review Submission</div><div class="ssub">Star rating · written review</div>
+  </div>
+
+</div>
+
+<!-- ── FLOW 8: OPERATOR & SYSTEM ── -->
+<div class="cat-row"><div class="cat-label">Operator, Admin & System</div><div class="cat-line"></div><div class="cat-count">3 screens</div></div>
+<div class="phones">
+
+  <!-- OPERATOR DASHBOARD -->
+  <div class="pw">
+    <div class="pf"><div class="notch"></div><div class="ps">
+      <div class="opdash">
+        <div class="op-t">Operator Dashboard</div>
+        <div class="op-s">Manage your tourist operator account</div>
+        <div class="op-stats"><div class="op-stat"><div class="op-sv">284</div><div class="op-sl">Total Bookings</div></div><div class="op-stat"><div class="op-sv">LKR 2.1M</div><div class="op-sl">Revenue</div></div><div class="op-stat"><div class="op-sv">4.8 ★</div><div class="op-sl">Avg Rating</div></div><div class="op-stat"><div class="op-sv">18</div><div class="op-sl">Active Guides</div></div></div>
+        <div class="op-sections">
+          <div class="op-sec"><div class="op-sec-t">This Week</div><div class="op-item"><div class="op-item-n">New bookings</div><div class="op-item-v">12</div></div><div class="op-item"><div class="op-item-n">Revenue</div><div class="op-item-v">LKR 186,000</div></div><div class="op-item"><div class="op-item-n">Active sessions</div><div class="op-item-v">3</div></div></div>
+          <div class="op-sec"><div class="op-sec-t">Top Guides</div><div class="op-item"><div class="op-item-n">Nimal Perera</div><div class="op-item-v">★4.9</div></div><div class="op-item"><div class="op-item-n">Sanduni A.</div><div class="op-item-v">★4.8</div></div></div>
+        </div>
+      </div>
+    </div></div>
+    <div class="sname">Operator Dashboard</div><div class="ssub">Revenue · guides · analytics</div>
+  </div>
+
+  <!-- UPDATE SCREEN -->
+  <div class="pw">
+    <div class="pf"><div class="notch"></div><div class="ps">
+      <div class="update">
+        <div class="update-ico">⬆️</div>
+        <div class="update-t">New Update Available</div>
+        <div class="update-s">A newer version of Hidden Gems SL is available. Update now to access the latest Oracle features and security improvements.</div>
+        <div class="update-ver">Version 3.2.1 → 3.3.0</div>
+        <button class="update-btn">Update on Play Store</button>
+      </div>
+    </div></div>
+    <div class="sname">Update Screen</div><div class="ssub">Force update prompt</div>
+  </div>
+
+  <!-- AR UPGRADE DIALOG (as screen) -->
+  <div class="pw">
+    <div class="pf"><div class="notch"></div><div class="ps" style="display:flex;align-items:center;justify-content:center;background:rgba(26,14,8,0.7);">
+      <div style="background:var(--bg);border-radius:20px;margin:16px;padding:18px;border:1px solid var(--border);box-shadow:0 8px 32px rgba(0,0,0,0.2);">
+        <div style="text-align:center;margin-bottom:12px;"><div style="font-size:32px;margin-bottom:8px">🔭</div><div style="font-family:'Outfit',sans-serif;font-size:13px;font-weight:900;color:var(--ink);margin-bottom:4px">Unlock AR Experiences</div><div style="font-size:8px;color:var(--ink2);line-height:1.5">AR heritage content requires Heritage Explorer or Oracle Abyss plan. Step into 5th century Sri Lanka.</div></div>
+        <button style="background:var(--rust);color:#fff;border:none;padding:10px;border-radius:10px;font-family:'Outfit',sans-serif;font-size:10px;font-weight:800;width:100%;margin-bottom:6px">Upgrade to Heritage Explorer</button>
+        <button style="background:transparent;border:none;font-size:9px;color:var(--ink3);width:100%">Maybe later</button>
+      </div>
+    </div></div>
+    <div class="sname">AR Upgrade Dialog</div><div class="ssub">Premium upsell · AR gate</div>
+  </div>
+
+</div>
+
+</div><!-- /section -->
+
+<!-- FOOTER -->
+<div class="divider"></div>
+<div style="padding:48px 36px;text-align:center;background:#F7F5F2;">
+  <div style="font-family:'Outfit',sans-serif;font-size:11px;font-weight:800;color:var(--rust);letter-spacing:3px;text-transform:uppercase;margin-bottom:8px">HIDDEN GEMS SL · ALL SCREENS</div>
+  <div style="font-size:12px;color:var(--ink3)">46 Screens · Light & Airy Design · Flutter / Dart · 2026</div>
+  <div style="font-size:11px;color:rgba(26,21,18,0.18);margin-top:6px">Outfit · Inter · Warm Cream · Terracotta Rust · Heritage Earth</div>
+</div>
+
+</body>
+</html>
+

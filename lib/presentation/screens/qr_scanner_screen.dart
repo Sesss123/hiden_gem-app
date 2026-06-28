@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../../core/theme/oracle_ui_system.dart';
+
 import '../../data/datasources/user_preference_service.dart';
 import '../../data/datasources/auth_service.dart';
 import '../../data/models/tour_session.dart';
@@ -98,12 +98,17 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                OracleUI.neonText("TOUR VERIFICATION", style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold)),
+                Text("TOUR VERIFICATION", style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
                 const SizedBox(height: 24),
                 
                 // Guide Info Card
-                OracleUI.glassContainer(
+                Container(
                   padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: Colors.white24),
+                  ),
                   child: Row(
                     children: [
                       CircleAvatar(
@@ -221,15 +226,20 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
       builder: (context) => BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
         child: Center(
-          child: OracleUI.glassContainer(
+          child: Container(
             padding: const EdgeInsets.all(32),
+            decoration: BoxDecoration(
+              color: Colors.black.withValues(alpha: 0.8),
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(color: Colors.white24),
+            ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 const Icon(Icons.link_rounded, color: Colors.greenAccent, size: 64)
                     .animate().scale(duration: 600.ms, curve: Curves.elasticOut),
                 const SizedBox(height: 24),
-                OracleUI.neonText("REALITY SYNCED", style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.bold)),
+                Text("REALITY SYNCED", style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
                 const SizedBox(height: 16),
                 const Text("Global safety protocols and live tracking active.", textAlign: TextAlign.center, style: TextStyle(color: Colors.white70)),
                 const SizedBox(height: 32),
@@ -302,7 +312,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                 if (_isProcessing)
                   Padding(
                     padding: const EdgeInsets.only(top: 24),
-                    child: OracleUI.neonText("DECRYPTING TOKEN...", style: GoogleFonts.outfit(fontSize: 12, fontWeight: FontWeight.bold)),
+                    child: Text("DECRYPTING TOKEN...", style: GoogleFonts.outfit(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white)),
                   ),
               ],
             ),
@@ -321,14 +331,20 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
             left: 0,
             right: 0,
             child: Center(
-              child: OracleUI.glassContainer(
+              child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                child: OracleUI.neonText(
+                decoration: BoxDecoration(
+                  color: Colors.black.withValues(alpha: 0.5),
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(color: Colors.white24),
+                ),
+                child: Text(
                   "SCAN PROTECTED QR",
                   style: GoogleFonts.outfit(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
                     letterSpacing: 2,
+                    color: Colors.white,
                   ),
                 ),
               ),

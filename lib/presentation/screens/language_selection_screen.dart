@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import '../../core/theme/oracle_ui_system.dart';
+import '../../core/theme/app_theme.dart';
 import '../../core/localization/locale_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../l10n/app_localizations.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'terms_screen.dart';
+import 'login_screen.dart';
+import 'home_screen.dart';
+import '../../data/datasources/user_preference_service.dart';
 
 class LanguageSelectionScreen extends ConsumerWidget {
   const LanguageSelectionScreen({super.key});
@@ -15,102 +20,94 @@ class LanguageSelectionScreen extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      backgroundColor: Colors.black, // Dark foundation for the aura
-      body: OracleUI.auraBackground(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      body: SafeArea(
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
           child: Container(
             width: double.infinity,
-            constraints: BoxConstraints(
-              minHeight: MediaQuery.of(context).size.height,
-            ),
-            padding: const EdgeInsets.symmetric(horizontal: 32),
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const SizedBox(height: 60),
-                // Ethereal Logo
-                Hero(
-                  tag: 'app_logo',
-                  child: Container(
-                    height: 140,
-                    width: 140,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.15),
-                          blurRadius: 40,
-                          spreadRadius: 5,
-                        )
-                      ],
+                const SizedBox(height: 20),
+                
+                // Lang Orb
+                Container(
+                  width: 80,
+                  height: 80,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFFFDEBD8), Color(0xFFECC89A)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
                     ),
-                    child: OracleUI.glassContainer(
-                      borderRadius: BorderRadius.circular(70),
-                      borderColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
-                      child: Icon(
-                        Icons.translate_rounded,
-                        size: 64,
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-                    ),
+                    border: Border.all(color: AppPalette.rust.withValues(alpha: 0.2)),
                   ),
-                ).animate(onPlay: (c) => c.repeat()).shimmer(duration: 4.seconds, color: Colors.white10),
+                  child: const Icon(
+                    Icons.translate_rounded,
+                    size: 32,
+                    color: AppPalette.rust,
+                  ),
+                ).animate().scale(duration: 600.ms, curve: Curves.easeOutBack),
+                
+                const SizedBox(height: 24),
+                
+                // Title
+                Text(
+                  "Choose Your Path",
+                  style: GoogleFonts.outfit(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w900,
+                    color: AppTheme.textPrimary(context),
+                  ),
+                ).animate().fadeIn(duration: 800.ms).slideY(begin: 0.1),
+                
+                const SizedBox(height: 8),
+                
+                // Subtitle
+                Text(
+                  l10n.selectOracleLanguage,
+                  style: GoogleFonts.inter(
+                    color: AppTheme.textSecondary(context),
+                    fontSize: 12,
+                  ),
+                  textAlign: TextAlign.center,
+                ).animate().fadeIn(duration: 800.ms, delay: 200.ms),
                 
                 const SizedBox(height: 48),
                 
-                // Title with Kinetic Glow
-                OracleUI.neonText(
-                  "TRIPME.AI",
-                  style: GoogleFonts.outfit(
-                    fontSize: 44,
-                    fontWeight: FontWeight.w900,
-                    color: Colors.white,
-                    letterSpacing: -1,
-                  ),
-                ).animate().fadeIn(duration: 800.ms).slideY(begin: 0.2, curve: Curves.easeOutBack),
-                
-                const SizedBox(height: 12),
-                
-                // Subtitle with Oracle Insight styling
-                Text(
-                  l10n.selectOracleLanguage.toUpperCase(),
-                  style: GoogleFonts.inter(
-                    color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5),
-                    fontSize: 10,
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: 4,
-                  ),
-                  textAlign: TextAlign.center,
-                ).animate().fadeIn(duration: 800.ms, delay: 300.ms),
-                
-                const SizedBox(height: 60),
-                
-                // Language Matrix
-                _buildLanguageOption(
-                  ref: ref,
-                  label: "ENGLISH",
-                  subLabel: "Global Oracle Standard",
-                  locale: const Locale('en'),
-                  delay: 500.ms,
-                ),
-                const SizedBox(height: 16),
-                
-                _buildLanguageOption(
-                  ref: ref,
-                  label: "සිංහල",
-                  subLabel: "දේශීය අත්දැකීම",
-                  locale: const Locale('si'),
-                  delay: 700.ms,
-                ),
-                const SizedBox(height: 16),
-                
-                _buildLanguageOption(
-                  ref: ref,
-                  label: "தமிழ்",
-                  subLabel: "உள்ளூர் அனுபவம்",
-                  locale: const Locale('ta'),
-                  delay: 900.ms,
+                // Language List (Converted from Grid to List for mobile friendliness)
+                Column(
+                  children: [
+                    _buildLanguageOption(
+                      context: context,
+                      ref: ref,
+                      label: "ENGLISH",
+                      subLabel: "Global Standard",
+                      locale: const Locale('en'),
+                      delay: 300.ms,
+                    ),
+                    const SizedBox(height: 12),
+                    _buildLanguageOption(
+                      context: context,
+                      ref: ref,
+                      label: "සිංහල",
+                      subLabel: "දේශීය අත්දැකීම",
+                      locale: const Locale('si'),
+                      delay: 400.ms,
+                    ),
+                    const SizedBox(height: 12),
+                    _buildLanguageOption(
+                      context: context,
+                      ref: ref,
+                      label: "தமிழ்",
+                      subLabel: "உள்ளூர் அனுபவம்",
+                      locale: const Locale('ta'),
+                      delay: 500.ms,
+                    ),
+                  ],
                 ),
                 
                 const SizedBox(height: 40),
@@ -118,17 +115,20 @@ class LanguageSelectionScreen extends ConsumerWidget {
                 TextButton(
                   onPressed: () async {
                     await ref.read(localeNotifierProvider.notifier).setLocale(const Locale('en'));
+                    if (context.mounted) {
+                      _navigateNext(context);
+                    }
                   },
                   child: Text(
                     l10n.skipForNow.toUpperCase(),
                     style: GoogleFonts.inter(
-                      color: Colors.white24,
-                      fontWeight: FontWeight.w900,
+                      color: AppTheme.textSecondary(context).withValues(alpha: 0.5),
+                      fontWeight: FontWeight.w800,
                       fontSize: 10,
                       letterSpacing: 2,
                     ),
                   ),
-                ).animate().fadeIn(delay: 1200.ms),
+                ).animate().fadeIn(delay: 800.ms),
               ],
             ),
           ),
@@ -137,67 +137,82 @@ class LanguageSelectionScreen extends ConsumerWidget {
     );
   }
 
+  void _navigateNext(BuildContext context) {
+    final profile = UserPreferenceService.getProfile();
+    Widget nextScreen;
+    if (!profile.hasAgreedToTerms) {
+      nextScreen = const TermsScreen();
+    } else if (FirebaseAuth.instance.currentUser != null) {
+      nextScreen = const HomeScreen();
+    } else {
+      nextScreen = const LoginScreen();
+    }
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (_) => nextScreen),
+    );
+  }
+
   Widget _buildLanguageOption({
+    required BuildContext context,
     required WidgetRef ref,
     required String label,
     required String subLabel,
     required Locale locale,
     required Duration delay,
   }) {
-    return OracleUI.premiumGlassCard(
-      padding: EdgeInsets.zero,
-      margin: EdgeInsets.zero,
-      radius: BorderRadius.circular(20),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: () async {
-            HapticFeedback.mediumImpact();
-            await ref.read(localeNotifierProvider.notifier).setLocale(locale);
-          },
-          borderRadius: BorderRadius.circular(20),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      OracleUI.neonText(
-                        label,
-                        style: GoogleFonts.inter(
-                          fontWeight: FontWeight.w900,
-                          fontSize: 16,
-                          color: Colors.white,
-                          letterSpacing: 1.5,
-                        ),
-                        glowColor: Colors.white10,
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        subLabel,
-                        style: GoogleFonts.inter(
-                          color: Colors.white38,
-                          fontSize: 10,
-                          fontWeight: FontWeight.w600,
-                          letterSpacing: 0.5,
-                        ),
-                      ),
-                    ],
+    return InkWell(
+      onTap: () async {
+        HapticFeedback.mediumImpact();
+        await ref.read(localeNotifierProvider.notifier).setLocale(locale);
+        if (context.mounted) {
+          _navigateNext(context);
+        }
+      },
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: AppTheme.secondaryBorder(context)),
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    label,
+                    style: GoogleFonts.inter(
+                      fontWeight: FontWeight.w800,
+                      fontSize: 16,
+                      color: AppTheme.textPrimary(context),
+                      letterSpacing: 0.5,
+                    ),
                   ),
-                ),
-                Icon(
-                  Icons.arrow_forward_ios_rounded,
-                  color: Colors.white24,
-                  size: 14,
-                ),
-              ],
+                  const SizedBox(height: 2),
+                  Text(
+                    subLabel,
+                    style: GoogleFonts.inter(
+                      color: AppTheme.textSecondary(context),
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
+            Icon(
+              Icons.arrow_forward_ios_rounded,
+              color: AppTheme.textSecondary(context).withValues(alpha: 0.3),
+              size: 16,
+            ),
+          ],
         ),
       ),
-    ).animate().fadeIn(delay: delay).slideX(begin: -0.1, curve: Curves.easeOut);
+    ).animate().fadeIn(delay: delay).slideX(begin: -0.05, curve: Curves.easeOut);
   }
 }
 

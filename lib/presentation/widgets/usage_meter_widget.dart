@@ -119,7 +119,7 @@ class _UsageMeterWidgetState extends State<UsageMeterWidget> {
                           ? '${(profile.premiumPlan ?? "Premium").toUpperCase()} PLAN ACTIVE'
                           : 'FREE EXPLORER TIER',
                       style: GoogleFonts.inter(
-                        color: Colors.white70,
+                        color: AppTheme.textSecondary(context),
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
                       ),
@@ -235,12 +235,12 @@ class _UsageMeterWidgetState extends State<UsageMeterWidget> {
           children: [
             Text(
               title,
-              style: GoogleFonts.inter(color: Colors.white70, fontSize: 12),
+              style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 12),
             ),
             Text(
               isUnlimited ? 'Unlimited' : '$used / $limit used',
               style: GoogleFonts.inter(
-                color: isHigh ? Colors.redAccent : Colors.white38,
+                color: isHigh ? Colors.redAccent : AppTheme.textSecondary(context).withValues(alpha: 0.5),
                 fontSize: 11,
                 fontWeight: FontWeight.bold,
               ),
@@ -253,7 +253,7 @@ class _UsageMeterWidgetState extends State<UsageMeterWidget> {
           child: LinearProgressIndicator(
             value: isUnlimited ? 1.0 : percent,
             minHeight: 6,
-            backgroundColor: Colors.white10,
+            backgroundColor: Theme.of(context).brightness == Brightness.dark ? Colors.white10 : Colors.black12,
             valueColor: AlwaysStoppedAnimation<Color>(color),
           ),
         ),

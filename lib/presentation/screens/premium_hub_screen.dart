@@ -3,7 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import '../../core/theme/oracle_ui_system.dart';
+import '../../core/theme/app_theme.dart';
 import '../../data/datasources/premium_service.dart';
 import '../../data/datasources/user_preference_service.dart';
 
@@ -47,42 +47,44 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      body: OracleUI.auraBackground(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              SizedBox(height: 100),
-              _buildModernHeader(isPremium),
-              SizedBox(height: 40),
-              _buildBenefitList(),
-              SizedBox(height: 60),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 24),
-                child: _buildPricingCard(isPremium),
-              ),
-              SizedBox(height: 100),
-            ],
-          ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            SizedBox(height: 100),
+            _buildModernHeader(isPremium),
+            SizedBox(height: 40),
+            _buildBenefitList(),
+            SizedBox(height: 60),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 24),
+              child: _buildPricingCard(isPremium),
+            ),
+            SizedBox(height: 100),
+          ],
         ),
       ),
     );
   }
 
   Widget _buildModernHeader(bool isPremium) {
-    const goldColor = Color(0xFFFFD700);
+    const goldColor = AppPalette.rust;
     return Column(
       children: [
-        OracleUI.glassContainer(
+        Container(
           width: 140, height: 140,
-          borderRadius: BorderRadius.circular(70),
-          borderColor: goldColor.withValues(alpha: 0.3),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(70),
+            border: Border.all(color: goldColor.withValues(alpha: 0.3)),
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4)),
+            ],
+          ),
           child: Container(
             margin: EdgeInsets.all(8),
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              gradient: RadialGradient(
-                colors: [goldColor.withValues(alpha: 0.2), Colors.transparent],
-              ),
+              color: goldColor.withValues(alpha: 0.1),
             ),
             child: Icon(Icons.stars_rounded, color: goldColor, size: 64),
           ),
@@ -96,7 +98,7 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
           children: [
             if (isPremium) Icon(Icons.workspace_premium_rounded, color: goldColor, size: 28),
             if (isPremium) SizedBox(width: 12),
-            OracleUI.neonText(
+            Text(
               "UNLEASH THE ORACLE",
               style: GoogleFonts.outfit(
                 fontSize: 26,
@@ -104,7 +106,6 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
                 letterSpacing: 2,
                 color: Theme.of(context).colorScheme.onSurface,
               ),
-              glowColor: goldColor.withValues(alpha: 0.2),
             ),
           ],
         ),
@@ -152,20 +153,29 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
   }
 
   Widget _benefitRow(IconData icon, String title, String desc) {
-    const goldColor = Color(0xFFFFD700);
+    const goldColor = AppPalette.rust;
     return Padding(
       padding: EdgeInsets.only(bottom: 24),
-      child: OracleUI.glassContainer(
+      child: Container(
         padding: EdgeInsets.all(20),
-        borderRadius: BorderRadius.circular(24),
-        borderColor: goldColor.withValues(alpha: 0.05),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: AppTheme.secondaryBorder(context)),
+          boxShadow: [
+            BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4)),
+          ],
+        ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            OracleUI.glassContainer(
+            Container(
               padding: EdgeInsets.all(12),
-              borderRadius: BorderRadius.circular(16),
-              borderColor: goldColor.withValues(alpha: 0.2),
+              decoration: BoxDecoration(
+                color: goldColor.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: goldColor.withValues(alpha: 0.2)),
+              ),
               child: Icon(icon, color: goldColor, size: 24),
             ),
             SizedBox(width: 20),
@@ -202,22 +212,28 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
 
   Widget _buildPricingCard(bool isPremium) {
     final profile = ref.watch(premiumNotifierProvider.select((_) => UserPreferenceService.getProfile()));
-    const goldColor = Color(0xFFFFD700);
+    const goldColor = AppPalette.rust;
 
     return Column(
       children: [
         if (isPremium) ...[
-          OracleUI.glassContainer(
+          Container(
             padding: EdgeInsets.all(40),
-            borderRadius: BorderRadius.circular(32),
-            borderColor: goldColor.withValues(alpha: 0.2),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(32),
+              border: Border.all(color: AppTheme.secondaryBorder(context)),
+              boxShadow: [
+                BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4)),
+              ],
+            ),
             child: Column(
               children: [
                 Icon(Icons.verified_user_rounded, color: goldColor, size: 64)
                     .animate(onPlay: (c) => c.repeat())
                     .shimmer(duration: 4.seconds),
                 SizedBox(height: 24),
-                OracleUI.neonText(
+                Text(
                   "${(profile.premiumPlan ?? 'PREMIUM').toUpperCase()} ACTIVE",
                   style: GoogleFonts.outfit(
                     fontSize: 20,
@@ -225,7 +241,6 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
                     color: Theme.of(context).colorScheme.onSurface,
                     letterSpacing: 2,
                   ),
-                  glowColor: goldColor.withValues(alpha: 0.2),
                 ),
                 if (profile.premiumExpiresAt != null)
                   Padding(
@@ -236,13 +251,16 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
                     ),
                   ),
                 SizedBox(height: 32),
-                OracleUI.glassContainer(
+                Container(
                   padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  borderRadius: BorderRadius.circular(12),
-                  borderColor: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.05),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.05)),
+                  ),
                   child: Text(
                     "ARCHIVED VIA ${profile.premiumSource?.replaceAll('_', ' ').toUpperCase() ?? 'STORE'}",
-                    style: GoogleFonts.inter(fontSize: 9, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.2), fontWeight: FontWeight.w900, letterSpacing: 1),
+                    style: GoogleFonts.inter(fontSize: 9, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5), fontWeight: FontWeight.w900, letterSpacing: 1),
                   ),
                 ),
               ],
@@ -283,15 +301,14 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
           SizedBox(height: 40),
           TextButton(
             onPressed: () => ref.read(premiumNotifierProvider.notifier).restorePurchases(),
-            child: OracleUI.neonText(
+            child: Text(
               "RESTORE PREVIOUS ARCHIVES",
               style: GoogleFonts.inter(
                 fontSize: 12,
-                color: goldColor.withValues(alpha: 0.5),
+                color: goldColor,
                 fontWeight: FontWeight.w900,
                 letterSpacing: 1,
               ),
-              glowColor: goldColor.withValues(alpha: 0.1),
             ),
           ),
           SizedBox(height: 12),
@@ -340,9 +357,15 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
     bool isRecommended = false,
     bool isLocked = false,
   }) {
-    return OracleUI.glassContainer(
-      borderRadius: BorderRadius.circular(32),
-      borderColor: color.withValues(alpha: isRecommended ? 0.4 : 0.1),
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(32),
+        border: Border.all(color: isRecommended ? color.withValues(alpha: 0.4) : AppTheme.secondaryBorder(context)),
+        boxShadow: [
+          BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4)),
+        ],
+      ),
       padding: EdgeInsets.all(28),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -364,10 +387,13 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
               ),
               if (isRecommended) ...[
                 SizedBox(width: 8),
-                OracleUI.glassContainer(
+                Container(
                   padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  radius: BorderRadius.circular(10),
-                  borderColor: color.withValues(alpha: 0.4),
+                  decoration: BoxDecoration(
+                    color: color.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: color.withValues(alpha: 0.4)),
+                  ),
                   child: Text(
                     "MOST POPULAR",
                     style: GoogleFonts.inter(fontSize: 8, fontWeight: FontWeight.w900, color: color, letterSpacing: 1),
@@ -385,7 +411,7 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              OracleUI.neonText(
+              Text(
                 priceStr,
                 style: GoogleFonts.outfit(
                   fontSize: 34,
@@ -393,7 +419,6 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
                   color: Theme.of(context).colorScheme.onSurface,
                   letterSpacing: -1,
                 ),
-                glowColor: color.withValues(alpha: 0.1),
               ),
               SizedBox(width: 8),
               Padding(
@@ -428,10 +453,9 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                 elevation: 0,
               ),
-              child: OracleUI.neonText(
+              child: Text(
                 isLocked ? "COMING SOON" : "UPGRADE NOW",
                 style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 12, letterSpacing: 1),
-                glowColor: isLocked ? Colors.transparent : Colors.black12,
               ),
             ),
           ),

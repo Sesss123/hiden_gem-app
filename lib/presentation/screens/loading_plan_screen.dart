@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../core/theme/oracle_ui_system.dart';
+import '../../core/theme/app_theme.dart';
 import '../../data/datasources/ai_trip_service.dart';
 import '../../data/datasources/trip_cache_service.dart';
 import '../../data/models/trip_plan_model.dart';
-import '../widgets/oracle_orb.dart';
+
 import 'results_screen.dart';
 
 class LoadingPlanScreen extends StatefulWidget {
@@ -213,10 +213,10 @@ class _LoadingPlanScreenState extends State<LoadingPlanScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      body: OracleUI.auraBackground(
+      body: SafeArea(
         child: Center(
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 40),
+            padding: const EdgeInsets.symmetric(horizontal: 40),
             child: _hasError ? _buildErrorState() : _buildManifestingState(),
           ),
         ),
@@ -228,27 +228,51 @@ class _LoadingPlanScreenState extends State<LoadingPlanScreen>
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const OracleOrb(),
-        SizedBox(height: 60),
-        OracleUI.neonText(
-          _isOfflineMode ? "OFFLINE RECOVERY" : "MANIFESTING",
-          style: GoogleFonts.inter(
-            fontSize: 12,
-            fontWeight: FontWeight.w900,
-            letterSpacing: 8,
-            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.8),
+        // Loading Orb (spinning dashed ring)
+        Container(
+          width: 120,
+          height: 120,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            gradient: LinearGradient(
+              colors: [
+                AppPalette.rust.withValues(alpha: 0.2),
+                AppPalette.rust.withValues(alpha: 0.05),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
           ),
-        ).animate(onPlay: (c) => c.repeat()).shimmer(duration: 2.seconds),
-        SizedBox(height: 24),
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              // Use a spinning widget for the dashed ring effect
+              const Icon(Icons.sync_rounded, size: 40, color: AppPalette.rust)
+                  .animate(onPlay: (c) => c.repeat())
+                  .rotate(duration: 4.seconds),
+            ],
+          ),
+        ),
+        const SizedBox(height: 32),
+        Text(
+          _isOfflineMode ? "OFFLINE RECOVERY" : "MANIFESTING",
+          style: GoogleFonts.outfit(
+            fontSize: 24,
+            fontWeight: FontWeight.w900,
+            color: AppTheme.textPrimary(context),
+            letterSpacing: 2,
+          ),
+        ).animate(onPlay: (c) => c.repeat()).shimmer(duration: 2.seconds, color: AppPalette.rust),
+        const SizedBox(height: 8),
         SizedBox(
           height: 80,
           child: Text(
             _isOfflineMode ? "Synthesizing Local Memories…" : _statusText,
             textAlign: TextAlign.center,
-            style: GoogleFonts.outfit(
-              fontSize: 18,
-              color: Theme.of(context).colorScheme.onSurface,
-              height: 1.4,
+            style: GoogleFonts.inter(
+              fontSize: 12,
+              fontWeight: FontWeight.w700,
+              color: AppPalette.rust,
             ),
           ).animate(key: ValueKey(_statusText)).fadeIn(duration: 600.ms).slideY(begin: 0.2),
         ),
@@ -257,27 +281,35 @@ class _LoadingPlanScreenState extends State<LoadingPlanScreen>
   }
 
   Widget _buildErrorState() {
-    return OracleUI.glassContainer(
-      padding: EdgeInsets.all(32),
-      borderRadius: BorderRadius.circular(32),
-      borderColor: Colors.redAccent.withValues(alpha: 0.3),
+    return Container(
+      padding: const EdgeInsets.all(32),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: Colors.redAccent.withValues(alpha: 0.5)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.redAccent.withValues(alpha: 0.1),
+            blurRadius: 20,
+          ),
+        ],
+      ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.auto_fix_off, size: 60, color: Colors.redAccent),
-          SizedBox(height: 24),
-          OracleUI.neonText(
+          const Icon(Icons.auto_fix_off, size: 60, color: Colors.redAccent),
+          const SizedBox(height: 24),
+          Text(
             "THE CONNECTION FADED",
-            style: GoogleFonts.outfit(fontSize: 18, color: Colors.white),
-            glowColor: Colors.redAccent,
+            style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.textPrimary(context)),
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 12),
           Text(
             _errorMessage,
             textAlign: TextAlign.center,
-            style: GoogleFonts.inter(color: Colors.white70, fontSize: 14),
+            style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 13, height: 1.5),
           ),
-          SizedBox(height: 32),
+          const SizedBox(height: 32),
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
@@ -289,17 +321,18 @@ class _LoadingPlanScreenState extends State<LoadingPlanScreen>
                 _generate();
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white.withValues(alpha: 0.1),
+                backgroundColor: AppPalette.rust,
                 foregroundColor: Colors.white,
-                padding: EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               ),
-              child: Text("TRY AGAIN"),
+              child: Text("TRY AGAIN", style: GoogleFonts.outfit(fontWeight: FontWeight.bold)),
             ),
           ),
+          const SizedBox(height: 8),
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text("REFINE REQUEST", style: TextStyle(color: Colors.white.withValues(alpha: 0.4))),
+            child: Text("REFINE REQUEST", style: TextStyle(color: AppTheme.textSecondary(context), fontWeight: FontWeight.w600)),
           ),
         ],
       ),

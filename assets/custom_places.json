@@ -1,0 +1,13 @@
+[
+  {
+    "id": "place_001",
+    "title": "Example Place",
+    "description": "This is an example description. Replace this with your actual LLM training data or place details.",
+    "location": "Kandy",
+    "category": "Culture",
+    "latitude": 7.2906,
+    "longitude": 80.6337,
+    "image_url": "https://example.com/image.jpg",
+    "tags": ["temple", "history"]
+  }
+]

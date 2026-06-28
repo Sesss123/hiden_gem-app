@@ -23,6 +23,11 @@ class AppCheckConfig {
   /// In release mode: uses Play Integrity / DeviceCheck for genuine device verification.
   static Future<void> initialize() async {
     try {
+      if (kDebugMode) {
+        debugPrint('[AppCheck] ⚠️ DEBUG: Skipping App Check in debug mode to prevent 403 errors (no debug token setup required).');
+        return;
+      }
+
       if (kIsWeb) {
         // Web: reCAPTCHA v3
         // Note: Site key matched with web/index.html
@@ -30,15 +35,6 @@ class AppCheckConfig {
           providerWeb: ReCaptchaV3Provider('6Lfm-GsqAAAAAHA_-Wj_P_X_X_X_X_X_X_X_X'),
         );
         debugPrint('[AppCheck] ✅ Web: reCAPTCHA v3 activated.');
-      } else if (kDebugMode) {
-        // Debug Mode: Use debug provider — no real attestation needed
-        // This allows testing without Play Integrity setup.
-        // The debug token will be printed to the console.
-        await FirebaseAppCheck.instance.activate(
-          providerAndroid: const AndroidDebugProvider(),
-          providerApple: const AppleDebugProvider(),
-        );
-        debugPrint('[AppCheck] ⚠️ DEBUG: Using debug providers (not for production).');
       } else {
         // Release Mode: Real attestation
         await FirebaseAppCheck.instance.activate(

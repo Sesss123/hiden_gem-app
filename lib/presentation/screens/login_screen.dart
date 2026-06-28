@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../core/theme/app_theme.dart';
 import '../../core/theme/oracle_ui_system.dart';
 import '../widgets/golden_tracer_indicator.dart';
 import '../../data/datasources/auth_service.dart';
@@ -238,7 +239,7 @@ class _LoginScreenState extends State<LoginScreen> {
     final primaryColor = Theme.of(context).colorScheme.primary;
 
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: OracleUI.auraBackground(
         child: SingleChildScrollView(
           child: Container(
@@ -285,14 +286,11 @@ class _LoginScreenState extends State<LoginScreen> {
                   text: TextSpan(
                     style: GoogleFonts.outfit(fontSize: 42, fontWeight: FontWeight.w900, letterSpacing: -1),
                     children: [
-                      const TextSpan(text: "TripMe", style: TextStyle(color: Colors.white)),
+                      TextSpan(text: "TripMe", style: TextStyle(color: AppTheme.textPrimary(context))),
                       TextSpan(
                         text: ".ai", 
                         style: TextStyle(
                           color: primaryColor,
-                          shadows: [
-                            Shadow(color: primaryColor.withValues(alpha: 0.6), blurRadius: 20)
-                          ]
                         )
                       ),
                     ],
@@ -373,9 +371,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                         fontWeight: FontWeight.w900, 
                                         letterSpacing: 1.5, 
                                         fontSize: 13, 
-                                        color: Colors.black,
+                                        color: Colors.white,
                                       ),
-                                      glowColor: Colors.white38,
+                                      glowColor: Colors.transparent,
                                     ),
                             ),
                           ),
@@ -386,14 +384,14 @@ class _LoginScreenState extends State<LoginScreen> {
                               HapticFeedback.lightImpact();
                               setState(() => _isLoginMode = !_isLoginMode);
                             },
-                            style: TextButton.styleFrom(foregroundColor: Colors.white38),
+                            style: TextButton.styleFrom(foregroundColor: AppTheme.textSecondary(context)),
                             child: Text(
                               _isLoginMode ? "New explore? Generate identity" : "Existing explorer? Validate access",
                               style: GoogleFonts.inter(
                                 fontSize: 12, 
                                 fontWeight: FontWeight.w600,
                                 decoration: TextDecoration.underline,
-                                decorationColor: Colors.white10,
+                                decorationColor: AppTheme.textSecondary(context).withValues(alpha: 0.3),
                               ),
                             ),
                           ),
@@ -407,20 +405,20 @@ class _LoginScreenState extends State<LoginScreen> {
                 
                 Row(
                   children: [
-                    Expanded(child: Divider(color: Colors.white.withValues(alpha: 0.05))),
+                    Expanded(child: Divider(color: AppTheme.secondaryBorder(context))),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: Text(
                         "THIRD-PARTY AUTH", 
                         style: GoogleFonts.inter(
-                          color: Colors.white10, 
+                          color: AppTheme.textSecondary(context).withValues(alpha: 0.5), 
                           fontSize: 9, 
                           fontWeight: FontWeight.w900, 
                           letterSpacing: 2,
                         ),
                       ),
                     ),
-                    Expanded(child: Divider(color: Colors.white.withValues(alpha: 0.05))),
+                    Expanded(child: Divider(color: AppTheme.secondaryBorder(context))),
                   ],
                 ).animate().fadeIn(duration: 800.ms, delay: 600.ms),
                 

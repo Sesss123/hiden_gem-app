@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import '../../core/theme/oracle_ui_system.dart';
+import '../../core/theme/app_theme.dart';
 import '../../core/services/web3_passport_service.dart';
 import '../../data/models/passport_model.dart';
 import '../widgets/skeleton_loaders.dart';
@@ -37,9 +37,8 @@ class _HeritagePassportScreenState extends State<HeritagePassportScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      body: OracleUI.auraBackground(
-        child: SafeArea(
-          child: Column(
+      body: SafeArea(
+        child: Column(
             children: [
               _buildTopBar(),
               _isLoading 
@@ -51,7 +50,6 @@ class _HeritagePassportScreenState extends State<HeritagePassportScreen> {
                   ),
             ],
           ),
-        ),
       ),
     );
   }
@@ -63,15 +61,15 @@ class _HeritagePassportScreenState extends State<HeritagePassportScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           IconButton(
-            icon: Icon(Icons.arrow_back_rounded, color: Colors.white70),
+            icon: Icon(Icons.arrow_back_rounded, color: AppTheme.textSecondary(context)),
             onPressed: () => Navigator.pop(context),
           ),
           Column(
             children: [
-              OracleUI.neonText(
+              Text(
                 "HERITAGE PASSPORT",
                 style: GoogleFonts.outfit(
-                  color: Colors.white, fontWeight: FontWeight.w900,
+                  color: AppTheme.textPrimary(context), fontWeight: FontWeight.w900,
                   letterSpacing: 4, fontSize: 14,
                 ),
               ),
@@ -96,24 +94,30 @@ class _HeritagePassportScreenState extends State<HeritagePassportScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          OracleUI.glassContainer(
+          Container(
             padding: EdgeInsets.all(32),
-            borderRadius: BorderRadius.circular(50),
-            borderColor: Colors.white.withValues(alpha: 0.1),
-            child: Icon(Icons.auto_awesome_motion_rounded, color: Colors.white10, size: 64)
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(50),
+              border: Border.all(color: AppTheme.secondaryBorder(context)),
+              color: Colors.white,
+              boxShadow: [
+                 BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4)),
+              ],
+            ),
+            child: Icon(Icons.auto_awesome_motion_rounded, color: AppPalette.rust.withValues(alpha: 0.5), size: 64)
                 .animate(onPlay: (c) => c.repeat())
                 .shimmer(duration: 3.seconds),
           ),
           SizedBox(height: 32),
-          OracleUI.neonText(
+          Text(
             "Passport Empty",
-            style: GoogleFonts.outfit(color: Colors.white24, fontSize: 20, fontWeight: FontWeight.w900, letterSpacing: 1),
+            style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontSize: 20, fontWeight: FontWeight.w900, letterSpacing: 1),
           ),
           SizedBox(height: 12),
           Text(
             "Explore historical gems to\nclaim your unique digital stamps.",
             textAlign: TextAlign.center,
-            style: GoogleFonts.inter(color: Colors.white12, fontSize: 13, height: 1.5, fontWeight: FontWeight.w600),
+            style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 13, height: 1.5, fontWeight: FontWeight.w600),
           ),
         ],
       ).animate().fadeIn(duration: 600.ms).slideY(begin: 0.1),
@@ -135,15 +139,21 @@ class _HeritagePassportScreenState extends State<HeritagePassportScreen> {
   }
 
   Widget _buildStampCard(HeritageStamp stamp) {
-    Color rarityColor = Colors.white54;
-    if (stamp.rarity == 'Rare') rarityColor = Theme.of(context).colorScheme.primary;
-    if (stamp.rarity == 'Mythic') rarityColor = const Color(0xFFFFD700);
+    Color rarityColor = AppTheme.textSecondary(context);
+    if (stamp.rarity == 'Rare') rarityColor = AppPalette.rust;
+    if (stamp.rarity == 'Mythic') rarityColor = const Color(0xFFD4AF37);
 
     return GestureDetector(
       onTap: () => _showStampDetail(stamp),
-      child: OracleUI.glassContainer(
-        borderRadius: BorderRadius.circular(24),
-        borderColor: rarityColor.withValues(alpha: 0.2),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: rarityColor.withValues(alpha: 0.3)),
+          boxShadow: [
+             BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4)),
+          ],
+        ),
         child: Column(
           children: [
             Expanded(
@@ -170,19 +180,21 @@ class _HeritagePassportScreenState extends State<HeritagePassportScreen> {
                 children: [
                   Text(
                     stamp.placeName.toUpperCase(),
-                    style: GoogleFonts.outfit(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w900, letterSpacing: 0.5),
+                    style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontSize: 13, fontWeight: FontWeight.w900, letterSpacing: 0.5),
                     textAlign: TextAlign.center,
                     maxLines: 1, overflow: TextOverflow.ellipsis,
                   ),
                   SizedBox(height: 8),
-                  OracleUI.glassContainer(
+                  Container(
                     padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                    borderRadius: BorderRadius.circular(8),
-                    borderColor: rarityColor.withValues(alpha: 0.3),
-                    child: OracleUI.neonText(
+                    decoration: BoxDecoration(
+                      color: rarityColor.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: rarityColor.withValues(alpha: 0.3)),
+                    ),
+                    child: Text(
                       stamp.rarity.toUpperCase(), 
                       style: GoogleFonts.inter(color: rarityColor, fontSize: 8, fontWeight: FontWeight.w900, letterSpacing: 1),
-                      glowColor: rarityColor.withValues(alpha: 0.1),
                     ),
                   ),
                 ],
@@ -195,30 +207,36 @@ class _HeritagePassportScreenState extends State<HeritagePassportScreen> {
   }
 
   void _showStampDetail(HeritageStamp stamp) {
-    Color rarityColor = Colors.white54;
-    if (stamp.rarity == 'Rare') rarityColor = Theme.of(context).colorScheme.primary;
-    if (stamp.rarity == 'Mythic') rarityColor = const Color(0xFFFFD700);
+    Color rarityColor = AppTheme.textSecondary(context);
+    if (stamp.rarity == 'Rare') rarityColor = AppPalette.rust;
+    if (stamp.rarity == 'Mythic') rarityColor = const Color(0xFFD4AF37); // Gold
 
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
-      builder: (context) => OracleUI.glassContainer(
+      builder: (context) => Container(
         padding: const EdgeInsets.fromLTRB(32, 20, 32, 40),
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(40)),
-        borderColor: rarityColor.withValues(alpha: 0.1),
+        decoration: BoxDecoration(
+          color: Theme.of(context).scaffoldBackgroundColor,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(40)),
+          border: Border.all(color: rarityColor.withValues(alpha: 0.2)),
+        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
               width: 40, height: 4,
-              decoration: BoxDecoration(color: Colors.white10, borderRadius: BorderRadius.circular(2)),
+              decoration: BoxDecoration(color: AppTheme.secondaryBorder(context), borderRadius: BorderRadius.circular(2)),
             ),
             SizedBox(height: 32),
-            OracleUI.glassContainer(
+            Container(
               width: 160, height: 160,
-              borderRadius: BorderRadius.circular(80),
-              borderColor: rarityColor.withValues(alpha: 0.3),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(80),
+                border: Border.all(color: rarityColor.withValues(alpha: 0.3)),
+                color: Colors.white,
+              ),
               child: Container(
                 margin: EdgeInsets.all(4),
                 decoration: BoxDecoration(
@@ -228,28 +246,28 @@ class _HeritagePassportScreenState extends State<HeritagePassportScreen> {
               ),
             ).animate(onPlay: (c) => c.repeat()).shimmer(duration: 4.seconds),
             SizedBox(height: 32),
-            OracleUI.neonText(stamp.placeName, style: GoogleFonts.outfit(color: Colors.white, fontSize: 26, fontWeight: FontWeight.w900)),
+            Text(stamp.placeName, style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontSize: 26, fontWeight: FontWeight.w900)),
             SizedBox(height: 8),
             Text(
               "CLAIMED ON ${stamp.claimDate.toString().split(' ')[0]}", 
-              style: GoogleFonts.inter(color: Colors.white24, fontSize: 11, fontWeight: FontWeight.w900, letterSpacing: 2)
+              style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 11, fontWeight: FontWeight.w900, letterSpacing: 2)
             ),
-            const Divider(color: Colors.white10, height: 48),
-            OracleUI.neonText(
-              "VERIFIABLE ORACLE HASH", 
+            Divider(color: AppTheme.secondaryBorder(context), height: 48),
+            Text(
+              "VERIFIABLE HASH", 
               style: GoogleFonts.outfit(color: rarityColor, fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 1.5)
             ),
             SizedBox(height: 12),
             Container(
               padding: EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.03), 
+                color: Colors.white, 
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+                border: Border.all(color: AppTheme.secondaryBorder(context)),
               ),
               child: SelectableText(
                 stamp.hash,
-                style: GoogleFonts.robotoMono(color: Colors.white38, fontSize: 9, height: 1.5),
+                style: GoogleFonts.robotoMono(color: AppTheme.textSecondary(context), fontSize: 9, height: 1.5),
                 textAlign: TextAlign.center,
               ),
             ),
@@ -272,10 +290,9 @@ class _HeritagePassportScreenState extends State<HeritagePassportScreen> {
                   children: [
                     Icon(Icons.share_rounded, size: 20),
                     SizedBox(width: 12),
-                    OracleUI.neonText(
+                    Text(
                       "SHARE COLLECTIBLE", 
                       style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 13, letterSpacing: 1),
-                      glowColor: rarityColor.withValues(alpha: 0.1),
                     ),
                   ],
                 ),

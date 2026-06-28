@@ -4,7 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../core/theme/app_theme.dart';
-import '../../core/theme/oracle_ui_system.dart';
+
 import '../../core/providers/screenshot_provider.dart';
 import '../../presentation/widgets/golden_tracer_indicator.dart';
 
@@ -63,7 +63,14 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: OracleUI.auraBackground(
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFF1A0E08), Color(0xFF2A1608), Color(0xFF1A0E08)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
         child: Stack(
           fit: StackFit.expand,
           children: [
@@ -71,40 +78,46 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // --- The Oracle Eye (Animated Logo) ---
+                  // --- Splash Orb ---
                   Container(
-                    padding: const EdgeInsets.all(24),
+                    width: 90,
+                    height: 90,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
+                      border: Border.all(color: AppPalette.rust.withValues(alpha: 0.4)),
                       boxShadow: [
                         BoxShadow(
-                          color: AppTheme.modernGreen(context).withValues(alpha: 0.1),
-                          blurRadius: 80,
-                          spreadRadius: 20,
+                          color: AppPalette.rust.withValues(alpha: 0.3),
+                          blurRadius: 40,
                         ),
                       ],
+                      gradient: RadialGradient(
+                        center: const Alignment(-0.3, -0.3),
+                        colors: [
+                          AppPalette.rust.withValues(alpha: 0.8),
+                          AppPalette.rust.withValues(alpha: 0.1),
+                        ],
+                      ),
                     ),
-                    child: Icon(
+                    child: const Icon(
                       Icons.travel_explore_rounded,
-                      size: 100,
-                      color: AppTheme.modernGreen(context),
+                      size: 40,
+                      color: Colors.white,
                     ),
                   )
                   .animate(onPlay: (c) => c.repeat())
-                  .shimmer(duration: 3.seconds, color: AppTheme.textSecondary(context).withValues(alpha: 0.2))
-                  .scale(begin: const Offset(0.95, 0.95), end: const Offset(1.05, 1.05), duration: 2.seconds, curve: Curves.easeInOut)
-                  .shake(hz: 0.5, rotation: 0.02),
+                  .scale(begin: const Offset(0.95, 0.95), end: const Offset(1.05, 1.05), duration: 2.seconds, curve: Curves.easeInOut),
 
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 24),
 
-                  // --- TRIPME.AI Branding ---
-                  OracleUI.neonText(
+                  // --- Brand ---
+                  Text(
                     "TRIPME.AI",
                     style: GoogleFonts.outfit(
-                      fontSize: 40,
+                      fontSize: 24,
                       fontWeight: FontWeight.w900,
-                      color: AppTheme.textPrimary(context),
-                      letterSpacing: 12,
+                      color: Colors.white,
+                      letterSpacing: 4,
                     ),
                   )
                   .animate()
@@ -115,11 +128,11 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
 
                   Text(
                     "SRI LANKA'S PREMIER ORACLE",
-                    style: GoogleFonts.outfit(
-                      fontSize: 10,
+                    style: GoogleFonts.inter(
+                      fontSize: 8,
                       fontWeight: FontWeight.bold,
-                      color: AppTheme.modernGreen(context).withValues(alpha: 0.5),
-                      letterSpacing: 6,
+                      color: Colors.white.withValues(alpha: 0.3),
+                      letterSpacing: 3,
                     ),
                   )
                   .animate()
@@ -131,7 +144,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
 
             // --- Bottom Loading State ---
             Positioned(
-              bottom: 80,
+              bottom: 60,
               left: 0,
               right: 0,
               child: Column(
@@ -139,18 +152,18 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                   const ModernTracerIndicator()
                       .animate()
                       .fadeIn(delay: 1.2.seconds),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 16),
                   Text(
                     widget.isReady ? "CONNECTION ESTABLISHED" : "CALCULATING DESTINY...",
                     style: GoogleFonts.inter(
-                      fontSize: 10,
+                      fontSize: 9,
                       fontWeight: FontWeight.w800,
-                      color: AppTheme.textSecondary(context),
-                      letterSpacing: 3,
+                      color: Colors.white.withValues(alpha: 0.4),
+                      letterSpacing: 2,
                     ),
                   )
                   .animate(onPlay: (c) => c.repeat(reverse: true))
-                  .shimmer(duration: 2.seconds, color: AppTheme.textSecondary(context).withValues(alpha: 0.1)),
+                  .shimmer(duration: 2.seconds, color: Colors.white24),
                 ],
               ),
             ),

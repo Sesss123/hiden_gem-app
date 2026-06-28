@@ -154,7 +154,7 @@ class _MapRouteScreenState extends State<MapRouteScreen> {
         Polyline(
           polylineId: const PolylineId("trip_route"),
           points: points,
-          color: AppTheme.accentOchre(context),
+          color: AppPalette.rust,
           width: 4,
           geodesic: true,
         ),
@@ -243,14 +243,20 @@ class _MapRouteScreenState extends State<MapRouteScreen> {
             child: Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: Theme.of(context).cardColor.withValues(alpha: 0.95),
+                color: Colors.white,
                 borderRadius: BorderRadius.circular(20),
-                boxShadow: AppTheme.premiumShadow,
-                border: Border.all(color: AppTheme.borderColor(context)),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.1),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+                border: Border.all(color: AppTheme.secondaryBorder(context)),
               ),
               child: Row(
                 children: [
-                  Icon(Icons.explore_outlined, color: AppTheme.accentOchre(context)),
+                  Icon(Icons.explore_outlined, color: AppPalette.rust),
                   const SizedBox(width: 16),
                   Expanded(
                     child: Column(
@@ -271,8 +277,8 @@ class _MapRouteScreenState extends State<MapRouteScreen> {
                   if (!_isOfflineMapMode) ...[
                     IconButton(
                       icon: _isSavingMap 
-                        ? SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: AppTheme.accentOchre(context), strokeWidth: 2))
-                        : Icon(Icons.download, color: AppTheme.accentOchre(context)),
+                        ? SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: AppPalette.rust, strokeWidth: 2))
+                        : Icon(Icons.download, color: AppPalette.rust),
                       onPressed: _saveOfflineMap,
                       tooltip: "Save Offline Map",
                     ),
@@ -282,8 +288,8 @@ class _MapRouteScreenState extends State<MapRouteScreen> {
                       icon: const Icon(Icons.center_focus_strong, size: 18),
                       label: const Text("FOCUS"),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppTheme.accentOchre(context),
-                        foregroundColor: Theme.of(context).cardColor,
+                        backgroundColor: AppPalette.rust,
+                        foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                         textStyle: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 13),

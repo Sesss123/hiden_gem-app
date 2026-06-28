@@ -98,8 +98,18 @@ class DiscoveryRepository {
         places = await _parsePlaces(json.decode(remoteJson));
       }
     } catch (e) {
-      SecureLogger.error("REST/Cache fetch failed, falling back to assets", e);
-      places = await _localDataSource.getAssetPlaces();
+      SecureLogger.error("REST/Cache fetch failed, falling back to Firestore places collection", e);
+      try {
+        places = await _remoteDataSource.fetchAllPlacesFirestore();
+        if (places.isNotEmpty) {
+          SecureLogger.info("Discovery data loaded from Firestore 'places' collection.");
+        } else {
+          places = await _localDataSource.getAssetPlaces();
+        }
+      } catch (e2) {
+        SecureLogger.error("Firestore fetch failed, falling back to assets", e2);
+        places = await _localDataSource.getAssetPlaces();
+      }
     }
 
     // 4. Processing (Distance measurement & Sorting)

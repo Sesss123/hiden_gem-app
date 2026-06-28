@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../core/theme/app_theme.dart';
 
 /// Shows the AR Premium upgrade bottom sheet dialog.
 /// Call via: ARUpgradeDialog.show(context, onPreview: ..., onUpgrade: ...)
@@ -43,9 +44,16 @@ class ARUpgradeDialog extends StatelessWidget {
         bottom: MediaQuery.of(context).viewInsets.bottom + 28,
       ),
       decoration: BoxDecoration(
-        color: const Color(0xFF0D0D1A),
+        color: Colors.white,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
-        border: Border.all(color: const Color(0xFFFFB300).withValues(alpha: 0.3)),
+        border: Border.all(color: AppPalette.rust.withValues(alpha: 0.3)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.1),
+            blurRadius: 20,
+            offset: const Offset(0, -4),
+          ),
+        ],
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -55,7 +63,7 @@ class ARUpgradeDialog extends StatelessWidget {
             child: Container(
               width: 40, height: 4,
               decoration: BoxDecoration(
-                color: Colors.white24,
+                color: Colors.black12,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -67,11 +75,11 @@ class ARUpgradeDialog extends StatelessWidget {
             width: 80, height: 80,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: const Color(0xFFFFB300).withValues(alpha: 0.1),
-              border: Border.all(color: const Color(0xFFFFB300).withValues(alpha: 0.4)),
+              color: AppPalette.rust.withValues(alpha: 0.1),
+              border: Border.all(color: AppPalette.rust.withValues(alpha: 0.4)),
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFFFFB300).withValues(alpha: 0.25),
+                  color: AppPalette.rust.withValues(alpha: 0.15),
                   blurRadius: 30,
                   spreadRadius: 4,
                 ),
@@ -88,7 +96,7 @@ class ARUpgradeDialog extends StatelessWidget {
             'Unlock AR Heritage Mode',
             textAlign: TextAlign.center,
             style: GoogleFonts.outfit(
-              color: Colors.white,
+              color: AppTheme.textPrimary(context),
               fontSize: 22,
               fontWeight: FontWeight.bold,
             ),
@@ -100,7 +108,7 @@ class ARUpgradeDialog extends StatelessWidget {
             'Experience Sri Lanka as it looked thousands of years ago.',
             textAlign: TextAlign.center,
             style: GoogleFonts.inter(
-              color: Colors.white54,
+              color: AppTheme.textSecondary(context),
               fontSize: 13,
               height: 1.5,
             ),
@@ -119,7 +127,7 @@ class ARUpgradeDialog extends StatelessWidget {
           Text(
             'From Rs. 299/month  ·  7-day free trial',
             style: GoogleFonts.inter(
-              color: const Color(0xFFFFB300),
+              color: AppPalette.rust,
               fontSize: 13,
               fontWeight: FontWeight.bold,
             ),
@@ -146,9 +154,7 @@ class ARUpgradeDialog extends StatelessWidget {
               ),
               child: Ink(
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFFFFB300), Color(0xFFFF8F00)],
-                  ),
+                  color: AppPalette.rust,
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Container(
@@ -157,7 +163,7 @@ class ARUpgradeDialog extends StatelessWidget {
                   child: Text(
                     'Upgrade to Premium',
                     style: GoogleFonts.outfit(
-                      color: Colors.black,
+                      color: Colors.white,
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
@@ -178,7 +184,7 @@ class ARUpgradeDialog extends StatelessWidget {
               },
               style: OutlinedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 14),
-                side: const BorderSide(color: Color(0xFFFFB300), width: 1.5),
+                side: const BorderSide(color: AppPalette.rust, width: 1.5),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
                 ),
@@ -186,7 +192,7 @@ class ARUpgradeDialog extends StatelessWidget {
               child: Text(
                 'Watch 10-sec Preview',
                 style: GoogleFonts.outfit(
-                  color: const Color(0xFFFFB300),
+                  color: AppPalette.rust,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -201,10 +207,10 @@ class ARUpgradeDialog extends StatelessWidget {
                   Navigator.pop(context);
                   onWatchAd!();
                 },
-                icon: const Icon(Icons.play_circle_fill, color: Colors.black, size: 20),
+                icon: const Icon(Icons.play_circle_fill, color: Colors.white, size: 20),
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
-                  backgroundColor: const Color(0xFFFFB300),
+                  backgroundColor: AppPalette.rust,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
                   ),
@@ -212,7 +218,7 @@ class ARUpgradeDialog extends StatelessWidget {
                 label: Text(
                   'Watch Ad to Unlock Session',
                   style: GoogleFonts.outfit(
-                    color: Colors.black,
+                    color: Colors.white,
                     fontSize: 15,
                     fontWeight: FontWeight.bold,
                   ),
@@ -227,7 +233,7 @@ class ARUpgradeDialog extends StatelessWidget {
             onPressed: () => Navigator.pop(context),
             child: Text(
               'Not Now',
-              style: GoogleFonts.inter(color: Colors.white38, fontSize: 13),
+              style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 13),
             ),
           ),
         ],
@@ -241,19 +247,17 @@ class ARUpgradeDialog extends StatelessWidget {
         Container(
           width: 36, height: 36,
           decoration: BoxDecoration(
-            color: const Color(0xFFFFB300).withValues(alpha: 0.1),
+            color: AppPalette.rust.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: const Color(0xFFFFB300).withValues(alpha: 0.2)),
+            border: Border.all(color: AppPalette.rust.withValues(alpha: 0.2)),
           ),
           child: Center(child: Text(emoji, style: const TextStyle(fontSize: 16))),
         ),
         const SizedBox(width: 12),
-        Text(
-          text,
-          style: GoogleFonts.inter(
-            color: Colors.white,
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
+        Expanded(
+          child: Text(
+            text,
+            style: GoogleFonts.inter(color: AppPalette.ink, fontSize: 14, fontWeight: FontWeight.w500),
           ),
         ),
       ],

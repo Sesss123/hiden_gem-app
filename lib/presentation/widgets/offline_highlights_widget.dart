@@ -88,10 +88,17 @@ class OfflineHighlightsWidget extends StatelessWidget {
 
     return Container(
       margin: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-      decoration: AppTheme.glassDecoration(
-        context,
-        opacity: isDark ? 0.05 : 0.08,
-        color: isDark ? null : Colors.orange.shade50,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppTheme.secondaryBorder(context)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Theme(
         data: Theme.of(context).copyWith(
@@ -105,7 +112,7 @@ class OfflineHighlightsWidget extends StatelessWidget {
           leading: Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: AppTheme.modernGreen(context).withValues(alpha: 0.1),
+              color: AppPalette.rust.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: Text(emoji, style: const TextStyle(fontSize: 20)),
@@ -120,7 +127,7 @@ class OfflineHighlightsWidget extends StatelessWidget {
           ),
           subtitle: Row(
             children: [
-              Icon(Icons.wifi_off, size: 12, color: AppTheme.modernGreen(context)),
+              const Icon(Icons.wifi_off, size: 12, color: AppPalette.rust),
               const SizedBox(width: 6),
               Text(
                 'Offline Knowledge Base',
@@ -138,7 +145,7 @@ class OfflineHighlightsWidget extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Divider(height: 24, thickness: 0.5),
-                  _section(context, '📍 Must See', mustSee, AppTheme.modernGreen(context)),
+                  _section(context, '📍 Must See', mustSee, AppPalette.rust),
                   const SizedBox(height: 16),
                   _section(context, '🌧️ Rainy Day Options', indoor, Theme.of(context).colorScheme.secondary),
                   const SizedBox(height: 16),

@@ -85,10 +85,12 @@ class _SmartMatchScreenState extends State<SmartMatchScreen> {
   }
 
   Widget _buildStep1() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        OracleUI.neonText("EXPERIENCES", style: GoogleFonts.outfit(fontSize: 28, fontWeight: FontWeight.w900, letterSpacing: 4, color: AppTheme.textPrimary(context))),
+    return SingleChildScrollView(
+      physics: const BouncingScrollPhysics(),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          OracleUI.neonText("EXPERIENCES", style: GoogleFonts.outfit(fontSize: 28, fontWeight: FontWeight.w900, letterSpacing: 4, color: AppTheme.textPrimary(context))),
         const SizedBox(height: 16),
         Text("What defines your journey's soul?", style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 16)),
         const SizedBox(height: 40),
@@ -97,7 +99,7 @@ class _SmartMatchScreenState extends State<SmartMatchScreen> {
           crossAxisCount: 2,
           mainAxisSpacing: 16,
           crossAxisSpacing: 16,
-          childAspectRatio: 1.1,
+          childAspectRatio: 0.85,
           children: _allInterests.map((interest) {
             final isSelected = _interests.contains(interest['label']);
             return GestureDetector(
@@ -139,21 +141,33 @@ class _SmartMatchScreenState extends State<SmartMatchScreen> {
                         BlendMode.darken,
                       ),
                     ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(interest['icon'], color: isSelected ? AppTheme.modernGreen(context) : AppTheme.textSecondary(context), size: 32),
-                        const SizedBox(height: 12),
-                        Text(
-                          interest['label'].toUpperCase(), 
-                          style: GoogleFonts.outfit(
-                            color: isSelected ? AppTheme.textPrimary(context) : AppTheme.textSecondary(context), 
-                            fontSize: 14, 
-                            fontWeight: FontWeight.w900,
-                            letterSpacing: 2.0,
-                          )
-                        ),
-                      ],
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.black.withValues(alpha: 0.4),
+                        borderRadius: BorderRadius.circular(28),
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(interest['icon'], color: isSelected ? AppTheme.modernGreen(context) : Colors.white70, size: 32),
+                          const SizedBox(height: 12),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                            child: FittedBox(
+                              fit: BoxFit.scaleDown,
+                              child: Text(
+                                interest['label'].toUpperCase(), 
+                                style: GoogleFonts.outfit(
+                                  color: isSelected ? Colors.white : Colors.white70, 
+                                  fontSize: 14, 
+                                  fontWeight: FontWeight.w900,
+                                  letterSpacing: 1.5,
+                                )
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ],
@@ -162,14 +176,17 @@ class _SmartMatchScreenState extends State<SmartMatchScreen> {
           }).toList(),
         ),
       ],
+      ),
     ).animate().fadeIn().slideX(begin: 0.1);
   }
 
   Widget _buildStep2() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        OracleUI.neonText("TRAVEL RHYTHM", style: GoogleFonts.outfit(fontSize: 28, fontWeight: FontWeight.w900, letterSpacing: 4, color: AppTheme.textPrimary(context))),
+    return SingleChildScrollView(
+      physics: const BouncingScrollPhysics(),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          OracleUI.neonText("TRAVEL RHYTHM", style: GoogleFonts.outfit(fontSize: 28, fontWeight: FontWeight.w900, letterSpacing: 4, color: AppTheme.textPrimary(context))),
         const SizedBox(height: 16),
         Text("What is your exploration frequency?", style: GoogleFonts.inter(color: AppTheme.textSecondary(context).withValues(alpha: 0.6), fontSize: 16)),
         const SizedBox(height: 48),
@@ -177,6 +194,7 @@ class _SmartMatchScreenState extends State<SmartMatchScreen> {
         _buildRhythmOption("BALANCED", "A harmonious flux of discovery.", Icons.wb_sunny_rounded, 0.6),
         _buildRhythmOption("EXPEDITION", "High-frequency, adrenaline-fueled.", Icons.bolt_rounded, 1.0),
       ],
+      ),
     ).animate().fadeIn(duration: 600.ms).slideX(begin: 0.05);
   }
 
@@ -234,10 +252,12 @@ class _SmartMatchScreenState extends State<SmartMatchScreen> {
   }
 
   Widget _buildStep3() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        OracleUI.neonText("FINANCIAL RESONANCE", style: GoogleFonts.outfit(fontSize: 28, fontWeight: FontWeight.w900, letterSpacing: 4, color: AppTheme.textPrimary(context))),
+    return SingleChildScrollView(
+      physics: const BouncingScrollPhysics(),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          OracleUI.neonText("FINANCIAL RESONANCE", style: GoogleFonts.outfit(fontSize: 28, fontWeight: FontWeight.w900, letterSpacing: 4, color: AppTheme.textPrimary(context))),
         const SizedBox(height: 16),
         Text("Select your preferred investment tier.", style: GoogleFonts.inter(color: AppTheme.textSecondary(context).withValues(alpha: 0.6), fontSize: 16)),
         const SizedBox(height: 48),
@@ -266,6 +286,7 @@ class _SmartMatchScreenState extends State<SmartMatchScreen> {
           ),
         ),
       ],
+      ),
     ).animate().fadeIn(duration: 600.ms).slideX(begin: 0.05);
   }
 

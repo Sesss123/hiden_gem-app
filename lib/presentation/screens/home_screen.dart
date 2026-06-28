@@ -123,33 +123,31 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return Row(
       children: [
         Expanded(
-          child: GestureDetector(
+          child: OracleUI.kineticCard(
+            context: context,
+            isEvening: false,
             onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const GuideMarketplaceScreen())),
-            child: OracleUI.glassContainer(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                children: [
-                  Icon(Icons.storefront_outlined, color: Theme.of(context).colorScheme.primary, size: 24),
-                  const SizedBox(height: 8),
-                  Text("MARKETPLACE", style: GoogleFonts.outfit(fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1)),
-                ],
-              ),
+            child: Column(
+              children: [
+                Icon(Icons.storefront_outlined, color: Theme.of(context).colorScheme.primary, size: 24),
+                const SizedBox(height: 8),
+                Text("MARKETPLACE", style: GoogleFonts.outfit(fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1)),
+              ],
             ),
           ),
         ),
         const SizedBox(width: 12),
         Expanded(
-          child: GestureDetector(
+          child: OracleUI.kineticCard(
+            context: context,
+            isEvening: false,
             onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const SmartMatchScreen())),
-            child: OracleUI.glassContainer(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                children: [
-                  Icon(Icons.auto_awesome_outlined, color: Colors.purpleAccent, size: 24),
-                  const SizedBox(height: 8),
-                  Text("SMART MATCH", style: GoogleFonts.outfit(fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1)),
-                ],
-              ),
+            child: Column(
+              children: [
+                const Icon(Icons.auto_awesome_outlined, color: Colors.purpleAccent, size: 24),
+                const SizedBox(height: 8),
+                Text("SMART MATCH", style: GoogleFonts.outfit(fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1)),
+              ],
             ),
           ),
         ),
@@ -236,7 +234,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Widget _buildCTAButton(AppLocalizations l10n) {
     return GestureDetector(
       onTap: () {
-        HapticFeedback.mediumImpact();
+        Haptics.medium();
         MonetizationService().showInterstitialAd();
         Navigator.push(context, MaterialPageRoute(builder: (context) => const TripFormScreen()));
       },
@@ -249,13 +247,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           children: [
             Icon(Icons.auto_awesome, color: Theme.of(context).colorScheme.primary, size: 24),
             const SizedBox(width: 16),
-            Text(
-              l10n.planNewTrip.toUpperCase(),
-              style: GoogleFonts.outfit(
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-                letterSpacing: 2,
-                color: AppTheme.textPrimary(context),
+            Flexible(
+              child: Text(
+                l10n.planNewTrip.toUpperCase(),
+                style: GoogleFonts.outfit(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                  letterSpacing: 2,
+                  color: AppTheme.textPrimary(context),
+                ),
+                textAlign: TextAlign.center,
               ),
             ),
           ],
@@ -403,8 +404,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         background: Stack(
           fit: StackFit.expand,
           children: [
-            AnimatedSwitcher(
-              duration: const Duration(milliseconds: 1500),
+            OracleUI.heroCrossfade(
               child: Image.asset(
                 _bgImages[_bgImageIndex],
                 key: ValueKey<int>(_bgImageIndex),
@@ -667,20 +667,24 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return Container(
       margin: const EdgeInsets.only(bottom: 20),
       height: 160,
-      child: OracleUI.premiumGlassCard(
-        padding: EdgeInsets.zero,
-        radius: BorderRadius.circular(24),
-        child: Stack(
-          children: [
-            Positioned.fill(
-              child: Opacity(
-                opacity: 0.4,
-                child: Image.network(
-                  "https://images.unsplash.com/photo-1546708973-b339540b5162?q=80&w=2670&auto=format&fit=crop",
-                  fit: BoxFit.cover,
+      child: OracleUI.kineticCard(
+        context: context,
+        isEvening: false,
+        opacity: 0.0, // Kinetic card adds its own container, we just use it for the press animation
+        child: OracleUI.premiumGlassCard(
+          padding: EdgeInsets.zero,
+          radius: BorderRadius.circular(24),
+          child: Stack(
+            children: [
+              Positioned.fill(
+                child: Opacity(
+                  opacity: 0.4,
+                  child: Image.network(
+                    "https://images.unsplash.com/photo-1546708973-b339540b5162?q=80&w=2670&auto=format&fit=crop",
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
-            ),
             Container(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
@@ -716,13 +720,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                         radius: BorderRadius.circular(12),
                         child: Text(duration, style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 10)),
-                      )
+                      ),
                     ],
                   ),
                 ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -735,7 +740,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         padding: EdgeInsets.zero,
         radius: BorderRadius.circular(12),
         child: IconButton(
-          icon: Icon(icon, color: Colors.white, size: 20),
+          icon: Icon(icon, color: AppTheme.textPrimary(context), size: 20),
           onPressed: onTap,
         ),
       ),
@@ -754,8 +759,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       child: Container(
         height: dynamicHeight,
         decoration: BoxDecoration(
-          color: Theme.of(context).scaffoldBackgroundColor.withValues(alpha: 0.8),
-          border: Border(top: BorderSide(color: Colors.white.withValues(alpha: 0.1), width: 0.5)),
+          color: Theme.of(context).scaffoldBackgroundColor.withValues(alpha: 0.95),
+          border: Border(top: BorderSide(color: AppTheme.secondaryBorder(context), width: 1.0)),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -783,7 +788,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         children: [
           Icon(
             icon,
-            color: active ? Theme.of(context).colorScheme.primary : AppTheme.textSecondary(context).withValues(alpha: 0.4),
+            color: active ? AppPalette.rust : AppPalette.ink.withValues(alpha: 0.4),
             size: 24,
           ),
           const SizedBox(height: 4),
