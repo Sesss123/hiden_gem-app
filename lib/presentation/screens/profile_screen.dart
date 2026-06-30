@@ -67,7 +67,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         margin: EdgeInsets.all(16),
         padding: EdgeInsets.symmetric(vertical: 24),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(24),
           border: Border.all(color: AppTheme.secondaryBorder(context)),
           boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10)],
@@ -120,7 +120,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         margin: EdgeInsets.all(16),
         padding: EdgeInsets.symmetric(vertical: 24),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(24),
           border: Border.all(color: AppTheme.secondaryBorder(context)),
           boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10)],
@@ -370,7 +370,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 24),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(color: AppTheme.secondaryBorder(context)),
         boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4))],
@@ -816,7 +816,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 margin: EdgeInsets.symmetric(horizontal: 40, vertical: 240),
                 padding: EdgeInsets.all(24),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Theme.of(context).colorScheme.surface,
                   borderRadius: BorderRadius.circular(24),
                   border: Border.all(color: AppTheme.secondaryBorder(context)),
                   boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10)],
@@ -896,7 +896,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                  margin: EdgeInsets.symmetric(horizontal: 40, vertical: 260),
                 padding: EdgeInsets.all(24),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Theme.of(context).colorScheme.surface,
                   borderRadius: BorderRadius.circular(24),
                   border: Border.all(color: AppTheme.secondaryBorder(context)),
                   boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10)],
@@ -933,7 +933,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     return Container(
       margin: EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: AppTheme.secondaryBorder(context)),
         boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4))],
@@ -972,7 +972,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     return Container(
       padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(color: AppTheme.secondaryBorder(context)),
         boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4))],
@@ -1092,7 +1092,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         Container(
           padding: EdgeInsets.all(24),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(32),
             border: Border.all(color: AppTheme.secondaryBorder(context)),
             boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4))],
