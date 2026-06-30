@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:math' as math;
-import 'package:arcore_flutter_plugin/arcore_flutter_plugin.dart';
+import '../../core/mocks/arcore_flutter_plugin.dart';
 import 'package:vector_math/vector_math_64.dart' as vector;
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';

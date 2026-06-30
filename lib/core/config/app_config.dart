@@ -15,7 +15,7 @@ class AppConfig {
 
   static const String nodeProxyUrl = String.fromEnvironment(
     'NODE_PROXY_URL',
-    defaultValue: "http://localhost:8000/api",
+    defaultValue: "http://localhost:3000",
   );
 
   static const String cdnBaseUrl = String.fromEnvironment(

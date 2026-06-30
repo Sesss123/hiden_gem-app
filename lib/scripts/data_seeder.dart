@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -14,12 +15,12 @@ class DataSeeder {
 
   static Future<void> seedPlaces() async {
     try {
-      print('Starting LLM data seeding...');
+      debugPrint('Starting LLM data seeding...');
       final firestore = FirebaseFirestore.instance;
       int totalCount = 0;
       
       for (final file in _files) {
-        print('Loading $file...');
+        debugPrint('Loading $file...');
         final String response = await rootBundle.loadString(file);
         final List<dynamic> data = json.decode(response);
         
@@ -70,12 +71,12 @@ class DataSeeder {
         if (batchCount > 0) {
           await batch.commit();
         }
-        print('Finished uploading $file');
+        debugPrint('Finished uploading $file');
       }
       
-      print('Successfully seeded $totalCount TOTAL places to Firestore!');
+      debugPrint('Successfully seeded $totalCount TOTAL places to Firestore!');
     } catch (e) {
-      print('Error seeding data: $e');
+      debugPrint('Error seeding data: $e');
     }
   }
 

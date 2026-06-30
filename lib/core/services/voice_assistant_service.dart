@@ -9,6 +9,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:http/http.dart' as http;
 import 'oracle_context_engine.dart';
 import 'dynamic_itinerary_service.dart';
+import 'lumen_ai_service.dart';
 import '../../core/utils/secure_logger.dart';
 
 enum OracleState { idle, listening, thinking, speaking }
@@ -146,7 +147,7 @@ class VoiceAssistantService {
 
 
 
-  // Gemini Integration Layer - The Oracle Supreme
+  // Lumen-1 Integration Layer - The Oracle Supreme
   static Future<String> getOracleLogic(String userQuery, String locationContext, {Position? position}) async {
     // Stage 5: Offline Fallback Check
     final hasInternet = await _checkConnectivity();
@@ -162,9 +163,30 @@ class VoiceAssistantService {
       'last_query_sentiment': contextData['query_sentiment'],
     });
 
-    // Simulate Gemini 1.5 Pro processing
-    await Future.delayed(const Duration(seconds: 1));
-    
+    // Check if Lumen-1 server is running
+    final lumenAlive = await LumenAiService.isServerAlive();
+
+    if (lumenAlive) {
+      try {
+        // Call Lumen-1 AI model for intelligent response
+        final reply = await LumenAiService.askOracle(
+          query: userQuery,
+          locationContext: locationContext,
+        );
+        SecureLogger.info('[Oracle] Lumen-1 replied: ${reply.substring(0, reply.length.clamp(0, 80))}...');
+        return reply;
+      } on LumenException catch (e) {
+        SecureLogger.warning('[Oracle] Lumen-1 error: $e — using fallback');
+        // Fall through to local fallback logic
+      } catch (e) {
+        SecureLogger.error('[Oracle] Unexpected error: $e — using fallback');
+        // Fall through to local fallback logic
+      }
+    } else {
+      SecureLogger.warning('[Oracle] Lumen-1 server not reachable — using local logic');
+    }
+
+    // Local fallback logic (when Lumen-1 is unavailable)
     if (userQuery.toLowerCase().contains("tired") || contextData['energy_level'] == 'Low') {
       await DynamicItineraryService.mutatePlan('relax');
       return "I sense your vitality is low, traveler. Rest is a sacred part of the journey. I have adjusted your path to include more restorative moments.";

@@ -8,7 +8,7 @@ import 'package:hidden_gems_sl/core/theme/theme_provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:hidden_gems_sl/l10n/app_localizations.dart';
+
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/localization/locale_provider.dart';
@@ -19,21 +19,23 @@ import '../../data/datasources/user_preference_service.dart';
 import '../../data/datasources/auth_service.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:hidden_gems_sl/l10n/app_localizations.dart';
 import '../widgets/explorer_progress_card.dart';
+import 'operator_dashboard_screen.dart';
+import 'guide_dashboard_screen.dart';
 import 'emergency_kit_screen.dart';
 import 'premium_hub_screen.dart';
 import '../widgets/usage_meter_widget.dart';
+import 'qr_scanner_screen.dart';
 import 'heritage_passport_screen.dart';
 import 'budget_concierge_screen.dart';
 import 'login_screen.dart';
 import '../../core/services/ethical_travel_service.dart';
 import '../../core/rating/rating_service.dart';
 import 'guide_enrollment_screen.dart';
-import 'qr_scanner_screen.dart';
 import 'package:hidden_gems_sl/data/models/guide_status.dart';
 import 'package:hidden_gems_sl/presentation/screens/guide_reviews_screen.dart';
 import 'package:hidden_gems_sl/presentation/screens/incident_center_screen.dart';
-import 'package:hidden_gems_sl/presentation/screens/operator_dashboard_screen.dart';
 import 'package:hidden_gems_sl/presentation/screens/subscription_screen.dart';
 import 'package:hidden_gems_sl/presentation/screens/family_share_screen.dart';
 import 'package:hidden_gems_sl/presentation/screens/smart_match_screen.dart';
@@ -560,6 +562,15 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       children: [
         if (profile.guideStatus == GuideStatus.approved || profile.role == 'admin') ...[
           _settingsTile(
+            Icons.explore_outlined, 
+            "GUIDE DASHBOARD",
+            iconColor: Colors.amberAccent,
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const GuideDashboardScreen()),
+            ),
+          ),
+          _settingsTile(
             Icons.business_center_outlined, 
             "OPERATOR DASHBOARD",
             iconColor: Colors.cyanAccent,
@@ -667,6 +678,17 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => const SmartMatchScreen()),
+            );
+          },
+        ),
+        _settingsTile(
+          Icons.book_online_outlined, 
+          "HERITAGE PASSPORT",
+          iconColor: Colors.brown[300],
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const HeritagePassportScreen()),
             );
           },
         ),

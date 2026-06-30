@@ -22,6 +22,7 @@ import '../../data/models/event_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'guide_marketplace_screen.dart';
 import 'smart_match_screen.dart';
+import 'savor_lanka_screen.dart';
 import '../widgets/pulse_hub_widget.dart';
 import '../widgets/banner_ad_widget.dart';
 import '../widgets/native_ad_widget.dart';
@@ -147,6 +148,21 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 const Icon(Icons.auto_awesome_outlined, color: Colors.purpleAccent, size: 24),
                 const SizedBox(height: 8),
                 Text("SMART MATCH", style: GoogleFonts.outfit(fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1)),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: OracleUI.kineticCard(
+            context: context,
+            isEvening: false,
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const SavorLankaScreen())),
+            child: Column(
+              children: [
+                const Icon(Icons.restaurant_menu_outlined, color: Colors.orangeAccent, size: 24),
+                const SizedBox(height: 8),
+                Text("FOOD AI", style: GoogleFonts.outfit(fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1)),
               ],
             ),
           ),
@@ -779,13 +795,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Widget _navItem(String label, IconData icon, int index) {
     final bool active = _selectedIndex == index;
     return GestureDetector(
+      behavior: HitTestBehavior.opaque,
       onTap: () {
         HapticFeedback.lightImpact();
         setState(() => _selectedIndex = index);
       },
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
           Icon(
             icon,
             color: active ? AppPalette.rust : AppPalette.ink.withValues(alpha: 0.4),
@@ -801,6 +820,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
           ),
         ],
+      ),
       ),
     );
   }

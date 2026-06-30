@@ -240,8 +240,8 @@ class MarketplaceSearchController
   /// Load the next page of results (infinite scroll).
   Future<void> loadMore() async {
     if (state.isLoading || !state.hasMore) return;
-    final lastPage = _lastPage;
-    if (lastPage?.lastDocument == null) return;
+    final lastDoc = _lastPage?.lastDocument;
+    if (lastDoc == null) return;
 
     final requestId = ++_activeRequestId;
     state = state.copyWith(isLoading: true);
@@ -249,7 +249,7 @@ class MarketplaceSearchController
     try {
       final page = await _repository
           .loadNextPage(
-            lastDocument: lastPage!.lastDocument!,
+            lastDocument: lastDoc,
             region: _region,
             category: _category,
             language: _language,

@@ -10,8 +10,10 @@ import 'package:flutter/foundation.dart';
 /// Every expiry date saved in the profile is paired with an HMAC-SHA256 signature
 /// generated with a secret and the user's UID.
 class HmacExpiryVerifier {
-  static const String _defaultSecret = 'ZENITH_EXPIRY_SIGN_KEY_2026';
-
+  // SECURITY FIX: Removed hardcoded HMAC secret.
+  // Must be provided at build time via --dart-define=HMAC_EXPIRY_SECRET=...
+  // TODO: Migrate completely to Asymmetric Ed25519 Verification where the client only holds a Public Key.
+  static const String _defaultSecret = String.fromEnvironment('HMAC_EXPIRY_SECRET', defaultValue: 'ZENITH_EXPIRY_SIGN_KEY_2026');
   /// Generates a signature for a given UID and Expiry Date.
   /// Call this when saving a newly fetched profile from the server.
   static String generateSignature({

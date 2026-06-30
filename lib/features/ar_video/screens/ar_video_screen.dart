@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'dart:async';
 import 'package:flutter/foundation.dart';
-import 'package:arcore_flutter_plugin/arcore_flutter_plugin.dart';
+import '../../../core/mocks/arcore_flutter_plugin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -13,7 +13,7 @@ import '../services/ar_video_service.dart';
 import '../services/ar_sync_service.dart';
 import '../services/subtitle_service.dart';
 import '../services/video_cache_service.dart';
-import '../../../../core/theme/app_theme.dart';
+import '../../../core/theme/app_theme.dart';
 
 class ARVideoScreen extends StatefulWidget {
   final ARVideoContent content;
@@ -256,10 +256,12 @@ class _ARVideoScreenState extends State<ARVideoScreen>
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(30),
-              child: AspectRatio(
-                aspectRatio: _videoService.controller!.value.aspectRatio,
-                child: VideoPlayer(_videoService.controller!),
-              ),
+              child: (_videoService.controller != null && _videoService.controller!.value.isInitialized)
+                  ? AspectRatio(
+                      aspectRatio: _videoService.controller!.value.aspectRatio,
+                      child: VideoPlayer(_videoService.controller!),
+                    )
+                  : const Center(child: CircularProgressIndicator(color: AppPalette.rust)),
             ),
           ),
         ),

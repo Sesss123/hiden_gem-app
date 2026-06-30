@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart';
-import 'package:arcore_flutter_plugin/arcore_flutter_plugin.dart';
+import '../mocks/arcore_flutter_plugin.dart';
 import '../../core/utils/secure_logger.dart';
 
 class ARSupportService {

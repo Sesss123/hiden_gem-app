@@ -96,6 +96,7 @@
 
 
 # Completed
+- [x] **Real-Time AI Food Scanner WebSocket Integration**: Created `RealTimeFoodScannerScreen` connecting bi-directionally to `ws://YOUR_BACKEND_IP:8000/ws/scan`, streaming frames at 1 FPS, rendering glowing AR bounding boxes, instant macro dashboard, user diet goal toggle, and AI diet coach bubble. Added launcher button in `SavorLankaScreen`. (Completed on 2026-06-30)
 - [x] **Fix Remaining Static Analysis Issues**: Resolved unused imports, dead code, unused private fields/methods, and unnecessary casts across `incident_detail_screen.dart`, `language_selection_screen.dart`, `map_explorer_screen.dart`, `operator_dashboard_screen.dart`, `profile_screen.dart`, `results_screen.dart`, `savor_lanka_screen.dart`, and `smart_match_screen.dart`. (Completed on 2026-06-27)
 - [x] **Fix AppConfig tripMeApiKey Compiler Errors**: Added a backwards-compatible `tripMeApiKey` getter inside `AppConfig` to solve undefined getter compiler issues. (Completed on 2026-06-27)
 - [x] **Complete remaining dashboard UI & limit issues**: Decoupled offline downloads from saved_plans, built and embedded `UsageMeterWidget` in Home and Profile, created and embedded `SoftUpgradeNudgeCard` in the trip creator step 1, resolved routing confusion for PremiumHub and Subscription screens based on user roles, and updated `OnboardingScreen` into a 5-step interactive tour (Discovery, Planner, AR, Guides, Safety). (Completed on 2026-06-27)

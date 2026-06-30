@@ -7,6 +7,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../../core/theme/app_theme.dart';
 import '../../data/models/trip_plan_model.dart';
 import '../../data/datasources/trip_cache_service.dart';
+import 'budget_concierge_screen.dart';
 
 class BudgetTrackerScreen extends StatefulWidget {
   final TripPlan plan;
@@ -202,6 +203,13 @@ class _BudgetTrackerScreenState extends State<BudgetTrackerScreen> {
           IconButton(
             icon: Icon(Icons.add_circle_outline, color: Theme.of(context).colorScheme.primary), 
             onPressed: _addExpense
+          ),
+          IconButton(
+            icon: Icon(Icons.auto_awesome, color: Colors.purpleAccent), 
+            onPressed: () => Navigator.push(
+              context, 
+              MaterialPageRoute(builder: (context) => const BudgetConciergeScreen())
+            )
           ),
           const SizedBox(width: 8),
         ],

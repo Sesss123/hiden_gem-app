@@ -525,7 +525,7 @@ class _KineticCardWidgetState extends State<_KineticCardWidget> {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 150),
         curve: Curves.easeOutCubic,
-        transform: Matrix4.identity()..scale(_isPressed ? 0.97 : 1.0, _isPressed ? 0.97 : 1.0),
+        transform: Matrix4.diagonal3Values(_isPressed ? 0.97 : 1.0, _isPressed ? 0.97 : 1.0, 1.0),
         transformAlignment: Alignment.center,
         child: widget.child,
       ),

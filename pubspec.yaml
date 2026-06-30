@@ -100,9 +100,7 @@ dependencies:
 
 
   # AR Mode — Phase 9
-  # ar_flutter_plugin: ^0.7.3  # Conflicts with permission_handler ^11 — use platform-specific below
-  # For Android ARCore:
-  arcore_flutter_plugin: ^0.1.0
+  # For Android ARCore (Mocked in lib/core/mocks):
   vector_math: ^2.1.4
   just_audio: ^0.9.41           # Audio narration streaming
   geoflutterfire_plus: ^0.0.32

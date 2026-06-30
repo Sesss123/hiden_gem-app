@@ -3,8 +3,8 @@ import 'package:google_fonts/google_fonts.dart';
 import '../models/ar_video_content.dart';
 import '../services/ar_video_repository.dart';
 import 'ar_content_preview_screen.dart';
-import '../../../../core/theme/app_theme.dart';
-import '../../../../presentation/widgets/batik_background.dart';
+import '../../../core/theme/app_theme.dart';
+import '../../../presentation/widgets/batik_background.dart';
 
 class ARVideoLibraryScreen extends StatelessWidget {
   const ARVideoLibraryScreen({super.key});

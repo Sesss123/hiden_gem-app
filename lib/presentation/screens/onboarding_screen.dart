@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/theme/oracle_ui_system.dart';
+import '../../core/theme/app_theme.dart';
 import '../../data/datasources/user_preference_service.dart';
 import 'login_screen.dart';
 import 'language_selection_screen.dart';
@@ -72,7 +73,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   child: Text(
                     "SKIP", 
                     style: GoogleFonts.inter(
-                      color: Colors.white24, 
+                      color: AppPalette.earth.withValues(alpha: 0.55), 
                       fontSize: 10, 
                       fontWeight: FontWeight.bold, 
                       letterSpacing: 2
@@ -134,7 +135,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           Text(
             "Explore over 500 off-the-beaten-path locations curated by locals — places you won't find in any guidebook.",
             textAlign: TextAlign.center,
-            style: GoogleFonts.inter(fontSize: 16, color: Colors.white54, height: 1.6),
+            style: GoogleFonts.inter(fontSize: 16, color: AppPalette.earth, height: 1.6),
           ),
         ],
       ).animate().fadeIn(duration: 600.ms).slideY(begin: 0.1, end: 0),
@@ -155,7 +156,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           Text(
             label, 
             textAlign: TextAlign.center,
-            style: GoogleFonts.inter(fontSize: 11, color: Colors.white70, fontWeight: FontWeight.w600, letterSpacing: 0.5)
+            style: GoogleFonts.inter(fontSize: 11, color: AppPalette.ink.withValues(alpha: 0.65), fontWeight: FontWeight.w600, letterSpacing: 0.5)
           ),
         ],
       ),
@@ -186,7 +187,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           Text(
             "Tell the Oracle where you want to go.\nGet a full personalized itinerary for Sri Lanka in seconds.",
             textAlign: TextAlign.center,
-            style: GoogleFonts.inter(fontSize: 16, color: Colors.white54, height: 1.6),
+            style: GoogleFonts.inter(fontSize: 16, color: AppPalette.earth, height: 1.6),
           ),
         ],
       ).animate().fadeIn(duration: 600.ms).slideY(begin: 0.1, end: 0),
@@ -217,7 +218,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           Text(
             "Unlock detailed 3D historical reconstructions of monuments. Watch past eras come alive in real-time.",
             textAlign: TextAlign.center,
-            style: GoogleFonts.inter(fontSize: 16, color: Colors.white54, height: 1.6),
+            style: GoogleFonts.inter(fontSize: 16, color: AppPalette.earth, height: 1.6),
           ),
         ],
       ).animate().fadeIn(duration: 600.ms).slideY(begin: 0.1, end: 0),
@@ -248,7 +249,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           Text(
             "Connect with certified regional tour guides. Request custom bookings and secure narrative tours directly.",
             textAlign: TextAlign.center,
-            style: GoogleFonts.inter(fontSize: 16, color: Colors.white54, height: 1.6),
+            style: GoogleFonts.inter(fontSize: 16, color: AppPalette.earth, height: 1.6),
           ),
         ],
       ).animate().fadeIn(duration: 600.ms).slideY(begin: 0.1, end: 0),
@@ -279,7 +280,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           Text(
             "Explore with peace of mind. Live local safety alerts, offline map backups, and one-tap emergency SOS broadcasts.",
             textAlign: TextAlign.center,
-            style: GoogleFonts.inter(fontSize: 16, color: Colors.white54, height: 1.6),
+            style: GoogleFonts.inter(fontSize: 16, color: AppPalette.earth, height: 1.6),
           ),
         ],
       ).animate().fadeIn(duration: 600.ms).slideY(begin: 0.1, end: 0),
@@ -330,7 +331,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       width: active ? 28 : 8,
       height: 6,
       decoration: BoxDecoration(
-        color: active ? Theme.of(context).colorScheme.primary : Colors.white10,
+        color: active ? Theme.of(context).colorScheme.primary : AppPalette.sand,
         borderRadius: BorderRadius.circular(4),
       ),
     );

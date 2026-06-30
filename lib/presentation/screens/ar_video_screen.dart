@@ -1,9 +1,10 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:arcore_flutter_plugin/arcore_flutter_plugin.dart';
+import '../../core/mocks/arcore_flutter_plugin.dart';
 import 'package:video_player/video_player.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../features/ar_video/screens/ar_video_library_screen.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/services/ar_video_service.dart';
 import '../../data/models/ar_place_data.dart';
@@ -99,7 +100,7 @@ class _ARVideoScreenState extends State<ARVideoScreen> with SingleTickerProvider
           ),
 
           // Portal Display Logic
-          if (_portalOpened && _videoService.isInitialized)
+          if (_portalOpened && _videoService.controller != null && _videoService.controller!.value.isInitialized)
             Center(
               child: ScaleTransition(
                 scale: _portalScale,
@@ -118,11 +119,13 @@ class _ARVideoScreenState extends State<ARVideoScreen> with SingleTickerProvider
                     border: Border.all(color: AppTheme.sigiriyaOchre(context), width: 2),
                   ),
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(30),
-                    child: AspectRatio(
-                      aspectRatio: _videoService.controller!.value.aspectRatio,
-                      child: VideoPlayer(_videoService.controller!),
-                    ),
+                      borderRadius: BorderRadius.circular(30),
+                      child: (_videoService.controller != null && _videoService.controller!.value.isInitialized)
+                          ? AspectRatio(
+                              aspectRatio: _videoService.controller!.value.aspectRatio,
+                              child: VideoPlayer(_videoService.controller!),
+                            )
+                          : const Center(child: CircularProgressIndicator(color: AppPalette.rust)),
                   ),
                 ),
               ),
@@ -156,7 +159,13 @@ class _ARVideoScreenState extends State<ARVideoScreen> with SingleTickerProvider
               fontSize: 18,
             ),
           ),
-          const SizedBox(width: 48),
+          IconButton(
+            icon: const Icon(Icons.video_library, color: Colors.white),
+            onPressed: () => Navigator.pushReplacement(
+              context, 
+              MaterialPageRoute(builder: (_) => const ARVideoLibraryScreen())
+            ),
+          ),
         ],
       ),
     );

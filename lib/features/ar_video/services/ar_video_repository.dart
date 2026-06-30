@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/ar_video_content.dart';
-import '../../../../core/utils/secure_logger.dart';
+import '../../../core/utils/secure_logger.dart';
 
 /// Repository for fetching AR Cinematic content from Firestore.
 /// Collection: 'locations'

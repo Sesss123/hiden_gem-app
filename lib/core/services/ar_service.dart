@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart';
-import 'package:arcore_flutter_plugin/arcore_flutter_plugin.dart';
+import '../mocks/arcore_flutter_plugin.dart';
 import 'package:vector_math/vector_math_64.dart' as vector;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';

@@ -7,9 +7,9 @@ import '../models/ar_video_content.dart';
 import '../services/ar_video_repository.dart';
 import 'ar_video_screen.dart';
 import '../services/subtitle_service.dart'; // NarrationLang enum
-import '../../../../core/theme/app_theme.dart';
-import '../../../../presentation/widgets/batik_background.dart';
-import '../../../../core/utils/secure_logger.dart';
+import '../../../core/theme/app_theme.dart';
+import '../../../presentation/widgets/batik_background.dart';
+import '../../../core/utils/secure_logger.dart';
 
 class ARContentPreviewScreen extends StatefulWidget {
   final ARVideoContent content;

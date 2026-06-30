@@ -13,6 +13,7 @@ import '../../core/services/voice_recipe_service.dart';
 import '../../data/repositories/food_repository.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/config/app_config.dart';
+import 'real_time_food_scanner_screen.dart';
 
 class SavorLankaScreen extends ConsumerStatefulWidget {
   const SavorLankaScreen({super.key});
@@ -155,6 +156,7 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
               child: Column(
                 children: [
                   _buildTopBar(),
+                  _buildLiveAiBanner(),
                   const Spacer(),
                   if (_result != null) _buildResultCard(),
                   const SizedBox(height: 24),
@@ -203,6 +205,47 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
           ),
           SizedBox(width: 48),
         ],
+      ),
+    );
+  }
+
+  Widget _buildLiveAiBanner() {
+    return GestureDetector(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const RealTimeFoodScannerScreen()),
+      ),
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        decoration: BoxDecoration(
+          color: Colors.cyanAccent.withValues(alpha: 0.15),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: Colors.cyanAccent, width: 1.5),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.cyanAccent.withValues(alpha: 0.2),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.bolt_rounded, color: Colors.cyanAccent, size: 20),
+            const SizedBox(width: 8),
+            Text(
+              "⚡ LIVE REAL-TIME AI SCANNER (WEBSOCKET)",
+              style: GoogleFonts.outfit(
+                color: Colors.cyanAccent,
+                fontWeight: FontWeight.w900,
+                fontSize: 11,
+                letterSpacing: 1.5,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

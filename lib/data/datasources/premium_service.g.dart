@@ -6,7 +6,7 @@ part of 'premium_service.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$premiumNotifierHash() => r'958c7ce55dcfcae44b32d1d27fd85de652b32f31';
+String _$premiumNotifierHash() => r'e5f8c38a9e5109b68fd6ab988739256df5b74d6f';
 
 /// See also [PremiumNotifier].
 @ProviderFor(PremiumNotifier)

@@ -7,6 +7,8 @@ import '../../data/models/tour_review.dart';
 import '../../data/models/guide_analytics_snapshot.dart';
 import '../../data/repositories/review_repository.dart';
 import '../../data/repositories/analytics_repository.dart';
+import 'review_submission_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class GuideReviewsScreen extends ConsumerStatefulWidget {
   final String guideId;
@@ -23,6 +25,24 @@ class _GuideReviewsScreenState extends ConsumerState<GuideReviewsScreen> {
     final analyticsRepo = ref.watch(analyticsRepositoryProvider);
 
     return Scaffold(
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          final userId = FirebaseAuth.instance.currentUser?.uid ?? 'guest_user';
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ReviewSubmissionScreen(
+                guideId: widget.guideId,
+                sessionId: 'direct_review_${DateTime.now().millisecondsSinceEpoch}',
+                touristId: userId,
+              ),
+            ),
+          );
+        },
+        backgroundColor: Colors.amberAccent,
+        icon: const Icon(Icons.edit_note, color: Colors.black87),
+        label: Text("WRITE REVIEW", style: GoogleFonts.outfit(color: Colors.black87, fontWeight: FontWeight.bold)),
+      ),
       body: OracleUI.auraBackground(
         child: CustomScrollView(
           slivers: [

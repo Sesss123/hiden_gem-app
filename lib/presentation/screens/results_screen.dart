@@ -19,6 +19,8 @@ import '../widgets/skeleton_loaders.dart';
 import '../widgets/kinetic_timeline_view.dart';
 import 'map_route_screen.dart';
 import 'budget_tracker_screen.dart';
+
+import 'smart_match_screen.dart';
 import 'package:hidden_gems_sl/l10n/app_localizations.dart';
 import 'dart:ui';
 import '../../core/analytics/analytics_service.dart';
@@ -235,6 +237,13 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
                         }
                       },
                     ),
+                    IconButton(
+                      icon: Icon(Icons.person_search, color: Colors.amberAccent),
+                      onPressed: () => Navigator.push(
+                        context, 
+                        MaterialPageRoute(builder: (context) => const SmartMatchScreen())
+                      ),
+                    ),
                     SizedBox(width: 8),
                   ],
                   flexibleSpace: FlexibleSpaceBar(
@@ -363,7 +372,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
           ),
           
           // Ad Banner at bottom (Optimized & Polished)
-          if (!isPremium && _isBannerLoaded)
+          if (!isPremium && _isBannerLoaded && _bannerAd != null)
             Positioned(
               bottom: 0,
               left: 0,

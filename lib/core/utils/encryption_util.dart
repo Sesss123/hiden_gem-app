@@ -6,8 +6,14 @@ import 'secure_logger.dart';
 class EncryptionUtil {
   // SHARED KEYS FOR CROSS-PLATFORM DATA (HIDDEN GEMS)
   // In production, these should be fetched from a secure backend or KMS.
-  static const String _sharedAesKeyBase64 = 'uN7U8L4f3k8P8m9Qz2Wp5X7r9tBy1C3v5X7r9tBy1C3='; 
-  static const String _sharedHmacKeyBase64 = 'kP5v8N2m4Q9z1X3r7tBy9C1v3X5r7tBy9C1v3X5r7tB=';
+  static const String _sharedAesKeyBase64 = String.fromEnvironment(
+    'SHARED_AES_KEY',
+    defaultValue: 'uN7U8L4f3k8P8m9Qz2Wp5X7r9tBy1C3v5X7r9tBy1C3=', 
+  );
+  static const String _sharedHmacKeyBase64 = String.fromEnvironment(
+    'SHARED_HMAC_KEY',
+    defaultValue: 'kP5v8N2m4Q9z1X3r7tBy9C1v3X5r7tBy9C1v3X5r7tB=',
+  );
 
   static enc.Key? _cachedKey;
   static List<int>? _cachedHmacKey;

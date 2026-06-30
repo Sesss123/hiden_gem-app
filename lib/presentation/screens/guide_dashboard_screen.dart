@@ -32,6 +32,7 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
   List<Vehicle> _vehicles = [];
   bool _isLoading = true;
   Timer? _locationTimer;
+  StreamSubscription? _vehicleSub;
   
   final _sessionRepo = TourSessionRepository();
   final _vehicleRepo = VehicleRepository();
@@ -42,6 +43,13 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
   void initState() {
     super.initState();
     _loadInitialData();
+  }
+
+  @override
+  void dispose() {
+    _locationTimer?.cancel();
+    _vehicleSub?.cancel();
+    super.dispose();
   }
 
   Future<void> _loadInitialData() async {
@@ -111,7 +119,7 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
     final uid = AuthService().currentUser?.uid;
     if (uid != null) {
       final stream = _vehicleRepo.getGuideVehicles(uid);
-      stream.listen((v) {
+      _vehicleSub = stream.listen((v) {
         if (mounted) setState(() => _vehicles = v);
       });
     }

@@ -30,9 +30,10 @@ class AppCheckConfig {
 
       if (kIsWeb) {
         // Web: reCAPTCHA v3
-        // Note: Site key matched with web/index.html
+        // Note: Site key matched with web/index.html. Fetched from env variables.
+        const siteKey = String.fromEnvironment('RECAPTCHA_SITE_KEY', defaultValue: '6Lfm-GsqAAAAAHA_-Wj_P_X_X_X_X_X_X_X_X');
         await FirebaseAppCheck.instance.activate(
-          providerWeb: ReCaptchaV3Provider('6Lfm-GsqAAAAAHA_-Wj_P_X_X_X_X_X_X_X_X'),
+          providerWeb: ReCaptchaV3Provider(siteKey),
         );
         debugPrint('[AppCheck] ✅ Web: reCAPTCHA v3 activated.');
       } else {
