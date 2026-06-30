@@ -7,7 +7,9 @@ import '../../data/models/tour_review.dart';
 import '../../data/models/guide_analytics_snapshot.dart';
 import '../../data/repositories/review_repository.dart';
 import '../../data/repositories/analytics_repository.dart';
+import '../../data/services/subscription_service.dart';
 import 'review_submission_screen.dart';
+import 'subscription_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class GuideReviewsScreen extends ConsumerStatefulWidget {
@@ -48,15 +50,30 @@ class _GuideReviewsScreenState extends ConsumerState<GuideReviewsScreen> {
           slivers: [
             _buildAppBar(),
             SliverToBoxAdapter(
-              child: FutureBuilder<GuideAnalyticsSnapshot?>(
-                future: analyticsRepo.getLatestSnapshot(widget.guideId),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
+              child: FutureBuilder<bool>(
+                future: _canViewAnalytics(),
+                builder: (context, entSnapshot) {
+                  if (entSnapshot.connectionState == ConnectionState.waiting) {
                     return const SizedBox(height: 200, child: Center(child: CircularProgressIndicator()));
                   }
-                  final data = snapshot.data;
-                  if (data == null) return const SizedBox.shrink();
-                  return _buildTrustHeader(data);
+                  
+                  final hasAccess = entSnapshot.data ?? false;
+                  
+                  if (!hasAccess) {
+                    return _buildLockedPremiumFeature();
+                  }
+
+                  return FutureBuilder<GuideAnalyticsSnapshot?>(
+                    future: analyticsRepo.getLatestSnapshot(widget.guideId),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const SizedBox(height: 200, child: Center(child: CircularProgressIndicator()));
+                      }
+                      final data = snapshot.data;
+                      if (data == null) return const SizedBox.shrink();
+                      return _buildTrustHeader(data);
+                    },
+                  );
                 },
               ),
             ),
@@ -106,6 +123,59 @@ class _GuideReviewsScreenState extends ConsumerState<GuideReviewsScreen> {
         title: OracleUI.neonText(
           "REPUTATION LOG",
           style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w900, letterSpacing: 2, color: Colors.white),
+        ),
+      ),
+    );
+  }
+
+  Future<bool> _canViewAnalytics() async {
+    final userId = FirebaseAuth.instance.currentUser?.uid;
+    if (userId == null) return false;
+    
+    // If the guide is viewing their own dashboard, enforce the entitlement.
+    if (userId == widget.guideId) {
+      return await ref.read(subscriptionServiceProvider).hasEntitlement(userId, 'analyticsAccess');
+    }
+    
+    // Public profile visitors (Tourists, Operators) can see public stats.
+    return true;
+  }
+
+  Widget _buildLockedPremiumFeature() {
+    return Padding(
+      padding: const EdgeInsets.all(20),
+      child: OracleUI.glassContainer(
+        padding: const EdgeInsets.all(32),
+        borderRadius: BorderRadius.circular(32),
+        borderColor: Colors.amber.withValues(alpha: 0.3),
+        child: Column(
+          children: [
+            const Icon(Icons.lock_person_rounded, size: 48, color: Colors.amber),
+            const SizedBox(height: 16),
+            Text(
+              "PREMIUM ANALYTICS LOCKED",
+              style: GoogleFonts.outfit(color: Colors.amber, fontSize: 14, fontWeight: FontWeight.w900, letterSpacing: 2),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              "Upgrade to PRO or ELITE to unlock deep insights into your performance, trust score, and tourist feedback.",
+              textAlign: TextAlign.center,
+              style: GoogleFonts.inter(color: Colors.white70, fontSize: 12),
+            ),
+            const SizedBox(height: 24),
+            ElevatedButton(
+              onPressed: () {
+                // Navigate to subscription screen
+                Navigator.push(context, MaterialPageRoute(builder: (_) => const SubscriptionScreen()));
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.amber,
+                foregroundColor: Colors.black,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+              ),
+              child: Text("UPGRADE NOW", style: GoogleFonts.outfit(fontWeight: FontWeight.bold)),
+            ),
+          ],
         ),
       ),
     );

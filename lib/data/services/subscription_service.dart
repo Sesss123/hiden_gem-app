@@ -1,6 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/subscription_record.dart';
+import 'package:purchases_flutter/purchases_flutter.dart';
+import 'package:uuid/uuid.dart';
+import 'package:flutter/services.dart';
 
 final subscriptionServiceProvider = Provider((ref) => SubscriptionService());
 
@@ -63,6 +66,60 @@ class SubscriptionService {
     };
     
     return limits[planId]?[key] ?? 0;
+  }
+
+  /// Initiates a real payment via RevenueCat.
+  Future<void> purchasePlan(String planId, String accountId, String accountType) async {
+    // Map internal plan IDs to RevenueCat product identifiers
+    final revenueCatProductId = planId == 'pro' ? 'guide_pro_monthly' : 'guide_elite_monthly';
+
+    try {
+      // 1. Fetch available products from RevenueCat
+      final offerings = await Purchases.getOfferings();
+      if (offerings.current == null || offerings.current!.availablePackages.isEmpty) {
+        throw Exception("No products available or configured in RevenueCat.");
+      }
+
+      // 2. Find the specific package to purchase
+      Package? packageToBuy;
+      for (var package in offerings.current!.availablePackages) {
+        if (package.storeProduct.identifier == revenueCatProductId) {
+          packageToBuy = package;
+          break;
+        }
+      }
+
+      if (packageToBuy == null) {
+        throw Exception("Product $revenueCatProductId not found in current offering.");
+      }
+
+      // 3. Initiate the native purchase flow
+      final purchaseResult = await Purchases.purchase(PurchaseParams.package(packageToBuy));
+
+      // 4. If successful, sync the active subscription with our Firestore database
+      if (purchaseResult.customerInfo.entitlements.all.isNotEmpty) {
+        final record = SubscriptionRecord(
+          subscriptionId: const Uuid().v4(),
+          accountId: accountId,
+          accountType: accountType,
+          planId: planId,
+          status: 'active',
+          startedAt: DateTime.now(),
+          expiresAt: DateTime.now().add(const Duration(days: 30)), // Basic estimation, real expiry is in RevenueCat
+          entitlements: {},
+        );
+        await startSubscription(record);
+      } else {
+         throw Exception("Purchase completed but no entitlements were unlocked.");
+      }
+    } on PlatformException catch (e) {
+      final errorCode = PurchasesErrorHelper.getErrorCode(e);
+      if (errorCode == PurchasesErrorCode.purchaseCancelledError) {
+        throw Exception("Purchase was cancelled.");
+      } else {
+        throw Exception("Failed to process payment: $e");
+      }
+    }
   }
 
   /// Upgrades or starts a new subscription.

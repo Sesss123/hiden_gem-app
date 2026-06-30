@@ -57,6 +57,11 @@ class AuthService {
   }
 
 
+  // Send password reset email
+  Future<void> sendPasswordResetEmail(String email) async {
+    await _auth.sendPasswordResetEmail(email: email.trim());
+  }
+
   // Sign up with Email
   Future<UserCredential?> signUpWithEmail(String email, String password, String name) async {
     try {

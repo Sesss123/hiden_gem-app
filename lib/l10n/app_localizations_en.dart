@@ -9,7 +9,7 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get appTitle => 'TripMe.ai';
+  String get appTitle => 'Hidden Gems SL';
 
   @override
   String get goodMorningAdmin => 'Good Morning, Admin';
@@ -136,7 +136,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get searchHint => 'Search for hidden gems...';
 
   @override
-  String get picksForYou => 'TripMe Picks for you';
+  String get picksForYou => 'Hidden Gems SL Picks for you';
 
   @override
   String get exploreInAr => 'Explore in AR';

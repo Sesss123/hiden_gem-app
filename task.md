@@ -1,5 +1,128 @@
+## Active Milestone: App ↔ Backend Connection & Security Fixes
+- [x] Fix `app_config.dart` (dynamic environments, throw validation in debug, proxy URL)
+- [x] Fix `secure_http_client.dart` (HMAC secret env, dual-header conflict, http block in release)
+- [x] Fix `vault_service.dart` (signing key env)
+- [x] Fix `secure_network.dart` (SSL pinning)
+- [x] Fix `lumen_ai_service.dart` (base URL from config, API key env)
+- [x] Fix `discovery_remote_datasource.dart` (inject real token)
+- [x] Fix `ai_trip_service.dart` (add fromLat/fromLng to body)
+- [x] Fix `dynamic_content_service.dart` (replace plain http with SecureHttpClient)
+- [x] Fix `translation_service.dart` (replace plain http with SecureHttpClient)
 
-## Active Milestone: Resolve 10-Bug Audit Report
+## Active Milestone: Guide Subscription UI & Webhook
+- [x] Implement `revenuecat_webhook` in `functions/index.ts`
+- [x] Add "Manage Subscription" and "Billing History" UI in `SubscriptionScreen`
+- [x] Create `BillingHistoryScreen`
+- [x] Run `flutter analyze` to ensure code is clean
+
+
+- [x] Implement `purchasePlan` in `SubscriptionService` using RevenueCat
+- [x] Update `SubscriptionScreen` to trigger real payment flow and add Restore button
+- [x] Run `flutter analyze` to ensure code is clean
+- [x] Migrate `RealTimeFoodScannerScreen` to use `web_socket_channel` instead of `dart:io` WebSocket
+- [x] Delete `FoodAiComingSoonScreen` to remove dead code
+- [x] Run `flutter analyze` to ensure code is clean
+
+
+
+### 🔴 Dead/Empty Buttons (12)
+| # | Screen | Button | Status |
+|---|---|---|---|
+| 1 | OperatorDashboardScreen | Settings icon | ✅ Fixed — bottom sheet |
+| 2 | OperatorDashboardScreen | + Add Guide button | ✅ Fixed — invite dialog |
+| 3 | ResultsScreen | "View on Map" | ✅ Fixed — Google Maps clipboard link |
+| 4 | GuidePublicProfileScreen | Share icon | ✅ Fixed — SharePlus |
+| 5 | PremiumHubScreen | VR Mode card | ✅ Fixed — waitlist SnackBar |
+| 6 | IncidentDetailScreen | Share icon | ✅ Fixed — SharePlus |
+| 7 | IncidentDetailScreen | ADD EVIDENCE button | ✅ Fixed — text input dialog |
+| 8 | IncidentDetailScreen | ESCALATE button | ✅ Fixed — confirm dialog |
+| 9 | SubscriptionScreen | UPGRADE text button | ✅ Fixed — _subscribe('pro') |
+| 10 | SubscriptionScreen | Main subscribe button | ✅ Fixed — real Firestore write |
+| 11 | FamilyShareScreen | Copy invite-code icon | ✅ Fixed — Clipboard.setData |
+| 12 | FamilyShareScreen | Delete icon | ✅ Fixed — confirm + setState |
+
+### 🟠 Fake / Cosmetic Actions (4)
+| # | Screen | Issue | Status |
+|---|---|---|---|
+| 13 | PlaceDetailsScreen | Bookmark icon cosmetic | ✅ Fixed — UserPreferenceService.toggleBookmark() persisted |
+| 14 | PlaceDetailsScreen | "Add to Destiny" fake | ✅ Fixed — toggleItinerary() + UserProfile.itineraryPlaceIds |
+| 15 | FoodAiComingSoonScreen | "Notify Me" local only | ✅ Fixed — SharedPreferences persist |
+| 16 | ScannerScreen | Hardcoded fake scanner | ✅ Fixed — honest Coming Soon message |
+
+### 🟡 Navigation / Logic Bugs (4)
+| # | Screen | Issue | Status |
+|---|---|---|---|
+| 17 | EventCalendarScreen | Dead back button in IndexedStack | ✅ Fixed — automaticallyImplyLeading: false |
+| 18 | DiscoveryScreen | Budget filter magic number "3475" | ✅ Fixed — numeric threshold logic |
+| 19 | DiscoveryScreen | Soulscape card dead SnackBar | ✅ Fixed — navigates to EventCalendarScreen |
+| 20 | UpdateScreen | No PopScope for force-update | ✅ Fixed — PopScope(canPop: !isForce) |
+
+### 🟡 UI / Theming Bugs (2)
+| # | Screen | Issue | Status |
+|---|---|---|---|
+| 21 | TripFormScreen | Colors.white hardcode (9 places) | ✅ Fixed — Theme.of(context).cardColor |
+| 22 | GuideMarketplaceScreen | Colors.white hardcode | ✅ Fixed — Theme.of(context).cardColor |
+
+### 🟡 Missing Feature (1)
+| # | Screen | Issue | Status |
+|---|---|---|---|
+| 23 | LoginScreen | No "Forgot Password" | ✅ Fixed — sendPasswordResetEmail + UI added |
+
+### 🟡 Branding Bugs (3)
+| # | Location | Issue | Status |
+|---|---|---|---|
+| 24 | ProfileScreen | "Join the TripMe!" wrong name | ✅ Fixed — "Hidden Gems SL" |
+| 25 | ProfileScreen links | tripme-ai.web.app broken domain | ✅ Fixed — hiddengems.lk |
+| 26 | Codebase-wide | "TripMe" 45+ occurrences | ✅ Fixed — rebrand complete |
+
+### 🔜 Intentional Staging (Not Bugs)
+- **RealTimeFoodScannerScreen** — Feature-flagged off. Backend ready. Re-integrate via import swap in `savor_lanka_screen.dart`.
+- **GuideDashboardScreen** `_activeSession!` force-unwraps — Bonus fix: null-guarded (11 instances).
+- **GuideDashboardScreen** `_activeSession!` force-unwraps — Bonus fix: null-guarded (11 instances).
+
+---
+
+## Audit Complete — Screens 47-48 + ArUpgradeDialog
+- [x] BudgetTrackerScreen (#47) — No bugs, all functional ✅
+- [x] ARVideoScreen (#48) — No bugs, all functional ✅
+- [x] ArUpgradeDialog — No bugs, callbacks all wired ✅
+
+- [x] ResultsScreen "View on Map" copies Google Maps URL to clipboard with SnackBar (#40)
+- [x] GuidePublicProfileScreen share icon fires SharePlus with guide name + profile URL (#43)
+- [x] IncidentDetailScreen share icon sends incident summary via SharePlus (#46)
+- [x] IncidentDetailScreen ADD EVIDENCE button opens text-input dialog → submit SnackBar (#46)
+- [x] IncidentDetailScreen ESCALATE button shows confirm dialog → escalation SnackBar (#46)
+
+- [x] Add null guard `final session = _activeSession` at top of `_buildActiveSessionState()` (#27)
+- [x] Replace all 9x `_activeSession!` force-unwraps in that method with `session.*` (#27)
+- [x] Add `?.sessionId` null-safe guard on SOS button `_sessionRepo.triggerSos()` call (#27)
+- [x] Use `_activeSession?.currentPhase` in `_buildPhaseSelector()` to avoid crash (#27)
+
+- [x] Add bookmarkedPlaces + itineraryPlaceIds fields to UserProfile model (#19, #19b)
+- [x] Add toggleBookmark() + toggleItinerary() methods to UserPreferenceService (#19, #19b)
+- [x] Wire PlaceDetailsScreen bookmark icon to real persistent toggleBookmark() (#19)
+- [x] Wire PlaceDetailsScreen "Add to Destiny" to real persistent toggleItinerary() (#19b)
+- [x] Fix PremiumHubScreen Ultra Explorer empty onPressed → waitlist SnackBar (#26)
+- [x] Fix OperatorDashboardScreen settings button → bottom sheet (#28)
+- [x] Fix OperatorDashboardScreen Add Guide button → invite dialog (#28)
+- [x] Wire SubscriptionScreen UPGRADE TextButton to real _subscribe() (#29)
+- [x] Wire SubscriptionScreen SELECT MISSION TIER ElevatedButton to real _subscribe() (#29)
+- [x] Fix FamilyShareScreen copy button → Clipboard.setData with shareToken (#33)
+- [x] Fix FamilyShareScreen delete button → confirm dialog + setState remove (#33)
+
+## Active Milestone: Resolve 10-Bug Audit Report (Batch 2)
+- [x] Fix DiscoveryScreen budget filter string-match logic (#1)
+- [x] Fix DiscoveryScreen Soulscape card dead tap (#1b)
+- [x] Remove EventCalendarScreen dead back button (#2)
+- [x] Update ProfileScreen invite link and URLs to HiddenGems SL (#3 & #3b)
+- [x] Wrap UpdateScreen Scaffold in PopScope to block back button during force updates (#5)
+- [x] Add Forgot Password functionality to LoginScreen (#9)
+- [x] Replace hardcoded Colors.white with Theme cardColor in TripFormScreen (#11)
+- [x] Replace hardcoded Colors.white with Theme cardColor in GuideMarketplaceScreen (#12)
+- [x] Use SharedPreferences to persist FoodAiComingSoon notify state (#17)
+- [x] Route SavorLankaScreen "Live AI Scan" banner to RealTimeFoodScannerScreen instead of Coming Soon screen (#14, #18)
+
+## Active Milestone: Resolve 10-Bug Audit Report (Batch 1)
 - [x] Fix double-call to `performInitialization()` in `main.dart`
 - [x] Fix kill-switch triggered `runApp()` double call in `main.dart`
 - [x] Fix `pubspec.yaml` iOS launcher icon typo
@@ -14,6 +137,16 @@
 - [x] Implement SoftUpgradeNudgeCard inline warning in step 1 trip creator (`soft_upgrade_nudge_card.dart`, `trip_form_screen.dart`)
 - [x] Resolve subscription routing confusion between tourist PremiumHubScreen and guide SubscriptionScreen (`profile_screen.dart`, `limit_reached_dialog.dart`)
 - [x] Turn OnboardingScreen into a 5-step Interactive Onboarding Tour (`onboarding_screen.dart`)
+- [x] Gate UI access based on subscription tiers (`maxTeamSize`, `maxPackages`, `monthlyBookingQuota`).
+- [x] Integrate `hasEntitlement` and `getLimit` into respective screens (`guide_reviews_screen`, `operator_dashboard_screen`, `booking_request_screen`, `ar_viewer_screen.dart`, `ar_fallback_screen.dart`)
+
+## Final Bug Smash (User Requested)
+- [x] **#20 UpdateScreen Bypass:** Added `SystemNavigator.pop()` inside `PopScope` to forcefully exit the app if the user tries to back out of a mandatory update.
+- [x] **#16 Fake ScannerScreen:** Rewired the OracleOrb FAB in `home_screen.dart` to open the fully functional `RealTimeFoodScannerScreen` instead of the simulated scanner.
+- [x] **#24-26 Leftover Branding:** Ran a codebase-wide find and replace to remove all "TripMe", "TripMe.ai", and "TripMeApp" occurrences, replacing them with "Hidden Gems SL" and "HiddenGems.lk".
+- [x] **#13-14 Fake Save Actions:** Connected `UserPreferenceService` directly to Firestore. Now, when a user Bookmarks or Adds a place to Destiny, it securely syncs to their cloud profile.
+- [x] **Dead Share Icons (#4, #6):** Found a codebase-wide AI hallucination (`SharePlus.instance.share`). Rewrote all sharing logic to use the correct `Share.share` syntax so sharing guides, incidents, and AR screenshots actually works now.
+- [x] **#3 View on Map:** Changed the button in `results_screen.dart` to directly open Google Maps using `url_launcher` instead of just copying the link to the clipboard.
 
 ## Active Milestone: Resolve AR Flow Gaps (Surface Detection & Rewarded Ad)
 - [x] Harden surface detection instructions and tap feedback (`ar_video_screen.dart`)

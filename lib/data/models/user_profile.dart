@@ -6,6 +6,8 @@ class UserProfile {
   List<String> preferredStyles;
   double avgBudgetLkr;
   List<String> visitedPlaces;
+  List<String> bookmarkedPlaces;   // Persisted bookmarks (Bug #19)
+  List<String> itineraryPlaceIds;  // "Add to Destiny" itinerary (Bug #19b)
   String vibe; // "luxury", "explorer", "photographer", "budget"
   int totalTripsGenerated;
   String? languageCode;
@@ -82,9 +84,13 @@ class UserProfile {
     this.offlineDownloadsUsed = 0,
     this.usageResetDate,
     this.premiumSignature,
+    List<String>? bookmarkedPlaces,
+    List<String>? itineraryPlaceIds,
   })  : sosContacts = sosContacts ?? [],
         tripHistory = tripHistory ?? [],
-        ownedArPacks = ownedArPacks ?? [];
+        ownedArPacks = ownedArPacks ?? [],
+        bookmarkedPlaces = bookmarkedPlaces ?? [],
+        itineraryPlaceIds = itineraryPlaceIds ?? [];
 
   factory UserProfile.defaultProfile({String uid = 'TEMP'}) {
     return UserProfile(
@@ -146,6 +152,8 @@ class UserProfile {
         'offlineDownloadsUsed': offlineDownloadsUsed,
         'usageResetDate': usageResetDate?.toIso8601String(),
         'premiumSignature': premiumSignature,
+        'bookmarkedPlaces': bookmarkedPlaces,
+        'itineraryPlaceIds': itineraryPlaceIds,
       };
 
   factory UserProfile.fromJson(Map<String, dynamic> json) => UserProfile(
@@ -185,5 +193,7 @@ class UserProfile {
         offlineDownloadsUsed: json['offlineDownloadsUsed'] ?? 0,
         usageResetDate: json['usageResetDate'] != null ? DateTime.parse(json['usageResetDate']) : null,
         premiumSignature: json['premiumSignature'],
+        bookmarkedPlaces: List<String>.from(json['bookmarkedPlaces'] ?? []),
+        itineraryPlaceIds: List<String>.from(json['itineraryPlaceIds'] ?? []),
       );
 }

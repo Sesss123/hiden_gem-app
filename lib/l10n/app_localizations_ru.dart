@@ -9,25 +9,25 @@ class AppLocalizationsRu extends AppLocalizations {
   AppLocalizationsRu([String locale = 'ru']) : super(locale);
 
   @override
-  String get appTitle => 'TripMe.ai';
+  String get appTitle => 'Hidden Gems SL';
 
   @override
   String get goodMorningAdmin => 'Доброе утро, администратор';
 
   @override
-  String get oracleToday => 'Вот что происходит с Оракулом сегодня.';
+  String get oracleToday => 'Вот что происходит сегодня с Оракулом.';
 
   @override
-  String get totalUsers => 'ВСЕГО ПОЛЬЗОВАТЕЛЕЙ';
+  String get totalUsers => 'Всего пользователей';
 
   @override
-  String get plansToday => 'ПЛАНОВ СЕГОДНЯ';
+  String get plansToday => 'Планы на сегодня';
 
   @override
-  String get avgConfidence => 'СРЕДНЯЯ УВЕРЕННОСТЬ';
+  String get avgConfidence => 'Средняя уверенность';
 
   @override
-  String get revenue => 'ДОХОД (LKR)';
+  String get revenue => 'Доход (LKR)';
 
   @override
   String get oraclesChoice => 'Выбор Оракула';
@@ -39,7 +39,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get selectLanguage => 'Выберите ваш язык';
 
   @override
-  String get continueButton => 'ПРОДОЛЖИТЬ';
+  String get continueButton => 'Продолжить';
 
   @override
   String get home => 'Главная';
@@ -60,7 +60,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get style => 'Стиль';
 
   @override
-  String get planB => 'Plan B';
+  String get planB => 'План Б';
 
   @override
   String get tips => 'Советы';
@@ -96,256 +96,261 @@ class AppLocalizationsRu extends AppLocalizations {
   String get openOnMap => 'Открыть на карте';
 
   @override
-  String get planNewTrip => 'Запланировать поездку';
+  String get planNewTrip => 'Планировать новую поездку';
 
   @override
-  String get localGemsOffline => 'Local Gems (Offline)';
+  String get localGemsOffline => 'Местные жемчужины (Офлайн)';
 
   @override
   String get privacyPolicy => 'Политика конфиденциальности';
 
   @override
-  String get termsOfService => 'Условия использования';
+  String get termsOfService => 'Условия предоставления услуг';
 
   @override
-  String get supportCenter => 'Support Center';
+  String get supportCenter => 'Центр поддержки';
 
   @override
-  String get deleteAccount => 'Delete Account';
+  String get deleteAccount => 'Удалить аккаунт';
 
   @override
-  String get inviteFriends => 'Invite Friends';
+  String get inviteFriends => 'Пригласить друзей';
 
   @override
-  String get confirmDeleteTitle => 'Delete account permanently?';
+  String get confirmDeleteTitle => 'Удалить аккаунт навсегда?';
 
   @override
   String get confirmDeleteMessage =>
-      'This action is permanent and cannot be undone. All your saved trips and data will be lost.';
+      'Это действие необратимо. Все ваши сохраненные поездки и данные будут удалены.';
 
   @override
-  String get cancel => 'Cancel';
+  String get cancel => 'Отмена';
 
   @override
-  String get deleteForever => 'Delete Forever';
+  String get deleteForever => 'Удалить навсегда';
 
   @override
-  String get discoveryHeader => 'Discover';
+  String get discoveryHeader => 'Открытия';
 
   @override
   String get searchHint => 'Поиск скрытых жемчужин...';
 
   @override
-  String get picksForYou => 'TripMe Picks for you';
+  String get picksForYou => 'Hidden Gems SL Выбор для вас';
 
   @override
-  String get exploreInAr => 'Explore in AR';
+  String get exploreInAr => 'Исследовать в AR';
 
   @override
-  String get bestNatureNearby => 'Best Nature nearby';
+  String get bestNatureNearby => 'Лучшая природа рядом';
 
   @override
-  String get topCultureSpots => 'Top Culture spots';
+  String get topCultureSpots => 'Топ культурных мест';
 
   @override
-  String get villageStayTitle => 'Village & Authentic Stays';
+  String get villageStayTitle => 'Деревенский и аутентичный отдых';
 
   @override
-  String get noMatchesNearby => 'No matches nearby';
+  String get noMatchesNearby => 'Поблизости нет совпадений';
 
   @override
   String get tryIncreasingDistance =>
-      'Try increasing distance or removing filters.';
+      'Попробуйте увеличить расстояние или убрать фильтры.';
 
   @override
-  String get filterAll => 'All';
+  String get filterAll => 'Все';
 
   @override
-  String get filterNature => 'Nature 🌿';
+  String get filterNature => 'Природа 🌿';
 
   @override
-  String get filterWaterfall => 'Waterfall 🌊';
+  String get filterWaterfall => 'Водопад 🌊';
 
   @override
-  String get filterHiking => 'Hiking 🥾';
+  String get filterHiking => 'Поход 🥾';
 
   @override
-  String get filterCulture => 'Culture 🏛️';
+  String get filterCulture => 'Культура 🏛️';
 
   @override
-  String get filterCoastal => 'Coastal 🌊';
+  String get filterCoastal => 'Побережье 🌊';
 
   @override
-  String get filterFamily => 'Family 👨‍👩‍👧‍👦';
+  String get filterFamily => 'Семья 👨‍👩‍👧‍👦';
 
   @override
-  String get filterBudget => 'Budget 💸';
+  String get filterBudget => 'Бюджет 💸';
 
   @override
-  String get filterAr => 'AR Places 🏛';
+  String get filterAr => 'AR места 🏛';
 
   @override
-  String get categoryNature => 'Nature';
+  String get categoryNature => 'Природа';
 
   @override
-  String get categoryWaterfall => 'Waterfall';
+  String get categoryWaterfall => 'Водопад';
 
   @override
-  String get categoryHiking => 'Hiking';
+  String get categoryHiking => 'Поход';
 
   @override
-  String get categoryCulture => 'Culture';
+  String get categoryCulture => 'Культура';
 
   @override
-  String get categoryCoastal => 'Coastal';
+  String get categoryCoastal => 'Побережье';
 
   @override
-  String get categoryFamily => 'Family';
+  String get categoryFamily => 'Семья';
 
   @override
-  String get categoryBudget => 'Budget';
+  String get categoryBudget => 'Бюджет';
 
   @override
-  String get oracleVision => 'ORACLE\\\'S VISION';
+  String get oracleVision => 'ВИДЕНИЕ ОРАКУЛА';
 
   @override
-  String get theKnowledge => 'THE KNOWLEDGE';
+  String get theKnowledge => 'ЗНАНИЯ';
 
   @override
-  String get safetyProtocols => 'SAFETY PROTOCOLS';
+  String get safetyProtocols => 'ПРОТОКОЛЫ БЕЗОПАСНОСТИ';
 
   @override
-  String get provisions => 'PROVISIONS';
+  String get provisions => 'ОБЕСПЕЧЕНИЕ';
 
   @override
-  String get sustainableEthos => 'SUSTAINABLE ETHOS';
+  String get sustainableEthos => 'УСТОЙЧИВАЯ ЭТИКА';
 
   @override
-  String get culturalEtiquette => 'CULTURAL ETIQUETTE';
+  String get culturalEtiquette => 'КУЛЬТУРНЫЙ ЭТИКЕТ';
 
   @override
-  String get ecoResponsibleTravel => 'ECO-RESPONSIBLE TRAVEL';
+  String get ecoResponsibleTravel => 'ЭКО-ОТВЕТСТВЕННОЕ ПУТЕШЕСТВИЕ';
 
   @override
-  String get tapToTranslate => 'TAP TO TRANSLATE';
+  String get tapToTranslate => 'НАЖМИТЕ ДЛЯ ПЕРЕВОДА';
 
   @override
-  String get moment => 'MOMENT';
+  String get moment => 'МОМЕНТ';
 
   @override
-  String get offering => 'OFFERING';
+  String get offering => 'ПРЕДЛОЖЕНИЕ';
 
   @override
-  String get reality => 'REALITY';
+  String get reality => 'РЕАЛЬНОСТЬ';
 
   @override
-  String get aerDimensionReady => 'AER DIMENSION READY';
+  String get aerDimensionReady => 'AER ИЗМЕРЕНИЕ ГОТОВО';
 
   @override
-  String get invokeAr => 'INVOKE AR';
+  String get invokeAr => 'ВЫЗВАТЬ AR';
 
   @override
-  String get addToDestiny => 'ADD TO DESTINY';
+  String get addToDestiny => 'ДОБАВИТЬ В МАРШРУТ';
 
   @override
-  String get distanceLockTitle => 'DISTANCE LOCK';
+  String get distanceLockTitle => 'ОГРАНИЧЕНИЕ ПО РАССТОЯНИЮ';
 
   @override
   String distanceLockMessage(Object distance) {
-    return 'You are $distance KM away. Seekers can only access the AER dimension within 500M of the site.';
+    return 'Вы находитесь в $distance км. Доступ к AER измерению возможен только в пределах 500м от места.';
   }
 
   @override
-  String get arCoreNotDetected => 'AR CORE NOT DETECTED';
+  String get arCoreNotDetected => 'AR CORE НЕ ОБНАРУЖЕН';
 
   @override
   String get arCoreMessage =>
-      'Traveler, the ancient visions require ARCore to manifest. Please ensure it is installed and updated on your device.';
+      'Путешественник, для древних видений требуется ARCore. Пожалуйста, убедитесь, что он установлен и обновлен на вашем устройстве.';
 
   @override
-  String get road => 'ROAD';
+  String get road => 'ДОРОГА';
 
   @override
-  String get access => 'ACCESS';
+  String get access => 'ДОСТУП';
 
   @override
-  String get parking => 'PARKING';
+  String get parking => 'ПАРКОВКА';
 
   @override
-  String get syncingResonance => 'Syncing with ancient resonance...';
+  String get syncingResonance => 'Синхронизация с древним резонансом...';
 
   @override
-  String get resonanceLost => 'Resonance Lost';
+  String get resonanceLost => 'Резонанс потерян';
 
   @override
   String get gpsRequired =>
-      'We couldn\'t verify your location. Ensure GPS is active.';
+      'Мы не смогли подтвердить ваше местоположение. Убедитесь, что GPS включен.';
 
   @override
-  String get unlockTeleport => 'UNLOCK TELEPORT';
+  String get unlockTeleport => 'РАЗБЛОКИРОВАТЬ ТЕЛЕПОРТ';
 
   @override
-  String get close => 'CLOSE';
+  String get close => 'ЗАКРЫТЬ';
 
   @override
-  String get understood => 'Understood';
+  String get understood => 'Понятно';
 
   @override
-  String get ancestralPortalOpen => 'ANCESTRAL PORTAL OPEN';
+  String get ancestralPortalOpen => 'ДРЕВНИЙ ПОРТАЛ ОТКРЫТ';
 
   @override
-  String get stepIntoHistory => 'Step into history';
+  String get stepIntoHistory => 'Шагнуть в историю';
 
   @override
   String viewEraIn360(Object era) {
-    return 'View $era in 360°';
+    return 'Смотреть $era на 360°';
   }
 
   @override
-  String get arDemoLabel => '10-Second AR Demo';
+  String get arDemoLabel => '10-секундное AR демо';
 
   @override
-  String get fullHeritageAr => 'Full Heritage AR';
+  String get fullHeritageAr => 'Полное Наследие AR';
 
   @override
-  String get ancientHeritageSite => 'Ancient Heritage Site';
+  String get ancientHeritageSite => 'Объект древнего наследия';
 
   @override
-  String get arTipPlace => 'Tap the surface to place the 3D reconstruction';
+  String get arTipPlace =>
+      'Коснитесь поверхности, чтобы разместить 3D реконструкцию';
 
   @override
-  String get arTipTime => 'Swipe \"Then/Now\" to travel through time';
+  String get arTipTime => 'Смахните «Тогда/Сейчас» для путешествия во времени';
 
   @override
-  String get arTipAudio => 'Audio guide available in Sinhala & English';
+  String get arTipAudio =>
+      'Доступен аудиогид на сингальском и английском языках';
 
   @override
-  String get arTipGroup => 'Host or join a group AR tour';
+  String get arTipGroup =>
+      'Организуйте или присоединяйтесь к групповому AR туру';
 
   @override
-  String get openArPortal => 'OPEN AR PORTAL';
+  String get openArPortal => 'ОТКРЫТЬ AR ПОРТАЛ';
 
   @override
-  String get enterDemo => 'ENTER DEMO (10s)';
+  String get enterDemo => 'ВОЙТИ В ДЕМО (10с)';
 
   @override
-  String get offlineReady => 'Offline Ready';
+  String get offlineReady => 'Готово к офлайн';
 
   @override
-  String get assetsCached => 'Heritage assets cached for offline use!';
+  String get assetsCached =>
+      'Активы наследия кэшированы для использования офлайн!';
 
   @override
-  String get downloadFailed => 'Download failed. Please check connection.';
+  String get downloadFailed =>
+      'Сбой загрузки. Пожалуйста, проверьте подключение.';
 
   @override
-  String get downloadForOffline => 'Download for Offline';
+  String get downloadForOffline => 'Скачать для офлайн';
 
   @override
-  String get initiateTravel => 'INITIATE TRAVEL SEQUENCE';
+  String get initiateTravel => 'НАЧАТЬ ПОСЛЕДОВАТЕЛЬНОСТЬ ПУТЕШЕСТВИЯ';
 
   @override
-  String get selectOracleLanguage => 'SELECT YOUR ORACLE LANGUAGE';
+  String get selectOracleLanguage => 'ВЫБЕРИТЕ ЯЗЫК ОРАКУЛА';
 
   @override
-  String get skipForNow => 'SKIP FOR NOW';
+  String get skipForNow => 'ПОКА ПРОПУСТИТЬ';
 }

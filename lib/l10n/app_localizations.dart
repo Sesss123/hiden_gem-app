@@ -109,7 +109,7 @@ abstract class AppLocalizations {
   /// The title of the application
   ///
   /// In en, this message translates to:
-  /// **'TripMe.ai'**
+  /// **'Hidden Gems SL'**
   String get appTitle;
 
   /// No description provided for @goodMorningAdmin.
@@ -361,7 +361,7 @@ abstract class AppLocalizations {
   /// No description provided for @picksForYou.
   ///
   /// In en, this message translates to:
-  /// **'TripMe Picks for you'**
+  /// **'Hidden Gems SL Picks for you'**
   String get picksForYou;
 
   /// No description provided for @exploreInAr.

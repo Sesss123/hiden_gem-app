@@ -366,7 +366,7 @@ class _GuideMarketplaceScreenState extends ConsumerState<GuideMarketplaceScreen>
         ),
         child: Container(
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(28),
             border: Border.all(color: AppTheme.secondaryBorder(context)),
             boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4))],

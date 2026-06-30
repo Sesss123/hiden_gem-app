@@ -5,13 +5,13 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:hidden_gems_sl/l10n/app_localizations.dart';
+import 'package:hidden_gems_sl/presentation/screens/real_time_food_scanner_screen.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/theme/oracle_ui_system.dart';
 import '../../data/datasources/trip_cache_service.dart';
 import '../widgets/batik_background.dart';
 import '../widgets/dynamic_light_wrapper.dart';
 import '../widgets/oracle_orb.dart';
-import 'scanner_screen.dart';
 import 'saved_plans_screen.dart';
 import 'trip_form_screen.dart';
 import 'discovery_screen.dart';
@@ -519,7 +519,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
            Navigator.push(context, MaterialPageRoute(builder: (_) => const SavedPlansScreen()));
         }),
         _glassActionIcon(Icons.camera_enhance_outlined, () {
-          Navigator.push(context, MaterialPageRoute(builder: (_) => const ScannerScreen()));
+          Navigator.push(context, MaterialPageRoute(builder: (_) => const RealTimeFoodScannerScreen()));
         }),
         const SizedBox(width: 8),
       ],

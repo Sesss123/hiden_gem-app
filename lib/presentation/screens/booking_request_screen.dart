@@ -5,6 +5,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../../core/theme/oracle_ui_system.dart';
 import '../../data/repositories/booking_repository.dart';
 import '../../data/models/booking_request.dart';
+import '../../data/services/subscription_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class BookingRequestScreen extends ConsumerStatefulWidget {
@@ -182,6 +183,14 @@ class _BookingRequestScreenState extends ConsumerState<BookingRequestScreen> {
     try {
       final user = FirebaseAuth.instance.currentUser;
       if (user == null) throw Exception("User not authenticated");
+
+      if (widget.guideId.isNotEmpty) {
+        final currentCount = await ref.read(bookingRepositoryProvider).getMonthlyBookingCount(widget.guideId);
+        final maxQuota = await ref.read(subscriptionServiceProvider).getLimit(widget.guideId, 'monthlyBookingQuota');
+        if (currentCount >= maxQuota) {
+           throw Exception("This guide has reached their maximum booking quota for the month. Please try again next month or select another guide.");
+        }
+      }
 
       final request = BookingRequest(
         bookingId: "", // Will be set by repo

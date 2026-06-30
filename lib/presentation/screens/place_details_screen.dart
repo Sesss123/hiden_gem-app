@@ -45,6 +45,14 @@ class PlaceDetailsScreen extends ConsumerStatefulWidget {
 class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
   String? _translatedAiReason;
   bool _isTranslating = false;
+  bool _isBookmarked = false;
+
+  @override
+  void initState() {
+    super.initState();
+    final profile = UserPreferenceService.getProfile();
+    _isBookmarked = profile.bookmarkedPlaces.contains(widget.place.id);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -709,15 +717,23 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
                 color: AppTheme.glassBackground(context),
               ),
               child: IconButton(
-                icon: Icon(Icons.bookmark_border_rounded, color: Theme.of(context).colorScheme.onSurface),
-                onPressed: () {
+                icon: Icon(
+                  _isBookmarked ? Icons.bookmark_rounded : Icons.bookmark_border_rounded,
+                  color: _isBookmarked
+                      ? Theme.of(context).colorScheme.primary
+                      : Theme.of(context).colorScheme.onSurface,
+                ),
+                onPressed: () async {
                   HapticFeedback.mediumImpact();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: const Text("Marked in your journey!"),
-                      backgroundColor: AppTheme.accentOchre(context),
-                    ),
-                  );
+                  final nowBookmarked = await UserPreferenceService.toggleBookmark(widget.place.id);
+                  if (!context.mounted) return;
+                  setState(() => _isBookmarked = nowBookmarked);
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Text(nowBookmarked
+                        ? "✨ Marked in your journey!"
+                        : "Removed from bookmarks."),
+                    backgroundColor: AppTheme.accentOchre(context),
+                  ));
                 },
               ),
             ),
@@ -745,12 +761,18 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
                     shadowColor: Colors.transparent,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
                   ),
-                  onPressed: () {
+                  onPressed: () async {
                     HapticFeedback.mediumImpact();
                     if (widget.place.arSupported) {
                       _handleARLaunch(context, ref, l10n);
                     } else {
-                       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Bound to your itinerary!")));
+                      final nowAdded = await UserPreferenceService.toggleItinerary(widget.place.id);
+                      if (!context.mounted) return;
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: Text(nowAdded
+                              ? "🗺️ ${widget.place.name} added to your destiny!"
+                              : "Removed from itinerary."),
+                      ));
                     }
                   },
                   child: FittedBox(

@@ -18,8 +18,12 @@ class SecureNetworkOverrides extends HttpOverrides {
   /// 
   /// Get fingerprint via: 
   /// openssl s_client -connect api.example.com:443 < /dev/null 2>/dev/null | openssl x509 -outform DER | openssl dgst -sha256
-  static const Map<String, String> _pinnedHosts = {
-    // 'api.tripmesl.com': 'YOUR_SHA256_FINGERPRINT_HERE',
+  static const String _sslHost = String.fromEnvironment('SSL_PIN_HOST', defaultValue: '');
+  static const String _sslFingerprint = String.fromEnvironment('SSL_PIN_FINGERPRINT', defaultValue: '');
+
+  static final Map<String, String> _pinnedHosts = {
+    if (_sslHost.isNotEmpty && _sslFingerprint.isNotEmpty)
+      _sslHost: _sslFingerprint,
   };
 
   @override

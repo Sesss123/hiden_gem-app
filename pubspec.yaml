@@ -114,6 +114,7 @@ dependencies:
   qr_flutter: ^4.1.0
   mobile_scanner: ^7.2.0
   firebase_storage: ^13.2.0
+  web_socket_channel: ^3.0.3
 
 dev_dependencies:
   flutter_test:

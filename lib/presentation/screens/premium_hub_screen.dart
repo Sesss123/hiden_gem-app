@@ -296,7 +296,15 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
             features: ["VR Mode Support", "Historical Timelines", "Personal AI Curator"],
             color: const Color(0xFFE1BEE7),
             isLocked: true,
-            onPressed: () {},
+            onPressed: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: const Text("🚀 Ultra Explorer is on the waitlist! We'll notify you when it launches."),
+                  behavior: SnackBarBehavior.floating,
+                  backgroundColor: const Color(0xFFE1BEE7).withValues(alpha: 0.15),
+                ),
+              );
+            },
           ),
           SizedBox(height: 40),
           TextButton(

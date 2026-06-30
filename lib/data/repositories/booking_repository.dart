@@ -79,4 +79,18 @@ class BookingRepository {
         .snapshots()
         .map((snapshot) => snapshot.docs.map((doc) => BookingRequest.fromJson(doc.data())).toList());
   }
+
+  /// Gets the number of booking requests received by a guide in the current month.
+  Future<int> getMonthlyBookingCount(String guideId) async {
+    final now = DateTime.now();
+    final startOfMonth = DateTime(now.year, now.month, 1);
+    
+    final query = await _bookingRef
+        .where('guideId', isEqualTo: guideId)
+        .where('createdAt', isGreaterThanOrEqualTo: startOfMonth)
+        .count()
+        .get();
+        
+    return query.count ?? 0;
+  }
 }

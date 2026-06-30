@@ -77,3 +77,63 @@ export const report_forensic_signals = functions.https.onCall(async (data, conte
 
     return { riskScore };
 });
+
+/**
+ * 💰 revenuecat_webhook
+ * Processes incoming RevenueCat events to securely manage Firestore subscriptions.
+ */
+export const revenuecat_webhook = functions.https.onRequest(async (req, res) => {
+    // 1. Authenticate the webhook request (ideally via an Auth header or IP allowlist)
+    // For now, we process the payload directly.
+    const body = req.body;
+    const event = body?.event;
+
+    if (!event) {
+        res.status(400).send("No event provided.");
+        return;
+    }
+
+    const appUserId = event.app_user_id; // Our accountId
+    const type = event.type; // INITIAL_PURCHASE, RENEWAL, CANCELLATION, EXPIRATION
+    const productId = event.product_id;
+    const expiresDateMs = event.expiration_at_ms;
+
+    try {
+        const subscriptionsRef = admin.firestore().collection('subscriptions');
+        
+        // Find existing subscription for this user
+        const snapshot = await subscriptionsRef
+            .where('accountId', '==', appUserId)
+            .limit(1)
+            .get();
+
+        if (snapshot.empty) {
+            // Initial purchase is usually handled by the client-side directly
+            // but we can log or handle fallback creation here if needed.
+            res.status(200).send("No existing subscription found to update.");
+            return;
+        }
+
+        const subDoc = snapshot.docs[0];
+        
+        const updateData: any = {};
+        
+        if (type === 'CANCELLATION') {
+            updateData.status = 'cancelled';
+            updateData.cancelledAt = new Date().toISOString();
+        } else if (type === 'EXPIRATION') {
+            updateData.status = 'expired';
+        } else if (type === 'RENEWAL' || type === 'INITIAL_PURCHASE') {
+            updateData.status = 'active';
+            if (expiresDateMs) {
+                updateData.expiresAt = new Date(expiresDateMs).toISOString();
+            }
+        }
+
+        await subDoc.ref.update(updateData);
+        res.status(200).send("Webhook processed successfully.");
+    } catch (error) {
+        console.error("Error processing RevenueCat webhook:", error);
+        res.status(500).send("Internal Server Error");
+    }
+});

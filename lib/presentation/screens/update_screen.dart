@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../core/theme/app_theme.dart';
@@ -26,9 +27,16 @@ class UpdateScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final bool isForce = type == UpdateType.force;
 
-    return Scaffold(
-      backgroundColor: AppTheme.scaffoldColor(context),
-      body: Stack(
+    return PopScope(
+      canPop: !isForce,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop && isForce) {
+          SystemNavigator.pop();
+        }
+      },
+      child: Scaffold(
+        backgroundColor: AppTheme.scaffoldColor(context),
+        body: Stack(
         fit: StackFit.expand,
         children: [
           // Background Aesthetic
@@ -128,6 +136,7 @@ class UpdateScreen extends StatelessWidget {
           ),
         ],
       ),
+    ),
     );
   }
 

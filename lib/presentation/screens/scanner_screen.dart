@@ -20,15 +20,6 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> with WidgetsBindi
   bool _isInit = false;
   bool _isScanning = false;
   String? _result;
-  int _scanCounter = 0;
-
-  static const List<String> _simulatedScans = [
-    "Sigiriya Rock Fortress Identified.\n\nBuilt by King Kasyapa (477–495 CE), Sigiriya is a UNESCO World Heritage site known as the 'Lion Rock'. Highlights include the mirror wall, ancient frescoes, and the symmetrical water gardens at the base.",
-    "Temple of the Sacred Tooth Relic Identified.\n\nLocated in the royal palace complex of Kandy, this houses the relic of the tooth of the Buddha. Since ancient times, the relic has played an active role in local politics because it is believed that whoever holds the relic holds governance of the country.",
-    "Galle Dutch Fort Identified.\n\nFirst built by the Portuguese in 1588 and fortified by the Dutch during the 17th century, Galle Fort is a historical, archaeological and architectural heritage monument that maintains its timeless charm.",
-    "Nine Arch Bridge, Ella Identified.\n\nOne of the best examples of colonial-era railway construction in Sri Lanka, built entirely from solid stone bricks and cement without a single piece of steel.",
-    "E-Ticket Validated Successfully.\n\nTicket Code: TM-9823-SL\nType: Premium Cultural Explorer Pass\nHolder: Verified Pilgrim\nStatus: ACTIVE\nAdmissions Remaining: 2/3 (Access granted to museum grounds)."
-  ];
 
   @override
   void initState() {
@@ -86,14 +77,13 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> with WidgetsBindi
       _result = null;
     });
 
-    // Simulate "Oracle" high-fidelity processing
-    await Future.delayed(const Duration(seconds: 3));
+    // Simulate connection check
+    await Future.delayed(const Duration(seconds: 2));
 
     if (mounted) {
       setState(() {
         _isScanning = false;
-        _result = _simulatedScans[_scanCounter % _simulatedScans.length];
-        _scanCounter++;
+        _result = "🛰️ Live Cloud Inference Rolling Out Soon!\n\nReal-time neural landmark recognition and object detection are being deployed to our high-speed edge nodes. You will receive an alert as soon as live camera processing goes live in the upcoming update.";
       });
     }
   }

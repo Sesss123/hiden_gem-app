@@ -18,6 +18,7 @@ import '../../data/datasources/village_experience_service.dart';
 import '../../core/utils/image_utils.dart';
 import '../../core/localization/l10n_utils.dart';
 import 'place_details_screen.dart';
+import 'event_calendar_screen.dart';
 
 class DiscoveryScreen extends ConsumerStatefulWidget {
   const DiscoveryScreen({super.key});
@@ -203,12 +204,14 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
         // 2. Distance Filter
         if (p.distanceKm > _maxDistance) return false;
 
-        // 3. Price Filter
+        // 3. Price Filter — numeric threshold-based (not fragile string matching)
         if (_selectedPriceRange != "All") {
           final price = p.ticketRange.toLowerCase();
-          if (_selectedPriceRange == "Free" && !price.contains("free")) return false;
-          if (_selectedPriceRange == "Economy" && (price.contains("1000") || price.contains("2000") || price.contains("3000"))) return false; 
-          if (_selectedPriceRange == "Premium" && (!price.contains("1000") && !price.contains("2000") && !price.contains("3475"))) return false;
+          final numMatch = RegExp(r'\d+').firstMatch(price);
+          final priceNum = numMatch != null ? int.tryParse(numMatch.group(0)!) ?? 0 : 0;
+          if (_selectedPriceRange == "Free" && priceNum != 0) return false;
+          if (_selectedPriceRange == "Economy" && (priceNum == 0 || priceNum > 2000)) return false;
+          if (_selectedPriceRange == "Premium" && priceNum <= 2000) return false;
         }
 
         // 4. AR Filter
@@ -666,13 +669,10 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
             child: GestureDetector(
               onTap: () {
                 HapticFeedback.lightImpact();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text("Soulscape: ${exp.name} hosted by ${exp.hostName}"),
-                    backgroundColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
-                    behavior: SnackBarBehavior.floating,
-                  ),
-                );
+                // Navigate to Event Calendar — best match for Soulscape experiences
+                Navigator.push(context, MaterialPageRoute(
+                  builder: (_) => const EventCalendarScreen(),
+                ));
               },
               child: Container(
                 width: 220,

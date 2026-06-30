@@ -1,12 +1,14 @@
-import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../../core/config/app_config.dart';
 import '../../core/utils/secure_logger.dart';
+import 'package:http/http.dart' as http;
+import '../../core/network/secure_http_client.dart';
 import 'voice_assistant_service.dart';
 
 class TranslationService {
   static String get _apiKey => AppConfig.tripMeApiKey;
   static String get _baseUrl => AppConfig.baseUrl;
+  static final _client = SecureHttpClient(http.Client());
 
   /// Translates text and speaks it out in the target language
   static Future<void> translateAndSpeak(String text, String targetLang) async {
@@ -25,7 +27,7 @@ class TranslationService {
     try {
       final url = Uri.parse("$_baseUrl/ai/translate");
       
-      final response = await http.post(
+      final response = await _client.post(
         url,
         headers: {
           "Content-Type": "application/json",

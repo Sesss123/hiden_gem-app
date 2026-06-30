@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:crypto/crypto.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import '../config/app_config.dart';
 import 'package:uuid/uuid.dart';
 
 /// VaultService provides high-security cryptographic signing for all outbound requests.
@@ -21,7 +22,7 @@ class VaultService {
     
     if (key == null) {
       // Fallback to environment or generate fallback (in production, strictly from KMS)
-      key = const String.fromEnvironment('DEVICE_SIGNING_KEY', defaultValue: 'TRIPME_V1_STAGING_KEY_SHHH');
+      key = AppConfig.vaultSignKey;
       await _storage.write(key: _signingKeyName, value: key);
     }
     

@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/theme/oracle_ui_system.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -979,7 +980,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
           ),
           SizedBox(height: 20),
           Text(
-            "TRIPME LUXURY",
+            "HIDDEN GEMS LUXURY",
             style: GoogleFonts.outfit(
               color: Theme.of(context).colorScheme.onSurface, 
               fontWeight: FontWeight.bold, 
@@ -1092,9 +1093,20 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
                   style: GoogleFonts.inter(fontSize: 12, color: AppTheme.textSecondary(context))),
                 const Spacer(),
                 TextButton.icon(
-                  onPressed: () {},
-                  icon: Icon(Icons.map_outlined, size: 18),
-                  label: Text("View on Map"),
+                  onPressed: () async {
+                    final mapsUrl = 'https://www.google.com/maps/search/?api=1&query=${item.lat},${item.lng}';
+                    final uri = Uri.parse(mapsUrl);
+                    final messenger = ScaffoldMessenger.of(context);
+                    if (await canLaunchUrl(uri)) {
+                      await launchUrl(uri, mode: LaunchMode.externalApplication);
+                    } else {
+                      messenger.showSnackBar(
+                        const SnackBar(content: Text('Could not open map.')),
+                      );
+                    }
+                  },
+                  icon: const Icon(Icons.map_outlined, size: 18),
+                  label: const Text("View on Map"),
                 ),
               ],
             ),

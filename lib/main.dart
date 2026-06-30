@@ -125,11 +125,11 @@ void main() async {
   // FLAG_SECURE is now handled directly in android/app/src/main/kotlin/com/hidden/gems/hidden_gems_sl/MainActivity.kt
   // for better compatibility and build reliability.
 
-  // Initialization is kicked off by appInitializationProvider which is observed by TripMeApp.
+  // Initialization is kicked off by appInitializationProvider which is observed by HiddenGemsApp.
 
   runApp(
     const ProviderScope(
-      child: TripMeApp(),
+      child: HiddenGemsApp(),
     ),
   );
 }
@@ -141,7 +141,7 @@ class AppInitState {
   AppInitState({required this.result, required this.updateType});
 }
 
-// Global initialization future provider to replace the logic passed into TripMeApp
+// Global initialization future provider to replace the logic passed into HiddenGemsApp
 final appInitializationProvider = FutureProvider<AppInitState>((ref) async {
   final result = await performInitialization().timeout(
     const Duration(seconds: 12),
@@ -340,14 +340,14 @@ void initializeOtherServices() {
 }
 
 // The thin root MaterialApp — just theming + localization, routes to Splash
-class TripMeApp extends ConsumerStatefulWidget {
-  const TripMeApp({super.key});
+class HiddenGemsApp extends ConsumerStatefulWidget {
+  const HiddenGemsApp({super.key});
 
   @override
-  ConsumerState<TripMeApp> createState() => _TripMeAppState();
+  ConsumerState<HiddenGemsApp> createState() => _HiddenGemsAppState();
 }
 
-class _TripMeAppState extends ConsumerState<TripMeApp> with WidgetsBindingObserver {
+class _HiddenGemsAppState extends ConsumerState<HiddenGemsApp> with WidgetsBindingObserver {
   bool _showMainApp = false;
   bool _userDismissedSoftUpdate = false;
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -372,7 +372,7 @@ class _TripMeAppState extends ConsumerState<TripMeApp> with WidgetsBindingObserv
 
     return MaterialApp(
       navigatorKey: navigatorKey,
-      title: 'TripMe.ai',
+      title: 'HiddenGems.lk',
       debugShowCheckedModeBanner: false,
       themeMode: themeMode,
       theme: AppTheme.breezeTheme,

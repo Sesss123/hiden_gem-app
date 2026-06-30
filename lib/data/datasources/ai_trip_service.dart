@@ -40,6 +40,8 @@ class AiTripService {
 
     final body = {
       "origin": origin,
+      "from_lat": fromLat,
+      "from_lng": fromLng,
       "destination": destination,
       "days": days,
       "start_date": startDate,
@@ -103,14 +105,14 @@ class AiTripService {
             await Future.delayed(Duration(seconds: 2 * retryCount));
             continue;
           }
-          throw Exception("TripMe.ai is experiencing issues. Please try again later.");
+          throw Exception("HiddenGems.lk is experiencing issues. Please try again later.");
         } else {
           String errorMessage = "Unknown API error (${response.statusCode})";
           try {
             final errorData = json.decode(response.body) as Map<String, dynamic>;
             errorMessage = errorData['detail']?['message'] as String? ?? errorMessage;
           } catch (_) {}
-          throw Exception("TripMe.ai: $errorMessage");
+          throw Exception("HiddenGems.lk: $errorMessage");
         }
       } catch (e) {
         if (retryCount < maxRetries && (e.toString().contains('SocketException') || e.toString().contains('Timeout'))) {
@@ -118,7 +120,7 @@ class AiTripService {
           await Future.delayed(Duration(seconds: 2 * retryCount));
           continue;
         }
-        throw Exception("Could not connect to TripMe.ai. Check your connection.");
+        throw Exception("Could not connect to HiddenGems.lk. Check your connection.");
       }
     }
     throw Exception("Maximum retries reached.");

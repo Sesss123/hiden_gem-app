@@ -9,7 +9,7 @@ class AppLocalizationsJa extends AppLocalizations {
   AppLocalizationsJa([String locale = 'ja']) : super(locale);
 
   @override
-  String get appTitle => 'TripMe.ai';
+  String get appTitle => 'Hidden Gems SL';
 
   @override
   String get goodMorningAdmin => 'おはようございます、管理者';
@@ -60,7 +60,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get style => 'スタイル';
 
   @override
-  String get planB => 'Plan B';
+  String get planB => 'プラン B';
 
   @override
   String get tips => 'ヒント';
@@ -81,10 +81,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get discovery => '発見';
 
   @override
-  String get nearYou => 'あなたの近く';
+  String get nearYou => '近く';
 
   @override
-  String get aiReason => 'なぜこの場所？';
+  String get aiReason => 'AIのおすすめ理由';
 
   @override
   String get filters => 'フィルター';
@@ -99,7 +99,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get planNewTrip => '新しい旅行を計画';
 
   @override
-  String get localGemsOffline => 'Local Gems (Offline)';
+  String get localGemsOffline => 'ローカルの魅力 (オフライン)';
 
   @override
   String get privacyPolicy => 'プライバシーポリシー';
@@ -108,244 +108,240 @@ class AppLocalizationsJa extends AppLocalizations {
   String get termsOfService => '利用規約';
 
   @override
-  String get supportCenter => 'Support Center';
+  String get supportCenter => 'サポートセンター';
 
   @override
-  String get deleteAccount => 'Delete Account';
+  String get deleteAccount => 'アカウント削除';
 
   @override
-  String get inviteFriends => 'Invite Friends';
+  String get inviteFriends => '友達を招待';
 
   @override
-  String get confirmDeleteTitle => 'Delete account permanently?';
+  String get confirmDeleteTitle => 'アカウントを完全に削除しますか？';
 
   @override
-  String get confirmDeleteMessage =>
-      'This action is permanent and cannot be undone. All your saved trips and data will be lost.';
+  String get confirmDeleteMessage => 'この操作は元に戻せません。すべての保存済みデータと旅行が失われます。';
 
   @override
-  String get cancel => 'Cancel';
+  String get cancel => 'キャンセル';
 
   @override
-  String get deleteForever => 'Delete Forever';
+  String get deleteForever => '完全に削除';
 
   @override
-  String get discoveryHeader => 'Discover';
+  String get discoveryHeader => '発見';
 
   @override
   String get searchHint => '隠れた名所を検索...';
 
   @override
-  String get picksForYou => 'TripMe Picks for you';
+  String get picksForYou => 'Hidden Gems SL あなたへのオススメ';
 
   @override
-  String get exploreInAr => 'Explore in AR';
+  String get exploreInAr => 'ARで探索';
 
   @override
-  String get bestNatureNearby => 'Best Nature nearby';
+  String get bestNatureNearby => '近くの最高の自然';
 
   @override
-  String get topCultureSpots => 'Top Culture spots';
+  String get topCultureSpots => 'トップ文化スポット';
 
   @override
-  String get villageStayTitle => 'Village & Authentic Stays';
+  String get villageStayTitle => '村と本格的な滞在';
 
   @override
-  String get noMatchesNearby => 'No matches nearby';
+  String get noMatchesNearby => '近くに一致するものはありません';
 
   @override
-  String get tryIncreasingDistance =>
-      'Try increasing distance or removing filters.';
+  String get tryIncreasingDistance => '距離を増やすか、フィルターを外してみてください。';
 
   @override
-  String get filterAll => 'All';
+  String get filterAll => 'すべて';
 
   @override
-  String get filterNature => 'Nature 🌿';
+  String get filterNature => '自然 🌿';
 
   @override
-  String get filterWaterfall => 'Waterfall 🌊';
+  String get filterWaterfall => '滝 🌊';
 
   @override
-  String get filterHiking => 'Hiking 🥾';
+  String get filterHiking => 'ハイキング 🥾';
 
   @override
-  String get filterCulture => 'Culture 🏛️';
+  String get filterCulture => '文化 🏛️';
 
   @override
-  String get filterCoastal => 'Coastal 🌊';
+  String get filterCoastal => '沿岸 🌊';
 
   @override
-  String get filterFamily => 'Family 👨‍👩‍👧‍👦';
+  String get filterFamily => '家族 👨‍👩‍👧‍👦';
 
   @override
-  String get filterBudget => 'Budget 💸';
+  String get filterBudget => '予算 💸';
 
   @override
-  String get filterAr => 'AR Places 🏛';
+  String get filterAr => 'AR スポット 🏛';
 
   @override
-  String get categoryNature => 'Nature';
+  String get categoryNature => '自然';
 
   @override
-  String get categoryWaterfall => 'Waterfall';
+  String get categoryWaterfall => '滝';
 
   @override
-  String get categoryHiking => 'Hiking';
+  String get categoryHiking => 'ハイキング';
 
   @override
-  String get categoryCulture => 'Culture';
+  String get categoryCulture => '文化';
 
   @override
-  String get categoryCoastal => 'Coastal';
+  String get categoryCoastal => '沿岸';
 
   @override
-  String get categoryFamily => 'Family';
+  String get categoryFamily => '家族';
 
   @override
-  String get categoryBudget => 'Budget';
+  String get categoryBudget => '予算';
 
   @override
-  String get oracleVision => 'ORACLE\\\'S VISION';
+  String get oracleVision => 'オラクルのビジョン';
 
   @override
-  String get theKnowledge => 'THE KNOWLEDGE';
+  String get theKnowledge => '知識';
 
   @override
-  String get safetyProtocols => 'SAFETY PROTOCOLS';
+  String get safetyProtocols => '安全プロトコル';
 
   @override
-  String get provisions => 'PROVISIONS';
+  String get provisions => '準備';
 
   @override
-  String get sustainableEthos => 'SUSTAINABLE ETHOS';
+  String get sustainableEthos => '持続可能な精神';
 
   @override
-  String get culturalEtiquette => 'CULTURAL ETIQUETTE';
+  String get culturalEtiquette => '文化的なエチケット';
 
   @override
-  String get ecoResponsibleTravel => 'ECO-RESPONSIBLE TRAVEL';
+  String get ecoResponsibleTravel => 'エコで責任ある旅行';
 
   @override
-  String get tapToTranslate => 'TAP TO TRANSLATE';
+  String get tapToTranslate => 'タップして翻訳';
 
   @override
-  String get moment => 'MOMENT';
+  String get moment => 'モーメント';
 
   @override
-  String get offering => 'OFFERING';
+  String get offering => '提供';
 
   @override
-  String get reality => 'REALITY';
+  String get reality => '現実';
 
   @override
-  String get aerDimensionReady => 'AER DIMENSION READY';
+  String get aerDimensionReady => 'AER ディメンションの準備完了';
 
   @override
-  String get invokeAr => 'INVOKE AR';
+  String get invokeAr => 'ARを呼び出す';
 
   @override
-  String get addToDestiny => 'ADD TO DESTINY';
+  String get addToDestiny => '運命に追加';
 
   @override
-  String get distanceLockTitle => 'DISTANCE LOCK';
+  String get distanceLockTitle => '距離ロック';
 
   @override
   String distanceLockMessage(Object distance) {
-    return 'You are $distance KM away. Seekers can only access the AER dimension within 500M of the site.';
+    return 'あなたは $distance km 離れています。AERディメンションには500m以内でのみアクセスできます。';
   }
 
   @override
-  String get arCoreNotDetected => 'AR CORE NOT DETECTED';
+  String get arCoreNotDetected => 'AR CORE が検出されません';
 
   @override
-  String get arCoreMessage =>
-      'Traveler, the ancient visions require ARCore to manifest. Please ensure it is installed and updated on your device.';
+  String get arCoreMessage => '古代のビジョンを表示するには ARCore が必要です。インストールと更新を確認してください。';
 
   @override
-  String get road => 'ROAD';
+  String get road => '道路';
 
   @override
-  String get access => 'ACCESS';
+  String get access => 'アクセス';
 
   @override
-  String get parking => 'PARKING';
+  String get parking => '駐車場';
 
   @override
-  String get syncingResonance => 'Syncing with ancient resonance...';
+  String get syncingResonance => '古代の共鳴と同期中...';
 
   @override
-  String get resonanceLost => 'Resonance Lost';
+  String get resonanceLost => '共鳴が失われました';
 
   @override
-  String get gpsRequired =>
-      'We couldn\'t verify your location. Ensure GPS is active.';
+  String get gpsRequired => '位置情報を確認できませんでした。GPSを有効にしてください。';
 
   @override
-  String get unlockTeleport => 'UNLOCK TELEPORT';
+  String get unlockTeleport => 'テレポートのロック解除';
 
   @override
-  String get close => 'CLOSE';
+  String get close => '閉じる';
 
   @override
-  String get understood => 'Understood';
+  String get understood => '了解';
 
   @override
-  String get ancestralPortalOpen => 'ANCESTRAL PORTAL OPEN';
+  String get ancestralPortalOpen => '祖先のポータルが開きました';
 
   @override
-  String get stepIntoHistory => 'Step into history';
+  String get stepIntoHistory => '歴史の中へ';
 
   @override
   String viewEraIn360(Object era) {
-    return 'View $era in 360°';
+    return '$era を360度で見る';
   }
 
   @override
-  String get arDemoLabel => '10-Second AR Demo';
+  String get arDemoLabel => '10秒間のARデモ';
 
   @override
-  String get fullHeritageAr => 'Full Heritage AR';
+  String get fullHeritageAr => 'フル ヘリテージ AR';
 
   @override
-  String get ancientHeritageSite => 'Ancient Heritage Site';
+  String get ancientHeritageSite => '古代の遺産サイト';
 
   @override
-  String get arTipPlace => 'Tap the surface to place the 3D reconstruction';
+  String get arTipPlace => '表面をタップして3Dモデルを配置';
 
   @override
-  String get arTipTime => 'Swipe \"Then/Now\" to travel through time';
+  String get arTipTime => '「過去/現在」をスワイプしてタイムトラベル';
 
   @override
-  String get arTipAudio => 'Audio guide available in Sinhala & English';
+  String get arTipAudio => 'シンハラ語と英語の音声ガイド';
 
   @override
-  String get arTipGroup => 'Host or join a group AR tour';
+  String get arTipGroup => 'グループARツアーを主催または参加';
 
   @override
-  String get openArPortal => 'OPEN AR PORTAL';
+  String get openArPortal => 'ARポータルを開く';
 
   @override
-  String get enterDemo => 'ENTER DEMO (10s)';
+  String get enterDemo => 'デモに参加 (10秒)';
 
   @override
-  String get offlineReady => 'Offline Ready';
+  String get offlineReady => 'オフライン対応';
 
   @override
-  String get assetsCached => 'Heritage assets cached for offline use!';
+  String get assetsCached => '遺産アセットがオフライン用にキャッシュされました！';
 
   @override
-  String get downloadFailed => 'Download failed. Please check connection.';
+  String get downloadFailed => 'ダウンロードに失敗しました。接続を確認してください。';
 
   @override
-  String get downloadForOffline => 'Download for Offline';
+  String get downloadForOffline => 'オフライン用にダウンロード';
 
   @override
-  String get initiateTravel => 'INITIATE TRAVEL SEQUENCE';
+  String get initiateTravel => 'トラベルシーケンスを開始';
 
   @override
-  String get selectOracleLanguage => 'SELECT YOUR ORACLE LANGUAGE';
+  String get selectOracleLanguage => 'オラクルの言語を選択';
 
   @override
-  String get skipForNow => 'SKIP FOR NOW';
+  String get skipForNow => '今はスキップ';
 }

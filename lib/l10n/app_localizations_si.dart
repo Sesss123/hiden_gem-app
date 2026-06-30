@@ -9,7 +9,7 @@ class AppLocalizationsSi extends AppLocalizations {
   AppLocalizationsSi([String locale = 'si']) : super(locale);
 
   @override
-  String get appTitle => 'TripMe.ai';
+  String get appTitle => 'Hidden Gems SL';
 
   @override
   String get goodMorningAdmin => 'සුභ උදෑසනක්, පරිපාලක';

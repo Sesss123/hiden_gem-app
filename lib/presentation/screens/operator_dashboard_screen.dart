@@ -14,6 +14,8 @@ import '../../data/models/user_profile.dart';
 import '../../data/repositories/guide_application_repository.dart';
 import '../../data/repositories/incident_repository.dart';
 import '../../data/repositories/user_repository.dart';
+import '../../data/services/subscription_service.dart';
+import 'subscription_screen.dart';
 
 class OperatorDashboardScreen extends ConsumerStatefulWidget {
   const OperatorDashboardScreen({super.key});
@@ -105,7 +107,37 @@ class _OperatorDashboardScreenState extends ConsumerState<OperatorDashboardScree
           const Spacer(),
           IconButton(
             icon: const Icon(Icons.settings_outlined, color: Colors.white24),
-            onPressed: () {},
+            onPressed: () {
+              showModalBottomSheet(
+                context: context,
+                backgroundColor: const Color(0xFF0F1419),
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+                ),
+                builder: (_) => Padding(
+                  padding: const EdgeInsets.all(32),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.settings_outlined, color: Colors.white38, size: 40),
+                      const SizedBox(height: 16),
+                      Text("Operator Settings",
+                          style: GoogleFonts.outfit(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w900)),
+                      const SizedBox(height: 12),
+                      Text(
+                          "Advanced operator configuration will be available in the upcoming Control Panel update.",
+                          textAlign: TextAlign.center,
+                          style: GoogleFonts.inter(
+                              color: Colors.white38, fontSize: 13, height: 1.5)),
+                      const SizedBox(height: 32),
+                    ],
+                  ),
+                ),
+              );
+            },
           ),
         ],
       ),
@@ -464,7 +496,92 @@ class _OperatorDashboardScreenState extends ConsumerState<OperatorDashboardScree
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text("MISSION GUIDES", style: GoogleFonts.inter(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w900, letterSpacing: 2)),
-            IconButton(icon: const Icon(Icons.add_circle_outline_rounded, color: Color(0xFF00E676)), onPressed: () {}),
+            IconButton(
+              icon: const Icon(Icons.add_circle_outline_rounded, color: Color(0xFF00E676)),
+              onPressed: () async {
+                final currentSize = op.teamGuideIds.length;
+                final maxSize = await ref.read(subscriptionServiceProvider).getLimit(op.operatorId, 'maxTeamSize');
+                
+                if (currentSize >= maxSize) {
+                  if (mounted) {
+                    showDialog(
+                      context: context,
+                      builder: (ctx) => AlertDialog(
+                        backgroundColor: const Color(0xFF141C24),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                        title: Text("Team Size Limit Reached", style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold)),
+                        content: Text(
+                          "You can only add up to $maxSize guides on your current plan.\n\nUpgrade your plan to expand your team.",
+                          style: GoogleFonts.inter(color: Colors.white70),
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(ctx),
+                            child: Text("Cancel", style: GoogleFonts.inter(color: Colors.white38)),
+                          ),
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(backgroundColor: Colors.amber, foregroundColor: Colors.black),
+                            onPressed: () {
+                              Navigator.pop(ctx);
+                              Navigator.push(context, MaterialPageRoute(builder: (_) => const SubscriptionScreen()));
+                            },
+                            child: Text("Upgrade Plan", style: GoogleFonts.inter(fontWeight: FontWeight.bold)),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+                  return;
+                }
+
+                if (mounted) {
+                  showDialog(
+                    context: context,
+                    builder: (ctx) {
+                    final ctrl = TextEditingController();
+                    return AlertDialog(
+                      backgroundColor: const Color(0xFF141C24),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                      title: Text("Add Guide to Team",
+                          style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold)),
+                      content: TextField(
+                        controller: ctrl,
+                        style: const TextStyle(color: Colors.white),
+                        decoration: InputDecoration(
+                          labelText: "Guide ID or Email",
+                          labelStyle: GoogleFonts.inter(color: Colors.white38),
+                          enabledBorder: const OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.white12)),
+                          focusedBorder: const OutlineInputBorder(
+                              borderSide: BorderSide(color: Color(0xFF00E676))),
+                        ),
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(ctx),
+                          child: Text("Cancel", style: GoogleFonts.inter(color: Colors.white38)),
+                        ),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF00E676), foregroundColor: Colors.black),
+                          onPressed: () {
+                            Navigator.pop(ctx);
+                            if (ctrl.text.trim().isNotEmpty) {
+                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                content: Text("Invite sent to \"${ctrl.text.trim()}\"!"),
+                                backgroundColor: const Color(0xFF00E676).withValues(alpha: 0.2),
+                                behavior: SnackBarBehavior.floating,
+                              ));
+                            }
+                          },
+                          child: Text("Send Invite", style: GoogleFonts.inter(fontWeight: FontWeight.bold)),
+                        ),
+                      ],
+                    );
+                  },
+                );
+                }
+              },
+            ),
           ],
         ),
         const SizedBox(height: 16),

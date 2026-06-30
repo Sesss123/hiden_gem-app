@@ -4,6 +4,8 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../models/user_profile.dart';
 import '../models/guide_profile.dart';
 import '../models/guide_status.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 /// [UserPreferenceService] — Hardened local profile cache.
 ///
@@ -88,6 +90,36 @@ class UserPreferenceService {
       _mutate((p) => p.visitedPlaces.add(place));
       await _flushToDisk();
     }
+  }
+
+  /// Toggle bookmark on a place. Returns the new bookmarked state.
+  static Future<bool> toggleBookmark(String placeId) async {
+    final profile = getProfile();
+    final isNowBookmarked = !profile.bookmarkedPlaces.contains(placeId);
+    _mutate((p) {
+      if (isNowBookmarked) {
+        p.bookmarkedPlaces.add(placeId);
+      } else {
+        p.bookmarkedPlaces.remove(placeId);
+      }
+    });
+    await _flushToDisk(force: true);
+    return isNowBookmarked;
+  }
+
+  /// Toggle itinerary entry for a place. Returns the new added state.
+  static Future<bool> toggleItinerary(String placeId) async {
+    final profile = getProfile();
+    final isNowAdded = !profile.itineraryPlaceIds.contains(placeId);
+    _mutate((p) {
+      if (isNowAdded) {
+        p.itineraryPlaceIds.add(placeId);
+      } else {
+        p.itineraryPlaceIds.remove(placeId);
+      }
+    });
+    await _flushToDisk(force: true);
+    return isNowAdded;
   }
 
   static Future<void> updateLanguage(String languageCode) async {
@@ -188,6 +220,22 @@ class UserPreferenceService {
         key: _profileKey,
         value: json.encode(profile.toJson()),
       );
+      
+      // Sync to Firestore if authenticated (Fix for Bug #13, #14)
+      if (FirebaseAuth.instance.currentUser != null) {
+        try {
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(FirebaseAuth.instance.currentUser!.uid)
+              .set({
+            'bookmarkedPlaces': profile.bookmarkedPlaces,
+            'itineraryPlaceIds': profile.itineraryPlaceIds,
+          }, SetOptions(merge: true));
+        } catch (e) {
+          debugPrint('[UPS] Firestore sync failed: $e');
+        }
+      }
+
       _isDirty = false;
       _lastFlush = DateTime.now();
     } catch (e) {

@@ -112,7 +112,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
 
                   // --- Brand ---
                   Text(
-                    "TRIPME.AI",
+                    "HIDDEN GEMS.AI",
                     style: GoogleFonts.outfit(
                       fontSize: 24,
                       fontWeight: FontWeight.w900,

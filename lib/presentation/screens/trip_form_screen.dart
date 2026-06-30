@@ -382,7 +382,7 @@ class _TripFormScreenState extends State<TripFormScreen> {
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(color: AppTheme.secondaryBorder(context)),
           ),
@@ -413,7 +413,7 @@ class _TripFormScreenState extends State<TripFormScreen> {
               margin: const EdgeInsets.only(top: 4),
               width: MediaQuery.of(context).size.width - 48,
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Theme.of(context).cardColor,
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(color: AppTheme.secondaryBorder(context)),
                 boxShadow: [
@@ -456,7 +456,7 @@ class _TripFormScreenState extends State<TripFormScreen> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: AppTheme.secondaryBorder(context)),
       ),
@@ -508,7 +508,7 @@ class _TripFormScreenState extends State<TripFormScreen> {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                 decoration: BoxDecoration(
-                  color: isSelected ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.1) : Colors.white,
+                  color: isSelected ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.1) : Theme.of(context).cardColor,
                   border: Border.all(
                     color: isSelected ? Theme.of(context).colorScheme.primary : AppTheme.secondaryBorder(context),
                     width: 1.5,
@@ -549,7 +549,7 @@ class _TripFormScreenState extends State<TripFormScreen> {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: AppTheme.secondaryBorder(context)),
         ),
@@ -571,7 +571,7 @@ class _TripFormScreenState extends State<TripFormScreen> {
     return Container(
       padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).scaffoldBackgroundColor,
         border: Border(top: BorderSide(color: AppTheme.secondaryBorder(context))),
       ),
       child: PrimaryButton(

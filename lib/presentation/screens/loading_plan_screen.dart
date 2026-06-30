@@ -46,7 +46,7 @@ class LoadingPlanScreen extends StatefulWidget {
 
 class _LoadingPlanScreenState extends State<LoadingPlanScreen>
     with TickerProviderStateMixin {
-  String _statusText = "Consulting TripMe.ai Brain...";
+  String _statusText = "Consulting HiddenGems.lk Brain...";
   bool _hasError = false;
   bool _isOfflineMode = false;
   String _errorMessage = "";

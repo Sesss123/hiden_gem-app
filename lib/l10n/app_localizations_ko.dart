@@ -9,19 +9,19 @@ class AppLocalizationsKo extends AppLocalizations {
   AppLocalizationsKo([String locale = 'ko']) : super(locale);
 
   @override
-  String get appTitle => 'TripMe.ai';
+  String get appTitle => 'Hidden Gems SL';
 
   @override
   String get goodMorningAdmin => '좋은 아침입니다, 관리자님';
 
   @override
-  String get oracleToday => '오늘 오라클에 일어난 일들입니다.';
+  String get oracleToday => '오늘의 오라클 현황입니다.';
 
   @override
-  String get totalUsers => '총 사용자';
+  String get totalUsers => '총 사용자 수';
 
   @override
-  String get plansToday => '오늘의 계획';
+  String get plansToday => '오늘의 일정';
 
   @override
   String get avgConfidence => '평균 신뢰도';
@@ -33,13 +33,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get oraclesChoice => '오라클의 선택';
 
   @override
-  String get recentPlans => '최근 계획';
+  String get recentPlans => '최근 일정';
 
   @override
   String get selectLanguage => '언어를 선택하세요';
 
   @override
-  String get continueButton => '계속하기';
+  String get continueButton => '계속';
 
   @override
   String get home => '홈';
@@ -60,7 +60,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get style => '스타일';
 
   @override
-  String get planB => 'Plan B';
+  String get planB => '플랜 B';
 
   @override
   String get tips => '팁';
@@ -78,13 +78,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get removePhoto => '사진 삭제';
 
   @override
-  String get discovery => '디스커버리';
+  String get discovery => '발견';
 
   @override
-  String get nearYou => '내 주변';
+  String get nearYou => '내 근처';
 
   @override
-  String get aiReason => '이 장소의 매력';
+  String get aiReason => '이 장소의 이유는?';
 
   @override
   String get filters => '필터';
@@ -99,253 +99,251 @@ class AppLocalizationsKo extends AppLocalizations {
   String get planNewTrip => '새로운 여행 계획';
 
   @override
-  String get localGemsOffline => 'Local Gems (Offline)';
+  String get localGemsOffline => '로컬 명소 (오프라인)';
 
   @override
-  String get privacyPolicy => '개인정보 처리방침';
+  String get privacyPolicy => '개인정보처리방침';
 
   @override
-  String get termsOfService => '서비스 이용약관';
+  String get termsOfService => '서비스 약관';
 
   @override
-  String get supportCenter => 'Support Center';
+  String get supportCenter => '지원 센터';
 
   @override
-  String get deleteAccount => 'Delete Account';
+  String get deleteAccount => '계정 삭제';
 
   @override
-  String get inviteFriends => 'Invite Friends';
+  String get inviteFriends => '친구 초대';
 
   @override
-  String get confirmDeleteTitle => 'Delete account permanently?';
+  String get confirmDeleteTitle => '계정을 영구적으로 삭제하시겠습니까?';
 
   @override
   String get confirmDeleteMessage =>
-      'This action is permanent and cannot be undone. All your saved trips and data will be lost.';
+      '이 작업은 취소할 수 없습니다. 저장된 모든 여행 및 데이터가 영구적으로 삭제됩니다.';
 
   @override
-  String get cancel => 'Cancel';
+  String get cancel => '취소';
 
   @override
-  String get deleteForever => 'Delete Forever';
+  String get deleteForever => '영구 삭제';
 
   @override
-  String get discoveryHeader => 'Discover';
+  String get discoveryHeader => '발견';
 
   @override
   String get searchHint => '숨겨진 명소 검색...';
 
   @override
-  String get picksForYou => 'TripMe Picks for you';
+  String get picksForYou => 'Hidden Gems SL 추천';
 
   @override
-  String get exploreInAr => 'Explore in AR';
+  String get exploreInAr => 'AR에서 탐색';
 
   @override
-  String get bestNatureNearby => 'Best Nature nearby';
+  String get bestNatureNearby => '근처 최고의 자연 명소';
 
   @override
-  String get topCultureSpots => 'Top Culture spots';
+  String get topCultureSpots => '최고의 문화 명소';
 
   @override
-  String get villageStayTitle => 'Village & Authentic Stays';
+  String get villageStayTitle => '마을과 진정한 숙박';
 
   @override
-  String get noMatchesNearby => 'No matches nearby';
+  String get noMatchesNearby => '근처에 일치하는 결과가 없습니다';
 
   @override
-  String get tryIncreasingDistance =>
-      'Try increasing distance or removing filters.';
+  String get tryIncreasingDistance => '거리를 늘리거나 필터를 제거해 보세요.';
 
   @override
-  String get filterAll => 'All';
+  String get filterAll => '모두';
 
   @override
-  String get filterNature => 'Nature 🌿';
+  String get filterNature => '자연 🌿';
 
   @override
-  String get filterWaterfall => 'Waterfall 🌊';
+  String get filterWaterfall => '폭포 🌊';
 
   @override
-  String get filterHiking => 'Hiking 🥾';
+  String get filterHiking => '하이킹 🥾';
 
   @override
-  String get filterCulture => 'Culture 🏛️';
+  String get filterCulture => '문화 🏛️';
 
   @override
-  String get filterCoastal => 'Coastal 🌊';
+  String get filterCoastal => '해안 🌊';
 
   @override
-  String get filterFamily => 'Family 👨‍👩‍👧‍👦';
+  String get filterFamily => '가족 👨‍👩‍👧‍👦';
 
   @override
-  String get filterBudget => 'Budget 💸';
+  String get filterBudget => '저예산 💸';
 
   @override
-  String get filterAr => 'AR Places 🏛';
+  String get filterAr => 'AR 장소 🏛';
 
   @override
-  String get categoryNature => 'Nature';
+  String get categoryNature => '자연';
 
   @override
-  String get categoryWaterfall => 'Waterfall';
+  String get categoryWaterfall => '폭포';
 
   @override
-  String get categoryHiking => 'Hiking';
+  String get categoryHiking => '하이킹';
 
   @override
-  String get categoryCulture => 'Culture';
+  String get categoryCulture => '문화';
 
   @override
-  String get categoryCoastal => 'Coastal';
+  String get categoryCoastal => '해안';
 
   @override
-  String get categoryFamily => 'Family';
+  String get categoryFamily => '가족';
 
   @override
-  String get categoryBudget => 'Budget';
+  String get categoryBudget => '저예산';
 
   @override
-  String get oracleVision => 'ORACLE\\\'S VISION';
+  String get oracleVision => '오라클의 비전';
 
   @override
-  String get theKnowledge => 'THE KNOWLEDGE';
+  String get theKnowledge => '지식';
 
   @override
-  String get safetyProtocols => 'SAFETY PROTOCOLS';
+  String get safetyProtocols => '안전 프로토콜';
 
   @override
-  String get provisions => 'PROVISIONS';
+  String get provisions => '준비물';
 
   @override
-  String get sustainableEthos => 'SUSTAINABLE ETHOS';
+  String get sustainableEthos => '지속 가능한 정신';
 
   @override
-  String get culturalEtiquette => 'CULTURAL ETIQUETTE';
+  String get culturalEtiquette => '문화 에티켓';
 
   @override
-  String get ecoResponsibleTravel => 'ECO-RESPONSIBLE TRAVEL';
+  String get ecoResponsibleTravel => '친환경 여행';
 
   @override
-  String get tapToTranslate => 'TAP TO TRANSLATE';
+  String get tapToTranslate => '탭하여 번역';
 
   @override
-  String get moment => 'MOMENT';
+  String get moment => '순간';
 
   @override
-  String get offering => 'OFFERING';
+  String get offering => '제공';
 
   @override
-  String get reality => 'REALITY';
+  String get reality => '현실';
 
   @override
-  String get aerDimensionReady => 'AER DIMENSION READY';
+  String get aerDimensionReady => 'AER 차원 준비 완료';
 
   @override
-  String get invokeAr => 'INVOKE AR';
+  String get invokeAr => 'AR 실행';
 
   @override
-  String get addToDestiny => 'ADD TO DESTINY';
+  String get addToDestiny => '여정에 추가';
 
   @override
-  String get distanceLockTitle => 'DISTANCE LOCK';
+  String get distanceLockTitle => '거리 제한';
 
   @override
   String distanceLockMessage(Object distance) {
-    return 'You are $distance KM away. Seekers can only access the AER dimension within 500M of the site.';
+    return '현재 $distance KM 떨어져 있습니다. AER 차원은 해당 장소의 500M 이내에서만 접근할 수 있습니다.';
   }
 
   @override
-  String get arCoreNotDetected => 'AR CORE NOT DETECTED';
+  String get arCoreNotDetected => 'AR CORE 미감지';
 
   @override
   String get arCoreMessage =>
-      'Traveler, the ancient visions require ARCore to manifest. Please ensure it is installed and updated on your device.';
+      '여행자여, 고대 비전을 보려면 ARCore가 필요합니다. 기기에 설치 및 업데이트되었는지 확인하세요.';
 
   @override
-  String get road => 'ROAD';
+  String get road => '도로';
 
   @override
-  String get access => 'ACCESS';
+  String get access => '접근';
 
   @override
-  String get parking => 'PARKING';
+  String get parking => '주차';
 
   @override
-  String get syncingResonance => 'Syncing with ancient resonance...';
+  String get syncingResonance => '고대 공명과 동기화 중...';
 
   @override
-  String get resonanceLost => 'Resonance Lost';
+  String get resonanceLost => '공명 끊김';
 
   @override
-  String get gpsRequired =>
-      'We couldn\'t verify your location. Ensure GPS is active.';
+  String get gpsRequired => '위치를 확인할 수 없습니다. GPS가 켜져 있는지 확인하세요.';
 
   @override
-  String get unlockTeleport => 'UNLOCK TELEPORT';
+  String get unlockTeleport => '텔레포트 잠금 해제';
 
   @override
-  String get close => 'CLOSE';
+  String get close => '닫기';
 
   @override
-  String get understood => 'Understood';
+  String get understood => '이해함';
 
   @override
-  String get ancestralPortalOpen => 'ANCESTRAL PORTAL OPEN';
+  String get ancestralPortalOpen => '조상의 포털이 열렸습니다';
 
   @override
-  String get stepIntoHistory => 'Step into history';
+  String get stepIntoHistory => '역사 속으로 들어가기';
 
   @override
   String viewEraIn360(Object era) {
-    return 'View $era in 360°';
+    return '360도로 $era 보기';
   }
 
   @override
-  String get arDemoLabel => '10-Second AR Demo';
+  String get arDemoLabel => '10초 AR 데모';
 
   @override
-  String get fullHeritageAr => 'Full Heritage AR';
+  String get fullHeritageAr => '전체 유산 AR';
 
   @override
-  String get ancientHeritageSite => 'Ancient Heritage Site';
+  String get ancientHeritageSite => '고대 유적지';
 
   @override
-  String get arTipPlace => 'Tap the surface to place the 3D reconstruction';
+  String get arTipPlace => '표면을 탭하여 3D 재구성 배치';
 
   @override
-  String get arTipTime => 'Swipe \"Then/Now\" to travel through time';
+  String get arTipTime => '시간 여행을 하려면 \'과거/현재\'를 스와이프하세요';
 
   @override
-  String get arTipAudio => 'Audio guide available in Sinhala & English';
+  String get arTipAudio => '싱할라어 및 영어 오디오 가이드 제공';
 
   @override
-  String get arTipGroup => 'Host or join a group AR tour';
+  String get arTipGroup => '그룹 AR 투어 주최 또는 참여';
 
   @override
-  String get openArPortal => 'OPEN AR PORTAL';
+  String get openArPortal => 'AR 포털 열기';
 
   @override
-  String get enterDemo => 'ENTER DEMO (10s)';
+  String get enterDemo => '데모 입장 (10초)';
 
   @override
-  String get offlineReady => 'Offline Ready';
+  String get offlineReady => '오프라인 준비 완료';
 
   @override
-  String get assetsCached => 'Heritage assets cached for offline use!';
+  String get assetsCached => '오프라인 사용을 위해 유산 애셋이 캐시되었습니다!';
 
   @override
-  String get downloadFailed => 'Download failed. Please check connection.';
+  String get downloadFailed => '다운로드 실패. 연결을 확인하세요.';
 
   @override
-  String get downloadForOffline => 'Download for Offline';
+  String get downloadForOffline => '오프라인용 다운로드';
 
   @override
-  String get initiateTravel => 'INITIATE TRAVEL SEQUENCE';
+  String get initiateTravel => '여행 시퀀스 시작';
 
   @override
-  String get selectOracleLanguage => 'SELECT YOUR ORACLE LANGUAGE';
+  String get selectOracleLanguage => '오라클 언어 선택';
 
   @override
-  String get skipForNow => 'SKIP FOR NOW';
+  String get skipForNow => '지금 건너뛰기';
 }

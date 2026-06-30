@@ -351,11 +351,23 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
   }
 
   Widget _buildActiveSessionState() {
+    // Guard: crash-safe null check before any access
+    final session = _activeSession;
+    if (session == null) {
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.all(40),
+          child: Text("Session data unavailable.",
+              style: TextStyle(color: Colors.white38)),
+        ),
+      );
+    }
+
     return Column(
       children: [
         Row(
           children: [
-            _buildStatCard("TRAVELERS", "${_activeSession!.touristIds.length}", Icons.people_outline),
+            _buildStatCard("TRAVELERS", "${session.touristIds.length}", Icons.people_outline),
             const SizedBox(width: 12),
             _buildStatCard("RATING", "4.9", Icons.star_border_rounded),
             const SizedBox(width: 12),
@@ -374,7 +386,7 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
             Expanded(
               child: OutlinedButton.icon(
                 icon: const Icon(Icons.add_location_alt_outlined, size: 18),
-                label: Text(_activeSession!.meetingPointName.isNotEmpty ? "UPDATE POINT" : "SET POINT"),
+                label: Text(session.meetingPointName.isNotEmpty ? "UPDATE POINT" : "SET POINT"),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: Colors.greenAccent,
                   side: const BorderSide(color: Colors.greenAccent, width: 1),
@@ -410,14 +422,14 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text("JOIN STATUS", style: GoogleFonts.outfit(fontSize: 12, fontWeight: FontWeight.bold, color: AppTheme.textPrimary(context))),
-                Text(_activeSession!.isJoinOpen ? "OPEN TO SCANS" : "LOCKED", 
-                  style: GoogleFonts.inter(fontSize: 10, color: _activeSession!.isJoinOpen ? Colors.greenAccent : Colors.redAccent)),
+                Text(session.isJoinOpen ? "OPEN TO SCANS" : "LOCKED",
+                  style: GoogleFonts.inter(fontSize: 10, color: session.isJoinOpen ? Colors.greenAccent : Colors.redAccent)),
               ],
             ),
             Switch(
-              value: _activeSession!.isJoinOpen,
+              value: session.isJoinOpen,
               activeThumbColor: Colors.greenAccent,
-              onChanged: (val) => _sessionRepo.toggleJoinStatus(_activeSession!.sessionId, val),
+              onChanged: (val) => _sessionRepo.toggleJoinStatus(session.sessionId, val),
             ),
           ],
         ),
@@ -433,9 +445,9 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
           ),
           child: Column(
             children: [
-              if (_activeSession!.joinToken != null && _activeSession!.isJoinOpen)
+              if (session.joinToken != null && session.isJoinOpen)
                 QrImageView(
-                  data: '{"v":1,"t":"join","token":"${_activeSession!.joinToken}"}',
+                  data: '{"v":1,"t":"join","token":"${session.joinToken}"}',
                   version: QrVersions.auto,
                   size: 200.0,
                   eyeStyle: QrEyeStyle(eyeShape: QrEyeShape.square, color: Theme.of(context).colorScheme.primary),
@@ -452,7 +464,7 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
               TextButton.icon(
                 icon: const Icon(Icons.refresh, size: 14),
                 label: Text("REFRESH CODE", style: GoogleFonts.outfit(fontSize: 10, color: Colors.white54)),
-                onPressed: () => _sessionRepo.generateJoinToken(_activeSession!.sessionId),
+                onPressed: () => _sessionRepo.generateJoinToken(session.sessionId),
               ),
             ],
           ),
@@ -474,7 +486,7 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => GuideBroadcastScreen(sessionId: _activeSession!.sessionId),
+                  builder: (context) => GuideBroadcastScreen(sessionId: session.sessionId),
                 ),
               );
             },
@@ -486,17 +498,17 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text("CONNECTED TRAVELERS", style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.bold, color: AppTheme.textPrimary(context))),
-            Text("${_activeSession!.touristIds.length} ACTIVE", style: GoogleFonts.inter(fontSize: 12, color: Colors.greenAccent)),
+            Text("${session.touristIds.length} ACTIVE", style: GoogleFonts.inter(fontSize: 12, color: Colors.greenAccent)),
           ],
         ),
         const SizedBox(height: 16),
-        _activeSession!.touristIds.isEmpty 
+        session.touristIds.isEmpty
           ? Text("Waiting for scans...", style: GoogleFonts.inter(color: Colors.white.withValues(alpha: 0.4)))
           : ListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              itemCount: _activeSession!.touristIds.length,
-              itemBuilder: (context, index) => _buildTouristTile(_activeSession!.touristIds[index]),
+              itemCount: session.touristIds.length,
+              itemBuilder: (context, index) => _buildTouristTile(session.touristIds[index]),
             ),
         const SizedBox(height: 32),
         _buildSosButton(),
@@ -527,7 +539,7 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
         scrollDirection: Axis.horizontal,
         child: Row(
           children: phases.map((p) {
-            final isSelected = _activeSession!.currentPhase == p['id'];
+            final isSelected = _activeSession?.currentPhase == p['id'];
             return GestureDetector(
               onTap: () => _updatePhase(p['id'] as String),
               child: AnimatedContainer(
@@ -573,7 +585,9 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
         ),
         onPressed: () async {
           HapticFeedback.heavyImpact();
-          await _sessionRepo.triggerSos(_activeSession!.sessionId, true);
+          final sessionId = _activeSession?.sessionId;
+          if (sessionId == null) return; // Guard against null crash
+          await _sessionRepo.triggerSos(sessionId, true);
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text("SOS ALERT BROADCASTED!")),

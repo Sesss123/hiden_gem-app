@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import '../../core/network/secure_http_client.dart';
 import '../../core/config/app_config.dart';
 import '../../core/config/remote_config_service.dart';
 import '../../core/utils/secure_logger.dart';
@@ -7,6 +8,8 @@ import 'trip_cache_service.dart';
 import 'sri_lanka_event_dataset.dart';
 
 class DynamicContentService {
+  static final _client = SecureHttpClient(http.Client());
+
   static Future<List<Map<String, dynamic>>> fetchEvents() async {
     try {
       final remoteConfig = await RemoteConfigService.getInstance();
@@ -20,7 +23,7 @@ class DynamicContentService {
         SecureLogger.info("Events loaded from cache (Smart Refresh).");
         return List<Map<String, dynamic>>.from(data);
       } else {
-        final response = await http.get(
+        final response = await _client.get(
           Uri.parse('${AppConfig.baseUrl}/discovery/events'),
           headers: {'X-TripMe-Key': AppConfig.tripMeApiKey},
         ).timeout(const Duration(seconds: 5));
@@ -47,7 +50,7 @@ class DynamicContentService {
   static Future<Map<String, dynamic>> fetchRemoteConfig() async {
     try {
       // Mock remote config endpoint - can be implemented in main.py later
-      final response = await http.get(
+      final response = await _client.get(
         Uri.parse('${AppConfig.baseUrl}/config/remote'),
         headers: {'X-TripMe-Key': AppConfig.tripMeApiKey},
       ).timeout(const Duration(seconds: 3));

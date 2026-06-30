@@ -22,7 +22,7 @@ class CachedPlanResult {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// TripMe.ai Offline Cache Service
+// HiddenGems.lk Offline Cache Service
 //
 // Privacy guarantee:
 //   • ONLY stores: origin city (string), destination city (string), days (int),

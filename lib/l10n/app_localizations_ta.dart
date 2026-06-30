@@ -9,7 +9,7 @@ class AppLocalizationsTa extends AppLocalizations {
   AppLocalizationsTa([String locale = 'ta']) : super(locale);
 
   @override
-  String get appTitle => 'TripMe.ai';
+  String get appTitle => 'Hidden Gems SL';
 
   @override
   String get goodMorningAdmin => 'காலை வணக்கம், நிர்வாகி';
@@ -130,222 +130,226 @@ class AppLocalizationsTa extends AppLocalizations {
   String get deleteForever => 'நிரந்தரமாக நீக்கு';
 
   @override
-  String get discoveryHeader => 'Discover';
+  String get discoveryHeader => 'கண்டுபிடிப்பு';
 
   @override
   String get searchHint => 'மறைக்கப்பட்ட ரத்தினங்களைத் தேடுங்கள்...';
 
   @override
-  String get picksForYou => 'TripMe Picks for you';
+  String get picksForYou => 'Hidden Gems SL உங்களுக்கான பரிந்துரைகள்';
 
   @override
-  String get exploreInAr => 'Explore in AR';
+  String get exploreInAr => 'AR இல் ஆராயுங்கள்';
 
   @override
-  String get bestNatureNearby => 'Best Nature nearby';
+  String get bestNatureNearby => 'அருகிலுள்ள சிறந்த இயற்கை இடங்கள்';
 
   @override
-  String get topCultureSpots => 'Top Culture spots';
+  String get topCultureSpots => 'சிறந்த கலாச்சார இடங்கள்';
 
   @override
-  String get villageStayTitle => 'Village & Authentic Stays';
+  String get villageStayTitle => 'கிராமம் & உண்மையான தங்கும் இடங்கள்';
 
   @override
-  String get noMatchesNearby => 'No matches nearby';
+  String get noMatchesNearby => 'அருகில் எந்த பொருத்தமும் இல்லை';
 
   @override
   String get tryIncreasingDistance =>
-      'Try increasing distance or removing filters.';
+      'தூரத்தை அதிகரிக்கவும் அல்லது வடிப்பான்களை அகற்றவும்.';
 
   @override
-  String get filterAll => 'All';
+  String get filterAll => 'அனைத்தும்';
 
   @override
-  String get filterNature => 'Nature 🌿';
+  String get filterNature => 'இயற்கை 🌿';
 
   @override
-  String get filterWaterfall => 'Waterfall 🌊';
+  String get filterWaterfall => 'நீர்வீழ்ச்சி 🌊';
 
   @override
-  String get filterHiking => 'Hiking 🥾';
+  String get filterHiking => 'மலையேற்றம் 🥾';
 
   @override
-  String get filterCulture => 'Culture 🏛️';
+  String get filterCulture => 'கலாச்சாரம் 🏛️';
 
   @override
-  String get filterCoastal => 'Coastal 🌊';
+  String get filterCoastal => 'கடற்கரை 🌊';
 
   @override
-  String get filterFamily => 'Family 👨‍👩‍👧‍👦';
+  String get filterFamily => 'குடும்பம் 👨‍👩‍👧‍👦';
 
   @override
-  String get filterBudget => 'Budget 💸';
+  String get filterBudget => 'பட்ஜெட் 💸';
 
   @override
-  String get filterAr => 'AR Places 🏛';
+  String get filterAr => 'AR இடங்கள் 🏛';
 
   @override
-  String get categoryNature => 'Nature';
+  String get categoryNature => 'இயற்கை';
 
   @override
-  String get categoryWaterfall => 'Waterfall';
+  String get categoryWaterfall => 'நீர்வீழ்ச்சி';
 
   @override
-  String get categoryHiking => 'Hiking';
+  String get categoryHiking => 'மலையேற்றம்';
 
   @override
-  String get categoryCulture => 'Culture';
+  String get categoryCulture => 'கலாச்சாரம்';
 
   @override
-  String get categoryCoastal => 'Coastal';
+  String get categoryCoastal => 'கடற்கரை';
 
   @override
-  String get categoryFamily => 'Family';
+  String get categoryFamily => 'குடும்பம்';
 
   @override
-  String get categoryBudget => 'Budget';
+  String get categoryBudget => 'பட்ஜெட்';
 
   @override
-  String get oracleVision => 'ORACLE\\\'S VISION';
+  String get oracleVision => 'ஆரக்கிள் பார்வை';
 
   @override
-  String get theKnowledge => 'THE KNOWLEDGE';
+  String get theKnowledge => 'அறிவு';
 
   @override
-  String get safetyProtocols => 'SAFETY PROTOCOLS';
+  String get safetyProtocols => 'பாதுகாப்பு நெறிமுறைகள்';
 
   @override
-  String get provisions => 'PROVISIONS';
+  String get provisions => 'வசதிகள்';
 
   @override
-  String get sustainableEthos => 'SUSTAINABLE ETHOS';
+  String get sustainableEthos => 'நிலையான நெறிமுறைகள்';
 
   @override
-  String get culturalEtiquette => 'CULTURAL ETIQUETTE';
+  String get culturalEtiquette => 'கலாச்சார பழக்கவழக்கங்கள்';
 
   @override
-  String get ecoResponsibleTravel => 'ECO-RESPONSIBLE TRAVEL';
+  String get ecoResponsibleTravel => 'சுற்றுச்சூழல் பொறுப்பான பயணம்';
 
   @override
-  String get tapToTranslate => 'TAP TO TRANSLATE';
+  String get tapToTranslate => 'மொழிபெயர்க்க தட்டவும்';
 
   @override
-  String get moment => 'MOMENT';
+  String get moment => ' தருணம்';
 
   @override
-  String get offering => 'OFFERING';
+  String get offering => 'சலுகை';
 
   @override
-  String get reality => 'REALITY';
+  String get reality => 'உண்மை';
 
   @override
-  String get aerDimensionReady => 'AER DIMENSION READY';
+  String get aerDimensionReady => 'AER பரிமாணம் தயார்';
 
   @override
-  String get invokeAr => 'INVOKE AR';
+  String get invokeAr => 'AR ஐத் திற';
 
   @override
-  String get addToDestiny => 'ADD TO DESTINY';
+  String get addToDestiny => 'பயணத்தில் சேர்';
 
   @override
-  String get distanceLockTitle => 'DISTANCE LOCK';
+  String get distanceLockTitle => 'தூரப் பூட்டு';
 
   @override
   String distanceLockMessage(Object distance) {
-    return 'You are $distance KM away. Seekers can only access the AER dimension within 500M of the site.';
+    return 'நீங்கள் $distance கி.மீ தொலைவில் உள்ளீர்கள். இடத்தை விட்டு 500 மீ தொலைவிற்குள் மட்டுமே AER பரிமாணத்தை அணுக முடியும்.';
   }
 
   @override
-  String get arCoreNotDetected => 'AR CORE NOT DETECTED';
+  String get arCoreNotDetected => 'AR CORE கண்டறியப்படவில்லை';
 
   @override
   String get arCoreMessage =>
-      'Traveler, the ancient visions require ARCore to manifest. Please ensure it is installed and updated on your device.';
+      'பயணியே, பழங்கால காட்சிகளைக் காண ARCore தேவை. அது நிறுவப்பட்டு புதுப்பிக்கப்பட்டுள்ளதா என்பதை உறுதிப்படுத்தவும்.';
 
   @override
-  String get road => 'ROAD';
+  String get road => 'சாலை';
 
   @override
-  String get access => 'ACCESS';
+  String get access => 'அணுகல்';
 
   @override
-  String get parking => 'PARKING';
+  String get parking => 'பார்க்கிங்';
 
   @override
-  String get syncingResonance => 'Syncing with ancient resonance...';
+  String get syncingResonance => 'பழங்கால அதிர்வுகளுடன் ஒத்திசைகிறது...';
 
   @override
-  String get resonanceLost => 'Resonance Lost';
+  String get resonanceLost => 'அதிர்வு துண்டிக்கப்பட்டது';
 
   @override
   String get gpsRequired =>
-      'We couldn\'t verify your location. Ensure GPS is active.';
+      'உங்கள் இருப்பிடத்தை சரிபார்க்க முடியவில்லை. GPS செயலில் உள்ளதா எனப் பார்க்கவும்.';
 
   @override
-  String get unlockTeleport => 'UNLOCK TELEPORT';
+  String get unlockTeleport => 'டெலிபோர்ட் திறக்க';
 
   @override
-  String get close => 'CLOSE';
+  String get close => 'மூடு';
 
   @override
-  String get understood => 'Understood';
+  String get understood => 'புரிந்தது';
 
   @override
-  String get ancestralPortalOpen => 'ANCESTRAL PORTAL OPEN';
+  String get ancestralPortalOpen => 'பழங்கால போர்டல் திறக்கப்பட்டது';
 
   @override
-  String get stepIntoHistory => 'Step into history';
+  String get stepIntoHistory => 'வரலாற்றில் நுழையுங்கள்';
 
   @override
   String viewEraIn360(Object era) {
-    return 'View $era in 360°';
+    return '$era ஐ 360° இல் காண்க';
   }
 
   @override
-  String get arDemoLabel => '10-Second AR Demo';
+  String get arDemoLabel => '10-வினாடி AR டெமோ';
 
   @override
-  String get fullHeritageAr => 'Full Heritage AR';
+  String get fullHeritageAr => 'முழுமையான பாரம்பரிய AR';
 
   @override
-  String get ancientHeritageSite => 'Ancient Heritage Site';
+  String get ancientHeritageSite => 'பழங்கால பாரம்பரிய தளம்';
 
   @override
-  String get arTipPlace => 'Tap the surface to place the 3D reconstruction';
+  String get arTipPlace => '3D மாதிரியை வைக்க மேற்பரப்பைத் தட்டவும்';
 
   @override
-  String get arTipTime => 'Swipe \"Then/Now\" to travel through time';
+  String get arTipTime =>
+      'காலப் பயணம் செய்ய \'அப்போது/இப்போது\' என ஸ்வைப் செய்யவும்';
 
   @override
-  String get arTipAudio => 'Audio guide available in Sinhala & English';
+  String get arTipAudio => 'சிங்களம் மற்றும் ஆங்கிலத்தில் ஆடியோ வழிகாட்டி';
 
   @override
-  String get arTipGroup => 'Host or join a group AR tour';
+  String get arTipGroup => 'குழு AR சுற்றுலாவை நடத்துங்கள் அல்லது சேருங்கள்';
 
   @override
-  String get openArPortal => 'OPEN AR PORTAL';
+  String get openArPortal => 'AR போர்டலைத் திற';
 
   @override
-  String get enterDemo => 'ENTER DEMO (10s)';
+  String get enterDemo => 'டெமோவிற்குள் நுழைய (10வி)';
 
   @override
-  String get offlineReady => 'Offline Ready';
+  String get offlineReady => 'ஆஃப்லைன் தயார்';
 
   @override
-  String get assetsCached => 'Heritage assets cached for offline use!';
+  String get assetsCached =>
+      'ஆஃப்லைன் பயன்பாட்டிற்காக பாரம்பரிய சொத்துக்கள் சேமிக்கப்பட்டுள்ளன!';
 
   @override
-  String get downloadFailed => 'Download failed. Please check connection.';
+  String get downloadFailed =>
+      'பதிவிறக்கம் தோல்வியடைந்தது. இணைப்பைச் சரிபார்க்கவும்.';
 
   @override
-  String get downloadForOffline => 'Download for Offline';
+  String get downloadForOffline => 'ஆஃப்லைனுக்கு பதிவிறக்கவும்';
 
   @override
-  String get initiateTravel => 'INITIATE TRAVEL SEQUENCE';
+  String get initiateTravel => 'பயணத்தை தொடங்கு';
 
   @override
-  String get selectOracleLanguage => 'SELECT YOUR ORACLE LANGUAGE';
+  String get selectOracleLanguage =>
+      'உங்கள் ஆரக்கிள் மொழியைத் தேர்ந்தெடுக்கவும்';
 
   @override
-  String get skipForNow => 'SKIP FOR NOW';
+  String get skipForNow => 'தற்போதைக்குத் தவிர்';
 }

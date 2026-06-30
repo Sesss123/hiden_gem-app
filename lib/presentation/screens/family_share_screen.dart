@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../core/theme/oracle_ui_system.dart';
+import 'package:flutter/services.dart';
 import '../../data/models/family_share_link.dart';
 
 class FamilyShareScreen extends ConsumerStatefulWidget {
@@ -123,8 +124,51 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
                 ],
               ),
             ),
-            IconButton(icon: const Icon(Icons.copy_rounded, color: Colors.white38), onPressed: () {}),
-            IconButton(icon: const Icon(Icons.delete_outline_rounded, color: Colors.redAccent), onPressed: () {}),
+            IconButton(
+              icon: const Icon(Icons.copy_rounded, color: Colors.white38),
+              onPressed: () {
+                // Copy invite code to clipboard (Bug #33)
+                Clipboard.setData(ClipboardData(
+                  text: 'Family Share Code: ${link.shareToken}\nJoin link: https://hiddengems.lk/join/${link.shareToken}',
+                ));
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                  content: Text("📋 Invite code copied to clipboard!"),
+                  behavior: SnackBarBehavior.floating,
+                ));
+              },
+            ),
+            IconButton(
+              icon: const Icon(Icons.delete_outline_rounded, color: Colors.redAccent),
+              onPressed: () {
+                // Delete confirmation (Bug #33)
+                showDialog(
+                  context: context,
+                  builder: (ctx) => AlertDialog(
+                    title: Text("Remove Link?",
+                        style: GoogleFonts.outfit(fontWeight: FontWeight.bold)),
+                    content: Text("This will revoke \"${link.recipientName}\"'s shared access.",
+                        style: GoogleFonts.inter(fontSize: 13)),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(ctx),
+                        child: const Text("Cancel"),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pop(ctx);
+                          setState(() => _activeLinks.remove(link));
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            content: Text("Link for \"${link.recipientName}\" removed."),
+                            behavior: SnackBarBehavior.floating,
+                          ));
+                        },
+                        child: const Text("Remove", style: TextStyle(color: Colors.redAccent)),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
           ],
         ),
       ),

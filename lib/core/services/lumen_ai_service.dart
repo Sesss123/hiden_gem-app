@@ -5,8 +5,8 @@
 // Physical Device (USB/WiFi): http://<PC-LOCAL-IP>:8000
 
 import 'dart:convert';
-import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
+import '../config/app_config.dart';
 import '../../core/utils/secure_logger.dart';
 
 /// Lumen-1 AI Modes (matches dashboard modes)
@@ -35,20 +35,10 @@ extension LumenModeExtension on LumenMode {
 class LumenAiService {
   // ── Configuration ──────────────────────────────────────────
 
-  /// Base URL for Lumen-1 dashboard server.
-  /// Android Emulator uses 10.0.2.2 to reach host PC's localhost.
-  /// Physical device: change this to your PC's local network IP.
-  static String get _baseUrl {
-    if (kDebugMode) {
-      // Android emulator: 10.0.2.2 → host PC localhost
-      return 'http://10.0.2.2:8000';
-    }
-    return 'http://10.0.2.2:8000';
-  }
+  static String get _baseUrl => AppConfig.baseUrl;
 
-  /// Lumen-1 API key (set in LUMEN_API_KEY env var on server,
-  /// default: 'lumen_default_secure_api_key_2026')
-  static const String _apiKey = 'lumen_default_secure_api_key_2026';
+  /// Lumen-1 API key (set in LUMEN_API_KEY env var on server)
+  static const String _apiKey = String.fromEnvironment('LUMEN_API_KEY', defaultValue: 'lumen_default_secure_api_key_2026');
 
   /// Default timeout for inference calls
   static const Duration _timeout = Duration(seconds: 60);

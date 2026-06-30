@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
+import 'dart:io' hide WebSocket;
+import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -167,7 +168,7 @@ class _RealTimeFoodScannerScreenState extends State<RealTimeFoodScannerScreen>
   bool _isCameraInitialized = false;
   
   // WebSocket Bi-directional connection
-  WebSocket? _webSocket;
+  WebSocketChannel? _channel;
   StreamSubscription? _socketSubscription;
   bool _isConnected = false;
   String _serverIp = '10.0.2.2'; // Default for Android Emulator; use 192.168.x.x for real device
@@ -223,11 +224,13 @@ class _RealTimeFoodScannerScreenState extends State<RealTimeFoodScannerScreen>
     debugPrint("Connecting to Real-Time AI Scanner WebSocket: $url");
 
     try {
-      _webSocket = await WebSocket.connect(url).timeout(const Duration(seconds: 5));
+      _channel = WebSocketChannel.connect(Uri.parse(url));
+      await _channel!.ready.timeout(const Duration(seconds: 5));
+
       if (!mounted) return;
       setState(() => _isConnected = true);
 
-      _socketSubscription = _webSocket!.listen(
+      _socketSubscription = _channel!.stream.listen(
         (data) {
           _handleServerMessage(data);
         },
@@ -251,8 +254,8 @@ class _RealTimeFoodScannerScreenState extends State<RealTimeFoodScannerScreen>
   void _disconnectWebSocket() {
     _frameTimer?.cancel();
     _socketSubscription?.cancel();
-    _webSocket?.close();
-    _webSocket = null;
+    _channel?.sink.close();
+    _channel = null;
     _isConnected = false;
   }
 
@@ -307,7 +310,7 @@ class _RealTimeFoodScannerScreenState extends State<RealTimeFoodScannerScreen>
           'user_mode': _userMode,
         });
 
-        _webSocket?.add(requestPayload);
+        _channel?.sink.add(requestPayload);
       } catch (e) {
         debugPrint("Error capturing/sending frame: $e");
       } finally {

@@ -102,6 +102,40 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  Future<void> _handleForgotPassword() async {
+    final email = _emailController.text.trim();
+    if (email.isEmpty || !email.contains('@')) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Please enter your registered email address first."),
+          backgroundColor: Theme.of(context).colorScheme.error,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      return;
+    }
+    try {
+      await _authService.sendPasswordResetEmail(email);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Password reset instructions sent to $email."),
+          backgroundColor: AppTheme.modernGreen(context),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Failed to send reset email: ${_mapAuthException(e)}"),
+          backgroundColor: Theme.of(context).colorScheme.error,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
+  }
+
   void _showLockoutOverlay(int seconds) {
     showDialog(
       context: context,
@@ -286,9 +320,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   text: TextSpan(
                     style: GoogleFonts.outfit(fontSize: 42, fontWeight: FontWeight.w900, letterSpacing: -1),
                     children: [
-                      TextSpan(text: "TripMe", style: TextStyle(color: AppTheme.textPrimary(context))),
+                      TextSpan(text: "HiddenGems", style: TextStyle(color: AppTheme.textPrimary(context))),
                       TextSpan(
-                        text: ".ai", 
+                        text: ".SL", 
                         style: TextStyle(
                           color: primaryColor,
                         )
@@ -348,7 +382,29 @@ class _LoginScreenState extends State<LoginScreen> {
                             autofillHints: _isLoginMode ? [AutofillHints.password] : [AutofillHints.newPassword],
                             validator: (v) => v!.length < 6 ? "Insufficient complexity" : null,
                           ),
-                          const SizedBox(height: 32),
+                          if (_isLoginMode) ...[
+                            const SizedBox(height: 8),
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: TextButton(
+                                onPressed: _handleForgotPassword,
+                                style: TextButton.styleFrom(
+                                  padding: EdgeInsets.zero,
+                                  minimumSize: const Size(0, 32),
+                                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                ),
+                                child: Text(
+                                  "Forgot Access Key?",
+                                  style: GoogleFonts.inter(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w600,
+                                    color: primaryColor.withValues(alpha: 0.8),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                          const SizedBox(height: 24),
                           
                           // Neural Portal Button
                           SizedBox(

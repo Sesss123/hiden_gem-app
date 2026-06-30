@@ -38,7 +38,7 @@ class ScreenshotService {
         await SharePlus.instance.share(
           ShareParams(
             files: [XFile(imagePath.path)],
-            text: 'Check out my Sri Lanka trip plan from TripMe.ai!',
+            text: 'Check out my Sri Lanka trip plan from Hidden Gems SL.ai!',
           ),
         );
       }

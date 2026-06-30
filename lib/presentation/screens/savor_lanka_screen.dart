@@ -13,7 +13,7 @@ import '../../core/services/voice_recipe_service.dart';
 import '../../data/repositories/food_repository.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/config/app_config.dart';
-import 'food_ai_coming_soon_screen.dart';
+import 'real_time_food_scanner_screen.dart';
 
 class SavorLankaScreen extends ConsumerStatefulWidget {
   const SavorLankaScreen({super.key});
@@ -213,7 +213,7 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
     return GestureDetector(
       onTap: () => Navigator.push(
         context,
-        MaterialPageRoute(builder: (_) => const FoodAiComingSoonScreen()),
+        MaterialPageRoute(builder: (_) => const RealTimeFoodScannerScreen()),
       ),
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
@@ -1445,8 +1445,8 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
           onTap: () {
             SharePlus.instance.share(
               ShareParams(
-                text: "Check out this ${res.name} recipe I found on TripMe.ai! It's an authentic Sri Lankan delicacy. \n\nOracle Score: ${res.hygieneScore}%",
-                subject: "TripMe.ai - Savor Lanka Recipe",
+                text: "Check out this ${res.name} recipe I found on Hidden Gems SL.ai! It's an authentic Sri Lankan delicacy. \n\nOracle Score: ${res.hygieneScore}%",
+                subject: "Hidden Gems SL.ai - Savor Lanka Recipe",
               ),
             );
           },

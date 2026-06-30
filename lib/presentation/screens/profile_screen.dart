@@ -769,7 +769,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           onTap: () async {
             final Uri emailLaunchUri = Uri(
               scheme: 'mailto',
-              path: 'support@tripme.ai',
+              path: 'support@hiddengems.lk',
               query: 'subject=Support%20Request%20-%20Oracle%20Traveler',
             );
             if (await canLaunchUrl(emailLaunchUri)) {
@@ -783,8 +783,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           onTap: () {
             SharePlus.instance.share(
               ShareParams(
-                text: "Join the Aethereal Oracle on TripMe! 🌍 Download now: https://tripme-ai.web.app",
-                subject: "Join me on TripMe!",
+                text: "Join the Aethereal Oracle on Hidden Gems SL! 🌍 Download now: https://tripme-ai.web.app",
+                subject: "Join me on Hidden Gems SL!",
               ),
             );
           },

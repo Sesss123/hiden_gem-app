@@ -1,5 +1,5 @@
 {
-  "appTitle": "TripMe.ai",
+  "appTitle": "Hidden Gems SL",
   "@appTitle": {
     "description": "The title of the application"
   },
@@ -44,7 +44,7 @@
   "deleteForever": "Delete Forever",
   "discoveryHeader": "Discover",
   "searchHint": "Search for hidden gems...",
-  "picksForYou": "TripMe Picks for you",
+  "picksForYou": "Hidden Gems SL Picks for you",
   "exploreInAr": "Explore in AR",
   "bestNatureNearby": "Best Nature nearby",
   "topCultureSpots": "Top Culture spots",
