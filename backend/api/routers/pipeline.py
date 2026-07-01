@@ -194,7 +194,7 @@ async def discover_new_places(
     user=Depends(get_current_user)
 ):
     """AI-driven discovery based on a natural language prompt."""
-    if not user.get("is_authenticated") or user.get("tier") != "premium":
+    if not user.get("is_authenticated") or (user.get("role") != "admin" and user.get("tier") != "admin"):
         raise HTTPException(status_code=403, detail="Admin privileges required for AI Discovery.")
 
     set_pipeline_state(
@@ -291,7 +291,7 @@ async def start_universal_hive(background_tasks: BackgroundTasks, authorized: bo
     }
 
 @router.get("/status")
-async def get_live_pipeline_status():
+async def get_live_pipeline_status(user=Depends(get_current_user)):
     """Returns real-time pipeline health and recent logs for the UI console."""
     today_logs = read_log_file()
     summary = get_log_summary(today_logs)
@@ -357,7 +357,7 @@ class VisionAnalysisRequest(BaseModel):
     place_name: Optional[str] = None
 
 @router.post("/vision-analyze")
-async def analyze_image_vision(request: VisionAnalysisRequest):
+async def analyze_image_vision(request: VisionAnalysisRequest, user=Depends(get_current_user)):
     """Use Gemini Vision AI to detect facility features."""
     extractor = get_extractor_instance()
     if not extractor:
@@ -385,7 +385,7 @@ async def analyze_image_vision(request: VisionAnalysisRequest):
 
 # ─── CACHE STATUS ─────────────────────────────────────────────────────────────
 @router.get("/cache-status")
-async def get_cache_status():
+async def get_cache_status(user=Depends(get_current_user)):
     """Returns current scraping cache statistics."""
     from pathlib import Path
     import json
@@ -417,7 +417,7 @@ async def get_cache_status():
 
 # ─── API KEY MANAGEMENT ───────────────────────────────────────────────────────
 @router.get("/keys")
-async def list_api_keys():
+async def list_api_keys(authorized: bool = Depends(verify_internal_key)):
     """List all registered API keys across all providers."""
     status = get_key_rotator().get_status()
     return JSONResponse({
@@ -434,14 +434,14 @@ class AddKeyRequest(BaseModel):
     nickname: Optional[str] = ""
 
 @router.post("/keys")
-async def add_api_key(request: AddKeyRequest):
+async def add_api_key(request: AddKeyRequest, authorized: bool = Depends(verify_internal_key)):
     result = get_key_rotator().add_key(request.api_key, request.provider, request.nickname or "")
     if not result["success"]:
         raise HTTPException(status_code=400, detail=result["error"])
     return JSONResponse({"success": True, **result})
 
 @router.delete("/keys/{index}")
-async def remove_api_key(index: int):
+async def remove_api_key(index: int, authorized: bool = Depends(verify_internal_key)):
     result = get_key_rotator().remove_key(index)
     if not result["success"]:
         raise HTTPException(status_code=400, detail=result["error"])

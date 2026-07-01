@@ -1,4 +1,5 @@
 import logging
+import os
 from fastapi import HTTPException, Depends, Security
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from firebase_admin import auth
@@ -12,16 +13,16 @@ security = HTTPBearer()
 def verify_firebase_token(id_token: str):
     """
     Verifies the Firebase ID token and returns decoded claims.
-    If in mock mode (no service account), it returns a dummy user.
+    If in mock mode (no service account), it returns a dummy user only in dev when explicitly enabled.
     """
     try:
         decoded_token = auth.verify_id_token(id_token)
         return decoded_token
     except Exception as e:
         logger.error(f"Error verifying Firebase token: {e}")
-        # For development ease if Firebase isn't configured, we can allow a MOCK_TOKEN
-        if id_token == "MOCK_TOKEN":
-            return {"uid": "mock-user-123", "email": "mock@example.com"}
+        # For development ease if Firebase isn't configured, allow MOCK_TOKEN only in non-production with explicit env flag
+        if id_token == "MOCK_TOKEN" and os.getenv("NODE_ENV") != "production" and os.getenv("ALLOW_MOCK_AUTH") == "true":
+            return {"uid": "mock-user-123", "email": "mock@hiddengems.sl", "tier": "free"}
         raise HTTPException(
             status_code=401,
             detail=f"Invalid authentication credentials: {str(e)}"

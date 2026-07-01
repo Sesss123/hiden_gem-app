@@ -4,7 +4,12 @@
 - [x] Improve `IntegrityShield` production signature check with critical logging and risk signal (Completed 2026-07-01)
 - [x] Rename unused `TripMeKb` class to `HiddenGemsKb` and remove all remaining `TripMe` references in `lib/` (Completed 2026-07-01)
 - [x] Fix Android app label in `AndroidManifest.xml` from `TripMe.ai` to `Hidden Gems SL` (Completed 2026-07-01)
-- [x] Update Security Audit Report to v2.1 with all completed hardening items (Completed 2026-07-01)
+- [x] Add `storage.rules` configuration to `firebase.json` and update Security Audit Report to v2.2 (9.8/10 Score) (Completed 2026-07-01)
+- [x] Fix duplicate mapping key error (`cached_network_image`) in `pubspec.yaml` (Completed 2026-07-01)
+- [x] Secure backend API key management (`/keys`), status, vision, and cache endpoints with authentication dependencies (Completed 2026-07-01)
+- [x] Fix admin role validation across all admin endpoints in `admin.py` and `pipeline.py` (Completed 2026-07-01)
+- [x] Hardened rate limiter in `rate_limit.py` with SHA-256 token hashing and rate-limited `/analytics/track` (Completed 2026-07-01)
+- [x] Gated mock auth backdoors in `auth.py` and `security.py` by requiring non-production and explicit `ALLOW_MOCK_AUTH=true` flag (Completed 2026-07-01)
 
 ## Active Milestone: Image Caching Optimization
 - [x] Add `cached_network_image: ^3.4.1` to pubspec.yaml (Completed 2026-07-01)
@@ -13,8 +18,8 @@
 - [x] Replace `Image.network` → `CachedImage` in `home_screen.dart` (Completed 2026-07-01)
 - [x] Replace `Image.network` → `CachedImage` in `audio_guide_screen.dart` (Completed 2026-07-01)
 - [x] Replace `Image.network` → `CachedImage` in `map_route_screen.dart` (Completed 2026-07-01)
-- [ ] Run `flutter pub get` to install cached_network_image
-- [ ] Run `flutter analyze` to verify no new issues
+- [x] Run `flutter pub get` to install cached_network_image (Completed 2026-07-01)
+- [x] Run `flutter analyze` to verify no new issues (Completed 2026-07-01)
 
 ## Active Milestone: Home & Discovery Screens Redesign
 - [x] Redesign HomeScreen (image-backed category cards, Quick Actions Row, smooth AnimatedSwitcher background, Featured Destination Card) (Completed on 2026-07-01)

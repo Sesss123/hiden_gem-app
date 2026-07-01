@@ -88,11 +88,12 @@ async def get_current_user(request: Request, token: Optional[str] = Depends(oaut
             return {
                 "is_authenticated": True,
                 "uid": "genesis-admin-proxy",
-                "email": "admin@tripme.ai",
-                "tier": "premium"
+                "email": "admin@hiddengems.sl",
+                "role": "admin",
+                "tier": "admin"
             }
         else:
-            logger.warning(f"❌ Internal Bridge Auth FAILED: Key mismatch for {request.url.path}. Expected {INTERNAL_BRIDGE_KEY[:4]}..., got {internal_key[:4]}...")
+            logger.warning(f"❌ Internal Bridge Auth FAILED: Key mismatch for {request.url.path}")
     else:
         logger.warning(f"⚠️  Internal Bridge Header MISSING for {request.url.path}")
 
@@ -106,8 +107,8 @@ async def get_current_user(request: Request, token: Optional[str] = Depends(oaut
         # If no token AND no internal key, check if we allow Mock Auth
         if not is_firebase_initialized():
             is_production = os.getenv("NODE_ENV") == "production"
-            if is_production:
-                logger.error("🛑 SECURITY ALERT: Anonymous access in PRODUCTION.")
+            if is_production or os.getenv("ALLOW_MOCK_AUTH") != "true":
+                logger.error("🛑 SECURITY ALERT: Anonymous access or uninitialized auth in PRODUCTION/PROD-mode.")
                 raise HTTPException(
                     status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                     detail="Security module unavailable.",
@@ -117,8 +118,8 @@ async def get_current_user(request: Request, token: Optional[str] = Depends(oaut
             return {
                 "is_authenticated": True,
                 "uid": "mock-user-777",
-                "email": "dev@tripme.ai",
-                "tier": "premium"
+                "email": "dev@hiddengems.sl",
+                "tier": "free"
             }
             
         # Standard anonymous context
@@ -137,6 +138,7 @@ async def get_current_user(request: Request, token: Optional[str] = Depends(oaut
                 "is_authenticated": True,
                 "uid": decoded_token.get("uid"),
                 "email": decoded_token.get("email"),
+                "role": decoded_token.get("role", "user"),
                 "tier": decoded_token.get("tier", "free")
             }
         except Exception as e:
@@ -162,11 +164,11 @@ async def get_current_user(request: Request, token: Optional[str] = Depends(oaut
                 )
 
     else:
-        # Not initialized but token provided? Allow mock if not prod
-        if os.getenv("NODE_ENV") == "production":
+        # Not initialized but token provided? Allow mock if not prod and ALLOW_MOCK_AUTH is true
+        if os.getenv("NODE_ENV") == "production" or os.getenv("ALLOW_MOCK_AUTH") != "true":
             raise HTTPException(status_code=500, detail="Auth unavailable")
         return {
             "is_authenticated": True,
             "uid": "mock-user-token",
-            "tier": "premium"
+            "tier": "free"
         }

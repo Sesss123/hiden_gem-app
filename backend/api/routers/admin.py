@@ -1,5 +1,6 @@
-from fastapi import APIRouter, Depends, HTTPException, Query, Response
+from fastapi import APIRouter, Depends, HTTPException, Query, Response, Request
 from core.security import get_current_user
+from core.rate_limit import limiter
 from core.mongodb import get_mongo_db
 from schemas.admin_schemas import PipelineRunSchema, AdminAnalyticsSchema, BulkActionRequest
 from typing import List, Optional
@@ -16,7 +17,7 @@ router = APIRouter(prefix="/api/admin", tags=["admin"])
 @router.get("/pipeline-history", response_model=List[PipelineRunSchema])
 async def get_pipeline_history(user=Depends(get_current_user)):
     """Retrieve historical pipeline runs from MongoDB."""
-    if user.get("tier") != "premium":
+    if user.get("role") != "admin" and user.get("tier") != "admin":
         raise HTTPException(status_code=403, detail="Admin access required.")
         
     db = await get_mongo_db()
@@ -28,7 +29,7 @@ async def get_pipeline_history(user=Depends(get_current_user)):
 @router.post("/places/bulk-action")
 async def bulk_action(request: BulkActionRequest, user=Depends(get_current_user)):
     """Perform bulk operations on selected places in MongoDB."""
-    if user.get("tier") != "premium":
+    if user.get("role") != "admin" and user.get("tier") != "admin":
         raise HTTPException(status_code=403, detail="Admin access required.")
         
     db = await get_mongo_db()
@@ -68,7 +69,7 @@ async def bulk_action(request: BulkActionRequest, user=Depends(get_current_user)
 @router.get("/analytics/overview", response_model=AdminAnalyticsSchema)
 async def get_analytics_overview(user=Depends(get_current_user)):
     """Aggregate stats from MongoDB: Visitor logs, Pipeline runs, and AI Usage."""
-    if user.get("tier") != "premium":
+    if user.get("role") != "admin" and user.get("tier") != "admin":
         raise HTTPException(status_code=403, detail="Admin access required.")
         
     db = await get_mongo_db()
@@ -162,7 +163,7 @@ async def get_analytics_overview(user=Depends(get_current_user)):
 @router.post("/stop-pipeline/{run_id}")
 async def stop_pipeline(run_id: str, user=Depends(get_current_user)):
     """Kill switch to stop a running pipeline."""
-    if user.get("tier") != "premium":
+    if user.get("role") != "admin" and user.get("tier") != "admin":
         raise HTTPException(status_code=403, detail="Admin access required.")
     
     db = await get_mongo_db()
@@ -180,7 +181,8 @@ async def get_admin_stats(user=Depends(get_current_user)):
     return await get_analytics_overview(user)
 
 @router.post("/analytics/track")
-async def track_telemetry(place_id: Optional[str] = None, type: str = "view", search_term: Optional[str] = None, session_id: Optional[str] = None):
+@limiter.limit("30/minute")
+async def track_telemetry(request: Request, place_id: Optional[str] = None, type: str = "view", search_term: Optional[str] = None, session_id: Optional[str] = None):
     """Endpoint for frontend to report user activity to MongoDB."""
     db = await get_mongo_db()
     import uuid
@@ -197,7 +199,7 @@ async def track_telemetry(place_id: Optional[str] = None, type: str = "view", se
 @router.get("/system/backups")
 async def list_system_backups(user=Depends(get_current_user)):
     """List all available backup folders."""
-    if user.get("tier") != "premium":
+    if user.get("role") != "admin" and user.get("tier") != "admin":
         raise HTTPException(status_code=403, detail="Admin access required.")
     
     # Define BACKUP_ROOT relative to the backend directory
@@ -223,7 +225,7 @@ async def list_system_backups(user=Depends(get_current_user)):
 @router.post("/system/backup")
 async def trigger_system_backup(user=Depends(get_current_user)):
     """Trigger a new system-wide backup."""
-    if user.get("tier") != "premium":
+    if user.get("role") != "admin" and user.get("tier") != "admin":
         raise HTTPException(status_code=403, detail="Admin access required.")
     
     guard = SystemGuard()
@@ -233,7 +235,7 @@ async def trigger_system_backup(user=Depends(get_current_user)):
 @router.post("/system/restore")
 async def trigger_system_restore(payload: dict, user=Depends(get_current_user)):
     """Restore system to a specific backup point."""
-    if user.get("tier") != "premium":
+    if user.get("role") != "admin" and user.get("tier") != "admin":
         raise HTTPException(status_code=403, detail="Admin access required.")
     
     folder = payload.get("folder")
