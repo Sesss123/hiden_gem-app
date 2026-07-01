@@ -10,7 +10,7 @@ import '../../core/network/secure_http_client.dart';
 class AiTripService {
   static String get _baseUrl => AppConfig.baseUrl;
   static bool get ragEnabled => AppConfig.ragEnabled;
-  static String get _apiKey => AppConfig.tripMeApiKey;
+  static String get _apiKey => AppConfig.hiddenGemsApiKey;
 
   // We reuse the secure client instance
   static final _client = SecureHttpClient(http.Client());
@@ -86,7 +86,7 @@ class AiTripService {
           url,
           headers: {
             "Content-Type": "application/json",
-            "X-TripMe-Key": _apiKey,
+            "X-HiddenGems-Key": _apiKey,
           },
           body: json.encode(body),
         ).timeout(const Duration(seconds: 45));

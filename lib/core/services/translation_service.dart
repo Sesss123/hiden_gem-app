@@ -6,7 +6,7 @@ import '../../core/network/secure_http_client.dart';
 import 'voice_assistant_service.dart';
 
 class TranslationService {
-  static String get _apiKey => AppConfig.tripMeApiKey;
+  static String get _apiKey => AppConfig.hiddenGemsApiKey;
   static String get _baseUrl => AppConfig.baseUrl;
   static final _client = SecureHttpClient(http.Client());
 
@@ -31,7 +31,7 @@ class TranslationService {
         url,
         headers: {
           "Content-Type": "application/json",
-          "X-TripMe-Key": _apiKey,
+          "X-HiddenGems-Key": _apiKey,
         },
         body: json.encode({
           "text": text,

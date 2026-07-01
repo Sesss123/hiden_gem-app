@@ -529,79 +529,153 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
     );
   }
 
+  IconData _getFilterIcon(String filter) {
+    switch (filter) {
+      case 'all': return Icons.explore_outlined;
+      case 'nature': return Icons.forest_outlined;
+      case 'waterfall': return Icons.water_drop_outlined;
+      case 'hiking': return Icons.directions_walk_outlined;
+      case 'culture': return Icons.temple_hindu_outlined;
+      case 'coastal': return Icons.waves_outlined;
+      case 'family': return Icons.people_outline_rounded;
+      case 'budget': return Icons.sell_outlined;
+      case 'ar': return Icons.view_in_ar_rounded;
+      default: return Icons.tag;
+    }
+  }
+
+  int _getFilterCount(String filter) {
+    if (filter == 'all') return _allPlaces.length;
+    
+    final cleanFilter = filter.toLowerCase();
+    return _allPlaces.where((p) {
+      final cat = p.category.toLowerCase();
+      final name = p.name.toLowerCase();
+      final resolvedDistrict = _resolveDistrict(p).toLowerCase();
+
+      if (cleanFilter == "nature") {
+        return cat.contains("nature") || cat.contains("hiking") || cat.contains("waterfall") || cat.contains("park") || cat.contains("village");
+      } else if (cleanFilter == "waterfall") {
+        return cat.contains("waterfall") || name.contains("waterfall") || name.contains("ella");
+      } else if (cleanFilter == "hiking") {
+        return cat.contains("hiking") || cat.contains("mountain") || cat.contains("peak") || name.contains("peak");
+      } else if (cleanFilter == "culture") {
+        return cat.contains("culture") || cat.contains("histor") || cat.contains("temple") || cat.contains("village");
+      } else if (cleanFilter == "coastal") {
+        return cat.contains("coast") || cat.contains("beach") || cat.contains("ocean") || resolvedDistrict.contains("galle") || resolvedDistrict.contains("jaffna");
+      } else if (cleanFilter == "budget") {
+        return p.ticketRange.toLowerCase().contains("free") || p.ticketRange.contains("50") || p.ticketRange.contains("100");
+      } else if (cleanFilter == "family") {
+        return p.vehicleAccess.toLowerCase().contains("all vehicles") || p.roadType.toLowerCase().contains("paved");
+      } else if (cleanFilter == "ar") {
+        return p.arSupported;
+      }
+      return cat.contains(cleanFilter) || name.contains(cleanFilter) || resolvedDistrict.contains(cleanFilter);
+    }).length;
+  }
+
   Widget _buildLocationHeader() {
     final l10n = AppLocalizations.of(context)!;
     return SliverAppBar(
-      expandedHeight: 180,
+      expandedHeight: 240,
       pinned: true,
-      backgroundColor: Colors.transparent,
+      stretch: true,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       elevation: 0,
       flexibleSpace: FlexibleSpaceBar(
-        background: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 60, 20, 0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              OracleUI.neonText(
-                l10n.discoveryHeader,
-                style: GoogleFonts.outfit(
-                  fontSize: 32,
-                  color: Theme.of(context).colorScheme.secondary,
-                  fontWeight: FontWeight.bold,
+        stretchModes: const [StretchMode.zoomBackground, StretchMode.blurBackground],
+        background: Stack(
+          fit: StackFit.expand,
+          children: [
+            Image.asset(
+              "assets/images/sri_lanka_live_base.jpg",
+              fit: BoxFit.cover,
+            ),
+            Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.black.withValues(alpha: 0.4),
+                    Theme.of(context).scaffoldBackgroundColor.withValues(alpha: 0.8),
+                    Theme.of(context).scaffoldBackgroundColor,
+                  ],
+                  stops: const [0.0, 0.7, 1.0],
                 ),
               ),
-              const SizedBox(height: 16),
-              OracleUI.glassContainer(
-                height: 54,
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                radius: BorderRadius.circular(27),
-                child: Row(
-                  children: [
-                    Icon(Icons.search, color: Theme.of(context).colorScheme.primary, size: 22),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: TextField(
-                        controller: _searchController,
-                        onSubmitted: _onSearchSubmitted,
-                        textInputAction: TextInputAction.search,
-                        decoration: InputDecoration(
-                          hintText: l10n.searchHint,
-                          hintStyle: GoogleFonts.inter(
-                            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
-                            fontSize: 14,
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 60, 20, 0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  OracleUI.neonText(
+                    l10n.discoveryHeader,
+                    style: GoogleFonts.outfit(
+                      fontSize: 32,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      shadows: [
+                        Shadow(color: Colors.black38, offset: Offset(0, 2), blurRadius: 4)
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  OracleUI.glassContainer(
+                    height: 54,
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    radius: BorderRadius.circular(27),
+                    opacity: 0.85,
+                    child: Row(
+                      children: [
+                        Icon(Icons.search, color: Theme.of(context).colorScheme.primary, size: 22),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: TextField(
+                            controller: _searchController,
+                            onSubmitted: _onSearchSubmitted,
+                            textInputAction: TextInputAction.search,
+                            decoration: InputDecoration(
+                              hintText: l10n.searchHint,
+                              hintStyle: GoogleFonts.inter(
+                                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
+                                fontSize: 14,
+                              ),
+                              border: InputBorder.none,
+                              isDense: true,
+                              suffixIcon: _searchController.text.isNotEmpty
+                                  ? IconButton(
+                                      icon: Icon(Icons.clear, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6), size: 18),
+                                      onPressed: () {
+                                        setState(() {
+                                          _searchController.clear();
+                                          _searchQuery = "";
+                                          _selectedFilter = "all";
+                                        });
+                                        _applyFilter();
+                                      },
+                                    )
+                                  : null,
+                            ),
+                            style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
                           ),
-                          border: InputBorder.none,
-                          isDense: true,
-                          suffixIcon: _searchController.text.isNotEmpty
-                              ? IconButton(
-                                  icon: Icon(Icons.clear, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6), size: 18),
-                                  onPressed: () {
-                                    setState(() {
-                                      _searchController.clear();
-                                      _searchQuery = "";
-                                      _selectedFilter = "all";
-                                    });
-                                    _applyFilter();
-                                  },
-                                )
-                              : null,
                         ),
-                        style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
-                      ),
+                        IconButton(
+                          icon: Icon(Icons.tune, color: Theme.of(context).colorScheme.primary, size: 22),
+                          onPressed: () {
+                            HapticFeedback.mediumImpact();
+                            _showDiscoveryFilterModal();
+                          },
+                        ),
+                      ],
                     ),
-                    IconButton(
-                      icon: Icon(Icons.tune, color: Theme.of(context).colorScheme.primary, size: 22),
-                      onPressed: () {
-                        HapticFeedback.mediumImpact();
-                        _showDiscoveryFilterModal();
-                      },
-                    ),
-                  ],
-                ),
-              )
-            ],
-          ),
+                  )
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -619,12 +693,14 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
         itemBuilder: (context, index) {
           final filter = _filters[index];
           final isSelected = _selectedFilter == filter;
+          final count = _getFilterCount(filter);
           return Padding(
             padding: const EdgeInsets.only(right: 8),
             child: OracleUI.glassChip(
               context: context,
-              label: L10nUtils.getFilterLabel(context, filter),
+              label: "${L10nUtils.getFilterLabel(context, filter)} ($count)",
               isSelected: isSelected,
+              icon: _getFilterIcon(filter),
               onTap: () => _onFilterChanged(filter),
             ),
           );
@@ -702,7 +778,12 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
                             fit: BoxFit.cover, 
                             width: double.infinity,
                             placeholder: (context, url) => Container(color: Colors.white.withValues(alpha: 0.05)),
-                            errorWidget: (context, url, error) => const Icon(Icons.broken_image_outlined, color: Colors.white24),
+                            errorWidget: (context, url, error) => Container(
+  color: Colors.black12,
+  child: const Center(
+    child: Icon(Icons.broken_image_outlined, color: Colors.white24, size: 32),
+  ),
+),
                           ),
                         ),
                       ),
@@ -846,7 +927,7 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
 
   Widget _buildHorizontalCards(List<DiscoveryPlace> places, AppLocalizations l10n, {bool isOracle = false, bool isAR = false}) {
     return SizedBox(
-      height: (isOracle || isAR) ? 300 : 260,
+      height: (isOracle || isAR) ? 340 : 270,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         physics: const BouncingScrollPhysics(),
@@ -859,7 +940,7 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
             child: GestureDetector(
               onTap: () => _openPlaceDetails(place),
               child: Container(
-                width: (isOracle || isAR) ? 260 : 180,
+                width: isOracle ? 300 : (isAR ? 260 : 180),
                 margin: const EdgeInsets.symmetric(horizontal: 10),
                 child: OracleUI.premiumGlassCard(
                   padding: EdgeInsets.zero,
@@ -868,7 +949,7 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Expanded(
-                        flex: 5,
+                        flex: isOracle ? 6 : 5,
                         child: Stack(
                           children: [
                             Positioned.fill(
@@ -879,7 +960,27 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
                                   width: double.infinity,
                                   fit: BoxFit.cover,
                                   placeholder: (context, url) => Container(color: Colors.white.withValues(alpha: 0.05)),
-                                  errorWidget: (context, url, error) => const Icon(Icons.broken_image_outlined, color: Colors.white24),
+                                  errorWidget: (context, url, error) => Container(
+                                    color: Colors.black12,
+                                    child: const Center(
+                                      child: Icon(Icons.broken_image_outlined, color: Colors.white24, size: 32),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Positioned.fill(
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+                                  gradient: LinearGradient(
+                                    begin: Alignment.topCenter,
+                                    end: Alignment.bottomCenter,
+                                    colors: [
+                                      Colors.black.withValues(alpha: 0.1),
+                                      Colors.black.withValues(alpha: 0.4),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
@@ -904,20 +1005,42 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
                                   ),
                                 ),
                               ),
+                            Positioned(
+                              top: 12,
+                              left: 12,
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: Colors.black54,
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const Icon(Icons.star_rounded, color: Colors.orangeAccent, size: 12),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      place.rating.toString(),
+                                      style: GoogleFonts.inter(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 10),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
                           ],
                         ),
                       ),
                       Expanded(
                         flex: isOracle ? 6 : 4,
                         child: Padding(
-                          padding: const EdgeInsets.all(16),
+                          padding: const EdgeInsets.all(14),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
                                 place.name.toUpperCase(),
                                 style: GoogleFonts.outfit(
-                                  fontSize: isOracle ? 16 : 14,
+                                  fontSize: isOracle ? 15 : 13,
                                   fontWeight: FontWeight.bold,
                                   color: AppTheme.textPrimary(context),
                                   letterSpacing: 0.5,
@@ -954,22 +1077,32 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
                               if (isOracle && place.aiReason.isNotEmpty) ...[
                                 const Spacer(),
                                 Container(
-                                  padding: const EdgeInsets.all(10),
+                                  padding: const EdgeInsets.all(8),
+                                  width: double.infinity,
                                   decoration: BoxDecoration(
                                     color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.05),
                                     borderRadius: BorderRadius.circular(12),
                                     border: Border.all(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1)),
                                   ),
-                                  child: Text(
-                                    place.aiReason,
-                                    style: GoogleFonts.inter(
-                                      fontSize: 10,
-                                      fontStyle: FontStyle.italic,
-                                      color: AppTheme.textPrimary(context).withValues(alpha: 0.8),
-                                      height: 1.4,
-                                    ),
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
+                                  child: Row(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Icon(Icons.auto_awesome, color: Theme.of(context).colorScheme.primary, size: 12),
+                                      const SizedBox(width: 6),
+                                      Expanded(
+                                        child: Text(
+                                          place.aiReason,
+                                          style: GoogleFonts.inter(
+                                            fontSize: 9.5,
+                                            fontStyle: FontStyle.italic,
+                                            color: AppTheme.textPrimary(context).withValues(alpha: 0.8),
+                                            height: 1.3,
+                                          ),
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ]
@@ -998,105 +1131,154 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
         borderRadius: BorderRadius.circular(24),
         child: Row(
           children: [
-            // Image Left
             SizedBox(
-              width: 130,
-              height: 140,
-              child: ClipRRect(
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(24),
-                  bottomLeft: Radius.circular(24),
-                ),
-                child: CachedNetworkImage(
-                  imageUrl: place.imageUrl.isNotEmpty ? place.imageUrl : ImageUtils.getPlaceholderImage(place.category, place.name),
-                  fit: BoxFit.cover,
-                  placeholder: (context, url) => Container(color: Colors.white.withValues(alpha: 0.05)),
-                  errorWidget: (context, url, error) => const Icon(Icons.broken_image_outlined, color: Colors.white24),
-                ),
+              width: 145,
+              height: 155,
+              child: Stack(
+                children: [
+                  Positioned.fill(
+                    child: ClipRRect(
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(24),
+                        bottomLeft: Radius.circular(24),
+                      ),
+                      child: CachedNetworkImage(
+                        imageUrl: place.imageUrl.isNotEmpty ? place.imageUrl : ImageUtils.getPlaceholderImage(place.category, place.name),
+                        fit: BoxFit.cover,
+                        placeholder: (context, url) => Container(color: Colors.white.withValues(alpha: 0.05)),
+                        errorWidget: (context, url, error) => Container(
+                          color: Colors.black12,
+                          child: const Center(
+                            child: Icon(Icons.broken_image_outlined, color: Colors.white24, size: 32),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    top: 12,
+                    left: 12,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: Colors.black87,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        L10nUtils.getLocalizedCategory(context, place.category).toUpperCase(),
+                        style: GoogleFonts.outfit(
+                          color: Colors.white,
+                          fontSize: 8,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
-            // Content Right
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      place.name.toUpperCase(),
-                      style: GoogleFonts.outfit(
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                        color: AppTheme.textPrimary(context),
-                        letterSpacing: 0.5,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      L10nUtils.getLocalizedCategory(context, place.category).toUpperCase(),
-                      style: GoogleFonts.inter(
-                        fontSize: 10,
-                        fontWeight: FontWeight.w900,
-                        letterSpacing: 1,
-                        color: Theme.of(context).colorScheme.secondary.withValues(alpha: 0.8),
-                      ),
-                    ),
-                    if (place.arSupported) ...[
-                      const SizedBox(height: 8),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.secondary.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: Theme.of(context).colorScheme.secondary.withValues(alpha: 0.2)),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(Icons.view_in_ar_rounded, size: 10, color: Theme.of(context).colorScheme.secondary),
-                            const SizedBox(width: 6),
-                            Text(
-                              "HERITAGE AR",
+                child: SizedBox(
+                  height: 125,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              place.name.toUpperCase(),
                               style: GoogleFonts.outfit(
-                                color: Theme.of(context).colorScheme.secondary,
+                                fontSize: 14,
                                 fontWeight: FontWeight.bold,
-                                fontSize: 9,
+                                color: AppTheme.textPrimary(context),
+                                letterSpacing: 0.5,
                               ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
-                          ],
-                        ),
+                          ),
+                          const SizedBox(width: 4),
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(Icons.star_rounded, color: Colors.orangeAccent, size: 14),
+                              const SizedBox(width: 2),
+                              Text(
+                                place.rating.toString(),
+                                style: GoogleFonts.inter(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppTheme.textPrimary(context),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
-                    ],
-                    const Spacer(),
-                    Row(
-                      children: [
-                        Icon(Icons.location_on_rounded, size: 14, color: Theme.of(context).colorScheme.primary),
-                        const SizedBox(width: 4),
-                        Text(
-                          "${place.distanceKm.toStringAsFixed(1)} KM",
-                          style: GoogleFonts.inter(
-                            fontSize: 11,
-                            fontWeight: FontWeight.bold,
-                            color: AppTheme.textSecondary(context),
+                      const SizedBox(height: 6),
+                      if (place.arSupported) ...[
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.secondary.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: Theme.of(context).colorScheme.secondary.withValues(alpha: 0.2)),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.view_in_ar_rounded, size: 10, color: Theme.of(context).colorScheme.secondary),
+                              const SizedBox(width: 6),
+                              Text(
+                                "HERITAGE AR",
+                                style: GoogleFonts.outfit(
+                                  color: Theme.of(context).colorScheme.secondary,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 9,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                        const Spacer(),
-                        Flexible(
-                          child: OracleUI.neonText(
+                        const SizedBox(height: 6),
+                      ],
+                      const Spacer(),
+                      Row(
+                        children: [
+                          Icon(Icons.location_on_rounded, size: 14, color: Theme.of(context).colorScheme.primary),
+                          const SizedBox(width: 4),
+                          Text(
+                            "${place.distanceKm.toStringAsFixed(1)} KM",
+                            style: GoogleFonts.inter(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              color: AppTheme.textSecondary(context),
+                            ),
+                          ),
+                          const Spacer(),
+                          Text(
                             place.ticketRange.toUpperCase(),
                             style: GoogleFonts.outfit(
-                              fontSize: 11,
+                              fontSize: 10,
                               fontWeight: FontWeight.w900,
                               color: Theme.of(context).colorScheme.primary,
+                              letterSpacing: 0.5,
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ],
+                          const SizedBox(width: 8),
+                          Icon(
+                            Icons.chevron_right_rounded,
+                            color: AppTheme.textSecondary(context).withValues(alpha: 0.5),
+                            size: 18,
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),

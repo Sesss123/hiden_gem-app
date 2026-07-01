@@ -6,6 +6,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../../data/models/discovery_place.dart';
 import '../../core/theme/oracle_ui_system.dart';
 import '../../core/services/asset_cache_service.dart';
+import '../widgets/cached_image.dart';
 
 class AudioGuideScreen extends StatefulWidget {
   final DiscoveryPlace place;
@@ -84,13 +85,9 @@ class _AudioGuideScreenState extends State<AudioGuideScreen> with SingleTickerPr
         children: [
           // Background Image with Blur
           Positioned.fill(
-            child: Image.network(
-              widget.place.imageUrl,
+            child: CachedImage(
+              url: widget.place.imageUrl,
               fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) => Container(
-                color: Theme.of(context).colorScheme.surface,
-                child: Icon(Icons.landscape, color: Colors.white24, size: 80),
-              ),
             ),
           ),
           Positioned.fill(

@@ -11,27 +11,25 @@ import '../../core/theme/app_theme.dart';
 import '../../core/theme/oracle_ui_system.dart';
 import '../../data/datasources/trip_cache_service.dart';
 import '../widgets/batik_background.dart';
-import '../widgets/dynamic_light_wrapper.dart';
 import '../widgets/oracle_orb.dart';
 import 'saved_plans_screen.dart';
 import 'trip_form_screen.dart';
 import 'discovery_screen.dart';
 import 'profile_screen.dart';
 import 'event_calendar_screen.dart';
+import 'place_details_screen.dart';
 import '../../data/datasources/live_events_service.dart';
 import '../../data/models/event_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'guide_marketplace_screen.dart';
 import 'smart_match_screen.dart';
 import 'savor_lanka_screen.dart';
-import '../widgets/pulse_hub_widget.dart';
 import '../widgets/banner_ad_widget.dart';
 import '../widgets/native_ad_widget.dart';
-import '../../data/datasources/monetization_service.dart';
 import '../../data/models/discovery_place.dart';
 import '../../data/repositories/discovery_repository.dart';
-import 'place_details_screen.dart';
-import '../widgets/usage_meter_widget.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import '../widgets/cached_image.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   final bool isOffline;
@@ -123,51 +121,243 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     await Future.delayed(const Duration(milliseconds: 800));
   }
 
-  Widget _buildMarketplaceShortcuts() {
+  Widget _buildFeaturedDestinationCard() {
+    final hasGem = _localGems.isNotEmpty;
+    final String name = hasGem ? _localGems.first.name : "Sigiriya Ancient Fortress";
+    final String district = hasGem ? _localGems.first.district : "Matale";
+    final String imageUrl = hasGem ? _localGems.first.imageUrl : "https://images.unsplash.com/photo-1588598130782-690a298573ec?q=80&w=600&auto=format&fit=crop";
+    final double rating = hasGem ? _localGems.first.rating : 4.9;
+
+    return SizedBox(
+      height: 220,
+      width: double.infinity,
+      child: OracleUI.kineticCard(
+        context: context,
+        isEvening: false,
+        opacity: 0.0,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(24),
+          child: Stack(
+            children: [
+              Positioned.fill(
+                child: CachedNetworkImage(
+                  imageUrl: imageUrl,
+                  fit: BoxFit.cover,
+                  errorWidget: (c, u, e) => Image.asset("assets/images/sigiriya_sunset_bg.jpg", fit: BoxFit.cover),
+                  placeholder: (c, u) => Container(color: Colors.black26),
+                ),
+              ),
+              Positioned.fill(
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.black.withValues(alpha: 0.2),
+                        Colors.black.withValues(alpha: 0.75),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.secondary.withValues(alpha: 0.8),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(
+                            "ORACLE'S FEATURED",
+                            style: GoogleFonts.outfit(
+                              color: Colors.white,
+                              fontSize: 9,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 1.5,
+                            ),
+                          ),
+                        ),
+                        Row(
+                          children: [
+                            const Icon(Icons.star_rounded, color: Colors.orangeAccent, size: 16),
+                            const SizedBox(width: 4),
+                            Text(
+                              rating.toString(),
+                              style: GoogleFonts.inter(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    const Spacer(),
+                    Text(
+                      name.toUpperCase(),
+                      style: GoogleFonts.outfit(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 0.5,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        const Icon(Icons.location_on_rounded, color: Colors.white70, size: 14),
+                        const SizedBox(width: 4),
+                        Text(
+                          district.toUpperCase(),
+                          style: GoogleFonts.inter(
+                            color: Colors.white70,
+                            fontSize: 11,
+                          ),
+                        ),
+                        const Spacer(),
+                        ElevatedButton(
+                          onPressed: () {
+                            Haptics.medium();
+                            if (hasGem) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => PlaceDetailsScreen(place: _localGems.first),
+                                ),
+                              );
+                            } else {
+                              setState(() => _selectedIndex = 1);
+                            }
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            foregroundColor: Colors.black,
+                            elevation: 0,
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                "EXPLORE",
+                                style: GoogleFonts.outfit(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 11,
+                                  letterSpacing: 1,
+                                ),
+                              ),
+                              const SizedBox(width: 4),
+                              const Icon(Icons.arrow_forward_rounded, size: 12),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildQuickActionsRow() {
     return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
-        Expanded(
-          child: OracleUI.kineticCard(
-            context: context,
-            isEvening: false,
-            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const GuideMarketplaceScreen())),
-            child: Column(
-              children: [
-                Icon(Icons.storefront_outlined, color: Theme.of(context).colorScheme.primary, size: 24),
-                const SizedBox(height: 8),
-                Text("MARKETPLACE", style: GoogleFonts.outfit(fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1)),
+        _buildQuickActionItem(
+          "Plan Trip",
+          Icons.edit_calendar_outlined,
+          Colors.teal,
+          () {
+            Haptics.medium();
+            Navigator.push(context, MaterialPageRoute(builder: (context) => const TripFormScreen()));
+          },
+        ),
+        _buildQuickActionItem(
+          "Food AI",
+          Icons.restaurant_menu_outlined,
+          Colors.orangeAccent,
+          () {
+            Haptics.medium();
+            Navigator.push(context, MaterialPageRoute(builder: (context) => const SavorLankaScreen()));
+          },
+        ),
+        _buildQuickActionItem(
+          "Smart Match",
+          Icons.auto_awesome_outlined,
+          Colors.purpleAccent,
+          () {
+            Haptics.medium();
+            Navigator.push(context, MaterialPageRoute(builder: (context) => const SmartMatchScreen()));
+          },
+        ),
+        _buildQuickActionItem(
+          "Marketplace",
+          Icons.storefront_outlined,
+          Theme.of(context).colorScheme.primary,
+          () {
+            Haptics.medium();
+            Navigator.push(context, MaterialPageRoute(builder: (context) => const GuideMarketplaceScreen()));
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildQuickActionItem(String label, IconData icon, Color color, VoidCallback onTap) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        GestureDetector(
+          onTap: onTap,
+          child: Container(
+            width: 56,
+            height: 56,
+            decoration: BoxDecoration(
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? AppPaletteDark.card
+                  : Colors.white,
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.white.withValues(alpha: 0.08)
+                    : AppPalette.ink.withValues(alpha: 0.1),
+                width: 1.5,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: color.withValues(alpha: 0.1),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                )
               ],
             ),
+            child: Icon(icon, color: color, size: 22),
           ),
         ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: OracleUI.kineticCard(
-            context: context,
-            isEvening: false,
-            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const SmartMatchScreen())),
-            child: Column(
-              children: [
-                const Icon(Icons.auto_awesome_outlined, color: Colors.purpleAccent, size: 24),
-                const SizedBox(height: 8),
-                Text("SMART MATCH", style: GoogleFonts.outfit(fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1)),
-              ],
-            ),
-          ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: OracleUI.kineticCard(
-            context: context,
-            isEvening: false,
-            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const SavorLankaScreen())),
-            child: Column(
-              children: [
-                const Icon(Icons.restaurant_menu_outlined, color: Colors.orangeAccent, size: 24),
-                const SizedBox(height: 8),
-                Text("FOOD AI", style: GoogleFonts.outfit(fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1)),
-              ],
-            ),
+        const SizedBox(height: 8),
+        Text(
+          label.toUpperCase(),
+          style: GoogleFonts.outfit(
+            fontSize: 9,
+            fontWeight: FontWeight.bold,
+            letterSpacing: 0.5,
+            color: AppTheme.textPrimary(context),
           ),
         ),
       ],
@@ -202,26 +392,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           ),
                           children: [
                             _journalUnfold(child: _buildWelcomeCard()),
+                            const SizedBox(height: 20),
+                            _buildFeaturedDestinationCard(),
                             const SizedBox(height: 24),
-                            const UsageMeterWidget(),
-                            const SizedBox(height: 24),
-                            // Phase 8: Kinetic Pulse Hub (Bridge to Travel)
-                            const PulseHubWidget(),
-                            const SizedBox(height: 24),
-                            // Plan Journey Button (Premium)
-                            _buildCTAButton(l10n),
-                            const SizedBox(height: 16),
-                            _buildMarketplaceShortcuts(),
+                            _buildQuickActionsRow(),
                             const SizedBox(height: 32),
                             if (_todayEvents.isNotEmpty && _showEventBanner) ...[
                                _buildTodayEventBanner(),
                                const SizedBox(height: 24),
                             ],
-                            if (isOffline) ...[
-                              _buildSectionHeader(l10n.localGemsOffline),
+                            if (isOffline || _localGems.isNotEmpty) ...[
+                              _buildSectionHeader(isOffline ? l10n.localGemsOffline : "Local Gems Nearby"),
                               const SizedBox(height: 16),
                               _buildLocalGemsScroller(context),
-                              const SizedBox(height: 16),
+                              const SizedBox(height: 24),
                             ],
                             _buildCategoriesGrid(),
                             const SizedBox(height: 32),
@@ -250,39 +434,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
-  Widget _buildCTAButton(AppLocalizations l10n) {
-    return GestureDetector(
-      onTap: () {
-        Haptics.medium();
-        MonetizationService().showInterstitialAd();
-        Navigator.push(context, MaterialPageRoute(builder: (context) => const TripFormScreen()));
-      },
-      child: OracleUI.premiumGlassCard(
-        padding: const EdgeInsets.symmetric(vertical: 20),
-        showGlow: true,
-        radius: BorderRadius.circular(24),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.auto_awesome, color: Theme.of(context).colorScheme.primary, size: 24),
-            const SizedBox(width: 16),
-            Flexible(
-              child: Text(
-                l10n.planNewTrip.toUpperCase(),
-                style: GoogleFonts.outfit(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                  letterSpacing: 2,
-                  color: AppTheme.textPrimary(context),
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -430,6 +582,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 fit: BoxFit.cover,
                 width: double.infinity,
                 height: double.infinity,
+                gaplessPlayback: true,
                 errorBuilder: (context, error, stackTrace) => Container(color: Theme.of(context).colorScheme.primary),
               ),
             ),
@@ -473,25 +626,31 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       ),
                     ),
                   const SizedBox(height: 24),
-                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 40),
-                    child: OracleUI.premiumGlassCard(
-                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-                      radius: BorderRadius.circular(40),
-                      child: Row(
-                        children: [
-                          Icon(Icons.search_rounded, color: Theme.of(context).colorScheme.primary, size: 20),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Text(
-                              "Search secret locations...",
-                              style: GoogleFonts.inter(
-                                color: AppTheme.textSecondary(context).withValues(alpha: 0.6),
-                                fontSize: 13,
+                  GestureDetector(
+                    onTap: () {
+                      Haptics.medium();
+                      setState(() => _selectedIndex = 1);
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 40),
+                      child: OracleUI.premiumGlassCard(
+                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                        radius: BorderRadius.circular(40),
+                        child: Row(
+                          children: [
+                            Icon(Icons.search_rounded, color: Theme.of(context).colorScheme.primary, size: 20),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Text(
+                                "Search secret locations...",
+                                style: GoogleFonts.inter(
+                                  color: AppTheme.textSecondary(context).withValues(alpha: 0.6),
+                                  fontSize: 13,
+                                ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -555,37 +714,47 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final user = widget.isOffline ? null : FirebaseAuth.instance.currentUser;
     final name = user?.displayName?.split(" ").first ?? "Traveler";
 
-    return DynamicLightWrapper(
-      child: OracleUI.premiumGlassCard(
-        padding: const EdgeInsets.all(28),
-        radius: BorderRadius.circular(32),
-        showGlow: true,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
           children: [
-            OracleUI.neonText(
-              "AYUBOWAN, $name!",
-              style: GoogleFonts.outfit(
-                fontSize: 12,
-                color: Theme.of(context).colorScheme.primary,
-                fontWeight: FontWeight.w900,
-                letterSpacing: 4,
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(20),
               ),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              "WHERE SHALL THE\nORACLE GUIDE YOU?",
-              style: GoogleFonts.outfit(
-                fontSize: 24,
-                fontWeight: FontWeight.w900,
-                color: AppTheme.textPrimary(context),
-                height: 1.1,
-                letterSpacing: 1,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.auto_awesome, color: Theme.of(context).colorScheme.primary, size: 12),
+                  const SizedBox(width: 6),
+                  Text(
+                    "AYUBOWAN, $name!",
+                    style: GoogleFonts.outfit(
+                      fontSize: 10,
+                      color: Theme.of(context).colorScheme.primary,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 2,
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
         ),
-      ),
+        const SizedBox(height: 12),
+        Text(
+          "Let the Oracle Guide Your Path",
+          style: GoogleFonts.outfit(
+            fontSize: 22,
+            fontWeight: FontWeight.w900,
+            color: AppTheme.textPrimary(context),
+            letterSpacing: 0.5,
+          ),
+        ),
+      ],
     );
   }
 
@@ -605,11 +774,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Widget _buildCategoriesGrid() {
-    final List<(String, IconData, Color)> categories = [
-      ("Nature", Icons.forest_outlined, AppTheme.modernGreen(context)),
-      ("Beaches", Icons.waves_rounded, Colors.blue),
-      ("Culture", Icons.temple_hindu_outlined, Theme.of(context).colorScheme.primary),
-      ("Adventure", Icons.explore_outlined, AppTheme.modernGreen(context)),
+    final List<(String, IconData, String)> categories = [
+      ("Nature", Icons.forest_outlined, "assets/images/sigiriya_sunset_bg.jpg"),
+      ("Beaches", Icons.waves_rounded, "assets/images/galle_fort_bg.jpg"),
+      ("Culture", Icons.temple_hindu_outlined, "assets/images/kandy_lake_bg.jpg"),
+      ("Adventure", Icons.explore_outlined, "assets/images/nuwara_eliya_tea_bg.jpg"),
     ];
 
     return Column(
@@ -625,36 +794,64 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             crossAxisCount: 2,
             mainAxisSpacing: 16,
             crossAxisSpacing: 16,
-            childAspectRatio: 1.1,
+            childAspectRatio: 1.3,
           ),
           itemCount: categories.length,
           itemBuilder: (context, i) {
             final cat = categories[i];
-            return OracleUI.glassContainer(
-              padding: const EdgeInsets.all(20),
-              radius: BorderRadius.circular(24),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: cat.$3.withValues(alpha: 0.1),
-                      shape: BoxShape.circle,
+            return GestureDetector(
+              onTap: () {
+                Haptics.light();
+                setState(() {
+                  _selectedIndex = 1;
+                });
+              },
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(24),
+                child: Stack(
+                  children: [
+                    Positioned.fill(
+                      child: Image.asset(
+                        cat.$3,
+                        fit: BoxFit.cover,
+                      ),
                     ),
-                    child: Icon(cat.$2, color: cat.$3, size: 28),
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    cat.$1.toUpperCase(),
-                    style: GoogleFonts.outfit(
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 1,
-                      color: AppTheme.textPrimary(context),
+                    Positioned.fill(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              Colors.black.withValues(alpha: 0.25),
+                              Colors.black.withValues(alpha: 0.65),
+                            ],
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
-                ],
+                    Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Icon(cat.$2, color: Colors.white, size: 22),
+                          const SizedBox(height: 6),
+                          Text(
+                            cat.$1.toUpperCase(),
+                            style: GoogleFonts.outfit(
+                              fontSize: 13,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 1,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             );
           },
@@ -698,8 +895,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               Positioned.fill(
                 child: Opacity(
                   opacity: 0.4,
-                  child: Image.network(
-                    "https://images.unsplash.com/photo-1546708973-b339540b5162?q=80&w=2670&auto=format&fit=crop",
+                  child: CachedImage(
+                    url: "https://images.unsplash.com/photo-1546708973-b339540b5162?q=80&w=2670&auto=format&fit=crop",
                     fit: BoxFit.cover,
                   ),
                 ),

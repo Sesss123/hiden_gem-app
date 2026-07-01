@@ -223,17 +223,17 @@ class UserPreferenceService {
       
       // Sync to Firestore if authenticated (Fix for Bug #13, #14)
       if (FirebaseAuth.instance.currentUser != null) {
-        try {
-          await FirebaseFirestore.instance
-              .collection('users')
-              .doc(FirebaseAuth.instance.currentUser!.uid)
-              .set({
-            'bookmarkedPlaces': profile.bookmarkedPlaces,
-            'itineraryPlaceIds': profile.itineraryPlaceIds,
-          }, SetOptions(merge: true));
-        } catch (e) {
+        // Fire and forget, don't await. Awaiting here can hang the app indefinitely 
+        // if the device is offline or has a poor connection, because Firestore waits for server confirmation.
+        FirebaseFirestore.instance
+            .collection('users')
+            .doc(FirebaseAuth.instance.currentUser!.uid)
+            .set({
+          'bookmarkedPlaces': profile.bookmarkedPlaces,
+          'itineraryPlaceIds': profile.itineraryPlaceIds,
+        }, SetOptions(merge: true)).catchError((e) {
           debugPrint('[UPS] Firestore sync failed: $e');
-        }
+        });
       }
 
       _isDirty = false;

@@ -1,4 +1,4 @@
-class TripMeKb {
+class HiddenGemsKb {
   static const List<Map<String, dynamic>> destinations = [
     {
       "name": "Colombo",

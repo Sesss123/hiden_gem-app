@@ -13,6 +13,7 @@ import '../../core/services/ar_support_service.dart';
 import '../../core/services/asset_cache_service.dart';
 import 'package:hidden_gems_sl/data/repositories/discovery_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../widgets/cached_image.dart';
 import '../../data/models/discovery_place.dart';
 import '../../data/datasources/user_preference_service.dart';
 import '../../data/datasources/portal_service.dart';
@@ -278,15 +279,11 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
         background: Stack(
           fit: StackFit.expand,
           children: [
-            Image.network(
-              widget.place.imageUrl.isNotEmpty ? widget.place.imageUrl : ImageUtils.getPlaceholderImage(widget.place.category, widget.place.name),
+            CachedImage(
+              url: widget.place.imageUrl.isNotEmpty
+                  ? widget.place.imageUrl
+                  : ImageUtils.getPlaceholderImage(widget.place.category, widget.place.name),
               fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) {
-                return Image.network(
-                  ImageUtils.getPlaceholderImage(widget.place.category, widget.place.name),
-                  fit: BoxFit.cover,
-                );
-              },
             ),
             // Subdued top overlay for back button visibility
             Container(

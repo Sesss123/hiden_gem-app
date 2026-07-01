@@ -38,7 +38,7 @@ class DiscoveryRemoteDataSource {
     final response = await _client.get(
       Uri.parse('${AppConfig.baseUrl}/discovery/places'),
       headers: {
-        'X-TripMe-Key': AppConfig.tripMeApiKey,
+        'X-HiddenGems-Key': AppConfig.hiddenGemsApiKey,
         ...securityHeaders,
       },
     ).timeout(const Duration(seconds: 10));

@@ -25,7 +25,7 @@ class DynamicContentService {
       } else {
         final response = await _client.get(
           Uri.parse('${AppConfig.baseUrl}/discovery/events'),
-          headers: {'X-TripMe-Key': AppConfig.tripMeApiKey},
+          headers: {'X-HiddenGems-Key': AppConfig.hiddenGemsApiKey},
         ).timeout(const Duration(seconds: 5));
 
         if (response.statusCode == 200) {
@@ -52,7 +52,7 @@ class DynamicContentService {
       // Mock remote config endpoint - can be implemented in main.py later
       final response = await _client.get(
         Uri.parse('${AppConfig.baseUrl}/config/remote'),
-        headers: {'X-TripMe-Key': AppConfig.tripMeApiKey},
+        headers: {'X-HiddenGems-Key': AppConfig.hiddenGemsApiKey},
       ).timeout(const Duration(seconds: 3));
 
       if (response.statusCode == 200) {

@@ -20,7 +20,7 @@ class AppConfig {
 
   static const String vaultSignKey = String.fromEnvironment(
     'VAULT_SIGN_KEY',
-    defaultValue: "TRIPME_V1_STAGING_KEY_SHHH",
+    defaultValue: "HIDDEN_GEMS_V1_STAGING_KEY_SHHH",
   );
 
   static const String nodeProxyUrl = String.fromEnvironment(

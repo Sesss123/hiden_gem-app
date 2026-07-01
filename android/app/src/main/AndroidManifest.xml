@@ -15,7 +15,7 @@
 
 
     <application
-        android:label="TripMe.ai"
+        android:label="Hidden Gems SL"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
         

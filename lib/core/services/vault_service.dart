@@ -42,10 +42,10 @@ class VaultService {
     final signature = hmac.convert(utf8.encode(payload)).toString();
 
     return {
-      'X-TripMe-Signature': signature,
-      'X-TripMe-Timestamp': timestamp,
-      'X-TripMe-Device-ID': deviceId,
-      'X-TripMe-Version': '1.0.0-Hardened',
+      'X-HiddenGems-Signature': signature,
+      'X-HiddenGems-Timestamp': timestamp,
+      'X-HiddenGems-Device-ID': deviceId,
+      'X-HiddenGems-Version': '2.0.0-Hardened',
     };
   }
 }

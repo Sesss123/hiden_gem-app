@@ -1,3 +1,25 @@
+## Active Milestone: Security Audit v2.0 Fixes & Brand Cleanup
+- [x] Upgrade ProGuard rules to `proguard-android-optimize.txt` in `build.gradle.kts` (Completed 2026-07-01)
+- [x] Rename `VaultService` headers from `X-TripMe-` to `X-HiddenGems-` across all data sources (Completed 2026-07-01)
+- [x] Improve `IntegrityShield` production signature check with critical logging and risk signal (Completed 2026-07-01)
+- [x] Rename unused `TripMeKb` class to `HiddenGemsKb` and remove all remaining `TripMe` references in `lib/` (Completed 2026-07-01)
+- [x] Fix Android app label in `AndroidManifest.xml` from `TripMe.ai` to `Hidden Gems SL` (Completed 2026-07-01)
+- [x] Update Security Audit Report to v2.1 with all completed hardening items (Completed 2026-07-01)
+
+## Active Milestone: Image Caching Optimization
+- [x] Add `cached_network_image: ^3.4.1` to pubspec.yaml (Completed 2026-07-01)
+- [x] Create central `CachedImage` widget with shimmer placeholder + error fallback (Completed 2026-07-01)
+- [x] Replace `Image.network` → `CachedImage` in `place_details_screen.dart` (Completed 2026-07-01)
+- [x] Replace `Image.network` → `CachedImage` in `home_screen.dart` (Completed 2026-07-01)
+- [x] Replace `Image.network` → `CachedImage` in `audio_guide_screen.dart` (Completed 2026-07-01)
+- [x] Replace `Image.network` → `CachedImage` in `map_route_screen.dart` (Completed 2026-07-01)
+- [ ] Run `flutter pub get` to install cached_network_image
+- [ ] Run `flutter analyze` to verify no new issues
+
+## Active Milestone: Home & Discovery Screens Redesign
+- [x] Redesign HomeScreen (image-backed category cards, Quick Actions Row, smooth AnimatedSwitcher background, Featured Destination Card) (Completed on 2026-07-01)
+- [x] Redesign DiscoveryScreen (expanded 240px SliverAppBar with background image, icons + dynamic count badges on filter chips, visually distinct Oracle Picks, enhanced horizontal cards and list cards) (Completed on 2026-07-01)
+
 ## Active Milestone: App ↔ Backend Connection & Security Fixes
 - [x] Fix `app_config.dart` (dynamic environments, throw validation in debug, proxy URL)
 - [x] Fix `secure_http_client.dart` (HMAC secret env, dual-header conflict, http block in release)

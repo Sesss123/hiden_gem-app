@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
@@ -15,6 +16,8 @@ class PremiumNotifier extends _$PremiumNotifier {
   static const String entitlementId = 'premium_access';
   static const String premiumId = 'hgems_premium_monthly';
   static const String explorerId = 'hgems_explorer_monthly';
+
+  bool get _isFirebaseReady => Firebase.apps.isNotEmpty;
 
   @override
   bool build() {
@@ -42,9 +45,11 @@ class PremiumNotifier extends _$PremiumNotifier {
       await Purchases.configure(PurchasesConfiguration(apiKey));
 
       // Identify user if logged in
-      final user = FirebaseAuth.instance.currentUser;
-      if (user != null) {
-        await Purchases.logIn(user.uid);
+      if (_isFirebaseReady) {
+        final user = FirebaseAuth.instance.currentUser;
+        if (user != null) {
+          await Purchases.logIn(user.uid);
+        }
       }
 
       final customerInfo = await Purchases.getCustomerInfo();
@@ -57,6 +62,10 @@ class PremiumNotifier extends _$PremiumNotifier {
   StreamSubscription<DocumentSnapshot>? _firestoreSubscription;
 
   void _setupFirestoreListener() {
+    if (!_isFirebaseReady) {
+      _checkPremiumStatus();
+      return;
+    }
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
 
@@ -104,17 +113,19 @@ class PremiumNotifier extends _$PremiumNotifier {
       );
 
       // 🛡️ SYNC TO FIRESTORE: Keep server record updated for other services (Analytics, Rules)
-      final user = FirebaseAuth.instance.currentUser;
-      if (user != null) {
-        await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
-          'isPremium': isPremium,
-          'premiumExpiresAt': activeEntitlement?.expirationDate != null 
-              ? Timestamp.fromDate(DateTime.parse(activeEntitlement!.expirationDate!)) 
-              : null,
-          'premiumPlan': activeEntitlement?.productIdentifier ?? 'unknown',
-          'premiumSource': 'revenuecat',
-          'updatedAt': FieldValue.serverTimestamp(),
-        }).catchError((e) => debugPrint("Firestore Sync Support Failed: $e"));
+      if (_isFirebaseReady) {
+        final user = FirebaseAuth.instance.currentUser;
+        if (user != null) {
+          await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
+            'isPremium': isPremium,
+            'premiumExpiresAt': activeEntitlement?.expirationDate != null 
+                ? Timestamp.fromDate(DateTime.parse(activeEntitlement!.expirationDate!)) 
+                : null,
+            'premiumPlan': activeEntitlement?.productIdentifier ?? 'unknown',
+            'premiumSource': 'revenuecat',
+            'updatedAt': FieldValue.serverTimestamp(),
+          }).catchError((e) => debugPrint("Firestore Sync Support Failed: $e"));
+        }
       }
     }
   }
@@ -167,13 +178,15 @@ class PremiumNotifier extends _$PremiumNotifier {
     );
     
     // Sync to Firestore mockly
-    final user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
-        'isPremium': true,
-        'premiumPlan': 'premium_mock_dev',
-        'premiumSource': 'mock_internal',
-      });
+    if (_isFirebaseReady) {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
+          'isPremium': true,
+          'premiumPlan': 'premium_mock_dev',
+          'premiumSource': 'mock_internal',
+        });
+      }
     }
   }
 }

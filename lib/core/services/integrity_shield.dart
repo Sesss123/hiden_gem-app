@@ -191,7 +191,8 @@ class IntegrityShield {
       // Verify Signature (Mock logic — in production use a native plugin for real fingerprint)
       // This is a placeholder for the concept in Point 4.
       if (_expectedSignatureHash == 'PLACEHOLDER_SHA256_FINGERPRINT' && !kDebugMode) {
-        debugPrint('[IntegrityShield] ⚠️ WARNING: Production signature hash is not set!');
+        debugPrint('[IntegrityShield] 🚨 CRITICAL SECURITY WARNING: Production signature hash is not set in integrity_shield.dart!');
+        _addSignal('missing_prod_signature_hash', score: 20);
       }
     } catch (e) {
       debugPrint('[IntegrityShield] Package check error: $e');
