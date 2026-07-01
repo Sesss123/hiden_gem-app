@@ -191,7 +191,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final isPremium = ref.watch(premiumNotifierProvider);
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
+    
+    if (l10n == null) {
+      return Scaffold(
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        body: const Center(child: CircularProgressIndicator(color: Colors.amber)),
+      );
+    }
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -287,27 +294,24 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             )
                           ],
                         ),
-                        child: Hero(
-                          tag: 'profile_pic',
-                          child: Container(
-                            width: 100,
-                            height: 100,
-                            decoration: BoxDecoration(shape: BoxShape.circle),
-                            child: ClipOval(
-                              child: profile.profileImagePath != null && (kIsWeb || File(profile.profileImagePath!).existsSync())
-                                ? (kIsWeb
-                                    ? Image.network(
-                                        profile.profileImagePath!,
-                                        fit: BoxFit.cover,
-                                        errorBuilder: (context, error, stackTrace) => _defaultAvatar(isPremium),
-                                      )
-                                    : Image.file(
-                                        File(profile.profileImagePath!),
-                                        fit: BoxFit.cover,
-                                        errorBuilder: (context, error, stackTrace) => _defaultAvatar(isPremium),
-                                      ))
-                                : _defaultAvatar(isPremium),
-                            ),
+                        child: Container(
+                          width: 100,
+                          height: 100,
+                          decoration: BoxDecoration(shape: BoxShape.circle),
+                          child: ClipOval(
+                            child: profile.profileImagePath != null && (kIsWeb || File(profile.profileImagePath!).existsSync())
+                              ? (kIsWeb
+                                  ? Image.network(
+                                      profile.profileImagePath!,
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (context, error, stackTrace) => _defaultAvatar(isPremium),
+                                    )
+                                  : Image.file(
+                                      File(profile.profileImagePath!),
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (context, error, stackTrace) => _defaultAvatar(isPremium),
+                                    ))
+                              : _defaultAvatar(isPremium),
                           ),
                         ),
                       ),

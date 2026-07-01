@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -83,7 +84,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         });
       }
     } catch (e) {
-      debugPrint("Error loading gems: $e");
+      if (kDebugMode) {
+        debugPrint("Error loading gems: $e");
+      }
     }
   }
 
@@ -501,7 +504,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       actions: [
         if (user != null)
           GestureDetector(
-            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ProfileScreen())),
+            onTap: () => setState(() => _selectedIndex = 3),
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: CircleAvatar(
@@ -512,7 +515,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           )
         else
           _glassActionIcon(Icons.person_outline, () {
-            Navigator.push(context, MaterialPageRoute(builder: (_) => const ProfileScreen()));
+            setState(() => _selectedIndex = 3);
           }),
         
         _glassActionIcon(Icons.bookmark_border_rounded, () {

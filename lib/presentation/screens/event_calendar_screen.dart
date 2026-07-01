@@ -691,6 +691,15 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> {
         await imagePath.writeAsBytes(image);
         await SharePlus.instance.share(ShareParams(files: [XFile(imagePath.path)], text: "Consulting the Temporal Oracle... 🇱🇰🌌"));
       }
-    } catch (_) {}
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Failed to share timeline: ${e.toString()}"),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
+    }
   }
 }

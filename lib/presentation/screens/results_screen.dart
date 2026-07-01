@@ -123,27 +123,36 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
     }
   }
 
-  void _triggerPostGenerationEvents() async {
-    // 1. Log Analytics
-    await AnalyticsService().logPlanGenerated(
-      destination: _activePlan.destination,
-      style: _activePlan.tripSummary.style,
-      days: _activePlan.itinerary.length,
-      verifiedScore: _activePlan.verifiedScore,
-    );
+  Future<void> _triggerPostGenerationEvents() async {
+    try {
+      // 1. Log Generation to Analytics
+      await AnalyticsService().logPlanGenerated(
+        destination: _activePlan.destination,
+        style: _activePlan.tripSummary.style,
+        days: _activePlan.itinerary.length,
+        verifiedScore: _activePlan.verifiedScore,
+      );
 
-    // 2. Increment Trip Count for User DNA
-    await UserPreferenceService.addTrip();
+      // 2. Increment Trip Count for User DNA
+      await UserPreferenceService.addTrip();
 
-    // 3. Check for Rating Prompt (Milestone trigger)
-    await RatingService().checkAndRequestReview();
+      // 3. Check for Rating Prompt (Milestone trigger)
+      await RatingService().checkAndRequestReview();
+    } catch (e) {
+      debugPrint("Post Generation Event Error: $e");
+    }
   }
 
   void _initBanner() async {
     final isPremium = ref.read(premiumNotifierProvider);
     if (!isPremium) {
-      _bannerAd = await MonetizationService().createBannerAd();
-      setState(() => _isBannerLoaded = true);
+      final ad = await MonetizationService().createBannerAd();
+      if (mounted) {
+        _bannerAd = ad;
+        setState(() => _isBannerLoaded = true);
+      } else {
+        ad.dispose();
+      }
     }
   }
 

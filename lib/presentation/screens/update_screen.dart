@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -16,10 +17,27 @@ class UpdateScreen extends StatelessWidget {
     required this.onMaybeLater,
   });
 
-  Future<void> _launchStore() async {
-    final Uri url = Uri.parse('https://play.google.com/store/apps/details?id=com.hidden_gems_sl'); // Replace with actual ID if different
-    if (await canLaunchUrl(url)) {
-      await launchUrl(url, mode: LaunchMode.externalApplication);
+  Future<void> _launchStore(BuildContext context) async {
+    final bool isIOS = Platform.isIOS;
+    final Uri url = Uri.parse(isIOS 
+        ? 'https://apps.apple.com/app/id6400000000' // TODO: Replace with actual App Store ID
+        : 'https://play.google.com/store/apps/details?id=com.hidden_gems_sl');
+        
+    try {
+      if (await canLaunchUrl(url)) {
+        await launchUrl(url, mode: LaunchMode.externalApplication);
+      } else {
+        throw Exception("Could not open store link.");
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Failed to open store. Please update manually."),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
     }
   }
 
@@ -117,7 +135,7 @@ class UpdateScreen extends StatelessWidget {
                         context,
                         label: "UPDATE NOW",
                         isPrimary: true,
-                        onTap: _launchStore,
+                        onTap: () => _launchStore(context),
                       ),
                       if (!isForce) ...[
                         const SizedBox(height: 16),

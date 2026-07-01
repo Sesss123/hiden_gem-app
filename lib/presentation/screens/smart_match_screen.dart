@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/theme/oracle_ui_system.dart';
 import '../../core/services/oracle_guardian.dart';
+import '../../core/services/lumen_ai_service.dart';
 
 class SmartMatchScreen extends StatefulWidget {
   const SmartMatchScreen({super.key});
@@ -366,18 +367,39 @@ class _SmartMatchScreenState extends State<SmartMatchScreen> {
     // Security Certification
     if (!await guardian.certifyTransition('QUESTIONNAIRE', 'ANALYZING')) {
       guardian.secureLog('Unauthorized analysis transition', isCritical: true);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Transition blocked by Oracle Guardian."),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
+      return;
     }
 
     setState(() => _isAnalyzing = true);
     
-    // Simulated Neural Processing
-    await Future.delayed(3.seconds);
-    
-    final obfuscatedStatus = guardian.obfuscateStatus('SUCCESS');
-    guardian.secureLog("Neural matching completed: $obfuscatedStatus");
+    try {
+      final prompt = "Find a travel guide matching these preferences: Interests: ${_interests.join(', ')}. Trip pace: $_tripStyle. Budget tier: $_budget.";
+      await LumenAiService.chat(prompt: prompt, mode: LumenMode.defaultMode);
+      
+      final obfuscatedStatus = guardian.obfuscateStatus('SUCCESS');
+      guardian.secureLog("Neural matching completed: $obfuscatedStatus");
 
-    if (mounted) {
-      _showResult();
+      if (mounted) {
+        _showResult();
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isAnalyzing = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("AI Analysis failed: ${e.toString()}"),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
     }
   }
 

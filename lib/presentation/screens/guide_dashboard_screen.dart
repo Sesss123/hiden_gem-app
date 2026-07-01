@@ -100,7 +100,14 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
       if (pos.speed > 1) return const Duration(seconds: 15);
       return const Duration(seconds: 30);
     } catch (e) {
-      debugPrint("Zenith Presence Sync Error: $e");
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Zenith Presence Sync Error: ${e.toString()}"),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
       return const Duration(seconds: 20); // Fallback on error
     }
   }
@@ -171,7 +178,14 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
       });
       HapticFeedback.mediumImpact();
     } catch (e) {
-      debugPrint("Update Phase Error: $e");
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Failed to update phase: ${e.toString()}"),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
     }
   }
 
@@ -235,7 +249,14 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
         );
       });
     } catch (e) {
-      debugPrint("Set Meeting Point Error: $e");
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Failed to set meeting point: ${e.toString()}"),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
     } finally {
       setState(() => _isLoading = false);
     }
@@ -251,7 +272,14 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
         const SnackBar(content: Text("VEHICLE POSITION MARKED"), backgroundColor: Colors.orangeAccent),
       );
     } catch (e) {
-      debugPrint("Update Vehicle Location Error: $e");
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Failed to update vehicle location: ${e.toString()}"),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
     } finally {
       setState(() => _isLoading = false);
     }

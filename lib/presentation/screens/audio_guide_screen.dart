@@ -85,7 +85,7 @@ class _AudioGuideScreenState extends State<AudioGuideScreen> with SingleTickerPr
           // Background Image with Blur
           Positioned.fill(
             child: Image.network(
-              'https://source.unsplash.com/featured/?sri+lanka,${Uri.encodeComponent(widget.place.name)}',
+              widget.place.imageUrl,
               fit: BoxFit.cover,
               errorBuilder: (_, __, ___) => Container(
                 color: Theme.of(context).colorScheme.surface,
@@ -173,9 +173,7 @@ class _AudioGuideScreenState extends State<AudioGuideScreen> with SingleTickerPr
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 image: DecorationImage(
-                  image: NetworkImage(
-              'https://source.unsplash.com/featured/?sri+lanka,${Uri.encodeComponent(widget.place.name)}',
-            ),
+                  image: NetworkImage(widget.place.imageUrl),
                   fit: BoxFit.cover,
                 ),
                 boxShadow: [

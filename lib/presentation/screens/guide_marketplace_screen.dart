@@ -149,7 +149,15 @@ class _GuideMarketplaceScreenState extends ConsumerState<GuideMarketplaceScreen>
               ],
             ),
             const SizedBox(height: 16),
-            SizedBox(
+            if (snapshot.hasError)
+              Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Text("Unable to load featured guides.", style: GoogleFonts.inter(color: Colors.redAccent)),
+              )
+            else if (!snapshot.hasData || snapshot.data!.isEmpty)
+              const SizedBox()
+            else
+              SizedBox(
               height: 180,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
@@ -305,6 +313,18 @@ class _GuideMarketplaceScreenState extends ConsumerState<GuideMarketplaceScreen>
             padding: EdgeInsets.all(40.0),
             child: CircularProgressIndicator(),
           ));
+        }
+
+        if (snapshot.hasError) {
+          return Center(
+            child: Padding(
+              padding: const EdgeInsets.all(40.0),
+              child: Text(
+                "Oracle connection disrupted.",
+                style: GoogleFonts.inter(color: Colors.redAccent),
+              ),
+            ),
+          );
         }
         
         final guides = (snapshot.data?.listings ?? []).where((g) {

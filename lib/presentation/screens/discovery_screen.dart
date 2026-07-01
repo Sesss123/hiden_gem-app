@@ -70,38 +70,49 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
   Future<void> _initDiscovery({bool forceRefresh = false}) async {
     if (!forceRefresh) setState(() => _isLoading = true);
     
-    final repo = ref.read(discoveryRepositoryProvider);
-    _currentPosition = await repo.getCurrentLocation();
-    
-    _allPlaces = await repo.getDiscoveryPlaces(
-      userLat: _currentPosition?.latitude,
-      userLng: _currentPosition?.longitude,
-      forceRefresh: forceRefresh,
-    );
+    try {
+      final repo = ref.read(discoveryRepositoryProvider);
+      _currentPosition = await repo.getCurrentLocation();
+      
+      _allPlaces = await repo.getDiscoveryPlaces(
+        userLat: _currentPosition?.latitude,
+        userLng: _currentPosition?.longitude,
+        forceRefresh: forceRefresh,
+      );
 
-    _oraclePicks = await repo.getAiRecommendations(_allPlaces);
-    
-    _naturePicks = _allPlaces.where((p) => 
-      p.category.toLowerCase().contains("nature") || 
-      p.category.toLowerCase().contains("waterfall") ||
-      p.category.toLowerCase().contains("hiking")
-    ).toList();
-    
-    _culturePicks = _allPlaces.where((p) => 
-      p.category.toLowerCase().contains("culture") || 
-      p.category.toLowerCase().contains("historical") ||
-      p.category.toLowerCase().contains("village")
-    ).toList();
-    
-    _arPicks = _allPlaces.where((p) => p.arSupported).toList();
+      _oraclePicks = await repo.getAiRecommendations(_allPlaces);
+      
+      _naturePicks = _allPlaces.where((p) => 
+        p.category.toLowerCase().contains("nature") || 
+        p.category.toLowerCase().contains("waterfall") ||
+        p.category.toLowerCase().contains("hiking")
+      ).toList();
+      
+      _culturePicks = _allPlaces.where((p) => 
+        p.category.toLowerCase().contains("culture") || 
+        p.category.toLowerCase().contains("historical") ||
+        p.category.toLowerCase().contains("village")
+      ).toList();
+      
+      _arPicks = _allPlaces.where((p) => p.arSupported).toList();
 
-    _villageExperiences = await VillageExperienceService.getNearbyExperiences(
-      lat: _currentPosition?.latitude ?? 7.8731,
-      lng: _currentPosition?.longitude ?? 80.7718,
-    );
+      _villageExperiences = await VillageExperienceService.getNearbyExperiences(
+        lat: _currentPosition?.latitude ?? 7.8731,
+        lng: _currentPosition?.longitude ?? 80.7718,
+      );
 
-    if (!mounted) return;
-    _applyFilter();
+      if (!mounted) return;
+      _applyFilter();
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _isLoading = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Oracle connection disrupted: ${e.toString()}"),
+          backgroundColor: Theme.of(context).colorScheme.error,
+        ),
+      );
+    }
   }
 
   String _resolveDistrict(DiscoveryPlace place) {

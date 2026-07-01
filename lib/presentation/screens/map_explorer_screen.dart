@@ -47,18 +47,29 @@ class _MapExplorerScreenState extends ConsumerState<MapExplorerScreen> {
   }
 
   Future<void> _loadData() async {
-    // Load all places (proximity handled by DiscoveryRepository)
-    final repo = ref.read(discoveryRepositoryProvider);
-    final places = await repo.getDiscoveryPlaces(
-      userLat: widget.initialPosition.latitude,
-      userLng: widget.initialPosition.longitude,
-    );
+    try {
+      // Load all places (proximity handled by DiscoveryRepository)
+      final repo = ref.read(discoveryRepositoryProvider);
+      final places = await repo.getDiscoveryPlaces(
+        userLat: widget.initialPosition.latitude,
+        userLng: widget.initialPosition.longitude,
+      );
 
-    if (mounted) {
-      setState(() {
-        _places = places;
-        _createMarkers();
-      });
+      if (mounted) {
+        setState(() {
+          _places = places;
+          _createMarkers();
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Failed to load map data: ${e.toString()}"),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
     }
   }
 

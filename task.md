@@ -15,15 +15,12 @@
 - [x] Create `BillingHistoryScreen`
 - [x] Run `flutter analyze` to ensure code is clean
 
-
 - [x] Implement `purchasePlan` in `SubscriptionService` using RevenueCat
 - [x] Update `SubscriptionScreen` to trigger real payment flow and add Restore button
 - [x] Run `flutter analyze` to ensure code is clean
 - [x] Migrate `RealTimeFoodScannerScreen` to use `web_socket_channel` instead of `dart:io` WebSocket
 - [x] Delete `FoodAiComingSoonScreen` to remove dead code
 - [x] Run `flutter analyze` to ensure code is clean
-
-
 
 ### 🔴 Dead/Empty Buttons (12)
 | # | Screen | Button | Status |
@@ -80,24 +77,19 @@
 - **GuideDashboardScreen** `_activeSession!` force-unwraps — Bonus fix: null-guarded (11 instances).
 - **GuideDashboardScreen** `_activeSession!` force-unwraps — Bonus fix: null-guarded (11 instances).
 
----
-
 ## Audit Complete — Screens 47-48 + ArUpgradeDialog
 - [x] BudgetTrackerScreen (#47) — No bugs, all functional ✅
 - [x] ARVideoScreen (#48) — No bugs, all functional ✅
-- [x] ArUpgradeDialog — No bugs, callbacks all wired ✅
-
+- [x] ArUpgradeDialog — No bugs, callbacks all wired 
 - [x] ResultsScreen "View on Map" copies Google Maps URL to clipboard with SnackBar (#40)
 - [x] GuidePublicProfileScreen share icon fires SharePlus with guide name + profile URL (#43)
 - [x] IncidentDetailScreen share icon sends incident summary via SharePlus (#46)
 - [x] IncidentDetailScreen ADD EVIDENCE button opens text-input dialog → submit SnackBar (#46)
-- [x] IncidentDetailScreen ESCALATE button shows confirm dialog → escalation SnackBar (#46)
-
+- [x] IncidentDetailScreen ESCALATE button shows confirm dialog → escalation SnackBar (#46
 - [x] Add null guard `final session = _activeSession` at top of `_buildActiveSessionState()` (#27)
 - [x] Replace all 9x `_activeSession!` force-unwraps in that method with `session.*` (#27)
 - [x] Add `?.sessionId` null-safe guard on SOS button `_sessionRepo.triggerSos()` call (#27)
-- [x] Use `_activeSession?.currentPhase` in `_buildPhaseSelector()` to avoid crash (#27)
-
+- [x] Use `_activeSession?.currentPhase` in `_buildPhaseSelector()` to avoid crash (#27
 - [x] Add bookmarkedPlaces + itineraryPlaceIds fields to UserProfile model (#19, #19b)
 - [x] Add toggleBookmark() + toggleItinerary() methods to UserPreferenceService (#19, #19b)
 - [x] Wire PlaceDetailsScreen bookmark icon to real persistent toggleBookmark() (#19)
@@ -121,6 +113,13 @@
 - [x] Replace hardcoded Colors.white with Theme cardColor in GuideMarketplaceScreen (#12)
 - [x] Use SharedPreferences to persist FoodAiComingSoon notify state (#17)
 - [x] Route SavorLankaScreen "Live AI Scan" banner to RealTimeFoodScannerScreen instead of Coming Soon screen (#14, #18)
+
+## Active Milestone: Resolve Audit Report (Screens 11-46)
+- [x] Fix GuideMarketplaceScreen FutureBuilder error states to prevent silent crashes
+- [x] Fix SmartMatchScreen by replacing Future.delayed with real LumenAiService call and enforcing OracleGuardian security
+- [x] Fix MapExplorerScreen silent crash by adding try/catch block to _loadData
+- [x] Fix GuideDashboardScreen by surfacing critical operations errors via UI SnackBars instead of silent debugPrints
+- [x] Fix ResultsScreen memory leaks and unhandled async exceptions in ad loaders and post-generation triggers
 
 ## Active Milestone: Resolve 10-Bug Audit Report (Batch 1)
 - [x] Fix double-call to `performInitialization()` in `main.dart`
@@ -226,7 +225,6 @@
   - [x] Q-04: Implement localization district defaults (`discovery_screen.dart`)
   - [x] Q-05: Query device locale support before TTS assistant play (`voice_service.dart`)
   - [x] Q-06: Validate data fields in parsing schema overrides (`trip_plan_model.dart`)
-
 
 # Completed
 - [x] **Real-Time AI Food Scanner WebSocket Integration**: Created `RealTimeFoodScannerScreen` connecting bi-directionally to `ws://YOUR_BACKEND_IP:8000/ws/scan`, streaming frames at 1 FPS, rendering glowing AR bounding boxes, instant macro dashboard, user diet goal toggle, and AI diet coach bubble. Added launcher button in `SavorLankaScreen`. (Completed on 2026-06-30)
