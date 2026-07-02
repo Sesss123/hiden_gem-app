@@ -54,7 +54,6 @@ app.*.map.json
 node_modules/
 proxy-backend/node_modules/
 tripme_backend/node_modules/
-tripme-admin-genesis/node_modules/
 
 # Python / Backend
 venv/
@@ -64,7 +63,6 @@ __pycache__/
 # Secrets & API Keys
 .env
 backend/.env
-tripme-admin-genesis/.env
 backend/serviceAccountKey.json
 backend/data/api_keys_config.json
 backend/data/key_usage.json

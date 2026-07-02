@@ -62,15 +62,24 @@
             </div>
         </div>
 
-        <nav class="flex items-center space-x-6">
-            <a href="{{ route('admin.dashboard') }}" class="text-sm font-semibold text-emerald-400 hover:text-emerald-300 transition flex items-center gap-2">
+        <nav class="flex items-center space-x-5">
+            <a href="{{ route('admin.dashboard') }}" class="text-sm font-semibold text-emerald-400 hover:text-emerald-300 transition flex items-center gap-1.5">
                 <i class="fa-solid fa-gauge-high"></i> Dashboard
             </a>
-            <a href="{{ route('admin.places.index') }}" class="text-sm font-medium hover:text-emerald-400 transition flex items-center gap-2">
+            <a href="{{ route('admin.places.index') }}" class="text-sm font-medium hover:text-emerald-400 transition flex items-center gap-1.5">
                 <i class="fa-solid fa-map-location-dot"></i> Places
             </a>
-            <a href="{{ route('admin.places.create') }}" class="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white px-4 py-2 rounded-lg text-sm font-semibold shadow-md shadow-emerald-900/30 transition duration-200 flex items-center gap-2 glow-effect">
-                <i class="fa-solid fa-plus"></i> Add New Gem
+            <a href="{{ route('admin.reviews.index') }}" class="text-sm font-medium hover:text-amber-400 transition flex items-center gap-1.5">
+                <i class="fa-solid fa-clipboard-check"></i> Reviews
+            </a>
+            <a href="{{ route('admin.ai-command.index') }}" class="text-sm font-medium hover:text-indigo-400 transition flex items-center gap-1.5">
+                <i class="fa-solid fa-brain"></i> AI Command
+            </a>
+            <a href="{{ route('admin.scheduler.index') }}" class="text-sm font-medium hover:text-cyan-400 transition flex items-center gap-1.5">
+                <i class="fa-solid fa-clock-rotate-left"></i> Automation
+            </a>
+            <a href="{{ route('admin.places.create') }}" class="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white px-3.5 py-1.5 rounded-lg text-xs font-semibold shadow-md shadow-emerald-900/30 transition duration-200 flex items-center gap-1.5 glow-effect">
+                <i class="fa-solid fa-plus"></i> Add Gem
             </a>
             <div class="h-5 w-px bg-slate-800"></div>
             <div class="flex items-center gap-3">

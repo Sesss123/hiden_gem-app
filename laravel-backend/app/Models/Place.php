@@ -22,7 +22,7 @@ class Place extends Model
         'ar_supported', 'ar_tier', 'ar_brand_name', 'ar_model_url', 'ar_historical_model_url',
         'ar_model_scale', 'historical_period', 'ar_file_size_mb',
         'audio_guide_url_si', 'audio_guide_url_en', 'geohash', 'image_url',
-        'sync_version', 'is_deleted', 'access_tier'
+        'sync_version', 'is_deleted', 'access_tier', 'status', 'reviewed_by', 'review_reason'
     ];
 
     protected $casts = [

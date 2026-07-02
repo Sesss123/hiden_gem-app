@@ -396,5 +396,9 @@
 - [x] Build Admin Dashboard UI with AI Duplicate Detection Scanner & Expandable Top 10 Districts Breakdown (Completed 2026-07-02)
 - [x] Fix IDE PHPDoc type warnings in `ApiSecurityHeaders.php` middleware (Completed 2026-07-02)
 - [x] Finalize database ID gap architecture using Industry Standard sequential ID preservation (Completed 2026-07-02)
+- [x] Migrate legacy tripme-admin-genesis Review Workflow Queue into Laravel Admin Backend (ReviewController & View) (Completed 2026-07-02)
+- [x] Migrate AI Command Center & Pipeline triggers (Discovery & Smart URL Intake) into Laravel Admin (AiCommandController & View) (Completed 2026-07-02)
+- [x] Migrate Background Job Scheduler & Server Controls into Laravel Admin (SchedulerController & View) (Completed 2026-07-02)
+- [x] Remove legacy tripme-admin-genesis Node.js/Express admin panel references and clean up architecture (Completed 2026-07-02)
 - [ ] Implement 3D AR Model (.glb) Validator & QR Code Generator widget on Dashboard
 - [ ] Connect Python Weather Microservice (`weather_service.py`) for live monsoon/weather alerts on Dashboard
