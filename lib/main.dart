@@ -23,6 +23,7 @@ import 'data/datasources/voice_service.dart';
 import 'core/analytics/analytics_service.dart';
 import 'core/notifications/notification_service.dart';
 import 'core/network/secure_network.dart';
+import 'core/services/delta_sync_service.dart';
 import 'core/utils/secure_logger.dart';
 import 'core/utils/encryption_util.dart';
 import 'package:safe_device/safe_device.dart';
@@ -295,6 +296,20 @@ Future<InitializationResult> performInitialization() async {
     }
   } catch (e) {
     debugPrint("Firebase optional init error: $e");
+  }
+
+  // Option A: Zero-Bundle Server-Driven Sync Engine (2.5s Timeout enforced inside service)
+  try {
+    debugPrint("Starting Option A Delta Sync & SQLite Hydration...");
+    final deltaSync = DeltaSyncService();
+    final bool hasUpdates = await deltaSync.checkForUpdates();
+    if (hasUpdates) {
+      await deltaSync.performDeltaSync();
+    }
+    await deltaSync.hydrateMemoryCache();
+    debugPrint("Option A Delta Sync & Hydration Complete.");
+  } catch (e) {
+    debugPrint("Option A Delta Sync failed (offline/timeout): $e. Proceeding with existing RAM/SQLite data.");
   }
 
   debugPrint("Background initialization complete. Firebase: $firebaseStatus");

@@ -382,3 +382,19 @@
 - [x] **Q-04: Implement localization district defaults**: Refactored `DiscoveryScreen` category filters to dynamically resolve district strings using place/city name lookup mapping when empty. (Completed on 2026-06-19)
 - [x] **Q-06: Validate data fields in parsing schema overrides**: Added strict format checks and validations to `TripPlan.fromJson` constructor to detect and reject malformed JSON. (Completed on 2026-06-19)
 
+## Active Milestone: Single Laravel App Architecture (API + Admin Dashboard)
+- [x] Create Laravel backend structure (`laravel-backend/`) with MySQL config (Completed 2026-07-01)
+- [x] Create database migrations for `sync_counter`, `places`, `place_images`, and `users` (Completed 2026-07-01)
+- [x] Create Eloquent Observers (`PlaceObserver`, `PlaceImageObserver`) for atomic sequential versioning (Completed 2026-07-01)
+- [x] Create Mobile Sync API (`PlaceSyncController`) with `/check-version` and `/delta` endpoints (Completed 2026-07-01)
+- [x] Create Admin Web Dashboard UI (`login`, `index`, `form` blade views with Tailwind Glassmorphism Dark Mode) (Completed 2026-07-01)
+- [x] Migrate environment to PHP 8.4 via Laravel Herd and run database migrations/seeding (Completed 2026-07-02)
+- [x] Execute `places:import` Artisan command to migrate legacy JSON places into MySQL (Completed 2026-07-02)
+- [x] Implement Sanctum Auth API (Register, Login, Profile, Logout) for Tourists and Locals (Completed 2026-07-02)
+- [x] Create Wishlist & Bookmark API (`WishlistController`) allowing tourists to bookmark favorite gems (Completed 2026-07-02)
+- [x] Implement Access Tiers (Free, PRO, VIP Exclusive) on Place model, Admin UI, and Sync Resource (Completed 2026-07-02)
+- [x] Build Admin Dashboard UI with AI Duplicate Detection Scanner & Expandable Top 10 Districts Breakdown (Completed 2026-07-02)
+- [x] Fix IDE PHPDoc type warnings in `ApiSecurityHeaders.php` middleware (Completed 2026-07-02)
+- [x] Finalize database ID gap architecture using Industry Standard sequential ID preservation (Completed 2026-07-02)
+- [ ] Implement 3D AR Model (.glb) Validator & QR Code Generator widget on Dashboard
+- [ ] Connect Python Weather Microservice (`weather_service.py`) for live monsoon/weather alerts on Dashboard

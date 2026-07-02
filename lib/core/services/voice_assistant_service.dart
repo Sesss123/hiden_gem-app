@@ -11,6 +11,7 @@ import 'oracle_context_engine.dart';
 import 'dynamic_itinerary_service.dart';
 import 'lumen_ai_service.dart';
 import '../../core/utils/secure_logger.dart';
+import '../../data/datasources/trip_cache_service.dart';
 
 enum OracleState { idle, listening, thinking, speaking }
 
@@ -220,8 +221,10 @@ class VoiceAssistantService {
     if (position == null) return null;
 
     try {
-      final String response = await rootBundle.loadString('assets/places.json');
-      final List<dynamic> places = json.decode(response);
+      // Option A: Zero-Bundle Strategy. Query cached places from Level-1 cache instead of static assets.
+      final String? cachedJson = TripCacheService.getGlobalData('places');
+      if (cachedJson == null || cachedJson.isEmpty) return null;
+      final List<dynamic> places = json.decode(cachedJson);
       
       Map<String, dynamic>? nearest;
       double minDistance = double.infinity;

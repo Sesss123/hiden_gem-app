@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/services/media_cache_manager.dart';
 
 /// [CachedImage] — Optimized network image widget with disk + memory caching.
 ///
@@ -11,6 +12,7 @@ import '../../core/theme/app_theme.dart';
 ///   - Shimmer placeholder
 ///   - Graceful error fallback with icon
 ///   - BoxFit control
+///   - Dual-Tier pool support (thumbnail vs full)
 ///
 /// USAGE:
 /// ```dart
@@ -18,6 +20,7 @@ import '../../core/theme/app_theme.dart';
 ///   url: place.imageUrl,
 ///   fit: BoxFit.cover,
 ///   height: 200,
+///   poolType: CachePoolType.full,
 /// )
 /// ```
 class CachedImage extends StatelessWidget {
@@ -28,6 +31,7 @@ class CachedImage extends StatelessWidget {
   final Widget? placeholder;
   final Widget? errorWidget;
   final BorderRadius? borderRadius;
+  final CachePoolType poolType;
 
   const CachedImage({
     super.key,
@@ -38,6 +42,7 @@ class CachedImage extends StatelessWidget {
     this.placeholder,
     this.errorWidget,
     this.borderRadius,
+    this.poolType = CachePoolType.thumbnail,
   });
 
   @override
@@ -50,6 +55,7 @@ class CachedImage extends StatelessWidget {
       fit: fit,
       width: width,
       height: height,
+      cacheManager: poolType == CachePoolType.full ? FullCacheManager() : ThumbCacheManager(),
 
       // Shimmer-style loading placeholder
       placeholder: (context, url) =>

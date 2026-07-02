@@ -25,9 +25,18 @@ class DiscoveryLocalDataSource {
   }
 
   Future<List<DiscoveryPlace>> getAssetPlaces() async {
-    final String localResponse = await rootBundle.loadString('assets/places.json');
-    final List<dynamic> data = json.decode(localResponse);
-    return data.map((j) => DiscoveryPlace.fromJson(j)).toList();
+    // Option A: Zero-Bundle Strategy. No static JSON files are shipped in assets.
+    // If remote fetches fail, check Level-1 cache or return empty list.
+    final String? cachedJson = TripCacheService.getGlobalData('places');
+    if (cachedJson != null && cachedJson.isNotEmpty) {
+      try {
+        final List<dynamic> data = json.decode(cachedJson);
+        return data.map((j) => DiscoveryPlace.fromJson(j)).toList();
+      } catch (e) {
+        return [];
+      }
+    }
+    return [];
   }
 
   void cacheInMemory(String key, List<DiscoveryPlace> places) {
