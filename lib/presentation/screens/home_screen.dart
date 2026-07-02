@@ -24,6 +24,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'guide_marketplace_screen.dart';
 import 'smart_match_screen.dart';
 import 'savor_lanka_screen.dart';
+import '../../features/ar_video/screens/ar_video_library_screen.dart';
 import '../widgets/banner_ad_widget.dart';
 import '../widgets/native_ad_widget.dart';
 import '../../data/models/discovery_place.dart';
@@ -313,6 +314,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           () {
             Haptics.medium();
             Navigator.push(context, MaterialPageRoute(builder: (context) => const GuideMarketplaceScreen()));
+          },
+        ),
+        _buildQuickActionItem(
+          "AR Portals",
+          Icons.view_in_ar_rounded,
+          Colors.indigoAccent,
+          () {
+            Haptics.medium();
+            Navigator.push(context, MaterialPageRoute(builder: (context) => const ARVideoLibraryScreen()));
           },
         ),
       ],

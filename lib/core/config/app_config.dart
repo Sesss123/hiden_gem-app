@@ -88,6 +88,11 @@ class AppConfig {
     defaultValue: "DEFAULT_NON_PROD_EXPIRY_SECRET",
   );
 
+  static const String appStoreId = String.fromEnvironment(
+    'APP_STORE_ID',
+    defaultValue: "6400000000",
+  );
+
   static void validate() {
     // In production, missing keys will fail hard.
     // In debug mode, if developers explicitly pass `--dart-define=BYPASS_KEY_CHECKS=true`, we allow it,
@@ -115,6 +120,9 @@ class AppConfig {
       }
       if (hmacExpirySecret == "DEFAULT_NON_PROD_EXPIRY_SECRET" || hmacExpirySecret == "ZENITH_EXPIRY_SIGN_KEY_2026") {
         throw AssertionError("CRITICAL: Must configure a valid HMAC_EXPIRY_SECRET.");
+      }
+      if (appStoreId == "6400000000") {
+        throw AssertionError("CRITICAL: Must configure a valid APP_STORE_ID.");
       }
     }
   }

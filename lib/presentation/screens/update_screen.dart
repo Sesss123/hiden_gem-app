@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/services/update_service.dart';
+import '../../core/config/app_config.dart';
 import '../widgets/golden_tracer_indicator.dart';
 
 class UpdateScreen extends StatelessWidget {
@@ -20,7 +21,7 @@ class UpdateScreen extends StatelessWidget {
   Future<void> _launchStore(BuildContext context) async {
     final bool isIOS = Platform.isIOS;
     final Uri url = Uri.parse(isIOS 
-        ? 'https://apps.apple.com/app/id6400000000' // TODO: Replace with actual App Store ID
+        ? 'https://apps.apple.com/app/id${AppConfig.appStoreId}'
         : 'https://play.google.com/store/apps/details?id=com.hidden_gems_sl');
         
     try {

@@ -59,7 +59,7 @@ class SavorLankaService {
     try {
       final base64Image = base64Encode(await imageFile.readAsBytes());
       final response = await http.post(
-        Uri.parse('http://10.0.2.2:8000/api/food/scan'),
+        Uri.parse('${AppConfig.pythonUrl}/food/scan'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({
           'image_base64': base64Image,

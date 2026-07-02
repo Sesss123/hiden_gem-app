@@ -1,3 +1,11 @@
+## Active Milestone: Static Code Review Audit Fixes (v7.0)
+- [x] Link AR Video Library Screen to the quick actions row in `home_screen.dart` (Completed 2026-07-02)
+- [x] Delete duplicate `ar_video_screen.dart` class from `presentation/screens/` directory (Completed 2026-07-02)
+- [x] Add configurable `APP_STORE_ID` to `AppConfig` and release assertion validation (Completed 2026-07-02)
+- [x] Update `UpdateScreen` iOS store launcher to use the validated App Store ID (Completed 2026-07-02)
+- [x] Wrap entitlement check in try-catch error guard in `guide_reviews_screen.dart` (Completed 2026-07-02)
+- [x] Decouple hardcoded local IP endpoint in `savor_lanka_service.dart` using `AppConfig.pythonUrl` (Completed 2026-07-02)
+
 ## Active Milestone: User Management & AI/Python Removal (v6.0)
 - [x] Create `UserController.php` with list/edit/update/destroy actions (Completed 2026-07-02)
 - [x] Create user index list and edit form views in Laravel blade templates (Completed 2026-07-02)

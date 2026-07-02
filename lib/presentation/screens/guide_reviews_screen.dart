@@ -134,7 +134,12 @@ class _GuideReviewsScreenState extends ConsumerState<GuideReviewsScreen> {
     
     // If the guide is viewing their own dashboard, enforce the entitlement.
     if (userId == widget.guideId) {
-      return await ref.read(subscriptionServiceProvider).hasEntitlement(userId, 'analyticsAccess');
+      try {
+        return await ref.read(subscriptionServiceProvider).hasEntitlement(userId, 'analyticsAccess');
+      } catch (e) {
+        SecureLogger.warning("Entitlement verification failed: $e");
+        return false;
+      }
     }
     
     // Public profile visitors (Tourists, Operators) can see public stats.
