@@ -1,5 +1,5 @@
 ### ================================================================
-### 🔑 Hidden Gems SL — BYOM & API Key Validation Tests
+### 🔑 Hidden Gems SL — Real Backend & API Validation Tests
 ### VS Code REST Client Extension හරහා run කරන්න
 ### Extension: humao.rest-client
 ###
@@ -11,48 +11,95 @@
 ### ── 🔧 Local & BYOM Variables (ඔයාගේ Local Endpoints මෙතන තියෙන්නේ) ──
 @python_backend     = http://localhost:8000/api
 @laravel_backend    = http://localhost:8888/api/v1
-@custom_food_scan   = http://localhost:8000/api/food/scan
 @internal_api_key   = dev-key-local
+@test_firebase_token = YOUR_FIREBASE_ID_TOKEN_HERE
 
 ### ================================================================
-### 🏛️ PART 1: SELF-HOSTED BYOM ARCHITECTURE TESTS (Local Models)
-###    මෙම පරීක්ෂණ හරහා ඔයාගේ Local Python, Laravel සහ Custom AI වැඩදැයි බලාගත හැක.
+### 🏛️ PART 1: REAL PYTHON FASTAPI BACKEND TESTS (Port 8000)
+###    මෙම පරීක්ෂණ හරහා ඔයාගේ Python Backend එකෙහි සැබෑම Endpoints වැඩදැයි බලාගත හැක.
 ### ================================================================
 
-### 1️⃣ PYTHON BACKEND — WEATHER ALERTS TEST
-###    ✅ Success: HTTP 200 + Weather alerts JSON from local monsoon monitor
-# @name python_weather_test
+### 1️⃣ PYTHON BACKEND — ROOT HEALTH CHECK
+###    ✅ Success: HTTP 200 + {"message": "Hidden Gems SL Secure API is running", "version": ...}
+# @name python_root_health
+GET http://localhost:8000/
+
+###
+
+### 2️⃣ PYTHON BACKEND — WEATHER ALERTS TEST (Monsoon Monitor)
+###    ✅ Success: HTTP 200 + Weather alerts JSON (Public endpoint)
+# @name python_weather_alerts
 GET {{python_backend}}/weather/alerts
 
 ###
 
-### 2️⃣ PYTHON BACKEND — LUMEN-1 AI STATUS TEST
-###    ✅ Success: HTTP 200 + Lumen model availability status
-# @name lumen_status_test
-GET {{python_backend}}/status
+### 3️⃣ PYTHON BACKEND — CURRENT WEATHER TEST
+###    ✅ Success: HTTP 200 + Current weather JSON (Public endpoint)
+# @name python_weather_current
+GET {{python_backend}}/weather/current?district=Colombo
 
 ###
 
-### 3️⃣ PYTHON BACKEND — LUMEN-1 AI CHAT INFERENCE TEST
-###    ✅ Success: HTTP 200 + AI response text from D:\ai model\lumen-1
-# @name lumen_inference_test
-POST {{python_backend}}/test-model
+### 4️⃣ PYTHON BACKEND — AUTH USER SYNC / LOGIN
+###    📌 Syncs Firebase ID token with local database. Critical step for token validation!
+###    ✅ Success: HTTP 200 + User Profile JSON {"id": ..., "email": ..., "tier": ...}
+# @name python_auth_sync
+POST {{python_backend}}/auth/sync
 Content-Type: application/json
 
 {
-  "prompt": "Ayubowan! Suggest one hidden waterfall in Sri Lanka.",
-  "use_rag": true,
-  "mode": "tourist",
-  "temperature": 0.7
+  "idToken": "{{test_firebase_token}}"
 }
 
 ###
 
-### 4️⃣ PYTHON BACKEND — AI TRANSLATION TEST
+### 5️⃣ PYTHON BACKEND — GET CURRENT USER PROFILE (/me)
+###    ✅ Success: HTTP 200 + Current user profile
+# @name python_auth_me
+GET {{python_backend}}/auth/me
+Authorization: Bearer {{test_firebase_token}}
+
+###
+
+### 6️⃣ PYTHON BACKEND — PLACES LIST TEST (Secured Endpoint)
+###    📌 Header: Option A -> Authorization: Bearer <token> OR Option B -> X-Admin-Internal-Key: dev-key-local
+###    ✅ Success: HTTP 200 + List of discovery places
+# @name python_places_list
+GET {{python_backend}}/places
+X-Admin-Internal-Key: {{internal_api_key}}
+
+###
+
+### 7️⃣ PYTHON BACKEND — AI SEMANTIC SEARCH TEST (Secured Endpoint)
+###    ✅ Success: HTTP 200 + Places matching query
+# @name python_ai_semantic_search
+GET {{python_backend}}/ai/search/semantic?query=waterfall
+X-Admin-Internal-Key: {{internal_api_key}}
+
+###
+
+### 8️⃣ PYTHON BACKEND — AI ITINERARY PLANNER TEST (Secured Endpoint)
+###    ✅ Success: HTTP 200 + Generated itinerary
+# @name python_ai_itinerary
+POST {{python_backend}}/ai/plan-itinerary
+Content-Type: application/json
+X-Admin-Internal-Key: {{internal_api_key}}
+
+{
+  "destination": "Kandy",
+  "days": 2,
+  "style": "balanced",
+  "budget_lkr": 50000
+}
+
+###
+
+### 9️⃣ PYTHON BACKEND — AI TRANSLATION TEST (Secured Endpoint)
 ###    ✅ Success: HTTP 200 + Translated Sinhala/English text
-# @name ai_translate_test
+# @name python_ai_translate
 POST {{python_backend}}/ai/translate
 Content-Type: application/json
+X-Admin-Internal-Key: {{internal_api_key}}
 
 {
   "text": "Welcome to Sri Lanka, the pearl of the Indian Ocean!",
@@ -61,14 +108,80 @@ Content-Type: application/json
 
 ###
 
-### 5️⃣ LARAVEL GATEWAY — PLACE SYNC VERSION CHECK
-###    ✅ Success: HTTP 200 + {"version": ...}
-# @name laravel_sync_test
-GET {{laravel_backend}}/places/check-version
+### 🔟 PYTHON BACKEND — PIPELINE STATUS TEST (Secured Endpoint)
+###    ✅ Success: HTTP 200 + Pipeline execution status
+# @name python_pipeline_status
+GET {{python_backend}}/pipeline/status
+X-Admin-Internal-Key: {{internal_api_key}}
 
 ###
 
-### 6️⃣ LARAVEL GATEWAY → PYTHON AI PROXY TEST (Itinerary Planner)
+### 1️⃣0️⃣a️⃣ PYTHON BACKEND — LUMEN-1 AI STATUS TEST (BYOM)
+###    ✅ Success: HTTP 200 + Lumen AI status
+# @name python_lumen_status
+GET {{python_backend}}/status
+
+###
+
+### 1️⃣0️⃣b️⃣ PYTHON BACKEND — LUMEN-1 AI INFERENCE TEST (BYOM)
+###    ✅ Success: HTTP 200 + Generated response
+# @name python_lumen_inference
+POST {{python_backend}}/test-model
+Content-Type: application/json
+
+{
+  "prompt": "What are the top waterfalls in Ella, Sri Lanka?",
+  "use_rag": true,
+  "mode": "default"
+}
+
+###
+
+### 1️⃣0️⃣c️⃣ PYTHON BACKEND — FOOD SCAN AI TEST (BYOM)
+###    ✅ Success: HTTP 200 + Identified dish profile
+# @name python_food_scan
+POST {{python_backend}}/food/scan
+Content-Type: application/json
+
+{
+  "image_base64": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////wgALCAABAAEBAREA/8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABPxA=",
+  "user_mode": "Tourist",
+  "spice_preference": "Medium"
+}
+
+###
+
+### 1️⃣0️⃣d️⃣ PYTHON BACKEND — AI RECOMMENDATIONS TEST
+###    ✅ Success: HTTP 200 + Recommended places JSON
+# @name python_ai_recommendations
+POST {{python_backend}}/ai/recommendations
+Content-Type: application/json
+X-Admin-Internal-Key: {{internal_api_key}}
+
+{
+  "nearbyPlaces": [
+    {"id": "1", "name": "Diyaluma Falls", "category": "nature_scenic", "distanceKm": 1.2}
+  ],
+  "vibeText": "adventure"
+}
+
+###
+
+
+### ================================================================
+### 🏛️ PART 2: REAL LARAVEL GATEWAY TESTS (Port 8888)
+###    මෙම පරීක්ෂණ හරහා ඔයාගේ Laravel Gateway එකෙහි සැබෑම Endpoints වැඩදැයි බලාගත හැක.
+### ================================================================
+
+### 1️⃣1️⃣ LARAVEL GATEWAY — PLACE SYNC VERSION CHECK
+###    ✅ Success: HTTP 200 + {"version": ...}
+# @name laravel_sync_test
+GET {{laravel_backend}}/places/check-version
+X-API-KEY: {{internal_api_key}}
+
+###
+
+### 1️⃣2️⃣ LARAVEL GATEWAY → PYTHON AI PROXY TEST (Itinerary Planner)
 ###    ✅ Success: HTTP 200 + TripItinerary JSON generated by Python via Laravel Proxy
 # @name laravel_ai_proxy_test
 POST {{laravel_backend}}/ai/plan-itinerary
@@ -83,57 +196,39 @@ Content-Type: application/json
 
 ###
 
-### 7️⃣ CUSTOM FOOD SCAN AI — BYOM VISION TEST
-###    ✅ Success: HTTP 200 + Dish Identification JSON
-# @name byom_food_scan_test
-POST {{custom_food_scan}}
+### 1️⃣2️⃣a️⃣ LARAVEL GATEWAY → PYTHON AI PROXY TEST (Recommendations)
+###    ✅ Success: HTTP 200 + Recommended places JSON generated by Python via Laravel Proxy
+# @name laravel_ai_recommendations_proxy_test
+POST {{laravel_backend}}/ai/recommendations
 Content-Type: application/json
 
 {
-  "image_base64": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==",
-  "user_mode": "Tourist",
-  "spice_preference": "Medium"
-}
-
-
-### ================================================================
-### 🌐 PART 2: LEGACY CLOUD API TESTS (Optional BYOM Fallback Only)
-###    ඔයාට අවශ්‍ය නම් පමණක් බාහිර Commercial API Keys චෙක් කිරීමට මෙය භාවිතා කරන්න.
-### ================================================================
-
-@gemini_api_key     = YOUR_GEMINI_API_KEY_HERE
-@weather_api_key    = YOUR_WEATHER_API_KEY_HERE
-@firebase_api_key   = YOUR_FIREBASE_API_KEY_HERE
-@firebase_project   = YOUR_FIREBASE_PROJECT_ID
-
-### 8️⃣ GEMINI API KEY TEST (Legacy Commercial Cloud)
-###    ✅ Success: HTTP 200 + JSON with "candidates" field
-# @name gemini_key_test
-POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={{gemini_api_key}}
-Content-Type: application/json
-
-{
-  "contents": [
-    {
-      "parts": [
-        {
-          "text": "Say Ayubowan in one word"
-        }
-      ]
-    }
-  ]
+  "nearbyPlaces": [
+    {"id": "1", "name": "Diyaluma Falls", "category": "nature_scenic", "distanceKm": 1.2}
+  ],
+  "vibeText": "adventure"
 }
 
 ###
 
-### 9️⃣ OPENWEATHERMAP API KEY TEST
+
+### ================================================================
+### 🌐 PART 3: OTHER CLOUD SERVICES (Weather & Firebase)
+###    ඔයාට අවශ්‍ය නම් පමණක් බාහිර Non-AI Cloud Services චෙක් කිරීමට මෙය භාවිතා කරන්න.
+### ================================================================
+
+@weather_api_key    = YOUR_WEATHER_API_KEY_HERE
+@firebase_api_key   = YOUR_FIREBASE_API_KEY_HERE
+@firebase_project   = YOUR_FIREBASE_PROJECT_ID
+
+### 1️⃣3️⃣ OPENWEATHERMAP API KEY TEST
 ###    ✅ Success: HTTP 200 + Colombo weather JSON
 # @name weather_key_test
 GET https://api.openweathermap.org/data/2.5/weather?q=Colombo&appid={{weather_api_key}}&units=metric
 
 ###
 
-### 🔟 FIREBASE AUTH — API KEY TEST
+### 1️⃣4️⃣ FIREBASE AUTH — API KEY TEST
 ###    ✅ Success: HTTP 200 + {"kind": "identitytoolkit..."}
 # @name firebase_key_test
 POST https://identitytoolkit.googleapis.com/v1/accounts:signUp?key={{firebase_api_key}}

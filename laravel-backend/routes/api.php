@@ -56,5 +56,18 @@ Route::prefix('v1')->group(function () {
             return response()->json(['error' => 'AI Subsystem unavailable', 'details' => $e->getMessage()], 503);
         }
     });
+
+    // AI Recommendations Proxy Route (Routes Flutter Discovery AI requests to Python FastAPI)
+    Route::post('/ai/recommendations', function (Request $request) {
+        $pythonUrl = env('PYTHON_BACKEND_URL', 'http://localhost:8000');
+        try {
+            $response = \Illuminate\Support\Facades\Http::timeout(15)
+                ->post("{$pythonUrl}/api/ai/recommendations", $request->all());
+            return response($response->body(), $response->status())
+                ->header('Content-Type', 'application/json');
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'AI Recommendations unavailable', 'details' => $e->getMessage()], 503);
+        }
+    });
 });
 

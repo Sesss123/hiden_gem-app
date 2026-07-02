@@ -1,3 +1,12 @@
+## Active Milestone: Self-Hosted BYOM Transition & API Routing Verification
+- [x] Decoupled commercial AI API dependencies (Gemini, Claude) and transitioned to BYOM architecture (`D:\ai model`) (Completed 2026-07-02)
+- [x] Fixed double `/api/api` routing bug in `monsoon_broadcast_service.dart` and `lumen_ai_service.dart` (Completed 2026-07-02)
+- [x] Fixed HTTP Method Mismatch (405 Not Allowed) in `backend/api/routers/ai.py` for `/plan-itinerary` (Completed 2026-07-02)
+- [x] Completely removed legacy Gemini API references from `api_key_tests.http` (Completed 2026-07-02)
+- [x] Rewrote `api_key_tests.http` to match ground-truth Python FastAPI and Laravel routes with explicit Auth (`/auth/sync`, `/auth/me`) and internal bridge key headers (Completed 2026-07-02)
+- [x] Fixed all 4 broken/missing backend endpoints (Created `/api/test-model`, `/api/status`, `/api/food/scan`, and `/ws/scan` in Python FastAPI backend; registered in `main.py`) (Completed 2026-07-02)
+- [x] Added `POST /ai/recommendations` proxy to Laravel `routes/api.php` and matching implementation to Python `ai.py` (Completed 2026-07-02)
+- [x] Overhauled `api_key_tests.http` with 5 new integration tests verifying status, inference, food scan, and recommendations across both backends (Completed 2026-07-02)
 ## Active Milestone: Security Audit v2.0 Fixes & Brand Cleanup
 - [x] Upgrade ProGuard rules to `proguard-android-optimize.txt` in `build.gradle.kts` (Completed 2026-07-01)
 - [x] Rename `VaultService` headers from `X-TripMe-` to `X-HiddenGems-` across all data sources (Completed 2026-07-01)
