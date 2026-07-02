@@ -139,7 +139,9 @@ class DiscoveryRepository {
           final place = topNearest.firstWhere((p) => p.id == result['id'].toString());
           place.aiReason = result['reason']?.toString() ?? '';
           recommended.add(place);
-        } catch (_) {}
+        } catch (e) {
+          SecureLogger.warning('Could not match AI recommended place ID: ${result['id']} - $e');
+        }
       }
       return recommended.isEmpty ? topNearest.take(3).toList() : recommended;
     } catch (e) {

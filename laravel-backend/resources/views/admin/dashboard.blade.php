@@ -252,6 +252,242 @@
         </div>
     </div>
 
+    <!-- 🔮 Phase 2: 3D AR Model & AI Vision Validator Widget -->
+    <div class="glass-card p-6 md:p-8 rounded-3xl border border-slate-800 bg-gradient-to-br from-slate-900/90 via-slate-900/60 to-cyan-950/20 shadow-2xl relative overflow-hidden">
+        <div class="absolute -right-10 -top-10 w-48 h-48 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="flex items-center justify-between border-b border-slate-800/80 pb-4 mb-6">
+            <div>
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 mb-2">
+                    <i class="fa-solid fa-cube animate-spin" style="animation-duration: 8s;"></i> Phase 2 Active Feature
+                </span>
+                <h3 class="font-extrabold text-xl text-white flex items-center gap-2.5 tracking-tight">
+                    <i class="fa-solid fa-vr-cardboard text-cyan-400"></i> 3D AR Model & AI Vision Validator
+                </h3>
+                <p class="text-xs text-slate-400 mt-1">
+                    Powered by Python <code class="text-cyan-300 bg-slate-800/80 px-1.5 py-0.5 rounded font-mono">/api/pipeline/vision-analyze</code>. Inspects cultural heritage assets for accuracy and generates deep-link QR codes for site signage.
+                </p>
+            </div>
+        </div>
+
+        @if(session('vision_result'))
+            @php $res = session('vision_result'); $feat = $res['features'] ?? []; @endphp
+            <div class="mb-8 p-6 rounded-2xl bg-gradient-to-r from-slate-950/80 via-slate-900/90 to-cyan-950/40 border border-cyan-500/30 shadow-xl animate-fadeIn">
+                <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-800">
+                    <div class="flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-ping"></span>
+                        <h4 class="font-bold text-sm text-cyan-300 uppercase tracking-wider">Vision AI Analysis Report</h4>
+                        <span class="text-xs text-slate-400 font-mono">({{ $res['model_id'] ?? 'N/A' }})</span>
+                    </div>
+                    <span class="text-[11px] font-bold px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                        <i class="fa-solid fa-check"></i> Validated by Gemini Vision
+                    </span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Left 2 Cols: Features & Description -->
+                    <div class="md:col-span-2 space-y-4">
+                        <div>
+                            <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider block mb-1">Target Heritage Asset</span>
+                            <p class="text-sm font-bold text-white">{{ $res['place_name'] ?? 'AR Heritage Model' }}</p>
+                            <p class="text-xs text-slate-400 font-mono truncate mt-0.5">{{ $res['image_url'] ?? '' }}</p>
+                        </div>
+
+                        @if(!empty($feat['scene_description']))
+                            <div class="p-3.5 rounded-xl bg-slate-900/80 border border-slate-800 text-xs text-slate-300 leading-relaxed">
+                                <span class="font-bold text-cyan-400 block mb-1"><i class="fa-solid fa-wand-magic-sparkles"></i> AI Scene Extraction:</span>
+                                "{{ $feat['scene_description'] }}"
+                            </div>
+                        @endif
+
+                        <div>
+                            <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider block mb-2">Detected Facility & Accessibility Tokens</span>
+                            <div class="flex flex-wrap gap-2 text-xs">
+                                <span class="px-3 py-1 rounded-lg border {{ !empty($feat['wheelchair_access']) ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' : 'bg-slate-800 text-slate-500 border-slate-700' }}">
+                                    <i class="fa-solid fa-wheelchair"></i> Wheelchair: {{ !empty($feat['wheelchair_access']) ? 'Yes' : 'No/Unclear' }}
+                                </span>
+                                <span class="px-3 py-1 rounded-lg border {{ !empty($feat['parking_visible']) ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' : 'bg-slate-800 text-slate-500 border-slate-700' }}">
+                                    <i class="fa-solid fa-square-parking"></i> Parking: {{ !empty($feat['parking_visible']) ? 'Visible' : 'No' }}
+                                </span>
+                                <span class="px-3 py-1 rounded-lg border {{ !empty($feat['toilets_visible']) ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' : 'bg-slate-800 text-slate-500 border-slate-700' }}">
+                                    <i class="fa-solid fa-restroom"></i> Toilets: {{ !empty($feat['toilets_visible']) ? 'Detected' : 'No' }}
+                                </span>
+                                <span class="px-3 py-1 rounded-lg border {{ !empty($feat['stairs_heavy']) ? 'bg-amber-500/10 text-amber-400 border-amber-500/30' : 'bg-slate-800 text-slate-500 border-slate-700' }}">
+                                    <i class="fa-solid fa-stairs"></i> Heavy Stairs: {{ !empty($feat['stairs_heavy']) ? 'Yes (Alert)' : 'None' }}
+                                </span>
+                            </div>
+                        </div>
+
+                        @if(!empty($feat['auto_tags']) && is_array($feat['auto_tags']))
+                            <div>
+                                <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider block mb-1.5">Neural Auto-Tags</span>
+                                <div class="flex flex-wrap gap-1.5">
+                                    @foreach($feat['auto_tags'] as $tag)
+                                        <span class="text-[11px] font-semibold bg-cyan-950/60 text-cyan-300 border border-cyan-800/60 px-2 py-0.5 rounded-md">
+                                            #{{ $tag }}
+                                        </span>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
+                    </div>
+
+                    <!-- Right Col: QR Signage Preview -->
+                    <div class="flex flex-col items-center justify-center p-5 rounded-2xl bg-slate-900/90 border border-slate-800 text-center">
+                        <span class="text-xs font-bold text-cyan-400 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+                            <i class="fa-solid fa-qrcode"></i> Physical Signage QR
+                        </span>
+                        @if(!empty($res['qr_preview']))
+                            <div class="p-3 bg-white rounded-xl shadow-lg mb-3 transform hover:scale-105 transition duration-300">
+                                <img src="{{ $res['qr_preview'] }}" alt="AR Signage QR" class="w-36 h-36 object-contain">
+                            </div>
+                            <a href="{{ $res['qr_preview'] }}" target="_blank" download="AR_Signage_{{ $res['model_id'] ?? 'QR' }}.png" class="w-full py-2 px-3 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-slate-950 font-bold rounded-xl text-xs shadow-md transition flex items-center justify-center gap-1.5">
+                                <i class="fa-solid fa-download"></i> Download QR Signage
+                            </a>
+                            <p class="text-[10px] text-slate-500 mt-2">Deep-Link: <code class="text-slate-400 font-mono">hiddengemssl://ar-viewer?model_id={{ $res['model_id'] ?? '' }}</code></p>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        @endif
+
+        <!-- AI Validator Input Form -->
+        <form action="{{ route('admin.ai.vision-analyze') }}" method="POST" class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
+            @csrf
+            <div class="md:col-span-5">
+                <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">
+                    Asset / Image URL <span class="text-cyan-400">*</span>
+                </label>
+                <div class="relative">
+                    <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
+                        <i class="fa-solid fa-image"></i>
+                    </span>
+                    <input type="url" name="image_url" required placeholder="https://... (Image or AR Model cover URL)" 
+                        class="w-full pl-10 pr-4 py-2.5 bg-slate-900/90 border border-slate-700/80 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition">
+                </div>
+            </div>
+
+            <div class="md:col-span-4">
+                <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">
+                    Heritage Name / Landmark
+                </label>
+                <div class="relative">
+                    <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
+                        <i class="fa-solid fa-landmark"></i>
+                    </span>
+                    <input type="text" name="place_name" placeholder="e.g. Sigiriya Lion Gate AR" 
+                        class="w-full pl-10 pr-4 py-2.5 bg-slate-900/90 border border-slate-700/80 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition">
+                </div>
+            </div>
+
+            <div class="md:col-span-3">
+                <button type="submit" class="w-full py-2.5 px-4 bg-gradient-to-r from-cyan-500 via-teal-500 to-emerald-500 hover:from-cyan-400 hover:to-emerald-400 text-slate-950 font-extrabold rounded-xl text-xs shadow-lg shadow-cyan-500/20 transition duration-200 flex items-center justify-center gap-2 transform hover:-translate-y-0.5">
+                    <i class="fa-solid fa-wand-magic-sparkles animate-pulse"></i> Validate & QR Signage
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- 🌧️ Phase 3: Live Monsoon Weather Alert & Hazard Dashboard Panel -->
+    <div class="glass-card p-6 md:p-8 rounded-3xl border border-slate-800 bg-gradient-to-br from-slate-900/90 via-slate-900/60 to-blue-950/20 shadow-2xl relative overflow-hidden">
+        <div class="absolute -left-10 -bottom-10 w-48 h-48 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="flex items-center justify-between border-b border-slate-800/80 pb-4 mb-6">
+            <div>
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-blue-500/10 text-blue-400 border border-blue-500/20 mb-2">
+                    <i class="fa-solid fa-cloud-showers-heavy animate-bounce"></i> Phase 3 Active Feature
+                </span>
+                <h3 class="font-extrabold text-xl text-white flex items-center gap-2.5 tracking-tight">
+                    <i class="fa-solid fa-cloud-bolt text-blue-400"></i> Live Monsoon & Weather Hazard Grid
+                </h3>
+                <p class="text-xs text-slate-400 mt-1">
+                    Real-time weather intelligence via Python <code class="text-blue-300 bg-slate-800/80 px-1.5 py-0.5 rounded font-mono">/api/weather/alerts</code>. Monitors Sri Lankan tourist districts for monsoon storms and flood risks.
+                </p>
+            </div>
+            <span class="text-xs font-mono text-slate-400 bg-slate-800/80 px-3 py-1.5 rounded-xl border border-slate-700">
+                <i class="fa-solid fa-satellite-dish text-emerald-400 animate-pulse mr-1"></i> Live 8-District Feed
+            </span>
+        </div>
+
+        <!-- Weather Grid Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            @forelse($weatherAlerts as $alert)
+                @php 
+                    $lvl = $alert['hazard_level'] ?? 'NORMAL'; 
+                    $border = $lvl === 'ALERT' ? 'border-red-500/50 bg-red-950/10' : ($lvl === 'WARNING' ? 'border-amber-500/40 bg-amber-950/10' : 'border-slate-800 bg-slate-900/60');
+                    $badge = $lvl === 'ALERT' ? 'bg-red-500/10 text-red-400 border-red-500/30' : ($lvl === 'WARNING' ? 'bg-amber-500/10 text-amber-400 border-amber-500/30' : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20');
+                @endphp
+                <div class="p-4 rounded-2xl border {{ $border }} transition duration-300 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="font-black text-sm text-white">{{ $alert['district'] ?? 'District' }}</span>
+                            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full border {{ $badge }}">
+                                {{ $lvl }}
+                            </span>
+                        </div>
+                        <div class="flex items-center gap-3 text-xs text-slate-300 mb-2 font-mono">
+                            <span><i class="fa-solid fa-temperature-half text-amber-400"></i> {{ $alert['temp'] ?? '28' }}°C</span>
+                            <span><i class="fa-solid fa-droplet text-blue-400"></i> {{ $alert['humidity'] ?? '75' }}%</span>
+                        </div>
+                        <p class="text-[11px] font-semibold text-blue-300 mb-1"><i class="fa-solid fa-cloud text-slate-400"></i> {{ $alert['condition'] ?? 'Partly Cloudy' }}</p>
+                        <p class="text-[11px] text-slate-400 leading-snug line-clamp-2 italic">"{{ $alert['advice'] ?? 'Standard inter-monsoon weather.' }}"</p>
+                    </div>
+                    @if(!empty($alert['is_simulated']))
+                        <div class="mt-2 pt-2 border-t border-slate-800/80 text-[9px] text-slate-500 font-mono text-right">
+                            ⚡ AI Simulated
+                        </div>
+                    @endif
+                </div>
+            @empty
+                <div class="col-span-4 p-6 text-center text-xs text-slate-500 bg-slate-900/40 rounded-2xl border border-slate-800">
+                    <i class="fa-solid fa-cloud-sun text-2xl text-slate-600 mb-2 block"></i>
+                    Weather microservice poller initializing... No district alerts received yet.
+                </div>
+            @endforelse
+        </div>
+
+        <!-- Emergency Push Broadcast Trigger Form -->
+        <div class="p-5 rounded-2xl bg-gradient-to-r from-red-950/30 via-slate-900/90 to-slate-950 border border-red-500/30">
+            <div class="flex items-center gap-2 mb-3">
+                <span class="w-2.5 h-2.5 rounded-full bg-red-500 animate-ping"></span>
+                <h4 class="font-extrabold text-xs text-red-400 uppercase tracking-wider">
+                    <i class="fa-solid fa-bullhorn mr-1"></i> Emergency Reverb Push Broadcast Trigger
+                </h4>
+            </div>
+            <form action="{{ route('admin.ai.broadcast') }}" method="POST" class="grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
+                @csrf
+                <div class="md:col-span-3">
+                    <label class="block text-[11px] font-bold text-slate-300 uppercase tracking-wider mb-1">Target District</label>
+                    <select name="district" required class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-red-500">
+                        <option value="All Sri Lanka (National Alert)">All Sri Lanka (National Alert)</option>
+                        <option value="Colombo">Colombo District</option>
+                        <option value="Galle">Galle & Southern Coast</option>
+                        <option value="Kandy">Kandy & Central Highlands</option>
+                        <option value="Nuwara Eliya">Nuwara Eliya & Tea Trails</option>
+                        <option value="Jaffna">Jaffna & Northern Province</option>
+                        <option value="Trincomalee">Trincomalee & East Coast</option>
+                    </select>
+                </div>
+                <div class="md:col-span-4">
+                    <label class="block text-[11px] font-bold text-slate-300 uppercase tracking-wider mb-1">Hazard Advisory Message</label>
+                    <input type="text" name="message" required placeholder="e.g. Heavy rainfall in Ella. Avoid hiking Little Adam's Peak today." 
+                        class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-red-500">
+                </div>
+                <div class="md:col-span-2">
+                    <label class="block text-[11px] font-bold text-slate-300 uppercase tracking-wider mb-1">Severity</label>
+                    <select name="severity" required class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-red-400 font-bold focus:outline-none focus:border-red-500">
+                        <option value="WARNING">🟡 WARNING</option>
+                        <option value="CRITICAL" selected>🔴 CRITICAL</option>
+                        <option value="EMERGENCY">🚨 EMERGENCY</option>
+                    </select>
+                </div>
+                <div class="md:col-span-3">
+                    <button type="submit" class="w-full py-2 px-3 bg-gradient-to-r from-red-600 to-amber-600 hover:from-red-500 hover:to-amber-500 text-white font-black rounded-xl text-xs shadow-lg shadow-red-600/20 transition duration-200 flex items-center justify-center gap-1.5 transform hover:-translate-y-0.5">
+                        <i class="fa-solid fa-paper-plane animate-bounce"></i> Dispatch Push Broadcast
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Recently Updated Hidden Gems Table -->
     <div class="glass-card p-6 rounded-2xl border border-slate-800">
         <div class="flex items-center justify-between border-b border-slate-800 pb-4 mb-6">

@@ -1,36 +1,35 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:http/http.dart' as http;
 import 'package:google_generative_ai/google_generative_ai.dart';
 import '../utils/secure_logger.dart';
 import '../../data/models/food_model.dart';
 import '../../core/config/app_config.dart';
 
 class SavorLankaService {
-  // Uses Firebase AI Logic pipeline with Gemini Multimodal Model
   static final String _modelName = AppConfig.llmModelName; 
   final String apiKey;
-  late final GenerativeModel _model;
+  GenerativeModel? _model;
 
   SavorLankaService({required this.apiKey}) {
-    if (apiKey.isEmpty) {
-      SecureLogger.error('SavorLankaService: API Key is empty! AI identification will fail.');
+    if (apiKey.isNotEmpty) {
+      _model = GenerativeModel(
+        model: _modelName,
+        apiKey: apiKey,
+        generationConfig: GenerationConfig(
+          responseMimeType: 'application/json',
+        ),
+      );
     }
-    _model = GenerativeModel(
-      model: _modelName,
-      apiKey: apiKey,
-      generationConfig: GenerationConfig(
-        responseMimeType: 'application/json',
-      ),
-    );
   }
 
   Future<FoodModel?> identifyFood(File imageFile, {
     String spicePreference = 'Medium',
     String userMode = 'Tourist',
   }) async {
-    if (apiKey.isEmpty) {
-      SecureLogger.error('Savor Lanka: Cannot identify food because API Key is empty.');
-      return null;
+    // 🏛️ Self-Hosted BYOM Custom Model Integration (D:\ai model\food_scan_ai)
+    if (apiKey.isEmpty || _model == null) {
+      return _callCustomByomFoodScanner(imageFile, spicePreference, userMode);
     }
     try {
       final bytes = await imageFile.readAsBytes();
@@ -41,20 +40,42 @@ class SavorLankaService {
         ])
       ];
 
-      final response = await _model.generateContent(content);
+      final response = await _model!.generateContent(content);
       final text = response.text;
 
       if (text == null) {
-        SecureLogger.error('Savor Lanka: Empty response from Gemini');
-        return null;
+        return _callCustomByomFoodScanner(imageFile, spicePreference, userMode);
       }
 
       final Map<String, dynamic> data = json.decode(text);
       return FoodModel.fromJson(data);
     } catch (e) {
-      SecureLogger.error('Savor Lanka Identification Error: $e');
-      return null;
+      SecureLogger.warning('Savor Lanka Commercial LLM skipped or failed: $e');
+      return _callCustomByomFoodScanner(imageFile, spicePreference, userMode);
     }
+  }
+
+  Future<FoodModel?> _callCustomByomFoodScanner(File imageFile, String spicePreference, String userMode) async {
+    try {
+      final base64Image = base64Encode(await imageFile.readAsBytes());
+      final response = await http.post(
+        Uri.parse('http://10.0.2.2:8000/api/food/scan'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          'image_base64': base64Image,
+          'user_mode': userMode,
+          'spice_preference': spicePreference,
+        }),
+      ).timeout(const Duration(seconds: 15));
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = json.decode(response.body);
+        return FoodModel.fromJson(data);
+      }
+    } catch (e) {
+      SecureLogger.warning('Custom BYOM Food Scanner offline or unreachable: $e');
+    }
+    return null;
   }
 
   String _buildUltimatePrompt(String spicePref, String userMode) {

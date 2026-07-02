@@ -43,5 +43,18 @@ Route::prefix('v1')->group(function () {
         Route::get('/check-version', [PlaceSyncController::class, 'checkVersion']);
         Route::get('/delta', [PlaceSyncController::class, 'delta']);
     });
+
+    // AI Subsystem Proxy Route (Routes Flutter AI requests to Python FastAPI)
+    Route::post('/ai/plan-itinerary', function (Request $request) {
+        $pythonUrl = env('PYTHON_BACKEND_URL', 'http://localhost:8000');
+        try {
+            $response = \Illuminate\Support\Facades\Http::timeout(30)
+                ->post("{$pythonUrl}/api/ai/plan-itinerary", $request->all());
+            return response($response->body(), $response->status())
+                ->header('Content-Type', 'application/json');
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'AI Subsystem unavailable', 'details' => $e->getMessage()], 503);
+        }
+    });
 });
 

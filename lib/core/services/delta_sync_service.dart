@@ -5,6 +5,7 @@ import '../../data/models/discovery_place.dart';
 import '../../data/datasources/discovery_local_datasource.dart';
 import '../../core/utils/secure_logger.dart';
 import 'sqlite_storage_service.dart';
+import '../config/app_config.dart';
 
 class DeltaSyncService {
   static final DeltaSyncService _instance = DeltaSyncService._internal();
@@ -12,8 +13,8 @@ class DeltaSyncService {
   DeltaSyncService._internal();
 
   // Configurable base URL for Laravel backend
-  static const String baseUrl = 'https://api.hiddengemssl.com/api/v1/places';
-  static const String apiKey = 'hg_live_secret_key_2026'; // Replaced Firebase AppCheck with X-API-KEY
+  static String get baseUrl => '${AppConfig.baseUrl}/places';
+  static String get apiKey => AppConfig.hiddenGemsApiKey;
 
   final SqliteStorageService _sqliteService = SqliteStorageService();
   final DiscoveryLocalDataSource _localDataSource = DiscoveryLocalDataSource();
@@ -108,7 +109,7 @@ class DeltaSyncService {
         currentVersion = nextCursor;
         await _sqliteService.setLocalSyncVersion(currentVersion);
 
-        SecureLogger.info("Chunk synced: +\$totalUpserted places, -\$totalPurged purged -> Version: \$currentVersion");
+        SecureLogger.info("Chunk synced: +$totalUpserted places, -$totalPurged purged -> Version: $currentVersion");
       }
     } on TimeoutException {
       SecureLogger.warning("Delta sync timed out during chunk fetch. Stopping sync gracefully.");

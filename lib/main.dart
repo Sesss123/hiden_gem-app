@@ -46,6 +46,7 @@ import 'presentation/screens/update_screen.dart';
 import 'core/config/app_check_config.dart';
 import 'core/services/zenith_security_facade.dart';
 import 'core/services/emergency_control_service.dart';
+import 'core/services/monsoon_broadcast_service.dart';
 
 class InitializationResult {
   final bool hiveSuccess;
@@ -259,6 +260,9 @@ Future<InitializationResult> performInitialization() async {
         
         final emergency = EmergencyControlService();
         await emergency.init();
+
+        // 🌧️ Phase 5: Initialize Monsoon Broadcast WebSocket & Poller Engine
+        MonsoonBroadcastService().init();
 
         // 🚨 PANIC ROOM: Check for global kill-switch before mounting UI
         if (emergency.isKillSwitchActive) {

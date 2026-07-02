@@ -1,4 +1,3 @@
-import 'package:flutter/services.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:flutter/material.dart';
@@ -258,7 +257,8 @@ class VoiceAssistantService {
     try {
       final result = await http.head(Uri.parse('https://google.com')).timeout(const Duration(seconds: 3));
       return result.statusCode == 200;
-    } catch (_) {
+    } catch (e) {
+      SecureLogger.warning('[VoiceAssistant] Connectivity check failed: $e');
       return false;
     }
   }

@@ -1,4 +1,5 @@
 import 'package:flutter_tts/flutter_tts.dart';
+import '../../core/utils/secure_logger.dart';
 
 class VoiceService {
   static final VoiceService _instance = VoiceService._internal();
@@ -45,7 +46,9 @@ class VoiceService {
     bool isSupported = false;
     try {
       isSupported = await _tts.isLanguageAvailable(ttsLang);
-    } catch (_) {}
+    } catch (e) {
+      SecureLogger.warning('TTS language availability query failed for $ttsLang: $e');
+    }
 
     if (!isSupported) {
       ttsLang = "en-US";

@@ -3,6 +3,7 @@ import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'session_quarantine.dart';
+import '../utils/secure_logger.dart';
 
 /// [EmergencyControlService] — The Zenith Panic Room.
 /// 
@@ -61,7 +62,8 @@ class EmergencyControlService {
     try {
       final List disabledList = json.decode(disabledRaw);
       return !disabledList.contains(featureId);
-    } catch (_) {
+    } catch (e) {
+      SecureLogger.warning('[PanicRoom] Failed to parse disabled_features: $e');
       return true;
     }
   }
@@ -94,7 +96,8 @@ class EmergencyControlService {
       if (parts.length >= 2) total += int.parse(parts[1]) * 100;
       if (parts.length >= 3) total += int.parse(parts[2]);
       return total;
-    } catch (_) {
+    } catch (e) {
+      SecureLogger.warning('[PanicRoom] Failed to parse version string "$v": $e');
       return 0;
     }
   }

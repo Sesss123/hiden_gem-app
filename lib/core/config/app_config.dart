@@ -1,10 +1,18 @@
 import 'package:flutter/foundation.dart';
 
 class AppConfig {
-  static const String baseUrl = String.fromEnvironment(
-    'BACKEND_URL',
-    defaultValue: kReleaseMode ? "https://api.hiddengemssl.com/api" : "http://10.0.2.2:8000/api",
+  static const String laravelUrl = String.fromEnvironment(
+    'LARAVEL_BACKEND_URL',
+    defaultValue: kReleaseMode ? "https://api.hiddengemssl.com/api/v1" : "http://10.0.2.2:8888/api/v1",
   );
+
+  static const String pythonUrl = String.fromEnvironment(
+    'PYTHON_BACKEND_URL',
+    defaultValue: kReleaseMode ? "https://ai.hiddengemssl.com/api" : "http://10.0.2.2:8000/api",
+  );
+
+  // Alias for backward compatibility (defaults to Laravel backend)
+  static const String baseUrl = laravelUrl;
 
   static const String hiddenGemsApiKey = String.fromEnvironment(
     'HIDDEN_GEMS_API_KEY',
@@ -25,7 +33,7 @@ class AppConfig {
 
   static const String nodeProxyUrl = String.fromEnvironment(
     'NODE_PROXY_URL',
-    defaultValue: kReleaseMode ? "https://proxy.hiddengemssl.com" : "http://10.0.2.2:3000",
+    defaultValue: kReleaseMode ? "https://api.hiddengemssl.com/api/v1" : "http://10.0.2.2:8888/api/v1",
   );
 
   static const String cdnBaseUrl = String.fromEnvironment(
@@ -75,16 +83,13 @@ class AppConfig {
       if (hiddenGemsApiKey == "" || hiddenGemsApiKey == "dev-key-local") {
         throw AssertionError("CRITICAL: Must configure a valid HIDDEN_GEMS_API_KEY.");
       }
-      if (geminiApiKey == "") {
-        throw AssertionError("CRITICAL: Must configure a valid GEMINI_API_KEY.");
-      }
       if (revenueCatApiKeyAndroid == "goog_example_key" || revenueCatApiKeyIos == "appl_example_key") {
         throw AssertionError("CRITICAL: Must configure valid RevenueCat API Keys.");
       }
       if (sharedSecret == "DEFAULT_NON_PROD_SECRET") {
         throw AssertionError("CRITICAL: Must configure a valid HMAC_SECRET.");
       }
-      if (vaultSignKey == "TRIPME_V1_STAGING_KEY_SHHH") {
+      if (vaultSignKey == "HIDDEN_GEMS_V1_STAGING_KEY_SHHH" || vaultSignKey == "TRIPME_V1_STAGING_KEY_SHHH") {
         throw AssertionError("CRITICAL: Must configure a valid VAULT_SIGN_KEY.");
       }
     }

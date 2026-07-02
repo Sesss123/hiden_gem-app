@@ -15,7 +15,9 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')->hourly();
+        // 🤖 Phase 5: Automated Curation & Safety CRON Jobs
+        $schedule->command('ai:harvest-pipeline full')->dailyAt('02:00')->withoutOverlapping();
+        $schedule->command('ai:monsoon-monitor')->hourly()->withoutOverlapping();
     }
 
     /**

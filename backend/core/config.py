@@ -35,9 +35,10 @@ DEDUPLICATION_THRESHOLD = 0.85  # Levenshtein ratio
 
 # --- Reliability Check ---
 def check_environment_health():
-    critical_keys = ["ANTHROPIC_API_KEY", "GOOGLE_API_KEY_1", "INTERNAL_API_KEY"]
+    # 🏛️ Modified for Self-Hosted BYOM Architecture: No external commercial AI keys required
+    critical_keys = ["INTERNAL_API_KEY"]
     missing = [k for k in critical_keys if not os.getenv(k)]
     if missing:
-        print(f"⚠️  CONFIG WARNING: Missing critical environment variables: {', '.join(missing)}", flush=True)
+        print(f"⚠️  CONFIG WARNING: Missing critical internal bridge key: {', '.join(missing)}", flush=True)
 
 check_environment_health()

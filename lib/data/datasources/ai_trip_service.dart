@@ -6,6 +6,7 @@ import '../../core/config/app_config.dart';
 import 'live_events_service.dart';
 import 'dynamic_content_service.dart';
 import '../../core/network/secure_http_client.dart';
+import '../../core/utils/secure_logger.dart';
 
 class AiTripService {
   static String get _baseUrl => AppConfig.baseUrl;
@@ -32,7 +33,7 @@ class AiTripService {
     required List<String> mustInclude,
     required List<String> avoid,
   }) async {
-    final url = Uri.parse("$_baseUrl/trip/plan");
+    final url = Uri.parse("$_baseUrl/ai/plan-itinerary"); // Python's real endpoint via Laravel proxy
     final userProfile = UserPreferenceService.getProfile();
     
     // 1. Fetch dynamic events for real-time AI grounding
@@ -111,7 +112,9 @@ class AiTripService {
           try {
             final errorData = json.decode(response.body) as Map<String, dynamic>;
             errorMessage = errorData['detail']?['message'] as String? ?? errorMessage;
-          } catch (_) {}
+          } catch (e) {
+            SecureLogger.warning('Failed to parse error payload: $e');
+          }
           throw Exception("HiddenGems.lk: $errorMessage");
         }
       } catch (e) {
@@ -140,8 +143,8 @@ class AiTripService {
         }
         await UserPreferenceService.saveProfile(profile);
       }
-    } catch (_) {} // Non-critical, never block generation
+    } catch (e) {
+      SecureLogger.warning('Failed to save trip history: $e');
+    }
   }
 }
-
-

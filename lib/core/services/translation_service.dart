@@ -7,7 +7,7 @@ import 'voice_assistant_service.dart';
 
 class TranslationService {
   static String get _apiKey => AppConfig.hiddenGemsApiKey;
-  static String get _baseUrl => AppConfig.baseUrl;
+  static String get _baseUrl => AppConfig.pythonUrl;
   static final _client = SecureHttpClient(http.Client());
 
   /// Translates text and speaks it out in the target language

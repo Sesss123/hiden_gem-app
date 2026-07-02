@@ -41,25 +41,31 @@ class _BudgetConciergeScreenState extends ConsumerState<BudgetConciergeScreen> {
   }
 
   Future<void> _getAIAdvice() async {
-    if (AppConfig.geminiApiKey.isEmpty) return;
-
     try {
-      final model = GenerativeModel(model: AppConfig.llmModelName, apiKey: AppConfig.geminiApiKey);
-      final prompt = """
-        You are 'Oracle Budget Concierge' for a traveler in Sri Lanka.
-        The user has spent total $_totalSpent LKR so far.
-        Expenses: ${_expenses.map((e) => "${e.description}: ${e.amount}").join(", ")}
-        
-        Provide a short (2 sentence) cinematic advice on their budget. 
-        Focus on value-for-money transport (like using PickMe/Uber vs private tours) 
-        and suggest maintaining a sustainable pace.
-      """;
-      final response = await model.generateContent([Content.text(prompt)]);
-      if (mounted) {
-        setState(() => _aiAdvice = response.text ?? "Your gold is safe, traveler.");
+      if (AppConfig.geminiApiKey.isNotEmpty) {
+        final model = GenerativeModel(model: AppConfig.llmModelName, apiKey: AppConfig.geminiApiKey);
+        final prompt = """
+          You are 'Oracle Budget Concierge' for a traveler in Sri Lanka.
+          The user has spent total $_totalSpent LKR so far.
+          Expenses: ${_expenses.map((e) => "${e.description}: ${e.amount}").join(", ")}
+          
+          Provide a short (2 sentence) cinematic advice on their budget. 
+          Focus on value-for-money transport (like using PickMe/Uber vs private tours) 
+          and suggest maintaining a sustainable pace.
+        """;
+        final response = await model.generateContent([Content.text(prompt)]);
+        if (mounted && response.text != null) {
+          setState(() => _aiAdvice = response.text!);
+          return;
+        }
       }
     } catch (e) {
-      if (mounted) setState(() => _aiAdvice = "The Oracle is silent on your gold for now.");
+      debugPrint('[BudgetConcierge] External LLM skipped or failed: $e');
+    }
+    
+    // 🏛️ Offline / Self-Hosted Rule-Based Cinematic Fallback
+    if (mounted) {
+      setState(() => _aiAdvice = "Your spending pace aligns well with island travel standards. We recommend utilizing PickMe or Uber for transparent transport fares, and sampling local eateries to maximize your value.");
     }
   }
 

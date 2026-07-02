@@ -1,6 +1,7 @@
 import 'package:url_launcher/url_launcher.dart';
 import '../models/event_model.dart';
 import 'sri_lanka_event_dataset.dart';
+import '../../core/utils/secure_logger.dart';
 
 class LiveEventsService {
   /// Returns a list of structured events happening during a specific trip window
@@ -22,7 +23,9 @@ class LiveEventsService {
               eventDate.isBefore(endDate.add(const Duration(days: 1)))) || isSameDay(eventDate, startDate) || isSameDay(eventDate, endDate)) {
             results.add(EventModel.fromJson(event));
           }
-        } catch (_) {}
+        } catch (e) {
+          SecureLogger.warning('Failed parsing single day event date ${event["date"]}: $e');
+        }
       } else if (event.containsKey("start") && event.containsKey("end")) {
         // Multi-Day or Seasonal Event
         try {
@@ -43,7 +46,9 @@ class LiveEventsService {
           if (overlap) {
             results.add(EventModel.fromJson(event));
           }
-        } catch (_) {}
+        } catch (e) {
+          SecureLogger.warning('Failed parsing multi-day event range: $e');
+        }
       }
     }
 
@@ -66,7 +71,8 @@ class LiveEventsService {
         base += ": ${e.description}";
         return base;
       }).toList();
-    } catch (_) {
+    } catch (e) {
+      SecureLogger.warning('Failed to get events for dates $startDateStr: $e');
       return [];
     }
   }

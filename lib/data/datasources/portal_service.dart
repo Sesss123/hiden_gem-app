@@ -23,7 +23,8 @@ class PortalService {
   static AncestralPortal? getPortalForPlace(String placeName) {
     try {
       return _allPortals.firstWhere((p) => placeName.toLowerCase().contains(p.locationName.toLowerCase()));
-    } catch (_) {
+    } catch (e) {
+      // Not found is normal for non-portal places
       return null;
     }
   }

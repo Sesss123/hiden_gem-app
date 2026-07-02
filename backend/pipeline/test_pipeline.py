@@ -54,8 +54,8 @@ async def run_smoke_test():
 
     print("\n--- Smoke Test Summary ---")
     print("Environment Check:")
-    print(f"- ANTHROPIC_API_KEY: {'Set' if os.getenv('ANTHROPIC_API_KEY') else 'MISSING'}")
-    print(f"- GOOGLE_API_KEY: {'Set' if os.getenv('GOOGLE_API_KEY') else 'MISSING'}")
+    print(f"- ANTHROPIC_API_KEY: {'Set' if os.getenv('ANTHROPIC_API_KEY') else 'Bypassed (Local BYOM Mode)'}")
+    print(f"- GOOGLE_API_KEY: {'Set' if os.getenv('GOOGLE_API_KEY') else 'Bypassed (Local BYOM Mode)'}")
     
     print("\nRun 'python -m pipeline.main_pipeline' for a real harvest run.")
 

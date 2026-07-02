@@ -3,6 +3,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../core/services/brute_force_service.dart';
+import '../../core/utils/secure_logger.dart';
 import 'user_preference_service.dart';
 
 class AuthService {
@@ -145,7 +146,7 @@ class AuthService {
   // Sign out
   Future<void> signOut() async {
     if (!kIsWeb) {
-      try { await _googleSignIn.signOut(); } catch (_) {}
+      try { await _googleSignIn.signOut(); } catch (e) { SecureLogger.warning('Google sign out failed: $e'); }
     }
     await _auth.signOut();
     await UserPreferenceService.clearProfile();
@@ -166,7 +167,7 @@ class AuthService {
       // 3. Clear local profile
       await UserPreferenceService.clearProfile();
       if (!kIsWeb) {
-        try { await _googleSignIn.signOut(); } catch (_) {}
+        try { await _googleSignIn.signOut(); } catch (e) { SecureLogger.warning('Google sign out failed: $e'); }
       }
     } catch (e) {
       debugPrint("Error during Account Deletion: $e");

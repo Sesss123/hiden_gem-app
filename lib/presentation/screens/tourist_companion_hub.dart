@@ -16,7 +16,9 @@ import 'family_share_screen.dart';
 import 'guide_reviews_screen.dart';
 import '../../data/models/offline_snapshot.dart';
 import 'dart:convert';
+import 'dart:async';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import '../../core/services/monsoon_broadcast_service.dart';
 
 class TouristCompanionHub extends StatefulWidget {
   final String sessionId;
@@ -32,11 +34,55 @@ class _TouristCompanionHubState extends State<TouristCompanionHub> {
   final _presenceRepo = PresenceRepository();
   DateTime? _lastSosTime;
   OfflineSnapshot? _cachedSnapshot;
+  StreamSubscription? _broadcastSub;
 
   @override
   void initState() {
     super.initState();
     _loadCache();
+    _initMonsoonListener();
+  }
+
+  void _initMonsoonListener() {
+    _broadcastSub = MonsoonBroadcastService().broadcastStream.listen((alert) {
+      if (!mounted) return;
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (ctx) => AlertDialog(
+          backgroundColor: const Color(0xFF1A1A1A),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16), side: const BorderSide(color: Colors.redAccent, width: 2)),
+          title: Row(
+            children: [
+              const Icon(Icons.warning_amber_rounded, color: Colors.redAccent, size: 28),
+              const SizedBox(width: 10),
+              Expanded(child: Text("MONSOON HAZARD ALERT", style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18))),
+            ],
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text("District: ${alert['district'] ?? 'General'}", style: GoogleFonts.inter(color: Colors.redAccent, fontWeight: FontWeight.w600)),
+              const SizedBox(height: 10),
+              Text(alert['message']?.toString() ?? "Severe monsoon weather detected.", style: GoogleFonts.inter(color: Colors.white70, fontSize: 14)),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(),
+              child: Text("ACKNOWLEDGE", style: GoogleFonts.outfit(color: Colors.amberAccent, fontWeight: FontWeight.bold)),
+            ),
+          ],
+        ),
+      );
+    });
+  }
+
+  @override
+  void dispose() {
+    _broadcastSub?.cancel();
+    super.dispose();
   }
 
   Future<void> _loadCache() async {

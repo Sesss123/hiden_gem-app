@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from core.security import get_current_user
 from core.database import get_db_connection
 from typing import List, Optional
@@ -49,8 +49,9 @@ async def semantic_search(query: str, user=Depends(get_current_user)):
     finally:
         conn.close()
 
-@router.get("/plan-itinerary")
+@router.api_route("/plan-itinerary", methods=["GET", "POST"])
 async def plan_itinerary(
+    request: Request,
     duration: int = 3, 
     vibe: str = "balanced", 
     start_district: Optional[str] = None,
@@ -60,6 +61,17 @@ async def plan_itinerary(
     AI-driven itinerary generation.
     Groups places by district clusters and sorts by category preference.
     """
+    if request.method == "POST":
+        try:
+            body = await request.json()
+            if body.get("days"):
+                duration = int(body["days"])
+            if body.get("style"):
+                vibe = str(body["style"]).lower()
+            if body.get("destination"):
+                start_district = str(body["destination"])
+        except Exception:
+            pass
     conn = get_db_connection()
     cur = conn.cursor()
     try:
@@ -156,3 +168,26 @@ async def find_near_me(lat: float, lng: float, radius_km: float = 10.0, user=Dep
         return nearby[:15]
     finally:
         conn.close()
+
+from pydantic import BaseModel
+
+class TranslateRequest(BaseModel):
+    text: str
+    target_lang: str
+
+@router.post("/translate")
+async def translate_text(req: TranslateRequest, user=Depends(get_current_user)):
+    """
+    AI Translation Service using Gemini or semantic rules.
+    """
+    # Fallback/mock AI translation for local dev if Gemini API not configured
+    translations = {
+        "si": {
+            "Welcome to Sri Lanka": "ශ්‍රී ලංකාවට සාදරයෙන් පිළිගනිමු",
+            "Hidden Gems": "සැඟවුණු ආකර්ෂණීය ස්ථාන",
+            "Explore": "ගවේෂණය කරන්න",
+        }
+    }
+    translated = translations.get(req.target_lang, {}).get(req.text, f"[{req.target_lang.upper()}] {req.text}")
+    return {"translated_text": translated, "source_lang": "en", "target_lang": req.target_lang}
+

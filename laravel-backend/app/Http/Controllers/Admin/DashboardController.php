@@ -49,10 +49,21 @@ class DashboardController extends Controller
             ->having('cnt', '>', 1)
             ->get();
 
+        $weatherAlerts = [];
+        try {
+            $pythonApi = env('PYTHON_AI_SERVICE_URL', 'http://localhost:8000');
+            $response = \Illuminate\Support\Facades\Http::timeout(3)->get($pythonApi . '/api/weather/alerts');
+            if ($response->successful()) {
+                $weatherAlerts = $response->json('alerts', []);
+            }
+        } catch (\Exception $e) {
+            // Non-blocking if Python service is unavailable
+        }
+
         return view('admin.dashboard', compact(
             'totalPlaces', 'proPlaces', 'vipPlaces', 'arPlaces',
             'totalUsers', 'proUsers', 'vipUsers',
-            'totalWishlists', 'byDistrict', 'byCategory', 'recentPlaces', 'duplicates'
+            'totalWishlists', 'byDistrict', 'byCategory', 'recentPlaces', 'duplicates', 'weatherAlerts'
         ));
     }
 }

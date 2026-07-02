@@ -44,6 +44,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/ai-command', [AiCommandController::class, 'index'])->name('ai-command.index');
         Route::post('/ai-command/discover', [AiCommandController::class, 'triggerDiscovery'])->name('ai.discover');
         Route::post('/ai-command/intake', [AiCommandController::class, 'harvestIntake'])->name('ai.intake');
+        Route::post('/ai-command/vision-analyze', [AiCommandController::class, 'visionAnalyze'])->name('ai.vision-analyze');
+        Route::post('/ai-command/broadcast', [AiCommandController::class, 'emergencyBroadcast'])->name('ai.broadcast');
 
         // Job Scheduler & Backups
         Route::get('/scheduler', [SchedulerController::class, 'index'])->name('scheduler.index');

@@ -35,7 +35,7 @@ extension LumenModeExtension on LumenMode {
 class LumenAiService {
   // ── Configuration ──────────────────────────────────────────
 
-  static String get _baseUrl => AppConfig.baseUrl;
+  static String get _baseUrl => AppConfig.pythonUrl;
 
   /// Lumen-1 API key (set in LUMEN_API_KEY env var on server)
   static const String _apiKey = String.fromEnvironment('LUMEN_API_KEY', defaultValue: 'lumen_default_secure_api_key_2026');
@@ -59,7 +59,7 @@ class LumenAiService {
     String systemPrompt = '',
     double temperature = 0.7,
   }) async {
-    final uri = Uri.parse('$_baseUrl/api/test-model');
+    final uri = Uri.parse('$_baseUrl/test-model');
 
     final body = json.encode({
       'prompt': prompt,
@@ -164,10 +164,11 @@ Please provide:
   static Future<bool> isServerAlive() async {
     try {
       final response = await http
-          .get(Uri.parse('$_baseUrl/api/status'))
+          .get(Uri.parse('$_baseUrl/status'))
           .timeout(const Duration(seconds: 5));
       return response.statusCode == 200;
-    } catch (_) {
+    } catch (e) {
+      SecureLogger.warning('[Lumen] Server status check failed: $e');
       return false;
     }
   }

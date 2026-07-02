@@ -15,7 +15,11 @@ class SchedulerController extends Controller
     public function __construct()
     {
         $this->pythonApi = env('PYTHON_BACKEND_URL', 'http://localhost:8000');
-        $this->internalKey = env('INTERNAL_API_KEY', 'default_internal_secret');
+        $key = env('INTERNAL_API_KEY', 'default_internal_secret');
+        if (app()->environment('production') && $key === 'default_internal_secret') {
+            throw new \RuntimeException("CRITICAL: INTERNAL_API_KEY must be configured in production environment.");
+        }
+        $this->internalKey = $key;
     }
 
     /**

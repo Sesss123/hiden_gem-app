@@ -400,5 +400,18 @@
 - [x] Migrate AI Command Center & Pipeline triggers (Discovery & Smart URL Intake) into Laravel Admin (AiCommandController & View) (Completed 2026-07-02)
 - [x] Migrate Background Job Scheduler & Server Controls into Laravel Admin (SchedulerController & View) (Completed 2026-07-02)
 - [x] Remove legacy tripme-admin-genesis Node.js/Express admin panel references and clean up architecture (Completed 2026-07-02)
-- [ ] Implement 3D AR Model (.glb) Validator & QR Code Generator widget on Dashboard
-- [ ] Connect Python Weather Microservice (`weather_service.py`) for live monsoon/weather alerts on Dashboard
+- [x] Implement 3D AR Model (.glb) Validator & QR Code Generator widget on Dashboard (Completed Phase 2 - 2026-07-02)
+- [x] Connect Python Weather Microservice (`weather_service.py`) for live monsoon/weather alerts on Dashboard (Completed Phase 3 - 2026-07-02)
+- [x] Refactor 16 empty catch blocks across Flutter services to use SecureLogger (Completed Phase 4 - 2026-07-02)
+- [x] Automated AI Harvester CRON setup via Laravel Task Scheduler & Reverb WebSockets push engine (Completed Phase 5 - 2026-07-02)
+
+## Active Milestone: 8-Point Deep Vulnerability & Architectural Resolution
+- [x] #1 Split shared `AppConfig.baseUrl` into `laravelUrl` and `pythonUrl`, and update AI services (`lumen_ai_service.dart`, `translation_service.dart`)
+- [x] #2 Implement `/api/ai/translate` endpoint in Python FastAPI (`ai.py`) and fix `/places` route in `discovery_remote_datasource.dart`
+- [x] #3 Update dead Node.js proxy reference (`nodeProxyUrl`) in `app_config.dart` to point to Laravel Gateway (`8888`)
+- [x] #4 Secure API keys in `VerifyApiKey.php` and verify `--dart-define` secret injection in `delta_sync_service.dart`
+- [x] #5 Enforce strict exception on default `INTERNAL_API_KEY` in production (`AiCommandController.php` & `SchedulerController.php`)
+- [x] #6 Catalog and verify empty catch blocks (`catch (_)`) across Flutter presentation/services for non-blocking fallbacks
+- [x] #7 Add Laravel origin (`http://localhost:8888`) to Python FastAPI CORS allowed origins list (`main.py`)
+- [x] #8 Fix typo in `vaultSignKey` validation check in `app_config.dart` (`HIDDEN_GEMS_V1_STAGING_KEY_SHHH`)
+

@@ -46,7 +46,8 @@ app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://localhost:3006", # Genesis Admin Dashboard
+        "http://localhost:8888", # Laravel Admin Dashboard & API Gateway
+        "http://127.0.0.1:8888", # Laravel Alternate IP
         "http://localhost:3000", # Native Frontend (React/Next)
         "http://localhost:5173", # Vite Default
     ], 
@@ -65,6 +66,7 @@ from api.routers.auth import router as auth_router
 from api.routers.user import router as user_router
 from api.routers.ai import router as ai_router
 from api.routers.scheduler import router as scheduler_router
+from api.routers.weather import router as weather_router
 
 # Include Modularized Routes
 app.include_router(pipeline_router)
@@ -74,6 +76,7 @@ app.include_router(auth_router)
 app.include_router(user_router)
 app.include_router(ai_router)
 app.include_router(scheduler_router)
+app.include_router(weather_router)
 
 # Static Files (Uploads)
 UPLOAD_DIR = "uploads"

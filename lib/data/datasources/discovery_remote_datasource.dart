@@ -34,9 +34,9 @@ class DiscoveryRemoteDataSource {
   }
 
   Future<String> fetchPlacesRest() async {
-    final securityHeaders = await VaultService.getSecurityHeaders('/discovery/places');
+    final securityHeaders = await VaultService.getSecurityHeaders('/places');
     final response = await _client.get(
-      Uri.parse('${AppConfig.baseUrl}/discovery/places'),
+      Uri.parse('${AppConfig.pythonUrl}/places'),
       headers: {
         'X-HiddenGems-Key': AppConfig.hiddenGemsApiKey,
         ...securityHeaders,
