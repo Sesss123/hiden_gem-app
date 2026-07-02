@@ -61,6 +61,8 @@ class ARVideoService extends ChangeNotifier {
     }
   }
 
+  bool _disposed = false;
+
   void play() {
     _controller?.play();
   }
@@ -74,15 +76,17 @@ class ARVideoService extends ChangeNotifier {
   }
 
   void _setState(ARVideoState s) {
+    if (_disposed) return;
     if (_state == s) return;
     _state = s;
     notifyListeners();
   }
 
   @override
-  Future<void> dispose() async {
+  void dispose() {
+    _disposed = true;
     _controller?.removeListener(_onControllerUpdate);
-    await _controller?.dispose();
+    _controller?.dispose();
     _controller = null;
     super.dispose();
   }

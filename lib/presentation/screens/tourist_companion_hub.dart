@@ -89,6 +89,7 @@ class _TouristCompanionHubState extends State<TouristCompanionHub> {
     final prefs = await SharedPreferences.getInstance();
     final data = prefs.getString('offline_snapshot_${widget.sessionId}');
     if (data != null) {
+      if (!mounted) return;
       setState(() {
         _cachedSnapshot = OfflineSnapshot.fromJson(jsonDecode(data));
       });

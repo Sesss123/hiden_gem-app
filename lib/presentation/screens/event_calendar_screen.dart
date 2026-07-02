@@ -16,6 +16,7 @@ import '../../data/datasources/live_events_service.dart';
 import '../../data/datasources/user_preference_service.dart';
 import '../../data/datasources/trip_cache_service.dart';
 import '../../data/models/event_model.dart';
+import '../widgets/cached_image.dart';
 import '../widgets/skeleton_loaders.dart';
 
 class EventCalendarScreen extends StatefulWidget {
@@ -389,7 +390,7 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> {
                   child: Stack(
                     fit: StackFit.expand,
                     children: [
-                      Image.network("https://images.unsplash.com/photo-1514525253361-bee8a4874051?w=800&q=80", fit: BoxFit.cover),
+                      CachedImage(url: "https://images.unsplash.com/photo-1514525253361-bee8a4874051?w=800&q=80", fit: BoxFit.cover),
                       Container(decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Colors.transparent, Colors.black.withValues(alpha: 0.6)]))),
                       Positioned(
                         bottom: 24, left: 24,
@@ -495,8 +496,8 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> {
                     Expanded(
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(24),
-                        child: Image.network(
-                          "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=400&q=80",
+                        child: CachedImage(
+                          url: "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=400&q=80",
                           fit: BoxFit.cover, width: double.infinity,
                         ),
                       ),

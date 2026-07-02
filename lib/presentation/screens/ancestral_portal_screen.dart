@@ -3,6 +3,7 @@ import 'package:panorama/panorama.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/theme/oracle_ui_system.dart';
 import '../../data/models/portal_model.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class AncestralPortalScreen extends StatefulWidget {
   final AncestralPortal portal;
@@ -34,7 +35,7 @@ class _AncestralPortalScreenState extends State<AncestralPortalScreen> {
           Positioned.fill(
             child: Panorama(
               zoom: 1,
-              child: Image.network(widget.portal.panoramaImageUrl),
+              child: Image(image: CachedNetworkImageProvider(widget.portal.panoramaImageUrl)),
             ),
           ),
 

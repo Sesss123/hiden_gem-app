@@ -19,6 +19,7 @@ class _OracleOrbState extends State<OracleOrb> {
   void _toggleOracle() async {
     if (_isListening) {
       await VoiceAssistantService.stopListening();
+      if (!mounted) return;
       setState(() => _isListening = false);
     } else {
       setState(() {

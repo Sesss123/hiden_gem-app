@@ -10,14 +10,12 @@ class Kernel extends ConsoleKernel
     /**
      * Define the application's command schedule.
      *
-     * @param  \Illuminate\Console\Scheduling\Schedule  $schedule
+     * @param  Schedule  $schedule
      * @return void
      */
     protected function schedule(Schedule $schedule)
     {
-        // 🤖 Phase 5: Automated Curation & Safety CRON Jobs
-        $schedule->command('ai:harvest-pipeline full')->dailyAt('02:00')->withoutOverlapping();
-        $schedule->command('ai:monsoon-monitor')->hourly()->withoutOverlapping();
+        // No background tasks scheduled
     }
 
     /**

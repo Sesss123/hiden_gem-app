@@ -2,18 +2,23 @@ import 'dart:convert';
 import 'package:crypto/crypto.dart';
 import 'package:encrypt/encrypt.dart' as enc;
 import 'secure_logger.dart';
+import '../config/app_config.dart';
 
 class EncryptionUtil {
-  // SHARED KEYS FOR CROSS-PLATFORM DATA (HIDDEN GEMS)
-  // In production, these should be fetched from a secure backend or KMS.
-  static const String _sharedAesKeyBase64 = String.fromEnvironment(
-    'SHARED_AES_KEY',
-    defaultValue: 'uN7U8L4f3k8P8m9Qz2Wp5X7r9tBy1C3v5X7r9tBy1C3=', 
-  );
-  static const String _sharedHmacKeyBase64 = String.fromEnvironment(
-    'SHARED_HMAC_KEY',
-    defaultValue: 'kP5v8N2m4Q9z1X3r7tBy9C1v3X5r7tBy9C1v3X5r7tB=',
-  );
+  static String get _sharedAesKeyBase64 => AppConfig.sharedAesKey;
+  static String get _sharedHmacKeyBase64 => AppConfig.sharedHmacKey;
+
+  /// Constant-time comparison to prevent timing attacks.
+  static bool safeEqual(String a, String b) {
+    final aBytes = utf8.encode(a);
+    final bBytes = utf8.encode(b);
+    if (aBytes.length != bBytes.length) return false;
+    int result = 0;
+    for (int i = 0; i < aBytes.length; i++) {
+      result |= aBytes[i] ^ bBytes[i];
+    }
+    return result == 0;
+  }
 
   static enc.Key? _cachedKey;
   static List<int>? _cachedHmacKey;
@@ -102,7 +107,7 @@ class EncryptionUtil {
       final hmac = Hmac(sha256, hmacKey);
       final expectedSignature = hmac.convert(utf8.encode(payloadToVerify)).toString();
       
-      if (signature != expectedSignature) {
+      if (!safeEqual(signature, expectedSignature)) {
         throw Exception("HMAC Integrity Check Failed.");
       }
 
@@ -133,7 +138,8 @@ class EncryptionUtil {
       
       final payloadToVerify = '$ivBase64:$cipherText';
       final hmac = Hmac(sha256, _cachedHmacKey!);
-      if (signature != hmac.convert(utf8.encode(payloadToVerify)).toString()) {
+      final expectedSignature = hmac.convert(utf8.encode(payloadToVerify)).toString();
+      if (!safeEqual(signature, expectedSignature)) {
         return '{}';
       }
 

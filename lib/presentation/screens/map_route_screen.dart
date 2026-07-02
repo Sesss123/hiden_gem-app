@@ -72,6 +72,7 @@ class _MapRouteScreenState extends State<MapRouteScreen> {
           final id = match.first.id;
           final path = await TripCacheService.saveOfflineMap(id, imageBytes);
           if (path != null) {
+            if (!mounted) return;
             setState(() {
               _plan = _plan.copyWith(offlineMapPath: path);
             });
@@ -92,6 +93,7 @@ class _MapRouteScreenState extends State<MapRouteScreen> {
                         final id = await TripCacheService.savePlan(_plan);
                         final path = await TripCacheService.saveOfflineMap(id, imageBytes);
                         if (path != null) {
+                          if (!mounted) return;
                           setState(() {
                             _plan = _plan.copyWith(offlineMapPath: path);
                           });

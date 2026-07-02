@@ -57,6 +57,7 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
       _loadActiveSession(),
       _loadVehicles(),
     ]);
+    if (!mounted) return;
     setState(() => _isLoading = false);
   }
 
@@ -117,6 +118,7 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
     if (profile.currentBatchId != null) {
       final session = await _sessionRepo.getSession(profile.currentBatchId!);
       if (session != null) {
+        if (!mounted) return;
         setState(() => _activeSession = session);
       }
     }
@@ -159,6 +161,7 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
     profile.currentBatchId = sessionId;
     await UserPreferenceService.saveProfile(profile);
 
+    if (!mounted) return;
     setState(() {
       _activeSession = newSession;
       _isLoading = false;
@@ -224,6 +227,7 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
 
     if (name == null || name.isEmpty) return;
 
+    if (!mounted) return;
     setState(() => _isLoading = true);
     try {
       final pos = await Geolocator.getCurrentPosition(locationSettings: const LocationSettings(accuracy: LocationAccuracy.high));
@@ -240,6 +244,7 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
       await _meetingRepo.updateMeetingPoint(checkpoint);
       
       // Update local state for immediate UI feedback
+      if (!mounted) return;
       setState(() {
         _activeSession = _activeSession!.copyWith(
           meetingPointName: name,
@@ -258,6 +263,7 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
         );
       }
     } finally {
+      if (!mounted) return;
       setState(() => _isLoading = false);
     }
   }
@@ -281,6 +287,7 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
         );
       }
     } finally {
+      if (!mounted) return;
       setState(() => _isLoading = false);
     }
   }
@@ -295,6 +302,7 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
     profile.currentBatchId = null;
     await UserPreferenceService.saveProfile(profile);
 
+    if (!mounted) return;
     setState(() {
       _activeSession = null;
       _isLoading = false;

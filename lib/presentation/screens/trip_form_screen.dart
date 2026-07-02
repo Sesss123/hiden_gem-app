@@ -134,7 +134,10 @@ class _TripFormScreenState extends State<TripFormScreen> {
       firstDate: DateTime.now(),
       lastDate: DateTime.now().add(const Duration(days: 365)),
     );
-    if (picked != null) setState(() => _startDate = picked);
+    if (picked != null) {
+      if (!mounted) return;
+      setState(() => _startDate = picked);
+    }
   }
 
   String _formatDate(DateTime d) =>

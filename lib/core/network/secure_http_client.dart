@@ -25,10 +25,14 @@ class SecureHttpClient extends http.BaseClient {
   @override
   Future<http.StreamedResponse> send(http.BaseRequest request) async {
     // 1. Force HTTPS (Point 1)
-    if (request.url.scheme != 'https' && !kDebugMode) {
-      // In release, we should probably warn or throw, but if node proxy is HTTP, we let it pass if explicitly allowed
-      if (!request.url.host.contains('localhost') && !request.url.host.contains('10.0.2.2')) {
-        debugPrint('WARNING: Non-secure HTTP request to ${request.url}');
+    if (request.url.scheme != 'https') {
+      final isLocal = request.url.host.contains('localhost') || request.url.host.contains('127.0.0.1') || request.url.host.contains('10.0.2.2');
+      if (!isLocal) {
+        if (!kDebugMode) {
+          throw SecurityException("Insecure HTTP requests are strictly prohibited in production: ${request.url}");
+        } else {
+          debugPrint('WARNING: Non-secure HTTP request to ${request.url}');
+        }
       }
     }
 

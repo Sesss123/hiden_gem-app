@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/foundation.dart';
+import '../config/app_config.dart';
 
 /// [HmacExpiryVerifier] — Cryptographic proof of entitlement expiry.
 ///
@@ -10,10 +11,20 @@ import 'package:flutter/foundation.dart';
 /// Every expiry date saved in the profile is paired with an HMAC-SHA256 signature
 /// generated with a secret and the user's UID.
 class HmacExpiryVerifier {
-  // SECURITY FIX: Removed hardcoded HMAC secret.
-  // Must be provided at build time via --dart-define=HMAC_EXPIRY_SECRET=...
-  // TODO: Migrate completely to Asymmetric Ed25519 Verification where the client only holds a Public Key.
-  static const String _defaultSecret = String.fromEnvironment('HMAC_EXPIRY_SECRET', defaultValue: 'ZENITH_EXPIRY_SIGN_KEY_2026');
+  static String get _defaultSecret => AppConfig.hmacExpirySecret;
+
+  /// Constant-time comparison to prevent timing attacks.
+  static bool safeEqual(String a, String b) {
+    final aBytes = utf8.encode(a);
+    final bBytes = utf8.encode(b);
+    if (aBytes.length != bBytes.length) return false;
+    int result = 0;
+    for (int i = 0; i < aBytes.length; i++) {
+      result |= aBytes[i] ^ bBytes[i];
+    }
+    return result == 0;
+  }
+
   /// Generates a signature for a given UID and Expiry Date.
   /// Call this when saving a newly fetched profile from the server.
   static String generateSignature({
@@ -45,7 +56,7 @@ class HmacExpiryVerifier {
       secret: secret,
     );
 
-    final isValid = expected == signature;
+    final isValid = safeEqual(expected, signature);
     
     if (!isValid) {
       debugPrint('[HmacExpiry] 🚨 ALERT: Signature mismatch! Expiry date has been tampered with.');

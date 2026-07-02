@@ -585,6 +585,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           onTap: () async {
             HapticFeedback.selectionClick();
             await UserPreferenceService.updateVibe(v['id']!);
+            if (!mounted) return;
             setState(() => profile = UserPreferenceService.getProfile());
           },
           child: AnimatedContainer(

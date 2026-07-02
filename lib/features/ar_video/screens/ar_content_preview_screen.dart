@@ -56,6 +56,7 @@ class _ARContentPreviewScreenState extends State<ARContentPreviewScreen> {
     try {
       final prefs = await SharedPreferences.getInstance();
       final list = prefs.getStringList('bookmarked_ar_portals') ?? [];
+      if (!mounted) return;
       setState(() {
         if (_isBookmarked) {
           list.remove(_currentContent.locationId);

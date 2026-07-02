@@ -53,6 +53,7 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
         preferredCameraDevice: type == 'selfie' ? CameraDevice.front : CameraDevice.rear,
       );
       if (image != null) {
+        if (!mounted) return;
         setState(() {
           if (type == 'license') _licenseFile = image;
           if (type == 'nic') _nicFile = image;
@@ -196,6 +197,7 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
       await _repo.submitApplication(application);
 
       // 3. Update Local Cache
+      if (!mounted) return;
       setState(() => _loadingStatus = "ORACLE SYNCHRONIZING...");
       
       final obfuscatedStatus = guardian.obfuscateStatus('PENDING');

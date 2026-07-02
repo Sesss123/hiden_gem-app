@@ -31,6 +31,7 @@ class _UsageMeterWidgetState extends State<UsageMeterWidget> {
     try {
       // Mock retrieve using key limit mappings
       await UsageLimiterService.canGenerateAiTrip(); // basic validation
+      if (!mounted) return;
       setState(() {
         // Fallback limits based on plan
         if (profile.isPremium) {

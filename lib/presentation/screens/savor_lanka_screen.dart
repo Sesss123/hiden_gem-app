@@ -1486,6 +1486,7 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
     } else {
       await FoodRepository.saveFood(_result!);
     }
+    if (!mounted) return;
     setState(() => _isSaved = !_isSaved);
   }
 

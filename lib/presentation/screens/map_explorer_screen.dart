@@ -13,6 +13,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../data/datasources/user_preference_service.dart';
 import 'dart:ui';
+import '../widgets/cached_image.dart';
 
 class MapExplorerScreen extends ConsumerStatefulWidget {
   final LatLng initialPosition;
@@ -317,8 +318,8 @@ class _MapExplorerScreenState extends ConsumerState<MapExplorerScreen> {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(16),
-              child: Image.network(
-                "https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?q=80&w=200&auto=format&fit=crop",
+              child: CachedImage(
+                url: "https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?q=80&w=200&auto=format&fit=crop",
                 width: 80,
                 height: 80,
                 fit: BoxFit.cover,

@@ -199,9 +199,10 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() => _isLoading = true);
     try {
       final user = await _authService.signInWithGoogle();
+      if (!mounted) return;
       setState(() => _isLoading = false);
 
-      if (user != null && mounted) {
+      if (user != null) {
         final profile = UserPreferenceService.getProfile();
         
         Navigator.pushReplacement(

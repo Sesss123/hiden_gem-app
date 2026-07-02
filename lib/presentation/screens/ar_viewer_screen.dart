@@ -23,6 +23,7 @@ import 'ar_upgrade_dialog.dart';
 import 'premium_hub_screen.dart';
 import 'heritage_passport_screen.dart';
 import '../../core/services/gamification_service.dart';
+import '../widgets/cached_image.dart';
 import '../../core/services/business_discovery_service.dart';
 import '../../data/models/ar_artifact.dart';
 import '../../data/models/business_partner.dart';
@@ -400,11 +401,13 @@ class _ARViewerScreenState extends State<ARViewerScreen>
         return;
       }
     }
+    if (!mounted) return;
     setState(() => _isAudioPlaying = !_isAudioPlaying);
   }
 
   Future<void> _switchLang(String lang) async {
     await _audioPlayer.stop();
+    if (!mounted) return;
     setState(() { _currentAudioLang = lang; _isAudioPlaying = false; });
   }
 
@@ -437,6 +440,7 @@ class _ARViewerScreenState extends State<ARViewerScreen>
     HapticFeedback.heavyImpact();
     
     // 2. Hide UI for clean shot
+    if (!mounted) return;
     setState(() => _isCapturing = true);
 
     // Small delay to ensure UI redraws before capture
@@ -1415,7 +1419,7 @@ class _ARViewerScreenState extends State<ARViewerScreen>
                   children: [
                     ClipRRect(
                       borderRadius: BorderRadius.circular(16),
-                      child: Image.network(partner.imageUrl, width: 80, height: 80, fit: BoxFit.cover),
+                      child: CachedImage(url: partner.imageUrl, width: 80, height: 80, fit: BoxFit.cover),
                     ),
                     const SizedBox(width: 16),
                     Expanded(

@@ -65,6 +65,7 @@ class _AudioGuideScreenState extends State<AudioGuideScreen> with SingleTickerPr
   Future<void> _switchLanguage(String lang) async {
     if (_currentLang == lang) return;
     await _player.stop();
+    if (!mounted) return;
     setState(() => _currentLang = lang);
     await _initAudio();
     await _player.play();

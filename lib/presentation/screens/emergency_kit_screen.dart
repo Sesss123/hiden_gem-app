@@ -358,6 +358,7 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> {
                         final p = UserPreferenceService.getProfile();
                         p.sosContacts.remove(c);
                         await UserPreferenceService.saveProfile(p);
+                        if (!mounted) return;
                         setState(() {});
                       },
                       child: Icon(Icons.close_rounded, color: Colors.redAccent, size: 14),
@@ -462,6 +463,7 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> {
                       final p = UserPreferenceService.getProfile();
                       p.sosContacts.add(phone);
                       await UserPreferenceService.saveProfile(p);
+                      if (!mounted) return;
                       setState(() {});
                       if (context.mounted) Navigator.pop(context);
                     }

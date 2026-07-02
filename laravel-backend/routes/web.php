@@ -15,9 +15,9 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\PlaceController;
-use App\Http\Controllers\Admin\ReviewController;
-use App\Http\Controllers\Admin\AiCommandController;
-use App\Http\Controllers\Admin\SchedulerController;
+use App\Http\Controllers\Admin\EventController;
+use App\Http\Controllers\Admin\GuideController;
+use App\Http\Controllers\Admin\UserController;
 
 Route::get('/', function () {
     return redirect()->route('admin.login');
@@ -35,21 +35,19 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::delete('images/{id}', [PlaceController::class, 'deleteImage'])->name('images.delete');
         Route::post('images/{id}/cover', [PlaceController::class, 'setCoverImage'])->name('images.cover');
 
-        // Review Queue
-        Route::get('/reviews', [ReviewController::class, 'index'])->name('reviews.index');
-        Route::post('/places/{id}/approve', [ReviewController::class, 'approve'])->name('places.approve');
-        Route::post('/places/{id}/reject', [ReviewController::class, 'reject'])->name('places.reject');
 
-        // AI Command Center
-        Route::get('/ai-command', [AiCommandController::class, 'index'])->name('ai-command.index');
-        Route::post('/ai-command/discover', [AiCommandController::class, 'triggerDiscovery'])->name('ai.discover');
-        Route::post('/ai-command/intake', [AiCommandController::class, 'harvestIntake'])->name('ai.intake');
-        Route::post('/ai-command/vision-analyze', [AiCommandController::class, 'visionAnalyze'])->name('ai.vision-analyze');
-        Route::post('/ai-command/broadcast', [AiCommandController::class, 'emergencyBroadcast'])->name('ai.broadcast');
+        // Events CRUD
+        Route::resource('events', EventController::class);
 
-        // Job Scheduler & Backups
-        Route::get('/scheduler', [SchedulerController::class, 'index'])->name('scheduler.index');
-        Route::post('/scheduler/run/{id}', [SchedulerController::class, 'runNow'])->name('scheduler.run');
-        Route::post('/scheduler/backup', [SchedulerController::class, 'runBackup'])->name('scheduler.backup');
+        // Guide Moderation
+        Route::get('/guides', [GuideController::class, 'index'])->name('guides.index');
+        Route::get('/guides/{id}', [GuideController::class, 'show'])->name('guides.show');
+        Route::post('/guides/{id}/approve', [GuideController::class, 'approve'])->name('guides.approve');
+        Route::post('/guides/{id}/reject', [GuideController::class, 'reject'])->name('guides.reject');
+        Route::post('/guides/{id}/ban', [GuideController::class, 'ban'])->name('guides.ban');
+        Route::post('/guides/{id}/remove', [GuideController::class, 'remove'])->name('guides.remove');
+
+        // Users CRUD
+        Route::resource('users', UserController::class);
     });
 });

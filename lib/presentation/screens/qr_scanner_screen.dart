@@ -63,7 +63,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
 
       if (query.docs.isEmpty) {
         _showError("SESSION NOT FOUND OR CLOSED");
-        setState(() => _isProcessing = false);
+        if (mounted) setState(() => _isProcessing = false);
         return;
       }
 
@@ -76,7 +76,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
     } catch (e) {
       _showError("CONNECTION ERROR");
     } finally {
-      setState(() => _isProcessing = false);
+      if (mounted) setState(() => _isProcessing = false);
     }
   }
 

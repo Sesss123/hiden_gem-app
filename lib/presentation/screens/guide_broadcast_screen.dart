@@ -43,6 +43,7 @@ class _GuideBroadcastScreenState extends State<GuideBroadcastScreen> {
     await _broadcastRepo.sendBroadcast(message);
     
     _messageController.clear();
+    if (!mounted) return;
     setState(() => _isSending = false);
     
     if (mounted) {

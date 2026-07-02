@@ -69,14 +69,14 @@
             <a href="{{ route('admin.places.index') }}" class="text-sm font-medium hover:text-emerald-400 transition flex items-center gap-1.5">
                 <i class="fa-solid fa-map-location-dot"></i> Places
             </a>
-            <a href="{{ route('admin.reviews.index') }}" class="text-sm font-medium hover:text-amber-400 transition flex items-center gap-1.5">
-                <i class="fa-solid fa-clipboard-check"></i> Reviews
+            <a href="{{ route('admin.events.index') }}" class="text-sm font-medium hover:text-emerald-400 transition flex items-center gap-1.5">
+                <i class="fa-solid fa-calendar-days text-emerald-500"></i> Events
             </a>
-            <a href="{{ route('admin.ai-command.index') }}" class="text-sm font-medium hover:text-indigo-400 transition flex items-center gap-1.5">
-                <i class="fa-solid fa-brain"></i> AI Command
+            <a href="{{ route('admin.guides.index') }}" class="text-sm font-medium hover:text-amber-400 transition flex items-center gap-1.5">
+                <i class="fa-solid fa-user-tie text-amber-500"></i> Guides
             </a>
-            <a href="{{ route('admin.scheduler.index') }}" class="text-sm font-medium hover:text-cyan-400 transition flex items-center gap-1.5">
-                <i class="fa-solid fa-clock-rotate-left"></i> Automation
+            <a href="{{ route('admin.users.index') }}" class="text-sm font-medium hover:text-indigo-400 transition flex items-center gap-1.5">
+                <i class="fa-solid fa-users text-indigo-500"></i> Users
             </a>
             <a href="{{ route('admin.places.create') }}" class="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white px-3.5 py-1.5 rounded-lg text-xs font-semibold shadow-md shadow-emerald-900/30 transition duration-200 flex items-center gap-1.5 glow-effect">
                 <i class="fa-solid fa-plus"></i> Add Gem

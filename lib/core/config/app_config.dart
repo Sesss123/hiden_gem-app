@@ -73,6 +73,21 @@ class AppConfig {
 
   static const bool ragEnabled = true;
 
+  static const String sharedAesKey = String.fromEnvironment(
+    'SHARED_AES_KEY',
+    defaultValue: "DEFAULT_NON_PROD_AES_KEY",
+  );
+
+  static const String sharedHmacKey = String.fromEnvironment(
+    'SHARED_HMAC_KEY',
+    defaultValue: "DEFAULT_NON_PROD_HMAC_KEY",
+  );
+
+  static const String hmacExpirySecret = String.fromEnvironment(
+    'HMAC_EXPIRY_SECRET',
+    defaultValue: "DEFAULT_NON_PROD_EXPIRY_SECRET",
+  );
+
   static void validate() {
     // In production, missing keys will fail hard.
     // In debug mode, if developers explicitly pass `--dart-define=BYPASS_KEY_CHECKS=true`, we allow it,
@@ -91,6 +106,15 @@ class AppConfig {
       }
       if (vaultSignKey == "HIDDEN_GEMS_V1_STAGING_KEY_SHHH" || vaultSignKey == "TRIPME_V1_STAGING_KEY_SHHH") {
         throw AssertionError("CRITICAL: Must configure a valid VAULT_SIGN_KEY.");
+      }
+      if (sharedAesKey == "DEFAULT_NON_PROD_AES_KEY" || sharedAesKey == "uN7U8L4f3k8P8m9Qz2Wp5X7r9tBy1C3v5X7r9tBy1C3=") {
+        throw AssertionError("CRITICAL: Must configure a valid SHARED_AES_KEY.");
+      }
+      if (sharedHmacKey == "DEFAULT_NON_PROD_HMAC_KEY" || sharedHmacKey == "kP5v8N2m4Q9z1X3r7tBy9C1v3X5r7tBy9C1v3X5r7tB=") {
+        throw AssertionError("CRITICAL: Must configure a valid SHARED_HMAC_KEY.");
+      }
+      if (hmacExpirySecret == "DEFAULT_NON_PROD_EXPIRY_SECRET" || hmacExpirySecret == "ZENITH_EXPIRY_SIGN_KEY_2026") {
+        throw AssertionError("CRITICAL: Must configure a valid HMAC_EXPIRY_SECRET.");
       }
     }
   }
