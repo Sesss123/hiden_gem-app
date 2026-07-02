@@ -11,6 +11,7 @@ import '../../data/services/subscription_service.dart';
 import 'review_submission_screen.dart';
 import 'subscription_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../../core/utils/secure_logger.dart';
 
 class GuideReviewsScreen extends ConsumerStatefulWidget {
   final String guideId;

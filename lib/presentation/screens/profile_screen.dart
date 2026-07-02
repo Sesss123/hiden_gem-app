@@ -40,7 +40,6 @@ import 'package:hidden_gems_sl/presentation/screens/guide_reviews_screen.dart';
 import 'package:hidden_gems_sl/presentation/screens/incident_center_screen.dart';
 import 'package:hidden_gems_sl/presentation/screens/subscription_screen.dart';
 import 'package:hidden_gems_sl/presentation/screens/family_share_screen.dart';
-import 'package:hidden_gems_sl/presentation/screens/smart_match_screen.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
@@ -734,10 +733,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             onTap: () => Navigator.push(
                 context, MaterialPageRoute(builder: (_) => const FamilyShareScreen()))),
 
-        _tile(Icons.auto_awesome_mosaic_outlined, "Smart Matching",
-            iconColor: Colors.purple[400],
-            onTap: () => Navigator.push(
-                context, MaterialPageRoute(builder: (_) => const SmartMatchScreen()))),
 
         _tile(Icons.qr_code_scanner_rounded, "Scan Guide QR",
             onTap: () => Navigator.push(

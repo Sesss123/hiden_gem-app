@@ -40,6 +40,7 @@ Route::prefix('v1')->group(function () {
 
     // Place Sync API Routes (Protected by API Key & Rate Limiting)
     Route::prefix('places')->middleware([VerifyApiKey::class, 'throttle:60,1'])->group(function () {
+        Route::get('/', [PlaceSyncController::class, 'allPlaces']);
         Route::get('/check-version', [PlaceSyncController::class, 'checkVersion']);
         Route::get('/delta', [PlaceSyncController::class, 'delta']);
     });

@@ -6,6 +6,7 @@ import '../models/guide_profile.dart';
 import '../models/guide_status.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 /// [UserPreferenceService] — Hardened local profile cache.
 ///
@@ -222,24 +223,36 @@ class UserPreferenceService {
       );
       
       // Sync to Firestore if authenticated (Fix for Bug #13, #14)
-      if (FirebaseAuth.instance.currentUser != null) {
-        // Fire and forget, don't await. Awaiting here can hang the app indefinitely 
-        // if the device is offline or has a poor connection, because Firestore waits for server confirmation.
-        FirebaseFirestore.instance
-            .collection('users')
-            .doc(FirebaseAuth.instance.currentUser!.uid)
-            .set({
-          'bookmarkedPlaces': profile.bookmarkedPlaces,
-          'itineraryPlaceIds': profile.itineraryPlaceIds,
-        }, SetOptions(merge: true)).catchError((e) {
-          debugPrint('[UPS] Firestore sync failed: $e');
-        });
-      }
+      syncToFirestore();
 
       _isDirty = false;
       _lastFlush = DateTime.now();
     } catch (e) {
       debugPrint('[UPS] ❌ Flush to disk failed: $e');
+    }
+  }
+
+  /// Forces sync of the local profile configuration to Firestore if Firebase is ready and user is logged in
+  static Future<void> syncToFirestore() async {
+    final profile = _cachedProfile;
+    if (profile == null) return;
+
+    if (Firebase.apps.isNotEmpty) {
+      try {
+        final currentUser = FirebaseAuth.instance.currentUser;
+        if (currentUser != null) {
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(currentUser.uid)
+              .set({
+            'bookmarkedPlaces': profile.bookmarkedPlaces,
+            'itineraryPlaceIds': profile.itineraryPlaceIds,
+          }, SetOptions(merge: true));
+          debugPrint('[UPS] Local profile successfully synchronized to Firestore.');
+        }
+      } catch (e) {
+        debugPrint('[UPS] Firestore sync failed: $e');
+      }
     }
   }
 

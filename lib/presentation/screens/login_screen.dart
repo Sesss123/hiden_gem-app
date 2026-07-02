@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter/services.dart';
+import 'dart:ui';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/theme/oracle_ui_system.dart';
@@ -272,244 +273,258 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final primaryColor = Theme.of(context).colorScheme.primary;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      body: OracleUI.auraBackground(
-        child: SingleChildScrollView(
-          child: Container(
-            constraints: BoxConstraints(
-              minHeight: MediaQuery.of(context).size.height,
-            ),
-            padding: const EdgeInsets.symmetric(horizontal: 32),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const SizedBox(height: 80),
-                // Glowing Logo Portal
-                Hero(
-                  tag: 'app_logo',
-                  child: Container(
-                    padding: const EdgeInsets.all(4),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: primaryColor.withValues(alpha: 0.1),
-                          blurRadius: 40,
-                          spreadRadius: 10,
-                        )
-                      ],
-                    ),
-                    child: OracleUI.glassContainer(
-                      padding: const EdgeInsets.all(28),
-                      borderRadius: BorderRadius.circular(40),
-                      borderColor: primaryColor.withValues(alpha: 0.3),
+      body: SafeArea(
+        child: Center(
+          child: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const SizedBox(height: 16),
+                  Hero(
+                    tag: 'app_logo',
+                    child: Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: primaryColor.withOpacity(0.1),
+                        shape: BoxShape.circle,
+                      ),
                       child: Icon(
                         Icons.explore_rounded,
-                        size: 56,
+                        size: 52,
                         color: primaryColor,
                       ),
                     ),
-                  ),
-                ).animate(onPlay: (c) => c.repeat()).shimmer(duration: 4.seconds, color: Colors.white24),
-                
-                const SizedBox(height: 32),
-                
-                // Typography Matrix
-                RichText(
-                  text: TextSpan(
-                    style: GoogleFonts.outfit(fontSize: 42, fontWeight: FontWeight.w900, letterSpacing: -1),
-                    children: [
-                      TextSpan(text: "HiddenGems", style: TextStyle(color: AppTheme.textPrimary(context))),
-                      TextSpan(
-                        text: ".SL", 
-                        style: TextStyle(
-                          color: primaryColor,
-                        )
+                  ).animate().scale(duration: 500.ms, curve: Curves.easeOutBack),
+                  
+                  const SizedBox(height: 24),
+                  
+                  RichText(
+                    text: TextSpan(
+                      style: GoogleFonts.outfit(
+                        fontSize: 34, 
+                        fontWeight: FontWeight.w900, 
+                        letterSpacing: -0.5,
                       ),
-                    ],
-                  ),
-                ).animate().fadeIn(duration: 800.ms).slideY(begin: 0.2, curve: Curves.easeOutBack),
-                
-                const SizedBox(height: 8),
-                
-                Text(
-                  "SECURE NEURAL ACCESS REQUIRED",
-                  style: GoogleFonts.inter(
-                    fontSize: 10, 
-                    color: primaryColor.withValues(alpha: 0.4), 
-                    letterSpacing: 3,
-                    fontWeight: FontWeight.w900,
-                  ),
-                ).animate().fadeIn(duration: 800.ms, delay: 200.ms),
-                
-                const SizedBox(height: 48),
-                
-                // Login/Register Neural Matrix
-                OracleUI.premiumGlassCard(
-                  padding: const EdgeInsets.all(28),
-                  radius: BorderRadius.circular(32),
-                  child: AutofillGroup(
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          if (!_isLoginMode) ...[
+                      children: [
+                        TextSpan(text: "HiddenGems", style: TextStyle(color: AppTheme.textPrimary(context))),
+                        TextSpan(
+                          text: ".SL", 
+                          style: TextStyle(color: primaryColor),
+                        ),
+                      ],
+                    ),
+                  ).animate().fadeIn(duration: 500.ms),
+                  
+                  const SizedBox(height: 6),
+                  
+                  Text(
+                    "SECURE ACCESS REQUIRED",
+                    style: GoogleFonts.inter(
+                      fontSize: 10, 
+                      color: AppTheme.textSecondary(context).withOpacity(0.6), 
+                      letterSpacing: 2,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ).animate().fadeIn(duration: 500.ms, delay: 100.ms),
+                  
+                  const SizedBox(height: 32),
+                  
+                  Container(
+                    padding: const EdgeInsets.all(24),
+                    decoration: BoxDecoration(
+                      color: isDark ? Colors.grey[900]!.withOpacity(0.6) : Colors.white,
+                      borderRadius: BorderRadius.circular(24),
+                      border: Border.all(
+                        color: AppTheme.secondaryBorder(context),
+                        width: 1,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.04),
+                          blurRadius: 20,
+                          offset: const Offset(0, 8),
+                        ),
+                      ],
+                    ),
+                    child: AutofillGroup(
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            if (!_isLoginMode) ...[
+                              _buildTextField(
+                                controller: _nameController,
+                                label: "USER IDENTIFIER",
+                                icon: Icons.person_outline_rounded,
+                                autofillHints: [AutofillHints.name],
+                                validator: (v) => v!.isEmpty ? "Identifier required" : null,
+                              ),
+                              const SizedBox(height: 16),
+                            ],
                             _buildTextField(
-                              controller: _nameController,
-                              label: "USER IDENTIFIER",
-                              icon: Icons.person_outline_rounded,
-                              autofillHints: [AutofillHints.name],
-                              validator: (v) => v!.isEmpty ? "Identifier required" : null,
+                              controller: _emailController,
+                              label: "ORACLE ADDRESS (EMAIL)",
+                              icon: Icons.alternate_email_rounded,
+                              keyboardType: TextInputType.emailAddress,
+                              autofillHints: [AutofillHints.email],
+                              validator: (v) => !v!.contains("@") ? "Invalid address" : null,
                             ),
                             const SizedBox(height: 16),
-                          ],
-                          _buildTextField(
-                            controller: _emailController,
-                            label: "ORACLE ADDRESS (EMAIL)",
-                            icon: Icons.alternate_email_rounded,
-                            keyboardType: TextInputType.emailAddress,
-                            autofillHints: [AutofillHints.email],
-                            validator: (v) => !v!.contains("@") ? "Invalid address" : null,
-                          ),
-                          const SizedBox(height: 16),
-                          _buildTextField(
-                            controller: _passwordController,
-                            label: "ACCESS KEY",
-                            icon: Icons.security_rounded,
-                            isPassword: true,
-                            autofillHints: _isLoginMode ? [AutofillHints.password] : [AutofillHints.newPassword],
-                            validator: (v) => v!.length < 6 ? "Insufficient complexity" : null,
-                          ),
-                          if (_isLoginMode) ...[
-                            const SizedBox(height: 8),
-                            Align(
-                              alignment: Alignment.centerRight,
-                              child: TextButton(
-                                onPressed: _handleForgotPassword,
-                                style: TextButton.styleFrom(
-                                  padding: EdgeInsets.zero,
-                                  minimumSize: const Size(0, 32),
-                                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                ),
-                                child: Text(
-                                  "Forgot Access Key?",
-                                  style: GoogleFonts.inter(
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w600,
-                                    color: primaryColor.withValues(alpha: 0.8),
+                            _buildTextField(
+                              controller: _passwordController,
+                              label: "ACCESS KEY",
+                              icon: Icons.security_rounded,
+                              isPassword: true,
+                              autofillHints: _isLoginMode ? [AutofillHints.password] : [AutofillHints.newPassword],
+                              validator: (v) => v!.length < 6 ? "Insufficient complexity" : null,
+                            ),
+                            if (_isLoginMode) ...[
+                              const SizedBox(height: 8),
+                              Align(
+                                alignment: Alignment.centerRight,
+                                child: TextButton(
+                                  onPressed: _handleForgotPassword,
+                                  style: TextButton.styleFrom(
+                                    padding: EdgeInsets.zero,
+                                    minimumSize: const Size(0, 24),
+                                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                  ),
+                                  child: Text(
+                                    "Forgot Access Key?",
+                                    style: GoogleFonts.inter(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
+                                      color: primaryColor,
+                                    ),
                                   ),
                                 ),
                               ),
+                            ],
+                            const SizedBox(height: 24),
+                            
+                            SizedBox(
+                              width: double.infinity,
+                              height: 54,
+                              child: ElevatedButton(
+                                onPressed: _isLoading ? null : _handleSubmit,
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: primaryColor,
+                                  foregroundColor: Colors.white,
+                                  elevation: 0,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+                                ),
+                                child: _isLoading 
+                                    ? const SizedBox(
+                                        width: 22,
+                                        height: 22,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2.5,
+                                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                        ),
+                                      )
+                                    : Text(
+                                        _isLoginMode ? "INITIATE ACCESS" : "CREATE NEW IDENTITY",
+                                        style: GoogleFonts.inter(
+                                          fontWeight: FontWeight.w800, 
+                                          letterSpacing: 1, 
+                                          fontSize: 13, 
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            
+                            TextButton(
+                              onPressed: () {
+                                HapticFeedback.lightImpact();
+                                setState(() => _isLoginMode = !_isLoginMode);
+                              },
+                              style: TextButton.styleFrom(
+                                foregroundColor: AppTheme.textSecondary(context),
+                              ),
+                              child: Text(
+                                _isLoginMode ? "New explorer? Generate identity" : "Existing explorer? Validate access",
+                                style: GoogleFonts.inter(
+                                  fontSize: 12, 
+                                  fontWeight: FontWeight.w600,
+                                  decoration: TextDecoration.underline,
+                                  decorationColor: AppTheme.textSecondary(context).withOpacity(0.3),
+                                ),
+                              ),
                             ),
                           ],
-                          const SizedBox(height: 24),
-                          
-                          // Neural Portal Button
-                          SizedBox(
-                            width: double.infinity,
-                            height: 60,
-                            child: ElevatedButton(
-                              onPressed: _isLoading ? null : _handleSubmit,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: primaryColor,
-                                foregroundColor: Colors.black,
-                                elevation: 0,
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                                shadowColor: primaryColor.withValues(alpha: 0.5),
-                              ),
-                              child: _isLoading 
-                                  ? const ModernTracerIndicator()
-                                  : OracleUI.neonText(
-                                      _isLoginMode ? "INITIATE ACCESS" : "CREATE NEW IDENTITY",
-                                      style: GoogleFonts.inter(
-                                        fontWeight: FontWeight.w900, 
-                                        letterSpacing: 1.5, 
-                                        fontSize: 13, 
-                                        color: Colors.white,
-                                      ),
-                                      glowColor: Colors.transparent,
-                                    ),
-                            ),
-                          ),
-                          const SizedBox(height: 20),
-                          
-                          TextButton(
-                            onPressed: () {
-                              HapticFeedback.lightImpact();
-                              setState(() => _isLoginMode = !_isLoginMode);
-                            },
-                            style: TextButton.styleFrom(foregroundColor: AppTheme.textSecondary(context)),
-                            child: Text(
-                              _isLoginMode ? "New explore? Generate identity" : "Existing explorer? Validate access",
-                              style: GoogleFonts.inter(
-                                fontSize: 12, 
-                                fontWeight: FontWeight.w600,
-                                decoration: TextDecoration.underline,
-                                decorationColor: AppTheme.textSecondary(context).withValues(alpha: 0.3),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ).animate().fadeIn(duration: 800.ms, delay: 400.ms).slideY(begin: 0.1),
-                
-                const SizedBox(height: 32),
-                
-                Row(
-                  children: [
-                    Expanded(child: Divider(color: AppTheme.secondaryBorder(context))),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Text(
-                        "THIRD-PARTY AUTH", 
-                        style: GoogleFonts.inter(
-                          color: AppTheme.textSecondary(context).withValues(alpha: 0.5), 
-                          fontSize: 9, 
-                          fontWeight: FontWeight.w900, 
-                          letterSpacing: 2,
                         ),
                       ),
                     ),
-                    Expanded(child: Divider(color: AppTheme.secondaryBorder(context))),
-                  ],
-                ).animate().fadeIn(duration: 800.ms, delay: 600.ms),
-                
-                const SizedBox(height: 24),
-                
-                // Google Sign In (Zenith Gloss)
-                OracleUI.premiumGlassCard(
-                  padding: EdgeInsets.zero,
-                  radius: BorderRadius.circular(20),
-                  child: Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      onTap: _isLoading ? null : _handleGoogleSignIn,
-                      borderRadius: BorderRadius.circular(20),
-                      child: Container(
-                        height: 60,
-                        alignment: Alignment.center,
+                  ).animate().fadeIn(duration: 500.ms, delay: 150.ms),
+                  
+                  const SizedBox(height: 32),
+                  
+                  Row(
+                    children: [
+                      Expanded(child: Divider(color: AppTheme.secondaryBorder(context))),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: Text(
+                          "THIRD-PARTY AUTH", 
+                          style: GoogleFonts.inter(
+                            color: AppTheme.textSecondary(context).withOpacity(0.4), 
+                            fontSize: 9, 
+                            fontWeight: FontWeight.w800, 
+                            letterSpacing: 1.5,
+                          ),
+                        ),
+                      ),
+                      Expanded(child: Divider(color: AppTheme.secondaryBorder(context))),
+                    ],
+                  ).animate().fadeIn(duration: 500.ms, delay: 250.ms),
+                  
+                  const SizedBox(height: 20),
+                  
+                  Container(
+                    width: double.infinity,
+                    height: 54,
+                    decoration: BoxDecoration(
+                      color: isDark ? Colors.grey[900]!.withOpacity(0.6) : Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: AppTheme.secondaryBorder(context),
+                        width: 1,
+                      ),
+                    ),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: _isLoading ? null : _handleGoogleSignIn,
+                        borderRadius: BorderRadius.circular(16),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Container(
-                              width: 24,
-                              height: 24,
-                              decoration: const BoxDecoration(
-                                color: Colors.white,
+                              width: 22,
+                              height: 22,
+                              decoration: BoxDecoration(
+                                color: isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.05),
                                 shape: BoxShape.circle,
                               ),
                               alignment: Alignment.center,
                               child: Text(
                                 "G",
                                 style: GoogleFonts.outfit(
-                                  color: Colors.black,
+                                  color: AppTheme.textPrimary(context),
                                   fontWeight: FontWeight.w900,
-                                  fontSize: 16,
+                                  fontSize: 14,
                                 ),
                               ),
                             ),
@@ -517,20 +532,20 @@ class _LoginScreenState extends State<LoginScreen> {
                             Text(
                               "Continue with Google Account", 
                               style: GoogleFonts.inter(
-                                fontWeight: FontWeight.w700, 
-                                fontSize: 14,
-                                color: Colors.white70,
+                                fontWeight: FontWeight.bold, 
+                                fontSize: 13,
+                                color: AppTheme.textPrimary(context),
                               ),
                             ),
                           ],
                         ),
                       ),
                     ),
-                  ),
-                ).animate().fadeIn(duration: 800.ms, delay: 800.ms),
-                
-                const SizedBox(height: 60),
-              ],
+                  ).animate().fadeIn(duration: 500.ms, delay: 350.ms),
+                  
+                  const SizedBox(height: 24),
+                ],
+              ),
             ),
           ),
         ),
@@ -548,6 +563,7 @@ class _LoginScreenState extends State<LoginScreen> {
     String? Function(String?)? validator,
   }) {
     final primaryColor = Theme.of(context).colorScheme.primary;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return TextFormField(
       controller: controller,
@@ -555,33 +571,42 @@ class _LoginScreenState extends State<LoginScreen> {
       keyboardType: keyboardType,
       autofillHints: autofillHints,
       validator: validator,
-      style: GoogleFonts.inter(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 14),
+      style: GoogleFonts.inter(color: AppTheme.textPrimary(context), fontWeight: FontWeight.w600, fontSize: 14),
       cursorColor: primaryColor,
       decoration: InputDecoration(
         labelText: label,
-        labelStyle: GoogleFonts.inter(color: Colors.white24, fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 1),
-        prefixIcon: Icon(icon, color: primaryColor.withValues(alpha: 0.5), size: 18),
+        labelStyle: GoogleFonts.inter(
+          color: AppTheme.textSecondary(context).withOpacity(0.6), 
+          fontSize: 11, 
+          fontWeight: FontWeight.w700, 
+          letterSpacing: 0.5,
+        ),
+        prefixIcon: Icon(icon, color: primaryColor.withOpacity(0.7), size: 18),
         floatingLabelBehavior: FloatingLabelBehavior.always,
-        contentPadding: const EdgeInsets.symmetric(vertical: 24, horizontal: 24),
+        contentPadding: const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(20),
-          borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.03)),
+          borderRadius: BorderRadius.circular(14),
+          borderSide: BorderSide(color: AppTheme.secondaryBorder(context)),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(20),
-          borderSide: BorderSide(color: primaryColor.withValues(alpha: 0.3), width: 1.5),
+          borderRadius: BorderRadius.circular(14),
+          borderSide: BorderSide(color: primaryColor.withOpacity(0.7), width: 1.5),
         ),
         errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(20),
-          borderSide: BorderSide(color: Colors.redAccent.withValues(alpha: 0.2)),
+          borderRadius: BorderRadius.circular(14),
+          borderSide: BorderSide(color: Colors.redAccent.withOpacity(0.4)),
         ),
         focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(20),
-          borderSide: BorderSide(color: Colors.redAccent.withValues(alpha: 0.4)),
+          borderRadius: BorderRadius.circular(14),
+          borderSide: BorderSide(color: Colors.redAccent.withOpacity(0.6)),
         ),
-        errorStyle: GoogleFonts.inter(color: Colors.redAccent.withValues(alpha: 0.6), fontSize: 10, fontWeight: FontWeight.bold),
+        errorStyle: GoogleFonts.inter(
+          color: Colors.redAccent.withOpacity(0.8), 
+          fontSize: 10, 
+          fontWeight: FontWeight.bold,
+        ),
         filled: true,
-        fillColor: Colors.white.withValues(alpha: 0.01),
+        fillColor: isDark ? Colors.white.withOpacity(0.02) : Colors.black.withOpacity(0.02),
       ),
     );
   }

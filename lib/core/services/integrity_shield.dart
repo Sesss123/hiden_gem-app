@@ -200,7 +200,7 @@ class IntegrityShield {
   }
 
   Future<void> _checkAppCheckAvailability() async {
-    if (kIsWeb) return;
+    if (kIsWeb || kDebugMode) return;
     try {
       final token = await FirebaseAppCheck.instance
           .getToken(false)

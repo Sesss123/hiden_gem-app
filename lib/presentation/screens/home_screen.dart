@@ -21,8 +21,6 @@ import 'place_details_screen.dart';
 import '../../data/datasources/live_events_service.dart';
 import '../../data/models/event_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'guide_marketplace_screen.dart';
-import 'smart_match_screen.dart';
 import 'savor_lanka_screen.dart';
 import '../../features/ar_video/screens/ar_video_library_screen.dart';
 import '../widgets/banner_ad_widget.dart';
@@ -296,24 +294,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           () {
             Haptics.medium();
             Navigator.push(context, MaterialPageRoute(builder: (context) => const SavorLankaScreen()));
-          },
-        ),
-        _buildQuickActionItem(
-          "Smart Match",
-          Icons.auto_awesome_outlined,
-          Colors.purpleAccent,
-          () {
-            Haptics.medium();
-            Navigator.push(context, MaterialPageRoute(builder: (context) => const SmartMatchScreen()));
-          },
-        ),
-        _buildQuickActionItem(
-          "Marketplace",
-          Icons.storefront_outlined,
-          Theme.of(context).colorScheme.primary,
-          () {
-            Haptics.medium();
-            Navigator.push(context, MaterialPageRoute(builder: (context) => const GuideMarketplaceScreen()));
           },
         ),
         _buildQuickActionItem(

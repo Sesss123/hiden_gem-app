@@ -7,6 +7,8 @@ plugins {
 import java.util.Properties
 import java.io.FileInputStream
 
+layout.buildDirectory.set(file("../../build/app"))
+
 android {
     namespace = "com.hidden.gems.hidden_gems_sl"
     compileSdk = 36

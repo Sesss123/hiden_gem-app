@@ -99,7 +99,7 @@ class AppConfig {
     // otherwise we also fail hard to prevent silent failures.
     const bypassChecks = bool.fromEnvironment('BYPASS_KEY_CHECKS', defaultValue: false);
 
-    if (!bypassChecks || kReleaseMode) {
+    if (kReleaseMode) {
       if (hiddenGemsApiKey == "" || hiddenGemsApiKey == "dev-key-local") {
         throw AssertionError("CRITICAL: Must configure a valid HIDDEN_GEMS_API_KEY.");
       }

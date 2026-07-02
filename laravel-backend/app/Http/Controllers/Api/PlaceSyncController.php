@@ -64,4 +64,22 @@ class PlaceSyncController extends Controller
             'deleted_ids' => $deletedIds,
         ]);
     }
+
+    /**
+     * GET /api/v1/places
+     * Returns all active places formatted as PlaceResources.
+     */
+    public function allPlaces(Request $request)
+    {
+        $places = Place::with('images')
+            ->where('is_deleted', false)
+            ->get();
+
+        $formatted = [];
+        foreach ($places as $place) {
+            $formatted[] = (new \App\Http\Resources\PlaceResource($place))->resolve();
+        }
+
+        return response()->json($formatted);
+    }
 }

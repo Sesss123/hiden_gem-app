@@ -21,7 +21,6 @@ import '../widgets/kinetic_timeline_view.dart';
 import 'map_route_screen.dart';
 import 'budget_tracker_screen.dart';
 
-import 'smart_match_screen.dart';
 import 'package:hidden_gems_sl/l10n/app_localizations.dart';
 import 'dart:ui';
 import '../../core/analytics/analytics_service.dart';
@@ -246,13 +245,6 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
                           _tabController.animateTo(3);
                         }
                       },
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.person_search, color: Colors.amberAccent),
-                      onPressed: () => Navigator.push(
-                        context, 
-                        MaterialPageRoute(builder: (context) => const SmartMatchScreen())
-                      ),
                     ),
                     SizedBox(width: 8),
                   ],

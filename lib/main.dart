@@ -253,6 +253,13 @@ Future<InitializationResult> performInitialization() async {
         firebaseStatus = true;
         debugPrint("Firebase initialized successfully.");
 
+        // Sync local profile configuration to Firestore now that Firebase is active (Fix silent migration data loss)
+        try {
+          await UserPreferenceService.syncToFirestore();
+        } catch (e) {
+          debugPrint("Failed to sync profile to Firestore at startup: $e");
+        }
+
         // 🛡️ ZENITH STRESS DEFENSE: FINAL HARDENING (Points 11 & 12)
         // Initialize forensic shield and remote emergency controls
         final shield = IntegrityShield();

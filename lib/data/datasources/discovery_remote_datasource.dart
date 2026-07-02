@@ -36,8 +36,9 @@ class DiscoveryRemoteDataSource {
   Future<String> fetchPlacesRest() async {
     final securityHeaders = await VaultService.getSecurityHeaders('/places');
     final response = await _client.get(
-      Uri.parse('${AppConfig.pythonUrl}/places'),
+      Uri.parse('${AppConfig.laravelUrl}/places'),
       headers: {
+        'X-API-KEY': AppConfig.hiddenGemsApiKey,
         'X-HiddenGems-Key': AppConfig.hiddenGemsApiKey,
         ...securityHeaders,
       },
