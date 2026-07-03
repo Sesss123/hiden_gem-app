@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:hidden_gems_sl/l10n/app_localizations.dart';
@@ -956,6 +955,7 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
           ),
         ],
       ),
+    );
   }
 
   Widget _buildHorizontalCards(
@@ -1157,7 +1157,8 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
                 ),
               ),
             ),
-          );
+          ),
+        );
         },
       ),
     );

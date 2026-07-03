@@ -139,7 +139,8 @@ async def websocket_food_scan(websocket: WebSocket):
     authenticated = False
     
     # 1. Verify Internal Bridge Key
-    if internal_key and internal_key == os.getenv("INTERNAL_BRIDGE_KEY", "hg_internal_bridge_secret_2026"):
+    bridge_key = os.getenv("INTERNAL_BRIDGE_KEY", os.getenv("INTERNAL_API_KEY"))
+    if internal_key and bridge_key and internal_key == bridge_key:
         authenticated = True
         logger.info("[WS/Scan] Internal bridge authentication successful.")
     # 2. Verify Firebase Token

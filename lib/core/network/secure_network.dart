@@ -53,11 +53,10 @@ class SecureNetworkOverrides extends HttpOverrides {
 
     // Setup standard client certificate validation rules
     standardClient.badCertificateCallback = (X509Certificate cert, String host, int port) {
-      if (kReleaseMode) {
-        debugPrint('[Security] 🚨 Blocked invalid SSL for $host in release mode.');
-        return false; // REJECT
+      if (kDebugMode) {
+        debugPrint('[Security] WARNING: Invalid SSL certificate encountered for $host:$port.');
       }
-      return false;
+      return false; // Strictly reject invalid SSL certificates in all environments
     };
 
     return SecureHttpClientWrapper(standardClient, pinnedClient, _pinnedHosts);

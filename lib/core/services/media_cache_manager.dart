@@ -43,7 +43,7 @@ class ValidatedResponse implements FileServiceResponse {
   int? get contentLength => _inner.contentLength;
 
   @override
-  DateTime get validTill => _inner.validTill ?? DateTime.now().add(const Duration(hours: 1));
+  DateTime get validTill => _inner.validTill;
 
   @override
   String? get eTag => _inner.eTag;

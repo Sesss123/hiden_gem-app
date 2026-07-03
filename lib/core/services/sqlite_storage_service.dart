@@ -50,6 +50,10 @@ class SqliteStorageService {
     return await openDatabase(
       path,
       version: 1,
+      onConfigure: (Database db) async {
+        await db.execute('PRAGMA foreign_keys = ON;');
+        await db.execute('PRAGMA journal_mode = WAL;');
+      },
       onCreate: (Database db, int version) async {
         await db.execute('''
           CREATE TABLE IF NOT EXISTS sync_counter (
@@ -201,29 +205,31 @@ class SqliteStorageService {
     });
   }
 
-  Future<List<DiscoveryPlace>> getActivePlaces() async {
-    final db = await database;
-    final List<Map<String, dynamic>> rows = await db.query(
-      'places',
-      where: 'is_deleted = ?',
-      whereArgs: [0],
-    );
-    
-    final List<DiscoveryPlace> places = [];
-    for (final row in rows) {
-      try {
-        final rawJson = row['raw_json'];
-        if (rawJson is String && rawJson.isNotEmpty) {
-          final Map<String, dynamic> data = jsonDecode(rawJson);
-          places.add(DiscoveryPlace.fromJson(data));
-        } else {
-          SecureLogger.warning("Corrupted or empty raw_json in SQLite place row: ${row['id']}");
+  Future<List<DiscoveryPlace>> getActivePlaces() {
+    return _enqueueWrite(() async {
+      final db = await database;
+      final List<Map<String, dynamic>> rows = await db.query(
+        'places',
+        where: 'is_deleted = ?',
+        whereArgs: [0],
+      );
+      
+      final List<DiscoveryPlace> places = [];
+      for (final row in rows) {
+        try {
+          final rawJson = row['raw_json'];
+          if (rawJson is String && rawJson.isNotEmpty) {
+            final Map<String, dynamic> data = jsonDecode(rawJson);
+            places.add(DiscoveryPlace.fromJson(data));
+          } else {
+            SecureLogger.warning("Corrupted or empty raw_json in SQLite place row: ${row['id']}");
+          }
+        } catch (e) {
+          SecureLogger.error("Failed to decode SQLite place row: ${row['id']}", e);
         }
-      } catch (e) {
-        SecureLogger.error("Failed to decode SQLite place row: ${row['id']}", e);
       }
-    }
-    return places;
+      return places;
+    });
   }
 
   Future<void> clearDatabase() {

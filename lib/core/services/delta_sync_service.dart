@@ -8,6 +8,7 @@ import '../../data/datasources/discovery_local_datasource.dart';
 import '../../core/utils/secure_logger.dart';
 import 'sqlite_storage_service.dart';
 import '../config/app_config.dart';
+import '../network/secure_http_client.dart';
 
 class DeltaParseResult {
   final int newSyncVersion;
@@ -64,6 +65,7 @@ class DeltaSyncService {
 
   final SqliteStorageService _sqliteService = SqliteStorageService();
   final DiscoveryLocalDataSource _localDataSource = DiscoveryLocalDataSource();
+  final SecureHttpClient _client = SecureHttpClient(http.Client());
 
   // BUG-055: Synchronization lock — prevents parallel sync executions on double-tap
   bool _isSyncing = false;
@@ -88,7 +90,7 @@ class DeltaSyncService {
       final Uri url = Uri.parse('$baseUrl/check-version');
       final timeoutDuration = await _getDynamicTimeout();
 
-      final http.Response response = await http.get(
+      final http.Response response = await _client.get(
         url,
         headers: {
           'Accept': 'application/json',
@@ -154,7 +156,7 @@ class DeltaSyncService {
         final Uri url = Uri.parse('$baseUrl/delta?since_version=$currentVersion&limit=100');
         final timeoutDuration = await _getDynamicTimeout();
 
-        final http.Response response = await http.get(
+        final http.Response response = await _client.get(
           url,
           headers: {
             'Accept': 'application/json',

@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token", auto_error=False)
 
 # Internal bridge secret (Must be set in environment)
-INTERNAL_BRIDGE_KEY = os.getenv("INTERNAL_API_KEY")
+INTERNAL_BRIDGE_KEY = os.getenv("INTERNAL_BRIDGE_KEY", os.getenv("INTERNAL_API_KEY"))
 
 async def verify_internal_key(request: Request):
     """
@@ -26,7 +26,7 @@ async def verify_internal_key(request: Request):
     """
     key = request.headers.get("X-Admin-Internal-Key")
     if not INTERNAL_BRIDGE_KEY:
-        logger.error("🛑 CRITICAL: INTERNAL_API_KEY is not set in environment.")
+        logger.error("🛑 CRITICAL: INTERNAL_BRIDGE_KEY is not set in environment.")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="System security misconfiguration."

@@ -38,7 +38,8 @@ service cloud.firestore {
                             'role', 'isPremium', 'isBanned', 'expiryDate', 'premiumPlan',
                             'isFlagged', 'flagReason', 'flaggedAt',
                             'premiumRevokedAt', 'premiumRevokedReason',
-                            'reviewCount', 'ratingAverage', 'ratingRecalcNeededAt'
+                            'reviewCount', 'ratingAverage', 'ratingRecalcNeededAt',
+                            'tier', 'dailyAiScans', 'scanQuotaResetAt', 'tokensUsed', 'aiQuotaLimit'
                           ])) ||
                        isAdmin();
       allow delete: if isAdmin();

@@ -290,7 +290,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: primaryColor.withOpacity(0.1),
+                        color: primaryColor.withValues(alpha: 0.1),
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
@@ -326,7 +326,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     "SECURE ACCESS REQUIRED",
                     style: GoogleFonts.inter(
                       fontSize: 10, 
-                      color: AppTheme.textSecondary(context).withOpacity(0.6), 
+                      color: AppTheme.textSecondary(context).withValues(alpha: 0.6), 
                       letterSpacing: 2,
                       fontWeight: FontWeight.w800,
                     ),
@@ -337,7 +337,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   Container(
                     padding: const EdgeInsets.all(24),
                     decoration: BoxDecoration(
-                      color: isDark ? Colors.grey[900]!.withOpacity(0.6) : Colors.white,
+                      color: isDark ? Colors.grey[900]!.withValues(alpha: 0.6) : Colors.white,
                       borderRadius: BorderRadius.circular(24),
                       border: Border.all(
                         color: AppTheme.secondaryBorder(context),
@@ -345,7 +345,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.04),
+                          color: Colors.black.withValues(alpha: 0.04),
                           blurRadius: 20,
                           offset: const Offset(0, 8),
                         ),
@@ -457,7 +457,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   fontSize: 12, 
                                   fontWeight: FontWeight.w600,
                                   decoration: TextDecoration.underline,
-                                  decorationColor: AppTheme.textSecondary(context).withOpacity(0.3),
+                                  decorationColor: AppTheme.textSecondary(context).withValues(alpha: 0.3),
                                 ),
                               ),
                             ),
@@ -477,7 +477,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         child: Text(
                           "THIRD-PARTY AUTH", 
                           style: GoogleFonts.inter(
-                            color: AppTheme.textSecondary(context).withOpacity(0.4), 
+                            color: AppTheme.textSecondary(context).withValues(alpha: 0.4), 
                             fontSize: 9, 
                             fontWeight: FontWeight.w800, 
                             letterSpacing: 1.5,
@@ -494,7 +494,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     width: double.infinity,
                     height: 54,
                     decoration: BoxDecoration(
-                      color: isDark ? Colors.grey[900]!.withOpacity(0.6) : Colors.white,
+                      color: isDark ? Colors.grey[900]!.withValues(alpha: 0.6) : Colors.white,
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
                         color: AppTheme.secondaryBorder(context),
@@ -513,7 +513,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               width: 22,
                               height: 22,
                               decoration: BoxDecoration(
-                                color: isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.05),
+                                color: isDark ? Colors.white.withValues(alpha: 0.1) : Colors.black.withValues(alpha: 0.05),
                                 shape: BoxShape.circle,
                               ),
                               alignment: Alignment.center,
@@ -547,8 +547,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
         ),
-      ),
-    );
+      );
   }
 
   Widget _buildTextField({
@@ -574,12 +573,12 @@ class _LoginScreenState extends State<LoginScreen> {
       decoration: InputDecoration(
         labelText: label,
         labelStyle: GoogleFonts.inter(
-          color: AppTheme.textSecondary(context).withOpacity(0.6), 
+          color: AppTheme.textSecondary(context).withValues(alpha: 0.6), 
           fontSize: 11, 
           fontWeight: FontWeight.w700, 
           letterSpacing: 0.5,
         ),
-        prefixIcon: Icon(icon, color: primaryColor.withOpacity(0.7), size: 18),
+        prefixIcon: Icon(icon, color: primaryColor.withValues(alpha: 0.7), size: 18),
         floatingLabelBehavior: FloatingLabelBehavior.always,
         contentPadding: const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
         enabledBorder: OutlineInputBorder(
@@ -588,23 +587,23 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
-          borderSide: BorderSide(color: primaryColor.withOpacity(0.7), width: 1.5),
+          borderSide: BorderSide(color: primaryColor.withValues(alpha: 0.7), width: 1.5),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
-          borderSide: BorderSide(color: Colors.redAccent.withOpacity(0.4)),
+          borderSide: BorderSide(color: Colors.redAccent.withValues(alpha: 0.4)),
         ),
         focusedErrorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
-          borderSide: BorderSide(color: Colors.redAccent.withOpacity(0.6)),
+          borderSide: BorderSide(color: Colors.redAccent.withValues(alpha: 0.6)),
         ),
         errorStyle: GoogleFonts.inter(
-          color: Colors.redAccent.withOpacity(0.8), 
+          color: Colors.redAccent.withValues(alpha: 0.8), 
           fontSize: 10, 
           fontWeight: FontWeight.bold,
         ),
         filled: true,
-        fillColor: isDark ? Colors.white.withOpacity(0.02) : Colors.black.withOpacity(0.02),
+        fillColor: isDark ? Colors.white.withValues(alpha: 0.02) : Colors.black.withValues(alpha: 0.02),
       ),
     );
   }

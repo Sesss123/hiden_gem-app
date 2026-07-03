@@ -76,6 +76,9 @@ async def add_place(
     lng: str = Form(""),
     user_context=Depends(get_current_user),
 ):
+    if not user_context.get("is_authenticated"):
+        raise HTTPException(status_code=401, detail="Authentication required to submit places.")
+
     db = await get_mongo_db()
     
     # Duplicate check
@@ -96,6 +99,7 @@ async def add_place(
         "lat": float(lat) if lat else None,
         "lng": float(lng) if lng else None,
         "status": "pending_review",
+        "submitted_by": user_context.get("uid"),
         "created_at": now,
         "updated_at": now,
         "images": []
@@ -106,6 +110,9 @@ async def add_place(
 
 @router.patch("/places/{place_id}")
 async def update_place(place_id: str, request: Request, user_context=Depends(get_current_user)):
+    if not user_context.get("is_authenticated"):
+        raise HTTPException(status_code=401, detail="Authentication required to modify places.")
+        
     data = await request.json()
     db = await get_mongo_db()
     
@@ -113,7 +120,15 @@ async def update_place(place_id: str, request: Request, user_context=Depends(get
     if ObjectId.is_valid(place_id):
         query["$or"].append({"_id": ObjectId(place_id)})
 
-    update_data = {k: v for k, v in data.items() if k != "id" and k != "_id"}
+    role = user_context.get("role", "user")
+    allowed_fields = {"name", "description", "lat", "lng", "category_id", "district_id"}
+    if role == "admin":
+        allowed_fields.update({"status", "country", "is_deleted"})
+        
+    update_data = {k: v for k, v in data.items() if k in allowed_fields}
+    if not update_data:
+        raise HTTPException(status_code=400, detail="No valid fields provided for update.")
+        
     update_data["updated_at"] = datetime.utcnow()
 
     result = await db.places.update_one(query, {"$set": update_data})

@@ -31,11 +31,11 @@ class PlaceSyncController extends Controller
         // Capped and hardcoded to 100 max per request to avoid memory exhaustion (BUG-046)
         $limit = 100;
 
-        $places = Place::with('images')
-            ->where('sync_version', '>', $sinceVersion)
-            ->orderBy('sync_version', 'asc')
-            ->limit($limit)
-            ->get();
+        $query = Place::with('images')->where('sync_version', '>', $sinceVersion);
+        if ($sinceVersion == 0) {
+            $query->where('is_deleted', false);
+        }
+        $places = $query->orderBy('sync_version', 'asc')->limit($limit)->get();
 
         $upsertPlaces = [];
         $deletedIds = [];

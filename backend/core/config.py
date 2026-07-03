@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # --- Security ---
-INTERNAL_BRIDGE_KEY = os.getenv("INTERNAL_API_KEY")
+INTERNAL_BRIDGE_KEY = os.getenv("INTERNAL_BRIDGE_KEY", os.getenv("INTERNAL_API_KEY"))
 API_URL = os.getenv("API_URL", "http://localhost:8000")
 
 # --- AI Models ---

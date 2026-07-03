@@ -25,9 +25,11 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 // v1 API Endpoints
 Route::prefix('v1')->group(function () {
-    // Public Auth Routes
-    Route::post('/auth/register', [AuthController::class, 'register']);
-    Route::post('/auth/login', [AuthController::class, 'login']);
+    // Public Auth Routes (Rate limited to prevent brute force attacks)
+    Route::middleware('throttle:5,1')->group(function () {
+        Route::post('/auth/register', [AuthController::class, 'register']);
+        Route::post('/auth/login', [AuthController::class, 'login']);
+    });
 
     // Protected Auth & Wishlist Routes (Require Sanctum Bearer Token)
     Route::middleware('auth:sanctum')->group(function () {
@@ -45,30 +47,35 @@ Route::prefix('v1')->group(function () {
         Route::get('/delta', [PlaceSyncController::class, 'delta']);
     });
 
-    // AI Subsystem Proxy Route (Routes Flutter AI requests to Python FastAPI)
-    Route::post('/ai/plan-itinerary', function (Request $request) {
-        $pythonUrl = env('PYTHON_BACKEND_URL', 'http://localhost:8000');
-        try {
-            $response = \Illuminate\Support\Facades\Http::timeout(30)
-                ->post("{$pythonUrl}/api/ai/plan-itinerary", $request->all());
-            return response($response->body(), $response->status())
-                ->header('Content-Type', 'application/json');
-        } catch (\Exception $e) {
-            return response()->json(['error' => 'AI Subsystem unavailable', 'details' => $e->getMessage()], 503);
-        }
-    });
+    // AI Subsystem Proxy Routes (Protected by Sanctum Auth, API Key, and Throttling)
+    Route::middleware(['auth:sanctum', VerifyApiKey::class, 'throttle:30,1'])->group(function () {
+        Route::post('/ai/plan-itinerary', function (Request $request) {
+            $pythonUrl = env('PYTHON_BACKEND_URL', 'http://localhost:8000');
+            $internalKey = env('INTERNAL_BRIDGE_KEY', '');
+            try {
+                $response = \Illuminate\Support\Facades\Http::timeout(30)
+                    ->withHeaders(['X-Admin-Internal-Key' => $internalKey])
+                    ->post("{$pythonUrl}/api/ai/plan-itinerary", $request->all());
+                return response($response->body(), $response->status())
+                    ->header('Content-Type', 'application/json');
+            } catch (\Exception $e) {
+                return response()->json(['error' => 'AI Subsystem unavailable', 'details' => $e->getMessage()], 503);
+            }
+        });
 
-    // AI Recommendations Proxy Route (Routes Flutter Discovery AI requests to Python FastAPI)
-    Route::post('/ai/recommendations', function (Request $request) {
-        $pythonUrl = env('PYTHON_BACKEND_URL', 'http://localhost:8000');
-        try {
-            $response = \Illuminate\Support\Facades\Http::timeout(15)
-                ->post("{$pythonUrl}/api/ai/recommendations", $request->all());
-            return response($response->body(), $response->status())
-                ->header('Content-Type', 'application/json');
-        } catch (\Exception $e) {
-            return response()->json(['error' => 'AI Recommendations unavailable', 'details' => $e->getMessage()], 503);
-        }
+        Route::post('/ai/recommendations', function (Request $request) {
+            $pythonUrl = env('PYTHON_BACKEND_URL', 'http://localhost:8000');
+            $internalKey = env('INTERNAL_BRIDGE_KEY', '');
+            try {
+                $response = \Illuminate\Support\Facades\Http::timeout(15)
+                    ->withHeaders(['X-Admin-Internal-Key' => $internalKey])
+                    ->post("{$pythonUrl}/api/ai/recommendations", $request->all());
+                return response($response->body(), $response->status())
+                    ->header('Content-Type', 'application/json');
+            } catch (\Exception $e) {
+                return response()->json(['error' => 'AI Recommendations unavailable', 'details' => $e->getMessage()], 503);
+            }
+        });
     });
 });
 
