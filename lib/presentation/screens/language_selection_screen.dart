@@ -223,8 +223,7 @@ class LanguageSelectionScreen extends ConsumerWidget {
                     Text(
                       label,
                       style: locale.languageCode == 'si'
-                          ? const TextStyle(
-                              fontFamily: 'OutfittedSinhala',
+                          ? GoogleFonts.notoSansSinhala(
                               fontWeight: FontWeight.w800,
                               fontSize: 16,
                               color: Colors.black87,
@@ -240,8 +239,7 @@ class LanguageSelectionScreen extends ConsumerWidget {
                     Text(
                       subLabel,
                       style: locale.languageCode == 'si'
-                          ? const TextStyle(
-                              fontFamily: 'OutfittedSinhala',
+                          ? GoogleFonts.notoSansSinhala(
                               fontSize: 12,
                               fontWeight: FontWeight.w500,
                               color: Colors.black54,

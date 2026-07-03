@@ -1,12 +1,17 @@
 import os
 import uuid
 import shutil
+import logging
 from PIL import Image
-from fastapi import UploadFile
+from fastapi import UploadFile, HTTPException
+
+logger = logging.getLogger(__name__)
 
 UPLOAD_DIR = "uploads"
 THUMB_DIR = os.path.join(UPLOAD_DIR, "thumbnails")
 os.makedirs(THUMB_DIR, exist_ok=True)
+
+ALLOWED_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp", ".gif"}
 
 def get_absolute_url(rel_path: str, base_url: str = None) -> str:
     """Converts a relative path to an absolute URL."""
@@ -24,9 +29,12 @@ def get_absolute_url(rel_path: str, base_url: str = None) -> str:
     return f"{api_url.rstrip('/')}/{rel_path.lstrip('/')}"
 
 def process_image(file: UploadFile, place_id: str, index: int):
-    # original path
-    ext = os.path.splitext(file.filename)[1]
-    filename = f"{place_id}_{index}{ext}"
+    ext = os.path.splitext(file.filename or "")[1].lower()
+    if ext not in ALLOWED_EXTENSIONS:
+        raise HTTPException(status_code=400, detail="Unsupported image file format.")
+
+    file_uuid = str(uuid.uuid4())
+    filename = f"{file_uuid}{ext}"
     rel_path = os.path.join(UPLOAD_DIR, filename)
     abs_path = os.path.join(os.getcwd(), rel_path)
     
@@ -34,14 +42,17 @@ def process_image(file: UploadFile, place_id: str, index: int):
         shutil.copyfileobj(file.file, buffer)
     
     # thumbnail
-    thumb_filename = f"{place_id}_{index}_thumb.jpg"
+    thumb_filename = f"{file_uuid}_thumb.jpg"
     thumb_rel = os.path.join("uploads", "thumbnails", thumb_filename)
     thumb_abs = os.path.join(os.getcwd(), thumb_rel)
     
     try:
         with Image.open(abs_path) as img:
+            img.verify()  # Verify image integrity
+        with Image.open(abs_path) as img:
             img.convert('RGB').save(thumb_abs, "JPEG", quality=80, optimize=True)
-    except:
+    except Exception as e:
+        logger.warning(f"Thumbnail generation or image verification failed for {filename}: {e}")
         thumb_rel = rel_path # fallback
         
     # Return absolute URLs as well

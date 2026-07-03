@@ -661,18 +661,21 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
           border: Border.all(color: Colors.white10),
         ),
         padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text("SELECT VEHICLE", style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
-            const SizedBox(height: 24),
-              ..._vehicles.map((v) => ListTile(
-                leading: const Icon(Icons.garage_rounded, color: Colors.orangeAccent),
-                title: Text(v.type, style: GoogleFonts.outfit(color: Colors.white)),
-                subtitle: Text(v.vehicleNumber, style: GoogleFonts.inter(color: Colors.white38)),
-                onTap: () => Navigator.pop(context, v),
-              )),
-          ],
+        child: Material(
+          type: MaterialType.transparency,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text("SELECT VEHICLE", style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
+              const SizedBox(height: 24),
+                ..._vehicles.map((v) => ListTile(
+                  leading: const Icon(Icons.garage_rounded, color: Colors.orangeAccent),
+                  title: Text(v.type, style: GoogleFonts.outfit(color: Colors.white)),
+                  subtitle: Text(v.vehicleNumber, style: GoogleFonts.inter(color: Colors.white38)),
+                  onTap: () => Navigator.pop(context, v),
+                )),
+            ],
+          ),
         ),
       ),
     );

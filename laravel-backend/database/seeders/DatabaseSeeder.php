@@ -14,6 +14,9 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
+        // Seed Places (Fix BUG-R16)
+        $this->call(PlaceSeeder::class);
+
         // Admin user (if not exists)
         $admin = \App\Models\User::firstOrCreate(
             ['email' => 'admin@hiddengemssl.com'],

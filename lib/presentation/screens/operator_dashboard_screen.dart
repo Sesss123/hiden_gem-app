@@ -349,13 +349,16 @@ class _OperatorDashboardScreenState extends ConsumerState<OperatorDashboardScree
     return OracleUI.glassContainer(
       margin: const EdgeInsets.only(bottom: 16),
       borderColor: color.withValues(alpha: 0.3),
-      child: ListTile(
-        title: Text(incident.title, style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold)),
-        subtitle: Text(incident.description, maxLines: 1, overflow: TextOverflow.ellipsis, style: GoogleFonts.inter(color: Colors.white38, fontSize: 11)),
-        trailing: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-          decoration: BoxDecoration(color: color.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(8)),
-          child: Text(incident.severity.toUpperCase(), style: TextStyle(color: color, fontSize: 10, fontWeight: FontWeight.bold)),
+      child: Material(
+        type: MaterialType.transparency,
+        child: ListTile(
+          title: Text(incident.title, style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold)),
+          subtitle: Text(incident.description, maxLines: 1, overflow: TextOverflow.ellipsis, style: GoogleFonts.inter(color: Colors.white38, fontSize: 11)),
+          trailing: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            decoration: BoxDecoration(color: color.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(8)),
+            child: Text(incident.severity.toUpperCase(), style: TextStyle(color: color, fontSize: 10, fontWeight: FontWeight.bold)),
+          ),
         ),
       ),
     );
@@ -419,28 +422,31 @@ class _OperatorDashboardScreenState extends ConsumerState<OperatorDashboardScree
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(32))),
       builder: (context) => Container(
         padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            OracleUI.neonText("NEURAL OVERRIDE"),
-            const SizedBox(height: 32),
-            ListTile(
-              leading: const Icon(Icons.star_rounded, color: Colors.amberAccent),
-              title: const Text("GRANT PREMIUM", style: TextStyle(color: Colors.white)),
-              onTap: () {
-                UserRepository().togglePremium(user.uid, true); 
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.block_rounded, color: Colors.redAccent),
-              title: const Text("BAN IDENTITY", style: TextStyle(color: Colors.white)),
-              onTap: () {
-                UserRepository().banUser(user.uid);
-                Navigator.pop(context);
-              },
-            ),
-          ],
+        child: Material(
+          type: MaterialType.transparency,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              OracleUI.neonText("NEURAL OVERRIDE"),
+              const SizedBox(height: 32),
+              ListTile(
+                leading: const Icon(Icons.star_rounded, color: Colors.amberAccent),
+                title: const Text("GRANT PREMIUM", style: TextStyle(color: Colors.white)),
+                onTap: () {
+                  UserRepository().togglePremium(user.uid, true); 
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.block_rounded, color: Colors.redAccent),
+                title: const Text("BAN IDENTITY", style: TextStyle(color: Colors.white)),
+                onTap: () {
+                  UserRepository().banUser(user.uid);
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );

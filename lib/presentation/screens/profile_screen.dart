@@ -1000,7 +1000,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(18),
         border: Border.all(color: AppTheme.borderColor(context)),
         boxShadow: [
@@ -1008,29 +1007,34 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               color: Colors.black.withValues(alpha: 0.03), blurRadius: 8, offset: const Offset(0, 2))
         ],
       ),
-      child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
-        leading: Container(
-          width: 38,
-          height: 38,
-          decoration: BoxDecoration(
-            color: effectiveIconColor.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(10),
+      child: Material(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(18),
+        clipBehavior: Clip.antiAlias,
+        child: ListTile(
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
+          leading: Container(
+            width: 38,
+            height: 38,
+            decoration: BoxDecoration(
+              color: effectiveIconColor.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(icon, color: effectiveIconColor, size: 18),
           ),
-          child: Icon(icon, color: effectiveIconColor, size: 18),
-        ),
-        title: Text(
-          title,
-          style: GoogleFonts.inter(
-            fontSize: 13,
-            fontWeight: FontWeight.w600,
-            color: textColor ?? AppTheme.textPrimary(context),
+          title: Text(
+            title,
+            style: GoogleFonts.inter(
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              color: textColor ?? AppTheme.textPrimary(context),
+            ),
           ),
+          trailing: trailing ??
+              Icon(Icons.arrow_forward_ios_rounded,
+                  size: 13, color: AppTheme.textSecondary(context).withValues(alpha: 0.35)),
+          onTap: onTap ?? () => HapticFeedback.selectionClick(),
         ),
-        trailing: trailing ??
-            Icon(Icons.arrow_forward_ios_rounded,
-                size: 13, color: AppTheme.textSecondary(context).withValues(alpha: 0.35)),
-        onTap: onTap ?? () => HapticFeedback.selectionClick(),
       ),
     );
   }
@@ -1079,15 +1083,19 @@ class _BottomSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.all(14),
-      padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(28),
         border: Border.all(color: AppTheme.borderColor(context)),
         boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.06), blurRadius: 16)],
       ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
+      child: Material(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(28),
+        clipBehavior: Clip.antiAlias,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
         children: [
           // Handle
           Container(
@@ -1109,7 +1117,7 @@ class _BottomSheet extends StatelessWidget {
           child,
         ],
       ),
-    );
+    )));
   }
 }
 

@@ -7,10 +7,10 @@ import 'package:crypto/crypto.dart';
 /// Features:
 /// 1. **Multi-Host SSL Pinning**: Strictly verifies the leaf certificate
 ///    of specific high-value hosts (Point 1).
-/// 2. **Strict Release Verification**: Denies all invalid/self-signed 
-///    certificates in release builds.
-/// 3. **Manual Override Support**: Allows development via proxies if needed
-///    strictly in debug mode.
+/// 2. **Zero-Trust Verification**: Unconditionally rejects all invalid/self-signed 
+///    certificates across all build environments (Debug, Profile, Release).
+/// 3. **Audit Logging**: Logs detailed certificate validation errors when
+///    running in debug mode.
 class SecureNetworkOverrides extends HttpOverrides {
   
   /// SSL Fingerprints (SHA-256) of your production server leaf certificates.

@@ -1,1 +1,58 @@
-[]
+[
+    {
+        "id": "parakrama_samudra",
+        "name": "Parakrama Samudra (Sea of Parakrama)",
+        "district": "Polonnaruwa",
+        "province": "North Central Province",
+        "lat": 7.9250,
+        "lng": 81.0000,
+        "capacity_ac_ft": 116000,
+        "constructed_by": "King Parakramabahu I (12th Century AD)",
+        "description": "Colossal shallow reservoir consisting of five separate ancient lakes interconnected by relief channels, serving as the lifeblood of Polonnaruwa agriculture.",
+        "historical_significance": "One of the greatest engineering feats of ancient Sri Lanka, famously declaring that not a drop of water from rain should reach the ocean without serving mankind.",
+        "best_viewpoint": "Resthouse bund walk at sunset",
+        "ar_model_url": "https://cdn.hiddengemssl.com/models/tanks/parakrama_sluice.glb"
+    },
+    {
+        "id": "kala_wewa",
+        "name": "Kala Wewa & Balalu Wewa",
+        "district": "Anuradhapura",
+        "province": "North Central Province",
+        "lat": 8.0167,
+        "lng": 80.5333,
+        "capacity_ac_ft": 123000,
+        "constructed_by": "King Dhatusena (5th Century AD)",
+        "description": "Massive twin reservoir feeding the 87km ancient Yoda Ela canal with a slope of just 6 inches per mile, supplying water to Anuradhapura.",
+        "historical_significance": "Features the colossal Avukana Buddha statue carved directly out of a granite cliff face near its spillway.",
+        "best_viewpoint": "Avukana bund lookout",
+        "ar_model_url": "https://cdn.hiddengemssl.com/models/tanks/kala_wewa_bisokotuwa.glb"
+    },
+    {
+        "id": "minneriya_tank",
+        "name": "Minneriya Reservoir (Minneri Deviyo)",
+        "district": "Polonnaruwa",
+        "province": "North Central Province",
+        "lat": 8.0333,
+        "lng": 80.9000,
+        "capacity_ac_ft": 110000,
+        "constructed_by": "King Mahasen (3rd Century AD)",
+        "description": "Vast ancient reservoir whose receding waters during the dry season create lush grass plains that host 'The Gathering', the largest congregation of Asian elephants in the world.",
+        "historical_significance": "King Mahasen was deified as 'Minneri Deviyo' (God of Minneriya) by grateful farmers for constructing this irrigation wonder.",
+        "best_viewpoint": "Minneriya National Park bund safari",
+        "ar_model_url": "https://cdn.hiddengemssl.com/models/tanks/minneriya_sluice.glb"
+    },
+    {
+        "id": "sorabora_wewa",
+        "name": "Sorabora Wewa Natural Sluice Tank",
+        "district": "Badulla",
+        "province": "Uva Province",
+        "lat": 7.3333,
+        "lng": 81.0000,
+        "capacity_ac_ft": 18000,
+        "constructed_by": "Bulata the Giant (King Dutugemunu era - 2nd Century BC)",
+        "description": "Unique ancient reservoir where the sluice gate (Bisokotuwa) was carved directly out of a solid living granite bedrock rather than constructed with dressed stones.",
+        "historical_significance": "Built by a local villagers' leader Bulata while supplying food to King Dutugemunu's army.",
+        "best_viewpoint": "Granite sluice gate viewpoint at dawn",
+        "ar_model_url": "https://cdn.hiddengemssl.com/models/tanks/sorabora_granite_sluice.glb"
+    }
+]

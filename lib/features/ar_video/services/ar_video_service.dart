@@ -23,6 +23,11 @@ class ARVideoService extends ChangeNotifier {
   /// Loads and initialises the video.
   /// Tries the local cache first, falls back to network.
   Future<void> init(String url) async {
+    if (_controller != null) {
+      _controller!.removeListener(_onControllerUpdate);
+      await _controller!.dispose();
+      _controller = null;
+    }
     _setState(ARVideoState.loading);
     try {
       File cachedFile;

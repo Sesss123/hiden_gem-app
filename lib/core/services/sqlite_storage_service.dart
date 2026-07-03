@@ -52,7 +52,7 @@ class SqliteStorageService {
       version: 1,
       onConfigure: (Database db) async {
         await db.execute('PRAGMA foreign_keys = ON;');
-        await db.execute('PRAGMA journal_mode = WAL;');
+        await db.rawQuery('PRAGMA journal_mode = WAL;');
       },
       onCreate: (Database db, int version) async {
         await db.execute('''

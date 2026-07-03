@@ -98,13 +98,17 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
           children: [
             if (isPremium) Icon(Icons.workspace_premium_rounded, color: goldColor, size: 28),
             if (isPremium) SizedBox(width: 12),
-            Text(
-              "UNLEASH THE ORACLE",
-              style: GoogleFonts.outfit(
-                fontSize: 26,
-                fontWeight: FontWeight.w900,
-                letterSpacing: 2,
-                color: Theme.of(context).colorScheme.onSurface,
+            Flexible(
+              child: Text(
+                "UNLEASH THE ORACLE",
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: GoogleFonts.outfit(
+                  fontSize: 26,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 2,
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
               ),
             ),
           ],

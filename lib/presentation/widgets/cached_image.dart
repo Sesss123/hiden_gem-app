@@ -1,5 +1,7 @@
 import 'dart:io';
 import 'dart:async';
+import 'dart:convert';
+import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
@@ -10,7 +12,8 @@ import '../../core/services/media_cache_manager.dart';
 class IsolateCacheHelper {
   static Future<File> getCachedFile(String url) async {
     final tempDir = await getTemporaryDirectory();
-    final filePath = '${tempDir.path}/${url.hashCode}';
+    final hash = sha1.convert(utf8.encode(url)).toString();
+    final filePath = '${tempDir.path}/$hash';
     
     // Check file existence in background isolate to keep UI thread free
     final fileExists = await compute(_checkFileExists, filePath);
@@ -48,7 +51,7 @@ class IsolateCacheHelper {
   }
 }
 
-class CachedImage extends StatelessWidget {
+class CachedImage extends StatefulWidget {
   final String url;
   final BoxFit fit;
   final double? width;
@@ -73,40 +76,67 @@ class CachedImage extends StatelessWidget {
   });
 
   @override
+  State<CachedImage> createState() => _CachedImageState();
+}
+
+class _CachedImageState extends State<CachedImage> {
+  Future<File>? _imageFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.url.isNotEmpty) {
+      _imageFuture = IsolateCacheHelper.getCachedFile(widget.url);
+    }
+  }
+
+  @override
+  void didUpdateWidget(CachedImage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.url != widget.url) {
+      if (widget.url.isNotEmpty) {
+        _imageFuture = IsolateCacheHelper.getCachedFile(widget.url);
+      } else {
+        _imageFuture = null;
+      }
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     // Empty URL guard
-    if (url.isEmpty) return _buildError(context);
+    if (widget.url.isEmpty || _imageFuture == null) return _buildError(context);
 
     final image = FutureBuilder<File>(
-      future: IsolateCacheHelper.getCachedFile(url),
+      future: _imageFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return placeholder ?? _buildShimmer(context);
+          return widget.placeholder ?? _buildShimmer(context);
         }
         if (snapshot.hasError || !snapshot.hasData || snapshot.data == null) {
-          return errorWidget ?? _buildError(context);
+          return widget.errorWidget ?? _buildError(context);
         }
         
         // Ensure the file is not empty/corrupted
         final file = snapshot.data!;
         if (!file.existsSync() || file.lengthSync() == 0) {
-          return errorWidget ?? _buildError(context);
+          return widget.errorWidget ?? _buildError(context);
         }
 
         return Image.file(
           file,
-          fit: fit,
-          width: width,
-          height: height,
-          cacheWidth: maxWidthDiskCache,
+          fit: widget.fit,
+          width: widget.width,
+          height: widget.height,
+          cacheWidth: widget.maxWidthDiskCache,
         );
       },
     );
 
     // Optional rounded corners
-    if (borderRadius != null) {
+    if (widget.borderRadius != null) {
       return ClipRRect(
-        borderRadius: borderRadius!,
+        borderRadius: widget.borderRadius!,
         child: image,
       );
     }
@@ -117,25 +147,25 @@ class CachedImage extends StatelessWidget {
   Widget _buildShimmer(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
-      width: width,
-      height: height,
+      width: widget.width,
+      height: widget.height,
       color: isDark
           ? const Color(0xFF1A2332)
           : AppPalette.sand2,
-      child: _ShimmerBox(width: width, height: height),
+      child: _ShimmerBox(width: widget.width, height: widget.height),
     );
   }
 
   Widget _buildError(BuildContext context) {
     return Container(
-      width: width,
-      height: height,
+      width: widget.width,
+      height: widget.height,
       color: AppPalette.heroCream,
       child: Center(
         child: Icon(
           Icons.image_not_supported_outlined,
           color: AppPalette.earth.withValues(alpha: 0.4),
-          size: (height != null && height! < 80) ? 20 : 32,
+          size: (widget.height != null && widget.height! < 80) ? 20 : 32,
         ),
       ),
     );

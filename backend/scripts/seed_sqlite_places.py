@@ -5,14 +5,21 @@ from datetime import datetime
 
 DB_PATH = "tripme.db"
 SAMPLE_FILE = "sample_data.json"
+FALLBACK_FILE = "../data/tripme_kb.json"
 
 def seed_db():
+    places = []
     try:
         with open(SAMPLE_FILE, 'r', encoding='utf-8') as f:
             places = json.load(f)
     except FileNotFoundError:
-        print(f"Error: {SAMPLE_FILE} not found.")
-        return
+        try:
+            with open(FALLBACK_FILE, 'r', encoding='utf-8') as f:
+                places = json.load(f)
+            print(f"Loaded {len(places)} places from fallback {FALLBACK_FILE}")
+        except FileNotFoundError:
+            print(f"Error: {SAMPLE_FILE} and {FALLBACK_FILE} not found.")
+            return
 
     conn = sqlite3.connect(DB_PATH)
     cur = conn.cursor()

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 import 'package:crypto/crypto.dart';
 import 'package:encrypt/encrypt.dart' as enc;
 import 'secure_logger.dart';
@@ -7,6 +8,25 @@ import '../config/app_config.dart';
 class EncryptionUtil {
   static String get _sharedAesKeyBase64 => AppConfig.sharedAesKey;
   static String get _sharedHmacKeyBase64 => AppConfig.sharedHmacKey;
+
+  /// Helper to safely derive a 32-byte AES key from either Base64 or plain string
+  static enc.Key _deriveAesKey(String keyStr) {
+    try {
+      final decoded = base64.decode(keyStr);
+      if (decoded.length == 32) return enc.Key(decoded);
+    } catch (_) {}
+    final bytes = sha256.convert(utf8.encode(keyStr)).bytes;
+    return enc.Key(Uint8List.fromList(bytes));
+  }
+
+  /// Helper to safely derive HMAC key bytes from either Base64 or plain string
+  static List<int> _deriveHmacKey(String keyStr) {
+    try {
+      return base64.decode(keyStr);
+    } catch (_) {
+      return utf8.encode(keyStr);
+    }
+  }
 
   /// Constant-time comparison to prevent timing attacks.
   static bool safeEqual(String a, String b) {
@@ -26,18 +46,18 @@ class EncryptionUtil {
   /// Call this at app startup to pre-load keys. 
   /// Note: Shared keys are used for public database records (Hidden Gems).
   static Future<void> init() async {
-    _cachedKey = enc.Key.fromBase64(_sharedAesKeyBase64);
-    _cachedHmacKey = base64.decode(_sharedHmacKeyBase64);
+    _cachedKey = _deriveAesKey(_sharedAesKeyBase64);
+    _cachedHmacKey = _deriveHmacKey(_sharedHmacKeyBase64);
   }
 
   static Future<enc.Key> _getOrCreateKey() async {
     if (_cachedKey != null) return _cachedKey!;
-    return enc.Key.fromBase64(_sharedAesKeyBase64);
+    return _deriveAesKey(_sharedAesKeyBase64);
   }
 
   static Future<List<int>> _getOrCreateHmacKey() async {
     if (_cachedHmacKey != null) return _cachedHmacKey!;
-    return base64.decode(_sharedHmacKeyBase64);
+    return _deriveHmacKey(_sharedHmacKeyBase64);
   }
 
   /// Encrypts data using AES-256 GCM and adds an HMAC signature.

@@ -643,5 +643,21 @@
 - [x] Fix BUG-C03: Lock down quota reset attributes in `firestore.rules`
 - [x] Fix BUG-L02: Clean up dead release certification rejection branch in `secure_network.dart`
 
+## Active Milestone: Enterprise Risk Audit Fixes (v12.0)
+- [x] Fix BUG-R01: Add rate limiting (`throttle:5,1`) to admin login in `laravel-backend/routes/web.php`
+- [x] Fix BUG-R02: Remove hardcoded `'hg_live_secret_key_2026'` fallback in `VerifyApiKey.php` across all environments
+- [x] Fix BUG-R03: Create and apply dedicated `IsAdmin` middleware to protected admin routes in `laravel-backend/routes/web.php`
+- [x] Fix BUG-R04 & BUG-R09: Secure `process_image` in `image_service.py` with extension whitelisting, UUID filenames, and replace broad silent exception handling
+- [x] Fix BUG-R05 & BUG-R06: Convert `CachedImage` to `StatefulWidget` to prevent `Future` re-creation on rebuilds and use SHA-1 for stable cache keys
+- [x] Fix BUG-R07: Dispose existing `VideoPlayerController` before creating a new one in `ARVideoService.init()`
+- [x] Fix BUG-R10: Update SSL pinning doc comment in `secure_network.dart` to accurately state unconditional rejection of invalid SSL certificates
 
+## Active Milestone: Final Enterprise Health Assessment (v12.1)
+- [x] Conduct comprehensive 17-Domain Health Audit & Scorecard evaluation (Flutter UI, Laravel Backend, Python Backend, API, DB, Auth, Real-time, State, Error Handling, Performance, Security, Memory, Network, Cache, SQLite, Image Loading, File Uploads) — 2026-07-04
+- [x] Fix BUG-R11: Use `db.rawQuery()` instead of `db.execute()` for `PRAGMA journal_mode = WAL;` in `sqlite_storage_service.dart` to prevent Android sqflite driver crashes — 2026-07-04
+- [x] Fix BUG-R12: Wrap all `ListTile` items inside `Material(type: MaterialType.transparency)` across `profile_screen.dart`, `operator_dashboard_screen.dart`, and `guide_dashboard_screen.dart` to enable Material ripple/ink splash effects over decorated boxes — 2026-07-04
+- [x] Fix BUG-R13: Replace direct base64 decoding with `_deriveAesKey` and `_deriveHmacKey` in `encryption_util.dart` to prevent `FormatException` when using non-base64 default keys — 2026-07-04
+- [x] Fix BUG-R14: Wrap Title Text in `Flexible` inside `Row` in `premium_hub_screen.dart` to prevent 8.3px RenderFlex overflow — 2026-07-04
+- [x] Fix BUG-R15: Update `integrity_shield.dart` to prevent debug mode checks and offline/server-sync availability failures from falsely escalating risk score to 70 (`QuarantineLevel.restricted`) — 2026-07-04
+- [x] Fix BUG-R16: Create `PlaceSeeder.php` with 6 authentic Sri Lankan places, populate Python KB (`tripme_kb.json`) & discovery JSON datasets (`discovered_tanks.json`, `smart_tanks.json`), and add fallback logic in `seed_sqlite_places.py` to resolve 0 active places — 2026-07-04
 

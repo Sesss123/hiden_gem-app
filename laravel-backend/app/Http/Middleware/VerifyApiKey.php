@@ -13,13 +13,11 @@ class VerifyApiKey
      */
     public function handle(Request $request, Closure $next)
     {
-        $expectedKey = env('API_KEY');
+        $expectedKey = env('API_KEY') ?: config('app.api_key');
         
-        if (app()->environment('production') && (empty($expectedKey) || $expectedKey === 'hg_live_secret_key_2026')) {
-            return response()->json(['error' => 'Server configuration error: Insecure or missing dynamic API key in production.'], 500);
+        if (empty($expectedKey)) {
+            return response()->json(['error' => 'Server configuration error: Missing API key configuration.'], 500);
         }
-
-        $expectedKey = $expectedKey ?? config('app.api_key') ?? 'hg_live_secret_key_2026';
         $providedKey = $request->header('X-API-KEY');
 
         if (!$providedKey || !hash_equals($expectedKey, $providedKey)) {

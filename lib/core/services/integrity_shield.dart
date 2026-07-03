@@ -118,8 +118,10 @@ class IntegrityShield {
       }
     } catch (e) {
       debugPrint('[IntegrityShield] Failed to sync posture with server: $e');
-      // If server sync fails, we rely on local signals but log the failure
-      _addSignal('server_sync_failed', score: 10);
+      // Do not inflate risk score for network/server availability errors to prevent false-positive quarantine
+      if (!_activeSignals.contains('server_sync_failed')) {
+        _activeSignals.add('server_sync_failed');
+      }
     }
   }
 
@@ -139,8 +141,10 @@ class IntegrityShield {
   // --- Internal Checks ---
 
   void _checkBuildMode() {
-    if (kDebugMode && !kIsWeb) {
-      _addSignal('debug_build_active', score: 10);
+    if (!kReleaseMode) {
+      if (!_activeSignals.contains('debug_build_active')) {
+        _activeSignals.add('debug_build_active'); // Recorded for logging without score penalty in dev mode
+      }
     }
   }
 
@@ -155,7 +159,7 @@ class IntegrityShield {
       // 🛡️ POINT 11: Multi-signal risk scoring
       if (isJailBroken) _addSignal('device_rooted_jailbroken', score: 50);
       if (!isRealDevice) _addSignal('emulator_detected', score: 30);
-      if (isDevelopmentMode) _addSignal('developer_mode_enabled', score: 10);
+      if (isDevelopmentMode && kReleaseMode) _addSignal('developer_mode_enabled', score: 5);
       
       // Secondary signals (lower weight)
       if (await SafeDevice.isOnExternalStorage) _addSignal('external_storage_install', score: 10);
@@ -167,13 +171,13 @@ class IntegrityShield {
   Future<void> _checkRuntimeIntegrity() async {
     if (kIsWeb) return;
 
-    // 🛡️ POINT 11: Real-time Debugger Detection
-    if (kDebugMode) {
-       _addSignal('debugger_attached', score: 40);
+    // 🛡️ POINT 11: Real-time Debugger Detection (Only critical if attached to a release build)
+    if (kReleaseMode && kDebugMode) {
+       _addSignal('debugger_attached', score: 80);
     }
 
-    // ADB Detection (If development mode is on and we are on Android)
-    if (Platform.isAndroid) {
+    // ADB Detection (If development mode is on and we are on Android in release mode)
+    if (Platform.isAndroid && kReleaseMode) {
        final isSafe = await SafeDevice.isSafeDevice;
        if (!isSafe) _addSignal('device_health_check_failed', score: 20);
     }

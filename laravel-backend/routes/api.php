@@ -59,7 +59,8 @@ Route::prefix('v1')->group(function () {
                 return response($response->body(), $response->status())
                     ->header('Content-Type', 'application/json');
             } catch (\Exception $e) {
-                return response()->json(['error' => 'AI Subsystem unavailable', 'details' => $e->getMessage()], 503);
+                \Illuminate\Support\Facades\Log::error('AI Subsystem plan-itinerary error: ' . $e->getMessage());
+                return response()->json(['error' => 'AI Subsystem unavailable'], 503);
             }
         });
 
@@ -73,7 +74,8 @@ Route::prefix('v1')->group(function () {
                 return response($response->body(), $response->status())
                     ->header('Content-Type', 'application/json');
             } catch (\Exception $e) {
-                return response()->json(['error' => 'AI Recommendations unavailable', 'details' => $e->getMessage()], 503);
+                \Illuminate\Support\Facades\Log::error('AI Subsystem recommendations error: ' . $e->getMessage());
+                return response()->json(['error' => 'AI Recommendations unavailable'], 503);
             }
         });
     });
