@@ -135,7 +135,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         isEvening: false,
         opacity: 0.0,
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: const BorderRadius.all(Radius.circular(24)),
           child: Stack(
             children: [
               Positioned.fill(
@@ -172,7 +172,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                           decoration: BoxDecoration(
                             color: Theme.of(context).colorScheme.secondary.withValues(alpha: 0.8),
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: const BorderRadius.all(Radius.circular(12)),
                           ),
                           child: Text(
                             "ORACLE'S FEATURED",
@@ -244,7 +244,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             foregroundColor: Colors.black,
                             elevation: 0,
                             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                            shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(16))),
                           ),
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
@@ -458,7 +458,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final event = _todayEvents.first;
     return OracleUI.glassContainer(
       padding: const EdgeInsets.all(20),
-      radius: BorderRadius.circular(24),
+      radius: const BorderRadius.all(Radius.circular(24)),
       showGlow: true,
       child: Stack(
         children: [
@@ -625,7 +625,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 40),
                       child: OracleUI.premiumGlassCard(
                         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-                        radius: BorderRadius.circular(40),
+                        radius: const BorderRadius.all(Radius.circular(40)),
                         child: Row(
                           children: [
                             Icon(Icons.search_rounded, color: Theme.of(context).colorScheme.primary, size: 20),
@@ -684,7 +684,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       right: 20,
       child: OracleUI.glassContainer(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-        radius: BorderRadius.circular(20),
+        radius: const BorderRadius.all(Radius.circular(20)),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -713,7 +713,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: const BorderRadius.all(Radius.circular(20)),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -888,6 +888,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   child: CachedImage(
                     url: "https://images.unsplash.com/photo-1546708973-b339540b5162?q=80&w=2670&auto=format&fit=crop",
                     fit: BoxFit.cover,
+                    maxWidthDiskCache: 300,
                   ),
                 ),
               ),

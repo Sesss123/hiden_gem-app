@@ -51,6 +51,6 @@ class PdfService {
       ),
     );
 
-    await Printing.sharePdf(bytes: await pdf.save(), filename: 'tripme_itinerary.pdf');
+    await Printing.sharePdf(bytes: await pdf.save(), filename: 'hiddengems_itinerary.pdf');
   }
 }

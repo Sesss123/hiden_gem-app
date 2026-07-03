@@ -31,7 +31,12 @@ class VoiceRecipeService extends ChangeNotifier {
         ? (food.voiceSummarySi ?? food.voiceSummary)
         : food.voiceSummary;
     
-    await VoiceAssistantService.speak(intro);
+    try {
+      await VoiceAssistantService.speak(intro);
+    } catch (e) {
+      _isPlaying = false;
+      notifyListeners();
+    }
   }
 
   Future<void> stopCooking() async {
@@ -39,7 +44,9 @@ class VoiceRecipeService extends ChangeNotifier {
     _currentStep = -1;
     _currentFood = null;
     notifyListeners();
-    await VoiceAssistantService.stop();
+    try {
+      await VoiceAssistantService.stop();
+    } catch (_) {}
   }
 
   Future<void> nextStep() async {
@@ -49,13 +56,18 @@ class VoiceRecipeService extends ChangeNotifier {
         ? (_currentFood!.recipeStepsSi ?? _currentFood!.recipeSteps)
         : _currentFood!.recipeSteps;
 
-    if (_currentStep < steps.length - 1) {
-      _currentStep++;
-      _isPlaying = true;
-      notifyListeners();
-      await VoiceAssistantService.speak("Step ${_currentStep + 1}: ${steps[_currentStep]}");
-    } else {
-      await VoiceAssistantService.speak(_isSinhala ? "ඔබේ ආහාරය දැන් සූදානම්. භුක්ති විඳින්න!" : "Your dish is ready. Enjoy your meal!");
+    try {
+      if (_currentStep < steps.length - 1) {
+        _currentStep++;
+        _isPlaying = true;
+        notifyListeners();
+        await VoiceAssistantService.speak("Step ${_currentStep + 1}: ${steps[_currentStep]}");
+      } else {
+        await VoiceAssistantService.speak(_isSinhala ? "ඔබේ ආහාරය දැන් සූදානම්. භුක්ති විඳින්න!" : "Your dish is ready. Enjoy your meal!");
+        _isPlaying = false;
+        notifyListeners();
+      }
+    } catch (e) {
       _isPlaying = false;
       notifyListeners();
     }
@@ -72,28 +84,37 @@ class VoiceRecipeService extends ChangeNotifier {
   Future<void> repeatStep() async {
     if (_currentFood == null) return;
     
-    if (_currentStep == -1) {
-      final intro = _isSinhala 
-          ? (_currentFood!.voiceSummarySi ?? _currentFood!.voiceSummary)
-          : _currentFood!.voiceSummary;
-      await VoiceAssistantService.speak(intro);
-      return;
+    try {
+      if (_currentStep == -1) {
+        final intro = _isSinhala 
+            ? (_currentFood!.voiceSummarySi ?? _currentFood!.voiceSummary)
+            : _currentFood!.voiceSummary;
+        await VoiceAssistantService.speak(intro);
+        return;
+      }
+
+      final steps = _isSinhala 
+          ? (_currentFood!.recipeStepsSi ?? _currentFood!.recipeSteps)
+          : _currentFood!.recipeSteps;
+
+      await VoiceAssistantService.speak("Step ${_currentStep + 1}: ${steps[_currentStep]}");
+    } catch (e) {
+      _isPlaying = false;
+      notifyListeners();
     }
-
-    final steps = _isSinhala 
-        ? (_currentFood!.recipeStepsSi ?? _currentFood!.recipeSteps)
-        : _currentFood!.recipeSteps;
-
-    await VoiceAssistantService.speak("Step ${_currentStep + 1}: ${steps[_currentStep]}");
   }
 
   Future<void> togglePlayPause() async {
-    if (_isPlaying) {
-      await VoiceAssistantService.stop();
+    try {
+      if (_isPlaying) {
+        await VoiceAssistantService.stop();
+        _isPlaying = false;
+      } else {
+        _isPlaying = true;
+        await repeatStep();
+      }
+    } catch (e) {
       _isPlaying = false;
-    } else {
-      _isPlaying = true;
-      await repeatStep();
     }
     notifyListeners();
   }

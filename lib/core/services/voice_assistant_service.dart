@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:flutter/material.dart';
@@ -31,8 +32,14 @@ class VoiceAssistantService {
   }
 
   static Future<void> speak(String text) async {
-    state.value = OracleState.speaking;
-    await _tts.speak(text);
+    try {
+      state.value = OracleState.speaking;
+      await _tts.speak(text);
+    } catch (e) {
+      // BUG-059: TTS engine may be occupied or unavailable; log and recover gracefully
+      state.value = OracleState.idle;
+      SecureLogger.warning('VoiceAssistantService.speak() failed \u2014 TTS may be busy: $e');
+    }
   }
 
   static Future<void> stop() async {
@@ -49,6 +56,17 @@ class VoiceAssistantService {
        SecureLogger.error('Oracle Position Fetch Failed: $e');
        return null;
      }
+  }
+
+  static Timer? _inactivityTimer;
+  static const _inactivityTimeout = Duration(seconds: 10);
+
+  static void _resetInactivityTimer() {
+    _inactivityTimer?.cancel();
+    _inactivityTimer = Timer(_inactivityTimeout, () {
+      SecureLogger.info('Oracle voice listening timed out due to inactivity.');
+      stopListening();
+    });
   }
 
   static Future<void> startListening({
@@ -71,11 +89,14 @@ class VoiceAssistantService {
       available = await _stt.initialize(
         onStatus: (status) {
           SecureLogger.info('STT Status: $status');
-          if (status == 'done' || status == 'notListening') onDone();
+          if (status == 'done' || status == 'notListening') {
+            _inactivityTimer?.cancel();
+            onDone();
+          }
         },
         onError: (errorNotification) {
           SecureLogger.error('STT Error: ${errorNotification.errorMsg} (Permanent: ${errorNotification.permanent})');
-          
+          _inactivityTimer?.cancel();
           if (errorNotification.errorMsg == 'error_permission' || 
               errorNotification.errorMsg == 'not-allowed') {
             speak("Traveler, your browser has veiled your voice. Please allow microphone access in your settings.");
@@ -94,12 +115,15 @@ class VoiceAssistantService {
 
     if (available) {
       state.value = OracleState.listening;
+      _resetInactivityTimer();
       _stt.listen(
         onResult: (result) async {
+          _resetInactivityTimer();
           _lastWords = result.recognizedWords;
           onResult(_lastWords);
           
           if (result.finalResult) {
+            _inactivityTimer?.cancel();
             state.value = OracleState.thinking;
             await processCommand(_lastWords);
           }
@@ -142,6 +166,7 @@ class VoiceAssistantService {
   }
 
   static Future<void> stopListening() async {
+    _inactivityTimer?.cancel();
     await _stt.stop();
   }
 

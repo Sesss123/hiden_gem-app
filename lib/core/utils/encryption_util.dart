@@ -44,7 +44,7 @@ class EncryptionUtil {
   static Future<String> encrypt(String plainText) async {
     try {
       final key = await _getOrCreateKey();
-      final iv = enc.IV.fromSecureRandom(16);
+      final iv = enc.IV.fromSecureRandom(12);
       
       // AES-GCM (Includes internal integrity check)
       final encrypter = enc.Encrypter(enc.AES(key, mode: enc.AESMode.gcm));
@@ -60,19 +60,19 @@ class EncryptionUtil {
       // Final Format: IV:Cipher:Signature
       return '$payload:${signature.toString()}';
     } catch (e) {
-      SecureLogger.error("Encryption Failure. Operating in fallback.", e);
-      return plainText;
+      SecureLogger.error("Encryption Failure.", e);
+      throw StateError("Encryption failed: $e");
     }
   }
 
   /// Synchronous encryption for use in models (requires init() to have been called)
   static String encryptSync(String plainText) {
     if (_cachedKey == null || _cachedHmacKey == null) {
-      SecureLogger.error("EncryptionUtil not initialized! Returning plain text.", null);
-      return plainText;
+      SecureLogger.error("EncryptionUtil not initialized!", null);
+      throw StateError("EncryptionUtil not initialized!");
     }
     try {
-      final iv = enc.IV.fromSecureRandom(16);
+      final iv = enc.IV.fromSecureRandom(12);
       final encrypter = enc.Encrypter(enc.AES(_cachedKey!, mode: enc.AESMode.gcm));
       final encrypted = encrypter.encrypt(plainText, iv: iv);
       
@@ -82,7 +82,8 @@ class EncryptionUtil {
       
       return '$payload:${signature.toString()}';
     } catch (e) {
-      return plainText;
+      SecureLogger.error("Encryption Failure Sync.", e);
+      throw StateError("Encryption sync failed: $e");
     }
   }
 

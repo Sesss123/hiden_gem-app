@@ -192,7 +192,9 @@ class _BookingRequestScreenState extends ConsumerState<BookingRequestScreen> {
 
       if (widget.guideId.isNotEmpty) {
         final currentCount = await ref.read(bookingRepositoryProvider).getMonthlyBookingCount(widget.guideId);
+        if (!mounted) return;
         final maxQuota = await ref.read(subscriptionServiceProvider).getLimit(widget.guideId, 'monthlyBookingQuota');
+        if (!mounted) return;
         if (currentCount >= maxQuota) {
            throw Exception("This guide has reached their maximum booking quota for the month. Please try again next month or select another guide.");
         }

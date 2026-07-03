@@ -507,6 +507,41 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
   Widget _buildItineraryTab(TripPlan plan, AppLocalizations l10n) {
     final isPremium = ref.read(premiumNotifierProvider);
 
+    // BUG-068: Handle empty itinerary state gracefully with a friendly message
+    if (plan.itinerary.isEmpty) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(32.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.explore_off_outlined, size: 64, color: AppTheme.textSecondary(context).withValues(alpha: 0.3)),
+              const SizedBox(height: 16),
+              Text(
+                "NO PATH FOUND",
+                style: GoogleFonts.outfit(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 2,
+                  color: AppTheme.textPrimary(context),
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                "The Oracle could not chart a path for this destination. Try refining your budget or style preferences.",
+                textAlign: TextAlign.center,
+                style: GoogleFonts.inter(
+                  fontSize: 12,
+                  color: AppTheme.textSecondary(context),
+                  height: 1.5,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
     return Column(
       children: [
         if (widget.cacheState != CacheReadResult.fresh)
@@ -518,7 +553,8 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
           child: Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: Colors.white,
+              // BUG-068: Use theme-aware card color so the panel is visible in dark mode
+              color: Theme.of(context).cardColor,
               borderRadius: BorderRadius.circular(24),
               border: Border.all(color: AppTheme.secondaryBorder(context)),
               boxShadow: [
@@ -565,13 +601,20 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
 
         Expanded(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(20, 24, 20, 120),
+            // BUG-108: Adjust tab view horizontal/vertical margins dynamically for larger tablet displays
+            padding: EdgeInsets.fromLTRB(
+              MediaQuery.of(context).size.width > 600 ? 40 : 20, 
+              24, 
+              MediaQuery.of(context).size.width > 600 ? 40 : 20, 
+              120
+            ),
             child: KineticTimelineView(days: plan.itinerary),
           ),
         ),
       ],
     );
   }
+
   // ═══════════════════════════════════════════════════════════════════
   // TAB 2 – ORACLE STYLE
   // ═══════════════════════════════════════════════════════════════════
@@ -606,17 +649,20 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
     final progress = userBudget > 0 ? (totalCost / userBudget).clamp(0.0, 1.0) : 0.0;
     final isOverBudget = totalCost > userBudget && userBudget > 0;
 
+    // BUG-108: Dynamic padding spacing adjustments for tablet layouts
+    final double paddingValue = MediaQuery.of(context).size.width > 600 ? 40.0 : 20.0;
     return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(20, 24, 20, 100),
+      padding: EdgeInsets.fromLTRB(paddingValue, 24, paddingValue, 100),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildHeroBudgetCard(context, totalCost, userBudget, progress, isOverBudget),
-          SizedBox(height: 24),
+          SizedBox(height: paddingValue),
           _buildSectionHeader(context, "Expense Breakdown"),
           SizedBox(height: 16),
           ...categories.entries.where((e) => e.value > 0).map((e) => _buildBudgetRow(context, e.key, e.value, totalCost)),
-          const SizedBox(height: 32),
+          SizedBox(height: paddingValue),
+
           ModernGradientButton(
             label: "Open Expense Tracker",
             onPressed: () {
@@ -727,7 +773,8 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        // BUG-088: Unified border radius (24px) for cards to prevent sharp clash
+        borderRadius: BorderRadius.circular(24),
         border: Border.all(color: AppTheme.secondaryBorder(context)),
       ),
       child: Row(
@@ -739,6 +786,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
             child: Icon(_getCategoryIcon(label), color: Colors.white, size: 20),
           ),
           SizedBox(width: 16),
+          // BUG-128: Wrap label text to prevent overflow on large text sizes
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -749,6 +797,8 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
                     color: Theme.of(context).colorScheme.onSurface, 
                     fontWeight: FontWeight.bold,
                   ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
                 Text(
                   "$percent% of total", 
@@ -756,21 +806,30 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
                     color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5), 
                     fontSize: 10,
                   ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),
           ),
-          Text(
-            _fmtLkr(amount), 
-            style: GoogleFonts.outfit(
-              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.8), 
-              fontWeight: FontWeight.bold,
+          // BUG-128: Flexible so the amount text shrinks instead of overflowing
+          Flexible(
+            flex: 0,
+            child: Text(
+              _fmtLkr(amount), 
+              style: GoogleFonts.outfit(
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.8), 
+                fontWeight: FontWeight.bold,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
         ],
       ),
     );
   }
+
 
   IconData _getCategoryIcon(String label) {
     switch (label) {
@@ -837,8 +896,9 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
     }
 
     final item = plan.planB;
+    final double paddingValue = MediaQuery.of(context).size.width > 600 ? 40.0 : 20.0;
     return SingleChildScrollView(
-      padding: EdgeInsets.only(left: 20, right: 20, top: 20, bottom: 80),
+      padding: EdgeInsets.only(left: paddingValue, right: paddingValue, top: 20, bottom: 80),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -846,7 +906,8 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
             padding: EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(16),
+              // BUG-088: Unified card border-radii
+              borderRadius: BorderRadius.circular(24),
             ),
             child: Row(
               children: [
@@ -885,6 +946,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
       ),
     );
   }
+
 
   Widget _buildRewardedGate() {
     return Center(
@@ -1055,7 +1117,8 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
+        // BUG-088: Unified card border-radii
+        borderRadius: BorderRadius.circular(24),
         border: Border.all(color: AppTheme.secondaryBorder(context)),
         boxShadow: [
           BoxShadow(
@@ -1146,7 +1209,8 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
       padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: AppTheme.warningAmber.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(20),
+        // BUG-088: Unified card border-radii
+        borderRadius: BorderRadius.circular(24),
         border: Border.all(color: AppTheme.warningAmber.withValues(alpha: 0.3)),
       ),
       child: Column(

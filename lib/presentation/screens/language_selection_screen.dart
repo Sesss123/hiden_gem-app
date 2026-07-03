@@ -79,13 +79,15 @@ class LanguageSelectionScreen extends ConsumerWidget {
                 const SizedBox(height: 48),
                 
                 // Language List (Converted from Grid to List for mobile friendliness)
+                // BUG-091: Support RTL layout directions using direction-aware padding
                 Column(
                   children: [
+                    // BUG-111: Native language names added alongside localized labels
                     _buildLanguageOption(
                       context: context,
                       ref: ref,
                       label: "ENGLISH",
-                      subLabel: "Global Standard",
+                      subLabel: "English - Global Standard",
                       locale: const Locale('en'),
                       delay: 300.ms,
                     ),
@@ -94,7 +96,7 @@ class LanguageSelectionScreen extends ConsumerWidget {
                       context: context,
                       ref: ref,
                       label: "සිංහල",
-                      subLabel: "දේශීය අත්දැකීම",
+                      subLabel: "Sinhala - දේශීය අත්දැකීම",
                       locale: const Locale('si'),
                       delay: 400.ms,
                     ),
@@ -103,7 +105,7 @@ class LanguageSelectionScreen extends ConsumerWidget {
                       context: context,
                       ref: ref,
                       label: "தமிழ்",
-                      subLabel: "உள்ளூர் அனுபவம்",
+                      subLabel: "Tamil - உள்ளூர் அனுபவம்",
                       locale: const Locale('ta'),
                       delay: 500.ms,
                     ),
@@ -112,7 +114,7 @@ class LanguageSelectionScreen extends ConsumerWidget {
                       context: context,
                       ref: ref,
                       label: "日本語",
-                      subLabel: "日本の体験",
+                      subLabel: "Japanese - 日本の体験",
                       locale: const Locale('ja'),
                       delay: 600.ms,
                     ),
@@ -121,7 +123,7 @@ class LanguageSelectionScreen extends ConsumerWidget {
                       context: context,
                       ref: ref,
                       label: "Русский",
-                      subLabel: "Русский опыт",
+                      subLabel: "Russian - Русский опыт",
                       locale: const Locale('ru'),
                       delay: 700.ms,
                     ),
@@ -130,7 +132,7 @@ class LanguageSelectionScreen extends ConsumerWidget {
                       context: context,
                       ref: ref,
                       label: "한국어",
-                      subLabel: "한국어 체험",
+                      subLabel: "Korean - 한국어 체험",
                       locale: const Locale('ko'),
                       delay: 800.ms,
                     ),
@@ -188,55 +190,79 @@ class LanguageSelectionScreen extends ConsumerWidget {
     required Locale locale,
     required Duration delay,
   }) {
-    return InkWell(
-      onTap: () async {
-        HapticFeedback.mediumImpact();
-        await ref.read(localeNotifierProvider.notifier).setLocale(locale);
-        if (context.mounted) {
-          _navigateNext(context);
-        }
-      },
-      borderRadius: BorderRadius.circular(16),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppTheme.secondaryBorder(context)),
-        ),
-        child: Row(
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    label,
-                    style: GoogleFonts.inter(
-                      fontWeight: FontWeight.w800,
-                      fontSize: 16,
-                      color: AppTheme.textPrimary(context),
-                      letterSpacing: 0.5,
+    final isRtl = Directionality.of(context) == TextDirection.rtl;
+
+    // BUG-071: Wrap in Material Card with Clip.antiAlias to prevent container background color from masking the InkWell ripple splash
+    return Card(
+      color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF1E2638) : Colors.white,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      elevation: 0,
+      margin: EdgeInsets.zero,
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: () async {
+          HapticFeedback.mediumImpact();
+          await ref.read(localeNotifierProvider.notifier).setLocale(locale);
+          if (context.mounted) {
+            _navigateNext(context);
+          }
+        },
+        child: Container(
+          // BUG-091: Support RTL layouts using direction-aware padding (EdgeInsetsDirectional)
+          padding: const EdgeInsetsDirectional.only(start: 20, end: 20, top: 16, bottom: 16),
+          decoration: BoxDecoration(
+            border: Border.all(color: AppTheme.secondaryBorder(context)),
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      label,
+                      style: locale.languageCode == 'si'
+                          ? const TextStyle(
+                              fontFamily: 'OutfittedSinhala',
+                              fontWeight: FontWeight.w800,
+                              fontSize: 16,
+                              color: Colors.black87,
+                            )
+                          : GoogleFonts.inter(
+                              fontWeight: FontWeight.w800,
+                              fontSize: 16,
+                              color: AppTheme.textPrimary(context),
+                              letterSpacing: 0.5,
+                            ),
                     ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    subLabel,
-                    style: GoogleFonts.inter(
-                      color: AppTheme.textSecondary(context),
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
+                    const SizedBox(height: 2),
+                    Text(
+                      subLabel,
+                      style: locale.languageCode == 'si'
+                          ? const TextStyle(
+                              fontFamily: 'OutfittedSinhala',
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.black54,
+                            )
+                          : GoogleFonts.inter(
+                              color: AppTheme.textSecondary(context),
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                            ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            Icon(
-              Icons.arrow_forward_ios_rounded,
-              color: AppTheme.textSecondary(context).withValues(alpha: 0.3),
-              size: 16,
-            ),
-          ],
+              // BUG-091: Use direction-aware icons matching directionality of the context
+              Icon(
+                isRtl ? Icons.arrow_back_ios_new_rounded : Icons.arrow_forward_ios_rounded,
+                color: AppTheme.textSecondary(context).withValues(alpha: 0.3),
+                size: 16,
+              ),
+            ],
+          ),
         ),
       ),
     ).animate().fadeIn(delay: delay).slideX(begin: -0.05, curve: Curves.easeOut);

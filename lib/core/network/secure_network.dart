@@ -15,9 +15,6 @@ class SecureNetworkOverrides extends HttpOverrides {
   
   /// SSL Fingerprints (SHA-256) of your production server leaf certificates.
   /// Format: { "hostname": "fingerprint" }
-  /// 
-  /// Get fingerprint via: 
-  /// openssl s_client -connect api.example.com:443 < /dev/null 2>/dev/null | openssl x509 -outform DER | openssl dgst -sha256
   static const String _sslHost = String.fromEnvironment('SSL_PIN_HOST', defaultValue: '');
   static const String _sslFingerprint = String.fromEnvironment('SSL_PIN_FINGERPRINT', defaultValue: '');
 
@@ -28,19 +25,19 @@ class SecureNetworkOverrides extends HttpOverrides {
 
   @override
   HttpClient createHttpClient(SecurityContext? context) {
-    // Force trusted roots and secure defaults
-    final SecurityContext secureContext = SecurityContext(withTrustedRoots: true);
-    final HttpClient client = super.createHttpClient(secureContext);
+    // 1. Context that trusts standard roots (for external APIs like google.com check)
+    final SecurityContext standardContext = SecurityContext(withTrustedRoots: true);
+    final HttpClient standardClient = super.createHttpClient(standardContext);
     
-    // Low connection timeout to mitigate hanging connection pool attacks
-    client.connectionTimeout = const Duration(seconds: 10);
-    
-    client.badCertificateCallback = (X509Certificate cert, String host, int port) {
-      // Logic:
-      // 1. If host is in pinning list → fingerprint MUST match.
-      // 2. If Release Mode → All invalid certs ARE REJECTED.
-      // 3. If Debug Mode → Rejection still occurs unless explicitly bypassed for proxy testing.
+    // 2. Context that does NOT trust standard roots (forces verification callback for every connection)
+    final SecurityContext pinnedContext = SecurityContext(withTrustedRoots: false);
+    final HttpClient pinnedClient = super.createHttpClient(pinnedContext);
 
+    standardClient.connectionTimeout = const Duration(seconds: 10);
+    pinnedClient.connectionTimeout = const Duration(seconds: 10);
+
+    // Setup strict certificate verification callback on the pinned client
+    pinnedClient.badCertificateCallback = (X509Certificate cert, String host, int port) {
       if (_pinnedHosts.containsKey(host)) {
         final fingerprint = sha256.convert(cert.der).toString();
         if (fingerprint == _pinnedHosts[host]) {
@@ -51,17 +48,184 @@ class SecureNetworkOverrides extends HttpOverrides {
         debugPrint('[Security] 🚨 SSL PIN MISMATCH for $host! Expected: ${_pinnedHosts[host]} Got: $fingerprint');
         return false; // REJECT: Possible MITM
       }
-      
+      return false; // REJECT all others
+    };
+
+    // Setup standard client certificate validation rules
+    standardClient.badCertificateCallback = (X509Certificate cert, String host, int port) {
       if (kReleaseMode) {
         debugPrint('[Security] 🚨 Blocked invalid SSL for $host in release mode.');
         return false; // REJECT
       }
-      
-      // Allow development proxies (like Charles/Proxyman) strictly in debug mode
-      // if specific logic is added here. Default to FALSE for safety.
       return false;
     };
-    
-    return client;
+
+    return SecureHttpClientWrapper(standardClient, pinnedClient, _pinnedHosts);
+  }
+}
+
+/// A wrapper around standard HttpClients to route pinned domains through a hardened zero-trust context.
+class SecureHttpClientWrapper implements HttpClient {
+  final HttpClient _inner;
+  final HttpClient _pinnedClient;
+  final Map<String, String> _pinnedHosts;
+
+  SecureHttpClientWrapper(this._inner, this._pinnedClient, this._pinnedHosts);
+
+  HttpClient _getClientForUri(Uri uri) {
+    if (_pinnedHosts.containsKey(uri.host)) {
+      return _pinnedClient;
+    }
+    return _inner;
+  }
+
+  @override
+  bool get autoUncompress => _inner.autoUncompress;
+  @override
+  set autoUncompress(bool value) => _inner.autoUncompress = value;
+
+  @override
+  Duration? get connectionTimeout => _inner.connectionTimeout;
+  @override
+  set connectionTimeout(Duration? value) {
+    _inner.connectionTimeout = value;
+    _pinnedClient.connectionTimeout = value;
+  }
+
+  @override
+  set idleTimeout(Duration value) {
+    _inner.idleTimeout = value;
+    _pinnedClient.idleTimeout = value;
+  }
+  @override
+  Duration get idleTimeout => _inner.idleTimeout;
+
+  @override
+  set connectionFactory(Future<ConnectionTask<Socket>> Function(Uri url, String? proxyHost, int? proxyPort)? f) {
+    _inner.connectionFactory = f;
+    _pinnedClient.connectionFactory = f;
+  }
+  @override
+  Future<ConnectionTask<Socket>> Function(Uri url, String? proxyHost, int? proxyPort)? get connectionFactory => _inner.connectionFactory;
+
+  @override
+  set keyLog(Function(String line)? callback) {
+    _inner.keyLog = callback;
+    _pinnedClient.keyLog = callback;
+  }
+  @override
+  Function(String line)? get keyLog => _inner.keyLog;
+
+  @override
+  set maxConnectionsPerHost(int? value) {
+    _inner.maxConnectionsPerHost = value;
+    _pinnedClient.maxConnectionsPerHost = value;
+  }
+  @override
+  int? get maxConnectionsPerHost => _inner.maxConnectionsPerHost;
+
+  @override
+  set userAgent(String? value) {
+    _inner.userAgent = value;
+    _pinnedClient.userAgent = value;
+  }
+  @override
+  String? get userAgent => _inner.userAgent;
+
+  @override
+  void addCredentials(Uri url, String realm, HttpClientCredentials credentials) {
+    _getClientForUri(url).addCredentials(url, realm, credentials);
+  }
+
+  @override
+  void addProxyCredentials(String host, int port, String realm, HttpClientCredentials credentials) {
+    _inner.addProxyCredentials(host, port, realm, credentials);
+    _pinnedClient.addProxyCredentials(host, port, realm, credentials);
+  }
+
+  @override
+  set badCertificateCallback(bool Function(X509Certificate cert, String host, int port)? callback) {
+    _inner.badCertificateCallback = callback;
+  }
+  @override
+  bool Function(X509Certificate cert, String host, int port)? get badCertificateCallback => _inner.badCertificateCallback;
+
+  @override
+  set findProxy(String Function(Uri url)? f) {
+    _inner.findProxy = f;
+    _pinnedClient.findProxy = f;
+  }
+  @override
+  String Function(Uri url)? get findProxy => _inner.findProxy;
+
+  @override
+  set authenticate(Future<bool> Function(Uri url, String scheme, String? realm)? f) {
+    _inner.authenticate = f;
+    _pinnedClient.authenticate = f;
+  }
+  @override
+  Future<bool> Function(Uri url, String scheme, String? realm)? get authenticate => _inner.authenticate;
+
+  @override
+  set authenticateProxy(Future<bool> Function(String host, int port, String scheme, String? realm)? f) {
+    _inner.authenticateProxy = f;
+    _pinnedClient.authenticateProxy = f;
+  }
+  @override
+  Future<bool> Function(String host, int port, String scheme, String? realm)? get authenticateProxy => _inner.authenticateProxy;
+
+  @override
+  Future<HttpClientRequest> open(String method, String host, int port, String path) {
+    if (_pinnedHosts.containsKey(host)) {
+      return _pinnedClient.open(method, host, port, path);
+    }
+    return _inner.open(method, host, port, path);
+  }
+
+  @override
+  Future<HttpClientRequest> openUrl(String method, Uri url) {
+    return _getClientForUri(url).openUrl(method, url);
+  }
+
+  @override
+  Future<HttpClientRequest> get(String host, int port, String path) => open("GET", host, port, path);
+
+  @override
+  Future<HttpClientRequest> getUrl(Uri url) => openUrl("GET", url);
+
+  @override
+  Future<HttpClientRequest> post(String host, int port, String path) => open("POST", host, port, path);
+
+  @override
+  Future<HttpClientRequest> postUrl(Uri url) => openUrl("POST", url);
+
+  @override
+  Future<HttpClientRequest> put(String host, int port, String path) => open("PUT", host, port, path);
+
+  @override
+  Future<HttpClientRequest> putUrl(Uri url) => openUrl("PUT", url);
+
+  @override
+  Future<HttpClientRequest> delete(String host, int port, String path) => open("DELETE", host, port, path);
+
+  @override
+  Future<HttpClientRequest> deleteUrl(Uri url) => openUrl("DELETE", url);
+
+  @override
+  Future<HttpClientRequest> head(String host, int port, String path) => open("HEAD", host, port, path);
+
+  @override
+  Future<HttpClientRequest> headUrl(Uri url) => openUrl("HEAD", url);
+
+  @override
+  Future<HttpClientRequest> patch(String host, int port, String path) => open("PATCH", host, port, path);
+
+  @override
+  Future<HttpClientRequest> patchUrl(Uri url) => openUrl("PATCH", url);
+
+  @override
+  void close({bool force = false}) {
+    _inner.close(force: force);
+    _pinnedClient.close(force: force);
   }
 }

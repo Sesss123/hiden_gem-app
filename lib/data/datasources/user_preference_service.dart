@@ -35,6 +35,7 @@ class UserPreferenceService {
   static bool _isDirty = false;           // True if cache differs from disk
   static DateTime? _lastFlush;
   static const _flushCooldown = Duration(seconds: 2); // Minimum flush interval
+  static bool _pendingFirestoreSync = false;
 
   // ── Initialization ───────────────────────────────────────────────────────
 
@@ -46,8 +47,19 @@ class UserPreferenceService {
   static Future<void> ensureProfileLoaded() async {
     if (_cachedProfile != null) return; // Already loaded
     _cachedProfile = await _loadFromDisk();
+    
+    try {
+      final pendingRaw = await _secureStorage.read(key: 'pending_firestore_sync');
+      _pendingFirestoreSync = pendingRaw == 'true';
+    } catch (_) {}
+
     await _migrateIfNeeded();
     debugPrint('[UPS] Profile loaded. uid=${_cachedProfile?.uid}');
+
+    if (_pendingFirestoreSync) {
+      debugPrint('[UPS] Pending firestore sync detected. Retrying sync in background.');
+      syncToFirestore();
+    }
   }
 
   // ── Public Read API ──────────────────────────────────────────────────────
@@ -248,10 +260,14 @@ class UserPreferenceService {
             'bookmarkedPlaces': profile.bookmarkedPlaces,
             'itineraryPlaceIds': profile.itineraryPlaceIds,
           }, SetOptions(merge: true));
+          _pendingFirestoreSync = false;
+          await _secureStorage.write(key: 'pending_firestore_sync', value: 'false');
           debugPrint('[UPS] Local profile successfully synchronized to Firestore.');
         }
       } catch (e) {
-        debugPrint('[UPS] Firestore sync failed: $e');
+        _pendingFirestoreSync = true;
+        await _secureStorage.write(key: 'pending_firestore_sync', value: 'true');
+        debugPrint('[UPS] Firestore sync failed: $e. Queued update locally.');
       }
     }
   }

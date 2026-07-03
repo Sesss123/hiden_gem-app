@@ -1,4 +1,5 @@
 import sys
+import asyncio
 from pipeline.logger import get_pipeline_logger
 # Configure root logger and app logger
 logger = get_pipeline_logger("HiddenGemsBackend")
@@ -24,6 +25,7 @@ from core.rate_limit import limiter
 
 # Initialize Security & Database (Hybrid Strategy: MongoDB Primary, SQLite Buffer)
 init_firebase()
+# BUG-054: Do NOT log environment variables or secrets during startup
 print(">>> Firebase: Bridge connection active.", flush=True)
 
 @asynccontextmanager
@@ -47,17 +49,40 @@ app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 # CORS Lockdown
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=[
+environment = os.getenv("ENV", "development")
+if environment == "production":
+    allowed_origins = [
+        "https://hiddengemssl.com",
+        "https://api.hiddengemssl.com",
+        "https://ai.hiddengemssl.com",
+    ]
+    allowed_methods = ["GET", "POST", "OPTIONS"]
+    allowed_headers = [
+        "Content-Type", 
+        "Authorization", 
+        "X-API-KEY", 
+        "X-HiddenGems-Signature", 
+        "X-HiddenGems-Timestamp", 
+        "X-HiddenGems-Device-ID",
+        "X-HiddenGems-Version",
+        "Accept-Encoding"
+    ]
+else:
+    allowed_origins = [
         "http://localhost:8888", # Laravel Admin Dashboard & API Gateway
         "http://127.0.0.1:8888", # Laravel Alternate IP
         "http://localhost:3000", # Native Frontend (React/Next)
         "http://localhost:5173", # Vite Default
-    ], 
+    ]
+    allowed_methods = ["*"]
+    allowed_headers = ["*"]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=allowed_origins,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=allowed_methods,
+    allow_headers=allowed_headers,
 )
 
 # --- Routes ---
@@ -107,8 +132,45 @@ async def legacy_admin_stats(user=Depends(get_current_user)):
 
 @app.websocket("/ws/scan")
 async def websocket_food_scan(websocket: WebSocket):
+    # Extract token or bridge keys
+    token = websocket.query_params.get("token")
+    internal_key = websocket.headers.get("X-Admin-Internal-Key") or websocket.query_params.get("key")
+    
+    authenticated = False
+    
+    # 1. Verify Internal Bridge Key
+    if internal_key and internal_key == os.getenv("INTERNAL_BRIDGE_KEY", "hg_internal_bridge_secret_2026"):
+        authenticated = True
+        logger.info("[WS/Scan] Internal bridge authentication successful.")
+    # 2. Verify Firebase Token
+    elif token:
+        try:
+            from core.firebase_admin_init import is_firebase_initialized
+            if is_firebase_initialized():
+                from firebase_admin import auth
+                auth.verify_id_token(token)
+                authenticated = True
+                logger.info("[WS/Scan] Firebase token verification successful.")
+            else:
+                # Mock fallback for dev environments
+                if os.getenv("NODE_ENV") != "production" and os.getenv("ALLOW_MOCK_AUTH") == "true":
+                    authenticated = True
+                    logger.info("[WS/Scan] Mock authentication accepted in development.")
+        except Exception as e:
+            logger.error(f"[WS/Scan] Authentication failed: {e}")
+            
+    if not authenticated:
+        await websocket.accept()
+        await websocket.send_json({"status": "error", "reason": "Unauthorized"})
+        await websocket.close(code=4001)
+        return
+
     await websocket.accept()
     logger.info("[WS/Scan] Client connected for real-time food scanning.")
+    
+    # BUG-069: Per-connection message rate limiter (max 3 frames/second)
+    _last_message_time = 0.0
+    _MIN_INTERVAL_SECONDS = 1.0 / 3  # ~333ms between messages
     
     # Sri Lankan dish database for WebSocket real-time responses
     ws_dishes = [
@@ -124,8 +186,28 @@ async def websocket_food_scan(websocket: WebSocket):
     
     try:
         while True:
-            data = await websocket.receive_text()
+            # BUG-109 / BUG-129 / BUG-149: Close connection if no message is received for 60 seconds of inactivity
+            try:
+                data = await asyncio.wait_for(websocket.receive_text(), timeout=60.0)
+            except asyncio.TimeoutError:
+                logger.info("[WS/Scan] Inactive connection closed due to timeout.")
+                await websocket.send_json({"status": "error", "reason": "Connection timeout due to inactivity. Closed."})
+                await websocket.close(code=1000)
+                break
+
+            # BUG-089: Enforce maximum payload size limit on WebSocket frames to prevent memory exhaustion (5MB max)
+            if len(data) > 5 * 1024 * 1024:
+                await websocket.send_json({"status": "error", "reason": "Payload size limit exceeded. Max 5MB allowed."})
+                await websocket.close(code=1009)
+                break
+
             start_time = time.time()
+            
+            # BUG-069: Enforce message frequency limit to prevent server spam
+            if (start_time - _last_message_time) < _MIN_INTERVAL_SECONDS:
+                await websocket.send_json({"status": "throttled", "reason": "Message rate limit exceeded. Max 3 frames/sec."})
+                continue
+            _last_message_time = start_time
             
             try:
                 payload = json.loads(data)

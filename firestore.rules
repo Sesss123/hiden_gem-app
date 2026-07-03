@@ -44,10 +44,10 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
-    // ── Subscriptions ────────────────────────────────────────────────────────
     match /subscriptions/{subId} {
       allow read: if isSignedIn() && request.auth.uid == resource.data.accountId;
-      allow write: if false; // Backend/Admin SDK only
+      allow create: if isSignedIn() && request.resource.data.accountId == request.auth.uid;
+      allow update, delete: if isSignedIn() && resource.data.accountId == request.auth.uid;
     }
 
     // ── Guide Listings (Marketplace) ─────────────────────────────────────────

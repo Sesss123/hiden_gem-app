@@ -1,28 +1,53 @@
-import 'package:cached_network_image/cached_network_image.dart';
+import 'dart:io';
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:http/http.dart' as http;
 import '../../core/theme/app_theme.dart';
 import '../../core/services/media_cache_manager.dart';
 
-/// [CachedImage] — Optimized network image widget with disk + memory caching.
-///
-/// Replaces all `Image.network()` calls across the app.
-/// Features:
-///   - Disk cache (survives app restarts)
-///   - Memory LRU cache
-///   - Shimmer placeholder
-///   - Graceful error fallback with icon
-///   - BoxFit control
-///   - Dual-Tier pool support (thumbnail vs full)
-///
-/// USAGE:
-/// ```dart
-/// CachedImage(
-///   url: place.imageUrl,
-///   fit: BoxFit.cover,
-///   height: 200,
-///   poolType: CachePoolType.full,
-/// )
-/// ```
+class IsolateCacheHelper {
+  static Future<File> getCachedFile(String url) async {
+    final tempDir = await getTemporaryDirectory();
+    final filePath = '${tempDir.path}/${url.hashCode}';
+    
+    // Check file existence in background isolate to keep UI thread free
+    final fileExists = await compute(_checkFileExists, filePath);
+    if (fileExists) {
+      return File(filePath);
+    }
+    
+    // Download and write bytes to disk in background isolates
+    final bytes = await compute(_downloadBytes, url);
+    if (bytes != null && bytes.isNotEmpty) {
+      await compute(_writeFile, {'path': filePath, 'bytes': bytes});
+    }
+    return File(filePath);
+  }
+
+  static bool _checkFileExists(String path) {
+    return File(path).existsSync();
+  }
+
+  static Future<List<int>?> _downloadBytes(String url) async {
+    try {
+      final response = await http.get(Uri.parse(url)).timeout(const Duration(seconds: 15));
+      if (response.statusCode == 200) {
+        return response.bodyBytes;
+      }
+    } catch (_) {}
+    return null;
+  }
+
+  static void _writeFile(Map<String, dynamic> args) {
+    try {
+      final file = File(args['path'] as String);
+      file.writeAsBytesSync(args['bytes'] as List<int>);
+    } catch (_) {}
+  }
+}
+
 class CachedImage extends StatelessWidget {
   final String url;
   final BoxFit fit;
@@ -32,6 +57,7 @@ class CachedImage extends StatelessWidget {
   final Widget? errorWidget;
   final BorderRadius? borderRadius;
   final CachePoolType poolType;
+  final int? maxWidthDiskCache;
 
   const CachedImage({
     super.key,
@@ -43,6 +69,7 @@ class CachedImage extends StatelessWidget {
     this.errorWidget,
     this.borderRadius,
     this.poolType = CachePoolType.thumbnail,
+    this.maxWidthDiskCache,
   });
 
   @override
@@ -50,23 +77,30 @@ class CachedImage extends StatelessWidget {
     // Empty URL guard
     if (url.isEmpty) return _buildError(context);
 
-    final image = CachedNetworkImage(
-      imageUrl: url,
-      fit: fit,
-      width: width,
-      height: height,
-      cacheManager: poolType == CachePoolType.full ? FullCacheManager() : ThumbCacheManager(),
+    final image = FutureBuilder<File>(
+      future: IsolateCacheHelper.getCachedFile(url),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return placeholder ?? _buildShimmer(context);
+        }
+        if (snapshot.hasError || !snapshot.hasData || snapshot.data == null) {
+          return errorWidget ?? _buildError(context);
+        }
+        
+        // Ensure the file is not empty/corrupted
+        final file = snapshot.data!;
+        if (!file.existsSync() || file.lengthSync() == 0) {
+          return errorWidget ?? _buildError(context);
+        }
 
-      // Shimmer-style loading placeholder
-      placeholder: (context, url) =>
-          placeholder ?? _buildShimmer(context),
-
-      // Error fallback
-      errorWidget: (context, url, error) =>
-          errorWidget ?? _buildError(context),
-
-      // Cache config: keep 200 images, max 30 days
-      memCacheWidth: width != null ? (width! * 2).toInt() : null,
+        return Image.file(
+          file,
+          fit: fit,
+          width: width,
+          height: height,
+          cacheWidth: maxWidthDiskCache,
+        );
+      },
     );
 
     // Optional rounded corners

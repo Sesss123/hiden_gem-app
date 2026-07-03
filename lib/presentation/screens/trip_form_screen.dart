@@ -148,7 +148,7 @@ class _TripFormScreenState extends State<TripFormScreen> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.transparent,
         elevation: 0,
         scrolledUnderElevation: 0,
         shape: Border(bottom: BorderSide(color: AppTheme.secondaryBorder(context))),
@@ -306,7 +306,7 @@ class _TripFormScreenState extends State<TripFormScreen> {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               decoration: BoxDecoration(
-                color: isSelected ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.1) : Colors.white,
+                color: isSelected ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.1) : Theme.of(context).colorScheme.surface,
                 border: Border.all(
                   color: isSelected ? Theme.of(context).colorScheme.primary : AppTheme.secondaryBorder(context),
                   width: 1.5,

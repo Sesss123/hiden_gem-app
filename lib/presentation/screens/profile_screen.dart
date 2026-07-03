@@ -216,52 +216,56 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(20, 0, 20, 120),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 28),
+                // BUG-053: Wrap in SingleChildScrollView to prevent overflow on small screens
+                child: SingleChildScrollView(
+                  physics: const NeverScrollableScrollPhysics(), // parent CustomScrollView handles scroll
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 28),
 
-                    // Stats Row
-                    _buildStatsCard(),
-                    const SizedBox(height: 20),
+                      // Stats Row
+                      _buildStatsCard(),
+                      const SizedBox(height: 20),
 
-                    // Explorer Progress
-                    ExplorerProgressCard(
-                      service: ExplorerProgressService(),
-                      compact: true,
-                    ).animate().fadeIn(delay: 150.ms).slideY(begin: 0.1),
-                    const SizedBox(height: 20),
+                      // Explorer Progress
+                      ExplorerProgressCard(
+                        service: ExplorerProgressService(),
+                        compact: true,
+                      ).animate().fadeIn(delay: 150.ms).slideY(begin: 0.1),
+                      const SizedBox(height: 20),
 
-                    // Premium / AR Status
-                    _buildPremiumCard(isPremium),
-                    const SizedBox(height: 20),
+                      // Premium / AR Status
+                      _buildPremiumCard(isPremium),
+                      const SizedBox(height: 20),
 
-                    // Usage Meter
-                    const UsageMeterWidget(),
-                    const SizedBox(height: 28),
+                      // Usage Meter
+                      const UsageMeterWidget(),
+                      const SizedBox(height: 28),
 
-                    // Theme Toggle
-                    _sectionLabel("APPEARANCE"),
-                    const SizedBox(height: 12),
-                    _buildThemeToggle(),
-                    const SizedBox(height: 20),
+                      // Theme Toggle
+                      _sectionLabel("APPEARANCE"),
+                      const SizedBox(height: 12),
+                      _buildThemeToggle(),
+                      const SizedBox(height: 20),
 
-                    // Vibe Selector
-                    _sectionLabel("TRAVEL VIBE"),
-                    const SizedBox(height: 12),
-                    _buildVibeRow(),
-                    const SizedBox(height: 28),
+                      // Vibe Selector
+                      _sectionLabel("TRAVEL VIBE"),
+                      const SizedBox(height: 12),
+                      _buildVibeRow(),
+                      const SizedBox(height: 28),
 
-                    // Heritage Hub
-                    _buildHeritageHub(),
-                    const SizedBox(height: 28),
+                      // Heritage Hub
+                      _buildHeritageHub(),
+                      const SizedBox(height: 28),
 
-                    // Settings
-                    _sectionLabel("SETTINGS"),
-                    const SizedBox(height: 12),
-                    _buildSettingsSection(l10n),
-                  ],
-                ).animate().fadeIn(duration: 500.ms).slideY(begin: 0.05),
+                      // Settings
+                      _sectionLabel("SETTINGS"),
+                      const SizedBox(height: 12),
+                      _buildSettingsSection(l10n),
+                    ],
+                  ).animate().fadeIn(duration: 500.ms).slideY(begin: 0.05),
+                ),
               ),
             ),
           ],
@@ -766,13 +770,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
         _tile(Icons.privacy_tip_outlined, l10n.privacyPolicy,
             onTap: () async {
-              final url = Uri.parse("https://tripme-ai.web.app/privacy");
+              final url = Uri.parse("https://hiddengems.lk/privacy");
               if (await canLaunchUrl(url)) await launchUrl(url, mode: LaunchMode.externalApplication);
             }),
 
         _tile(Icons.description_outlined, l10n.termsOfService,
             onTap: () async {
-              final url = Uri.parse("https://tripme-ai.web.app/terms");
+              final url = Uri.parse("https://hiddengems.lk/terms");
               if (await canLaunchUrl(url)) await launchUrl(url, mode: LaunchMode.externalApplication);
             }),
 
@@ -791,7 +795,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         _tile(Icons.share_rounded, l10n.inviteFriends,
             onTap: () {
               SharePlus.instance.share(ShareParams(
-                text: "Join Hidden Gems SL! 🌍 https://tripme-ai.web.app",
+                text: "Join Hidden Gems SL! 🌍 https://hiddengems.lk",
                 subject: "Join me on Hidden Gems SL!",
               ));
             }),

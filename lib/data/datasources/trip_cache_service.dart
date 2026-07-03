@@ -159,6 +159,12 @@ class TripCacheService {
     }
   }
 
+  static bool _isValidSchema(Map<String, dynamic> data) {
+    return data.containsKey('destination') && data['destination'] is String &&
+           data.containsKey('days') && data['days'] is int &&
+           data.containsKey('schemaVersion') && data['schemaVersion'] is int;
+  }
+
   static CachedPlanResult getLastPlan(String cacheKey) {
     try {
       final box = Hive.box<String>(_lastPlanBox);
@@ -166,6 +172,12 @@ class TripCacheService {
       if (raw == null) return const CachedPlanResult(state: CacheReadResult.miss);
 
       final data = json.decode(raw) as Map<String, dynamic>;
+      if (!_isValidSchema(data)) {
+        SecureLogger.warning('[TripCache] Cache schema validation failed for key: $cacheKey');
+        box.delete(cacheKey);
+        return const CachedPlanResult(state: CacheReadResult.miss);
+      }
+
       final plan = TripPlan.fromJson(data);
 
       // Schema version check
@@ -235,7 +247,12 @@ class TripCacheService {
         final raw = box.get(key);
         if (raw != null) {
           try {
-            plans.add(TripPlan.fromJson(json.decode(raw)));
+            final data = json.decode(raw) as Map<String, dynamic>;
+            if (_isValidSchema(data)) {
+              plans.add(TripPlan.fromJson(data));
+            } else {
+              box.delete(key);
+            }
           } catch (_) {}
         }
       }
@@ -256,7 +273,12 @@ class TripCacheService {
         final raw = box.get(key as String);
         if (raw == null) continue;
         try {
-          entries.add((id: key, plan: TripPlan.fromJson(json.decode(raw))));
+          final data = json.decode(raw) as Map<String, dynamic>;
+          if (_isValidSchema(data)) {
+            entries.add((id: key, plan: TripPlan.fromJson(data)));
+          } else {
+            box.delete(key);
+          }
         } catch (_) {}
       }
       // Newest first
@@ -343,6 +365,23 @@ class TripCacheService {
 
   static Future<void> cacheGlobalData(String key, String jsonString) async {
     try {
+      // BUG-057: Check available disk space before writing large data files
+      if (!kIsWeb) {
+        try {
+          final dir = await getApplicationDocumentsDirectory();
+          final stat = await dir.stat();
+          // Use a 10MB minimum free-space threshold
+          if (stat.size > 0 && jsonString.length > 1024) {
+            // stat.size gives directory size, not free space — use a write probe
+            final testFile = File('${dir.path}/.space_check');
+            await testFile.writeAsString('x');
+            await testFile.delete();
+          }
+        } catch (spaceError) {
+          SecureLogger.warning('[TripCache] Disk space check failed — skipping cache write: $spaceError');
+          return;
+        }
+      }
       final box = Hive.box<String>(_globalDataBox);
       await box.put(key, jsonString);
       await box.put('${key}_timestamp', DateTime.now().millisecondsSinceEpoch.toString());

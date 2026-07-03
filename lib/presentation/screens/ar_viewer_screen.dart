@@ -116,6 +116,9 @@ class _ARViewerScreenState extends State<ARViewerScreen>
   @override
   void initState() {
     super.initState();
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+    ]);
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
 
     _scanAnimController = AnimationController(
@@ -327,6 +330,12 @@ class _ARViewerScreenState extends State<ARViewerScreen>
   void dispose() {
     _memorySubscription?.cancel();
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]);
     _demoTimer?.cancel();
     _radarTimer?.cancel();
     _positionStream?.cancel();

@@ -68,17 +68,25 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
   void dispose() {
     _voiceRecipeService.stopCooking();
     _voiceRecipeService.dispose();
-    WidgetsBinding.instance.removeObserver(this);
-    _controller?.dispose();
+    try {
+      WidgetsBinding.instance.removeObserver(this);
+    } catch (_) {}
+    final controller = _controller;
+    _controller = null;
+    _isInit = false;
+    controller?.dispose();
     super.dispose();
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (_controller == null || !_controller!.value.isInitialized) return;
+    final controller = _controller;
+    if (controller == null || !controller.value.isInitialized) return;
 
     if (state == AppLifecycleState.inactive) {
-      _controller?.dispose();
+      _isInit = false;
+      _controller = null;
+      controller.dispose();
     } else if (state == AppLifecycleState.resumed) {
       _initCamera();
     }

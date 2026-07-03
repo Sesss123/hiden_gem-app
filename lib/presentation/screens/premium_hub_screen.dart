@@ -445,7 +445,9 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
               children: [
                 Icon(Icons.check_circle_rounded, size: 18, color: color.withValues(alpha: 0.6)),
                 SizedBox(width: 12),
-                Text(f, style: GoogleFonts.inter(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7), fontSize: 13, fontWeight: FontWeight.w600)),
+                Expanded(
+                  child: Text(f, style: GoogleFonts.inter(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7), fontSize: 13, fontWeight: FontWeight.w600)),
+                ),
               ],
             ),
           )),

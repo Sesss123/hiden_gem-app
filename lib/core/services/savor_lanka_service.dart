@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:http/http.dart' as http;
 import 'package:google_generative_ai/google_generative_ai.dart';
 import '../utils/secure_logger.dart';
@@ -40,7 +42,10 @@ class SavorLankaService {
         ])
       ];
 
-      final response = await _model!.generateContent(content);
+      // BUG-079: Limit generative AI call with 15s timeout to prevent freezing the camera UI
+      final response = await _model!.generateContent(content).timeout(
+        const Duration(seconds: 15),
+      );
       final text = response.text;
 
       if (text == null) {
@@ -49,29 +54,64 @@ class SavorLankaService {
 
       final Map<String, dynamic> data = json.decode(text);
       return FoodModel.fromJson(data);
+    } on TimeoutException catch (e) {
+      SecureLogger.error('Savor Lanka Commercial LLM timed out (15s limit). Falling back to BYOM scanner.', e);
+      return _callCustomByomFoodScanner(imageFile, spicePreference, userMode);
     } catch (e) {
       SecureLogger.warning('Savor Lanka Commercial LLM skipped or failed: $e');
       return _callCustomByomFoodScanner(imageFile, spicePreference, userMode);
     }
   }
 
+
   Future<FoodModel?> _callCustomByomFoodScanner(File imageFile, String spicePreference, String userMode) async {
     try {
-      final base64Image = base64Encode(await imageFile.readAsBytes());
+      final imageBytes = await imageFile.readAsBytes();
+      
+      // BUG-099: Validate image file integrity before starting conversions/GZIP encoding
+      if (imageBytes.isEmpty || imageBytes.length < 4) {
+        SecureLogger.warning("Custom BYOM Scanner: Image file is empty or corrupted. Aborting scan.");
+        return null;
+      }
+
+      final compressedBytes = GZipCodec().encode(imageBytes);
+      final base64Image = base64Encode(compressedBytes);
+
       final response = await http.post(
         Uri.parse('${AppConfig.pythonUrl}/food/scan'),
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+          'Content-Type': 'application/json',
+          'Content-Encoding': 'gzip', // Signal to server that payload is compressed
+        },
         body: json.encode({
           'image_base64': base64Image,
           'user_mode': userMode,
           'spice_preference': spicePreference,
+          'compressed': true,
         }),
       ).timeout(const Duration(seconds: 15));
 
       if (response.statusCode == 200) {
-        final Map<String, dynamic> data = json.decode(response.body);
+        // BUG-139: Validate that the response is actually JSON before decoding.
+        // Servers under load may return HTML error pages or empty bodies.
+        final contentType = response.headers['content-type'] ?? '';
+        final body = response.body.trim();
+        if (body.isEmpty || !contentType.contains('application/json')) {
+          SecureLogger.warning(
+            'Custom BYOM Scanner: unexpected response format '
+            '(content-type: $contentType, body length: ${body.length}). Skipping decode.',
+          );
+          return null;
+        }
+        final Map<String, dynamic> data = json.decode(body);
         return FoodModel.fromJson(data);
       }
+    } on TimeoutException catch (e) {
+      SecureLogger.error('Custom BYOM Food Scanner timed out (15s limit)', e);
+    } on HttpException catch (e) {
+      SecureLogger.error('Custom BYOM Food Scanner HTTP protocol error', e);
+    } on SocketException catch (e) {
+      SecureLogger.error('Custom BYOM Food Scanner connection failed: Network unreachable', e);
     } catch (e) {
       SecureLogger.warning('Custom BYOM Food Scanner offline or unreachable: $e');
     }

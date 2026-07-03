@@ -78,10 +78,22 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
+      // BUG-136: SafeArea ensures layout adapts to system status bar changes,
+      // preventing content from jumping when bars appear/disappear.
+      body: SafeArea(
+        // Expand the gradient background behind the safe area insets
+        bottom: false,
+        child: Container(
+
+        // BUG-096: Use theme-aware background so splash matches active theme on load.
+        // Fallback to dark oracle color for non-initialized state (before MaterialApp context).
+        decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [Color(0xFF1A0E08), Color(0xFF2A1608), Color(0xFF1A0E08)],
+            colors: [
+              Theme.of(context).scaffoldBackgroundColor,
+              Theme.of(context).scaffoldBackgroundColor.withValues(alpha: 0.85),
+              Theme.of(context).scaffoldBackgroundColor,
+            ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -89,71 +101,75 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // --- Splash Orb ---
-                  Container(
-                    width: 90,
-                    height: 90,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(color: AppPalette.rust.withValues(alpha: 0.4)),
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppPalette.rust.withValues(alpha: 0.3),
-                          blurRadius: 40,
-                        ),
-                      ],
-                      gradient: RadialGradient(
-                        center: const Alignment(-0.3, -0.3),
-                        colors: [
-                          AppPalette.rust.withValues(alpha: 0.8),
-                          AppPalette.rust.withValues(alpha: 0.1),
+            // BUG-076: Wrap central assets in SafeArea so the logo is never
+            // clipped by notches or curved-screen corners.
+            SafeArea(
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // --- Splash Orb ---
+                    Container(
+                      width: 90,
+                      height: 90,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(color: AppPalette.rust.withValues(alpha: 0.4)),
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppPalette.rust.withValues(alpha: 0.3),
+                            blurRadius: 40,
+                          ),
                         ],
+                        gradient: RadialGradient(
+                          center: const Alignment(-0.3, -0.3),
+                          colors: [
+                            AppPalette.rust.withValues(alpha: 0.8),
+                            AppPalette.rust.withValues(alpha: 0.1),
+                          ],
+                        ),
                       ),
-                    ),
-                    child: const Icon(
-                      Icons.travel_explore_rounded,
-                      size: 40,
-                      color: Colors.white,
-                    ),
-                  )
-                  .animate(onPlay: (c) => c.repeat())
-                  .scale(begin: const Offset(0.95, 0.95), end: const Offset(1.05, 1.05), duration: 2.seconds, curve: Curves.easeInOut),
+                      child: const Icon(
+                        Icons.travel_explore_rounded,
+                        size: 40,
+                        color: Colors.white,
+                      ),
+                    )
+                    .animate(onPlay: (c) => c.repeat())
+                    .scale(begin: const Offset(0.95, 0.95), end: const Offset(1.05, 1.05), duration: 1200.ms, curve: Curves.easeInOut),
 
-                  const SizedBox(height: 24),
+                    const SizedBox(height: 24),
 
-                  // --- Brand ---
-                  Text(
-                    "HIDDEN GEMS.AI",
-                    style: GoogleFonts.outfit(
-                      fontSize: 24,
-                      fontWeight: FontWeight.w900,
-                      color: Colors.white,
-                      letterSpacing: 4,
-                    ),
-                  )
-                  .animate()
-                  .fadeIn(duration: 1.seconds)
-                  .blur(begin: const Offset(10, 10), end: Offset.zero, duration: 1.2.seconds),
-                  
-                  const SizedBox(height: 8),
+                    // --- Brand ---
+                    Text(
+                      "HIDDEN GEMS.AI",
+                      style: GoogleFonts.outfit(
+                        fontSize: 24,
+                        fontWeight: FontWeight.w900,
+                        color: Colors.white,
+                        letterSpacing: 4,
+                      ),
+                    )
+                    .animate()
+                    .fadeIn(duration: 800.ms)
+                    .blur(begin: const Offset(10, 10), end: Offset.zero, duration: 1000.ms),
+                    
+                    const SizedBox(height: 8),
 
-                  Text(
-                    "SRI LANKA'S PREMIER ORACLE",
-                    style: GoogleFonts.inter(
-                      fontSize: 8,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white.withValues(alpha: 0.3),
-                      letterSpacing: 3,
-                    ),
-                  )
-                  .animate()
-                  .fadeIn(delay: 500.ms, duration: 800.ms)
-                  .slideY(begin: 1, end: 0),
-                ],
+                    Text(
+                      "SRI LANKA'S PREMIER ORACLE",
+                      style: GoogleFonts.inter(
+                        fontSize: 8,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white.withValues(alpha: 0.3),
+                        letterSpacing: 3,
+                      ),
+                    )
+                    .animate()
+                    .fadeIn(delay: 400.ms, duration: 600.ms)
+                    .slideY(begin: 1, end: 0),
+                  ],
+                ),
               ),
             ),
 
@@ -166,7 +182,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                 children: [
                   const ModernTracerIndicator()
                       .animate()
-                      .fadeIn(delay: 1.2.seconds),
+                      .fadeIn(delay: 800.ms),
                   const SizedBox(height: 16),
                   Text(
                     widget.isReady ? "CONNECTION ESTABLISHED" : "CALCULATING DESTINY...",
@@ -178,14 +194,15 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                     ),
                   )
                   .animate(onPlay: (c) => c.repeat(reverse: true))
-                  .shimmer(duration: 2.seconds, color: Colors.white24),
+                  .shimmer(duration: 1500.ms, color: Colors.white24),
                 ],
               ),
             ),
           ],
         ),
       ),
-    );
+    ), // SafeArea close
+  );
   }
 }
 
@@ -204,7 +221,12 @@ class _FadeInTextState extends State<FadeInText> with SingleTickerProviderStateM
   @override
   void initState() {
     super.initState();
-    _anim = AnimationController(vsync: this, duration: const Duration(seconds: 2));
+    _anim = AnimationController(
+      vsync: this, 
+      duration: const Duration(milliseconds: 1500),
+      lowerBound: 0.0,
+      upperBound: 1.0,
+    );
     _opacity = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _anim, curve: const Interval(0.5, 1.0, curve: Curves.easeIn)),
     );

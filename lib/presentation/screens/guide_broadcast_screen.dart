@@ -20,11 +20,14 @@ class _GuideBroadcastScreenState extends State<GuideBroadcastScreen> {
   final _broadcastRepo = BroadcastRepository();
   bool _isSending = false;
   BroadcastType _selectedType = BroadcastType.general;
+  BroadcastPriority _selectedPriority = BroadcastPriority.normal;
+
   @override
   void dispose() {
     _messageController.dispose();
     super.dispose();
   }
+
 
   Future<void> _sendBroadcast() async {
     if (_messageController.text.isEmpty) return;

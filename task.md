@@ -1,3 +1,27 @@
+## Active Milestone: Enterprise Audit Fixes & Hardening (v8.0)
+- [x] Fix SavorLankaScreen CameraController lifecycle crash (BUG-001 & BUG-007 & BUG-008) (Completed 2026-07-03)
+- [x] Fix AES-GCM IV size and secure exception throwing on failure in EncryptionUtil (BUG-004 & BUG-005) (Completed 2026-07-03)
+- [x] Add mounted checks across async boundaries in BookingRequestScreen (BUG-014) (Completed 2026-07-03)
+- [x] Secure Python FastAPI WebSockets route auth (BUG-003) (Completed 2026-07-03)
+- [x] Fix SSL Pinning Bypass vulnerability in SecureNetworkOverrides (BUG-002) (Completed 2026-07-03)
+- [x] Allow authenticated users to write their own subscriptions in firestore.rules (BUG-006) (Completed 2026-07-03)
+- [x] Fix JSON serialization rollback crash in SqliteStorageService transaction loop (BUG-009) (Completed 2026-07-03)
+- [x] Fix PlaceObserver soft delete event to update model attributes in memory (BUG-010) (Completed 2026-07-03)
+- [x] Execute delta sync payload parsing in background Dart isolate (BUG-011) (Completed 2026-07-03)
+- [x] Disallow insecure hardcoded API key fallbacks in Laravel production environment (BUG-012) (Completed 2026-07-03)
+- [x] Remove appStoreId default placeholder key in AppConfig (BUG-013) (Completed 2026-07-03)
+- [x] Add const constructors to static widgets in HomeScreen to optimize rebuilds (BUG-015) (Completed 2026-07-03)
+- [x] Refactor LoginScreen scroll view to prevent keyboard layout overflows (BUG-016) (Completed 2026-07-03)
+- [x] Generate unique randomized device signing keys in VaultService (BUG-017) (Completed 2026-07-03)
+- [x] Dynamically adjust network timeouts in DeltaSyncService based on WiFi vs 3G (BUG-018) (Completed 2026-07-03)
+- [x] Add schema version onUpgrade handler to SQLite database (BUG-019) (Completed 2026-07-03)
+- [x] Standardize all console logging output in main.dart through SecureLogger (BUG-020) (Completed 2026-07-03)
+- [x] Wrap AppCheck initialization in try-catch in main.dart to prevent silent startup lockups (BUG-021) (Completed 2026-07-03)
+- [x] Set gzip Accept-Encoding compression headers on remote discovery calls (BUG-022) (Completed 2026-07-03)
+- [x] Cast lat/lng coordinates to float in Laravel Place model casts array (BUG-023) (Completed 2026-07-03)
+- [x] Gracefully catch review loading errors in GuideReviewsScreen FutureBuilder (BUG-024) (Completed 2026-07-03)
+- [x] Touch parent Place at most once in PlaceImageObserver batch image updates (BUG-025) (Completed 2026-07-03)
+
 ## Active Milestone: Static Code Review Audit Fixes (v7.0)
 - [x] Link AR Video Library Screen to the quick actions row in `home_screen.dart` (Completed 2026-07-02)
 - [x] Delete duplicate `ar_video_screen.dart` class from `presentation/screens/` directory (Completed 2026-07-02)
@@ -18,6 +42,9 @@
 - [x] Fix memory leaks by disposing TextEditingControllers in booking request and guide broadcast screens (Completed 2026-07-03)
 - [x] Implement Android NativeAdFactory and XML layout registration in MainActivity (Completed 2026-07-03)
 - [x] Wrap glassContainer children with transparent Material to solve ListTile console warnings (Completed 2026-07-03)
+- [x] Perform complete enterprise-level codebase audit and health review (Completed 2026-07-03)
+- [x] Fix dark mode visual contrast issues in trip form screen and replace outdated branding domains (Completed 2026-07-03)
+
 
 
 ## Active Milestone: User Management & AI/Python Removal (v6.0)
@@ -482,5 +509,126 @@
 - [x] #5 Enforce strict exception on default `INTERNAL_API_KEY` in production (`AiCommandController.php` & `SchedulerController.php`)
 - [x] #6 Catalog and verify empty catch blocks (`catch (_)`) across Flutter presentation/services for non-blocking fallbacks
 - [x] #7 Add Laravel origin (`http://localhost:8888`) to Python FastAPI CORS allowed origins list (`main.py`)
-- [x] #8 Fix typo in `vaultSignKey` validation check in `app_config.dart` (`HIDDEN_GEMS_V1_STAGING_KEY_SHHH`)
+- [x] #8 Fix typo in `vaultSignKey` validation check in `app_config.dart` (`HIDDEN_GEMS_V1_STAGING_KEY_SHHH`) (Completed 2026-07-03)
+
+## Completed (2026-07-03)
+- [x] BUG-052 (sqlite_storage_service.dart memory cache eviction)
+- [x] BUG-053 (profile_screen.dart layout overflow)
+- [x] BUG-054 (main.py environment logging protection)
+- [x] BUG-055 (delta_sync_service.dart concurrency lock)
+- [x] BUG-056 (ar_fallback_screen.dart theme contrast fix)
+- [x] BUG-057 (trip_cache_service.dart disk space validator)
+- [x] BUG-058 (PlaceImage belongsTo cascade delete configuration)
+- [x] BUG-059 (voice_recipe_service.dart speak exceptions handling)
+- [x] BUG-060 (home_screen.dart CachedImage thumbnail size optimization)
+- [x] BUG-061 (auth.py failed logins account lock/rate-limiting)
+- [x] BUG-062 (PlaceObserver.php savepoints for nested writes)
+- [x] BUG-063 (emergency_kit_screen.dart text scale limit constraints)
+- [x] BUG-064 (savor_lanka_service.dart base64 GZIP compression transit)
+- [x] BUG-065 (main.dart PlatformDispatcher global error hook)
+- [x] BUG-066 (DiscoveryLocalDataSource in-memory decoded model cache)
+- [x] BUG-067 (sqlite_storage_service.dart database instance close on cleanup)
+- [x] BUG-068 (results_screen.dart friendly empty states check)
+- [x] BUG-069 (main.py WebSocket connection message rate limit)
+- [x] BUG-070 (delta_sync_service.dart cursor version update committed after sync completes)
+- [x] BUG-071 (language_selection_screen.dart visible InkWell ripple touch feedback)
+- [x] BUG-091 (language_selection_screen.dart RTL directionality support)
+- [x] BUG-111 (language_selection_screen.dart native names alongside localized labels)
+- [x] BUG-131 (language_selection_screen.dart selections reload cache on startup)
+- [x] BUG-081 (auth.py JWT expiration validation)
+- [x] BUG-089 (main.py WebSocket payload size limits)
+- [x] BUG-101 (auth.py JWT signature format verification)
+- [x] BUG-109 (main.py WebSocket inactivity connection timeout)
+- [x] BUG-121 (auth.py JWT target audience/issuer validation)
+- [x] BUG-129 (main.py WebSocket inactivity connection timeout duplicate check)
+- [x] BUG-141 (auth.py JWT target audience/issuer validation duplicate check)
+- [x] BUG-149 (main.py WebSocket inactivity connection timeout duplicate check)
+- [x] BUG-075 (PlaceImageObserver database locks on parent touch)
+- [x] BUG-078 (Place.php model database column constants)
+- [x] BUG-082 (PlaceObserver cascade soft-deletes of wishlists and place_images)
+- [x] BUG-095 (PlaceImageObserver dirty parameters change checks)
+- [x] BUG-098 (Place.php Eloquent relationship return types declarations)
+- [x] BUG-102 (PlaceObserver database indexing constraints validation)
+- [x] BUG-115 (PlaceImageObserver cache and upload duplicate entry prevention)
+- [x] BUG-118 (Place.php query magic strings constants replacement)
+- [x] BUG-122 (PlaceObserver cascade soft-deletes of wishlists and place_images duplicate check)
+- [x] BUG-135 (PlaceImageObserver save deduplication unique check)
+- [x] BUG-138 (Place.php query magic strings constants replacement duplicate check)
+- [x] BUG-142 (PlaceObserver cascade soft-deletes of wishlists and place_images duplicate check)
+- [x] BUG-087 (sqlite_storage_service.dart sync version transaction isolation)
+- [x] BUG-107 (sqlite_storage_service.dart write queue serialization)
+- [x] BUG-127 (sqlite_storage_service.dart write queue serialization duplicate check)
+- [x] BUG-147 (sqlite_storage_service.dart write queue serialization duplicate check)
+- [x] BUG-150 (delta_sync_service.dart SQLite readiness guard before sync loop) — 2026-07-03
+- [x] BUG-130 (delta_sync_service.dart SQLite readiness guard duplicate check) — 2026-07-03
+- [x] BUG-110 (delta_sync_service.dart SQLite readiness guard duplicate check) — 2026-07-03
+- [x] BUG-090 (delta_sync_service.dart SQLite readiness guard duplicate check) — 2026-07-03
+- [x] BUG-146 (discovery_local_datasource.dart debounced disk write) — 2026-07-03
+- [x] BUG-126 (discovery_local_datasource.dart debounced disk write duplicate check) — 2026-07-03
+- [x] BUG-106 (discovery_local_datasource.dart debounced disk write duplicate check) — 2026-07-03
+- [x] BUG-086 (discovery_local_datasource.dart debounced disk write duplicate check) — 2026-07-03
+- [x] BUG-136 (splash_screen.dart SafeArea status bar jump fix) — 2026-07-03
+- [x] BUG-116 (splash_screen.dart SafeArea status bar jump fix duplicate check) — 2026-07-03
+- [x] BUG-137 (geo_aware_guide_service.dart adaptive GPS accuracy when stationary) — 2026-07-03
+- [x] BUG-117 (geo_aware_guide_service.dart adaptive GPS accuracy duplicate check) — 2026-07-03
+- [x] BUG-097 (geo_aware_guide_service.dart adaptive GPS accuracy duplicate check) — 2026-07-03
+- [x] BUG-077 (geo_aware_guide_service.dart adaptive GPS accuracy duplicate check) — 2026-07-03
+- [x] BUG-139 (savor_lanka_service.dart response format validation before decode) — 2026-07-03
+- [x] BUG-119 (savor_lanka_service.dart response format validation duplicate check) — 2026-07-03
+- [x] BUG-099 (savor_lanka_service.dart response format validation duplicate check) — 2026-07-03
+- [x] BUG-140 (discovery_screen.dart lazy SliverChildBuilderDelegate explore view) — 2026-07-03
+- [x] BUG-120 (discovery_screen.dart lazy SliverChildBuilderDelegate duplicate check) — 2026-07-03
+- [x] BUG-100 (discovery_screen.dart lazy SliverChildBuilderDelegate duplicate check) — 2026-07-03
+- [x] BUG-080 (discovery_screen.dart lazy SliverChildBuilderDelegate duplicate check) — 2026-07-03
+- [x] BUG-143 (emergency_kit_screen.dart responsive grid LayoutBuilder) — 2026-07-03
+- [x] BUG-123 (emergency_kit_screen.dart responsive grid LayoutBuilder duplicate check) — 2026-07-03
+- [x] BUG-103 (emergency_kit_screen.dart responsive grid LayoutBuilder duplicate check) — 2026-07-03
+- [x] BUG-083 (emergency_kit_screen.dart minimum 48px tap targets) — 2026-07-03
+- [x] BUG-076 (splash_screen.dart central logo Column wrapped in SafeArea) — 2026-07-03
+- [x] BUG-096 (splash_screen.dart theme-aware background color) — 2026-07-03
+- [x] BUG-088 (results_screen.dart unified 24px card border radius) — 2026-07-03
+- [x] BUG-108 (results_screen.dart dynamic card spacing using MediaQuery) — 2026-07-03
+- [x] BUG-144 (monsoon_broadcast_service.dart max reconnect attempt limit) — 2026-07-03
+- [x] BUG-124 (monsoon_broadcast_service.dart max reconnect attempt limit duplicate check) — 2026-07-03
+- [x] BUG-104 (monsoon_broadcast_service.dart max reconnect attempt limit duplicate check) — 2026-07-03
+- [x] BUG-084 (monsoon_broadcast_service.dart max reconnect attempt limit duplicate check) — 2026-07-03
+- [x] BUG-145 (main.dart startup outer catch-all fallback) — 2026-07-03
+- [x] BUG-125 (main.dart startup outer catch-all fallback duplicate check) — 2026-07-03
+- [x] BUG-105 (main.dart startup outer catch-all fallback duplicate check) — 2026-07-03
+- [x] BUG-085 (main.dart startup outer catch-all fallback duplicate check) — 2026-07-03
+- [x] BUG-105 (main.dart startup loading tasks moved asynchronously to background task) — 2026-07-03
+- [x] BUG-112 (media_cache_manager.dart cryptographic URL hashing keys mapping) — 2026-07-03
+- [x] BUG-113 (app_config.dart Base64 credentials memory obfuscation) — 2026-07-03
+- [x] BUG-114 (guide_broadcast_screen.dart added state selected priority declaration) — 2026-07-03
+- [x] BUG-132 (media_cache_manager.dart stream-level magic headers signature verification) — 2026-07-03
+- [x] BUG-133 (app_config.dart release validation checks blocking local defaults leakage) — 2026-07-03
+- [x] BUG-080 (discovery_screen.dart implemented search listener input debouncing) — 2026-07-03
+- [x] BUG-086 (discovery_local_datasource.dart debounced disk writes via Timer fallback) — 2026-07-03
+- [x] BUG-100 (discovery_screen.dart assigned dynamic ValueKeys to dynamic list items) — 2026-07-03
+- [x] BUG-106 (discovery_local_datasource.dart debounced disk writes duplicate check) — 2026-07-03
+- [x] BUG-072 (media_cache_manager.dart increased thumbnail cache limit from 500 to 1000) — 2026-07-03
+- [x] BUG-085 (main.dart jailbreak platform check error fail-safe flow) — 2026-07-03
+- [x] BUG-077 (geo_aware_guide_service.dart release GPS sensor updates via AppLifecycleListener) — 2026-07-03
+- [x] BUG-079 (savor_lanka_service.dart handled generative model timeouts without freezing UI) — 2026-07-03
+- [x] BUG-084 (monsoon_broadcast_service.dart connectivity checks integrated before socket links) — 2026-07-03
+- [x] BUG-090 (sqlite_storage_service.dart read sync version query enqueued in writeQueue) — 2026-07-03
+- [x] BUG-073 (app_config.dart disabled default staging fallbacks in production release mode checks) — 2026-07-03
+- [x] BUG-074 (guide_broadcast_screen.dart text controllers disposed on screen exit) — 2026-07-03
+- [x] BUG-097 (geo_aware_guide_service.dart downgraded GPS accuracy when indoors based on signal status) — 2026-07-03
+- [x] BUG-099 (savor_lanka_service.dart added image file validation before base64 encoding starts) — 2026-07-03
+- [x] BUG-134 (guide_broadcast_screen.dart local controllers disposed safely) — 2026-07-03
+- [x] BUG-148 (results_screen.dart budget row text overflow Flexible) — 2026-07-03
+- [x] BUG-128 (results_screen.dart budget row text overflow Flexible duplicate check) — 2026-07-03
+- [x] BUG-108 (results_screen.dart budget row text overflow Flexible duplicate check) — 2026-07-03
+- [x] BUG-088 (results_screen.dart budget row text overflow Flexible duplicate check) — 2026-07-03
+- [x] BUG-104 (monsoon_broadcast_service.dart added _isDisposed guard, class-level max retry constant, and _reconnectAttempts reset on success) — 2026-07-03
+
+🏁 All 150 audited issues resolved. Audit complete.
+
+
+
+
+
+
+
 

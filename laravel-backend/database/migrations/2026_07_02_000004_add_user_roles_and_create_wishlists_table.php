@@ -35,8 +35,12 @@ return new class extends Migration
             Schema::create('wishlists', function (Blueprint $table) {
                 $table->id();
                 $table->foreignId('user_id')->constrained()->onDelete('cascade');
-                $table->foreignId('place_id')->constrained()->onDelete('cascade');
+                $table->string('place_id', 100)->index();
                 $table->timestamps();
+
+                $table->foreign('place_id')
+                      ->references('id')->on('places')
+                      ->onDelete('cascade');
 
                 // A user can bookmark a specific place only once
                 $table->unique(['user_id', 'place_id']);

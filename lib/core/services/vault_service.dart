@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 import 'package:crypto/crypto.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../config/app_config.dart';
@@ -18,13 +19,13 @@ class VaultService {
   static Future<String> _getSigningKey() async {
     if (_cachedKey != null) return _cachedKey!;
 
-    // In a real production app, this should be injected via --dart-define 
-    // or fetched once from a secure KMS during onboarding.
     String? key = await _storage.read(key: _signingKeyName);
     
     if (key == null) {
-      // Fallback to environment or generate fallback (in production, strictly from KMS)
-      key = AppConfig.vaultSignKey;
+      // Generate a secure random 256-bit (32-byte) key
+      final random = Random.secure();
+      final bytes = List<int>.generate(32, (i) => random.nextInt(256));
+      key = base64Url.encode(bytes);
       await _storage.write(key: _signingKeyName, value: key);
     }
     

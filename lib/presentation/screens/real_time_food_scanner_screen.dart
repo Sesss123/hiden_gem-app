@@ -325,6 +325,9 @@ class _RealTimeFoodScannerScreenState extends State<RealTimeFoodScannerScreen>
 
     if (state == AppLifecycleState.inactive || state == AppLifecycleState.paused) {
       _disconnectWebSocket();
+      if (_cameraController!.value.isStreamingImages) {
+        _cameraController!.stopImageStream().catchError((_) {});
+      }
       _cameraController?.dispose();
     } else if (state == AppLifecycleState.resumed) {
       _initCameraAndSocket();
@@ -335,6 +338,9 @@ class _RealTimeFoodScannerScreenState extends State<RealTimeFoodScannerScreen>
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     _disconnectWebSocket();
+    if (_cameraController != null && _cameraController!.value.isStreamingImages) {
+      _cameraController!.stopImageStream().catchError((_) {});
+    }
     _cameraController?.dispose();
     super.dispose();
   }

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:ui';
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -12,6 +13,7 @@ import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 import '../../core/theme/oracle_ui_system.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/services/monsoon_broadcast_service.dart';
 import '../../data/datasources/live_events_service.dart';
 import '../../data/datasources/user_preference_service.dart';
 import '../../data/datasources/trip_cache_service.dart';
@@ -40,6 +42,7 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> {
   final List<String> _musicGenres = [
     "Techno", "House", "Acoustic", "Jazz", "Traditional", "Rock", "Electronic"
   ];
+  StreamSubscription? _broadcastSub;
   List<String> _selectedMusicPreferences = [];
 
   @override
@@ -48,6 +51,22 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> {
     _selectedDay = _focusedDay;
     _selectedMusicPreferences = List<String>.from(_userProfile.preferredStyles.where((i) => _musicGenres.contains(i)));
     _loadData();
+    _broadcastSub = MonsoonBroadcastService().broadcastStream.listen((alert) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("🚨 HAZARD WARNING: ${alert['message'] ?? 'Extreme weather alert!'}"),
+            backgroundColor: Colors.redAccent,
+          ),
+        );
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _broadcastSub?.cancel();
+    super.dispose();
   }
 
   Future<void> _loadData() async {
@@ -96,11 +115,7 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> {
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         appBar: AppBar(
           backgroundColor: Colors.transparent,
-          elevation: 0,
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back_ios_new_rounded, color: AppTheme.textPrimary(context), size: 20),
-            onPressed: () => Navigator.pop(context),
-          ),
+          automaticallyImplyLeading: false,
           actions: [
             IconButton(
               onPressed: _showPreferenceDialog,

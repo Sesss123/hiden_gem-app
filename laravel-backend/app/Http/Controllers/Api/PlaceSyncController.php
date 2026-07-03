@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Place;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use App\Models\SyncCounter;
 
 class PlaceSyncController extends Controller
 {
@@ -15,7 +15,7 @@ class PlaceSyncController extends Controller
      */
     public function checkVersion(Request $request)
     {
-        $version = DB::table('sync_counter')->where('id', 1)->value('current_version');
+        $version = SyncCounter::where('id', 1)->value('current_version');
         return response()->json([
             'version' => (int) ($version ?? 0)
         ]);
@@ -28,7 +28,8 @@ class PlaceSyncController extends Controller
     public function delta(Request $request)
     {
         $sinceVersion = (int) $request->query('since_version', 0);
-        $limit = min((int) $request->query('limit', 100), 500);
+        // Capped and hardcoded to 100 max per request to avoid memory exhaustion (BUG-046)
+        $limit = 100;
 
         $places = Place::with('images')
             ->where('sync_version', '>', $sinceVersion)
@@ -67,12 +68,22 @@ class PlaceSyncController extends Controller
 
     /**
      * GET /api/v1/places
-     * Returns all active places formatted as PlaceResources.
+     * Returns all active places with cursor pagination.
      */
     public function allPlaces(Request $request)
     {
-        $places = Place::with('images')
-            ->where('is_deleted', false)
+        $cursor = $request->query('cursor');
+        $limit = 100;
+
+        $query = Place::with('images')
+            ->where('is_deleted', false);
+
+        if ($cursor) {
+            $query->where('id', '>', $cursor);
+        }
+
+        $places = $query->orderBy('id', 'asc')
+            ->limit($limit)
             ->get();
 
         $formatted = [];
@@ -80,6 +91,13 @@ class PlaceSyncController extends Controller
             $formatted[] = (new \App\Http\Resources\PlaceResource($place))->resolve();
         }
 
-        return response()->json($formatted);
+        $nextCursor = $places->last()?->id;
+        $hasMore = $places->count() >= $limit;
+
+        return response()->json([
+            'places' => $formatted,
+            'next_cursor' => $nextCursor,
+            'has_more' => $hasMore,
+        ]);
     }
 }

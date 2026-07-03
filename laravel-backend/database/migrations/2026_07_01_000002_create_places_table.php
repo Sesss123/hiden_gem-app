@@ -80,6 +80,11 @@ return new class extends Migration
             
             // Enforce unique index on sync_version as agreed in System Architecture v3.3
             $table->unique('sync_version');
+
+            // Composite indices for common query patterns (BUG-037)
+            $table->index(['is_deleted', 'district']);
+            $table->index(['is_deleted', 'category']);
+            $table->index(['is_deleted', 'ar_supported']);
         });
     }
 

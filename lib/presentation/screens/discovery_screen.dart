@@ -52,8 +52,12 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
     "all", "nature", "waterfall", "hiking", "culture", "coastal", "family", "budget", "ar"
   ];
 
+  // BUG-080: Debounce timer for search queries
+  Timer? _searchDebounce;
+
   @override
   void dispose() {
+    _searchDebounce?.cancel();
     _searchController.dispose();
     super.dispose();
   }
@@ -62,10 +66,21 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
   void initState() {
     super.initState();
     _searchController.addListener(() {
-      if (mounted) setState(() {});
+      // BUG-080: Debounce search queries to avoid triggering full redraws
+      // and filter evaluations on every single character typed.
+      _searchDebounce?.cancel();
+      _searchDebounce = Timer(const Duration(milliseconds: 300), () {
+        if (mounted && _searchQuery != _searchController.text) {
+          setState(() {
+            _searchQuery = _searchController.text;
+          });
+          _applyFilter();
+        }
+      });
     });
     _initDiscovery();
   }
+
 
   Future<void> _initDiscovery({bool forceRefresh = false}) async {
     if (!forceRefresh) setState(() => _isLoading = true);
@@ -710,36 +725,44 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
   }
 
   Widget _buildExploreView(AppLocalizations l10n) {
+    // BUG-120 / BUG-140: Build explore sections lazily so off-screen widgets
+    // are never constructed until they scroll into the viewport.
+    final List<Widget> sections = [
+      if (_oraclePicks.isNotEmpty) ...[
+        _buildSectionTitle(l10n.picksForYou, Icons.auto_awesome),
+        _buildHorizontalCards(_oraclePicks, l10n, isOracle: true),
+        const SizedBox(height: 32),
+      ],
+      if (_arPicks.isNotEmpty) ...[
+        _buildSectionTitle(l10n.exploreInAr, Icons.view_in_ar),
+        _buildHorizontalCards(_arPicks, l10n, isAR: true),
+        const SizedBox(height: 32),
+      ],
+      if (_naturePicks.isNotEmpty) ...[
+        _buildSectionTitle(l10n.bestNatureNearby, Icons.park_outlined),
+        _buildHorizontalCards(_naturePicks, l10n),
+        const SizedBox(height: 32),
+      ],
+      if (_culturePicks.isNotEmpty) ...[
+        _buildSectionTitle(l10n.topCultureSpots, Icons.temple_buddhist_outlined),
+        _buildHorizontalCards(_culturePicks, l10n),
+        const SizedBox(height: 32),
+      ],
+      if (_villageExperiences.isNotEmpty) ...[
+        _buildSectionTitle(l10n.villageStayTitle, Icons.home_work_outlined),
+        _buildVillageCards(_villageExperiences),
+        const SizedBox(height: 32),
+      ],
+    ];
+
     return SliverList(
-      delegate: SliverChildListDelegate([
-        if (_oraclePicks.isNotEmpty) ...[
-          _buildSectionTitle(l10n.picksForYou, Icons.auto_awesome),
-          _buildHorizontalCards(_oraclePicks, l10n, isOracle: true),
-          const SizedBox(height: 32),
-        ],
-        if (_arPicks.isNotEmpty) ...[
-          _buildSectionTitle(l10n.exploreInAr, Icons.view_in_ar),
-          _buildHorizontalCards(_arPicks, l10n, isAR: true),
-          const SizedBox(height: 32),
-        ],
-        if (_naturePicks.isNotEmpty) ...[
-          _buildSectionTitle(l10n.bestNatureNearby, Icons.park_outlined),
-          _buildHorizontalCards(_naturePicks, l10n),
-          const SizedBox(height: 32),
-        ],
-        if (_culturePicks.isNotEmpty) ...[
-          _buildSectionTitle(l10n.topCultureSpots, Icons.temple_buddhist_outlined),
-          _buildHorizontalCards(_culturePicks, l10n),
-          const SizedBox(height: 32),
-        ],
-        if (_villageExperiences.isNotEmpty) ...[
-          _buildSectionTitle(l10n.villageStayTitle, Icons.home_work_outlined),
-          _buildVillageCards(_villageExperiences),
-          const SizedBox(height: 32),
-        ],
-      ]),
+      delegate: SliverChildBuilderDelegate(
+        (context, index) => RepaintBoundary(child: sections[index]),
+        childCount: sections.length,
+      ),
     );
   }
+
 
   Widget _buildVillageCards(List<VillageExperience> experiences) {
     return SizedBox(
@@ -751,76 +774,80 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
         itemCount: experiences.length,
         itemBuilder: (context, index) {
           final exp = experiences[index];
-          return OracleUI.staggeredEntrance(
-            index: index,
-            child: GestureDetector(
-              onTap: () {
-                HapticFeedback.lightImpact();
-                // Navigate to Event Calendar — best match for Soulscape experiences
-                Navigator.push(context, MaterialPageRoute(
-                  builder: (_) => const EventCalendarScreen(),
-                ));
-              },
-              child: Container(
-                width: 220,
-                margin: const EdgeInsets.symmetric(horizontal: 10),
-                child: OracleUI.premiumGlassCard(
-                  padding: EdgeInsets.zero,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        flex: 3,
-                        child: ClipRRect(
-                          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-                          child: CachedNetworkImage(
-                            imageUrl: exp.imageUrl, 
-                            fit: BoxFit.cover, 
-                            width: double.infinity,
-                            placeholder: (context, url) => Container(color: Colors.white.withValues(alpha: 0.05)),
-                            errorWidget: (context, url, error) => Container(
-  color: Colors.black12,
-  child: const Center(
-    child: Icon(Icons.broken_image_outlined, color: Colors.white24, size: 32),
-  ),
-),
+          // BUG-100: Preserves state of horizontal cards
+          return RepaintBoundary(
+            key: ValueKey('village_card_${exp.id}'),
+            child: OracleUI.staggeredEntrance(
+              index: index,
+              child: GestureDetector(
+                onTap: () {
+                  HapticFeedback.lightImpact();
+                  // Navigate to Event Calendar — best match for Soulscape experiences
+                  Navigator.push(context, MaterialPageRoute(
+                    builder: (_) => const EventCalendarScreen(),
+                  ));
+                },
+                child: Container(
+                  width: 220,
+                  margin: const EdgeInsets.symmetric(horizontal: 10),
+                  child: OracleUI.premiumGlassCard(
+                    padding: EdgeInsets.zero,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          flex: 3,
+                          child: ClipRRect(
+                            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+                            child: CachedNetworkImage(
+                              imageUrl: exp.imageUrl, 
+                              fit: BoxFit.cover, 
+                              width: double.infinity,
+                              placeholder: (context, url) => Container(color: Colors.white.withValues(alpha: 0.05)),
+                              errorWidget: (context, url, error) => Container(
+                                color: Colors.black12,
+                                child: const Center(
+                                  child: Icon(Icons.broken_image_outlined, color: Colors.white24, size: 32),
+                                ),
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                      Expanded(
-                        flex: 2,
-                        child: Padding(
-                          padding: const EdgeInsets.all(12),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                exp.name.toUpperCase(),
-                                style: GoogleFonts.outfit(fontSize: 13, fontWeight: FontWeight.bold, color: AppTheme.textPrimary(context), letterSpacing: 0.5),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              const SizedBox(height: 4),
-                              Row(
-                                children: [
-                                  Icon(Icons.person_pin_rounded, size: 10, color: Theme.of(context).colorScheme.secondary),
-                                  const SizedBox(width: 4),
-                                  Text(
-                                    exp.hostName.toUpperCase(),
-                                    style: GoogleFonts.inter(fontSize: 9, color: AppTheme.textSecondary(context), fontWeight: FontWeight.w600, letterSpacing: 0.5),
-                                  ),
-                                ],
-                              ),
-                              const Spacer(),
-                              OracleUI.neonText(
-                                "LKR ${exp.price}",
-                                style: GoogleFonts.outfit(fontSize: 11, color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.w900),
-                              ),
-                            ],
+                        Expanded(
+                          flex: 2,
+                          child: Padding(
+                            padding: const EdgeInsets.all(12),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  exp.name.toUpperCase(),
+                                  style: GoogleFonts.outfit(fontSize: 13, fontWeight: FontWeight.bold, color: AppTheme.textPrimary(context), letterSpacing: 0.5),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                const SizedBox(height: 4),
+                                Row(
+                                  children: [
+                                    Icon(Icons.person_pin_rounded, size: 10, color: Theme.of(context).colorScheme.secondary),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      exp.hostName.toUpperCase(),
+                                      style: GoogleFonts.inter(fontSize: 9, color: AppTheme.textSecondary(context), fontWeight: FontWeight.w600, letterSpacing: 0.5),
+                                    ),
+                                  ],
+                                ),
+                                const Spacer(),
+                                OracleUI.neonText(
+                                  "LKR ${exp.price}",
+                                  style: GoogleFonts.outfit(fontSize: 11, color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.w900),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -830,6 +857,7 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
       ),
     );
   }
+
 
   Widget _buildListView(AppLocalizations l10n) {
     if (_filteredList.isEmpty) {
@@ -890,11 +918,15 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
         delegate: SliverChildBuilderDelegate(
           (context, index) {
             final place = _filteredList[index];
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 20),
-              child: OracleUI.staggeredEntrance(
-                index: index,
-                child: _buildListCard(place, l10n),
+            // BUG-100: Unique key prevents expensive full card redraws
+            return RepaintBoundary(
+              key: ValueKey('list_card_${place.id}'),
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 20),
+                child: OracleUI.staggeredEntrance(
+                  index: index,
+                  child: _buildListCard(place, l10n),
+                ),
               ),
             );
           },
@@ -903,6 +935,7 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
       ),
     );
   }
+
 
   Widget _buildSectionTitle(String title, IconData icon) {
     return Padding(
@@ -925,7 +958,6 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
     ).animate().fadeIn(duration: 600.ms).slideX(begin: -0.1);
   }
 
-  Widget _buildHorizontalCards(List<DiscoveryPlace> places, AppLocalizations l10n, {bool isOracle = false, bool isAR = false}) {
     return SizedBox(
       height: (isOracle || isAR) ? 340 : 270,
       child: ListView.builder(
@@ -935,13 +967,17 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
         itemCount: places.length,
         itemBuilder: (context, index) {
           final place = places[index];
-          return OracleUI.staggeredEntrance(
-            index: index,
-            child: GestureDetector(
-              onTap: () => _openPlaceDetails(place),
+          // BUG-100: Assign unique key to avoid full redraws on horizontal scrolling
+          return RepaintBoundary(
+            key: ValueKey('horiz_card_${isOracle ? "oracle" : (isAR ? "ar" : "normal")}_${place.id}'),
+            child: OracleUI.staggeredEntrance(
+              index: index,
+              child: GestureDetector(
+                onTap: () => _openPlaceDetails(place),
               child: Container(
                 width: isOracle ? 300 : (isAR ? 260 : 180),
                 margin: const EdgeInsets.symmetric(horizontal: 10),
+
                 child: OracleUI.premiumGlassCard(
                   padding: EdgeInsets.zero,
                   showGlow: isOracle || isAR,

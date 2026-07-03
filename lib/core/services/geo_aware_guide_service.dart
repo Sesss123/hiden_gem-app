@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart';
 import 'package:geolocator/geolocator.dart';
 import 'voice_assistant_service.dart';
 import '../../data/models/trip_plan_model.dart';
@@ -8,20 +9,45 @@ class GeoAwareGuideService {
   static StreamSubscription<Position>? _positionStream;
   static String? _lastTriggeredPlaceId;
   static const double _triggerRadius = 150.0; // 150 meters
-
-  static double _currentFilter = 10.0;
+  static double _currentFilter = 10.0; // Added missing variable check
+  static LocationAccuracy _currentAccuracy = LocationAccuracy.high;
+  static AppLifecycleListener? _lifecycleListener;
 
   static void startMonitoring(List<ItineraryItem> plannedItems) {
-    _monitorAdaptive(plannedItems, initialFilter: 10.0);
+    // BUG-077: Add AppLifecycleListener to release GPS sensor when app is closed or paused
+    _lifecycleListener?.dispose();
+    _lifecycleListener = AppLifecycleListener(
+      onPause: () {
+        SecureLogger.info("App paused: Stopping GPS sensor updates.");
+        stopMonitoring();
+      },
+      onResume: () {
+        SecureLogger.info("App resumed: Restarting GPS sensor updates.");
+        _monitorAdaptive(plannedItems, initialFilter: _currentFilter, accuracy: _currentAccuracy);
+      },
+      onDetach: () {
+        SecureLogger.info("App detached: Cleaning up GPS sensor updates.");
+        stopMonitoring();
+      },
+    );
+
+    _monitorAdaptive(plannedItems, initialFilter: 10.0, accuracy: LocationAccuracy.high);
   }
 
-  static void _monitorAdaptive(List<ItineraryItem> items, {required double initialFilter}) {
+
+  static void _monitorAdaptive(
+    List<ItineraryItem> items, {
+    required double initialFilter,
+    LocationAccuracy accuracy = LocationAccuracy.high,
+  }) {
     _positionStream?.cancel();
     _currentFilter = initialFilter;
-    
+    _currentAccuracy = accuracy;
+
     _positionStream = Geolocator.getPositionStream(
       locationSettings: LocationSettings(
-        accuracy: LocationAccuracy.high,
+        // BUG-137: Use adaptive accuracy — low power when stationary, high when moving
+        accuracy: _currentAccuracy,
         distanceFilter: _currentFilter.toInt(),
       ),
     ).listen((Position position) {
@@ -39,20 +65,41 @@ class GeoAwareGuideService {
       if (d < minDistance) minDistance = d;
     }
 
-    // Adaptive Strategy:
-    // Close (< 1km) -> High Precision (10m filter)
-    // Far (> 1km) -> Power Saving (100m filter)
-    double targetFilter = minDistance < 1000 ? 10.0 : 100.0;
+    // BUG-137: Switch GPS accuracy based on movement state AND proximity.
+    // BUG-097: Downgrade accuracy when indoors (poor location accuracy signals > 30m)
+    final bool isStationary = pos.speed < 0.5;
+    final bool isIndoors = pos.accuracy > 30.0;
+    double targetFilter;
+    LocationAccuracy targetAccuracy;
 
-    if (targetFilter != _currentFilter) {
-      SecureLogger.info('Adaptive GPS: Switching to ${targetFilter == 10.0 ? "High Precision" : "Power Saving"} mode.');
-      _monitorAdaptive(items, initialFilter: targetFilter);
+    if (isStationary || isIndoors) {
+      targetFilter = minDistance < 1000 ? 50.0 : 250.0;
+      targetAccuracy = LocationAccuracy.low; // BUG-137 & BUG-097: Low power when stationary/indoors
+    } else if (minDistance < 1000) {
+
+      targetFilter = 10.0;
+      targetAccuracy = LocationAccuracy.high;
+    } else {
+      targetFilter = 100.0;
+      targetAccuracy = LocationAccuracy.medium;
+    }
+
+    if (targetFilter != _currentFilter || targetAccuracy != _currentAccuracy) {
+      SecureLogger.info(
+        'Adaptive GPS: filter=${targetFilter}m accuracy=$targetAccuracy '
+        '(speed=${pos.speed.toStringAsFixed(1)} m/s, dist=${minDistance.toStringAsFixed(0)}m).',
+      );
+      _monitorAdaptive(items, initialFilter: targetFilter, accuracy: targetAccuracy);
     }
   }
 
+
   static void stopMonitoring() {
     _positionStream?.cancel();
+    _lifecycleListener?.dispose();
+    _lifecycleListener = null;
   }
+
 
   static Future<void> _checkProximity(Position userPos, List<ItineraryItem> items) async {
     for (var item in items) {

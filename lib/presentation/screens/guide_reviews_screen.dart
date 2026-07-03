@@ -84,6 +84,27 @@ class _GuideReviewsScreenState extends ConsumerState<GuideReviewsScreen> {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const SliverFillRemaining(child: Center(child: CircularProgressIndicator()));
                 }
+                if (snapshot.hasError) {
+                  SecureLogger.error("Failed to load guide reviews", snapshot.error);
+                  return SliverFillRemaining(
+                    child: Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(24.0),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(Icons.error_outline, color: Colors.redAccent, size: 48),
+                            const SizedBox(height: 16),
+                            Text(
+                              "Failed to load reviews. Please try again.",
+                              style: GoogleFonts.inter(color: Colors.white70),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                }
                 final reviews = snapshot.data?.reviews ?? [];
                 if (reviews.isEmpty) {
                   return SliverFillRemaining(child: _buildEmptyState());

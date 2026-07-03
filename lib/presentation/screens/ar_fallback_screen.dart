@@ -137,7 +137,9 @@ class _ARFallbackScreenState extends State<ARFallbackScreen> {
                   child: Container(
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      // BUG-056: Use theme-aware card color instead of hardcoded white
+                      // so text remains readable in both light and dark themes
+                      color: Theme.of(context).cardColor,
                       borderRadius: BorderRadius.circular(24),
                       border: Border.all(color: AppPalette.rust.withValues(alpha: 0.3)),
                       boxShadow: [

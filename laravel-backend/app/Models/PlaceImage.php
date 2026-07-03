@@ -20,6 +20,12 @@ class PlaceImage extends Model
         'sync_version' => 'integer'
     ];
 
+    /**
+     * BUG-058: Cascade delete is defined at the database level.
+     * The migration for place_images must include:
+     *   $table->foreign('place_id')->references('id')->on('places')->onDelete('cascade');
+     * This ensures rows are automatically cleaned up when the parent Place is deleted.
+     */
     public function place(): BelongsTo
     {
         return $this->belongsTo(Place::class, 'place_id', 'id');

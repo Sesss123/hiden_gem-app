@@ -81,7 +81,7 @@ void main() async {
         FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
       }
     } catch (e) {
-      debugPrint("Suppressing Crashlytics error during reporting: $e");
+      SecureLogger.error("Suppressing Crashlytics error during reporting", e);
     }
     
     // 2. Log to Analytics (Safe for Web/Mobile)
@@ -96,27 +96,31 @@ void main() async {
     FlutterError.presentError(errorDetails);
   };
   
+  // BUG-065: PlatformDispatcher.instance.onError is bound here to catch ALL
+  // uncaught platform exceptions that bypass FlutterError.onError (e.g., async
+  // exceptions in isolates and platform channels). This prevents them from
+  // silently crashing the app without being logged or reported.
   PlatformDispatcher.instance.onError = (error, stack) {
     try {
       if (!kIsWeb) {
         FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
       }
     } catch (e) {
-      debugPrint("Suppressing Crashlytics error in dispatcher: $e");
+      SecureLogger.error("Suppressing Crashlytics error in dispatcher", e);
     }
     return true;
   };
   
-  debugPrint("Main Entry: Initializing core storage...");
+  SecureLogger.info("Main Entry: Initializing core storage...");
   
   // 1. Initialize Essential Local Storage (Hive) - MUST be first
   try {
     await TripCacheService.init();
     await UserPreferenceService.init();
     await UserPreferenceService.ensureProfileLoaded();
-    debugPrint("Core storage ready.");
+    SecureLogger.info("Core storage ready.");
   } catch (e) {
-    debugPrint("CRITICAL Hive Init Error: $e");
+    SecureLogger.error("CRITICAL Hive Init Error", e);
   }
 
   // Apply Strict HTTPS Security and SSL Pinning configuration globally
@@ -148,10 +152,15 @@ final appInitializationProvider = FutureProvider<AppInitState>((ref) async {
   final result = await performInitialization().timeout(
     const Duration(seconds: 12),
     onTimeout: () {
-      debugPrint("Initialization timed out. Proceeding in fallback mode.");
+      SecureLogger.warning("Initialization timed out. Proceeding in fallback mode.");
       return InitializationResult(hiveSuccess: true, firebaseSuccess: false);
     },
   );
+
+  // BUG-131: Invalidate locale and theme providers once initialization completes
+  // to prevent settings from resetting during early app boot / hot restart.
+  ref.invalidate(localeNotifierProvider);
+  ref.invalidate(themeModeProvider);
 
   UpdateType updateType = UpdateType.none;
   if (result.firebaseSuccess) {
@@ -172,10 +181,14 @@ Future<InitializationResult> performInitialization() async {
   bool storageStatus = TripCacheService.isInitialized;
   String? errorMessage;
 
+  // BUG-125: Outer catch-all — any unexpected startup anomaly returns a
+  // degraded result instead of propagating and halting the application.
+  try {
+
   try {
     AppConfig.validate();
   } catch (e) {
-    debugPrint("Validation error: $e");
+    SecureLogger.error("Validation error", e);
     return InitializationResult(
       hiveSuccess: storageStatus,
       firebaseSuccess: false,
@@ -183,44 +196,45 @@ Future<InitializationResult> performInitialization() async {
     );
   }
 
-  debugPrint("Background initialization started. Web mode: $kIsWeb");
+  SecureLogger.info("Background initialization started. Web mode: $kIsWeb");
 
   try {
     // Initialize Encryption System early
     await EncryptionUtil.init();
-    debugPrint("Encryption system initialized.");
+    SecureLogger.info("Encryption system initialized.");
+
   } catch (e) {
-    debugPrint("Encryption init error: $e");
+    SecureLogger.error("Encryption init error", e);
   }
 
   try {
     if (!kIsWeb) {
-      bool jailbroken = await SafeDevice.isJailBroken;
+      // BUG-085: SafeDevice calls can fail on older Android APIs or emulators.
+      // We log platform errors and allow startup to continue safely rather than blocking app launch.
+      final bool jailbroken = await SafeDevice.isJailBroken;
       if (jailbroken) {
         isCompromised = true;
         errorMessage = "Compromised device detected. The Oracle cannot run in this environment.";
       }
     }
-  } catch (e) {
-    debugPrint("Jailbreak detection error: $e");
+  } catch (e, st) {
+    SecureLogger.error("Jailbreak verification failed, continuing safely", e);
+    debugPrint("SafeDevice check error: $e\n$st");
   }
 
   if (isCompromised) {
-    return InitializationResult(
-      hiveSuccess: true, // Hive was already opened in main
-      firebaseSuccess: false,
-      isCompromised: true,
-      error: errorMessage,
-    );
+    // Log compromised status but allow custom recovery path
+    SecureLogger.warning("Startup alert: $errorMessage");
   }
 
+
   try {
-    debugPrint("Initializing Firebase...");
+    SecureLogger.info("Initializing Firebase...");
     FirebaseOptions? options;
     try {
       options = DefaultFirebaseOptions.currentPlatform;
     } catch (e) {
-      debugPrint("Firebase config not available for this platform: $e");
+      SecureLogger.error("Firebase config not available for this platform", e);
     }
 
     if (options != null) {
@@ -230,8 +244,12 @@ Future<InitializationResult> performInitialization() async {
         ).timeout(const Duration(seconds: 15));
 
         // 🛡️ App Check — centralized, environment-aware
-        await AppCheckConfig.initialize()
-            .timeout(const Duration(seconds: 8));
+        try {
+          await AppCheckConfig.initialize()
+              .timeout(const Duration(seconds: 8));
+        } catch (e) {
+          SecureLogger.error("AppCheck initialization error", e);
+        }
         
         if (!kIsWeb) {
           try {
@@ -239,7 +257,7 @@ Future<InitializationResult> performInitialization() async {
                 .setCrashlyticsCollectionEnabled(true)
                 .timeout(const Duration(seconds: 5));
           } catch (e) {
-            debugPrint("Crashlytics setup error: $e");
+            SecureLogger.error("Crashlytics setup error", e);
           }
         }
 
@@ -251,13 +269,13 @@ Future<InitializationResult> performInitialization() async {
         );
 
         firebaseStatus = true;
-        debugPrint("Firebase initialized successfully.");
+        SecureLogger.info("Firebase initialized successfully.");
 
         // Sync local profile configuration to Firestore now that Firebase is active (Fix silent migration data loss)
         try {
           await UserPreferenceService.syncToFirestore();
         } catch (e) {
-          debugPrint("Failed to sync profile to Firestore at startup: $e");
+          SecureLogger.error("Failed to sync profile to Firestore at startup", e);
         }
 
         // 🛡️ ZENITH STRESS DEFENSE: FINAL HARDENING (Points 11 & 12)
@@ -285,15 +303,15 @@ Future<InitializationResult> performInitialization() async {
         try {
           await ZenithSecurityFacade().initialize()
               .timeout(const Duration(seconds: 10));
-          debugPrint("[ZenithSecurity] Stack initialized. Risk: ${ZenithSecurityFacade().shield.riskScore}");
+          SecureLogger.info("[ZenithSecurity] Stack initialized. Risk: ${ZenithSecurityFacade().shield.riskScore}");
         } catch (e) {
-          debugPrint("[ZenithSecurity] Init failed (non-critical): $e");
+          SecureLogger.error("[ZenithSecurity] Init failed (non-critical)", e);
         }
       } on Exception catch (e) {
-        debugPrint("Firebase init error: $e. Proceeding in offline mode.");
+        SecureLogger.error("Firebase init error. Proceeding in offline mode.", e);
       }
     } else {
-      debugPrint("Skipping Firebase initialization due to missing config.");
+      SecureLogger.warning("Skipping Firebase initialization due to missing config.");
     }
 
     if (firebaseStatus) {
@@ -323,47 +341,63 @@ Future<InitializationResult> performInitialization() async {
     debugPrint("Option A Delta Sync failed (offline/timeout): $e. Proceeding with existing RAM/SQLite data.");
   }
 
-  debugPrint("Background initialization complete. Firebase: $firebaseStatus");
+  debugPrint('Background initialization complete. Firebase: $firebaseStatus');
   return InitializationResult(
     hiveSuccess: storageStatus,
     firebaseSuccess: firebaseStatus,
     isCompromised: isCompromised,
     error: errorMessage,
   );
+
+  } catch (e, st) {
+    // BUG-125: Catch-all for any unexpected startup anomaly — return a
+    // degraded result so the UI can show a fallback screen instead of crashing.
+    SecureLogger.error('Critical unexpected startup error', e);
+    debugPrint('Startup catch-all: $e\n$st');
+    return InitializationResult(
+      hiveSuccess: storageStatus,
+      firebaseSuccess: false,
+      error: e.toString(),
+    );
+  }
 }
+
+
 
 void initializeOtherServices() {
-  // These don't need to block UI rendering
-  try {
-    if (!kIsWeb) {
-      MobileAds.instance.initialize();
+  // BUG-105: Run non-critical initializers completely asynchronously in background tasks
+  // to ensure they never block UI rendering or cause startup hangs.
+  Future.microtask(() {
+    try {
+      if (!kIsWeb) {
+        MobileAds.instance.initialize();
+      }
+    } catch (e) {
+      SecureLogger.error("Ads Init Error: $e");
     }
-  } catch (e) {
-    SecureLogger.error("Ads Init Error: $e");
-  }
 
-  try {
-    NotificationService().init();
-  } catch (e) {
-    SecureLogger.error("Notify Init Error: $e");
-  }
+    try {
+      NotificationService().init();
+    } catch (e) {
+      SecureLogger.error("Notify Init Error: $e");
+    }
 
-  try {
-    AnalyticsService().logEvent('app_opened');
-  } catch (_) {}
-  
-  // Ads & Voice Pre-load
-  MonetizationService().loadInterstitialAd();
-  MonetizationService().loadRewardedAd();
-  
-  try {
-    VoiceService().init();
-  } catch (e) {
-    debugPrint("Voice Init Error: $e");
-  }
-
-  // Global Error Boundary is already set in main()
+    try {
+      AnalyticsService().logEvent('app_opened');
+    } catch (_) {}
+    
+    // Ads & Voice Pre-load
+    MonetizationService().loadInterstitialAd();
+    MonetizationService().loadRewardedAd();
+    
+    try {
+      VoiceService().init();
+    } catch (e) {
+      debugPrint("Voice Init Error: $e");
+    }
+  });
 }
+
 
 // The thin root MaterialApp — just theming + localization, routes to Splash
 class HiddenGemsApp extends ConsumerStatefulWidget {

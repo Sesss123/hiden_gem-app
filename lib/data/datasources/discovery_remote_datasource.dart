@@ -34,21 +34,37 @@ class DiscoveryRemoteDataSource {
   }
 
   Future<String> fetchPlacesRest() async {
-    final securityHeaders = await VaultService.getSecurityHeaders('/places');
-    final response = await _client.get(
-      Uri.parse('${AppConfig.laravelUrl}/places'),
-      headers: {
-        'X-API-KEY': AppConfig.hiddenGemsApiKey,
-        'X-HiddenGems-Key': AppConfig.hiddenGemsApiKey,
-        ...securityHeaders,
-      },
-    ).timeout(const Duration(seconds: 10));
+    final List<dynamic> allPlaces = [];
+    String? cursor;
+    bool hasMore = true;
 
-    if (response.statusCode == 200) {
-      return response.body;
-    } else {
-      throw Exception("API returned status ${response.statusCode}");
+    while (hasMore) {
+      final queryParam = cursor != null ? '?cursor=$cursor' : '';
+      final securityHeaders = await VaultService.getSecurityHeaders('/places$queryParam');
+      
+      final response = await _client.get(
+        Uri.parse('${AppConfig.laravelUrl}/places$queryParam'),
+        headers: {
+          'Accept': 'application/json',
+          'Accept-Encoding': 'gzip',
+          'X-API-KEY': AppConfig.hiddenGemsApiKey,
+          'X-HiddenGems-Key': AppConfig.hiddenGemsApiKey,
+          ...securityHeaders,
+        },
+      ).timeout(const Duration(seconds: 10));
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = json.decode(response.body);
+        final List<dynamic> places = data['places'] ?? [];
+        allPlaces.addAll(places);
+        cursor = data['next_cursor']?.toString();
+        hasMore = data['has_more'] as bool? ?? false;
+      } else {
+        throw Exception("API returned status ${response.statusCode}");
+      }
     }
+
+    return json.encode(allPlaces);
   }
 
   Future<List<DiscoveryPlace>> fetchNearbyPlacesFirestore({
@@ -102,6 +118,7 @@ class DiscoveryRemoteDataSource {
       Uri.parse('${AppConfig.nodeProxyUrl}/ai/recommendations'),
       headers: {
         'Content-Type': 'application/json',
+        'Accept-Encoding': 'gzip',
         if (idToken.isNotEmpty) 'Authorization': 'Bearer $idToken',
         ...securityHeaders,
       },
