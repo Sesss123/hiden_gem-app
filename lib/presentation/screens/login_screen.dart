@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter/services.dart';
-import 'dart:ui';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/theme/oracle_ui_system.dart';
-import '../widgets/golden_tracer_indicator.dart';
 import '../../data/datasources/auth_service.dart';
 import '../../data/datasources/user_preference_service.dart';
 import 'home_screen.dart';

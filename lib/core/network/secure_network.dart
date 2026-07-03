@@ -105,16 +105,12 @@ class SecureHttpClientWrapper implements HttpClient {
     _inner.connectionFactory = f;
     _pinnedClient.connectionFactory = f;
   }
-  @override
-  Future<ConnectionTask<Socket>> Function(Uri url, String? proxyHost, int? proxyPort)? get connectionFactory => _inner.connectionFactory;
 
   @override
   set keyLog(Function(String line)? callback) {
     _inner.keyLog = callback;
     _pinnedClient.keyLog = callback;
   }
-  @override
-  Function(String line)? get keyLog => _inner.keyLog;
 
   @override
   set maxConnectionsPerHost(int? value) {
@@ -147,32 +143,24 @@ class SecureHttpClientWrapper implements HttpClient {
   set badCertificateCallback(bool Function(X509Certificate cert, String host, int port)? callback) {
     _inner.badCertificateCallback = callback;
   }
-  @override
-  bool Function(X509Certificate cert, String host, int port)? get badCertificateCallback => _inner.badCertificateCallback;
 
   @override
   set findProxy(String Function(Uri url)? f) {
     _inner.findProxy = f;
     _pinnedClient.findProxy = f;
   }
-  @override
-  String Function(Uri url)? get findProxy => _inner.findProxy;
 
   @override
   set authenticate(Future<bool> Function(Uri url, String scheme, String? realm)? f) {
     _inner.authenticate = f;
     _pinnedClient.authenticate = f;
   }
-  @override
-  Future<bool> Function(Uri url, String scheme, String? realm)? get authenticate => _inner.authenticate;
 
   @override
   set authenticateProxy(Future<bool> Function(String host, int port, String scheme, String? realm)? f) {
     _inner.authenticateProxy = f;
     _pinnedClient.authenticateProxy = f;
   }
-  @override
-  Future<bool> Function(String host, int port, String scheme, String? realm)? get authenticateProxy => _inner.authenticateProxy;
 
   @override
   Future<HttpClientRequest> open(String method, String host, int port, String path) {

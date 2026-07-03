@@ -109,6 +109,7 @@ class AppConfig {
     // In debug mode, if developers explicitly pass `--dart-define=BYPASS_KEY_CHECKS=true`, we allow it,
     // otherwise we also fail hard to prevent silent failures.
     const bypassChecks = bool.fromEnvironment('BYPASS_KEY_CHECKS', defaultValue: false);
+    if (!kReleaseMode && bypassChecks) return;
 
     // BUG-073 & BUG-133: Ensure environment variables are correctly injected and no fallback defaults leakage in release mode
     if (kReleaseMode) {

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter/services.dart';
@@ -955,9 +956,14 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
           ),
         ],
       ),
-    ).animate().fadeIn(duration: 600.ms).slideX(begin: -0.1);
   }
 
+  Widget _buildHorizontalCards(
+    List<DiscoveryPlace> places,
+    AppLocalizations l10n, {
+    bool isOracle = false,
+    bool isAR = false,
+  }) {
     return SizedBox(
       height: (isOracle || isAR) ? 340 : 270,
       child: ListView.builder(
