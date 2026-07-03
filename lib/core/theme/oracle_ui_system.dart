@@ -72,7 +72,10 @@ class OracleUI {
             )
           ] : AppTheme.softShadow,
         ),
-        child: child,
+        child: Material(
+          color: Colors.transparent,
+          child: child,
+        ),
       );
     });
   }
@@ -105,7 +108,10 @@ class OracleUI {
             )
           ] : AppTheme.premiumShadow,
         ),
-        child: child,
+        child: Material(
+          color: Colors.transparent,
+          child: child,
+        ),
       );
     });
   }

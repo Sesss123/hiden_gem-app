@@ -124,6 +124,18 @@ class AppConfig {
       if (appStoreId == "6400000000") {
         throw AssertionError("CRITICAL: Must configure a valid APP_STORE_ID.");
       }
+      if (const String.fromEnvironment('ADMOB_BANNER_ID', defaultValue: 'YOUR_REAL_BANNER_ID') == 'YOUR_REAL_BANNER_ID') {
+        throw AssertionError("CRITICAL: Must configure a valid ADMOB_BANNER_ID.");
+      }
+      if (const String.fromEnvironment('ADMOB_INTERSTITIAL_ID', defaultValue: 'YOUR_REAL_INTERSTITIAL_ID') == 'YOUR_REAL_INTERSTITIAL_ID') {
+        throw AssertionError("CRITICAL: Must configure a valid ADMOB_INTERSTITIAL_ID.");
+      }
+      if (const String.fromEnvironment('ADMOB_REWARDED_ID', defaultValue: 'YOUR_REAL_REWARDED_ID') == 'YOUR_REAL_REWARDED_ID') {
+        throw AssertionError("CRITICAL: Must configure a valid ADMOB_REWARDED_ID.");
+      }
+      if (const String.fromEnvironment('ADMOB_NATIVE_ID', defaultValue: 'YOUR_REAL_NATIVE_ID') == 'YOUR_REAL_NATIVE_ID') {
+        throw AssertionError("CRITICAL: Must configure a valid ADMOB_NATIVE_ID.");
+      }
     }
   }
 }

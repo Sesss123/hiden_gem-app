@@ -24,6 +24,12 @@ class _BookingRequestScreenState extends ConsumerState<BookingRequestScreen> {
   bool _isSubmitting = false;
 
   @override
+  void dispose() {
+    _notesController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.transparent,

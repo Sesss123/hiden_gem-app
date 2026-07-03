@@ -14,6 +14,11 @@
 - [ ] Deploy `report_forensic_signals` Cloud Function to Firebase project (Pending user action)
 - [x] Redesign Login Screen with premium travel-themed glassmorphism interface (Completed 2026-07-02)
 - [x] Completely remove Smart Match and Marketplace screens, references, and routes (Completed 2026-07-02)
+- [x] Configure environment parameters for AdMob unit IDs and add release validation checks (Completed 2026-07-03)
+- [x] Fix memory leaks by disposing TextEditingControllers in booking request and guide broadcast screens (Completed 2026-07-03)
+- [x] Implement Android NativeAdFactory and XML layout registration in MainActivity (Completed 2026-07-03)
+- [x] Wrap glassContainer children with transparent Material to solve ListTile console warnings (Completed 2026-07-03)
+
 
 ## Active Milestone: User Management & AI/Python Removal (v6.0)
 - [x] Create `UserController.php` with list/edit/update/destroy actions (Completed 2026-07-02)
@@ -22,6 +27,7 @@
 - [x] Add Users tab and remove AI Command/Automation links in `layout.blade.php` (Completed 2026-07-02)
 - [x] Delete `AiCommandController.php`, `SchedulerController.php`, and views directories (Completed 2026-07-02)
 - [x] Delete `PythonProcessService.php` and references from `DashboardController.php` (Completed 2026-07-02)
+- [x] Remove AI Vision Validator widget from Admin Dashboard blade view (Completed 2026-07-02)
 - [x] Delete `ai:*` Artisan commands and schedule triggers in `console.php` and `Kernel.php` (Completed 2026-07-02)
 
 ## Active Milestone: Remove Places Review Queue Module (v5.0)

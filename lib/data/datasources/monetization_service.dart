@@ -13,19 +13,19 @@ class MonetizationService {
   // Real Ad Units would go here. For dev, we use test IDs.
   String get bannerAdUnitId => kDebugMode 
     ? ((!kIsWeb && defaultTargetPlatform == TargetPlatform.android) ? 'ca-app-pub-3940256099942544/6300978111' : 'ca-app-pub-3940256099942544/2934735716')
-    : 'YOUR_REAL_BANNER_ID';
+    : const String.fromEnvironment('ADMOB_BANNER_ID', defaultValue: 'YOUR_REAL_BANNER_ID');
 
   String get interstitialAdUnitId => kDebugMode
     ? ((!kIsWeb && defaultTargetPlatform == TargetPlatform.android) ? 'ca-app-pub-3940256099942544/1033173712' : 'ca-app-pub-3940256099942544/4411468910')
-    : 'YOUR_REAL_INTERSTITIAL_ID';
+    : const String.fromEnvironment('ADMOB_INTERSTITIAL_ID', defaultValue: 'YOUR_REAL_INTERSTITIAL_ID');
 
   String get rewardedAdUnitId => kDebugMode
     ? ((!kIsWeb && defaultTargetPlatform == TargetPlatform.android) ? 'ca-app-pub-3940256099942544/5224354917' : 'ca-app-pub-3940256099942544/1712485313')
-    : 'YOUR_REAL_REWARDED_ID';
+    : const String.fromEnvironment('ADMOB_REWARDED_ID', defaultValue: 'YOUR_REAL_REWARDED_ID');
 
   String get nativeAdUnitId => kDebugMode
     ? ((!kIsWeb && defaultTargetPlatform == TargetPlatform.android) ? 'ca-app-pub-3940256099942544/2247696110' : 'ca-app-pub-3940256099942544/3986624511')
-    : 'YOUR_REAL_NATIVE_ID';
+    : const String.fromEnvironment('ADMOB_NATIVE_ID', defaultValue: 'YOUR_REAL_NATIVE_ID');
 
   // --- Banner Ads ---
   Future<BannerAd> createBannerAd() async {
