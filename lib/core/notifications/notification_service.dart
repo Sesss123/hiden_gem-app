@@ -11,6 +11,8 @@ class NotificationService {
 
   final FirebaseMessaging _fcm = FirebaseMessaging.instance;
   final _foregroundMessageController = StreamController<RemoteMessage>.broadcast();
+  StreamSubscription? _notifSub;
+  final Set<String> _seenNotifIds = {};
 
   /// Stream of foreground push notifications for UI banners/toasts
   Stream<RemoteMessage> get onForegroundMessage => _foregroundMessageController.stream;
@@ -60,6 +62,12 @@ class NotificationService {
       // BUG-N01 Fix: Broadcast to listeners so active screens can show Heads-Up Snackbars/Toasts
       _foregroundMessageController.add(message);
     });
+
+    final currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser != null) {
+      startWatchingUserNotifications(currentUser.uid);
+      subscribeToTopic('guide_${currentUser.uid}');
+    }
   }
 
   /// BUG-N02 Fix: Upload FCM token to authenticated user's Firestore profile
@@ -72,11 +80,50 @@ class NotificationService {
           'fcmToken': token,
           'fcmTokenUpdatedAt': FieldValue.serverTimestamp(),
         }, SetOptions(merge: true));
+        startWatchingUserNotifications(user.uid);
+        subscribeToTopic('guide_${user.uid}');
         SecureLogger.info("FCM Token synced to Firestore for user: ${user.uid}", tag: "Notifications", isBackground: true);
       }
     } catch (e) {
       SecureLogger.warning("Failed to sync FCM token: $e", tag: "Notifications", isBackground: true);
     }
+  }
+
+  void startWatchingUserNotifications(String uid) {
+    _notifSub?.cancel();
+    _notifSub = FirebaseFirestore.instance
+        .collection('user_notifications')
+        .where('recipientId', isEqualTo: uid)
+        .where('isRead', isEqualTo: false)
+        .snapshots()
+        .listen((snapshot) {
+      for (var change in snapshot.docChanges) {
+        if (change.type == DocumentChangeType.added) {
+          final data = change.doc.data();
+          if (data != null && !_seenNotifIds.contains(change.doc.id)) {
+            _seenNotifIds.add(change.doc.id);
+            final createdAt = (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now();
+            // Only trigger alert for notifications created within the last 15 minutes
+            if (DateTime.now().difference(createdAt).inMinutes < 15) {
+              final title = data['title'] as String? ?? 'New Notification';
+              final body = data['body'] as String? ?? '';
+              _foregroundMessageController.add(RemoteMessage(
+                notification: RemoteNotification(title: title, body: body),
+                data: {'bookingId': data['bookingId'] ?? '', 'type': data['type'] ?? ''},
+              ));
+            }
+          }
+        }
+      }
+    }, onError: (e) {
+      SecureLogger.warning("Error watching user notifications: $e", tag: "Notifications");
+    });
+  }
+
+  void stopWatchingUserNotifications() {
+    _notifSub?.cancel();
+    _notifSub = null;
+    _seenNotifIds.clear();
   }
 
   static Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {

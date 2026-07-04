@@ -15,7 +15,9 @@ return new class extends Migration
     {
         Schema::create('guide_applications', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->string('user_id', 128)->index(); // Firebase UID or Local User ID
+            $table->string('email')->nullable();
+            $table->string('name')->nullable();
             $table->string('license_number');
             $table->text('bio')->nullable();
             $table->string('category', 100);
@@ -23,7 +25,9 @@ return new class extends Migration
             $table->string('nic_doc_url', 500)->nullable();
             $table->string('selfie_doc_url', 500)->nullable();
             $table->string('status', 20)->default('pending'); // 'pending', 'approved', 'rejected'
+            $table->text('admin_comment')->nullable();
             $table->timestamp('applied_at')->useCurrent();
+            $table->timestamp('reviewed_at')->nullable();
             $table->timestamps();
         });
     }

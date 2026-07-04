@@ -91,7 +91,7 @@ class _BudgetConciergeScreenState extends ConsumerState<BudgetConciergeScreen> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text("RECENT TRANSACTIONS", style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold, letterSpacing: 2, fontSize: 12)),
+                            Text("RECENT TRANSACTIONS", style: GoogleFonts.outfit(color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.bold, letterSpacing: 2, fontSize: 12)),
                             IconButton(
                               icon: Icon(Icons.add_circle, color: Theme.of(context).colorScheme.secondary),
                               onPressed: _showAddExpenseDialog,
@@ -117,13 +117,13 @@ class _BudgetConciergeScreenState extends ConsumerState<BudgetConciergeScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           IconButton(
-            icon: Icon(Icons.arrow_back_rounded, color: Colors.white70),
+            icon: Icon(Icons.arrow_back_rounded, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.8)),
             onPressed: () => Navigator.pop(context),
           ),
           OracleUI.neonText(
             "BUDGET CONCIERGE",
             style: GoogleFonts.outfit(
-              color: Colors.white, fontWeight: FontWeight.w900,
+              color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.w900,
               letterSpacing: 4, fontSize: 16,
             ),
           ),
@@ -142,17 +142,17 @@ class _BudgetConciergeScreenState extends ConsumerState<BudgetConciergeScreen> {
         children: [
           Text(
             "TOTAL MANIFESTED", 
-            style: GoogleFonts.inter(color: Colors.white24, fontSize: 10, letterSpacing: 2, fontWeight: FontWeight.w900)
+            style: GoogleFonts.inter(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5), fontSize: 10, letterSpacing: 2, fontWeight: FontWeight.w900)
           ),
           SizedBox(height: 12),
           OracleUI.neonText(
             "Rs. ${_totalSpent.toStringAsFixed(0)}",
-            style: GoogleFonts.outfit(color: Colors.white, fontSize: 42, fontWeight: FontWeight.w900, letterSpacing: -1),
+            style: GoogleFonts.outfit(color: Theme.of(context).colorScheme.onSurface, fontSize: 42, fontWeight: FontWeight.w900, letterSpacing: -1),
           ),
           SizedBox(height: 8),
           Text(
             "≈ \$${(_totalSpent / 320).toStringAsFixed(2)} USD", 
-            style: GoogleFonts.inter(color: Colors.white10, fontSize: 12, fontWeight: FontWeight.w600)
+            style: GoogleFonts.inter(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5), fontSize: 12, fontWeight: FontWeight.w600)
           ),
         ],
       ),
@@ -181,7 +181,7 @@ class _BudgetConciergeScreenState extends ConsumerState<BudgetConciergeScreen> {
                 SizedBox(height: 8),
                 Text(
                   _aiAdvice,
-                  style: GoogleFonts.inter(color: Colors.white70, fontSize: 13, height: 1.6, fontStyle: FontStyle.italic),
+                  style: GoogleFonts.inter(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.8), fontSize: 13, height: 1.6, fontStyle: FontStyle.italic),
                 ),
               ],
             ),
@@ -196,7 +196,7 @@ class _BudgetConciergeScreenState extends ConsumerState<BudgetConciergeScreen> {
       margin: EdgeInsets.only(bottom: 12),
       padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       borderRadius: BorderRadius.circular(20),
-      borderColor: Colors.white.withValues(alpha: 0.05),
+      borderColor: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.1),
       child: Row(
         children: [
           _categoryIcon(e.category),
@@ -207,19 +207,19 @@ class _BudgetConciergeScreenState extends ConsumerState<BudgetConciergeScreen> {
               children: [
                 Text(
                   e.description.toUpperCase(), 
-                  style: GoogleFonts.inter(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 13, letterSpacing: 0.5)
+                  style: GoogleFonts.inter(color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.w800, fontSize: 13, letterSpacing: 0.5)
                 ),
                 SizedBox(height: 4),
                 Text(
                   e.date.toString().split(' ')[0], 
-                  style: GoogleFonts.inter(color: Colors.white24, fontSize: 10, fontWeight: FontWeight.bold)
+                  style: GoogleFonts.inter(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5), fontSize: 10, fontWeight: FontWeight.bold)
                 ),
               ],
             ),
           ),
           OracleUI.neonText(
             "Rs. ${e.amount.toInt()}", 
-            style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 15)
+            style: GoogleFonts.outfit(color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.w900, fontSize: 15)
           ),
         ],
       ),
@@ -228,7 +228,7 @@ class _BudgetConciergeScreenState extends ConsumerState<BudgetConciergeScreen> {
 
   Widget _categoryIcon(ExpenseCategory cat) {
     IconData icon = Icons.receipt_long_rounded;
-    Color color = Colors.white24;
+    Color color = Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5);
     switch(cat) {
       case ExpenseCategory.food: icon = Icons.restaurant_rounded; color = Colors.orangeAccent; break;
       case ExpenseCategory.transport: icon = Icons.directions_car_rounded; color = Colors.blueAccent; break;
@@ -256,45 +256,45 @@ class _BudgetConciergeScreenState extends ConsumerState<BudgetConciergeScreen> {
       builder: (context) => OracleUI.glassContainer(
         padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom + 40, top: 24, left: 24, right: 24),
         borderRadius: const BorderRadius.vertical(top: Radius.circular(40)),
-        borderColor: Colors.white.withValues(alpha: 0.1),
+        borderColor: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.1),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
               width: 40, height: 4,
-              decoration: BoxDecoration(color: Colors.white10, borderRadius: BorderRadius.circular(2)),
+              decoration: BoxDecoration(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(2)),
             ),
             SizedBox(height: 32),
-            OracleUI.neonText("LOG TRANSACTION", style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.w900, letterSpacing: 4, fontSize: 16)),
+            OracleUI.neonText("LOG TRANSACTION", style: GoogleFonts.outfit(color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.w900, letterSpacing: 4, fontSize: 16)),
             SizedBox(height: 48),
             TextField(
               controller: descController,
-              style: GoogleFonts.inter(color: Colors.white, fontWeight: FontWeight.w600),
+              style: GoogleFonts.inter(color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.w600),
               decoration: InputDecoration(
                 hintText: "WHAT WAS THE PURPOSE?",
-                hintStyle: GoogleFonts.inter(color: Colors.white12, fontWeight: FontWeight.w900, letterSpacing: 1, fontSize: 10),
-                prefixIcon: Icon(Icons.edit_note_rounded, color: Colors.white24),
+                hintStyle: GoogleFonts.inter(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4), fontWeight: FontWeight.w900, letterSpacing: 1, fontSize: 10),
+                prefixIcon: Icon(Icons.edit_note_rounded, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5)),
                 filled: true,
-                fillColor: Colors.white.withValues(alpha: 0.03),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.05))),
-                enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.05))),
-                focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: Colors.white10)),
+                fillColor: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.03),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.1))),
+                enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.1))),
+                focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.3))),
               ),
             ),
             SizedBox(height: 16),
             TextField(
               controller: amountController,
               keyboardType: TextInputType.number,
-              style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 18),
+              style: GoogleFonts.outfit(color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.w900, fontSize: 18),
               decoration: InputDecoration(
                 hintText: "AMOUNT (LKR)",
-                hintStyle: GoogleFonts.inter(color: Colors.white12, fontWeight: FontWeight.w900, letterSpacing: 1, fontSize: 10),
-                prefixIcon: Icon(Icons.payments_rounded, color: Colors.white24),
+                hintStyle: GoogleFonts.inter(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4), fontWeight: FontWeight.w900, letterSpacing: 1, fontSize: 10),
+                prefixIcon: Icon(Icons.payments_rounded, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5)),
                 filled: true,
-                fillColor: Colors.white.withValues(alpha: 0.03),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.05))),
-                enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.05))),
-                focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: Colors.white10)),
+                fillColor: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.03),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.1))),
+                enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.1))),
+                focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.3))),
               ),
             ),
             SizedBox(height: 32),
@@ -320,7 +320,7 @@ class _BudgetConciergeScreenState extends ConsumerState<BudgetConciergeScreen> {
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Theme.of(context).colorScheme.primary,
-                  foregroundColor: Colors.black,
+                  foregroundColor: Theme.of(context).colorScheme.onPrimary,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                 ),
                 child: OracleUI.neonText(

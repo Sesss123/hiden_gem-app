@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -24,7 +25,6 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:hidden_gems_sl/l10n/app_localizations.dart';
 import '../widgets/explorer_progress_card.dart';
 import '../widgets/cached_image.dart';
-import 'operator_dashboard_screen.dart';
 import 'guide_dashboard_screen.dart';
 import 'emergency_kit_screen.dart';
 import 'premium_hub_screen.dart';
@@ -33,8 +33,12 @@ import 'qr_scanner_screen.dart';
 import 'heritage_passport_screen.dart';
 import 'budget_concierge_screen.dart';
 import 'login_screen.dart';
+import 'guide_listing_editor_screen.dart';
+import 'booking_inbox_screen.dart';
+import 'guide_earnings_screen.dart';
 import '../../core/services/ethical_travel_service.dart';
 import '../../core/rating/rating_service.dart';
+import '../../core/notifications/notification_service.dart';
 import 'guide_enrollment_screen.dart';
 import 'package:hidden_gems_sl/data/models/guide_status.dart';
 import 'package:hidden_gems_sl/presentation/screens/guide_reviews_screen.dart';
@@ -51,6 +55,85 @@ class ProfileScreen extends ConsumerStatefulWidget {
 
 class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   late var profile = UserPreferenceService.getProfile();
+  StreamSubscription? _userSub;
+  StreamSubscription? _appSub;
+
+  @override
+  void initState() {
+    super.initState();
+    _startWatchingRole();
+  }
+
+  void _startWatchingRole() {
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        NotificationService().startWatchingUserNotifications(user.uid);
+        _userSub = FirebaseFirestore.instance.collection('users').doc(user.uid).snapshots().listen((doc) async {
+          if (doc.exists && doc.data() != null && mounted) {
+            final data = doc.data()!;
+            bool changed = false;
+            if (data['role'] != null && profile.role != data['role']) {
+              profile.role = data['role'];
+              changed = true;
+            }
+            if (data['guideStatus'] != null) {
+              final statusStr = data['guideStatus'] as String;
+              try {
+                final newStatus = GuideStatus.values.byName(statusStr);
+                if (profile.guideStatus != newStatus) {
+                  profile.guideStatus = newStatus;
+                  changed = true;
+                }
+              } catch (_) {}
+            }
+            if (changed) {
+              await UserPreferenceService.saveProfile(profile);
+              if (mounted) setState(() {});
+            }
+          }
+        });
+
+        _appSub = FirebaseFirestore.instance.collection('guide_applications').doc(user.uid).snapshots().listen((doc) async {
+          if (doc.exists && doc.data() != null && mounted) {
+            final data = doc.data()!;
+            final statusStr = data['status'] as String?;
+            if (statusStr != null) {
+              try {
+                final newStatus = GuideStatus.values.byName(statusStr);
+                bool changed = false;
+                if (newStatus == GuideStatus.approved && profile.guideStatus != GuideStatus.approved) {
+                  profile.guideStatus = GuideStatus.approved;
+                  profile.role = 'guide_approved';
+                  profile.isGuideApproved = true;
+                  changed = true;
+                } else if (newStatus == GuideStatus.rejected && profile.guideStatus != GuideStatus.rejected) {
+                  profile.guideStatus = GuideStatus.rejected;
+                  changed = true;
+                } else if (newStatus == GuideStatus.pending && profile.guideStatus != GuideStatus.pending) {
+                  profile.guideStatus = GuideStatus.pending;
+                  changed = true;
+                }
+                if (changed) {
+                  await UserPreferenceService.saveProfile(profile);
+                  if (mounted) setState(() {});
+                }
+              } catch (_) {}
+            }
+          }
+        });
+      }
+    } catch (e) {
+      debugPrint("Error syncing role: $e");
+    }
+  }
+
+  @override
+  void dispose() {
+    _userSub?.cancel();
+    _appSub?.cancel();
+    super.dispose();
+  }
 
   // ── Language Picker ─────────────────────────────────────────────────────────
   void _showLanguagePicker(BuildContext context) {
@@ -256,12 +339,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       _sectionLabel("APPEARANCE"),
                       const SizedBox(height: 12),
                       _buildThemeToggle(),
-                      const SizedBox(height: 20),
-
-                      // Vibe Selector
-                      _sectionLabel("TRAVEL VIBE"),
-                      const SizedBox(height: 12),
-                      _buildVibeRow(),
                       const SizedBox(height: 28),
 
                       // Heritage Hub
@@ -580,54 +657,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     );
   }
 
-  // ── Vibe Chips ───────────────────────────────────────────────────────────────
-  Widget _buildVibeRow() {
-    final vibes = [
-      {'id': 'explorer', 'emoji': '🧭'},
-      {'id': 'luxury', 'emoji': '✨'},
-      {'id': 'photographer', 'emoji': '📷'},
-      {'id': 'budget', 'emoji': '💰'},
-    ];
-    return Wrap(
-      spacing: 10,
-      runSpacing: 10,
-      children: vibes.map((v) {
-        final isSelected = profile.vibe == v['id'];
-        return GestureDetector(
-          onTap: () async {
-            HapticFeedback.selectionClick();
-            await UserPreferenceService.updateVibe(v['id']!);
-            if (!mounted) return;
-            setState(() => profile = UserPreferenceService.getProfile());
-          },
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 250),
-            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 11),
-            decoration: BoxDecoration(
-              color: isSelected ? AppPalette.rust : Theme.of(context).colorScheme.surface,
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(
-                  color: isSelected ? AppPalette.rust : AppTheme.borderColor(context),
-                  width: 1.5),
-              boxShadow: isSelected
-                  ? [BoxShadow(color: AppPalette.rust.withValues(alpha: 0.3), blurRadius: 12)]
-                  : null,
-            ),
-            child: Text(
-              "${v['emoji']}  ${v['id']!.toUpperCase()}",
-              style: GoogleFonts.outfit(
-                fontSize: 11,
-                fontWeight: FontWeight.bold,
-                color: isSelected ? Colors.white : AppTheme.textSecondary(context),
-                letterSpacing: 1,
-              ),
-            ),
-          ),
-        );
-      }).toList(),
-    );
-  }
-
   // ── Heritage Hub ─────────────────────────────────────────────────────────────
   Widget _buildHeritageHub() {
     return Column(
@@ -652,13 +681,199 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   final score = snapshot.data ?? 0;
                   final rank = EthicalTravelService.getRank(score);
                   return _hubItem(Icons.eco_outlined, "Ethical Travel Meter",
-                      "Rank: $rank • Score: $score", const Color(0xFF2E7D32), () {});
+                      "Rank: $rank • Score: $score", const Color(0xFF2E7D32), () => _showEthicalMeterDialog(context, score, rank));
                 },
               ),
             ],
           ),
         ),
       ],
+    );
+  }
+
+  void _showEthicalMeterDialog(BuildContext context, int score, String rank) {
+    HapticFeedback.selectionClick();
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(28),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surface,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(36)),
+          border: Border.all(color: const Color(0xFF2E7D32).withValues(alpha: 0.3), width: 1.5),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.2),
+              blurRadius: 20,
+              offset: const Offset(0, -5),
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 40, height: 4,
+              decoration: BoxDecoration(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(2)),
+            ),
+            const SizedBox(height: 24),
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: const Color(0xFF2E7D32).withValues(alpha: 0.15),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.eco_rounded, color: Color(0xFF2E7D32), size: 40),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              "ETHICAL TRAVEL METER",
+              style: GoogleFonts.outfit(
+                color: Theme.of(context).colorScheme.onSurface,
+                fontWeight: FontWeight.w900,
+                letterSpacing: 2,
+                fontSize: 18,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              "Rank: $rank • Score: $score Pts",
+              style: GoogleFonts.inter(
+                color: const Color(0xFF2E7D32),
+                fontWeight: FontWeight.w800,
+                fontSize: 14,
+              ),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              "Your ethical travel score measures your positive impact on local communities and heritage preservation across Sri Lanka.",
+              textAlign: TextAlign.center,
+              style: GoogleFonts.inter(
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+                fontSize: 13,
+                height: 1.5,
+              ),
+            ),
+            const SizedBox(height: 24),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                "HOW TO EARN POINTS:",
+                style: GoogleFonts.outfit(
+                  color: Theme.of(context).colorScheme.onSurface,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1,
+                  fontSize: 12,
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            _ecoPointTile("✍️ Leave Place Reviews", "+10 Pts", "Support local guides and travelers"),
+            _ecoPointTile("🍛 Sample Local Food", "+15 Pts", "Empower authentic local eateries"),
+            _ecoPointTile("🏛️ Visit Heritage Sites", "+20 Pts", "Promote cultural preservation"),
+            const SizedBox(height: 20),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                "🎁 REWARDS & PERKS YOU UNLOCK:",
+                style: GoogleFonts.outfit(
+                  color: Theme.of(context).colorScheme.onSurface,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1,
+                  fontSize: 12,
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            _rewardTile("🌟 Eco Guardian Badge", "Stand out on leaderboards & reviews"),
+            _rewardTile("☕ Partner Discounts", "5%-15% off at verified eco-stays & cafes"),
+            _rewardTile("🔓 Free Premium Perks", "Unlock AR guides & offline maps with points"),
+            _rewardTile("🌳 Real-World Impact", "Reach 500 Pts & we plant a tree in SL for you!"),
+            const SizedBox(height: 28),
+            SizedBox(
+              width: double.infinity,
+              height: 54,
+              child: ElevatedButton(
+                onPressed: () => Navigator.pop(context),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF2E7D32),
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                ),
+                child: Text(
+                  "GOT IT, KEEP EXPLORING",
+                  style: GoogleFonts.inter(fontWeight: FontWeight.w900, letterSpacing: 1, fontSize: 13),
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _rewardTile(String title, String subtitle) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      decoration: BoxDecoration(
+        color: const Color(0xFF2E7D32).withValues(alpha: 0.06),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFF2E7D32).withValues(alpha: 0.15)),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.card_giftcard_rounded, color: Color(0xFF2E7D32), size: 18),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: GoogleFonts.inter(color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.bold, fontSize: 12)),
+                Text(subtitle, style: GoogleFonts.inter(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6), fontSize: 11)),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _ecoPointTile(String title, String points, String subtitle) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.04),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.08)),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: GoogleFonts.inter(color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.bold, fontSize: 13)),
+                const SizedBox(height: 2),
+                Text(subtitle, style: GoogleFonts.inter(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5), fontSize: 11)),
+              ],
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            decoration: BoxDecoration(
+              color: const Color(0xFF2E7D32).withValues(alpha: 0.15),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Text(points, style: GoogleFonts.outfit(color: const Color(0xFF2E7D32), fontWeight: FontWeight.w900, fontSize: 12)),
+          ),
+        ],
+      ),
     );
   }
 
@@ -714,9 +929,18 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               iconColor: Colors.amber[700],
               onTap: () => Navigator.push(
                   context, MaterialPageRoute(builder: (_) => const GuideDashboardScreen()))),
-          _tile(Icons.business_center_outlined, "Operator Dashboard",
-              iconColor: Colors.cyan[600],
-              onTap: _openOperatorDashboard),
+          _tile(Icons.edit_document, "My Listing",
+              iconColor: Colors.amber[700],
+              onTap: () => Navigator.push(
+                  context, MaterialPageRoute(builder: (_) => const GuideListingEditorScreen()))),
+          _tile(Icons.inbox_rounded, "Guide Bookings",
+              iconColor: Colors.amber[700],
+              onTap: () => Navigator.push(
+                  context, MaterialPageRoute(builder: (_) => const BookingInboxScreen()))),
+          _tile(Icons.account_balance_wallet_outlined, "Earnings & Payouts",
+              iconColor: Colors.greenAccent[400],
+              onTap: () => Navigator.push(
+                  context, MaterialPageRoute(builder: (_) => const GuideEarningsScreen()))),
           _tile(Icons.card_membership_outlined, "Guide Subscription",
               iconColor: Colors.amber[700],
               onTap: () => Navigator.push(
@@ -835,44 +1059,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             onTap: _confirmSignOut),
       ],
     );
-  }
-
-  // ── Operator Dashboard guard ──────────────────────────────────────────────────
-  Future<void> _openOperatorDashboard() async {
-    showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (_) => const Center(child: CircularProgressIndicator()));
-    try {
-      if (Firebase.apps.isEmpty) {
-        Navigator.pop(context);
-        ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Offline Mode: Operator Dashboard unavailable.")));
-        return;
-      }
-      final user = FirebaseAuth.instance.currentUser;
-      if (user != null) {
-        final doc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
-        if (doc.exists) {
-          final data = doc.data() ?? {};
-          if (data['role'] == 'admin' || data['guideStatus'] == 'approved') {
-            if (!mounted) return;
-            Navigator.pop(context);
-            Navigator.push(context,
-                MaterialPageRoute(builder: (_) => const OperatorDashboardScreen()));
-            return;
-          }
-        }
-      }
-      if (!mounted) return;
-      Navigator.pop(context);
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Unauthorized: Access restricted.")));
-    } catch (e) {
-      if (!mounted) return;
-      Navigator.pop(context);
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error: $e")));
-    }
   }
 
   // ── Confirm Delete ────────────────────────────────────────────────────────────

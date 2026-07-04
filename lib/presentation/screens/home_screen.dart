@@ -30,6 +30,7 @@ import '../../data/models/discovery_place.dart';
 import '../../data/repositories/discovery_repository.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../widgets/cached_image.dart';
+import 'marketplace_results_screen.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   final bool isOffline;
@@ -295,6 +296,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           () {
             Haptics.medium();
             Navigator.push(context, MaterialPageRoute(builder: (context) => const TripFormScreen()));
+          },
+        ),
+        _buildQuickActionItem(
+          "Find Guide",
+          Icons.person_search_outlined,
+          Colors.amber,
+          () {
+            Haptics.medium();
+            Navigator.push(context, MaterialPageRoute(builder: (context) => const MarketplaceResultsScreen()));
           },
         ),
         _buildQuickActionItem(

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/guide_listing.dart';
+import '../models/guide_availability.dart';
 
 final marketplaceRepositoryProvider = Provider((ref) => MarketplaceRepository());
 
@@ -158,6 +159,12 @@ class MarketplaceRepository {
     await _listingRef
         .doc(listing.listingId)
         .set(listing.toJson(), SetOptions(merge: true));
+  }
+
+  Future<void> updateAvailability(String listingId, GuideAvailability availability) async {
+    await _listingRef
+        .doc(listingId)
+        .set({'availability': availability.toJson()}, SetOptions(merge: true));
   }
 
   // --- ADMIN METHODS (Stream OK — admin is low-volume) ---

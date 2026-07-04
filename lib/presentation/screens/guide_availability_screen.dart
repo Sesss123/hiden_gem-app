@@ -1,0 +1,426 @@
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:intl/intl.dart';
+import '../../core/theme/oracle_ui_system.dart';
+import '../../data/models/guide_availability.dart';
+import '../../data/models/guide_listing.dart';
+import '../../data/repositories/marketplace_repository.dart';
+
+class GuideAvailabilityScreen extends ConsumerStatefulWidget {
+  final GuideListing? listing;
+  const GuideAvailabilityScreen({super.key, this.listing});
+
+  @override
+  ConsumerState<GuideAvailabilityScreen> createState() => _GuideAvailabilityScreenState();
+}
+
+class _GuideAvailabilityScreenState extends ConsumerState<GuideAvailabilityScreen> {
+  bool _isLoading = true;
+  bool _isSaving = false;
+  late String _listingId;
+
+  // State
+  bool _instantBookEnabled = false;
+  String _advanceNoticeHours = '24';
+  List<DateTime> _blackoutDates = [];
+  final Map<int, RecurringSlot?> _weeklySlots = {}; // dayOfWeek (1-7) -> slot or null if off
+
+  final List<String> _daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+  final List<String> _noticeOptions = ['2', '6', '12', '24', '48', '72'];
+
+  @override
+  void initState() {
+    super.initState();
+    _initSchedule();
+  }
+
+  Future<void> _initSchedule() async {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) {
+      setState(() => _isLoading = false);
+      return;
+    }
+    _listingId = uid;
+
+    GuideAvailability? avail;
+    if (widget.listing != null && widget.listing!.availability != null) {
+      avail = widget.listing!.availability;
+    } else {
+      try {
+        final repo = ref.read(marketplaceRepositoryProvider);
+        final listing = await repo.getListing(uid);
+        avail = listing?.availability;
+      } catch (e) {
+        debugPrint('Error fetching availability: $e');
+      }
+    }
+
+    // Initialize defaults (Mon-Fri 08:00 - 17:00)
+    for (int i = 1; i <= 7; i++) {
+      if (i <= 5) {
+        _weeklySlots[i] = RecurringSlot(dayOfWeek: i, startTime: '08:00', endTime: '17:00');
+      } else {
+        _weeklySlots[i] = null; // Weekend off by default
+      }
+    }
+
+    if (avail != null && mounted) {
+      _blackoutDates = List.from(avail.blackoutDates);
+      _instantBookEnabled = avail.customNotes['instantBookEnabled'] == 'true';
+      _advanceNoticeHours = avail.customNotes['advanceNoticeHours'] ?? '24';
+
+      if (avail.recurringSlots.isNotEmpty) {
+        for (int i = 1; i <= 7; i++) {
+          _weeklySlots[i] = null;
+        }
+        for (final slot in avail.recurringSlots) {
+          _weeklySlots[slot.dayOfWeek] = slot;
+        }
+      }
+    }
+
+    if (mounted) {
+      setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _pickBlackoutDate() async {
+    HapticFeedback.lightImpact();
+    final now = DateTime.now();
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: now.add(const Duration(days: 1)),
+      firstDate: now,
+      lastDate: now.add(const Duration(days: 365)),
+      builder: (context, child) => Theme(
+        data: ThemeData.dark().copyWith(
+          colorScheme: const ColorScheme.dark(
+            primary: Colors.amber,
+            onPrimary: Colors.black,
+            surface: Color(0xFF1E1E1E),
+            onSurface: Colors.white,
+          ),
+        ),
+        child: child!,
+      ),
+    );
+
+    if (picked != null) {
+      final dateOnly = DateTime(picked.year, picked.month, picked.day);
+      if (!_blackoutDates.any((d) => d.year == dateOnly.year && d.month == dateOnly.month && d.day == dateOnly.day)) {
+        setState(() {
+          _blackoutDates.add(dateOnly);
+          _blackoutDates.sort((a, b) => a.compareTo(b));
+        });
+      }
+    }
+  }
+
+  Future<void> _pickTime(int dayIndex, bool isStart) async {
+    HapticFeedback.lightImpact();
+    final currentSlot = _weeklySlots[dayIndex];
+    if (currentSlot == null) return;
+
+    final parts = (isStart ? currentSlot.startTime : currentSlot.endTime).split(':');
+    final initialTime = TimeOfDay(hour: int.parse(parts[0]), minute: int.parse(parts[1]));
+
+    final picked = await showTimePicker(
+      context: context,
+      initialTime: initialTime,
+      builder: (context, child) => Theme(
+        data: ThemeData.dark().copyWith(
+          colorScheme: const ColorScheme.dark(primary: Colors.amber, onPrimary: Colors.black, surface: Color(0xFF1E1E1E), onSurface: Colors.white),
+        ),
+        child: child!,
+      ),
+    );
+
+    if (picked != null) {
+      final formatted = '${picked.hour.toString().padLeft(2, '0')}:${picked.minute.toString().padLeft(2, '0')}';
+      setState(() {
+        _weeklySlots[dayIndex] = RecurringSlot(
+          dayOfWeek: dayIndex,
+          startTime: isStart ? formatted : currentSlot.startTime,
+          endTime: !isStart ? formatted : currentSlot.endTime,
+        );
+      });
+    }
+  }
+
+  Future<void> _saveAvailability() async {
+    HapticFeedback.mediumImpact();
+    setState(() => _isSaving = true);
+
+    try {
+      final activeSlots = _weeklySlots.values.whereType<RecurringSlot>().toList();
+      final customNotes = {
+        'instantBookEnabled': _instantBookEnabled ? 'true' : 'false',
+        'advanceNoticeHours': _advanceNoticeHours,
+      };
+
+      final newAvail = GuideAvailability(
+        listingId: _listingId,
+        blackoutDates: _blackoutDates,
+        recurringSlots: activeSlots,
+        isManualUnavailable: false,
+        customNotes: customNotes,
+      );
+
+      final repo = ref.read(marketplaceRepositoryProvider);
+      await repo.updateAvailability(_listingId, newAvail);
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('🎉 Availability & Schedule Updated!'), backgroundColor: Colors.green),
+        );
+        Navigator.pop(context);
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error saving availability: $e'), backgroundColor: Colors.redAccent),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isSaving = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_isLoading) {
+      return Scaffold(
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        body: const Center(child: CircularProgressIndicator(color: Colors.amber)),
+      );
+    }
+
+    final dateFormat = DateFormat('MMM d, yyyy');
+
+    return Scaffold(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        title: Text(
+          'AVAILABILITY & SCHEDULE',
+          style: GoogleFonts.outfit(fontWeight: FontWeight.bold, letterSpacing: 1.5, fontSize: 16),
+        ),
+        centerTitle: true,
+      ),
+      body: OracleUI.auraBackground(
+        child: SafeArea(
+          child: ListView(
+            padding: const EdgeInsets.all(20),
+            physics: const BouncingScrollPhysics(),
+            children: [
+              _buildSectionTitle('INSTANT BOOK & NOTICE'),
+              const SizedBox(height: 12),
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.08),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: Colors.white.withValues(alpha: 0.15)),
+                ),
+                child: Column(
+                  children: [
+                    SwitchListTile(
+                      title: Text('Instant Book Enabled', style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold)),
+                      subtitle: Text('Allow tourists to book immediately without manual approval', style: GoogleFonts.inter(color: Colors.white60, fontSize: 12)),
+                      value: _instantBookEnabled,
+                      activeThumbColor: Colors.amber,
+                      contentPadding: EdgeInsets.zero,
+                      onChanged: (val) => setState(() => _instantBookEnabled = val),
+                    ),
+                    const Divider(color: Colors.white12),
+                    const SizedBox(height: 8),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Advance Notice Required', style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.w600)),
+                            Text('Minimum lead time before tour starts', style: GoogleFonts.inter(color: Colors.white60, fontSize: 12)),
+                          ],
+                        ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: Colors.black45,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: Colors.amber.withValues(alpha: 0.5)),
+                          ),
+                          child: DropdownButton<String>(
+                            value: _advanceNoticeHours,
+                            dropdownColor: const Color(0xFF1E1E1E),
+                            underline: const SizedBox(),
+                            icon: const Icon(Icons.arrow_drop_down, color: Colors.amber),
+                            items: _noticeOptions.map((e) => DropdownMenuItem(value: e, child: Text('$e hrs', style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold)))).toList(),
+                            onChanged: (val) => setState(() => _advanceNoticeHours = val!),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 28),
+
+              _buildSectionTitle('RECURRING WEEKLY SCHEDULE'),
+              const SizedBox(height: 4),
+              Text('Toggle working days and customize working hours', style: GoogleFonts.inter(color: Colors.white60, fontSize: 12)),
+              const SizedBox(height: 12),
+              ...List.generate(7, (index) {
+                final dayIndex = index + 1;
+                final dayName = _daysOfWeek[index];
+                final slot = _weeklySlots[dayIndex];
+                final isWorking = slot != null;
+
+                return Container(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  decoration: BoxDecoration(
+                    color: isWorking ? Colors.white.withValues(alpha: 0.08) : Colors.white.withValues(alpha: 0.03),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: isWorking ? Colors.amber.withValues(alpha: 0.4) : Colors.white.withValues(alpha: 0.08)),
+                  ),
+                  child: Row(
+                    children: [
+                      SizedBox(
+                        width: 100,
+                        child: Text(
+                          dayName,
+                          style: GoogleFonts.outfit(
+                            color: isWorking ? Colors.white : Colors.white38,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15,
+                          ),
+                        ),
+                      ),
+                      Switch(
+                        value: isWorking,
+                        activeThumbColor: Colors.amber,
+                        onChanged: (val) {
+                          setState(() {
+                            if (val) {
+                              _weeklySlots[dayIndex] = RecurringSlot(dayOfWeek: dayIndex, startTime: '08:00', endTime: '17:00');
+                            } else {
+                              _weeklySlots[dayIndex] = null;
+                            }
+                          });
+                        },
+                      ),
+                      const Spacer(),
+                      if (isWorking) ...[
+                        GestureDetector(
+                          onTap: () => _pickTime(dayIndex, true),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                            decoration: BoxDecoration(color: Colors.black45, borderRadius: BorderRadius.circular(8), border: Border.all(color: Colors.white24)),
+                            child: Text(slot.startTime, style: GoogleFonts.outfit(color: Colors.amber[300], fontWeight: FontWeight.bold, fontSize: 13)),
+                          ),
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 6),
+                          child: Text('-', style: TextStyle(color: Colors.white60)),
+                        ),
+                        GestureDetector(
+                          onTap: () => _pickTime(dayIndex, false),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                            decoration: BoxDecoration(color: Colors.black45, borderRadius: BorderRadius.circular(8), border: Border.all(color: Colors.white24)),
+                            child: Text(slot.endTime, style: GoogleFonts.outfit(color: Colors.amber[300], fontWeight: FontWeight.bold, fontSize: 13)),
+                          ),
+                        ),
+                      ] else ...[
+                        Text('OFF / UNAVAILABLE', style: GoogleFonts.inter(color: Colors.white30, fontSize: 12, fontWeight: FontWeight.w600)),
+                      ],
+                    ],
+                  ),
+                );
+              }),
+              const SizedBox(height: 28),
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  _buildSectionTitle('BLACKOUT DATES (${_blackoutDates.length})'),
+                  TextButton.icon(
+                    onPressed: _pickBlackoutDate,
+                    icon: const Icon(Icons.add_circle_outline, color: Colors.amber, size: 18),
+                    label: Text('ADD DATE', style: GoogleFonts.outfit(color: Colors.amber, fontWeight: FontWeight.bold, fontSize: 12)),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              if (_blackoutDates.isEmpty)
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.04),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Text('No blackout dates added. You are available according to your schedule.', textAlign: TextAlign.center, style: GoogleFonts.inter(color: Colors.white38, fontSize: 13)),
+                )
+              else
+                Wrap(
+                  spacing: 10,
+                  runSpacing: 10,
+                  children: _blackoutDates.map((date) {
+                    return Chip(
+                      backgroundColor: Colors.redAccent.withValues(alpha: 0.2),
+                      side: BorderSide(color: Colors.redAccent.withValues(alpha: 0.5)),
+                      label: Text(dateFormat.format(date), style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.w600)),
+                      deleteIcon: const Icon(Icons.close, size: 16, color: Colors.white70),
+                      onDeleted: () {
+                        setState(() {
+                          _blackoutDates.remove(date);
+                        });
+                      },
+                    );
+                  }).toList(),
+                ),
+              const SizedBox(height: 40),
+
+              SizedBox(
+                width: double.infinity,
+                height: 56,
+                child: ElevatedButton(
+                  onPressed: _isSaving ? null : _saveAvailability,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.amber,
+                    foregroundColor: Colors.black,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+                    elevation: 8,
+                  ),
+                  child: _isSaving
+                      ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.black))
+                      : Text('SAVE AVAILABILITY & SCHEDULE 📅', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, letterSpacing: 1, fontSize: 15)),
+                ),
+              ),
+              const SizedBox(height: 40),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSectionTitle(String title) {
+    return Text(
+      title,
+      style: GoogleFonts.outfit(
+        color: Colors.amber[400],
+        fontSize: 12,
+        fontWeight: FontWeight.w800,
+        letterSpacing: 2.0,
+      ),
+    );
+  }
+}

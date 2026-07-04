@@ -464,6 +464,22 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
       _isLoading = true;
     });
     
+    // 🚧 Show Coming Soon Toast while AI model is in development!
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: const Row(
+          children: [
+            Icon(Icons.auto_awesome, color: Colors.amberAccent, size: 20),
+            SizedBox(width: 10),
+            Expanded(child: Text("✨ AI Oracle Recommendations & Vibe Search — Coming Soon!")),
+          ],
+        ),
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        duration: const Duration(seconds: 3),
+      ),
+    );
+    
     final repository = ref.read(discoveryRepositoryProvider);
     final aiResults = await repository.getAiRecommendations(_allPlaces, customQuery: query);
     

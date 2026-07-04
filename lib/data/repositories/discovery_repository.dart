@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:math' as math;
-import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
@@ -165,8 +164,13 @@ class DiscoveryRepository {
     if (places.isEmpty) return [];
     
     final topNearest = places.take(10).toList();
-    final vibeText = customQuery ?? "default vibe";
     
+    // 🚧 AI Recommendations Model & API Key in Development — Coming Soon!
+    // Skip upstream network call completely to avoid 10s timeout and return local nearest places immediately.
+    return topNearest.take(3).toList();
+
+    /*
+    final vibeText = customQuery ?? "default vibe";
     try {
       final List<Map<String, dynamic>> results = await _remoteDataSource.getAiRecommendationsRaw(
         nearbyPlaces: topNearest, 
@@ -190,6 +194,7 @@ class DiscoveryRepository {
       SecureLogger.info("AI recommendations model offline or in development ($e). Using local nearest places fallback.");
       return topNearest.take(3).toList();
     }
+    */
   }
 
   // --- Private Helpers ---

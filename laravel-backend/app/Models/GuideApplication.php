@@ -11,6 +11,8 @@ class GuideApplication extends Model
 
     protected $fillable = [
         'user_id',
+        'email',
+        'name',
         'license_number',
         'bio',
         'category',
@@ -18,11 +20,14 @@ class GuideApplication extends Model
         'nic_doc_url',
         'selfie_doc_url',
         'status',
+        'admin_comment',
         'applied_at',
+        'reviewed_at',
     ];
 
     protected $casts = [
         'applied_at' => 'datetime',
+        'reviewed_at' => 'datetime',
     ];
 
     /**

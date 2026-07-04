@@ -123,7 +123,7 @@ class _AudioGuideScreenState extends State<AudioGuideScreen> with SingleTickerPr
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           IconButton(
-            icon: Icon(Icons.close, color: Colors.white, size: 28),
+            icon: Icon(Icons.close, color: Theme.of(context).colorScheme.onSurface, size: 28),
             onPressed: () => Navigator.pop(context),
           ),
           OracleUI.glassContainer(
@@ -192,7 +192,7 @@ class _AudioGuideScreenState extends State<AudioGuideScreen> with SingleTickerPr
           style: GoogleFonts.outfit(
             fontSize: 26, 
             fontWeight: FontWeight.w900, 
-            color: Colors.white,
+            color: Theme.of(context).colorScheme.onSurface,
             letterSpacing: 1.5,
           ),
         ),
@@ -201,7 +201,7 @@ class _AudioGuideScreenState extends State<AudioGuideScreen> with SingleTickerPr
           widget.place.district.toUpperCase(),
           style: GoogleFonts.inter(
             fontSize: 11, 
-            color: Colors.white24, 
+            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6), 
             letterSpacing: 3,
             fontWeight: FontWeight.w900,
           ),
@@ -223,7 +223,7 @@ class _AudioGuideScreenState extends State<AudioGuideScreen> with SingleTickerPr
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               IconButton(
-                icon: Icon(Icons.replay_10_rounded, color: Colors.white30, size: 32),
+                icon: Icon(Icons.replay_10_rounded, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7), size: 32),
                 onPressed: () => _player.seek(Duration(seconds: _player.position.inSeconds - 10)),
               ),
               SizedBox(width: 40),
@@ -245,7 +245,7 @@ class _AudioGuideScreenState extends State<AudioGuideScreen> with SingleTickerPr
               ),
               SizedBox(width: 40),
               IconButton(
-                icon: Icon(Icons.forward_10_rounded, color: Colors.white30, size: 32),
+                icon: Icon(Icons.forward_10_rounded, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7), size: 32),
                 onPressed: () => _player.seek(Duration(seconds: _player.position.inSeconds + 10)),
               ),
             ],
@@ -259,7 +259,7 @@ class _AudioGuideScreenState extends State<AudioGuideScreen> with SingleTickerPr
     return OracleUI.glassContainer(
       padding: EdgeInsets.all(4),
       borderRadius: BorderRadius.circular(30),
-      borderColor: Colors.white.withValues(alpha: 0.05),
+      borderColor: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.1),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -284,7 +284,7 @@ class _AudioGuideScreenState extends State<AudioGuideScreen> with SingleTickerPr
         child: Text(
           label,
           style: GoogleFonts.outfit(
-            color: active ? Colors.black : Colors.white24, 
+            color: active ? Theme.of(context).colorScheme.onPrimary : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6), 
             fontWeight: FontWeight.w900, 
             fontSize: 10,
             letterSpacing: 1,
@@ -309,8 +309,8 @@ class _AudioGuideScreenState extends State<AudioGuideScreen> with SingleTickerPr
                 SliderTheme(
                   data: SliderTheme.of(context).copyWith(
                     activeTrackColor: Theme.of(context).colorScheme.primary,
-                    inactiveTrackColor: Colors.white.withValues(alpha: 0.05),
-                    thumbColor: Colors.white,
+                    inactiveTrackColor: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.15),
+                    thumbColor: Theme.of(context).colorScheme.primary,
                     overlayColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
                     trackHeight: 3,
                     thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 0),
@@ -329,8 +329,8 @@ class _AudioGuideScreenState extends State<AudioGuideScreen> with SingleTickerPr
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(_formatDuration(position), style: GoogleFonts.inter(color: Colors.white54, fontSize: 11, fontWeight: FontWeight.bold)),
-                      Text(_formatDuration(duration), style: GoogleFonts.inter(color: Colors.white38, fontSize: 11)),
+                      Text(_formatDuration(position), style: GoogleFonts.inter(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7), fontSize: 11, fontWeight: FontWeight.bold)),
+                      Text(_formatDuration(duration), style: GoogleFonts.inter(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5), fontSize: 11)),
                     ],
                   ),
                 ),

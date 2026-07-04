@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/booking_request.dart';
+import '../../core/utils/secure_logger.dart';
 
 final bookingRepositoryProvider = Provider((ref) => BookingRepository());
 
@@ -13,6 +14,10 @@ class BookingRepository {
   /// Submits a new booking request from a tourist.
   Future<String> submitRequest(BookingRequest request) async {
     final doc = _bookingRef.doc();
+    final quoted = request.quotedPrice;
+    final commission = request.commissionAmount ?? (quoted != null ? quoted * 0.10 : null);
+    final netAmount = request.guideNetAmount ?? (quoted != null ? quoted * 0.90 : null);
+
     final newRequest = BookingRequest(
       bookingId: doc.id,
       touristId: request.touristId,
@@ -24,10 +29,13 @@ class BookingRepository {
       notes: request.notes,
       
       // Capture Snapshots
-      quotedPrice: request.quotedPrice,
-      currency: request.currency,
+      quotedPrice: quoted,
+      currency: request.currency ?? 'LKR',
       packageSnapshot: request.packageSnapshot,
       includedItemsSnapshot: request.includedItemsSnapshot,
+      commissionAmount: commission,
+      guideNetAmount: netAmount,
+      payoutStatus: request.payoutStatus,
       
       status: 'pending',
       createdAt: DateTime.now(),
@@ -35,11 +43,30 @@ class BookingRepository {
 
     await doc.set(newRequest.toJson());
     
-    // Increment booking request counts for analytics
+    // Increment booking request counts for analytics and trigger push notification
     if (request.guideId != null) {
-      await _firestore.collection('guide_listings').doc(request.guideId).update({
-        'bookingRequestsCount': FieldValue.increment(1),
-      });
+      try {
+        await _firestore.collection('guide_listings').doc(request.guideId).update({
+          'bookingRequestsCount': FieldValue.increment(1),
+        });
+      } catch (e) {
+        SecureLogger.warning("Failed to increment booking count: $e", tag: "Booking");
+      }
+
+      try {
+        await _firestore.collection('user_notifications').add({
+          'recipientId': request.guideId,
+          'title': '📅 New Booking Request!',
+          'body': 'You have received a tour request for ${request.guestCount} guests on ${request.requestedDate.toString().split(' ')[0]}.',
+          'type': 'new_booking',
+          'bookingId': doc.id,
+          'createdAt': FieldValue.serverTimestamp(),
+          'isRead': false,
+        });
+        SecureLogger.info("Dispatched new_booking notification to guide: ${request.guideId}", tag: "Booking");
+      } catch (e) {
+        SecureLogger.warning("Failed to dispatch booking notification: $e", tag: "Booking");
+      }
     }
 
     return doc.id;
@@ -55,6 +82,13 @@ class BookingRepository {
       'status': status,
       'respondedAt': DateTime.now().toIso8601String(),
       'responseNote': note,
+    });
+  }
+
+  /// Links a created tour session to a booking request.
+  Future<void> updateLinkedSessionId(String bookingId, String sessionId) async {
+    await _bookingRef.doc(bookingId).update({
+      'linkedSessionId': sessionId,
     });
   }
 

@@ -19,6 +19,10 @@ import 'guide_broadcast_screen.dart';
 
 import '../../data/repositories/meeting_point_repository.dart';
 import '../../data/models/meeting_checkpoint.dart';
+import '../../core/services/monsoon_broadcast_service.dart';
+import 'incident_center_screen.dart';
+import '../../data/models/incident_report.dart';
+import '../../data/repositories/incident_repository.dart';
 
 class GuideDashboardScreen extends StatefulWidget {
   const GuideDashboardScreen({super.key});
@@ -33,6 +37,8 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
   bool _isLoading = true;
   Timer? _locationTimer;
   StreamSubscription? _vehicleSub;
+  StreamSubscription<Map<String, dynamic>>? _monsoonSub;
+  Map<String, dynamic>? _activeMonsoonAlert;
   
   final _sessionRepo = TourSessionRepository();
   final _vehicleRepo = VehicleRepository();
@@ -49,6 +55,7 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
   void dispose() {
     _locationTimer?.cancel();
     _vehicleSub?.cancel();
+    _monsoonSub?.cancel();
     super.dispose();
   }
 
@@ -120,6 +127,7 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
       if (session != null) {
         if (!mounted) return;
         setState(() => _activeSession = session);
+        _setupMonsoonSafetyListener(session.meetingPointName);
       }
     }
   }
@@ -171,6 +179,7 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
     await _sessionRepo.generateJoinToken(sessionId);
     if (!mounted) return;
     _startLocationSync();
+    _setupMonsoonSafetyListener("Initial Meeting Point");
   }
 
   Future<void> _updatePhase(String phase) async {
@@ -405,6 +414,7 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
 
     return Column(
       children: [
+        if (_activeMonsoonAlert != null) _buildMonsoonSafetyBanner(_activeMonsoonAlert!),
         Row(
           children: [
             _buildStatCard("TRAVELERS", "${session.touristIds.length}", Icons.people_outline),
@@ -730,5 +740,128 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
           ],
         ),
       );
+  }
+
+  void _setupMonsoonSafetyListener(String location) {
+    _monsoonSub?.cancel();
+    MonsoonBroadcastService().init(district: location.isNotEmpty ? location : "Colombo");
+    _monsoonSub = MonsoonBroadcastService().broadcastStream.listen((alert) {
+      if (mounted) {
+        setState(() => _activeMonsoonAlert = alert);
+      }
+    });
+  }
+
+  Widget _buildMonsoonSafetyBanner(Map<String, dynamic> alert) {
+    final title = alert['title'] as String? ?? alert['event']?.toString() ?? '🚨 EMERGENCY MONSOON ALERT';
+    final msg = alert['message'] as String? ?? alert['description']?.toString() ?? 'Severe weather warning in your tour district.';
+    final severity = alert['severity'] as String? ?? 'CRITICAL';
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 20),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.redAccent.withValues(alpha: 0.15),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.redAccent, width: 2),
+        boxShadow: [
+          BoxShadow(color: Colors.redAccent.withValues(alpha: 0.2), blurRadius: 15, spreadRadius: 2),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.warning_amber_rounded, color: Colors.redAccent, size: 28),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  title.toUpperCase(),
+                  style: GoogleFonts.outfit(color: Colors.redAccent, fontWeight: FontWeight.bold, fontSize: 14, letterSpacing: 1.2),
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                decoration: BoxDecoration(color: Colors.redAccent, borderRadius: BorderRadius.circular(8)),
+                child: Text(severity.toUpperCase(), style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 10)),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(msg, style: GoogleFonts.inter(color: Colors.white, fontSize: 12)),
+          const SizedBox(height: 14),
+          Row(
+            children: [
+              Expanded(
+                child: ElevatedButton.icon(
+                  onPressed: () => _logMonsoonIncident(title, msg, severity),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.redAccent,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  ),
+                  icon: const Icon(Icons.shield_outlined, size: 16),
+                  label: Text("LOG INCIDENT", style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 11)),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: () {
+                    if (_activeSession != null) {
+                      Navigator.push(context, MaterialPageRoute(builder: (_) => IncidentCenterScreen(sessionId: _activeSession!.sessionId)));
+                    }
+                  },
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    side: const BorderSide(color: Colors.white60),
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  ),
+                  icon: const Icon(Icons.open_in_new, size: 16),
+                  label: Text("SAFETY CONSOLE", style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 11)),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    ).animate().fadeIn().shake(duration: 500.ms);
+  }
+
+  Future<void> _logMonsoonIncident(String title, String desc, String severity) async {
+    if (_activeSession == null) return;
+    try {
+      final repo = IncidentRepository();
+      final report = IncidentReport(
+        incidentId: '',
+        incidentNumber: 'INC-WTR-${DateTime.now().millisecondsSinceEpoch.toString().substring(8)}',
+        sessionId: _activeSession!.sessionId,
+        guideId: _activeSession!.guideId,
+        touristId: 'all_session_guests',
+        reportedBy: _activeSession!.guideId,
+        reportedByRole: 'guide',
+        type: 'weather_hazard',
+        severity: severity.toLowerCase() == 'critical' ? 'critical' : 'high',
+        title: title,
+        description: desc,
+        lat: _activeSession!.meetingPointLat,
+        lng: _activeSession!.meetingPointLng,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      );
+      await repo.createIncident(report);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("✅ Weather hazard logged to Safety Console!"), backgroundColor: Colors.green),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error logging incident: $e"), backgroundColor: Colors.red),
+      );
+    }
   }
 }

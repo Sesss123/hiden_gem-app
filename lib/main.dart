@@ -32,6 +32,7 @@ import 'presentation/screens/login_screen.dart';
 import 'presentation/screens/home_screen.dart';
 import 'presentation/screens/splash_screen.dart';
 import 'presentation/screens/onboarding_screen.dart';
+import 'presentation/screens/booking_inbox_screen.dart';
 import 'presentation/screens/language_selection_screen.dart';
 import 'presentation/screens/terms_screen.dart';
 import 'presentation/widgets/graceful_error_widget.dart';
@@ -469,7 +470,17 @@ class _HiddenGemsAppState extends ConsumerState<HiddenGemsApp> with WidgetsBindi
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             margin: const EdgeInsets.all(16),
-            duration: const Duration(seconds: 4),
+            duration: const Duration(seconds: 5),
+            action: SnackBarAction(
+              label: 'OPEN',
+              textColor: Colors.amber,
+              onPressed: () {
+                final nav = navigatorKey.currentState;
+                if (nav != null && message.data['type'] == 'new_booking') {
+                  nav.push(MaterialPageRoute(builder: (_) => const BookingInboxScreen()));
+                }
+              },
+            ),
           ),
         );
       }

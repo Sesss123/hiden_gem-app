@@ -142,7 +142,8 @@ service cloud.firestore {
     match /guide_applications/{userId} {
       allow read: if isOwner(userId) || isAdmin();
       allow create: if isOwner(userId);
-      allow update, delete: if isAdmin();
+      allow update: if isAdmin() || (isOwner(userId) && resource.data.status == 'rejected');
+      allow delete: if isAdmin();
     }
 
     // ── Places & Events (Discovery) ──────────────────────────────────────────

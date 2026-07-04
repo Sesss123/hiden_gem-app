@@ -1,4 +1,4 @@
-
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:google_fonts/google_fonts.dart';
@@ -24,22 +24,70 @@ class GuideEnrollmentScreen extends StatefulWidget {
 }
 
 class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
-  final _licenseController = TextEditingController();
-  final _bioController = TextEditingController();
-  String _selectedCategory = 'National';
-  bool _isLoading = false;
-  String _loadingStatus = "INITIATING VERIFICATION...";
+  final _repo = GuideApplicationRepository();
+  final _storage = FirebaseStorageService();
+  final _picker = ImagePicker();
 
   XFile? _licenseFile;
   XFile? _nicFile;
   XFile? _selfieFile;
 
-  final _picker = ImagePicker();
-  final _storage = FirebaseStorageService();
-  final _repo = GuideApplicationRepository();
+  final _licenseController = TextEditingController();
+  final _bioController = TextEditingController();
+
+  bool _isLoading = false;
+  String _loadingStatus = "INITIATING VERIFICATION...";
+  String _selectedCategory = 'National';
+  String? _rejectionReason;
+  GuideStatus _currentStatus = GuideStatus.none;
+  StreamSubscription? _appSub;
+
+  @override
+  void initState() {
+    super.initState();
+    _startWatchingApplication();
+  }
+
+  void _startWatchingApplication() {
+    final profile = UserPreferenceService.getProfile();
+    setState(() {
+      _currentStatus = profile.guideStatus;
+    });
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) return;
+
+    _appSub = _repo.watchMyApplication(uid).listen((app) {
+      if (app != null && mounted) {
+        setState(() {
+          _currentStatus = app.status;
+          if (app.status == GuideStatus.rejected) {
+            _rejectionReason = app.adminComment ?? "Please ensure your license documents and photos are clear and valid.";
+          }
+        });
+        final currentProfile = UserPreferenceService.getProfile();
+        bool changed = false;
+        if (app.status == GuideStatus.approved && currentProfile.guideStatus != GuideStatus.approved) {
+          currentProfile.guideStatus = GuideStatus.approved;
+          currentProfile.role = 'guide_approved';
+          currentProfile.isGuideApproved = true;
+          changed = true;
+        } else if (app.status == GuideStatus.rejected && currentProfile.guideStatus != GuideStatus.rejected) {
+          currentProfile.guideStatus = GuideStatus.rejected;
+          changed = true;
+        } else if (app.status == GuideStatus.pending && currentProfile.guideStatus != GuideStatus.pending) {
+          currentProfile.guideStatus = GuideStatus.pending;
+          changed = true;
+        }
+        if (changed) {
+          UserPreferenceService.saveProfile(currentProfile);
+        }
+      }
+    });
+  }
 
   @override
   void dispose() {
+    _appSub?.cancel();
     _licenseController.dispose();
     _bioController.dispose();
     super.dispose();
@@ -364,6 +412,28 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SizedBox(height: 20),
+                    if (_currentStatus == GuideStatus.pending) ...[
+                      _buildStatusBanner(
+                        title: "⏳ APPLICATION UNDER REVIEW",
+                        message: "Your guide application has been submitted and is currently being reviewed by the Oracle Council. You will be notified once a decision is made.",
+                        color: Colors.amber,
+                      ),
+                      const SizedBox(height: 20),
+                    ] else if (_currentStatus == GuideStatus.rejected) ...[
+                      _buildStatusBanner(
+                        title: "❌ APPLICATION REJECTED",
+                        message: "Reason: ${_rejectionReason ?? 'Documents incomplete or unclear.'}\n\nYou can re-submit your application below once you fix the required items.",
+                        color: Colors.redAccent,
+                      ),
+                      const SizedBox(height: 20),
+                    ] else if (_currentStatus == GuideStatus.approved) ...[
+                      _buildStatusBanner(
+                        title: "✅ YOU ARE AN APPROVED GUIDE",
+                        message: "Congratulations! Your guide identity is active. You can access the Guide Dashboard from your profile.",
+                        color: Colors.greenAccent,
+                      ),
+                      const SizedBox(height: 20),
+                    ],
                     Container(
                       padding: const EdgeInsets.all(24),
                       decoration: BoxDecoration(
@@ -582,5 +652,25 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
         ),
       ],
     );
+  }
+
+  Widget _buildStatusBanner({required String title, required String message, required Color color}) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: color.withValues(alpha: 0.5), width: 1.5),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(title, style: GoogleFonts.outfit(color: color, fontSize: 16, fontWeight: FontWeight.bold, letterSpacing: 1.2)),
+          const SizedBox(height: 8),
+          Text(message, style: GoogleFonts.inter(color: AppTheme.textPrimary(context), fontSize: 13, height: 1.5)),
+        ],
+      ),
+    ).animate().fadeIn(duration: 600.ms).slideY(begin: -0.1, end: 0);
   }
 }
