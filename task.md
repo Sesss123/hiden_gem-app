@@ -1,4 +1,24 @@
-## Active Milestone: Master Enterprise Remediation Plan Execution (v12.0)
+## Active Milestone: Combined Master Remediation Plan (v15.0)
+- [x] Phase 1: Laravel Backend & Database Schema
+  - [x] Exec #1 & #16 / Audit #21: Update migration `2026_07_01_000002_create_places_table.php` (change `unique` to `index` for `sync_version`, change `id` length to 36)
+  - [x] Exec #2 / Audit #2, #3, #14: Wrap `PlaceObserver::saving()` and `deleting()` in `DB::transaction`, and handle image cleanup on delete
+  - [x] Exec #6, #10, #13 / Audit #13, #20, #23: Update `PlaceSyncController.php` (cursor pagination, secondary ordering, collection resolve, dynamic limit, off-by-one hasMore fix)
+  - [x] Exec #17: Optimize `PlaceResource.php` null-coalescing evaluations
+- [/] Phase 2: Flutter Data & Core Layer (Sync Pipeline & Performance)
+  - [ ] Audit #5, #7, #12: Update `DiscoveryPlace` model (`openingHours`, `syncVersion`, null-safe `rating`, clean image fallback)
+  - [ ] Exec #4, #7, #9, #11, #18 / Audit #10, #11, #22: Update `SqliteStorageService`
+  - [ ] Audit #4, #6, #9: Update `DeltaSyncService`
+  - [ ] Exec #8 / Audit #1, Exec #14: Update `DiscoveryRemoteDataSource`
+  - [ ] Exec #12: Update `DiscoveryLocalDataSource`
+  - [ ] Exec #3, #5, #15 / Audit #8, #18: Update `DiscoveryRepository`
+- [ ] Phase 3: Layers A–E (Auth, Config & Lifecycle)
+  - [ ] Audit #16: Update `AuthService`
+  - [ ] Audit #17: Update `PremiumService`
+  - [ ] Audit #15: Update `AppConfig`
+  - [ ] Audit #19: Update `firebase_options.dart`
+- [ ] Phase 4: Verification & Quality Assurance
+
+## Completed Milestone: Master Enterprise Remediation Plan Execution (v12.0)
 - [x] 1. Laravel Backend & MySQL Schema / Sync (`laravel-backend/`)
   - [x] 1.1 Add `access_tier` column to `2026_07_01_000002_create_places_table.php`
   - [x] 1.2 Fix race condition in `PlaceObserver.php` saving event (remove inner transaction)

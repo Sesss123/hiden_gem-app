@@ -25,7 +25,7 @@ class SplashScreen extends ConsumerStatefulWidget {
 class _SplashScreenState extends ConsumerState<SplashScreen> {
   bool _isNavigating = false;
   int _retryCount = 0;
-  static const int maxRetries = 3;
+  static const int maxRetries = 20; // 10 seconds max retry duration
 
   @override
   void initState() {
@@ -42,21 +42,36 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     _checkReadiness();
   }
 
+  @override
+  void didUpdateWidget(covariant SplashScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.isReady && !oldWidget.isReady) {
+      _isNavigating = false;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _attemptFinish();
+      });
+    }
+  }
+
   Future<void> _checkReadiness() async {
-    await Future.delayed(const Duration(seconds: 4));
+    await Future.delayed(const Duration(seconds: 3));
     _attemptFinish();
   }
 
   void _attemptFinish() {
     if (widget.isReady && !_isNavigating && mounted) {
       _isNavigating = true;
-      widget.onFinish();
-    } else if (mounted) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) widget.onFinish();
+      });
+    } else if (mounted && !_isNavigating) {
       _retryCount++;
       if (_retryCount > maxRetries) {
         if (mounted && !_isNavigating) {
           _isNavigating = true;
-          widget.onFinish();
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) widget.onFinish();
+          });
         }
       } else {
         Future.delayed(const Duration(milliseconds: 500), _attemptFinish);

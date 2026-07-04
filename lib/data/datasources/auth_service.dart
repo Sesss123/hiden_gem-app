@@ -54,7 +54,7 @@ class AuthService {
         return userCredential;
       }
     } catch (e) {
-      debugPrint("Error during Google Sign-In: $e");
+      SecureLogger.error("Error during Google Sign-In", e);
       rethrow;
     }
   }
@@ -81,7 +81,7 @@ class AuthService {
       }
       return userCredential;
     } catch (e) {
-      debugPrint("Error during Email Sign-Up: $e");
+      SecureLogger.error("Error during Email Sign-Up", e);
       rethrow;
     }
   }
@@ -113,7 +113,7 @@ class AuthService {
         await guard.recordFailure();
       }
       
-      debugPrint("Error during Email Sign-In: $e");
+      SecureLogger.error("Error during Email Sign-In", e);
       rethrow;
     }
   }
@@ -185,7 +185,7 @@ class AuthService {
         try { await _googleSignIn.signOut(); } catch (e) { SecureLogger.warning('Google sign out failed: $e'); }
       }
     } catch (e) {
-      debugPrint("Error during Account Deletion: $e");
+      SecureLogger.error("Error during Account Deletion", e);
       rethrow;
     }
   }

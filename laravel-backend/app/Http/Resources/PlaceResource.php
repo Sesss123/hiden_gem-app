@@ -26,6 +26,24 @@ class PlaceResource extends JsonResource
             $imageUrl = asset('storage/' . ltrim($imageUrl, '/'));
         }
 
+        // Calculate standard fallback variables once at the top of toArray (Exec #17)
+        $ticket = $this->ticket_range ?? $this->ticket_price ?? 'Free';
+        $road = $this->road_type ?? $this->road_condition ?? '';
+        $vehicle = $this->vehicle_access ?? '';
+        $parkingRange = $this->parking_range ?? '';
+        $parkingAvail = $this->parking_avail ?? ($parkingRange === 'Available' ? 'yes' : 'no');
+        $bestTime = $this->best_time ?? $this->best_time_to_visit ?? '';
+        $riskTags = $this->risk_tags ?? [];
+        $facilities = $this->facilities ?? [];
+        $arSupported = (bool) $this->ar_supported;
+        $arTier = (int) ($this->ar_tier ?? 3);
+        $arBrandName = $this->ar_brand_name ?? '';
+        $arModelUrl = $this->ar_model_url ?? '';
+        $arHistoricalModelUrl = $this->ar_historical_model_url ?? '';
+        $arModelScale = (float) ($this->ar_model_scale ?? 0.01);
+        $historicalPeriod = $this->historical_period ?? '';
+        $accessTier = $this->access_tier ?? 'Free';
+
         return [
             'id' => $this->id,
             'name' => $this->name,
@@ -36,21 +54,21 @@ class PlaceResource extends JsonResource
             'lat' => (float) $this->lat,
             'lng' => (float) $this->lng,
             'rating' => (float) $this->rating,
-            'ticket_range' => $this->ticket_range ?? $this->ticket_price ?? 'Free',
-            'ticketRange' => $this->ticket_range ?? $this->ticket_price ?? 'Free',
-            'road_type' => $this->road_type ?? $this->road_condition ?? '',
-            'roadType' => $this->road_type ?? $this->road_condition ?? '',
-            'vehicle_access' => $this->vehicle_access ?? '',
-            'vehicleAccess' => $this->vehicle_access ?? '',
+            'ticket_range' => $ticket,
+            'ticketRange' => $ticket,
+            'road_type' => $road,
+            'roadType' => $road,
+            'vehicle_access' => $vehicle,
+            'vehicleAccess' => $vehicle,
             'opening_hours' => $this->opening_hours ?? '',
             'mobile_signal' => $this->mobile_signal ?? '',
             'activities' => $this->activities ?? '',
             'tourist_popularity' => $this->tourist_popularity ?? '',
             'family_friendly' => $this->family_friendly ?? '',
             'budget_category' => $this->budget_category ?? '',
-            'parking_avail' => $this->parking_avail ?? ($this->parking_range === 'Available' ? 'yes' : 'no'),
-            'parking_range' => $this->parking_range ?? '',
-            'parkingRange' => $this->parking_range ?? '',
+            'parking_avail' => $parkingAvail,
+            'parking_range' => $parkingRange,
+            'parkingRange' => $parkingRange,
             'toilets' => $this->toilets ?? '',
             'food_nearby' => $this->food_nearby ?? '',
             'wheelchair_access' => $this->wheelchair_access ?? '',
@@ -60,28 +78,28 @@ class PlaceResource extends JsonResource
             'guide_required' => $this->guide_required ?? '',
             'rain_sensitivity' => $this->rain_sensitivity ?? '',
             'monsoon_note' => $this->monsoon_note ?? '',
-            'best_time' => $this->best_time ?? $this->best_time_to_visit ?? '',
-            'bestTime' => $this->best_time ?? $this->best_time_to_visit ?? '',
+            'best_time' => $bestTime,
+            'bestTime' => $bestTime,
             'height_m' => $this->height_m ?? '0',
             'length_km' => $this->length_km ?? '0',
             'surfing' => $this->surfing ?? 'no',
-            'risk_tags' => $this->risk_tags ?? [],
-            'riskTags' => $this->risk_tags ?? [],
-            'facilities' => $this->facilities ?? [],
-            'ar_supported' => (bool) $this->ar_supported,
-            'arSupported' => (bool) $this->ar_supported,
-            'ar_tier' => (int) ($this->ar_tier ?? 3),
-            'arTier' => (int) ($this->ar_tier ?? 3),
-            'ar_brand_name' => $this->ar_brand_name ?? '',
-            'arBrandName' => $this->ar_brand_name ?? '',
-            'ar_model_url' => $this->ar_model_url ?? '',
-            'arModelUrl' => $this->ar_model_url ?? '',
-            'ar_historical_model_url' => $this->ar_historical_model_url ?? '',
-            'arHistoricalModelUrl' => $this->ar_historical_model_url ?? '',
-            'ar_model_scale' => (float) ($this->ar_model_scale ?? 0.01),
-            'arModelScale' => (float) ($this->ar_model_scale ?? 0.01),
-            'historical_period' => $this->historical_period ?? '',
-            'historicalPeriod' => $this->historical_period ?? '',
+            'risk_tags' => $riskTags,
+            'riskTags' => $riskTags,
+            'facilities' => $facilities,
+            'ar_supported' => $arSupported,
+            'arSupported' => $arSupported,
+            'ar_tier' => $arTier,
+            'arTier' => $arTier,
+            'ar_brand_name' => $arBrandName,
+            'arBrandName' => $arBrandName,
+            'ar_model_url' => $arModelUrl,
+            'arModelUrl' => $arModelUrl,
+            'ar_historical_model_url' => $arHistoricalModelUrl,
+            'arHistoricalModelUrl' => $arHistoricalModelUrl,
+            'ar_model_scale' => $arModelScale,
+            'arModelScale' => $arModelScale,
+            'historical_period' => $historicalPeriod,
+            'historicalPeriod' => $historicalPeriod,
             'ar_file_size_mb' => (float) ($this->ar_file_size_mb ?? 0),
             'audio_guide_url_si' => $this->audio_guide_url_si ?? '',
             'audio_guide_url_en' => $this->audio_guide_url_en ?? '',
@@ -99,9 +117,9 @@ class PlaceResource extends JsonResource
                     'isCover' => (bool) $img->is_cover,
                 ];
             }) : [],
-            'access_tier' => $this->access_tier ?? 'Free',
-            'accessTier' => $this->access_tier ?? 'Free',
-            'isPremium' => in_array($this->access_tier, ['PRO', 'VIP']),
+            'access_tier' => $accessTier,
+            'accessTier' => $accessTier,
+            'isPremium' => in_array($accessTier, ['PRO', 'VIP']),
             'sync_version' => (int) $this->sync_version,
         ];
     }

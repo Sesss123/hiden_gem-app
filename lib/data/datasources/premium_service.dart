@@ -90,7 +90,11 @@ class PremiumNotifier extends _$PremiumNotifier {
       return;
     }
     final user = FirebaseAuth.instance.currentUser;
-    if (user == null) return;
+    if (user == null) {
+      _firestoreSubscription?.cancel();
+      _firestoreSubscription = null;
+      return;
+    }
 
     _firestoreSubscription?.cancel();
     _firestoreSubscription = FirebaseFirestore.instance
@@ -105,6 +109,11 @@ class PremiumNotifier extends _$PremiumNotifier {
     });
 
     _checkPremiumStatus();
+  }
+
+  void dispose() {
+    _firestoreSubscription?.cancel();
+    _firestoreSubscription = null;
   }
 
   Future<void> _checkPremiumStatus() async {

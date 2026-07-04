@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import 'package:flutter/foundation.dart';
 import '../../data/models/discovery_place.dart';
 import '../../data/datasources/discovery_local_datasource.dart';
 import '../../core/utils/secure_logger.dart';
@@ -20,17 +21,19 @@ class SqliteStorageService {
   Future<void> _writeQueue = Future.value();
 
   /// Enqueue [operation] so it runs only after every previously-queued
-  /// write has finished.  Errors are caught and re-thrown but do NOT
-  /// poison the queue for subsequent writers.
+  /// write has finished. Errors are caught and re-thrown but do NOT
+  /// poison the queue for subsequent writers (Exec #4 / Audit #22).
   Future<T> _enqueueWrite<T>(Future<T> Function() operation) {
     final completer = Completer<T>();
     _writeQueue = _writeQueue.then((_) async {
       try {
         final result = await operation();
-        completer.complete(result);
+        if (!completer.isCompleted) completer.complete(result);
       } catch (e, st) {
-        completer.completeError(e, st);
+        if (!completer.isCompleted) completer.completeError(e, st);
       }
+    }).catchError((e, st) {
+      if (!completer.isCompleted) completer.completeError(e, st);
     });
     return completer.future;
   }
@@ -102,31 +105,24 @@ class SqliteStorageService {
     );
   }
 
-  Future<int> getLocalSyncVersion() async {
-    // BUG-090: Query inside the writeQueue to block read until all pending writes finish,
+  Future<int> getLocalSyncVersion() {
+    // BUG-090 / Exec #4: Query inside the writeQueue to block read until all pending writes finish,
     // avoiding reading old version status due to write commits delay.
-    final completer = Completer<int>();
-    _writeQueue = _writeQueue.then((_) async {
-      try {
-        final db = await database;
-        final List<Map<String, dynamic>> result = await db.query(
-          'sync_counter',
-          columns: ['current_version'],
-          where: 'id = ?',
-          whereArgs: [1],
-        );
-        if (result.isNotEmpty) {
-          completer.complete(result.first['current_version'] as int? ?? 0);
-        } else {
-          completer.complete(0);
-        }
-      } catch (e, st) {
-        completer.completeError(e, st);
+    return _enqueueWrite(() async {
+      final db = await database;
+      final List<Map<String, dynamic>> result = await db.query(
+        'sync_counter',
+        columns: ['current_version'],
+        where: 'id = ?',
+        whereArgs: [1],
+      );
+      if (result.isNotEmpty) {
+        return result.first['current_version'] as int? ?? 0;
+      } else {
+        return 0;
       }
     });
-    return completer.future;
   }
-
 
   // BUG-087: Wrap sync version update in a write-queue + explicit transaction
   // so concurrent callers cannot interleave and produce state mismatches.
@@ -143,16 +139,24 @@ class SqliteStorageService {
     });
   }
 
-  // BUG-107 / BUG-127 / BUG-147: Serialised through write queue so that
-  // simultaneous sync calls never write over each other.
+  static List<String> _encodePlaces(List<Map<String, dynamic>> jsonList) {
+    return jsonList.map((m) => jsonEncode(m)).toList();
+  }
+
+  // BUG-107 / BUG-127 / BUG-147 / Exec #7 / Exec #9: Serialised through write queue.
+  // Uses background isolate compute for JSON encoding to prevent UI thread ANRs.
   Future<void> upsertPlaces(List<DiscoveryPlace> places, int syncVersion) {
     if (places.isEmpty) return Future.value();
     return _enqueueWrite(() async {
       final db = await database;
+      final List<Map<String, dynamic>> mapList = places.map((p) => p.toJson()).toList();
+      final List<String> encodedList = await compute(_encodePlaces, mapList);
+
       await db.transaction((txn) async {
-        for (final place in places) {
+        for (int i = 0; i < places.length; i++) {
+          final place = places[i];
+          final rawJson = encodedList[i];
           try {
-            final String rawJson = jsonEncode(place.toJson());
             await txn.insert(
               'places',
               {
@@ -162,31 +166,31 @@ class SqliteStorageService {
                 'category': place.category,
                 'lat': place.lat,
                 'lng': place.lng,
-                'sync_version': syncVersion,
+                'sync_version': place.syncVersion > 0 ? place.syncVersion : syncVersion,
                 'is_deleted': 0,
                 'raw_json': rawJson,
               },
               conflictAlgorithm: ConflictAlgorithm.replace,
             );
           } catch (e) {
-            SecureLogger.error("Failed to serialize or insert place ID: ${place.id}", e);
+            SecureLogger.error("Failed to insert place ID: ${place.id}", e);
           }
         }
       });
     });
   }
 
+  // Exec #11 / Audit #10: Replace soft-delete update with physical delete to prevent SQLite bloat
   Future<void> purgeDeletedPlaces(List<String> deletedIds) {
     if (deletedIds.isEmpty) return Future.value();
     return _enqueueWrite(() async {
       final db = await database;
 
-      // Write deletions to SQLite — serialised via write queue (BUG-107/127/147)
+      // Write physical deletions to SQLite — serialised via write queue
       await db.transaction((txn) async {
         for (final id in deletedIds) {
-          await txn.update(
+          await txn.delete(
             'places',
-            {'is_deleted': 1},
             where: 'id = ?',
             whereArgs: [id],
           );
@@ -205,6 +209,22 @@ class SqliteStorageService {
     });
   }
 
+  static List<DiscoveryPlace> _decodePlaces(List<String> rawJsonList) {
+    final List<DiscoveryPlace> places = [];
+    for (final rawJson in rawJsonList) {
+      try {
+        if (rawJson.isNotEmpty) {
+          final Map<String, dynamic> data = jsonDecode(rawJson);
+          places.add(DiscoveryPlace.fromJson(data));
+        }
+      } catch (e) {
+        // ignore malformed rows during background decode
+      }
+    }
+    return places;
+  }
+
+  // Exec #7: Move JSON decoding to background isolate using compute
   Future<List<DiscoveryPlace>> getActivePlaces() {
     return _enqueueWrite(() async {
       final db = await database;
@@ -214,30 +234,25 @@ class SqliteStorageService {
         whereArgs: [0],
       );
       
-      final List<DiscoveryPlace> places = [];
-      for (final row in rows) {
-        try {
-          final rawJson = row['raw_json'];
-          if (rawJson is String && rawJson.isNotEmpty) {
-            final Map<String, dynamic> data = jsonDecode(rawJson);
-            places.add(DiscoveryPlace.fromJson(data));
-          } else {
-            SecureLogger.warning("Corrupted or empty raw_json in SQLite place row: ${row['id']}");
-          }
-        } catch (e) {
-          SecureLogger.error("Failed to decode SQLite place row: ${row['id']}", e);
-        }
-      }
-      return places;
+      final List<String> rawJsonList = rows
+          .map((row) => row['raw_json'] as String?)
+          .where((s) => s != null && s.isNotEmpty)
+          .cast<String>()
+          .toList();
+
+      return await compute(_decodePlaces, rawJsonList);
     });
   }
 
+  // Exec #18: Wrap clearDatabase operations in db.transaction
   Future<void> clearDatabase() {
     return _enqueueWrite(() async {
       final db = await database;
-      await db.delete('places');
-      await db.delete('place_images');
-      await db.update('sync_counter', {'current_version': 0}, where: 'id = ?', whereArgs: [1]);
+      await db.transaction((txn) async {
+        await txn.delete('places');
+        await txn.delete('place_images');
+        await txn.update('sync_counter', {'current_version': 0}, where: 'id = ?', whereArgs: [1]);
+      });
       // BUG-067: Close the database connection after cleanup to prevent lock races
       await db.close();
       _database = null;

@@ -19,6 +19,8 @@ class DiscoveryPlace {
   final String parkingRange;
   final String bestTime;
   final List<String> facilities;
+  final String openingHours;
+  final int syncVersion;
   final bool arSupported;
   final int arTier;
   final String arBrandName;
@@ -55,6 +57,8 @@ class DiscoveryPlace {
     required this.parkingRange,
     required this.bestTime,
     required this.facilities,
+    this.openingHours = '',
+    this.syncVersion = 0,
     this.arSupported = false,
     this.arTier = 3,
     this.arBrandName = '',
@@ -87,19 +91,21 @@ class DiscoveryPlace {
 
     return DiscoveryPlace(
       id: json['id'].toString(),
-      name: json['name'] as String,
-      district: json['district'] as String,
-      category: json['category'] as String,
+      name: json['name'] as String? ?? '',
+      district: json['district'] as String? ?? '',
+      category: json['category'] as String? ?? '',
       lat: double.tryParse(decryptVal(json['lat'])) ?? 0.0,
       lng: double.tryParse(decryptVal(json['lng'])) ?? 0.0,
-      rating: (json['rating'] as num).toDouble(),
-      ticketRange: json['ticketRange'] as String,
-      roadType: json['roadType'] as String? ?? '',
-      vehicleAccess: json['vehicleAccess'] as String? ?? '',
-      riskTags: List<String>.from(json['riskTags'] ?? []),
-      parkingRange: json['parkingRange'] as String? ?? '',
-      bestTime: json['bestTime'] as String? ?? '',
+      rating: (json['rating'] as num?)?.toDouble() ?? 0.0,
+      ticketRange: json['ticketRange'] as String? ?? json['ticket_range'] as String? ?? 'Free',
+      roadType: json['roadType'] as String? ?? json['road_type'] as String? ?? '',
+      vehicleAccess: json['vehicleAccess'] as String? ?? json['vehicle_access'] as String? ?? '',
+      riskTags: List<String>.from(json['riskTags'] ?? json['risk_tags'] ?? []),
+      parkingRange: json['parkingRange'] as String? ?? json['parking_range'] as String? ?? '',
+      bestTime: json['bestTime'] as String? ?? json['best_time'] as String? ?? '',
       facilities: List<String>.from(json['facilities'] ?? []),
+      openingHours: json['openingHours'] as String? ?? json['opening_hours'] as String? ?? '',
+      syncVersion: (json['syncVersion'] as num?)?.toInt() ?? (json['sync_version'] as num?)?.toInt() ?? 0,
       arSupported: json['arSupported'] as bool? ?? json['ar_supported'] as bool? ?? false,
       arTier: json['arTier'] as int? ?? json['ar_tier'] as int? ?? 3,
       arBrandName: json['arBrandName'] as String? ?? json['ar_brand_name'] as String? ?? '',
@@ -118,7 +124,7 @@ class DiscoveryPlace {
           .map((a) => ARArtifact.fromMap(a as Map<String, dynamic>))
           .toList(),
       geohash: json['geohash'] as String? ?? '',
-      imageUrl: json['imageUrl'] as String? ?? 'https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?q=80&w=2078&auto=format&fit=crop',
+      imageUrl: json['imageUrl'] as String? ?? json['image_url'] as String? ?? 'https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?q=80&w=2078&auto=format&fit=crop',
     );
   }
 
@@ -134,13 +140,15 @@ class DiscoveryPlace {
       lat: geoPoint?.latitude ?? (data['lat'] is String ? double.tryParse(data['lat']) : (data['lat'] as num?)?.toDouble()) ?? 0.0,
       lng: geoPoint?.longitude ?? (data['lng'] is String ? double.tryParse(data['lng']) : (data['lng'] as num?)?.toDouble()) ?? 0.0,
       rating: (data['rating'] as num?)?.toDouble() ?? 0.0,
-      ticketRange: data['ticketRange'] ?? '',
-      roadType: data['roadType'] ?? '',
-      vehicleAccess: data['vehicleAccess'] ?? '',
-      riskTags: List<String>.from(data['riskTags'] ?? []),
-      parkingRange: data['parkingRange'] ?? '',
-      bestTime: data['bestTime'] ?? '',
+      ticketRange: data['ticketRange'] ?? data['ticket_range'] ?? '',
+      roadType: data['roadType'] ?? data['road_type'] ?? '',
+      vehicleAccess: data['vehicleAccess'] ?? data['vehicle_access'] ?? '',
+      riskTags: List<String>.from(data['riskTags'] ?? data['risk_tags'] ?? []),
+      parkingRange: data['parkingRange'] ?? data['parking_range'] ?? '',
+      bestTime: data['bestTime'] ?? data['best_time'] ?? '',
       facilities: List<String>.from(data['facilities'] ?? []),
+      openingHours: data['openingHours'] ?? data['opening_hours'] ?? '',
+      syncVersion: (data['syncVersion'] as num?)?.toInt() ?? (data['sync_version'] as num?)?.toInt() ?? 0,
       arSupported: data['arSupported'] ?? false,
       arTier: data['arTier'] ?? 3,
       arBrandName: data['arBrandName'] ?? '',
@@ -152,7 +160,7 @@ class DiscoveryPlace {
       audioUrlSi: data['audio_guide_url_si'] ?? '',
       audioUrlEn: data['audio_guide_url_en'] ?? '',
       geohash: data['geohash'] ?? '',
-      imageUrl: data['imageUrl'] ?? 'https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?q=80&w=2078&auto=format&fit=crop',
+      imageUrl: data['imageUrl'] ?? data['image_url'] ?? 'https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?q=80&w=2078&auto=format&fit=crop',
     );
   }
 
@@ -166,14 +174,26 @@ class DiscoveryPlace {
       'lng': lng,
       'rating': rating,
       'ticketRange': ticketRange,
+      'ticket_range': ticketRange,
       'roadType': roadType,
+      'road_type': roadType,
       'vehicleAccess': vehicleAccess,
+      'vehicle_access': vehicleAccess,
       'riskTags': riskTags,
+      'risk_tags': riskTags,
       'parkingRange': parkingRange,
+      'parking_range': parkingRange,
       'bestTime': bestTime,
+      'best_time': bestTime,
       'facilities': facilities,
+      'openingHours': openingHours,
+      'opening_hours': openingHours,
+      'syncVersion': syncVersion,
+      'sync_version': syncVersion,
       'arSupported': arSupported,
+      'ar_supported': arSupported,
       'arTier': arTier,
+      'ar_tier': arTier,
       'arBrandName': arBrandName,
       'ar_brand_name': arBrandName,
       'arModelUrl': arModelUrl,
@@ -192,6 +212,7 @@ class DiscoveryPlace {
       'fallback_video_url': fallbackVideoUrl,
       'geohash': geohash,
       'imageUrl': imageUrl,
+      'image_url': imageUrl,
     };
   }
 }

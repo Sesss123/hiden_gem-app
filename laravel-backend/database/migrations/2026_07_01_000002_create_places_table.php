@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('places', function (Blueprint $table) {
-            $table->string('id', 100)->primary();
+            $table->string('id', 36)->primary();
             $table->string('name');
             $table->text('description')->nullable();
             $table->string('district')->index();
@@ -79,8 +79,8 @@ return new class extends Migration
             
             $table->timestamps();
             
-            // Enforce unique index on sync_version as agreed in System Architecture v3.3
-            $table->unique('sync_version');
+            // Enforce index on sync_version for fast cursor pagination and delta queries
+            $table->index('sync_version');
 
             // Composite indices for common query patterns (BUG-037)
             $table->index(['is_deleted', 'district']);

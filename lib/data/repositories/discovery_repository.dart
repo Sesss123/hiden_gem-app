@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:math' as math;
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -85,8 +86,14 @@ class DiscoveryRepository {
       final sqliteService = SqliteStorageService();
       final deltaService = DeltaSyncService();
       
-      if (forceRefresh) {
+      places = await sqliteService.getActivePlaces();
+
+      // Exec #15: If SQLite is empty (first boot) or forceRefresh requested, await delta sync.
+      // Otherwise, serve SQLite data immediately and run delta sync in background unawaited.
+      if (places.isEmpty || forceRefresh) {
+        SecureLogger.info("SQLite empty or forceRefresh requested. Awaiting delta sync...");
         await deltaService.performDeltaSync();
+        places = await sqliteService.getActivePlaces();
       } else {
         unawaited(deltaService.performDeltaSync().catchError((e) {
           SecureLogger.warning("Background delta sync failed: $e");
@@ -94,7 +101,6 @@ class DiscoveryRepository {
         }));
       }
 
-      places = await sqliteService.getActivePlaces();
       if (places.isNotEmpty) {
         SecureLogger.info("Discovery data loaded from Level-2 SQLite Storage.");
       }
@@ -181,7 +187,7 @@ class DiscoveryRepository {
       }
       return recommended.isEmpty ? topNearest.take(3).toList() : recommended;
     } catch (e) {
-      SecureLogger.error("AI recommendations failed", e);
+      SecureLogger.info("AI recommendations model offline or in development ($e). Using local nearest places fallback.");
       return topNearest.take(3).toList();
     }
   }
@@ -189,10 +195,12 @@ class DiscoveryRepository {
   // --- Private Helpers ---
 
   Future<List<DiscoveryPlace>> _parsePlaces(dynamic data) async {
-    if (data is List && data.length > 50) {
-      return await compute(_parsePlacesIsolate, data);
+    if (data is! List) return [];
+    final list = data.whereType<Map<String, dynamic>>().toList();
+    if (list.length > 50) {
+      return await compute(_parsePlacesIsolate, list);
     } else {
-      return (data as List).map((j) => DiscoveryPlace.fromJson(j)).toList();
+      return list.map((j) => DiscoveryPlace.fromJson(j)).toList();
     }
   }
 
@@ -206,9 +214,22 @@ class DiscoveryRepository {
     });
   }
 
-  static List<DiscoveryPlace> _parsePlacesIsolate(dynamic data) {
-    return (data as List).map((json) => DiscoveryPlace.fromJson(json)).toList();
+  static List<DiscoveryPlace> _parsePlacesIsolate(List<Map<String, dynamic>> data) {
+    return data.map((json) => DiscoveryPlace.fromJson(json)).toList();
   }
+
+  static double _haversineDistanceKm(double lat1, double lon1, double lat2, double lon2) {
+    const double r = 6371.0; // Earth radius in km
+    final double dLat = _toRadians(lat2 - lat1);
+    final double dLon = _toRadians(lon2 - lon1);
+    final double a = math.sin(dLat / 2) * math.sin(dLat / 2) +
+        math.cos(_toRadians(lat1)) * math.cos(_toRadians(lat2)) *
+        math.sin(dLon / 2) * math.sin(dLon / 2);
+    final double c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a));
+    return r * c;
+  }
+
+  static double _toRadians(double degree) => degree * math.pi / 180.0;
 
   static List<DiscoveryPlace> _sortPlacesIsolate(Map<String, dynamic> params) {
     final List<DiscoveryPlace> places = params['places'];
@@ -216,10 +237,9 @@ class DiscoveryRepository {
     final double lng = params['lng'];
 
     for (var place in places) {
-      final distanceMeters = Geolocator.distanceBetween(
-        lat, lng, place.lat, place.lng,
-      );
-      place.distanceKm = distanceMeters / 1000.0;
+      // Exec #3 / Audit #8: Pure Dart Haversine formula prevents platform channel
+      // MissingPluginException inside background Dart isolates.
+      place.distanceKm = _haversineDistanceKm(lat, lng, place.lat, place.lng);
     }
     places.sort((a, b) => a.distanceKm.compareTo(b.distanceKm));
     return places;

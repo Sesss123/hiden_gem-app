@@ -28,16 +28,23 @@ class PlaceSyncController extends Controller
     public function delta(Request $request)
     {
         $sinceVersion = (int) $request->query('since_version', 0);
-        // Capped and hardcoded to 100 max per request to avoid memory exhaustion (BUG-046)
-        $limit = 100;
+        // Honor client limit capped at 500 max to avoid memory exhaustion (Audit #13)
+        $limit = min((int) $request->query('limit', 100), 500);
 
         $query = Place::with('images')->where('sync_version', '>', $sinceVersion);
         if ($sinceVersion == 0) {
             $query->where('is_deleted', false);
         }
-        $places = $query->orderBy('sync_version', 'asc')->limit($limit)->get();
+        
+        // Secondary ordering by id prevents record dropping across chunk limits (Exec #10 / Audit #23)
+        // Query limit + 1 to accurately determine hasMore without an extra empty round-trip (Audit #20)
+        $places = $query->orderBy('sync_version', 'asc')->orderBy('id', 'asc')->limit($limit + 1)->get();
 
-        $upsertPlaces = [];
+        $hasMore = $places->count() > $limit;
+        if ($hasMore) {
+            $places = $places->slice(0, $limit);
+        }
+
         $deletedIds = [];
         $maxVersion = $sinceVersion;
 
@@ -50,12 +57,12 @@ class PlaceSyncController extends Controller
                 if ($sinceVersion > 0) {
                     $deletedIds[] = $place->id;
                 }
-            } else {
-                $upsertPlaces[] = (new \App\Http\Resources\PlaceResource($place))->resolve();
             }
         }
 
-        $hasMore = $places->count() >= $limit;
+        // Use PlaceResource::collection to leverage optimized collection serialization (Exec #13)
+        $activePlaces = $places->where('is_deleted', false);
+        $upsertPlaces = \App\Http\Resources\PlaceResource::collection($activePlaces)->resolve();
 
         return response()->json([
             'sync_version' => (int) $maxVersion,
@@ -72,27 +79,30 @@ class PlaceSyncController extends Controller
      */
     public function allPlaces(Request $request)
     {
-        $cursor = $request->query('cursor');
-        $limit = 100;
+        $cursor = (int) $request->query('cursor', 0);
+        $limit = min((int) $request->query('limit', 100), 500);
 
         $query = Place::with('images')
             ->where('is_deleted', false);
 
-        if ($cursor) {
-            $query->where('id', '>', $cursor);
+        if ($cursor > 0) {
+            $query->where('sync_version', '>', $cursor);
         }
 
-        $places = $query->orderBy('id', 'asc')
-            ->limit($limit)
+        // Stable monotonic ordering by sync_version and id (Exec #6 / Audit #23)
+        $places = $query->orderBy('sync_version', 'asc')
+            ->orderBy('id', 'asc')
+            ->limit($limit + 1)
             ->get();
 
-        $formatted = [];
-        foreach ($places as $place) {
-            $formatted[] = (new \App\Http\Resources\PlaceResource($place))->resolve();
+        $hasMore = $places->count() > $limit;
+        if ($hasMore) {
+            $places = $places->slice(0, $limit);
         }
 
-        $nextCursor = $places->last()?->id;
-        $hasMore = $places->count() >= $limit;
+        $formatted = \App\Http\Resources\PlaceResource::collection($places)->resolve();
+
+        $nextCursor = $places->last()?->sync_version ?? 0;
 
         return response()->json([
             'places' => $formatted,

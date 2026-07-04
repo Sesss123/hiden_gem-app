@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -17,12 +18,10 @@ class DiscoveryRemoteDataSource {
       : _client = SecureHttpClient(client ?? http.Client());
 
   Future<Position?> getCurrentLocation() async {
-    bool serviceEnabled;
     LocationPermission permission;
+    bool serviceEnabled;
 
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) return null;
-
+    // Exec #8 / Audit #1: Check location permission BEFORE querying service status
     permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
@@ -31,7 +30,28 @@ class DiscoveryRemoteDataSource {
 
     if (permission == LocationPermission.deniedForever) return null;
 
-    return await Geolocator.getCurrentPosition();
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) return null;
+
+    // Add explicit timeout to prevent hanging when GPS signal is poor
+    try {
+      return await Geolocator.getCurrentPosition(
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.high,
+          timeLimit: Duration(seconds: 10),
+        ),
+      ).timeout(const Duration(seconds: 12));
+    } catch (e) {
+      return null;
+    }
+  }
+
+  static Map<String, dynamic> _decodeRestPayload(String body) {
+    return json.decode(body) as Map<String, dynamic>;
+  }
+
+  static String _encodeRestPayload(List<dynamic> places) {
+    return json.encode(places);
   }
 
   Future<String> fetchPlacesRest() async {
@@ -60,7 +80,8 @@ class DiscoveryRemoteDataSource {
       if (response.statusCode == 200) {
         Map<String, dynamic> data;
         try {
-          data = json.decode(response.body);
+          // Exec #14: Offload JSON decode to background isolate using compute
+          data = await compute(_decodeRestPayload, response.body);
         } on FormatException catch (e) {
           throw FormatException("Invalid JSON payload from REST API (/places): $e");
         }
@@ -73,7 +94,8 @@ class DiscoveryRemoteDataSource {
       }
     }
 
-    return json.encode(allPlaces);
+    // Exec #14: Offload JSON encode to background isolate using compute
+    return await compute(_encodeRestPayload, allPlaces);
   }
 
   Future<List<DiscoveryPlace>> fetchNearbyPlacesFirestore({
@@ -106,6 +128,10 @@ class DiscoveryRemoteDataSource {
     return querySnapshot.docs.map((doc) => DiscoveryPlace.fromFirestore(doc)).toList();
   }
 
+  static dynamic _decodeAiPayload(String body) {
+    return json.decode(body);
+  }
+
   Future<List<Map<String, dynamic>>> getAiRecommendationsRaw({
     required List<DiscoveryPlace> nearbyPlaces,
     required String vibeText,
@@ -136,7 +162,7 @@ class DiscoveryRemoteDataSource {
 
     if (response.statusCode == 200) {
       try {
-        final decoded = json.decode(response.body);
+        final decoded = await compute(_decodeAiPayload, response.body);
         if (decoded is List) {
           return List<Map<String, dynamic>>.from(decoded);
         } else if (decoded is Map && decoded.containsKey('recommendations')) {

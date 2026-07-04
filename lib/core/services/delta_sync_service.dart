@@ -143,7 +143,6 @@ class DeltaSyncService {
 
     _isSyncing = true;
 
-
     int currentVersion = await _sqliteService.getLocalSyncVersion();
     bool hasMore = true;
     int totalUpserted = 0;
@@ -165,7 +164,16 @@ class DeltaSyncService {
         ).timeout(timeoutDuration);
 
         if (response.statusCode != 200) {
-          SecureLogger.error("Delta endpoint returned status: ${response.statusCode}");
+          // Audit #4 & #6: Structured error logging and HTTP error code handling
+          if (response.statusCode == 401 || response.statusCode == 403) {
+            SecureLogger.error("Delta sync auth failure (${response.statusCode}) at url: $url");
+          } else if (response.statusCode == 429) {
+            SecureLogger.warning("Delta sync rate limited (429). Aborting loop gracefully to back off.");
+          } else if (response.statusCode >= 500) {
+            SecureLogger.error("Delta sync server error (${response.statusCode}) at url: $url | Body: ${response.body}");
+          } else {
+            SecureLogger.error("Delta endpoint returned HTTP ${response.statusCode} at url: $url");
+          }
           break;
         }
 
@@ -186,21 +194,19 @@ class DeltaSyncService {
           totalPurged += deletedIds.length;
         }
 
-        // BUG-070: Only advance the cursor in memory during the loop;
-        // the final version is committed once after all chunks complete.
         currentVersion = nextCursor;
 
-        SecureLogger.info('Chunk synced: +$totalUpserted places, -$totalPurged purged -> cursor: $currentVersion');
+        // Audit #9: Checkpoint sync version after each chunk so progress is preserved on interruption.
+        await _sqliteService.setLocalSyncVersion(currentVersion);
+
+        SecureLogger.info('Chunk synced: +$totalUpserted places, -$totalPurged purged -> cursor committed: $currentVersion');
       }
 
-      // BUG-070: Persist the sync version only after the full batch completes
-      // to prevent partial data from being seen as fully synced on interruption.
-      await _sqliteService.setLocalSyncVersion(currentVersion);
-      SecureLogger.info('Delta Sync complete -> Version committed: $currentVersion');
+      SecureLogger.info('Delta Sync complete -> Final version: $currentVersion');
     } on TimeoutException {
-      SecureLogger.warning('Delta sync timed out during chunk fetch. Stopping sync gracefully.');
+      SecureLogger.warning('Delta sync timed out during chunk fetch at version $currentVersion. Progress up to previous chunk was saved.');
     } catch (e) {
-      SecureLogger.error('Exception during delta synchronization loop', e);
+      SecureLogger.error('Exception during delta synchronization loop at version $currentVersion', e);
     } finally {
       // BUG-055: Always release the lock when done
       _isSyncing = false;

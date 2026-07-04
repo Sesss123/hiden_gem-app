@@ -6,6 +6,15 @@ import 'package:flutter/foundation.dart'
 
 /// Default [FirebaseOptions] for use with your Firebase apps.
 ///
+/// Audit #19 Security Note:
+/// Firebase API keys (`apiKey`), project IDs (`projectId`), and app IDs (`appId`) embedded below
+/// are public client identifiers by design in Google Firebase architecture. They identify the
+/// Firebase project to Google servers and cannot be used alone to bypass access controls.
+///
+/// Backend security and data protection against unauthorized API calls, scraping, or abuse are strictly enforced by:
+/// 1. Firebase App Check (using Google Play Integrity on Android, DeviceCheck/App Attest on iOS, and reCAPTCHA Enterprise on Web).
+/// 2. Strict Firestore and Firebase Storage Security Rules that validate user authentication, role-based permissions, and request integrity.
+///
 /// Example:
 /// ```dart
 /// import 'firebase_options.dart';

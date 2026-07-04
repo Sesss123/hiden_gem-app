@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import '../models/discovery_place.dart';
 import 'trip_cache_service.dart';
 
@@ -38,7 +39,6 @@ class DiscoveryLocalDataSource {
     });
   }
 
-
   String? getCachedPlaces(String key) {
     return TripCacheService.getGlobalData(key);
   }
@@ -49,6 +49,15 @@ class DiscoveryLocalDataSource {
 
   int getCacheTimestamp(String key) {
     return TripCacheService.getGlobalDataTimestamp(key);
+  }
+
+  static List<DiscoveryPlace> _decodeCachedPlaces(String cachedJson) {
+    try {
+      final List<dynamic> data = json.decode(cachedJson);
+      return data.map((j) => DiscoveryPlace.fromJson(j as Map<String, dynamic>)).toList();
+    } catch (e) {
+      return [];
+    }
   }
 
   Future<List<DiscoveryPlace>> getAssetPlaces() async {
@@ -63,8 +72,8 @@ class DiscoveryLocalDataSource {
     final String? cachedJson = TripCacheService.getGlobalData('places');
     if (cachedJson != null && cachedJson.isNotEmpty) {
       try {
-        final List<dynamic> data = json.decode(cachedJson);
-        final places = data.map((j) => DiscoveryPlace.fromJson(j)).toList();
+        // Exec #12: Offload JSON decode and model parsing to background isolate
+        final places = await compute(_decodeCachedPlaces, cachedJson);
         _decodedCache['places'] = places; // Store decoded result for reuse
         return places;
       } catch (e) {

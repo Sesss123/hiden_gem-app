@@ -447,7 +447,7 @@ class _HiddenGemsAppState extends ConsumerState<HiddenGemsApp> with WidgetsBindi
     // BUG-N01 Fix: Listen for foreground push messages and present a floating Snackbar
     _notifSubscription = NotificationService().onForegroundMessage.listen((message) {
       final ctx = navigatorKey.currentContext;
-      if (ctx != null && message.notification != null) {
+      if (ctx != null && ctx.mounted && message.notification != null) {
         ScaffoldMessenger.of(ctx).showSnackBar(
           SnackBar(
             content: Column(
@@ -533,7 +533,10 @@ class _HiddenGemsAppState extends ConsumerState<HiddenGemsApp> with WidgetsBindi
             isReady: true,
           );
         },
-        loading: () => SplashScreen(onFinish: () {}, isReady: false),
+        loading: () => SplashScreen(
+          onFinish: () => setState(() => _showMainApp = true),
+          isReady: false,
+        ),
         error: (error, stack) => Scaffold(
           backgroundColor: AppTheme.primaryBlue(context),
           body: GracefulErrorWidget(
@@ -578,18 +581,6 @@ class _HiddenGemsAppState extends ConsumerState<HiddenGemsApp> with WidgetsBindi
       );
     }
 
-    final profile = UserPreferenceService.getProfile();
-    if (!profile.hasCompletedOnboarding) {
-      return const OnboardingScreen();
-    }
-    if (profile.languageCode == null) {
-      return const LanguageSelectionScreen();
-    }
-
-    if (!profile.hasAgreedToTerms) {
-      return const TermsScreen();
-    }
-
     if (!result.firebaseSuccess) {
       return const HomeScreen(isOffline: true);
     }
@@ -627,16 +618,33 @@ class _HiddenGemsAppState extends ConsumerState<HiddenGemsApp> with WidgetsBindi
           );
         }
 
-        if (snapshot.hasData) {
-          final user = snapshot.data!;
+        final user = snapshot.data;
+        if (user != null) {
+          // User is ALREADY logged in via Firebase / Gmail / Email!
           SecurityOrchestrator().init(user.uid);
           
+          // Auto-repair local profile if needed so we don't prompt them again
           final currentProfile = UserPreferenceService.getProfile();
-          if (!currentProfile.hasAgreedToTerms) {
-            return const TermsScreen();
+          if (!currentProfile.hasCompletedOnboarding || !currentProfile.hasAgreedToTerms) {
+            UserPreferenceService.updateOnboardingCompletion(true);
+            UserPreferenceService.updateTermsAgreement(true);
           }
           return const HomeScreen();
         }
+
+        // User is NOT logged in (new user or logged out).
+        // They must go through Onboarding -> Language -> Terms -> Login Screen!
+        final profile = UserPreferenceService.getProfile();
+        if (!profile.hasCompletedOnboarding) {
+          return const OnboardingScreen();
+        }
+        if (profile.languageCode == null) {
+          return const LanguageSelectionScreen();
+        }
+        if (!profile.hasAgreedToTerms) {
+          return const TermsScreen();
+        }
+
         return const LoginScreen();
       },
     );
