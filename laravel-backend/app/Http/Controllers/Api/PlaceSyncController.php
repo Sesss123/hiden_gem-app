@@ -31,8 +31,10 @@ class PlaceSyncController extends Controller
         // Honor client limit capped at 500 max to avoid memory exhaustion (Audit #13)
         $limit = min((int) $request->query('limit', 100), 500);
 
-        $query = Place::with('images')->where('sync_version', '>', $sinceVersion);
-        if ($sinceVersion == 0) {
+        $query = Place::with('images');
+        if ($sinceVersion > 0) {
+            $query->where('sync_version', '>', $sinceVersion);
+        } else {
             $query->where('is_deleted', false);
         }
         

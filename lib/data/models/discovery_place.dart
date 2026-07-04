@@ -2,7 +2,43 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../core/utils/encryption_util.dart';
 import 'ar_artifact.dart';
 
+class PlaceImageModel {
+  final int id;
+  final String thumbPath;
+  final String fullPath;
+  final bool isCover;
+
+  const PlaceImageModel({
+    required this.id,
+    required this.thumbPath,
+    required this.fullPath,
+    this.isCover = false,
+  });
+
+  factory PlaceImageModel.fromJson(Map<String, dynamic> json) {
+    return PlaceImageModel(
+      id: (json['id'] as num?)?.toInt() ?? 0,
+      thumbPath: json['thumbPath'] as String? ?? json['thumb_path'] as String? ?? '',
+      fullPath: json['fullPath'] as String? ?? json['full_path'] as String? ?? '',
+      isCover: json['isCover'] as bool? ?? json['is_cover'] as bool? ?? false,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'thumbPath': thumbPath,
+      'thumb_path': thumbPath,
+      'fullPath': fullPath,
+      'full_path': fullPath,
+      'isCover': isCover,
+      'is_cover': isCover,
+    };
+  }
+}
+
 class DiscoveryPlace {
+
   final String id;
   final String name;
   final String district;
@@ -38,6 +74,7 @@ class DiscoveryPlace {
   final List<ARArtifact> arArtifacts;
   
   final String geohash;
+  final List<PlaceImageModel> images;
   
   double distanceKm;
   String aiReason;
@@ -75,6 +112,7 @@ class DiscoveryPlace {
     this.arHotspots = const [],
     this.arArtifacts = const [],
     this.geohash = '',
+    this.images = const [],
     this.distanceKm = 0.0,
     this.aiReason = '',
     this.imageUrl = 'https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?q=80&w=2078&auto=format&fit=crop',
@@ -125,6 +163,16 @@ class DiscoveryPlace {
           .toList(),
       geohash: json['geohash'] as String? ?? '',
       imageUrl: json['imageUrl'] as String? ?? json['image_url'] as String? ?? 'https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?q=80&w=2078&auto=format&fit=crop',
+      images: (json['images'] is List && (json['images'] as List).isNotEmpty)
+          ? (json['images'] as List).map((i) => PlaceImageModel.fromJson(i as Map<String, dynamic>)).toList()
+          : [
+              PlaceImageModel(
+                id: 0,
+                thumbPath: json['imageUrl'] as String? ?? json['image_url'] as String? ?? 'https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?q=80&w=2078&auto=format&fit=crop',
+                fullPath: json['imageUrl'] as String? ?? json['image_url'] as String? ?? 'https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?q=80&w=2078&auto=format&fit=crop',
+                isCover: true,
+              )
+            ],
     );
   }
 
@@ -161,6 +209,16 @@ class DiscoveryPlace {
       audioUrlEn: data['audio_guide_url_en'] ?? '',
       geohash: data['geohash'] ?? '',
       imageUrl: data['imageUrl'] ?? data['image_url'] ?? 'https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?q=80&w=2078&auto=format&fit=crop',
+      images: (data['images'] is List && (data['images'] as List).isNotEmpty)
+          ? (data['images'] as List).map((i) => PlaceImageModel.fromJson(i as Map<String, dynamic>)).toList()
+          : [
+              PlaceImageModel(
+                id: 0,
+                thumbPath: data['imageUrl'] ?? data['image_url'] ?? 'https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?q=80&w=2078&auto=format&fit=crop',
+                fullPath: data['imageUrl'] ?? data['image_url'] ?? 'https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?q=80&w=2078&auto=format&fit=crop',
+                isCover: true,
+              )
+            ],
     );
   }
 
@@ -213,6 +271,8 @@ class DiscoveryPlace {
       'geohash': geohash,
       'imageUrl': imageUrl,
       'image_url': imageUrl,
+      'images': images.map((i) => i.toJson()).toList(),
     };
   }
 }
+

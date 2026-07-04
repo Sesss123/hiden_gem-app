@@ -18,12 +18,12 @@ class AppConfig {
 
   static const String laravelUrl = String.fromEnvironment(
     'LARAVEL_BACKEND_URL',
-    defaultValue: kReleaseMode ? "https://api.hiddengemssl.com/api/v1" : "http://10.0.2.2:8888/api/v1",
+    defaultValue: kReleaseMode ? "https://api.hiddengemssl.com/api/v1" : "http://192.168.8.102:8888/api/v1",
   );
 
   static const String pythonUrl = String.fromEnvironment(
     'PYTHON_BACKEND_URL',
-    defaultValue: kReleaseMode ? "https://ai.hiddengemssl.com/api" : "http://10.0.2.2:8000/api",
+    defaultValue: kReleaseMode ? "https://ai.hiddengemssl.com/api" : "http://192.168.8.102:8000/api",
   );
 
   // Alias for backward compatibility (defaults to Laravel backend)
@@ -40,7 +40,7 @@ class AppConfig {
     } catch (_) {
       return kReleaseMode
           ? 'wss://api.hiddengemssl.com:8080/app/hiddengems_reverb_key?protocol=7&client=js&version=8.0.0&flash=false'
-          : 'ws://10.0.2.2:8080/app/hiddengems_reverb_key?protocol=7&client=js&version=8.0.0&flash=false';
+          : 'ws://192.168.8.102:8080/app/hiddengems_reverb_key?protocol=7&client=js&version=8.0.0&flash=false';
     }
   }
 
@@ -54,7 +54,7 @@ class AppConfig {
     } catch (_) {
       return kReleaseMode
           ? 'wss://ai.hiddengemssl.com/ws/scan'
-          : 'ws://10.0.2.2:8000/ws/scan';
+          : 'ws://192.168.8.102:8000/ws/scan';
     }
   }
 
@@ -79,7 +79,7 @@ class AppConfig {
 
   static const String nodeProxyUrl = String.fromEnvironment(
     'NODE_PROXY_URL',
-    defaultValue: kReleaseMode ? "https://api.hiddengemssl.com/api/v1" : "http://10.0.2.2:8888/api/v1",
+    defaultValue: kReleaseMode ? "https://api.hiddengemssl.com/api/v1" : "http://192.168.8.102:8888/api/v1",
   );
 
   static const String cdnBaseUrl = String.fromEnvironment(

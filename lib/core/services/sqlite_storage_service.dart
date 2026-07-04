@@ -172,11 +172,40 @@ class SqliteStorageService {
               },
               conflictAlgorithm: ConflictAlgorithm.replace,
             );
+
+            await txn.delete('place_images', where: 'place_id = ?', whereArgs: [place.id]);
+            for (int imgIdx = 0; imgIdx < place.images.length; imgIdx++) {
+              final img = place.images[imgIdx];
+              await txn.insert(
+                'place_images',
+                {
+                  'place_id': place.id,
+                  'image_path': img.fullPath,
+                  'thumb_path': img.thumbPath,
+                  'is_cover': img.isCover ? 1 : 0,
+                  'sort_order': imgIdx + 1,
+                  'sync_version': place.syncVersion > 0 ? place.syncVersion : syncVersion,
+                },
+                conflictAlgorithm: ConflictAlgorithm.replace,
+              );
+            }
           } catch (e) {
             SecureLogger.error("Failed to insert place ID: ${place.id}", e);
           }
         }
       });
+    });
+  }
+
+  Future<List<Map<String, dynamic>>> getPlaceImages(String placeId) {
+    return _enqueueWrite(() async {
+      final db = await database;
+      return await db.query(
+        'place_images',
+        where: 'place_id = ?',
+        whereArgs: [placeId],
+        orderBy: 'sort_order ASC',
+      );
     });
   }
 

@@ -35,7 +35,7 @@ class MonetizationService {
   // --- Banner Ads ---
   Future<BannerAd> createBannerAd() async {
     int retryCount = 0;
-    while (true) {
+    while (retryCount < 3) {
       final completer = Completer<BannerAd>();
       final ad = BannerAd(
         adUnitId: bannerAdUnitId,
@@ -44,7 +44,7 @@ class MonetizationService {
         listener: BannerAdListener(
           onAdLoaded: (ad) => completer.complete(ad as BannerAd),
           onAdFailedToLoad: (ad, error) {
-            ad.dispose();
+            // Do not dispose synchronously here to prevent MethodChannel adId race conditions
             if (!completer.isCompleted) completer.completeError(error);
           },
         ),
@@ -53,22 +53,24 @@ class MonetizationService {
         await ad.load();
         return await completer.future;
       } catch (e) {
+        await ad.dispose(); // Ensure native ad is disposed before retrying
+        retryCount++;
         if (retryCount >= 3) {
           debugPrint("Banner Ad failed to load after 3 retries: $e");
           rethrow;
         }
-        retryCount++;
         final delaySeconds = 1 << retryCount; // Exponential backoff: 2s, 4s, 8s
         debugPrint("Banner Ad load failed ($e). Retrying in ${delaySeconds}s (attempt $retryCount/3)...");
         await Future.delayed(Duration(seconds: delaySeconds));
       }
     }
+    throw Exception("Banner Ad failed to load.");
   }
 
   // --- Native Ads ---
   Future<NativeAd> createNativeAd({required Function() onAdLoaded, required Function() onAdFailed}) async {
     int retryCount = 0;
-    while (true) {
+    while (retryCount < 3) {
       final completer = Completer<NativeAd>();
       final ad = NativeAd(
         adUnitId: nativeAdUnitId,
@@ -81,7 +83,7 @@ class MonetizationService {
             completer.complete(ad as NativeAd);
           },
           onAdFailedToLoad: (ad, error) {
-            ad.dispose();
+            // Do not dispose synchronously here to prevent MethodChannel adId race conditions
             debugPrint("Native Ad Failed: $error");
             if (!completer.isCompleted) completer.completeError(error);
           },
@@ -91,17 +93,20 @@ class MonetizationService {
         await ad.load();
         return await completer.future;
       } catch (e) {
+        await ad.dispose(); // Ensure native ad is disposed before retrying
+        retryCount++;
         if (retryCount >= 3) {
           debugPrint("Native Ad failed to load after 3 retries: $e");
           onAdFailed();
           rethrow;
         }
-        retryCount++;
         final delaySeconds = 1 << retryCount;
         debugPrint("Native Ad load failed ($e). Retrying in ${delaySeconds}s (attempt $retryCount/3)...");
         await Future.delayed(Duration(seconds: delaySeconds));
       }
     }
+    onAdFailed();
+    throw Exception("Native Ad failed to load.");
   }
 
   // --- Interstitial Ads ---

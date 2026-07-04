@@ -23,6 +23,8 @@ import '../../core/services/monsoon_broadcast_service.dart';
 import 'incident_center_screen.dart';
 import '../../data/models/incident_report.dart';
 import '../../data/repositories/incident_repository.dart';
+import 'subscription_screen.dart';
+import 'guide_reviews_screen.dart';
 
 class GuideDashboardScreen extends StatefulWidget {
   const GuideDashboardScreen({super.key});
@@ -39,6 +41,7 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
   StreamSubscription? _vehicleSub;
   StreamSubscription<Map<String, dynamic>>? _monsoonSub;
   Map<String, dynamic>? _activeMonsoonAlert;
+  int _currentTabIndex = 0;
   
   final _sessionRepo = TourSessionRepository();
   final _vehicleRepo = VehicleRepository();
@@ -326,26 +329,49 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      body: CustomScrollView(
-        slivers: [
-          SliverAppBar(
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            leading: IconButton(
-              icon: Icon(Icons.arrow_back_ios_new, size: 20, color: AppTheme.textPrimary(context)),
-              onPressed: () => Navigator.pop(context),
-            ),
-            title: Text(
-              "GUIDE COMMAND",
-              style: GoogleFonts.outfit(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 2,
-                color: AppTheme.textPrimary(context),
+      body: PopScope(
+        canPop: _currentTabIndex == 0,
+        onPopInvokedWithResult: (didPop, _) {
+          if (!didPop && _currentTabIndex != 0) {
+            setState(() => _currentTabIndex = 0);
+          }
+        },
+        child: _buildTabContent(),
+      ),
+      bottomNavigationBar: _buildBottomNav(),
+    );
+  }
+
+  Widget _buildTabContent() {
+    switch (_currentTabIndex) {
+      case 1:
+        return const SubscriptionScreen();
+      case 2:
+        return GuideReviewsScreen(guideId: AuthService().currentUser?.uid ?? "guest_guide");
+      case 3:
+        return IncidentCenterScreen(sessionId: _activeSession?.sessionId);
+      case 0:
+      default:
+        return CustomScrollView(
+          slivers: [
+            SliverAppBar(
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              leading: IconButton(
+                icon: Icon(Icons.arrow_back_ios_new, size: 20, color: AppTheme.textPrimary(context)),
+                onPressed: () => Navigator.pop(context),
+              ),
+              title: Text(
+                "GUIDE COMMAND",
+                style: GoogleFonts.outfit(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 2,
+                  color: AppTheme.textPrimary(context),
+                ),
               ),
             ),
-          ),
-          SliverToBoxAdapter(
+            SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.all(24.0),
                 child: _isLoading 
@@ -356,9 +382,52 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
               ),
             ),
           ],
-        ),
-      );
+        );
+    }
   }
+
+  Widget _buildBottomNav() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).scaffoldBackgroundColor.withValues(alpha: 0.95),
+        border: Border(top: BorderSide(color: AppTheme.secondaryBorder(context), width: 0.5)),
+      ),
+      child: NavigationBar(
+        selectedIndex: _currentTabIndex,
+        onDestinationSelected: (index) {
+          HapticFeedback.lightImpact();
+          setState(() => _currentTabIndex = index);
+        },
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        indicatorColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
+        labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+        destinations: const [
+          NavigationDestination(
+            icon: Icon(Icons.explore_outlined),
+            selectedIcon: Icon(Icons.explore, color: Colors.amber),
+            label: 'Tour Session',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.card_membership_outlined),
+            selectedIcon: Icon(Icons.card_membership, color: Colors.amber),
+            label: 'Subscription',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.star_border_rounded),
+            selectedIcon: Icon(Icons.star_rounded, color: Colors.amber),
+            label: 'Reviews',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.shield_outlined),
+            selectedIcon: Icon(Icons.shield, color: Colors.amber),
+            label: 'Safety',
+          ),
+        ],
+      ),
+    );
+  }
+
 
   Widget _buildEmptyState() {
     return Column(

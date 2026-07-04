@@ -67,6 +67,9 @@
   - [x] 8.2 Update `task.md` in workspace root and `walkthrough.md`
 
 ## Active Milestone: Enterprise Audit Phase 2 Hardening & Priority Bug Fixes (v11.0)
+- [x] Wire up multi-image gallery (`images[]` array) in `DiscoveryPlace` and populate SQLite `place_images` table (Completed 2026-07-04)
+- [x] Implement Bottom Navigation Bar (Sub-tabs) in `GuideDashboardScreen` connecting Tour Session, Subscription, Reviews, and Safety (Completed 2026-07-04)
+- [x] BUG-AD01: Fix AdMob `adId already exists` crash and infinite retry loop in `monetization_service.dart` by awaiting ad disposal in catch block before retrying (Completed 2026-07-04)
 - [x] Fix startup error spam in Flutter debug mode: skip RevenueCat init on dummy keys and check `Firebase.apps.isNotEmpty` before Firestore GeoHash fetch (Completed 2026-07-04)
 - [x] BUG-C02: Address System Restore Path Traversal vulnerability in `backend/api/routers/admin.py` and `scripts/system_guard.py` (Completed 2026-07-04)
 - [x] BUG-N01 to BUG-N04 (Notification Pipeline): Implement foreground notification display and FCM token sync logic (Completed 2026-07-04)

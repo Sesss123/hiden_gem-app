@@ -74,12 +74,12 @@ class DeltaSyncService {
     try {
       final connectivityResult = await Connectivity().checkConnectivity();
       if (connectivityResult.contains(ConnectivityResult.wifi)) {
-        return const Duration(seconds: 4); // WiFi is faster
+        return const Duration(seconds: 15); // WiFi / Local dev server
       } else if (connectivityResult.contains(ConnectivityResult.mobile)) {
-        return const Duration(seconds: 10); // Mobile network (rural 2G/3G) needs more time
+        return const Duration(seconds: 15); // Mobile network (rural 2G/3G) needs more time
       }
     } catch (_) {}
-    return const Duration(seconds: 5); // Fallback
+    return const Duration(seconds: 15); // Fallback
   }
 
   /// Checks if server version is higher than local SQLite version.

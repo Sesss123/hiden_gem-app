@@ -26,7 +26,7 @@ class SecureHttpClient extends http.BaseClient {
   Future<http.StreamedResponse> send(http.BaseRequest request) async {
     // 1. Force HTTPS (Point 1)
     if (request.url.scheme != 'https') {
-      final isLocal = request.url.host.contains('localhost') || request.url.host.contains('127.0.0.1') || request.url.host.contains('10.0.2.2');
+      final isLocal = request.url.host.contains('localhost') || request.url.host.contains('127.0.0.1') || request.url.host.contains('10.0.2.2') || request.url.host.startsWith('192.168.');
       if (!isLocal) {
         if (!kDebugMode) {
           throw SecurityException("Insecure HTTP requests are strictly prohibited in production: ${request.url}");
