@@ -4,6 +4,20 @@
   - [x] Generate comprehensive `ENTERPRISE_CODE_AUDIT_FINAL_REPORT.md` containing scores, health evaluation, and 150 detailed issues/hardening items
 - [x] PART 1: Establish Master Role, QA Framework & Audit Methodology (Completed 2026-07-04)
 - [x] PART 2: Perform Complete Multi-Layer Pre-Release Software Verification & Generate Document (Completed 2026-07-04)
+- [x] BUG-L001 through BUG-L007: Complete Laravel Backend Hardening — Added strict image MIME/extension validation and removed silent GD fallback in `ImageProcessingService` and `PlaceController` (closing webshell/RCE upload risk); removed `sync_version` and `is_deleted` from `Place` model `$fillable` array; fixed query grouping bug in `GuideController::index()`; wrapped `store`, `update`, `setCoverImage`, `approve`, and `reject` in `DB::transaction()` with `lockForUpdate()` during smart ID generation; set `SESSION_SECURE_COOKIE=true` in `.env`. (Completed 2026-07-04)
+- [x] BUG-P005 & BUG-Q022: Registered `SlowAPIMiddleware` in `backend/main.py` so global rate limiting (`default_limits`) applies across all FastAPI routers; replaced raw `print()` startup/shutdown statements with structured `logger.info()`. (Completed 2026-07-04)
+- [x] BUG-P001: Converted synchronous database endpoints in `backend/api/routers/user.py` (`/profile`, `/favorites`, `/history`) from `async def` to standard `def` (offloading execution to FastAPI worker threadpool), preventing blocking of the asyncio event loop. Added SlowAPI `@limiter.limit` decorators. (Completed 2026-07-04)
+- [x] BUG-P006, BUG-P008, BUG-P009, BUG-P012: Hardened `backend/api/routers/lumen.py` by adding `get_current_user` auth dependency and rate limiting (`@limiter.limit`) to `/test-model` and `/status`; replaced raw user prompt logging with prompt length logging to prevent PII exposure; added explicit `knowledge_base_mode` flag to response; sanitized error messages. (Completed 2026-07-04)
+- [x] BUG-P007 & BUG-061: Replaced blocking `threading.Lock` with non-blocking `asyncio.Lock` in `backend/api/routers/auth.py` for in-memory brute-force login protection; added SlowAPI `@limiter.limit` rate limiting to `/sync` and `/me`. (Completed 2026-07-04)
+- [x] BUG-Q006/Q010/Q011: Refactor Laravel AI Proxy — Created `AiProxyController` + `PlanItineraryRequest` + `RecommendationsRequest` FormRequest classes; replaced raw inline closures in `api.php` with validated, sanitised controller bindings. Python upstream errors are never forwarded raw to clients. (Completed 2026-07-04)
+- [x] BUG-Q003: Fix Python `security.py` leaking full Authorization headers to console logs; downgraded happy-path auth events from WARNING to DEBUG/INFO level. (Completed 2026-07-04)
+- [x] Python `food.py` hardening: Added `get_current_user` auth dependency, `@limiter.limit("10/minute")` rate limit, `field_validator` for image size/user_mode/spice_preference input validation. Sanitised error messages (no raw exception detail returned to client). (Completed 2026-07-04)
+- [x] Laravel `.env` documented with explicit `API_KEY`, `INTERNAL_BRIDGE_KEY`, `PYTHON_BACKEND_URL`, `AI_PLAN_TIMEOUT`, `AI_REC_TIMEOUT` entries. (Completed 2026-07-04)
+- [x] BUG-040 & BUG-112: Enabled SQLite WAL mode (`PRAGMA journal_mode=WAL;`), added 15s lock wait timeouts, and configured `pool_pre_ping=True` in `database.py` to eliminate `SQLITE_BUSY` contention. (Completed 2026-07-04)
+- [x] BUG-033 & BUG-036: Converted synchronous database endpoints in `ai.py` (`semantic_search`, `find_near_me`, `translate_text`, `get_ai_recommendations`) from `async def` to `def` (offloading execution to FastAPI worker threadpool), wrapped `plan_itinerary` SQLite clustering in `anyio.to_thread.run_sync`, fixed silent exception swallowing, and added `@limiter.limit` rate limits. (Completed 2026-07-04)
+- [x] BUG-036 & BUG-068: Added rate limiting (`@limiter.limit`) and sanitized exception handling in `weather.py` (`/current` and `/alerts`) so raw exception trace strings are never leaked to external clients. (Completed 2026-07-04)
+
+
 
 ## Completed Milestones: Enterprise Audit Fixes & Hardening (v8.0)
 - [x] Fix SavorLankaScreen CameraController lifecycle crash (BUG-001 & BUG-007 & BUG-008) (Completed 2026-07-03)
@@ -660,4 +674,20 @@
 - [x] Fix BUG-R14: Wrap Title Text in `Flexible` inside `Row` in `premium_hub_screen.dart` to prevent 8.3px RenderFlex overflow — 2026-07-04
 - [x] Fix BUG-R15: Update `integrity_shield.dart` to prevent debug mode checks and offline/server-sync availability failures from falsely escalating risk score to 70 (`QuarantineLevel.restricted`) — 2026-07-04
 - [x] Fix BUG-R16: Create `PlaceSeeder.php` with 6 authentic Sri Lankan places, populate Python KB (`tripme_kb.json`) & discovery JSON datasets (`discovered_tanks.json`, `smart_tanks.json`), and add fallback logic in `seed_sqlite_places.py` to resolve 0 active places — 2026-07-04
+- [x] Fix BUG-R17: Redesign `splash_screen.dart` with edge-to-edge layout (fixing notch cutoff) and dynamic theme alignment matching the app's Aethereal Oracle / Tropical Earthy Modern Light & Dark UI system (`AppPalette.bg`, `AppPalette.rust`, `AppTheme.premiumShadow`) — 2026-07-04
+- [x] Fix BUG-R18: Add `functions` source configuration to `firebase.json` so Cloud Functions (`verify_entitlements`, `report_forensic_signals`) can be deployed via `firebase deploy --only functions` — 2026-07-04
+- [x] Fix BUG-R19: Replace hardcoded `10.0.2.2:8080` WebSocket URL in `monsoon_broadcast_service.dart` with dynamic `AppConfig.reverbWsUrl` derived from `laravelUrl` or `--dart-define=REVERB_WS_URL` — 2026-07-04
+- [x] Fix BUG-Q003 & BUG-Q004: Remove raw request headers logging (`dict(request.headers)`) and replace plain `==` with constant-time `hmac.compare_digest` in `backend/core/security.py` — 2026-07-04
+- [x] Fix BUG-Q009: Add `AppConfig.foodScannerWsUrl` and replace hardcoded `10.0.2.2:8000` in `real_time_food_scanner_screen.dart` — 2026-07-04
+- [x] Fix BUG-Q001 & BUG-Q005: Make `AppConfig.validate()` enforce API key checks in strict debug mode unless `--dart-define=BYPASS_KEY_CHECKS=true` is set — 2026-07-04
+- [x] Fix BUG-F001 & BUG-F002: Hoist and dispose temporary `TextEditingController` instances inside `showDialog` and `showModalBottomSheet` in `operator_dashboard_screen.dart` and `budget_concierge_screen.dart` — 2026-07-04
+- [x] Fix BUG-F003, BUG-F004 & BUG-F009: Consolidate duplicate `ARVideoService` by redirecting `lib/core/services/ar_video_service.dart` to the canonical modular service in `features/ar_video/services/` — 2026-07-04
+- [x] Fix BUG-F005 & BUG-F006: Add `ref.onDispose` cleanup in `PremiumNotifier` (`premium_service.dart`) to remove RevenueCat listener and cancel Firestore stream — 2026-07-04
+- [x] Fix BUG-F007 & BUG-F008: Add `if (mounted)` checks around asynchronous `setState` calls in `qr_scanner_screen.dart` and `guide_dashboard_screen.dart` — 2026-07-04
+- [x] Fix BUG-L001: Add strict image MIME/extension validation rules in `PlaceController::validatePlace()` and throw explicit exception in `ImageProcessingService` if GD fails to parse image (preventing arbitrary file/webshell upload) — 2026-07-04
+- [x] Fix BUG-L002: Remove `sync_version` and `is_deleted` from `Place` model `$fillable` array to protect delta-sync protocol and version-bump locks from mass assignment — 2026-07-04
+- [x] Fix BUG-L003: Wrap search condition in `GuideController::index()` in an explicit grouping closure so `orWhere` does not bypass the active status filter — 2026-07-04
+- [x] Fix BUG-L004, BUG-L005 & BUG-L006: Wrap smart ID generation (`lockForUpdate()`), model store/update, image processing loops, and cover image swapping in `DB::transaction()` in `PlaceController.php` — 2026-07-04
+- [x] Fix BUG-L007: Explicitly configure `SESSION_SECURE_COOKIE=true` in `laravel-backend/.env` to enforce HTTPS-only session cookies in production — 2026-07-04
+- [x] Fix BUG-P001 to BUG-P012: Hardened Python backend routers (`user.py`, `lumen.py`, `auth.py`, `food.py`, `main.py`) with threadpool offloading for SQLite calls, non-blocking `asyncio.Lock`, SlowAPI rate limiting, PII prompt redaction, and error message sanitization — 2026-07-04
 

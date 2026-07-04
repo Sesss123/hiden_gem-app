@@ -20,15 +20,21 @@ else:
     DB_PATH = os.path.join(os.getcwd(), "tripme.db")
 
 engine = create_engine(
-    SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
+    SQLALCHEMY_DATABASE_URL,
+    connect_args={"check_same_thread": False, "timeout": 15},
+    pool_pre_ping=True,
 )
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
 
 def get_db_connection():
-    """Raw SQLite connection for legacy dictionary-like row access."""
-    conn = sqlite3.connect(DB_PATH)
+    """
+    Raw SQLite connection for legacy dictionary-like row access.
+    BUG-040 / BUG-112: Enabled WAL mode and 15s lock wait timeout to prevent SQLITE_BUSY errors.
+    """
+    conn = sqlite3.connect(DB_PATH, timeout=15.0)
+    conn.execute("PRAGMA journal_mode=WAL;")
     conn.row_factory = sqlite3.Row  # Returns results as dict-like objects
     return conn
 

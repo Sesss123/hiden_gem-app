@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:permission_handler/permission_handler.dart';
+import '../../core/config/app_config.dart';
+import '../../core/utils/secure_logger.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/theme/oracle_ui_system.dart';
 
@@ -217,11 +219,11 @@ class _RealTimeFoodScannerScreenState extends State<RealTimeFoodScannerScreen>
     }
   }
 
-  /// Establishes WebSocket connection to ws://YOUR_BACKEND_IP:8000/ws/scan
+  /// Establishes WebSocket connection to dynamically derived AI Scanner endpoint
   Future<void> _connectWebSocket() async {
     _disconnectWebSocket();
-    final url = 'ws://$_serverIp:$_serverPort/ws/scan';
-    debugPrint("Connecting to Real-Time AI Scanner WebSocket: $url");
+    final url = AppConfig.foodScannerWsUrl;
+    SecureLogger.network("Connecting to Real-Time AI Scanner WebSocket: $url");
 
     try {
       _channel = WebSocketChannel.connect(Uri.parse(url));

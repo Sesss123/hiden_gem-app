@@ -541,10 +541,10 @@ class _OperatorDashboardScreenState extends ConsumerState<OperatorDashboardScree
                 }
 
                 if (mounted) {
+                  final ctrl = TextEditingController();
                   showDialog(
                     context: context,
                     builder: (ctx) {
-                    final ctrl = TextEditingController();
                     return AlertDialog(
                       backgroundColor: const Color(0xFF141C24),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
@@ -583,6 +583,7 @@ class _OperatorDashboardScreenState extends ConsumerState<OperatorDashboardScree
                         ),
                       ],
                     );
+                  }).whenComplete(() => ctrl.dispose());
                   },
                 );
                 }

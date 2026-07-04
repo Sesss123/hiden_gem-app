@@ -10,12 +10,15 @@ import logging
 
 from services.weather_service import weather_service
 from core.security import verify_internal_key, get_current_user
+from core.rate_limit import limiter
+from fastapi import Request
 
 router = APIRouter(prefix="/api/weather", tags=["weather"])
 logger = logging.getLogger("WeatherRouter")
 
 @router.get("/current")
-async def get_district_weather(district: str = Query("Colombo", description="Sri Lankan District Name")):
+@limiter.limit("30/minute")
+async def get_district_weather(request: Request, district: str = Query("Colombo", description="Sri Lankan District Name")):
     """
     Fetch current weather conditions and seasonal monsoon advice for a district.
     """
@@ -29,10 +32,11 @@ async def get_district_weather(district: str = Query("Colombo", description="Sri
         })
     except Exception as e:
         logger.error(f"❌ Error fetching weather for {district}: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=503, detail="Weather service currently unavailable.")
 
 @router.get("/alerts")
-async def get_monsoon_alerts():
+@limiter.limit("20/minute")
+async def get_monsoon_alerts(request: Request):
     """
     Fetch live monsoon hazard grid for all major tourist districts in Sri Lanka.
     Used by Laravel Admin Dashboard & mobile safety widget.

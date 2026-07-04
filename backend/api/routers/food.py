@@ -4,15 +4,21 @@
 # to local food AI model (D:\ai model\food_scan_ai)
 # කිසිම Commercial API Key අවශ්‍ය නැත!
 
-from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel
+from fastapi import APIRouter, HTTPException, Depends, Request
+from pydantic import BaseModel, field_validator
 from typing import Optional
 import logging
 import time
 import random
 
+from core.security import get_current_user
+from core.rate_limit import limiter
+
 router = APIRouter(prefix="/api/food", tags=["food"])
 logger = logging.getLogger("FoodRouter")
+
+# Max base64 image size: ~5 MB compressed (original ~3.75 MB image)
+_MAX_BASE64_LEN = 5 * 1024 * 1024
 
 # ── Request/Response Models ────────────────────────────────
 
@@ -20,6 +26,31 @@ class FoodScanRequest(BaseModel):
     image_base64: str
     user_mode: str = "Tourist"
     spice_preference: str = "Medium"
+    compressed: bool = False
+
+    @field_validator('image_base64')
+    @classmethod
+    def validate_image_size(cls, v):
+        """BUG-Q006: Prevent oversized payloads from reaching the AI model."""
+        if len(v) > _MAX_BASE64_LEN:
+            raise ValueError(f'Image data exceeds maximum allowed size ({_MAX_BASE64_LEN // 1024 // 1024} MB).')
+        return v
+
+    @field_validator('user_mode')
+    @classmethod
+    def validate_user_mode(cls, v):
+        allowed = {'Tourist', 'Weight_Loss', 'Diabetic', 'Vegetarian', 'Vegan'}
+        if v not in allowed:
+            raise ValueError(f'user_mode must be one of: {allowed}')
+        return v
+
+    @field_validator('spice_preference')
+    @classmethod
+    def validate_spice(cls, v):
+        allowed = {'Mild', 'Medium', 'Spicy', 'Extra Spicy'}
+        if v not in allowed:
+            raise ValueError(f'spice_preference must be one of: {allowed}')
+        return v
 
 # ── Sri Lankan Food Knowledge Base ──────────────────────────
 # ඔයාගේ D:\ai model\food_scan_ai Model එක Integrate කරන තෙක්
@@ -132,30 +163,43 @@ def _identify_food(user_mode: str, spice_preference: str) -> dict:
 # ── Endpoints ──────────────────────────────────────────────
 
 @router.post("/scan")
-async def scan_food(req: FoodScanRequest):
+@limiter.limit("10/minute")
+async def scan_food(
+    request: Request,
+    req: FoodScanRequest,
+    user=Depends(get_current_user),
+):
     """
     BYOM Food Identification Endpoint.
     Flutter SavorLankaService._callCustomByomFoodScanner() එක මෙහිට call කරයි.
-    
+
     Request: {"image_base64": "...", "user_mode": "Tourist", "spice_preference": "Medium"}
     Response: FoodModel-compatible JSON
+
+    Auth: Firebase ID Token (Bearer) or internal bridge key required.
+    Rate Limit: 10 scans/minute per user/IP.
     """
     start_time = time.time()
-    
+
     if not req.image_base64 or len(req.image_base64) < 10:
         raise HTTPException(status_code=400, detail="Invalid or empty image data")
-    
-    logger.info(f"[FoodScan] Scan request: mode={req.user_mode}, spice={req.spice_preference}, image_size={len(req.image_base64)} chars")
-    
+
+    uid = user.get("uid", "anonymous")
+    logger.info(
+        f"[FoodScan] Scan request: uid={uid}, mode={req.user_mode}, "
+        f"spice={req.spice_preference}, image_size={len(req.image_base64)} chars"
+    )
+
     try:
         result = _identify_food(req.user_mode, req.spice_preference)
         elapsed_ms = (time.time() - start_time) * 1000
-        
+
         result["processing_time_ms"] = round(elapsed_ms, 2)
         result["detection_engine"] = "byom-knowledge-base"
         result["id"] = str(int(time.time() * 1000))
-        
+
+        logger.info(f"[FoodScan] Scan complete in {elapsed_ms:.0f}ms for uid={uid}.")
         return result
     except Exception as e:
-        logger.error(f"[FoodScan] Scan failed: {e}")
-        raise HTTPException(status_code=500, detail=f"Food scan failed: {str(e)}")
+        logger.error(f"[FoodScan] Scan failed for uid={uid}: {e}")
+        raise HTTPException(status_code=500, detail="Food scan failed. Please try again.")

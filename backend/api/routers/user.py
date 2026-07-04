@@ -1,6 +1,7 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from core.security import get_current_user
 from core.database import get_db_connection
+from core.rate_limit import limiter
 from typing import List
 import uuid
 from datetime import datetime
@@ -8,7 +9,8 @@ from datetime import datetime
 router = APIRouter(prefix="/api/user", tags=["user"])
 
 @router.get("/profile")
-async def get_user_profile(user=Depends(get_current_user)):
+@limiter.limit("30/minute")
+def get_user_profile(request: Request, user=Depends(get_current_user)):
     """Returns the user profile with tier and activity summary."""
     conn = get_db_connection()
     cur = conn.cursor()
@@ -33,7 +35,8 @@ async def get_user_profile(user=Depends(get_current_user)):
         conn.close()
 
 @router.get("/favorites")
-async def get_favorites(user=Depends(get_current_user)):
+@limiter.limit("30/minute")
+def get_favorites(request: Request, user=Depends(get_current_user)):
     """Retrieve the user's saved hidden gems."""
     conn = get_db_connection()
     cur = conn.cursor()
@@ -50,7 +53,8 @@ async def get_favorites(user=Depends(get_current_user)):
         conn.close()
 
 @router.post("/favorites/{place_id}")
-async def toggle_favorite(place_id: str, user=Depends(get_current_user)):
+@limiter.limit("20/minute")
+def toggle_favorite(request: Request, place_id: str, user=Depends(get_current_user)):
     """Add or remove a place from favorites."""
     conn = get_db_connection()
     cur = conn.cursor()
@@ -76,7 +80,8 @@ async def toggle_favorite(place_id: str, user=Depends(get_current_user)):
         conn.close()
 
 @router.post("/history/{place_id}")
-async def log_visit(place_id: str, notes: str = "", user=Depends(get_current_user)):
+@limiter.limit("20/minute")
+def log_visit(request: Request, place_id: str, notes: str = "", user=Depends(get_current_user)):
     """Record a visit to a hidden gem."""
     conn = get_db_connection()
     cur = conn.cursor()

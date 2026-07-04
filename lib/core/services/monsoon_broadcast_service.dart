@@ -53,8 +53,8 @@ class MonsoonBroadcastService {
     }
 
     try {
-      // Reverb / Pusher WebSocket URL syntax (defaulting to ws://localhost:8080/app/reverb_key)
-      final wsUrl = Uri.parse('ws://10.0.2.2:8080/app/hiddengems_reverb_key?protocol=7&client=js&version=8.0.0&flash=false');
+      // Reverb / Pusher WebSocket URL syntax dynamically derived from AppConfig
+      final wsUrl = Uri.parse(AppConfig.reverbWsUrl);
       _channel = WebSocketChannel.connect(wsUrl);
       
       _channel!.stream.listen(

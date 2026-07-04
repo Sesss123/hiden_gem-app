@@ -8,6 +8,7 @@ import socket
 from urllib.parse import urlparse
 from dotenv import load_dotenv
 import ipaddress
+import hmac
 
 load_dotenv()
 
@@ -32,7 +33,7 @@ async def verify_internal_key(request: Request):
             detail="System security misconfiguration."
         )
     
-    if key != INTERNAL_BRIDGE_KEY:
+    if not key or not hmac.compare_digest(key, INTERNAL_BRIDGE_KEY):
         logger.warning(f"❌ Internal Bridge Auth FAILED: Key mismatch for {request.url.path}")
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Access denied.")
     
@@ -67,24 +68,17 @@ def validate_safe_url(url: str) -> bool:
         return False
 
 async def get_current_user(request: Request, token: Optional[str] = Depends(oauth2_scheme)):
+    # BUG-Q003 FIX: Do NOT log full request headers — they contain Authorization tokens.
+    # Only log the path and user-agent for safe diagnostics.
     ua = request.headers.get("User-Agent", "Unknown")
-    logger.warning(f"🔄 Auth attempt for {request.url.path} | UA: {ua}")
-    """
-    Dependency to get the current authenticated user. Supports:
-    1. Internal Shared Secret (X-Admin-Internal-Key) for Dashboard Proxy
-    2. Firebase ID Token (Bearer) for Client Apps
-    3. Mock Auth for local development
-    """
+    logger.debug(f"🔄 Auth check for {request.url.path} | UA: {ua}")
     
     # --- Strategy A: Internal Bridge Secret ---
     internal_key = request.headers.get("X-Admin-Internal-Key")
     
-    # DEBUG: Log incoming headers for bridge troubleshooting
-    logger.debug(f"📋 Headers for {request.url.path}: {dict(request.headers)}")
-    
-    if internal_key is not None:
-        if internal_key == INTERNAL_BRIDGE_KEY:
-            logger.warning(f"🔑 Internal Bridge Auth successful for {request.url.path}")
+    if internal_key is not None and INTERNAL_BRIDGE_KEY is not None:
+        if hmac.compare_digest(internal_key, INTERNAL_BRIDGE_KEY):
+            logger.info(f"🔑 Internal Bridge Auth successful for {request.url.path}")
             return {
                 "is_authenticated": True,
                 "uid": "genesis-admin-proxy",
@@ -95,11 +89,11 @@ async def get_current_user(request: Request, token: Optional[str] = Depends(oaut
         else:
             logger.warning(f"❌ Internal Bridge Auth FAILED: Key mismatch for {request.url.path}")
     else:
-        logger.warning(f"⚠️  Internal Bridge Header MISSING for {request.url.path}")
+        logger.debug(f"⚪ No internal key for {request.url.path}")
 
     # Logging token presence for debug
     if token:
-        logger.warning(f"🔍 Bearer token detected for {request.url.path}")
+        logger.debug(f"🔍 Bearer token present for {request.url.path}")
     else:
         logger.debug(f"⚪ No bearer token for {request.url.path}")
 

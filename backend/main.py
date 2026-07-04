@@ -4,7 +4,7 @@ from pipeline.logger import get_pipeline_logger
 # Configure root logger and app logger
 logger = get_pipeline_logger("HiddenGemsBackend")
 
-print(">>> BACKEND STARTING: Initializing core modules...", flush=True)
+logger.info(">>> BACKEND STARTING: Initializing core modules...")
 from fastapi import FastAPI, Depends, Request, HTTPException
 from fastapi.websockets import WebSocket, WebSocketDisconnect
 import logging
@@ -20,21 +20,22 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
+from slowapi.middleware import SlowAPIMiddleware
 from core.firebase_admin_init import init_firebase
 from core.rate_limit import limiter
 
 # Initialize Security & Database (Hybrid Strategy: MongoDB Primary, SQLite Buffer)
 init_firebase()
 # BUG-054: Do NOT log environment variables or secrets during startup
-print(">>> Firebase: Bridge connection active.", flush=True)
+logger.info(">>> Firebase: Bridge connection active.")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup logic
-    print(">>> Startup: Background service engines active.", flush=True)
+    logger.info(">>> Startup: Background service engines active.")
     yield
     # Shutdown logic (if any)
-    print(">>> Shutdown: Cleaning up resources...", flush=True)
+    logger.info(">>> Shutdown: Cleaning up resources...")
 
 app = FastAPI(
     title="Hidden Gems SL API", 
@@ -47,6 +48,7 @@ app = FastAPI(
 # Rate Limiting
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+app.add_middleware(SlowAPIMiddleware)
 
 # CORS Lockdown
 environment = os.getenv("ENV", "development")

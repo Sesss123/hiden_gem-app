@@ -214,8 +214,10 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
         _showSuccessDialog(session.sessionId);
       }
     } catch (e) {
-      _showError(e.toString().replaceAll("Exception: ", ""));
-      setState(() => _isProcessing = false);
+      if (mounted) {
+        _showError(e.toString().replaceAll("Exception: ", ""));
+        setState(() => _isProcessing = false);
+      }
     }
   }
 

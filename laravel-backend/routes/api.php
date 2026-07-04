@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 use App\Http\Controllers\Api\PlaceSyncController;
+use App\Http\Controllers\Api\AiProxyController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\WishlistController;
 use App\Http\Middleware\VerifyApiKey;
@@ -48,36 +49,11 @@ Route::prefix('v1')->group(function () {
     });
 
     // AI Subsystem Proxy Routes (Protected by Sanctum Auth, API Key, and Throttling)
+    // BUG-Q006 / BUG-Q010 / BUG-Q011: Replaced inline closures with AiProxyController.
+    // All requests are now validated via FormRequest before being forwarded to Python.
+    // Python upstream errors are sanitised — raw error bodies are never returned to clients.
     Route::middleware(['auth:sanctum', VerifyApiKey::class, 'throttle:30,1'])->group(function () {
-        Route::post('/ai/plan-itinerary', function (Request $request) {
-            $pythonUrl = env('PYTHON_BACKEND_URL', 'http://localhost:8000');
-            $internalKey = env('INTERNAL_BRIDGE_KEY', '');
-            try {
-                $response = \Illuminate\Support\Facades\Http::timeout(30)
-                    ->withHeaders(['X-Admin-Internal-Key' => $internalKey])
-                    ->post("{$pythonUrl}/api/ai/plan-itinerary", $request->all());
-                return response($response->body(), $response->status())
-                    ->header('Content-Type', 'application/json');
-            } catch (\Exception $e) {
-                \Illuminate\Support\Facades\Log::error('AI Subsystem plan-itinerary error: ' . $e->getMessage());
-                return response()->json(['error' => 'AI Subsystem unavailable'], 503);
-            }
-        });
-
-        Route::post('/ai/recommendations', function (Request $request) {
-            $pythonUrl = env('PYTHON_BACKEND_URL', 'http://localhost:8000');
-            $internalKey = env('INTERNAL_BRIDGE_KEY', '');
-            try {
-                $response = \Illuminate\Support\Facades\Http::timeout(15)
-                    ->withHeaders(['X-Admin-Internal-Key' => $internalKey])
-                    ->post("{$pythonUrl}/api/ai/recommendations", $request->all());
-                return response($response->body(), $response->status())
-                    ->header('Content-Type', 'application/json');
-            } catch (\Exception $e) {
-                \Illuminate\Support\Facades\Log::error('AI Subsystem recommendations error: ' . $e->getMessage());
-                return response()->json(['error' => 'AI Recommendations unavailable'], 503);
-            }
-        });
+        Route::post('/ai/plan-itinerary', [AiProxyController::class, 'planItinerary']);
+        Route::post('/ai/recommendations', [AiProxyController::class, 'recommendations']);
     });
 });
-

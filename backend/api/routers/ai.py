@@ -1,12 +1,16 @@
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from core.security import get_current_user
 from core.database import get_db_connection
+from core.rate_limit import limiter
 from typing import List, Optional
 import math
 import json
 import random
+import logging
+import anyio
 
 router = APIRouter(prefix="/api/ai", tags=["ai"])
+logger = logging.getLogger("AIRouter")
 
 def haversine(lat1, lon1, lat2, lon2):
     """Calculate the great circle distance between two points in km."""
@@ -18,7 +22,8 @@ def haversine(lat1, lon1, lat2, lon2):
     return R * c
 
 @router.get("/search/semantic")
-async def semantic_search(query: str, user=Depends(get_current_user)):
+@limiter.limit("20/minute")
+def semantic_search(request: Request, query: str, user=Depends(get_current_user)):
     """
     Experimental Semantic Search.
     In Phase 3, we use context-weighting across name, tags, and AI summaries.
@@ -51,6 +56,7 @@ async def semantic_search(query: str, user=Depends(get_current_user)):
         conn.close()
 
 @router.api_route("/plan-itinerary", methods=["GET", "POST"])
+@limiter.limit("15/minute")
 async def plan_itinerary(
     request: Request,
     duration: int = 3, 
@@ -61,6 +67,7 @@ async def plan_itinerary(
     """
     AI-driven itinerary generation.
     Groups places by district clusters and sorts by category preference.
+    BUG-033: Offloaded synchronous SQLite query to worker threadpool.
     """
     if request.method == "POST":
         try:
@@ -71,8 +78,12 @@ async def plan_itinerary(
                 vibe = str(body["style"]).lower()
             if body.get("destination"):
                 start_district = str(body["destination"])
-        except Exception:
-            pass
+        except Exception as e:
+            logger.warning(f"[PlanItinerary] Could not parse POST body JSON: {e}")
+
+    return await anyio.to_thread.run_sync(_compute_itinerary_sync, duration, vibe, start_district)
+
+def _compute_itinerary_sync(duration: int, vibe: str, start_district: Optional[str]):
     conn = get_db_connection()
     cur = conn.cursor()
     try:
@@ -144,7 +155,8 @@ async def plan_itinerary(
         conn.close()
 
 @router.get("/near-me")
-async def find_near_me(lat: float, lng: float, radius_km: float = 10.0, user=Depends(get_current_user)):
+@limiter.limit("30/minute")
+def find_near_me(request: Request, lat: float, lng: float, radius_km: float = 10.0, user=Depends(get_current_user)):
     """Locate hidden gems within a specific radius of the user."""
     conn = get_db_connection()
     cur = conn.cursor()
@@ -177,7 +189,8 @@ class TranslateRequest(BaseModel):
     target_lang: str
 
 @router.post("/translate")
-async def translate_text(req: TranslateRequest, user=Depends(get_current_user)):
+@limiter.limit("30/minute")
+def translate_text(request: Request, req: TranslateRequest, user=Depends(get_current_user)):
     """
     AI Translation Service using Gemini or semantic rules.
     """
@@ -197,7 +210,8 @@ class RecommendationRequest(BaseModel):
     vibeText: str = "balanced"
 
 @router.post("/recommendations")
-async def get_ai_recommendations(req: RecommendationRequest, user=Depends(get_current_user)):
+@limiter.limit("20/minute")
+def get_ai_recommendations(request: Request, req: RecommendationRequest, user=Depends(get_current_user)):
     """
     AI-driven place recommendations based on nearby places and user vibe.
     Flutter DiscoveryRemoteDataSource.getAiRecommendationsRaw() එක මෙහිට call කරයි.

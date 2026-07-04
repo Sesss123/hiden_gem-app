@@ -333,6 +333,9 @@ class _BudgetConciergeScreenState extends ConsumerState<BudgetConciergeScreen> {
           ],
         ),
       ),
-    );
+    ).whenComplete(() {
+      descController.dispose();
+      amountController.dispose();
+    });
   }
 }

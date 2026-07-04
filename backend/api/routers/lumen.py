@@ -4,10 +4,12 @@
 # මේ Router එක හරහා Voice Oracle, AI Chat, Trip Planning යන සියලු AI
 # Inference calls ක්‍රියාත්මක වේ — කිසිම Commercial API Key අවශ්‍ය නැත!
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request, Depends
 from pydantic import BaseModel
 from typing import Optional
 from core.database import get_db_connection
+from core.security import get_current_user
+from core.rate_limit import limiter
 import logging
 import time
 import random
@@ -30,6 +32,7 @@ class LumenInferenceResponse(BaseModel):
     mode: str = "default"
     rag_used: bool = False
     processing_time_ms: float = 0.0
+    knowledge_base_mode: bool = True
 
 # ── Sri Lanka Travel Knowledge Base (Rule-Based RAG) ───────
 # මේ Knowledge Base එක ඔයාගේ D:\ai model\lumen-1 Model එක
@@ -83,20 +86,20 @@ def _generate_response(prompt: str, mode: str, use_rag: bool) -> str:
 # ── Endpoints ──────────────────────────────────────────────
 
 @router.post("/test-model")
-async def lumen_inference(req: LumenInferenceRequest):
+@limiter.limit("30/minute")
+def lumen_inference(request: Request, req: LumenInferenceRequest, user=Depends(get_current_user)):
     """
     Lumen-1 AI Inference Endpoint.
     Flutter LumenAiService.chat() එක මේ endpoint එකට call කරනවා.
-    
-    Request: {"prompt": "...", "use_rag": true, "mode": "default", "temperature": 0.7}
-    Response: {"response": "...", "model": "lumen-1-local", ...}
+    BUG-P001: Run in worker threadpool (def instead of async def).
     """
     start_time = time.time()
     
     if not req.prompt or not req.prompt.strip():
         raise HTTPException(status_code=400, detail="Prompt cannot be empty")
     
-    logger.info(f"[Lumen] Inference request: mode={req.mode}, rag={req.use_rag}, prompt='{req.prompt[:50]}...'")
+    # BUG-P009: Do NOT log raw user prompt text to prevent PII/privacy exposure in log aggregators.
+    logger.info(f"[Lumen] Inference request: mode={req.mode}, rag={req.use_rag}, prompt_len={len(req.prompt)}")
     
     try:
         response_text = _generate_response(req.prompt, req.mode, req.use_rag)
@@ -107,19 +110,19 @@ async def lumen_inference(req: LumenInferenceRequest):
             "model": "lumen-1-local",
             "mode": req.mode,
             "rag_used": req.use_rag and bool(_rag_search(req.prompt)),
-            "processing_time_ms": round(elapsed_ms, 2)
+            "processing_time_ms": round(elapsed_ms, 2),
+            "knowledge_base_mode": True
         }
     except Exception as e:
         logger.error(f"[Lumen] Inference failed: {e}")
-        raise HTTPException(status_code=500, detail=f"Inference failed: {str(e)}")
+        raise HTTPException(status_code=503, detail="AI inference engine temporarily unavailable.")
 
 @router.get("/status")
-async def lumen_status():
+@limiter.limit("60/minute")
+def lumen_status(request: Request):
     """
     Lumen-1 Server Status Endpoint.
     Flutter LumenAiService.isServerAlive() එක මේ endpoint එකට call කරනවා.
-    
-    Response: {"status": "online", "model": "lumen-1-local", ...}
     """
     return {
         "status": "online",

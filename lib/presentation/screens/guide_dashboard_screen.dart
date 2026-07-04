@@ -169,6 +169,7 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
 
     await _sessionRepo.startSession(sessionId);
     await _sessionRepo.generateJoinToken(sessionId);
+    if (!mounted) return;
     _startLocationSync();
   }
 
@@ -176,6 +177,7 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
     if (_activeSession == null) return;
     try {
       await _sessionRepo.updateSessionPhase(_activeSession!.sessionId, phase);
+      if (!mounted) return;
       setState(() {
         _activeSession = _activeSession!.copyWith(currentPhase: phase);
       });

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\GuideApplication;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class GuideController extends Controller
 {
@@ -15,10 +16,13 @@ class GuideController extends Controller
         $query = GuideApplication::with('user')->where('status', $status);
 
         if ($search = $request->input('search')) {
-            $query->whereHas('user', function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%");
-            })->orWhere('license_number', 'like', "%{$search}%");
+            // BUG-L003: Wrap search condition in an explicit grouping closure so orWhere doesn't bypass status filter
+            $query->where(function ($q) use ($search) {
+                $q->whereHas('user', function ($uq) use ($search) {
+                    $uq->where('name', 'like', "%{$search}%")
+                       ->orWhere('email', 'like', "%{$search}%");
+                })->orWhere('license_number', 'like', "%{$search}%");
+            });
         }
 
         $applications = $query->orderBy('created_at', 'desc')->paginate(15);
@@ -38,25 +42,31 @@ class GuideController extends Controller
     public function approve($id)
     {
         $application = GuideApplication::findOrFail($id);
-        $application->update(['status' => 'approved']);
+        
+        DB::transaction(function () use ($application) {
+            $application->update(['status' => 'approved']);
 
-        $user = $application->user;
-        $user->update(['role' => 'guide_approved']);
+            $user = $application->user;
+            $user->update(['role' => 'guide_approved']);
+        });
 
         return redirect()->route('admin.guides.index', ['status' => 'approved'])
-            ->with('success', "Guide application for '{$user->name}' has been approved. User role elevated to 'guide_approved'.");
+            ->with('success', "Guide application for '{$application->user->name}' has been approved. User role elevated to 'guide_approved'.");
     }
 
     public function reject(Request $request, $id)
     {
         $application = GuideApplication::findOrFail($id);
-        $application->update(['status' => 'rejected']);
+        
+        DB::transaction(function () use ($application) {
+            $application->update(['status' => 'rejected']);
 
-        $user = $application->user;
-        $user->update(['role' => 'tourist']); // demote back to tourist
+            $user = $application->user;
+            $user->update(['role' => 'tourist']); // demote back to tourist
+        });
 
         return redirect()->route('admin.guides.index', ['status' => 'rejected'])
-            ->with('success', "Guide application for '{$user->name}' has been rejected.");
+            ->with('success', "Guide application for '{$application->user->name}' has been rejected.");
     }
 
     public function ban($id)

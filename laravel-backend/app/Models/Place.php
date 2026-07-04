@@ -80,7 +80,7 @@ class Place extends Model
         self::COL_AR_SUPPORTED, self::COL_AR_TIER, self::COL_AR_BRAND_NAME, self::COL_AR_MODEL_URL, self::COL_AR_HISTORICAL_MODEL_URL,
         self::COL_AR_MODEL_SCALE, self::COL_HISTORICAL_PERIOD, self::COL_AR_FILE_SIZE_MB,
         self::COL_AUDIO_GUIDE_URL_SI, self::COL_AUDIO_GUIDE_URL_EN, self::COL_GEOHASH, self::COL_IMAGE_URL,
-        self::COL_SYNC_VERSION, self::COL_IS_DELETED, self::COL_ACCESS_TIER, self::COL_STATUS, self::COL_REVIEWED_BY, self::COL_REVIEW_REASON
+        self::COL_ACCESS_TIER, self::COL_STATUS, self::COL_REVIEWED_BY, self::COL_REVIEW_REASON
     ];
 
     protected $casts = [

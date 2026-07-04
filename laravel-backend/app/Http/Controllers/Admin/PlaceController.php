@@ -7,6 +7,7 @@ use App\Models\Place;
 use App\Models\PlaceImage;
 use App\Services\ImageProcessingService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class PlaceController extends Controller
@@ -46,14 +47,19 @@ class PlaceController extends Controller
     public function store(Request $request)
     {
         $data = $this->validatePlace($request);
-        if (empty($data['id'])) {
-            $data['id'] = $this->generateSmartId($data['category'] ?? 'General', $data['district'] ?? 'SL');
-        }
+        
+        // BUG-L004 & BUG-L006: Wrap ID generation, model creation, and image processing in a transaction
+        $place = DB::transaction(function () use ($data, $request) {
+            if (empty($data['id'])) {
+                $data['id'] = $this->generateSmartId($data['category'] ?? 'General', $data['district'] ?? 'SL');
+            }
 
-        // Creating will trigger PlaceObserver::saving to stamp sync_version
-        $place = Place::create($data);
+            // Creating will trigger PlaceObserver::saving to stamp sync_version
+            $place = Place::create($data);
 
-        $this->handleImages($request, $place);
+            $this->handleImages($request, $place);
+            return $place;
+        });
 
         return redirect()->route('admin.places.index')->with('success', "Place '{$place->name}' created successfully.");
     }
@@ -69,10 +75,13 @@ class PlaceController extends Controller
         $place = Place::findOrFail($id);
         $data = $this->validatePlace($request, true);
 
-        // Updating triggers PlaceObserver::saving if dirty
-        $place->update($data);
+        // BUG-L006: Wrap model update and image processing in a transaction
+        DB::transaction(function () use ($place, $data, $request) {
+            // Updating triggers PlaceObserver::saving if dirty
+            $place->update($data);
 
-        $this->handleImages($request, $place);
+            $this->handleImages($request, $place);
+        });
 
         return redirect()->route('admin.places.index')->with('success', "Place '{$place->name}' updated successfully.");
     }
@@ -98,8 +107,11 @@ class PlaceController extends Controller
     public function setCoverImage($imageId)
     {
         $image = PlaceImage::findOrFail($imageId);
-        PlaceImage::where('place_id', $image->place_id)->update(['is_cover' => false]);
-        $image->update(['is_cover' => true]);
+        // BUG-L005: Atomic cover image swap in transaction
+        DB::transaction(function () use ($image) {
+            PlaceImage::where('place_id', $image->place_id)->update(['is_cover' => false]);
+            $image->update(['is_cover' => true]);
+        });
 
         return back()->with('success', 'Cover image updated.');
     }
@@ -155,6 +167,7 @@ class PlaceController extends Controller
             'audio_guide_url_en' => 'nullable|string|max:500',
             'geohash' => 'nullable|string|max:20',
             'access_tier' => 'nullable|string|in:Free,PRO,VIP',
+            'images.*' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
         ]);
     }
 
@@ -210,7 +223,9 @@ class PlaceController extends Controller
 
         $prefix = "{$catCode}-{$distCode}-";
         
+        // BUG-L004: Lock matching ID prefix range to prevent concurrent duplicate ID generation
         $lastPlace = Place::where('id', 'like', "{$prefix}%")
+            ->lockForUpdate()
             ->orderBy('id', 'desc')
             ->first();
 

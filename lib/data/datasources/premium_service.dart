@@ -21,9 +21,15 @@ class PremiumNotifier extends _$PremiumNotifier {
 
   @override
   bool build() {
-    // 🎧 Listen to RevenueCat customer info changes
-    Purchases.addCustomerInfoUpdateListener((customerInfo) {
+    // 🎧 Listen to RevenueCat customer info changes (BUG-F005 & BUG-F006 fix)
+    void listener(CustomerInfo customerInfo) {
       _updateStateFromCustomerInfo(customerInfo);
+    }
+    Purchases.addCustomerInfoUpdateListener(listener);
+
+    ref.onDispose(() {
+      Purchases.removeCustomerInfoUpdateListener(listener);
+      _firestoreSubscription?.cancel();
     });
 
     _initRevenueCat();

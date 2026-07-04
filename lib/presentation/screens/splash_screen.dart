@@ -77,170 +77,188 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bgColor = isDark ? AppPaletteDark.bg : AppPalette.bg;
+    final primaryTextColor = isDark ? AppPaletteDark.text : AppPalette.ink;
+    final accentColor = isDark ? AppPaletteDark.gold : AppPalette.rust;
+    final cardColor = isDark ? AppPaletteDark.card : AppPalette.surface;
+
     return Scaffold(
-      // BUG-136: SafeArea ensures layout adapts to system status bar changes,
-      // preventing content from jumping when bars appear/disappear.
-      body: SafeArea(
-        // Expand the gradient background behind the safe area insets
-        bottom: false,
-        child: Container(
-
-        // BUG-096: Use theme-aware background so splash matches active theme on load.
-        // Fallback to dark oracle color for non-initialized state (before MaterialApp context).
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              Theme.of(context).scaffoldBackgroundColor,
-              Theme.of(context).scaffoldBackgroundColor.withValues(alpha: 0.85),
-              Theme.of(context).scaffoldBackgroundColor,
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
+      backgroundColor: bgColor,
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          // 1. Theme-Aware Background Gradient
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: isDark
+                    ? [AppPaletteDark.bg, const Color(0xFF111720)]
+                    : [AppPalette.bg, AppPalette.bg2],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ),
+            ),
           ),
-        ),
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            // BUG-076: Wrap central assets in SafeArea so the logo is never
-            // clipped by notches or curved-screen corners.
-            SafeArea(
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    // --- Splash Orb ---
-                    Container(
-                      width: 90,
-                      height: 90,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(color: AppPalette.rust.withValues(alpha: 0.4)),
-                        boxShadow: [
-                          BoxShadow(
-                            color: AppPalette.rust.withValues(alpha: 0.3),
-                            blurRadius: 40,
-                          ),
-                        ],
-                        gradient: RadialGradient(
-                          center: const Alignment(-0.3, -0.3),
-                          colors: [
-                            AppPalette.rust.withValues(alpha: 0.8),
-                            AppPalette.rust.withValues(alpha: 0.1),
-                          ],
-                        ),
-                      ),
-                      child: const Icon(
-                        Icons.travel_explore_rounded,
-                        size: 40,
-                        color: Colors.white,
-                      ),
-                    )
-                    .animate(onPlay: (c) => c.repeat())
-                    .scale(begin: const Offset(0.95, 0.95), end: const Offset(1.05, 1.05), duration: 1200.ms, curve: Curves.easeInOut),
 
-                    const SizedBox(height: 24),
-
-                    // --- Brand ---
-                    Text(
-                      "HIDDEN GEMS.AI",
-                      style: GoogleFonts.outfit(
-                        fontSize: 24,
-                        fontWeight: FontWeight.w900,
-                        color: Colors.white,
-                        letterSpacing: 4,
-                      ),
-                    )
-                    .animate()
-                    .fadeIn(duration: 800.ms)
-                    .blur(begin: const Offset(10, 10), end: Offset.zero, duration: 1000.ms),
-                    
-                    const SizedBox(height: 8),
-
-                    Text(
-                      "SRI LANKA'S PREMIER ORACLE",
-                      style: GoogleFonts.inter(
-                        fontSize: 8,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white.withValues(alpha: 0.3),
-                        letterSpacing: 3,
-                      ),
-                    )
-                    .animate()
-                    .fadeIn(delay: 400.ms, duration: 600.ms)
-                    .slideY(begin: 1, end: 0),
+          // 2. Subtle Ambient Top-Right Accent Glow
+          Positioned(
+            top: -70,
+            right: -70,
+            child: Container(
+              width: 260,
+              height: 260,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: RadialGradient(
+                  colors: [
+                    accentColor.withValues(alpha: isDark ? 0.15 : 0.10),
+                    accentColor.withValues(alpha: 0.0),
                   ],
                 ),
               ),
             ),
+          ),
 
-            // --- Bottom Loading State ---
-            Positioned(
-              bottom: 60,
-              left: 0,
-              right: 0,
-              child: Column(
-                children: [
-                  const ModernTracerIndicator()
-                      .animate()
-                      .fadeIn(delay: 800.ms),
-                  const SizedBox(height: 16),
-                  Text(
-                    widget.isReady ? "CONNECTION ESTABLISHED" : "CALCULATING DESTINY...",
-                    style: GoogleFonts.inter(
-                      fontSize: 9,
-                      fontWeight: FontWeight.w800,
-                      color: Colors.white.withValues(alpha: 0.4),
-                      letterSpacing: 2,
-                    ),
-                  )
-                  .animate(onPlay: (c) => c.repeat(reverse: true))
-                  .shimmer(duration: 1500.ms, color: Colors.white24),
-                ],
+          // 3. Subtle Ambient Bottom-Left Earth Glow
+          Positioned(
+            bottom: -90,
+            left: -90,
+            child: Container(
+              width: 300,
+              height: 300,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: RadialGradient(
+                  colors: [
+                    (isDark ? AppPaletteDark.gem : AppPalette.earth).withValues(alpha: isDark ? 0.12 : 0.08),
+                    Colors.transparent,
+                  ],
+                ),
               ),
             ),
-          ],
-        ),
+          ),
+
+          // 4. Safe Content Area
+          SafeArea(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const SizedBox(height: 40),
+
+                // Center Brand Emblem & Typography
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      // Harmonious Elevated Emblem
+                      Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          // Outer Subtle Pulsing Ring
+                          Container(
+                            width: 140,
+                            height: 140,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: accentColor.withValues(alpha: 0.2),
+                                width: 1.5,
+                              ),
+                            ),
+                          )
+                          .animate(onPlay: (c) => c.repeat(reverse: true))
+                          .scale(begin: const Offset(0.95, 0.95), end: const Offset(1.06, 1.06), duration: 1600.ms, curve: Curves.easeInOut),
+
+                          // Inner Elevated Surface Orb
+                          Container(
+                            width: 104,
+                            height: 104,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: cardColor,
+                              border: Border.all(
+                                color: accentColor.withValues(alpha: 0.35),
+                                width: 1.5,
+                              ),
+                              boxShadow: AppTheme.premiumShadow,
+                            ),
+                            child: Center(
+                              child: Icon(
+                                Icons.explore_rounded,
+                                size: 48,
+                                color: accentColor,
+                              ),
+                            ),
+                          ),
+                        ],
+                      )
+                      .animate()
+                      .fadeIn(duration: 800.ms)
+                      .scale(begin: const Offset(0.85, 0.85), end: const Offset(1.0, 1.0), duration: 900.ms, curve: Curves.easeOutBack),
+
+                      const SizedBox(height: 36),
+
+                      // Brand Title
+                      Text(
+                        "HIDDEN GEMS.AI",
+                        style: GoogleFonts.outfit(
+                          fontSize: 28,
+                          fontWeight: FontWeight.w900,
+                          color: primaryTextColor,
+                          letterSpacing: 5.5,
+                        ),
+                      )
+                      .animate()
+                      .fadeIn(delay: 250.ms, duration: 750.ms)
+                      .slideY(begin: 0.25, end: 0, curve: Curves.easeOutQuad),
+
+                      const SizedBox(height: 10),
+
+                      // Subtitle matching app label style
+                      Text(
+                        "SRI LANKA'S PREMIER AI TRAVEL ORACLE",
+                        style: GoogleFonts.inter(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w700,
+                          color: accentColor,
+                          letterSpacing: 2.5,
+                        ),
+                      )
+                      .animate()
+                      .fadeIn(delay: 500.ms, duration: 650.ms),
+                    ],
+                  ),
+                ),
+
+                // 5. Bottom Status Indicator
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 40),
+                  child: Column(
+                    children: [
+                      const ModernTracerIndicator()
+                          .animate()
+                          .fadeIn(delay: 600.ms),
+                      const SizedBox(height: 14),
+                      Text(
+                        widget.isReady ? "ORACLE CONNECTED" : "INITIALIZING TRAVEL EXPERIENCE...",
+                        style: GoogleFonts.inter(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w700,
+                          color: primaryTextColor.withValues(alpha: 0.55),
+                          letterSpacing: 1.8,
+                        ),
+                      )
+                      .animate(onPlay: (c) => c.repeat(reverse: true))
+                      .shimmer(duration: 1600.ms, color: accentColor.withValues(alpha: 0.6)),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
-    ), // SafeArea close
-  );
-  }
-}
-
-class FadeInText extends StatefulWidget {
-  final Widget child;
-  const FadeInText({super.key, required this.child});
-
-  @override
-  State<FadeInText> createState() => _FadeInTextState();
-}
-
-class _FadeInTextState extends State<FadeInText> with SingleTickerProviderStateMixin {
-  late AnimationController _anim;
-  late Animation<double> _opacity;
-
-  @override
-  void initState() {
-    super.initState();
-    _anim = AnimationController(
-      vsync: this, 
-      duration: const Duration(milliseconds: 1500),
-      lowerBound: 0.0,
-      upperBound: 1.0,
     );
-    _opacity = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _anim, curve: const Interval(0.5, 1.0, curve: Curves.easeIn)),
-    );
-    _anim.forward();
-  }
-
-  @override
-  void dispose() {
-    _anim.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return FadeTransition(opacity: _opacity, child: widget.child);
   }
 }

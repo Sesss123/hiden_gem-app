@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
+import '../utils/secure_logger.dart';
 
 class AppConfig {
   // Helper to securely decode obfuscated credentials in memory
@@ -23,6 +24,35 @@ class AppConfig {
 
   // Alias for backward compatibility (defaults to Laravel backend)
   static const String baseUrl = laravelUrl;
+
+  static String get reverbWsUrl {
+    final customWs = const String.fromEnvironment('REVERB_WS_URL');
+    if (customWs.isNotEmpty) return customWs;
+    try {
+      final uri = Uri.parse(laravelUrl);
+      final scheme = uri.scheme == 'https' ? 'wss' : 'ws';
+      final port = (uri.port == 8888 || uri.port == 80) ? 8080 : uri.port;
+      return '$scheme://${uri.host}:$port/app/hiddengems_reverb_key?protocol=7&client=js&version=8.0.0&flash=false';
+    } catch (_) {
+      return kReleaseMode
+          ? 'wss://api.hiddengemssl.com:8080/app/hiddengems_reverb_key?protocol=7&client=js&version=8.0.0&flash=false'
+          : 'ws://10.0.2.2:8080/app/hiddengems_reverb_key?protocol=7&client=js&version=8.0.0&flash=false';
+    }
+  }
+
+  static String get foodScannerWsUrl {
+    final customWs = const String.fromEnvironment('FOOD_SCANNER_WS_URL');
+    if (customWs.isNotEmpty) return customWs;
+    try {
+      final uri = Uri.parse(pythonUrl);
+      final scheme = uri.scheme == 'https' ? 'wss' : 'ws';
+      return '$scheme://${uri.host}:${uri.port}/ws/scan';
+    } catch (_) {
+      return kReleaseMode
+          ? 'wss://ai.hiddengemssl.com/ws/scan'
+          : 'ws://10.0.2.2:8000/ws/scan';
+    }
+  }
 
   // BUG-113: Obfuscate raw API keys using base64 wrapper string constants
   static final String hiddenGemsApiKey = _decryptString(const String.fromEnvironment(
@@ -107,48 +137,48 @@ class AppConfig {
   static void validate() {
     // In production, missing keys will fail hard.
     // In debug mode, if developers explicitly pass `--dart-define=BYPASS_KEY_CHECKS=true`, we allow it,
-    // otherwise we also fail hard to prevent silent failures.
+    // otherwise we also fail hard to prevent silent failures (BUG-Q001 & BUG-Q005).
     const bypassChecks = bool.fromEnvironment('BYPASS_KEY_CHECKS', defaultValue: false);
-    if (!kReleaseMode && bypassChecks) return;
+    if (!kReleaseMode && bypassChecks) {
+      SecureLogger.warning('[AppConfig] Running in debug mode with BYPASS_KEY_CHECKS=true. Using placeholder keys.');
+      return;
+    }
 
-    // BUG-073 & BUG-133: Ensure environment variables are correctly injected and no fallback defaults leakage in release mode
-    if (kReleaseMode) {
-      if (hiddenGemsApiKey == "" || hiddenGemsApiKey == "dev-key-local" || const String.fromEnvironment('HIDDEN_GEMS_API_KEY') == "") {
-        throw AssertionError("CRITICAL: Must configure a valid HIDDEN_GEMS_API_KEY environment variable.");
-      }
-      if (revenueCatApiKeyAndroid == "goog_example_key" || revenueCatApiKeyIos == "appl_example_key") {
-        throw AssertionError("CRITICAL: Must configure valid RevenueCat API Keys via secure environment variables.");
-      }
-      if (sharedSecret == "DEFAULT_NON_PROD_SECRET" || const String.fromEnvironment('HMAC_SECRET') == "") {
-        throw AssertionError("CRITICAL: Must configure a valid HMAC_SECRET environment variable.");
-      }
-      if (vaultSignKey == "HIDDEN_GEMS_V1_STAGING_KEY_SHHH" || const String.fromEnvironment('VAULT_SIGN_KEY') == "") {
-        throw AssertionError("CRITICAL: Must configure a valid VAULT_SIGN_KEY environment variable.");
-      }
-      if (sharedAesKey == "DEFAULT_NON_PROD_AES_KEY" || const String.fromEnvironment('SHARED_AES_KEY') == "") {
-        throw AssertionError("CRITICAL: Must configure a valid SHARED_AES_KEY environment variable.");
-      }
-      if (sharedHmacKey == "DEFAULT_NON_PROD_HMAC_KEY" || const String.fromEnvironment('SHARED_HMAC_KEY') == "") {
-        throw AssertionError("CRITICAL: Must configure a valid SHARED_HMAC_KEY environment variable.");
-      }
-      if (hmacExpirySecret == "DEFAULT_NON_PROD_EXPIRY_SECRET" || const String.fromEnvironment('HMAC_EXPIRY_SECRET') == "") {
-        throw AssertionError("CRITICAL: Must configure a valid HMAC_EXPIRY_SECRET.");
-      }
-      if (appStoreId == "" || appStoreId == "6400000000") {
-        throw AssertionError("CRITICAL: Must configure a valid APP_STORE_ID.");
-      }
-      if (const String.fromEnvironment('ADMOB_BANNER_ID', defaultValue: 'YOUR_REAL_BANNER_ID') == 'YOUR_REAL_BANNER_ID') {
-        throw AssertionError("CRITICAL: Must configure a valid ADMOB_BANNER_ID.");
-      }
-      if (const String.fromEnvironment('ADMOB_INTERSTITIAL_ID', defaultValue: 'YOUR_REAL_INTERSTITIAL_ID') == 'YOUR_REAL_INTERSTITIAL_ID') {
-        throw AssertionError("CRITICAL: Must configure a valid ADMOB_INTERSTITIAL_ID.");
-      }
-      if (const String.fromEnvironment('ADMOB_REWARDED_ID', defaultValue: 'YOUR_REAL_REWARDED_ID') == 'YOUR_REAL_REWARDED_ID') {
-        throw AssertionError("CRITICAL: Must configure a valid ADMOB_REWARDED_ID.");
-      }
-      if (const String.fromEnvironment('ADMOB_NATIVE_ID', defaultValue: 'YOUR_REAL_NATIVE_ID') == 'YOUR_REAL_NATIVE_ID') {
-        throw AssertionError("CRITICAL: Must configure a valid ADMOB_NATIVE_ID.");
-      }
+    if (hiddenGemsApiKey == "" || hiddenGemsApiKey == "dev-key-local" || const String.fromEnvironment('HIDDEN_GEMS_API_KEY') == "") {
+      throw AssertionError("CRITICAL: Must configure a valid HIDDEN_GEMS_API_KEY environment variable.");
+    }
+    if (revenueCatApiKeyAndroid == "goog_example_key" || revenueCatApiKeyIos == "appl_example_key") {
+      throw AssertionError("CRITICAL: Must configure valid RevenueCat API Keys via secure environment variables (BUG-Q001).");
+    }
+    if (sharedSecret == "DEFAULT_NON_PROD_SECRET" || const String.fromEnvironment('HMAC_SECRET') == "") {
+      throw AssertionError("CRITICAL: Must configure a valid HMAC_SECRET environment variable.");
+    }
+    if (vaultSignKey == "HIDDEN_GEMS_V1_STAGING_KEY_SHHH" || const String.fromEnvironment('VAULT_SIGN_KEY') == "") {
+      throw AssertionError("CRITICAL: Must configure a valid VAULT_SIGN_KEY environment variable.");
+    }
+    if (sharedAesKey == "DEFAULT_NON_PROD_AES_KEY" || const String.fromEnvironment('SHARED_AES_KEY') == "") {
+      throw AssertionError("CRITICAL: Must configure a valid SHARED_AES_KEY environment variable.");
+    }
+    if (sharedHmacKey == "DEFAULT_NON_PROD_HMAC_KEY" || const String.fromEnvironment('SHARED_HMAC_KEY') == "") {
+      throw AssertionError("CRITICAL: Must configure a valid SHARED_HMAC_KEY environment variable.");
+    }
+    if (hmacExpirySecret == "DEFAULT_NON_PROD_EXPIRY_SECRET" || const String.fromEnvironment('HMAC_EXPIRY_SECRET') == "") {
+      throw AssertionError("CRITICAL: Must configure a valid HMAC_EXPIRY_SECRET.");
+    }
+    if (appStoreId == "" || appStoreId == "6400000000") {
+      throw AssertionError("CRITICAL: Must configure a valid APP_STORE_ID.");
+    }
+    if (const String.fromEnvironment('ADMOB_BANNER_ID', defaultValue: 'YOUR_REAL_BANNER_ID') == 'YOUR_REAL_BANNER_ID') {
+      throw AssertionError("CRITICAL: Must configure a valid ADMOB_BANNER_ID.");
+    }
+    if (const String.fromEnvironment('ADMOB_INTERSTITIAL_ID', defaultValue: 'YOUR_REAL_INTERSTITIAL_ID') == 'YOUR_REAL_INTERSTITIAL_ID') {
+      throw AssertionError("CRITICAL: Must configure a valid ADMOB_INTERSTITIAL_ID.");
+    }
+    if (const String.fromEnvironment('ADMOB_REWARDED_ID', defaultValue: 'YOUR_REAL_REWARDED_ID') == 'YOUR_REAL_REWARDED_ID') {
+      throw AssertionError("CRITICAL: Must configure a valid ADMOB_REWARDED_ID.");
+    }
+    if (const String.fromEnvironment('ADMOB_NATIVE_ID', defaultValue: 'YOUR_REAL_NATIVE_ID') == 'YOUR_REAL_NATIVE_ID') {
+      throw AssertionError("CRITICAL: Must configure a valid ADMOB_NATIVE_ID.");
     }
   }
 }
