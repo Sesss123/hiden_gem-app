@@ -24,8 +24,12 @@ class DatabaseSeeder extends Seeder
                 'name' => 'Genesis Super Admin',
                 'password' => bcrypt('password123'),
                 'is_admin' => true,
+                'role' => 'super_admin',
             ]
         );
+        if ($admin && ($admin->role !== 'super_admin' || !$admin->is_admin)) {
+            $admin->update(['role' => 'super_admin', 'is_admin' => true]);
+        }
 
         // Seed Events
         \App\Models\Event::firstOrCreate(

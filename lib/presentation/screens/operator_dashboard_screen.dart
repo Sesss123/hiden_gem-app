@@ -584,8 +584,6 @@ class _OperatorDashboardScreenState extends ConsumerState<OperatorDashboardScree
                       ],
                     );
                   }).whenComplete(() => ctrl.dispose());
-                  },
-                );
                 }
               },
             ),

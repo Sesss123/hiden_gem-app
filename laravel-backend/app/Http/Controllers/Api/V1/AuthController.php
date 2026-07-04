@@ -18,7 +18,8 @@ class AuthController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8',
+            // BUG-L04 Fix: Cap password length to 255 characters to prevent bcrypt DoS attacks
+            'password' => 'required|string|min:8|max:255',
             'role' => 'nullable|string|in:tourist,local',
         ]);
 
@@ -49,8 +50,9 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
+            'email' => 'required|email|max:255',
+            // BUG-L04 Fix: Cap password length to 255 characters to prevent bcrypt DoS attacks
+            'password' => 'required|string|max:255',
         ]);
 
         $user = User::where('email', $request->email)->first();

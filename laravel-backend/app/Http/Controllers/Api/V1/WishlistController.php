@@ -53,10 +53,14 @@ class WishlistController extends Controller
             ]);
         } else {
             // Add to wishlist
-            Wishlist::create([
-                'user_id' => $user->id,
-                'place_id' => $place->id,
-            ]);
+            try {
+                Wishlist::create([
+                    'user_id' => $user->id,
+                    'place_id' => $place->id,
+                ]);
+            } catch (\Illuminate\Database\QueryException $e) {
+                // BUG-C04 Fix: Handle check-then-act race condition on concurrent double-taps gracefully
+            }
             return response()->json([
                 'status' => 'success',
                 'bookmarked' => true,

@@ -47,7 +47,7 @@ class UserController extends Controller
 
         $rules = [
             'name' => 'required|string|max:255',
-            'role' => 'required|string|in:tourist,guide_approved,banned,admin',
+            'role' => ['required', 'string', \Illuminate\Validation\Rule::in(User::allRoles())],
             'subscription_tier' => 'required|string|in:Free,PRO,VIP',
         ];
 

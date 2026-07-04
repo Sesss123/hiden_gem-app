@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import '../../core/services/brute_force_service.dart';
 import '../../core/utils/secure_logger.dart';
 import 'user_preference_service.dart';
@@ -140,6 +141,19 @@ class AuthService {
       await userDoc.update({
         'lastLogin': FieldValue.serverTimestamp(),
       });
+    }
+
+    // BUG-N02 Fix: Ensure FCM token is linked to user document on login/signup
+    try {
+      final token = await FirebaseMessaging.instance.getToken();
+      if (token != null) {
+        await userDoc.set({
+          'fcmToken': token,
+          'fcmTokenUpdatedAt': FieldValue.serverTimestamp(),
+        }, SetOptions(merge: true));
+      }
+    } catch (e) {
+      SecureLogger.warning("Could not sync FCM token during login: $e", tag: "Auth", isBackground: true);
     }
   }
 

@@ -14,12 +14,15 @@ from scripts.system_guard import SystemGuard
 
 router = APIRouter(prefix="/api/admin", tags=["admin"])
 
-@router.get("/pipeline-history", response_model=List[PipelineRunSchema])
-async def get_pipeline_history(user=Depends(get_current_user)):
-    """Retrieve historical pipeline runs from MongoDB."""
+# BUG-C06 Fix: Centralized admin authorization dependency
+async def require_admin(user=Depends(get_current_user)):
     if user.get("role") != "admin" and user.get("tier") != "admin":
         raise HTTPException(status_code=403, detail="Admin access required.")
-        
+    return user
+
+@router.get("/pipeline-history", response_model=List[PipelineRunSchema])
+async def get_pipeline_history(user=Depends(require_admin)):
+    """Retrieve historical pipeline runs from MongoDB."""
     db = await get_mongo_db()
     cursor = db.pipeline_runs.find().sort("start_time", -1)
     runs = await cursor.to_list(length=100)
@@ -27,11 +30,8 @@ async def get_pipeline_history(user=Depends(get_current_user)):
     return runs
 
 @router.post("/places/bulk-action")
-async def bulk_action(request: BulkActionRequest, user=Depends(get_current_user)):
+async def bulk_action(request: BulkActionRequest, user=Depends(require_admin)):
     """Perform bulk operations on selected places in MongoDB."""
-    if user.get("role") != "admin" and user.get("tier") != "admin":
-        raise HTTPException(status_code=403, detail="Admin access required.")
-        
     db = await get_mongo_db()
     if not request.ids:
         return {"message": "No places selected."}
@@ -67,11 +67,8 @@ async def bulk_action(request: BulkActionRequest, user=Depends(get_current_user)
     return {"message": f"Bulk {request.action} successful.", "count": len(request.ids)}
 
 @router.get("/analytics/overview", response_model=AdminAnalyticsSchema)
-async def get_analytics_overview(user=Depends(get_current_user)):
+async def get_analytics_overview(user=Depends(require_admin)):
     """Aggregate stats from MongoDB: Visitor logs, Pipeline runs, and AI Usage."""
-    if user.get("role") != "admin" and user.get("tier") != "admin":
-        raise HTTPException(status_code=403, detail="Admin access required.")
-        
     db = await get_mongo_db()
     
     # 1. Total Views (from visitor_analytics)
@@ -161,11 +158,8 @@ async def get_analytics_overview(user=Depends(get_current_user)):
     return strip_oids(raw_response)
 
 @router.post("/stop-pipeline/{run_id}")
-async def stop_pipeline(run_id: str, user=Depends(get_current_user)):
+async def stop_pipeline(run_id: str, user=Depends(require_admin)):
     """Kill switch to stop a running pipeline."""
-    if user.get("role") != "admin" and user.get("tier") != "admin":
-        raise HTTPException(status_code=403, detail="Admin access required.")
-    
     db = await get_mongo_db()
     result = await db.pipeline_runs.update_one(
         {"id": run_id, "status": "running"},
@@ -176,7 +170,7 @@ async def stop_pipeline(run_id: str, user=Depends(get_current_user)):
     return {"message": "Stop request sent to pipeline."}
 
 @router.get("/stats")
-async def get_admin_stats(user=Depends(get_current_user)):
+async def get_admin_stats(user=Depends(require_admin)):
     """Alias for dashboard stats."""
     return await get_analytics_overview(user)
 
@@ -197,11 +191,8 @@ async def track_telemetry(request: Request, place_id: Optional[str] = None, type
     return {"status": "tracked"}
 
 @router.get("/system/backups")
-async def list_system_backups(user=Depends(get_current_user)):
+async def list_system_backups(user=Depends(require_admin)):
     """List all available backup folders."""
-    if user.get("role") != "admin" and user.get("tier") != "admin":
-        raise HTTPException(status_code=403, detail="Admin access required.")
-    
     # Define BACKUP_ROOT relative to the backend directory
     # Updated to handle potential directory structure variations
     BACKUP_ROOT = Path(os.getcwd()) / "backups"
@@ -223,24 +214,27 @@ async def list_system_backups(user=Depends(get_current_user)):
     return {"backups": backups}
 
 @router.post("/system/backup")
-async def trigger_system_backup(user=Depends(get_current_user)):
+async def trigger_system_backup(user=Depends(require_admin)):
     """Trigger a new system-wide backup."""
-    if user.get("role") != "admin" and user.get("tier") != "admin":
-        raise HTTPException(status_code=403, detail="Admin access required.")
-    
     guard = SystemGuard()
     backup_name = await guard.backup()
     return {"message": "Backup completed successfully", "folder": backup_name}
 
 @router.post("/system/restore")
-async def trigger_system_restore(payload: dict, user=Depends(get_current_user)):
+async def trigger_system_restore(payload: dict, user=Depends(require_admin)):
     """Restore system to a specific backup point."""
-    if user.get("role") != "admin" and user.get("tier") != "admin":
-        raise HTTPException(status_code=403, detail="Admin access required.")
-    
-    folder = payload.get("folder")
-    if not folder:
-        raise HTTPException(status_code=400, detail="Folder name is required.")
+    # BUG-C02 Fix: Path traversal and whitelist validation + explicit confirmation check
+    folder = payload.get("folder", "")
+    if not folder or "/" in folder or "\\" in folder or ".." in folder:
+        raise HTTPException(status_code=400, detail="Invalid backup folder name. Path traversal characters forbidden.")
+        
+    BACKUP_ROOT = Path(os.getcwd()) / "backups"
+    valid_backups = {d.name for d in BACKUP_ROOT.iterdir() if d.is_dir()} if BACKUP_ROOT.exists() else set()
+    if folder not in valid_backups:
+        raise HTTPException(status_code=404, detail="Backup folder not found.")
+        
+    if payload.get("confirm") is not True:
+        raise HTTPException(status_code=400, detail="Restore is a destructive operation and requires explicit confirmation ('confirm': true).")
         
     guard = SystemGuard()
     success = await guard.restore(folder, skip_confirm=True)

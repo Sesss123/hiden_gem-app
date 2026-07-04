@@ -12,16 +12,21 @@ service cloud.firestore {
       return isSignedIn() && request.auth.uid == userId;
     }
 
+    // BUG-F01 Fix: Check JWT custom claims first to eliminate billed document reads & latency
     function isAdmin() {
-      return isSignedIn() &&
+      return isSignedIn() && (
+        request.auth.token.role in ['admin', 'super_admin'] ||
         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role
-          in ['admin', 'super_admin'];
+          in ['admin', 'super_admin']
+      );
     }
 
     function isVerifiedGuide() {
-      return isSignedIn() &&
+      return isSignedIn() && (
+        request.auth.token.role in ['guide_approved', 'admin', 'super_admin'] ||
         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role
-          in ['guide_approved', 'admin', 'super_admin'];
+          in ['guide_approved', 'admin', 'super_admin']
+      );
     }
 
     // ── User Profiles ────────────────────────────────────────────────────────

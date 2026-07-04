@@ -1,0 +1,7 @@
+{"timestamp": "2026-07-04T08:43:43.229065Z", "level": "INFO", "logger": "HiddenGemsBackend", "message": ">>> BACKEND STARTING: Initializing core modules...", "module": "main", "line": 7}
+{"timestamp": "2026-07-04T08:43:47.390714Z", "level": "INFO", "logger": "HiddenGemsBackend", "message": ">>> Firebase: Bridge connection active.", "module": "main", "line": 30}
+{"timestamp": "2026-07-04T08:59:40.151874Z", "level": "INFO", "logger": "HiddenGemsBackend", "message": ">>> BACKEND STARTING: Initializing core modules...", "module": "main", "line": 7}
+{"timestamp": "2026-07-04T08:59:43.628055Z", "level": "INFO", "logger": "HiddenGemsBackend", "message": ">>> Firebase: Bridge connection active.", "module": "main", "line": 30}
+{"timestamp": "2026-07-04T08:59:56.074662Z", "level": "INFO", "logger": "AIExtractor", "message": "[AIExtractor] Gemini ready (gemini-flash-latest) — 8 key(s), managed via unified rotator.", "module": "ai_extractor", "line": 205}
+{"timestamp": "2026-07-04T08:59:58.365782Z", "level": "INFO", "logger": "AIExtractor", "message": "[AIExtractor] Gemini ready (gemini-flash-latest) — 8 key(s), managed via unified rotator.", "module": "ai_extractor", "line": 205}
+{"timestamp": "2026-07-04T08:59:59.973103Z", "level": "INFO", "logger": "HiddenGemsBackend", "message": ">>> Startup: Background service engines active.", "module": "main", "line": 35}

@@ -61,6 +61,13 @@ android {
             signingConfig = if (keystorePropertiesFile.exists()) {
                 signingConfigs.getByName("release")
             } else {
+                if (System.getenv("CI") == "true" || System.getenv("STRICT_RELEASE") == "true") {
+                    throw GradleException("❌ STRICT RELEASE BUILD FAILED: android/key.properties is missing! Cannot sign release artifact with debug keystore in CI/production.")
+                }
+                println("================================================================================")
+                println("⚠️  WARNING: RELEASE BUILD SIGNED WITH DEBUG KEY — DO NOT DISTRIBUTE IN PROD!")
+                println("⚠️  Missing android/key.properties. Using debug keystore as local fallback.")
+                println("================================================================================")
                 signingConfigs.getByName("debug")
             }
         }

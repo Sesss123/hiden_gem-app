@@ -1,5 +1,6 @@
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:flutter/foundation.dart';
+import '../utils/secure_logger.dart';
 
 /// [AppCheckConfig] — Centralized Firebase App Check configuration.
 ///
@@ -24,40 +25,48 @@ class AppCheckConfig {
   static Future<void> initialize() async {
     try {
       if (kDebugMode) {
-        debugPrint('[AppCheck] ⚠️ DEBUG: Skipping App Check in debug mode to prevent 403 errors (no debug token setup required).');
-        return;
-      }
-
-      if (kIsWeb) {
+        // BUG-A03 Fix: Enable AndroidDebugProvider / AppleDebugProvider in debug sessions
+        // when explicitly configured via --dart-define=ENABLE_DEBUG_APP_CHECK=true
+        const useDebugProvider = bool.fromEnvironment('ENABLE_DEBUG_APP_CHECK', defaultValue: false);
+        if (!useDebugProvider) {
+          SecureLogger.warning('[AppCheck] ⚠️ DEBUG: Skipping App Check in debug mode (pass --dart-define=ENABLE_DEBUG_APP_CHECK=true to enable AndroidDebugProvider/AppleDebugProvider).');
+          return;
+        }
+        await FirebaseAppCheck.instance.activate(
+          providerAndroid: const AndroidDebugProvider(),
+          providerApple: const AppleDebugProvider(),
+        );
+        SecureLogger.info('[AppCheck] ✅ Debug mode: AndroidDebugProvider + AppleDebugProvider activated.');
+      } else if (kIsWeb) {
         // Web: reCAPTCHA v3
         // Note: Site key matched with web/index.html. Fetched from env variables.
         const siteKey = String.fromEnvironment('RECAPTCHA_SITE_KEY', defaultValue: '6Lfm-GsqAAAAAHA_-Wj_P_X_X_X_X_X_X_X_X');
         await FirebaseAppCheck.instance.activate(
           providerWeb: ReCaptchaV3Provider(siteKey),
         );
-        debugPrint('[AppCheck] ✅ Web: reCAPTCHA v3 activated.');
+        SecureLogger.info('[AppCheck] ✅ Web: reCAPTCHA v3 activated.');
       } else {
         // Release Mode: Real attestation
         await FirebaseAppCheck.instance.activate(
           providerAndroid: const AndroidPlayIntegrityProvider(),
           providerApple: const AppleDeviceCheckProvider(),
         );
-        debugPrint('[AppCheck] ✅ Release: Play Integrity + DeviceCheck activated.');
+        SecureLogger.info('[AppCheck] ✅ Release: Play Integrity + DeviceCheck activated.');
       }
 
       // Set up a token refresh listener for logging/monitoring
       FirebaseAppCheck.instance.onTokenChange.listen((token) {
         if (token != null) {
-          debugPrint('[AppCheck] Token refreshed (length: ${token.length}).');
+          SecureLogger.info('[AppCheck] Token refreshed (length: ${token.length}).');
         } else {
-          debugPrint('[AppCheck] ⚠️ Token became null — possible enforcement block.');
+          SecureLogger.warning('[AppCheck] ⚠️ Token became null — possible enforcement block.');
         }
       });
     } catch (e) {
       // CRITICAL: Never crash the app if App Check fails.
       // In non-enforcement mode, the app continues normally.
       // In enforcement mode, Firestore/Auth calls will fail for unverified clients.
-      debugPrint('[AppCheck] ❌ Initialization error: $e. Proceeding without App Check.');
+      SecureLogger.error('[AppCheck] ❌ Initialization error. Proceeding without App Check.', e);
     }
   }
 
@@ -69,7 +78,7 @@ class AppCheckConfig {
     try {
       return await FirebaseAppCheck.instance.getToken(true);
     } catch (e) {
-      debugPrint('[AppCheck] Token fetch failed: $e');
+      SecureLogger.warning('[AppCheck] Token fetch failed: $e');
       return null;
     }
   }

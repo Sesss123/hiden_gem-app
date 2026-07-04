@@ -1,57 +1,10 @@
-import 'dart:io';
-import 'dart:async';
-import 'dart:convert';
-import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:http/http.dart' as http;
+import 'package:cached_network_image/cached_network_image.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/services/media_cache_manager.dart';
+import '../../core/utils/secure_logger.dart';
 
-class IsolateCacheHelper {
-  static Future<File> getCachedFile(String url) async {
-    final tempDir = await getTemporaryDirectory();
-    final hash = sha1.convert(utf8.encode(url)).toString();
-    final filePath = '${tempDir.path}/$hash';
-    
-    // Check file existence in background isolate to keep UI thread free
-    final fileExists = await compute(_checkFileExists, filePath);
-    if (fileExists) {
-      return File(filePath);
-    }
-    
-    // Download and write bytes to disk in background isolates
-    final bytes = await compute(_downloadBytes, url);
-    if (bytes != null && bytes.isNotEmpty) {
-      await compute(_writeFile, {'path': filePath, 'bytes': bytes});
-    }
-    return File(filePath);
-  }
-
-  static bool _checkFileExists(String path) {
-    return File(path).existsSync();
-  }
-
-  static Future<List<int>?> _downloadBytes(String url) async {
-    try {
-      final response = await http.get(Uri.parse(url)).timeout(const Duration(seconds: 15));
-      if (response.statusCode == 200) {
-        return response.bodyBytes;
-      }
-    } catch (_) {}
-    return null;
-  }
-
-  static void _writeFile(Map<String, dynamic> args) {
-    try {
-      final file = File(args['path'] as String);
-      file.writeAsBytesSync(args['bytes'] as List<int>);
-    } catch (_) {}
-  }
-}
-
-class CachedImage extends StatefulWidget {
+class CachedImage extends StatelessWidget {
   final String url;
   final BoxFit fit;
   final double? width;
@@ -76,67 +29,37 @@ class CachedImage extends StatefulWidget {
   });
 
   @override
-  State<CachedImage> createState() => _CachedImageState();
-}
-
-class _CachedImageState extends State<CachedImage> {
-  Future<File>? _imageFuture;
-
-  @override
-  void initState() {
-    super.initState();
-    if (widget.url.isNotEmpty) {
-      _imageFuture = IsolateCacheHelper.getCachedFile(widget.url);
-    }
-  }
-
-  @override
-  void didUpdateWidget(CachedImage oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.url != widget.url) {
-      if (widget.url.isNotEmpty) {
-        _imageFuture = IsolateCacheHelper.getCachedFile(widget.url);
-      } else {
-        _imageFuture = null;
-      }
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
-    // Empty URL guard
-    if (widget.url.isEmpty || _imageFuture == null) return _buildError(context);
+    final uri = Uri.tryParse(url);
+    if (url.isEmpty || uri == null || !uri.hasAbsolutePath) {
+      return errorWidget ?? _buildError(context);
+    }
 
-    final image = FutureBuilder<File>(
-      future: _imageFuture,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return widget.placeholder ?? _buildShimmer(context);
-        }
-        if (snapshot.hasError || !snapshot.hasData || snapshot.data == null) {
-          return widget.errorWidget ?? _buildError(context);
-        }
-        
-        // Ensure the file is not empty/corrupted
-        final file = snapshot.data!;
-        if (!file.existsSync() || file.lengthSync() == 0) {
-          return widget.errorWidget ?? _buildError(context);
-        }
+    // BUG-P04 & BUG-P05 Fix: Route to appropriate cache pool with LRU eviction and TTL
+    final cacheManager = poolType == CachePoolType.full
+        ? FullCacheManager()
+        : ThumbCacheManager();
 
-        return Image.file(
-          file,
-          fit: widget.fit,
-          width: widget.width,
-          height: widget.height,
-          cacheWidth: widget.maxWidthDiskCache,
-        );
+    // BUG-P01, P02, P03 Fix: Use CachedNetworkImage which deduplicates in-flight requests
+    // and eliminates the 3x isolate compute() overhead per image.
+    final image = CachedNetworkImage(
+      imageUrl: url,
+      cacheManager: cacheManager,
+      fit: fit,
+      width: width,
+      height: height,
+      maxWidthDiskCache: maxWidthDiskCache,
+      placeholder: (context, url) => placeholder ?? _buildShimmer(context),
+      errorWidget: (context, url, error) {
+        // BUG-P06 Fix: Explicit error logging instead of silent catch (_) {}
+        SecureLogger.warning("Failed to load image from cache: $url | Error: $error", tag: "ImageCache", isBackground: true);
+        return errorWidget ?? _buildError(context);
       },
     );
 
-    // Optional rounded corners
-    if (widget.borderRadius != null) {
+    if (borderRadius != null) {
       return ClipRRect(
-        borderRadius: widget.borderRadius!,
+        borderRadius: borderRadius!,
         child: image,
       );
     }
@@ -147,25 +70,25 @@ class _CachedImageState extends State<CachedImage> {
   Widget _buildShimmer(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
-      width: widget.width,
-      height: widget.height,
+      width: width,
+      height: height,
       color: isDark
           ? const Color(0xFF1A2332)
           : AppPalette.sand2,
-      child: _ShimmerBox(width: widget.width, height: widget.height),
+      child: _ShimmerBox(width: width, height: height),
     );
   }
 
   Widget _buildError(BuildContext context) {
     return Container(
-      width: widget.width,
-      height: widget.height,
+      width: width,
+      height: height,
       color: AppPalette.heroCream,
       child: Center(
         child: Icon(
           Icons.image_not_supported_outlined,
           color: AppPalette.earth.withValues(alpha: 0.4),
-          size: (widget.height != null && widget.height! < 80) ? 20 : 32,
+          size: (height != null && height! < 80) ? 20 : 32,
         ),
       ),
     );

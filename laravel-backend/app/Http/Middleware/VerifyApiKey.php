@@ -13,7 +13,8 @@ class VerifyApiKey
      */
     public function handle(Request $request, Closure $next)
     {
-        $expectedKey = env('API_KEY') ?: config('app.api_key');
+        // BUG-L01 Fix: Use config() instead of env() so config:cache doesn't break API authentication in production
+        $expectedKey = config('app.api_key');
         
         if (empty($expectedKey)) {
             return response()->json(['error' => 'Server configuration error: Missing API key configuration.'], 500);
