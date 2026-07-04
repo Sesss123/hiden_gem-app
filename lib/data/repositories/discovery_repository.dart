@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:firebase_core/firebase_core.dart';
 import '../models/discovery_place.dart';
 import '../datasources/discovery_remote_datasource.dart';
 import '../datasources/discovery_local_datasource.dart';
@@ -45,8 +46,8 @@ class DiscoveryRepository {
       }
     }
 
-    // 2. GeoHash Firestore check (L1) - if location available
-    if (userLat != null && userLng != null) {
+    // 2. GeoHash Firestore check (L1) - if location available and Firebase is ready
+    if (userLat != null && userLng != null && Firebase.apps.isNotEmpty) {
       try {
         final position = Position(
           latitude: userLat, 

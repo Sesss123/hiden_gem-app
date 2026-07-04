@@ -680,6 +680,9 @@ Return ONLY a JSON object with this schema:
 
         try:
             try:
+                if not validate_safe_url(image_url):
+                    logger.warning(f"[VisionAI] SSRF Blocked unsafe image URL: {image_url}")
+                    return None
                 async with httpx.AsyncClient() as client:
                     img_resp = await client.get(image_url, timeout=15.0)
                     img_resp.raise_for_status()

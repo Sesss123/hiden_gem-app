@@ -23,6 +23,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:hidden_gems_sl/l10n/app_localizations.dart';
 import '../widgets/explorer_progress_card.dart';
+import '../widgets/cached_image.dart';
 import 'operator_dashboard_screen.dart';
 import 'guide_dashboard_screen.dart';
 import 'emergency_kit_screen.dart';
@@ -92,7 +93,15 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     if (profile.profileImagePath == null || profile.profileImagePath!.isEmpty) {
       return _defaultAvatar(isPremium);
     }
-    if (kIsWeb || profile.profileImagePath!.startsWith('http')) {
+    if (profile.profileImagePath!.startsWith('http')) {
+      return CachedImage(
+        url: profile.profileImagePath!,
+        fit: BoxFit.cover,
+        errorWidget: _defaultAvatar(isPremium),
+        placeholder: _defaultAvatar(isPremium),
+      );
+    }
+    if (kIsWeb) {
       return Image.network(
         profile.profileImagePath!,
         fit: BoxFit.cover,

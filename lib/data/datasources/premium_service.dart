@@ -8,6 +8,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import 'user_preference_service.dart';
 import '../../core/config/app_config.dart';
+import '../../core/utils/secure_logger.dart';
 
 part 'premium_service.g.dart';
 
@@ -48,6 +49,11 @@ class PremiumNotifier extends _$PremiumNotifier {
           ? AppConfig.revenueCatApiKeyIos
           : AppConfig.revenueCatApiKeyAndroid;
 
+      if (apiKey.isEmpty || apiKey == 'goog_example_key' || apiKey == 'appl_example_key' || apiKey.contains('example_key') || apiKey == 'dev-key-local') {
+        SecureLogger.info("Skipping RevenueCat initialization: Dummy/example API key detected in dev mode.", tag: "RevenueCat");
+        return;
+      }
+
       await Purchases.configure(PurchasesConfiguration(apiKey));
 
       // Identify user if logged in
@@ -61,7 +67,18 @@ class PremiumNotifier extends _$PremiumNotifier {
       final customerInfo = await Purchases.getCustomerInfo();
       _updateStateFromCustomerInfo(customerInfo);
     } catch (e) {
-      debugPrint('[RevenueCat] Init error: $e');
+      final errStr = e.toString();
+      if (errStr.contains('InvalidCredentialsError') || errStr.contains('Invalid API Key') || errStr.contains('credentials issue')) {
+        SecureLogger.warning(
+          "RevenueCat API Key is invalid or not configured properly. "
+          "Please check your RevenueCat Dashboard for the correct public Android/iOS API Key and set REVENUECAT_API_KEY_ANDROID / REVENUECAT_API_KEY_IOS. "
+          "Falling back to local/free tier.",
+          tag: "RevenueCat",
+          isBackground: true,
+        );
+      } else {
+        SecureLogger.warning("RevenueCat Init error: $e", tag: "RevenueCat", isBackground: true);
+      }
     }
   }
 
@@ -96,7 +113,7 @@ class PremiumNotifier extends _$PremiumNotifier {
       final customerInfo = await Purchases.getCustomerInfo();
       _updateStateFromCustomerInfo(customerInfo);
     } catch (e) {
-      debugPrint("[RevenueCat] Status Check failed: $e");
+      SecureLogger.warning("Status Check failed: $e", tag: "RevenueCat", isBackground: true);
     }
   }
 
@@ -130,7 +147,7 @@ class PremiumNotifier extends _$PremiumNotifier {
             'premiumPlan': activeEntitlement?.productIdentifier ?? 'unknown',
             'premiumSource': 'revenuecat',
             'updatedAt': FieldValue.serverTimestamp(),
-          }).catchError((e) => debugPrint("Firestore Sync Support Failed: $e"));
+          }).catchError((e) => SecureLogger.error("Firestore Sync Support Failed", e, null, "RevenueCat"));
         }
       }
     }
@@ -155,7 +172,7 @@ class PremiumNotifier extends _$PremiumNotifier {
     } on PlatformException catch (e) {
       var errorCode = PurchasesErrorHelper.getErrorCode(e);
       if (errorCode != PurchasesErrorCode.purchaseCancelledError) {
-        debugPrint('[RevenueCat] Purchase Error: $e');
+        SecureLogger.error("Purchase Error", e, null, "RevenueCat");
       }
     }
   }
@@ -165,7 +182,7 @@ class PremiumNotifier extends _$PremiumNotifier {
       CustomerInfo customerInfo = await Purchases.restorePurchases();
       _updateStateFromCustomerInfo(customerInfo);
     } catch (e) {
-      debugPrint("[RevenueCat] Restore failed: $e");
+      SecureLogger.error("Restore failed", e, null, "RevenueCat");
     }
   }
 

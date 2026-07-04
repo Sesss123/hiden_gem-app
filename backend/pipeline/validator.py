@@ -105,6 +105,11 @@ async def validate_image_url(url: str) -> bool:
         return bool(url)  # Assume valid if httpx not available
 
     try:
+        from core.security import validate_safe_url
+        if not validate_safe_url(url):
+            logger.warning(f"[Validator] SSRF Blocked unsafe image URL: {url}")
+            return False
+
         async with httpx.AsyncClient(timeout=8.0, follow_redirects=True) as client:
             response = await client.head(url)
             content_type = response.headers.get("content-type", "")

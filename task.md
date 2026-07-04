@@ -1,3 +1,14 @@
+## Active Milestone: Enterprise Audit Phase 2 Hardening & Priority Bug Fixes (v11.0)
+- [x] Fix startup error spam in Flutter debug mode: skip RevenueCat init on dummy keys and check `Firebase.apps.isNotEmpty` before Firestore GeoHash fetch (Completed 2026-07-04)
+- [x] BUG-C02: Address System Restore Path Traversal vulnerability in `backend/api/routers/admin.py` and `scripts/system_guard.py` (Completed 2026-07-04)
+- [x] BUG-N01 to BUG-N04 (Notification Pipeline): Implement foreground notification display and FCM token sync logic (Completed 2026-07-04)
+- [x] BUG-P01 to BUG-P06 (Image Caching Overhead): Consolidate dual caching systems and optimize/standardize `cached_network_image` (Completed 2026-07-04)
+- [x] BUG-Y01 (Python SSRF): Address DNS rebinding risk in `backend/core/security.py` and enforce URL checks across pipeline (Completed 2026-07-04)
+- [x] BUG-L04 (Password Constraints): Enforce `max:255` on password fields in Laravel (Completed 2026-07-04)
+- [x] BUG-A01/A02 (Android Build): Prevent silent release-build signing fallback and remove unused `FOREGROUND_SERVICE` permission (Completed 2026-07-04)
+- [x] BUG-F01 (Firestore Rules): Migrate Firestore role lookups to custom claims to reduce read costs (Completed 2026-07-04)
+- [x] BUG-G01 (Exception Handling): Audit and replace `catch (_) {}` blocks in sensitive areas (`main.dart`, `encryption_util.dart`) (Completed 2026-07-04)
+
 ## Completed Milestones
 - [x] Complete Enterprise Code Audit & 150-Issue Comprehensive Report (v10.0) (Completed 2026-07-04)
   - [x] Perform full architectural, code quality, security, performance, and bug audit across Flutter, Laravel, Python, and Database layers
@@ -705,4 +716,7 @@
 - [x] Fix BUG-C04 (Enterprise Audit): Wrapped `Wishlist::create()` in try/catch for `QueryException` in `WishlistController::toggle()` to handle concurrent double-tap race conditions gracefully without throwing 500 errors — 2026-07-04
 - [x] Fix BUG-C05 (Enterprise Audit): Implemented custom escalating lockout in `Admin/AuthController.php` keyed by `email|IP` using Laravel `RateLimiter` (locking account attempts for 15 minutes after 5 failures) — 2026-07-04
 - [x] Fix BUG-C06 (Enterprise Audit): Created reusable `require_admin` dependency in `backend/api/routers/admin.py` and refactored all protected route handlers to use it instead of copy-pasted authorization checks — 2026-07-04
+- [x] Fix RevenueCat API Key error handling in `PremiumService` (`lib/data/datasources/premium_service.dart`) by replacing raw `debugPrint` with structured `SecureLogger` calls and logging actionable guidance when API keys are invalid or placeholders — 2026-07-04
+- [x] Fix Firebase Initialization order in `lib/main.dart` by calling `await Firebase.initializeApp()` directly inside `main()` before `runApp(...)`, resolving `[core/no-app]` errors and preventing the chain reaction of GeoHash/Firestore fetch failures during early app boot — 2026-07-04
+- [x] Optimize startup performance in `lib/main.dart` by concurrently initializing Firebase and Hive storage using `Future.wait(...)`, drastically reducing main thread blocking and eliminating the `Skipped 20 frames...` UI lag/jank warning — 2026-07-04
 

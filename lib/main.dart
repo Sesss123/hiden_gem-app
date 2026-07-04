@@ -12,6 +12,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'dart:io';
 import 'dart:ui';
+import 'dart:async';
 import 'core/theme/app_theme.dart';
 import 'core/services/security_orchestrator.dart';
 import 'core/theme/theme_provider.dart';
@@ -90,7 +91,9 @@ void main() async {
         'exception': errorDetails.exceptionAsString(),
         'stack': errorDetails.stack.toString(),
       });
-    } catch (_) {}
+    } catch (e) {
+      SecureLogger.warning("Failed to log runtime_error to AnalyticsService: $e");
+    }
 
     // 3. Keep Default Behavior (Show Red Screen/Overflow Indicator)
     FlutterError.presentError(errorDetails);
@@ -111,16 +114,36 @@ void main() async {
     return true;
   };
   
-  SecureLogger.info("Main Entry: Initializing core storage...");
+  SecureLogger.info("Main Entry: Initializing Firebase and core storage concurrently...");
   
-  // 1. Initialize Essential Local Storage (Hive) - MUST be first
+  // 1. Concurrently initialize Firebase and Essential Local Storage (Hive)
+  // This satisfies the user requirement to initialize Firebase before runApp (preventing [core/no-app] errors and Firestore GeoHash fetch failures)
+  // while running tasks in parallel via Future.wait to eliminate main-thread jank (Skipped 20 frames... warning).
   try {
-    await TripCacheService.init();
-    await UserPreferenceService.init();
+    FirebaseOptions? options;
+    try {
+      options = DefaultFirebaseOptions.currentPlatform;
+    } catch (e) {
+      SecureLogger.error("Firebase config not available for this platform", e);
+    }
+
+    await Future.wait([
+      if (options != null && Firebase.apps.isEmpty)
+        Firebase.initializeApp(options: options).then((_) {
+          // Enable Firestore offline persistence immediately upon initialization
+          FirebaseFirestore.instance.settings = Settings(
+            persistenceEnabled: true,
+            cacheSizeBytes: kIsWeb ? 20 * 1024 * 1024 : Settings.CACHE_SIZE_UNLIMITED,
+          );
+        }),
+      TripCacheService.init(),
+      UserPreferenceService.init(),
+    ]);
+    
     await UserPreferenceService.ensureProfileLoaded();
-    SecureLogger.info("Core storage ready.");
+    SecureLogger.info("Core storage and Firebase ready.");
   } catch (e) {
-    SecureLogger.error("CRITICAL Hive Init Error", e);
+    SecureLogger.error("CRITICAL Startup Init Error", e);
   }
 
   // Apply Strict HTTPS Security and SSL Pinning configuration globally
@@ -150,7 +173,7 @@ class AppInitState {
 // Global initialization future provider to replace the logic passed into HiddenGemsApp
 final appInitializationProvider = FutureProvider<AppInitState>((ref) async {
   final result = await performInitialization().timeout(
-    const Duration(seconds: 12),
+    const Duration(seconds: 20),
     onTimeout: () {
       SecureLogger.warning("Initialization timed out. Proceeding in fallback mode.");
       return InitializationResult(hiveSuccess: true, firebaseSuccess: false);
@@ -170,7 +193,9 @@ final appInitializationProvider = FutureProvider<AppInitState>((ref) async {
         const Duration(seconds: 5),
         onTimeout: () => UpdateType.none,
       );
-    } catch (_) {}
+    } catch (e) {
+      SecureLogger.warning("Update check failed or timed out during init: $e");
+    }
   }
   return AppInitState(result: result, updateType: updateType);
 });
@@ -218,8 +243,7 @@ Future<InitializationResult> performInitialization() async {
       }
     }
   } catch (e, st) {
-    SecureLogger.error("Jailbreak verification failed, continuing safely", e);
-    debugPrint("SafeDevice check error: $e\n$st");
+    SecureLogger.error("Jailbreak verification failed, continuing safely", e, st);
   }
 
   if (isCompromised) {
@@ -229,20 +253,29 @@ Future<InitializationResult> performInitialization() async {
 
 
   try {
-    SecureLogger.info("Initializing Firebase...");
-    FirebaseOptions? options;
-    try {
-      options = DefaultFirebaseOptions.currentPlatform;
-    } catch (e) {
-      SecureLogger.error("Firebase config not available for this platform", e);
-    }
-
-    if (options != null) {
+    SecureLogger.info("Verifying Firebase setup...");
+    if (Firebase.apps.isEmpty) {
+      FirebaseOptions? options;
       try {
+        options = DefaultFirebaseOptions.currentPlatform;
+      } catch (e) {
+        SecureLogger.error("Firebase config not available for this platform", e);
+      }
+      if (options != null) {
         await Firebase.initializeApp(
           options: options,
-        ).timeout(const Duration(seconds: 15));
+        ).timeout(const Duration(seconds: 10));
 
+        FirebaseFirestore.instance.settings = Settings(
+          persistenceEnabled: true,
+          cacheSizeBytes: kIsWeb ? 20 * 1024 * 1024 : Settings.CACHE_SIZE_UNLIMITED,
+        );
+      }
+    }
+
+    if (Firebase.apps.isNotEmpty) {
+      firebaseStatus = true;
+      try {
         // 🛡️ App Check — centralized, environment-aware
         try {
           await AppCheckConfig.initialize()
@@ -261,15 +294,7 @@ Future<InitializationResult> performInitialization() async {
           }
         }
 
-        // Enable Firestore offline persistence
-        FirebaseFirestore.instance.settings = Settings(
-          persistenceEnabled: true,
-          // For web: use IndexedDb for better performance than memory cache
-          cacheSizeBytes: kIsWeb ? 20 * 1024 * 1024 : Settings.CACHE_SIZE_UNLIMITED,
-        );
-
-        firebaseStatus = true;
-        SecureLogger.info("Firebase initialized successfully.");
+        SecureLogger.info("Firebase verified successfully.");
 
         // Sync local profile configuration to Firestore now that Firebase is active (Fix silent migration data loss)
         try {
@@ -318,30 +343,30 @@ Future<InitializationResult> performInitialization() async {
       try {
         final remoteConfig = await RemoteConfigService.getInstance();
         await remoteConfig.initialize();
-        debugPrint("Remote Config initialized.");
+        SecureLogger.bgTask("Remote Config initialized.", tag: "RemoteConfig");
       } catch (e) {
-        debugPrint("Remote Config init failed: $e. Using default values.");
+        SecureLogger.warning("Remote Config init failed: $e. Using default values.", tag: "RemoteConfig", isBackground: true);
       }
     }
   } catch (e) {
-    debugPrint("Firebase optional init error: $e");
+    SecureLogger.warning("Firebase optional init error: $e", tag: "Firebase", isBackground: true);
   }
 
   // Option A: Zero-Bundle Server-Driven Sync Engine (2.5s Timeout enforced inside service)
   try {
-    debugPrint("Starting Option A Delta Sync & SQLite Hydration...");
+    SecureLogger.storage("Starting Option A Delta Sync & SQLite Hydration...", tag: "DeltaSync", isBackground: true);
     final deltaSync = DeltaSyncService();
     final bool hasUpdates = await deltaSync.checkForUpdates();
     if (hasUpdates) {
       await deltaSync.performDeltaSync();
     }
     await deltaSync.hydrateMemoryCache();
-    debugPrint("Option A Delta Sync & Hydration Complete.");
+    SecureLogger.storage("Option A Delta Sync & Hydration Complete.", tag: "DeltaSync", isBackground: true);
   } catch (e) {
-    debugPrint("Option A Delta Sync failed (offline/timeout): $e. Proceeding with existing RAM/SQLite data.");
+    SecureLogger.warning("Option A Delta Sync failed (offline/timeout): $e. Proceeding with existing RAM/SQLite data.", tag: "DeltaSync", isBackground: true);
   }
 
-  debugPrint('Background initialization complete. Firebase: $firebaseStatus');
+  SecureLogger.bgTask('Background initialization complete. Firebase: $firebaseStatus', tag: "Startup");
   return InitializationResult(
     hiveSuccess: storageStatus,
     firebaseSuccess: firebaseStatus,
@@ -352,8 +377,7 @@ Future<InitializationResult> performInitialization() async {
   } catch (e, st) {
     // BUG-125: Catch-all for any unexpected startup anomaly — return a
     // degraded result so the UI can show a fallback screen instead of crashing.
-    SecureLogger.error('Critical unexpected startup error', e);
-    debugPrint('Startup catch-all: $e\n$st');
+    SecureLogger.error('Critical unexpected startup error', e, st, 'Startup', true);
     return InitializationResult(
       hiveSuccess: storageStatus,
       firebaseSuccess: false,
@@ -384,7 +408,9 @@ void initializeOtherServices() {
 
     try {
       AnalyticsService().logEvent('app_opened');
-    } catch (_) {}
+    } catch (e) {
+      SecureLogger.warning("Failed to log app_opened event: $e");
+    }
     
     // Ads & Voice Pre-load
     MonetizationService().loadInterstitialAd();
@@ -411,15 +437,48 @@ class _HiddenGemsAppState extends ConsumerState<HiddenGemsApp> with WidgetsBindi
   bool _showMainApp = false;
   bool _userDismissedSoftUpdate = false;
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+  StreamSubscription? _notifSubscription;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    
+    // BUG-N01 Fix: Listen for foreground push messages and present a floating Snackbar
+    _notifSubscription = NotificationService().onForegroundMessage.listen((message) {
+      final ctx = navigatorKey.currentContext;
+      if (ctx != null && message.notification != null) {
+        ScaffoldMessenger.of(ctx).showSnackBar(
+          SnackBar(
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  message.notification!.title ?? 'New Notification',
+                  style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+                ),
+                if (message.notification!.body != null)
+                  Text(
+                    message.notification!.body!,
+                    style: const TextStyle(color: Colors.white70),
+                  ),
+              ],
+            ),
+            backgroundColor: const Color(0xFF1B263B),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            margin: const EdgeInsets.all(16),
+            duration: const Duration(seconds: 4),
+          ),
+        );
+      }
+    });
   }
 
   @override
   void dispose() {
+    _notifSubscription?.cancel();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }

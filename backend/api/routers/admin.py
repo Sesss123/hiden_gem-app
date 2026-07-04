@@ -10,7 +10,7 @@ import json
 from datetime import datetime
 import os
 from pathlib import Path
-from scripts.system_guard import SystemGuard
+from scripts.system_guard import SystemGuard, BACKUP_ROOT
 
 router = APIRouter(prefix="/api/admin", tags=["admin"])
 
@@ -193,10 +193,6 @@ async def track_telemetry(request: Request, place_id: Optional[str] = None, type
 @router.get("/system/backups")
 async def list_system_backups(user=Depends(require_admin)):
     """List all available backup folders."""
-    # Define BACKUP_ROOT relative to the backend directory
-    # Updated to handle potential directory structure variations
-    BACKUP_ROOT = Path(os.getcwd()) / "backups"
-    
     backups = []
     if BACKUP_ROOT.exists():
         dirs = [d for d in BACKUP_ROOT.iterdir() if d.is_dir()]
@@ -228,7 +224,6 @@ async def trigger_system_restore(payload: dict, user=Depends(require_admin)):
     if not folder or "/" in folder or "\\" in folder or ".." in folder:
         raise HTTPException(status_code=400, detail="Invalid backup folder name. Path traversal characters forbidden.")
         
-    BACKUP_ROOT = Path(os.getcwd()) / "backups"
     valid_backups = {d.name for d in BACKUP_ROOT.iterdir() if d.is_dir()} if BACKUP_ROOT.exists() else set()
     if folder not in valid_backups:
         raise HTTPException(status_code=404, detail="Backup folder not found.")

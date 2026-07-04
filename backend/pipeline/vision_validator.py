@@ -62,6 +62,11 @@ Return ONLY JSON:
 }}"""
 
         try:
+            from core.security import validate_safe_url
+            if not validate_safe_url(image_url):
+                logger.warning(f"[VisionValidator] SSRF Blocked unsafe image URL: {image_url}")
+                return None
+
             async with httpx.AsyncClient(timeout=10.0) as client:
                 resp = await client.get(image_url)
                 resp.raise_for_status()

@@ -14,7 +14,9 @@ class EncryptionUtil {
     try {
       final decoded = base64.decode(keyStr);
       if (decoded.length == 32) return enc.Key(decoded);
-    } catch (_) {}
+    } catch (e) {
+      SecureLogger.info("AES key not base64 encoded, falling back to SHA-256 derivation: $e", tag: "Encryption", isBackground: true);
+    }
     final bytes = sha256.convert(utf8.encode(keyStr)).bytes;
     return enc.Key(Uint8List.fromList(bytes));
   }
@@ -23,7 +25,8 @@ class EncryptionUtil {
   static List<int> _deriveHmacKey(String keyStr) {
     try {
       return base64.decode(keyStr);
-    } catch (_) {
+    } catch (e) {
+      SecureLogger.info("HMAC key not base64 encoded, falling back to UTF-8 encoding: $e", tag: "Encryption", isBackground: true);
       return utf8.encode(keyStr);
     }
   }
@@ -182,7 +185,8 @@ class EncryptionUtil {
       final key = await _getOrCreateKey(); 
       final encrypter = enc.Encrypter(enc.AES(key, mode: enc.AESMode.cbc));
       return encrypter.decrypt64(cipherText, iv: iv);
-    } catch (_) {
+    } catch (e) {
+      SecureLogger.warning("Legacy decryption failed for payload: $e", tag: "Encryption");
       return '{}';
     }
   }

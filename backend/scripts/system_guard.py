@@ -69,9 +69,9 @@ class SystemGuard:
         return str(backup_dir.name)
 
     async def restore(self, backup_folder_name: str, skip_confirm: bool = False):
-        backup_dir = BACKUP_ROOT / backup_folder_name
-        if not backup_dir.exists():
-            print(f"RESTORE Error: Backup folder '{backup_folder_name}' not found in {BACKUP_ROOT}")
+        backup_dir = (BACKUP_ROOT / backup_folder_name).resolve()
+        if not str(backup_dir).startswith(str(BACKUP_ROOT.resolve())) or not backup_dir.exists():
+            print(f"RESTORE Error: Backup folder '{backup_folder_name}' not found or invalid in {BACKUP_ROOT}")
             return False
 
         print(f"WARNING: This will OVERWRITE your current data with items from {backup_folder_name}")

@@ -26,9 +26,7 @@ class NotificationService {
     );
 
     if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-      if (kDebugMode) {
-        debugPrint('[Notifications] User granted permission.');
-      }
+      SecureLogger.info("User granted push notification permission.", tag: "Notifications");
     }
 
     // BUG-N01 Fix: Enable native presentation options for foreground notifications on Apple/Web
@@ -40,9 +38,8 @@ class NotificationService {
 
     // Get FCM Token for server-side targeting
     String? token = await _fcm.getToken();
-    if (kDebugMode && token != null) {
-      // BUG-N04 Fix: Truncate token in debug logs and never log in release mode
-      debugPrint("[Notifications] FCM Token acquired: ${token.length > 8 ? '${token.substring(0, 8)}...' : token}");
+    if (token != null) {
+      SecureLogger.info("FCM Token acquired: ${token.length > 8 ? '${token.substring(0, 8)}...' : token}", tag: "Notifications");
     }
     
     // BUG-N02 Fix: Sync token to backend/Firestore for targeted user pushes
@@ -50,9 +47,7 @@ class NotificationService {
 
     // BUG-N03 Fix: Listen for token rotation and re-sync automatically
     _fcm.onTokenRefresh.listen((newToken) {
-      if (kDebugMode) {
-        debugPrint("[Notifications] FCM Token refreshed: ${newToken.substring(0, 8)}...");
-      }
+      SecureLogger.bgTask("FCM Token refreshed: ${newToken.substring(0, 8)}...", tag: "Notifications");
       syncTokenToServer(newToken);
     });
 
@@ -61,9 +56,6 @@ class NotificationService {
 
     // Handle foreground messages
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      if (kDebugMode) {
-        debugPrint('[Notifications] Got a message whilst in the foreground!');
-      }
       SecureLogger.uiEvent("Foreground Push Received: ${message.notification?.title ?? message.messageId}", tag: "Notifications");
 
       // BUG-N01 Fix: Broadcast to listeners so active screens can show Heads-Up Snackbars/Toasts
@@ -89,15 +81,11 @@ class NotificationService {
   }
 
   static Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-    if (kDebugMode) {
-      debugPrint("[Notifications] Handling a background message: ${message.messageId}");
-    }
+    SecureLogger.bgTask("Handling background push message: ${message.messageId} (Title: ${message.notification?.title ?? 'No Title'})", tag: "Notifications");
   }
 
   Future<void> subscribeToTopic(String topic) async {
     await _fcm.subscribeToTopic(topic);
-    if (kDebugMode) {
-      debugPrint("[Notifications] Subscribed to $topic");
-    }
+    SecureLogger.info("Subscribed to topic: $topic", tag: "Notifications");
   }
 }
