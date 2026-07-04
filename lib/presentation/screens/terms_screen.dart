@@ -3,19 +3,21 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/theme/app_theme.dart';
 import '../../data/datasources/user_preference_service.dart';
+import '../../data/datasources/auth_service.dart';
 import 'home_screen.dart';
 import 'login_screen.dart';
 
-class TermsScreen extends StatefulWidget {
+class TermsScreen extends ConsumerStatefulWidget {
   const TermsScreen({super.key});
 
   @override
-  State<TermsScreen> createState() => _TermsScreenState();
+  ConsumerState<TermsScreen> createState() => _TermsScreenState();
 }
 
-class _TermsScreenState extends State<TermsScreen> {
+class _TermsScreenState extends ConsumerState<TermsScreen> {
   bool _agreedToTerms = false;
   bool _agreedToAiPolicy = false;
 
@@ -24,7 +26,7 @@ class _TermsScreenState extends State<TermsScreen> {
       await UserPreferenceService.updateTermsAgreement(true);
       if (!mounted) return;
       HapticFeedback.mediumImpact();
-      if (FirebaseAuth.instance.currentUser != null) {
+      if ((ref.read(authStateProvider).value ?? FirebaseAuth.instance.currentUser) != null) {
         Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const HomeScreen()));
       } else {
         Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const LoginScreen()));
@@ -34,6 +36,7 @@ class _TermsScreenState extends State<TermsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    ref.watch(authStateProvider);
     final primaryColor = Theme.of(context).colorScheme.primary;
 
     return Scaffold(

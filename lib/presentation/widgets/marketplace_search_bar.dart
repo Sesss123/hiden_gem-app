@@ -91,6 +91,36 @@ class _MarketplaceSearchBarState
       }
     });
 
+    if (state.isCooldown) {
+      return StreamBuilder<int>(
+        stream: Stream.periodic(const Duration(seconds: 1), (_) => state.cooldownSeconds),
+        initialData: state.cooldownSeconds,
+        builder: (context, snapshot) {
+          final secs = snapshot.data ?? state.cooldownSeconds;
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _SearchInputField(
+                controller: _controller,
+                hintText: widget.hintText ?? 'Search guides, regions…',
+                isLoading: state.isLoading,
+                isCooldown: true,
+                cooldownSeconds: secs,
+                onChanged: _onChanged,
+                onClear: _onClear,
+              ),
+              if (state.normalizedQuery.isNotEmpty &&
+                  state.normalizedQuery.length < 2 &&
+                  !state.isLoading)
+                const _MinCharsHint(),
+              _CooldownBar(seconds: secs),
+            ],
+          );
+        },
+      );
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
@@ -110,10 +140,6 @@ class _MarketplaceSearchBarState
             state.normalizedQuery.length < 2 &&
             !state.isLoading)
           const _MinCharsHint(),
-
-        // Rate-limit cooldown bar
-        if (state.isCooldown)
-          _CooldownBar(seconds: state.cooldownSeconds),
       ],
     );
   }

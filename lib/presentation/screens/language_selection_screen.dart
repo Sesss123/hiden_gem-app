@@ -11,12 +11,14 @@ import 'terms_screen.dart';
 import 'login_screen.dart';
 import 'home_screen.dart';
 import '../../data/datasources/user_preference_service.dart';
+import '../../data/datasources/auth_service.dart';
 
 class LanguageSelectionScreen extends ConsumerWidget {
   const LanguageSelectionScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    ref.watch(authStateProvider);
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
@@ -145,7 +147,7 @@ class LanguageSelectionScreen extends ConsumerWidget {
                   onPressed: () async {
                     await ref.read(localeNotifierProvider.notifier).setLocale(const Locale('en'));
                     if (context.mounted) {
-                      _navigateNext(context);
+                      _navigateNext(context, ref);
                     }
                   },
                   child: Text(
@@ -166,12 +168,12 @@ class LanguageSelectionScreen extends ConsumerWidget {
     );
   }
 
-  void _navigateNext(BuildContext context) {
+  void _navigateNext(BuildContext context, WidgetRef ref) {
     final profile = UserPreferenceService.getProfile();
     Widget nextScreen;
     if (!profile.hasAgreedToTerms) {
       nextScreen = const TermsScreen();
-    } else if (FirebaseAuth.instance.currentUser != null) {
+    } else if ((ref.read(authStateProvider).value ?? FirebaseAuth.instance.currentUser) != null) {
       nextScreen = const HomeScreen();
     } else {
       nextScreen = const LoginScreen();
@@ -204,7 +206,7 @@ class LanguageSelectionScreen extends ConsumerWidget {
           HapticFeedback.mediumImpact();
           await ref.read(localeNotifierProvider.notifier).setLocale(locale);
           if (context.mounted) {
-            _navigateNext(context);
+            _navigateNext(context, ref);
           }
         },
         child: Container(

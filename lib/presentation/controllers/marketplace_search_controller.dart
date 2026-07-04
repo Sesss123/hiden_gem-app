@@ -21,8 +21,7 @@ class MarketplaceSearchState {
   final String? error;
   final String normalizedQuery;
   final bool hasMore;         // Has a next page to load
-  final bool isCooldown;      // Rate limit UI cooldown active
-  final int cooldownSeconds;  // Seconds remaining in cooldown
+  final DateTime? cooldownEndTimestamp; // Cooldown end time
   final SearchMetrics metrics;
 
   const MarketplaceSearchState({
@@ -31,13 +30,14 @@ class MarketplaceSearchState {
     this.error,
     this.normalizedQuery = '',
     this.hasMore = false,
-    this.isCooldown = false,
-    this.cooldownSeconds = 0,
+    this.cooldownEndTimestamp,
     this.metrics = const SearchMetrics(),
   });
 
   bool get isEmpty => results.isEmpty && !isLoading && normalizedQuery.isNotEmpty;
   bool get isBlank => normalizedQuery.isEmpty;
+  bool get isCooldown => cooldownEndTimestamp != null && cooldownEndTimestamp!.isAfter(DateTime.now());
+  int get cooldownSeconds => cooldownEndTimestamp != null ? (cooldownEndTimestamp!.difference(DateTime.now()).inSeconds.clamp(0, 999)) : 0;
 
   MarketplaceSearchState copyWith({
     List<GuideListing>? results,
@@ -45,8 +45,8 @@ class MarketplaceSearchState {
     String? error,
     String? normalizedQuery,
     bool? hasMore,
-    bool? isCooldown,
-    int? cooldownSeconds,
+    DateTime? cooldownEndTimestamp,
+    bool clearCooldown = false,
     SearchMetrics? metrics,
   }) =>
       MarketplaceSearchState(
@@ -55,8 +55,7 @@ class MarketplaceSearchState {
         error: error ?? this.error,
         normalizedQuery: normalizedQuery ?? this.normalizedQuery,
         hasMore: hasMore ?? this.hasMore,
-        isCooldown: isCooldown ?? this.isCooldown,
-        cooldownSeconds: cooldownSeconds ?? this.cooldownSeconds,
+        cooldownEndTimestamp: clearCooldown ? null : (cooldownEndTimestamp ?? this.cooldownEndTimestamp),
         metrics: metrics ?? this.metrics,
       );
 }
@@ -94,7 +93,6 @@ class MarketplaceSearchController
   // ── Rate Limiting ───────────────────────────────────────────────────────
   final List<DateTime> _searchTimestamps = [];
   Timer? _cooldownTimer;
-  int _cooldownRemaining = 0;
 
   // ── Result Cache (Query String → Timed Result) ──────────────────────────
   final Map<String, _CachedResult> _queryCache = {};
@@ -319,21 +317,16 @@ class MarketplaceSearchController
   }
 
   void _startCooldownUI() {
-    _cooldownRemaining = _cooldownDuration.inSeconds;
+    final endTime = DateTime.now().add(_cooldownDuration);
     state = state.copyWith(
-      isCooldown: true,
-      cooldownSeconds: _cooldownRemaining,
+      cooldownEndTimestamp: endTime,
       metrics: state.metrics.copyWith(rateLimitHits: state.metrics.rateLimitHits + 1),
     );
 
     _cooldownTimer?.cancel();
-    _cooldownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      _cooldownRemaining--;
-      if (_cooldownRemaining <= 0) {
-        timer.cancel();
-        if (mounted) state = state.copyWith(isCooldown: false, cooldownSeconds: 0);
-      } else {
-        if (mounted) state = state.copyWith(cooldownSeconds: _cooldownRemaining);
+    _cooldownTimer = Timer(_cooldownDuration, () {
+      if (mounted) {
+        state = state.copyWith(clearCooldown: true);
       }
     });
   }

@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'dart:convert';
+import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
@@ -8,6 +10,8 @@ import '../datasources/discovery_remote_datasource.dart';
 import '../datasources/discovery_local_datasource.dart';
 import '../../core/utils/secure_logger.dart';
 import '../../core/config/remote_config_service.dart';
+import '../../core/services/delta_sync_service.dart';
+import '../../core/services/sqlite_storage_service.dart';
 
 final discoveryRemoteDataSourceProvider = Provider((ref) => DiscoveryRemoteDataSource());
 final discoveryLocalDataSourceProvider = Provider((ref) => DiscoveryLocalDataSource());
@@ -36,11 +40,14 @@ class DiscoveryRepository {
   }) async {
     List<DiscoveryPlace> places = [];
     
-    // 1. Memory Cache check (L0)
-    final cacheKey = 'places_${userLat}_$userLng';
+    // 1. Memory Cache check (L0) - Rounded coordinates to 3 decimal places (~110m bucket)
+    final latKey = userLat?.toStringAsFixed(3) ?? 'null';
+    final lngKey = userLng?.toStringAsFixed(3) ?? 'null';
+    final cacheKey = 'places_${latKey}_$lngKey';
+
     if (!forceRefresh) {
       final memCache = _localDataSource.getFromMemory(cacheKey);
-      if (memCache != null) {
+      if (memCache != null && memCache.isNotEmpty) {
         SecureLogger.info("Discovery data loaded from Level-0 Memory Cache.");
         return memCache;
       }
@@ -64,59 +71,86 @@ class DiscoveryRepository {
         places = await _remoteDataSource.fetchNearbyPlacesFirestore(center: position);
         if (places.isNotEmpty) {
           SecureLogger.info("Discovery data loaded from Level-1 GeoHash Firestore.");
-          // Still need to sort and cache
           places = await _processPlaces(places, userLat, userLng);
           _localDataSource.cacheInMemory(cacheKey, places);
           return places;
         }
       } catch (e) {
-        SecureLogger.error("GeoHash Firestore fetch failed, falling back to REST", e);
+        SecureLogger.warning("GeoHash Firestore fetch failed or offline, falling back to SQLite/REST: $e");
       }
     }
 
-    // 3. REST API / Persistent Cache check (L2/L3)
+    // 3. SQLite / Delta Sync check (L2)
     try {
-      final String? cachedJson = _localDataSource.getCachedPlaces('places');
-      final remoteConfig = await RemoteConfigService.getInstance();
-      final remoteTimestamp = remoteConfig.dataRefreshTimestamp;
-      final localTimestamp = _localDataSource.getCacheTimestamp('places');
-
-      bool useCache = !forceRefresh && cachedJson != null;
-      if (useCache && !_localDataSource.isCacheValid('places', const Duration(hours: 12))) {
-        // TTL expired, check remote config timestamp
-        if (localTimestamp < remoteTimestamp) {
-          useCache = false; // Need hard refresh
-        }
+      final sqliteService = SqliteStorageService();
+      final deltaService = DeltaSyncService();
+      
+      if (forceRefresh) {
+        await deltaService.performDeltaSync();
+      } else {
+        unawaited(deltaService.performDeltaSync().catchError((e) {
+          SecureLogger.warning("Background delta sync failed: $e");
+          return 0;
+        }));
       }
 
-      if (useCache) {
-        SecureLogger.info("Discovery data loaded from Level-2 Persistent Cache.");
-        places = await _parsePlaces(json.decode(cachedJson!));
-      } else {
-        SecureLogger.info("Fetching discovery data from Level-3 REST API...");
-        final String remoteJson = await _remoteDataSource.fetchPlacesRest();
-        await _localDataSource.cachePlaces('places', remoteJson);
-        places = await _parsePlaces(json.decode(remoteJson));
+      places = await sqliteService.getActivePlaces();
+      if (places.isNotEmpty) {
+        SecureLogger.info("Discovery data loaded from Level-2 SQLite Storage.");
       }
     } catch (e) {
-      SecureLogger.error("REST/Cache fetch failed, falling back to Firestore places collection", e);
+      SecureLogger.warning("SQLite / Delta sync fetch failed, falling back to L3 REST: $e");
+    }
+
+    // 4. REST API / Persistent Cache check (L3) if SQLite returned empty
+    if (places.isEmpty) {
       try {
-        places = await _remoteDataSource.fetchAllPlacesFirestore();
-        if (places.isNotEmpty) {
-          SecureLogger.info("Discovery data loaded from Firestore 'places' collection.");
+        final String? cachedJson = _localDataSource.getCachedPlaces('places');
+        final remoteConfig = await RemoteConfigService.getInstance();
+        final remoteTimestamp = remoteConfig.dataRefreshTimestamp;
+        final localTimestamp = _localDataSource.getCacheTimestamp('places');
+
+        bool useCache = !forceRefresh && cachedJson != null;
+        if (useCache && !_localDataSource.isCacheValid('places', const Duration(hours: 12))) {
+          if (localTimestamp < remoteTimestamp) {
+            useCache = false;
+          }
+        }
+
+        if (useCache) {
+          SecureLogger.info("Discovery data loaded from Level-3 Persistent Cache.");
+          places = await _parsePlaces(json.decode(cachedJson!));
         } else {
+          SecureLogger.info("Fetching discovery data from Level-3 REST API...");
+          final String remoteJson = await _remoteDataSource.fetchPlacesRest();
+          await _localDataSource.cachePlaces('places', remoteJson);
+          places = await _parsePlaces(json.decode(remoteJson));
+        }
+      } catch (e) {
+        SecureLogger.warning("REST/Cache fetch failed, falling back to Firestore places collection: $e");
+        try {
+          places = await _remoteDataSource.fetchAllPlacesFirestore();
+          if (places.isNotEmpty) {
+            SecureLogger.info("Discovery data loaded from Firestore 'places' collection.");
+          } else {
+            places = await _localDataSource.getAssetPlaces();
+          }
+        } catch (e2) {
+          SecureLogger.warning("Firestore fetch failed, falling back to assets: $e2");
           places = await _localDataSource.getAssetPlaces();
         }
-      } catch (e2) {
-        SecureLogger.error("Firestore fetch failed, falling back to assets", e2);
-        places = await _localDataSource.getAssetPlaces();
       }
     }
 
-    // 4. Processing (Distance measurement & Sorting)
+    if (places.isEmpty) {
+      SecureLogger.error("All discovery tiers failed (including asset fallback). No data available.", null);
+      throw Exception("Unable to load discovery places from any data source.");
+    }
+
+    // 5. Processing (Distance measurement & Sorting)
     places = await _processPlaces(places, userLat, userLng);
     
-    // 5. Update Memory Cache
+    // 6. Update Memory Cache
     _localDataSource.cacheInMemory(cacheKey, places);
     return places;
   }
@@ -124,9 +158,8 @@ class DiscoveryRepository {
   Future<List<DiscoveryPlace>> getAiRecommendations(List<DiscoveryPlace> places, {String? customQuery}) async {
     if (places.isEmpty) return [];
     
-    // In a real app, this logic might be more complex, but we'll follow similar logic to service
     final topNearest = places.take(10).toList();
-    final vibeText = customQuery ?? "default vibe"; // Normally from preference service
+    final vibeText = customQuery ?? "default vibe";
     
     try {
       final List<Map<String, dynamic>> results = await _remoteDataSource.getAiRecommendationsRaw(
@@ -137,9 +170,11 @@ class DiscoveryRepository {
       final recommended = <DiscoveryPlace>[];
       for (var result in results) {
         try {
-          final place = topNearest.firstWhere((p) => p.id == result['id'].toString());
-          place.aiReason = result['reason']?.toString() ?? '';
-          recommended.add(place);
+          final place = topNearest.firstWhereOrNull((p) => p.id == result['id'].toString());
+          if (place != null) {
+            place.aiReason = result['reason']?.toString() ?? '';
+            recommended.add(place);
+          }
         } catch (e) {
           SecureLogger.warning('Could not match AI recommended place ID: ${result['id']} - $e');
         }

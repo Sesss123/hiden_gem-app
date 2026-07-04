@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/theme/oracle_ui_system.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../../data/datasources/auth_service.dart';
 import '../../data/datasources/user_preference_service.dart';
 import 'home_screen.dart';
@@ -247,6 +248,30 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   String _mapAuthException(Object e) {
+    if (e is FirebaseAuthException) {
+      switch (e.code) {
+        case 'invalid-credential':
+        case 'wrong-password':
+        case 'user-not-found':
+          return "Invalid email or password. Please try again.";
+        case 'user-disabled':
+          return "This account has been disabled.";
+        case 'email-already-in-use':
+          return "The email address is already in use by another account.";
+        case 'weak-password':
+          return "The password provided is too weak.";
+        case 'invalid-email':
+          return "Please enter a valid email address.";
+        case 'network-request-failed':
+          return "Network request failed. Please check your internet connection.";
+        case 'too-many-requests':
+          return "Too many requests. Please try again later.";
+        case 'operation-not-allowed':
+          return "This operation is not allowed.";
+        default:
+          return e.message ?? "An authentication error occurred.";
+      }
+    }
     final message = e.toString().toLowerCase();
     if (message.contains('invalid-credential') || message.contains('wrong-password') || message.contains('user-not-found')) {
       return "Invalid email or password. Please try again.";

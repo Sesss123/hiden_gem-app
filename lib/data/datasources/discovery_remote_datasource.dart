@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:firebase_auth/firebase_auth.dart';
@@ -37,8 +38,11 @@ class DiscoveryRemoteDataSource {
     final List<dynamic> allPlaces = [];
     String? cursor;
     bool hasMore = true;
+    int pageCount = 0;
+    const int maxPages = 20; // Bounded pagination to prevent memory exhaustion / infinite loop
 
-    while (hasMore) {
+    while (hasMore && pageCount < maxPages) {
+      pageCount++;
       final queryParam = cursor != null ? '?cursor=$cursor' : '';
       final securityHeaders = await VaultService.getSecurityHeaders('/places$queryParam');
       
@@ -54,7 +58,12 @@ class DiscoveryRemoteDataSource {
       ).timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200) {
-        final Map<String, dynamic> data = json.decode(response.body);
+        Map<String, dynamic> data;
+        try {
+          data = json.decode(response.body);
+        } on FormatException catch (e) {
+          throw FormatException("Invalid JSON payload from REST API (/places): $e");
+        }
         final List<dynamic> places = data['places'] ?? [];
         allPlaces.addAll(places);
         cursor = data['next_cursor']?.toString();
@@ -86,7 +95,7 @@ class DiscoveryRemoteDataSource {
 
     final List<DocumentSnapshot> snapshots = await stream.first.timeout(
       const Duration(seconds: 5),
-      onTimeout: () => [],
+      onTimeout: () => throw TimeoutException("GeoHash Firestore stream timed out after 5 seconds."),
     );
 
     return snapshots.map((doc) => DiscoveryPlace.fromFirestore(doc)).toList();
@@ -126,7 +135,17 @@ class DiscoveryRemoteDataSource {
     );
 
     if (response.statusCode == 200) {
-      return List<Map<String, dynamic>>.from(json.decode(response.body));
+      try {
+        final decoded = json.decode(response.body);
+        if (decoded is List) {
+          return List<Map<String, dynamic>>.from(decoded);
+        } else if (decoded is Map && decoded.containsKey('recommendations')) {
+          return List<Map<String, dynamic>>.from(decoded['recommendations']);
+        }
+        return [];
+      } on FormatException catch (e) {
+        throw FormatException("Invalid JSON payload from AI recommendations API: $e");
+      }
     } else {
       throw Exception("AI Recommendation API failed with status ${response.statusCode}");
     }

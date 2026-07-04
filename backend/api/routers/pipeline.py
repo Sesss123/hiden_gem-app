@@ -206,8 +206,9 @@ async def discover_new_places(
         agent_monologue=[]
     )
 
-    from pipeline.agent_orchestrator import agent_orchestrator
-    background_tasks.add_task(agent_orchestrator.execute_directive, request.prompt)
+    from pipeline.agent_orchestrator import NeuralCommandAgent
+    agent = NeuralCommandAgent()
+    background_tasks.add_task(agent.execute_directive, request.prompt)
     
     return {
         "success": True, 
@@ -239,10 +240,10 @@ async def discover_district_route(request: Request, bg_tasks: BackgroundTasks, a
 
 @router.post("/stop")
 async def stop_discovery(authorized: bool = Depends(verify_internal_key)):
-    from pipeline.agent_orchestrator import agent_orchestrator
+    from pipeline.agent_orchestrator import stop_all_agents
     
-    agent_orchestrator.stop_requested = True
-    return {"success": True, "message": "Stop signal broadcasted to Neural Agent."}
+    stop_all_agents()
+    return {"success": True, "message": "Stop signal broadcasted to all active Neural Agents."}
 
 @router.post("/tank-hive")
 async def trigger_tank_hive(background_tasks: BackgroundTasks, user=Depends(get_current_user)):

@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:video_player/video_player.dart';
 import 'video_cache_service.dart';
@@ -11,6 +10,7 @@ class ARVideoService extends ChangeNotifier {
   VideoPlayerController? _controller;
   ARVideoState _state = ARVideoState.idle;
   String? _errorMessage;
+  String? _loadingUrl;
 
   VideoPlayerController? get controller => _controller;
   ARVideoState get state => _state;
@@ -23,6 +23,7 @@ class ARVideoService extends ChangeNotifier {
   /// Loads and initialises the video.
   /// Tries the local cache first, falls back to network.
   Future<void> init(String url) async {
+    _loadingUrl = url;
     if (_controller != null) {
       _controller!.removeListener(_onControllerUpdate);
       await _controller!.dispose();
@@ -30,24 +31,35 @@ class ARVideoService extends ChangeNotifier {
     }
     _setState(ARVideoState.loading);
     try {
-      File cachedFile;
+      VideoPlayerController? tempController;
       try {
-        cachedFile = await VideoCacheService.getVideo(url);
-        _controller = VideoPlayerController.file(cachedFile);
-      } catch (_) {
-        // Cache fail — stream direct from network
-        debugPrint('[ARVideoService] Cache miss, streaming from: $url');
-        _controller = VideoPlayerController.networkUrl(Uri.parse(url));
+        final cachedFile = await VideoCacheService.getVideo(url);
+        if (_loadingUrl != url) return;
+        tempController = VideoPlayerController.file(cachedFile);
+        await tempController.initialize();
+      } catch (e) {
+        if (_loadingUrl != url) return;
+        debugPrint('[ARVideoService] Cache miss or corrupted file ($e), falling back to network: $url');
+        if (tempController != null) {
+          await tempController.dispose();
+          tempController = null;
+        }
+        tempController = VideoPlayerController.networkUrl(Uri.parse(url));
+        await tempController.initialize();
       }
 
-      await _controller!.initialize();
-      _controller!.setLooping(true);
+      if (_loadingUrl != url) {
+        await tempController.dispose();
+        return;
+      }
 
-      // Forward buffering states
+      _controller = tempController;
+      _controller!.setLooping(true);
       _controller!.addListener(_onControllerUpdate);
 
       _setState(ARVideoState.paused);
     } catch (e) {
+      if (_loadingUrl != url) return;
       _errorMessage = e.toString();
       _setState(ARVideoState.error);
       debugPrint('[ARVideoService] Init error: $e');

@@ -1,3 +1,51 @@
+## Active Milestone: Master Enterprise Remediation Plan Execution (v12.0)
+- [x] 1. Laravel Backend & MySQL Schema / Sync (`laravel-backend/`)
+  - [x] 1.1 Add `access_tier` column to `2026_07_01_000002_create_places_table.php`
+  - [x] 1.2 Fix race condition in `PlaceObserver.php` saving event (remove inner transaction)
+  - [x] 1.3 Fix double increment & destructive deletes in `PlaceObserver.php` deleting event (`saveQuietly`, soft-delete wishlists)
+  - [x] 1.4 Standardize `snake_case` & secure relative image URLs in `PlaceResource.php`
+  - [x] 1.5 Protect `/places` and `/places/delta` with `auth:sanctum` in `routes/api.php`
+- [x] 2. Python AI Backend (`backend/`)
+  - [x] 2.1 Fix global state race condition in `agent_orchestrator.py`
+  - [x] 2.2 Fix prompt injection in `agent_orchestrator.py`
+  - [x] 2.3 Use `hmac.compare_digest` in `main.py` WebSocket auth
+  - [x] 2.4 Change `async def get_current_user` to synchronous `def` in `core/auth.py`
+  - [x] 2.5 Extract mock auth to `MockAuthService` & rate limit user creation in `core/auth.py`
+  - [x] 2.6 Use Pydantic schemas in `api/routers/ai.py`
+  - [x] 2.7 Replace `print()` with logger in `core/config.py`
+  - [x] 2.8 Pin dependencies in `requirements.txt`
+- [x] 3. Core Security & Encryption (`lib/core/`)
+  - [x] 3.1 Upgrade `encryption_util.dart` to use `flutter_secure_storage` per-device keys
+  - [x] 3.2 Cache `SecurityContext` & add subdomain check in `secure_network.dart`
+  - [x] 3.3 Add request body SHA-256 hash to HMAC in `secure_http_client.dart`
+  - [x] 3.4 Fix `security_orchestrator.dart` (`_checkKeySynchronously` and subscriptions)
+  - [x] 3.5 Fix fail-closed behavior in `emergency_control_service.dart`
+  - [x] 3.6 Set remote config timeout to 3s in `remote_config_service.dart`
+- [x] 4. AR Video Engine (`lib/features/ar_video/services/`)
+  - [x] 4.1 Move `initialize()` into cache try block in `ar_video_service.dart`
+  - [x] 4.2 Add `_loadingUrl` race condition token in `ar_video_service.dart`
+- [x] 5. Data & Repository Layer (`lib/data/`)
+  - [x] 5.1 Round GPS coords to 3 decimals & fix fallback rethrowing in `discovery_repository.dart`
+  - [x] 5.2 Implement `/places/delta` wiring & `firstWhereOrNull` in `discovery_repository.dart`
+  - [x] 5.3 Add `TimeoutException` on GeoHash timeout & bounded pagination in `discovery_remote_datasource.dart`
+  - [x] 5.4 Add JSON `FormatException` catching in `discovery_remote_datasource.dart`
+- [x] 6. Monetization Engine (`lib/data/datasources/`)
+  - [x] 6.1 Add exponential backoff & max 3 retries in `monetization_service.dart`
+  - [x] 6.2 Return `Future<bool>` from ad display methods in `monetization_service.dart`
+  - [x] 6.3 Fix iOS platform check for test ad units in `monetization_service.dart`
+- [x] 7. Presentation & UI Layer (`lib/presentation/`)
+  - [x] 7.1 Remove `SystemNavigator.pop()` in `update_screen.dart`
+  - [x] 7.2 Standardize Riverpod auth state in `home_screen`, `language_selection_screen`, and `terms_screen`
+  - [x] 7.3 Handle `_loadLocalGems` error & guard `precacheImage` in `home_screen.dart`
+  - [x] 7.4 Catch `FirebaseAuthException` by code in `login_screen.dart`
+  - [x] 7.5 Refactor `_OnboardingSlide` widget & localize strings in `onboarding_screen.dart`
+  - [x] 7.6 Add `maxRetries = 3` in `splash_screen.dart`
+  - [x] 7.7 Remove 1Hz timer in `marketplace_search_controller.dart`
+  - [x] 7.8 Optimize GPU shader blur in `golden_tracer_indicator.dart`
+- [x] 8. Final Verification & Documentation
+  - [x] 8.1 Run `flutter analyze` and tests
+  - [x] 8.2 Update `task.md` in workspace root and `walkthrough.md`
+
 ## Active Milestone: Enterprise Audit Phase 2 Hardening & Priority Bug Fixes (v11.0)
 - [x] Fix startup error spam in Flutter debug mode: skip RevenueCat init on dummy keys and check `Firebase.apps.isNotEmpty` before Firestore GeoHash fetch (Completed 2026-07-04)
 - [x] BUG-C02: Address System Restore Path Traversal vulnerability in `backend/api/routers/admin.py` and `scripts/system_guard.py` (Completed 2026-07-04)

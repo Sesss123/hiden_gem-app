@@ -1,13 +1,16 @@
 import 'dart:convert';
+import 'dart:math';
 import 'dart:typed_data';
 import 'package:crypto/crypto.dart';
 import 'package:encrypt/encrypt.dart' as enc;
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'secure_logger.dart';
 import '../config/app_config.dart';
 
 class EncryptionUtil {
-  static String get _sharedAesKeyBase64 => AppConfig.sharedAesKey;
-  static String get _sharedHmacKeyBase64 => AppConfig.sharedHmacKey;
+  static const _storage = FlutterSecureStorage();
+  static const String _deviceAesKeyName = 'DEVICE_AES_KEY';
+  static const String _deviceHmacKeyName = 'DEVICE_HMAC_KEY';
 
   /// Helper to safely derive a 32-byte AES key from either Base64 or plain string
   static enc.Key _deriveAesKey(String keyStr) {
@@ -46,21 +49,43 @@ class EncryptionUtil {
   static enc.Key? _cachedKey;
   static List<int>? _cachedHmacKey;
 
-  /// Call this at app startup to pre-load keys. 
-  /// Note: Shared keys are used for public database records (Hidden Gems).
+  /// Call this at app startup to load or generate secure hardware-backed keys.
   static Future<void> init() async {
-    _cachedKey = _deriveAesKey(_sharedAesKeyBase64);
-    _cachedHmacKey = _deriveHmacKey(_sharedHmacKeyBase64);
+    try {
+      String? aesKeyStr = await _storage.read(key: _deviceAesKeyName);
+      if (aesKeyStr == null) {
+        final random = Random.secure();
+        final bytes = List<int>.generate(32, (i) => random.nextInt(256));
+        aesKeyStr = base64Url.encode(bytes);
+        await _storage.write(key: _deviceAesKeyName, value: aesKeyStr);
+      }
+      _cachedKey = _deriveAesKey(aesKeyStr);
+
+      String? hmacKeyStr = await _storage.read(key: _deviceHmacKeyName);
+      if (hmacKeyStr == null) {
+        final random = Random.secure();
+        final bytes = List<int>.generate(32, (i) => random.nextInt(256));
+        hmacKeyStr = base64Url.encode(bytes);
+        await _storage.write(key: _deviceHmacKeyName, value: hmacKeyStr);
+      }
+      _cachedHmacKey = _deriveHmacKey(hmacKeyStr);
+    } catch (e) {
+      SecureLogger.warning("Keystore access failed, falling back to shared config: $e", tag: "Encryption");
+      _cachedKey = _deriveAesKey(AppConfig.sharedAesKey);
+      _cachedHmacKey = _deriveHmacKey(AppConfig.sharedHmacKey);
+    }
   }
 
   static Future<enc.Key> _getOrCreateKey() async {
     if (_cachedKey != null) return _cachedKey!;
-    return _deriveAesKey(_sharedAesKeyBase64);
+    await init();
+    return _cachedKey!;
   }
 
   static Future<List<int>> _getOrCreateHmacKey() async {
     if (_cachedHmacKey != null) return _cachedHmacKey!;
-    return _deriveHmacKey(_sharedHmacKeyBase64);
+    await init();
+    return _cachedHmacKey!;
   }
 
   /// Encrypts data using AES-256 GCM and adds an HMAC signature.

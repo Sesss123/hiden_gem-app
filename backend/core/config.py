@@ -1,8 +1,10 @@
 # backend/core/config.py
 import os
+import logging
 from dotenv import load_dotenv
 
 load_dotenv()
+logger = logging.getLogger("Config")
 
 # --- Security ---
 INTERNAL_BRIDGE_KEY = os.getenv("INTERNAL_BRIDGE_KEY", os.getenv("INTERNAL_API_KEY"))
@@ -39,6 +41,6 @@ def check_environment_health():
     critical_keys = ["INTERNAL_API_KEY"]
     missing = [k for k in critical_keys if not os.getenv(k)]
     if missing:
-        print(f"⚠️  CONFIG WARNING: Missing critical internal bridge key: {', '.join(missing)}", flush=True)
+        logger.warning(f"⚠️  CONFIG WARNING: Missing critical internal bridge key: {', '.join(missing)}")
 
 check_environment_health()

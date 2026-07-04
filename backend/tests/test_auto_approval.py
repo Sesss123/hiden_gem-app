@@ -7,8 +7,10 @@ from datetime import datetime
 sys.path.append(os.getcwd())
 
 from pipeline.smart_intake_service import smart_intake_service
-from core.database import SessionLocal
+from core.database import SessionLocal, engine
 from models.database_models import Place
+
+Place.metadata.create_all(bind=engine)
 
 async def test_auto_approval_insertion():
     print("[TEST] Verifying Auto-Approval and SQLite Persistence...")

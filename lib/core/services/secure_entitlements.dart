@@ -28,6 +28,11 @@ class SecureEntitlements {
   DateTime? _cacheExpiry;
 
   // --- Public API ---
+  
+  /// Synchronous access to cached entitlement state for synchronous nexus checks.
+  bool get cachedIsPremium => _serverClaimsCache?['isPremium'] == true || 
+      _serverClaimsCache?['role'] == 'premium' || 
+      _serverClaimsCache?['role'] == 'admin';
 
   /// Verifies if the user has a valid Premium role.
   /// Result is NOT trusted if it comes from the local Firestore cache.

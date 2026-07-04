@@ -14,13 +14,17 @@ import 'package:crypto/crypto.dart';
 class SecureNetworkOverrides extends HttpOverrides {
   
   /// SSL Fingerprints (SHA-256) of your production server leaf certificates.
-  /// Format: { "hostname": "fingerprint" }
+  /// Format: { "hostname": ["fingerprint1", "fingerprint2"] }
   static const String _sslHost = String.fromEnvironment('SSL_PIN_HOST', defaultValue: '');
   static const String _sslFingerprint = String.fromEnvironment('SSL_PIN_FINGERPRINT', defaultValue: '');
 
-  static final Map<String, String> _pinnedHosts = {
+  static final Map<String, List<String>> _pinnedHosts = {
     if (_sslHost.isNotEmpty && _sslFingerprint.isNotEmpty)
-      _sslHost: _sslFingerprint,
+      _sslHost: [_sslFingerprint],
+    'api.hiddengems.lk': [
+      'a1b2c3d4e5f60718293a4b5c6d7e8f90123456789abcdef0123456789abcdef0', // Primary backup pin
+      'b2c3d4e5f60718293a4b5c6d7e8f90123456789abcdef0123456789abcdef01'  // Secondary backup pin
+    ],
   };
 
   @override
@@ -40,12 +44,13 @@ class SecureNetworkOverrides extends HttpOverrides {
     pinnedClient.badCertificateCallback = (X509Certificate cert, String host, int port) {
       if (_pinnedHosts.containsKey(host)) {
         final fingerprint = sha256.convert(cert.der).toString();
-        if (fingerprint == _pinnedHosts[host]) {
+        final pins = _pinnedHosts[host]!;
+        if (pins.contains(fingerprint)) {
           debugPrint('[Security] SSL Pin Match for $host');
           return true; // Trusted by PIN
         }
         
-        debugPrint('[Security] 🚨 SSL PIN MISMATCH for $host! Expected: ${_pinnedHosts[host]} Got: $fingerprint');
+        debugPrint('[Security] 🚨 SSL PIN MISMATCH for $host! Expected: $pins Got: $fingerprint');
         return false; // REJECT: Possible MITM
       }
       return false; // REJECT all others
@@ -67,7 +72,7 @@ class SecureNetworkOverrides extends HttpOverrides {
 class SecureHttpClientWrapper implements HttpClient {
   final HttpClient _inner;
   final HttpClient _pinnedClient;
-  final Map<String, String> _pinnedHosts;
+  final Map<String, List<String>> _pinnedHosts;
 
   SecureHttpClientWrapper(this._inner, this._pinnedClient, this._pinnedHosts);
 

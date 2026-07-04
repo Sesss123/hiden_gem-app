@@ -2,7 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from core.security import get_current_user
 from core.database import get_db_connection
 from core.rate_limit import limiter
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
+from pydantic import BaseModel, Field
 import math
 import json
 import random
@@ -55,6 +56,11 @@ def semantic_search(request: Request, query: str, user=Depends(get_current_user)
     finally:
         conn.close()
 
+class ItineraryRequest(BaseModel):
+    days: Optional[int] = Field(default=None, ge=1, le=14)
+    style: Optional[str] = None
+    destination: Optional[str] = None
+
 @router.api_route("/plan-itinerary", methods=["GET", "POST"])
 @limiter.limit("15/minute")
 async def plan_itinerary(
@@ -62,6 +68,7 @@ async def plan_itinerary(
     duration: int = 3, 
     vibe: str = "balanced", 
     start_district: Optional[str] = None,
+    body: Optional[ItineraryRequest] = None,
     user=Depends(get_current_user)
 ):
     """
@@ -69,17 +76,13 @@ async def plan_itinerary(
     Groups places by district clusters and sorts by category preference.
     BUG-033: Offloaded synchronous SQLite query to worker threadpool.
     """
-    if request.method == "POST":
-        try:
-            body = await request.json()
-            if body.get("days"):
-                duration = int(body["days"])
-            if body.get("style"):
-                vibe = str(body["style"]).lower()
-            if body.get("destination"):
-                start_district = str(body["destination"])
-        except Exception as e:
-            logger.warning(f"[PlanItinerary] Could not parse POST body JSON: {e}")
+    if body is not None:
+        if body.days is not None:
+            duration = int(body.days)
+        if body.style is not None:
+            vibe = str(body.style).lower()
+        if body.destination is not None:
+            start_district = str(body.destination)
 
     return await anyio.to_thread.run_sync(_compute_itinerary_sync, duration, vibe, start_district)
 
@@ -206,7 +209,7 @@ def translate_text(request: Request, req: TranslateRequest, user=Depends(get_cur
     return {"translated_text": translated, "source_lang": "en", "target_lang": req.target_lang}
 
 class RecommendationRequest(BaseModel):
-    nearbyPlaces: list = []
+    nearbyPlaces: List[Dict[str, Any]] = []
     vibeText: str = "balanced"
 
 @router.post("/recommendations")

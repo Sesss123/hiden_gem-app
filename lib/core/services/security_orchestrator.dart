@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'integrity_shield.dart';
@@ -31,22 +32,29 @@ class SecurityOrchestrator {
   
   // Real-time posture tracking
   Map<String, dynamic>? _lastServerPosture;
+  StreamSubscription<DocumentSnapshot>? _postureSubscription;
 
   /// Initializes the real-time Security Posture listener.
   /// This allows the backend to push instant blocks or security overrides.
   void init(String uid) {
-    FirebaseFirestore.instance
+    _postureSubscription?.cancel();
+    _postureSubscription = FirebaseFirestore.instance
         .collection('users')
         .doc(uid)
         .collection('security')
         .doc('posture')
         .snapshots()
         .listen((doc) {
-      if (doc.exists) {
-        _lastServerPosture = doc.data();
+      if (doc.exists && doc.data() != null) {
+        _lastServerPosture = doc.data() as Map<String, dynamic>;
         _enforceServerDirectives(_lastServerPosture!);
       }
     });
+  }
+
+  void dispose() {
+    _postureSubscription?.cancel();
+    _postureSubscription = null;
   }
 
   void _enforceServerDirectives(Map<String, dynamic> posture) {
@@ -128,8 +136,7 @@ class SecurityOrchestrator {
       case SecurityKey.localFlag:
         return profile.isPremium;
       case SecurityKey.serverProof:
-        // We only have sync access to cached result
-        return true; // Assume true if not pre-verified async
+        return _entitlements.cachedIsPremium;
       case SecurityKey.integrity:
         return _shield.riskScore < 60;
       case SecurityKey.sessionHealth:

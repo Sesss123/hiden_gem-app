@@ -63,8 +63,8 @@ class EmergencyControlService {
       final List disabledList = json.decode(disabledRaw);
       return !disabledList.contains(featureId);
     } catch (e) {
-      SecureLogger.warning('[PanicRoom] Failed to parse disabled_features: $e');
-      return true;
+      SecureLogger.warning('[PanicRoom] Failed to parse disabled_features, failing closed: $e');
+      return false; // Fail closed during security emergencies
     }
   }
 

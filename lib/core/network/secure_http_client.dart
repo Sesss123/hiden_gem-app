@@ -41,10 +41,11 @@ class SecureHttpClient extends http.BaseClient {
     final String nonce = _uuid.v4();
 
     // 3. Generate Request Signature
-    // We sign the combination of Method, Path, Timestamp, Nonce, and Body
+    // We sign the combination of Method, Path, Timestamp, Nonce, and SHA-256 Body Hash
     // to ensure an attacker cannot modify the payload without breaking the signature.
     final String body = await _getRequestBody(request);
-    final String payloadToSign = '${request.method}|${request.url.path}|$timestamp|$nonce|$body';
+    final String bodyHash = sha256.convert(utf8.encode(body)).toString();
+    final String payloadToSign = '${request.method}|${request.url.path}|$timestamp|$nonce|$bodyHash';
     
     final String signature = _calculateHMAC(payloadToSign);
 

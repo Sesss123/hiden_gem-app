@@ -9,7 +9,9 @@ import 'package:hidden_gems_sl/l10n/app_localizations.dart';
 import 'package:hidden_gems_sl/presentation/screens/real_time_food_scanner_screen.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/theme/oracle_ui_system.dart';
+import '../../core/utils/secure_logger.dart';
 import '../../data/datasources/trip_cache_service.dart';
+import '../../data/datasources/auth_service.dart';
 import '../widgets/batik_background.dart';
 import '../widgets/oracle_orb.dart';
 import 'saved_plans_screen.dart';
@@ -44,6 +46,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   List<EventModel> _todayEvents = [];
   bool _showEventBanner = true;
   List<DiscoveryPlace> _localGems = [];
+  bool _imagesPrecached = false;
   
   late Timer _bgTimer;
   int _bgImageIndex = 0;
@@ -66,8 +69,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    for (final imagePath in _bgImages) {
-      precacheImage(AssetImage(imagePath), context);
+    if (!_imagesPrecached) {
+      _imagesPrecached = true;
+      for (final imagePath in _bgImages) {
+        precacheImage(AssetImage(imagePath), context).catchError((e) {
+          SecureLogger.error("Failed to precache background image: $imagePath", e);
+        });
+      }
     }
   }
 
@@ -81,8 +89,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         });
       }
     } catch (e) {
-      if (kDebugMode) {
-        debugPrint("Error loading gems: $e");
+      SecureLogger.error("Failed to load local gems in HomeScreen", e);
+      if (mounted) {
+        setState(() {
+          _localGems = [];
+        });
       }
     }
   }
@@ -553,7 +564,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Widget _buildAppBar(BuildContext context) {
-    final user = widget.isOffline ? null : FirebaseAuth.instance.currentUser;
+    final user = widget.isOffline ? null : (ref.watch(authStateProvider).value ?? FirebaseAuth.instance.currentUser);
     return SliverAppBar(
       expandedHeight: 360,
       pinned: true,
@@ -701,7 +712,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Widget _buildWelcomeCard() {
-    final user = widget.isOffline ? null : FirebaseAuth.instance.currentUser;
+    final user = widget.isOffline ? null : (ref.watch(authStateProvider).value ?? FirebaseAuth.instance.currentUser);
     final name = user?.displayName?.split(" ").first ?? "Traveler";
 
     return Column(

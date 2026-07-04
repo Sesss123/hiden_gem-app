@@ -52,6 +52,7 @@ return new class extends Migration
             $table->string('height_m')->nullable();
             $table->string('length_km')->nullable();
             $table->string('surfing')->nullable();
+            $table->string('access_tier')->default('Free')->index();
             
             $table->json('risk_tags')->nullable();
             $table->json('facilities')->nullable();

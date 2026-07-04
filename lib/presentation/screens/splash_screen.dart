@@ -25,6 +25,7 @@ class SplashScreen extends ConsumerStatefulWidget {
 class _SplashScreenState extends ConsumerState<SplashScreen> {
   bool _isNavigating = false;
   int _retryCount = 0;
+  static const int maxRetries = 3;
 
   @override
   void initState() {
@@ -52,20 +53,14 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       widget.onFinish();
     } else if (mounted) {
       _retryCount++;
-      if (_retryCount > 30) {
-        // 15 seconds timeout
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text("Initialization is taking longer than expected. Please check your connection."),
-              backgroundColor: Colors.redAccent,
-              duration: const Duration(seconds: 5),
-            ),
-          );
-          _retryCount = 0; // Reset to allow more retries, but warned user
+      if (_retryCount > maxRetries) {
+        if (mounted && !_isNavigating) {
+          _isNavigating = true;
+          widget.onFinish();
         }
+      } else {
+        Future.delayed(const Duration(milliseconds: 500), _attemptFinish);
       }
-      Future.delayed(const Duration(milliseconds: 500), _attemptFinish);
     }
   }
 

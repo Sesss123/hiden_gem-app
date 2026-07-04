@@ -70,12 +70,17 @@ class _ModernTracerPainter extends CustomPainter {
       final scale = 0.8 + (0.4 * (1.0 - (p - 0.5).abs() * 2));
       final opacity = 0.4 + (0.6 * (1.0 - (p - 0.5).abs() * 2));
       
-      final paint = Paint()
-        ..color = color.withValues(alpha: opacity)
-        ..maskFilter = MaskFilter.blur(BlurStyle.normal, p * 3); // hardware accelerated blur
+      // Draw outer soft halo without GPU shader blur to prevent 60FPS jank
+      final haloPaint = Paint()
+        ..color = color.withValues(alpha: opacity * 0.3)
+        ..style = PaintingStyle.fill;
+      canvas.drawCircle(Offset(centers[i], size.height / 2), 4 * scale * 1.5, haloPaint);
 
-      // base radius 4. scaled by scale.
-      canvas.drawCircle(Offset(centers[i], size.height / 2), 4 * scale, paint);
+      // Draw inner core circle
+      final corePaint = Paint()
+        ..color = color.withValues(alpha: opacity)
+        ..style = PaintingStyle.fill;
+      canvas.drawCircle(Offset(centers[i], size.height / 2), 4 * scale, corePaint);
     }
   }
 

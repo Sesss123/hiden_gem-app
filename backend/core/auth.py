@@ -21,19 +21,26 @@ def is_safe_token(token: str) -> bool:
         return True
     return bool(JWT_PATTERN.match(token))
 
-def verify_firebase_token(id_token: str):
-    """
-    Verifies the Firebase ID token and returns decoded claims.
-    If in mock mode (no service account), it returns a dummy user only in dev when explicitly enabled.
-    """
-    if not id_token or not is_safe_token(id_token):
-        raise HTTPException(
-            status_code=400,
-            detail="Malformed or unsafe token format."
-        )
+class MockAuthService:
+    @staticmethod
+    def verify_mock_token(id_token: str) -> dict:
+        if os.getenv("NODE_ENV") != "production" and os.getenv("ALLOW_MOCK_AUTH") == "true":
+            return {"uid": "mock-user-123", "email": "mock@hiddengems.sl", "tier": "free"}
+        raise HTTPException(status_code=401, detail="Mock authentication disabled in production.")
 
-    # BUG-101 / BUG-121 / BUG-141: Validate signature format and hash algorithm (RS256)
-    if id_token != "MOCK_TOKEN":
+class FirebaseAuthService:
+    @staticmethod
+    def verify_token(id_token: str) -> dict:
+        if not id_token or not is_safe_token(id_token):
+            raise HTTPException(
+                status_code=400,
+                detail="Malformed or unsafe token format."
+            )
+
+        if id_token == "MOCK_TOKEN":
+            return MockAuthService.verify_mock_token(id_token)
+
+        # BUG-101 / BUG-121 / BUG-141: Validate signature format and hash algorithm (RS256)
         try:
             import base64
             import json
@@ -51,18 +58,17 @@ def verify_firebase_token(id_token: str):
                 raise e
             raise HTTPException(status_code=401, detail="Malformed token header.")
 
-    try:
-        # Check revoked to verify against latest key signatures
-        decoded_token = auth.verify_id_token(id_token, check_revoked=True)
+        try:
+            # Check revoked to verify against latest key signatures
+            decoded_token = auth.verify_id_token(id_token, check_revoked=True)
 
-        # BUG-081: Enforce token expiration validation on decoded signatures
-        import time
-        exp = decoded_token.get("exp")
-        if exp and exp < time.time():
-            raise HTTPException(status_code=401, detail="Token has expired.")
+            # BUG-081: Enforce token expiration validation on decoded signatures
+            import time
+            exp = decoded_token.get("exp")
+            if exp and exp < time.time():
+                raise HTTPException(status_code=401, detail="Token has expired.")
 
-        # BUG-121 / BUG-141: Validate authentication targets (issuer and audience format)
-        if id_token != "MOCK_TOKEN":
+            # BUG-121 / BUG-141: Validate authentication targets (issuer and audience format)
             iss = decoded_token.get("iss", "")
             aud = decoded_token.get("aud", "")
             if not iss.startswith("https://securetoken.google.com/"):
@@ -70,26 +76,34 @@ def verify_firebase_token(id_token: str):
             if not aud or len(aud) == 0:
                 raise HTTPException(status_code=401, detail="Authentication target mismatch (invalid audience).")
 
-        return decoded_token
-    except Exception as e:
-        if isinstance(e, HTTPException):
-            raise e
-        logger.error(f"Error verifying Firebase token: {e}")
-        # For development ease if Firebase isn't configured, allow MOCK_TOKEN only in non-production with explicit env flag
-        if id_token == "MOCK_TOKEN" and os.getenv("NODE_ENV") != "production" and os.getenv("ALLOW_MOCK_AUTH") == "true":
-            return {"uid": "mock-user-123", "email": "mock@hiddengems.sl", "tier": "free"}
-        raise HTTPException(
-            status_code=401,
-            detail=f"Invalid authentication credentials: {str(e)}"
-        )
+            return decoded_token
+        except Exception as e:
+            if isinstance(e, HTTPException):
+                raise e
+            logger.error(f"Error verifying Firebase token: {e}")
+            raise HTTPException(
+                status_code=401,
+                detail=f"Invalid authentication credentials: {str(e)}"
+            )
 
-async def get_current_user(
+def verify_firebase_token(id_token: str):
+    """
+    Verifies the Firebase ID token and returns decoded claims.
+    Delegates to FirebaseAuthService and MockAuthService.
+    """
+    return FirebaseAuthService.verify_token(id_token)
+
+# Rate limiter for auto-creations (max 20 per minute globally to prevent DoS)
+_creation_timestamps = []
+
+def get_current_user(
     res: HTTPAuthorizationCredentials = Security(security),
     db: Session = Depends(get_db)
 ) -> User:
     """
     FastAPI dependency that extracts the user from the Bearer token.
     Ensures the user exists in the local database.
+    Runs synchronously in threadpool to prevent blocking FastAPI main event loop.
     """
     token = res.credentials
     decoded = verify_firebase_token(token)
@@ -105,6 +119,14 @@ async def get_current_user(
     user = db.query(User).filter(User.firebase_uid == uid).first()
     
     if not user:
+        import time
+        now = time.time()
+        global _creation_timestamps
+        _creation_timestamps = [t for t in _creation_timestamps if now - t < 60]
+        if len(_creation_timestamps) >= 20:
+            raise HTTPException(status_code=429, detail="User creation rate limit exceeded. Please try again later.")
+        _creation_timestamps.append(now)
+
         raw_email = decoded.get("email", "unknown@example.com")
         # Sanitize email string to remove any script tags or special injection chars
         clean_email = re.sub(r'[^\w\.\-\+@]', '', raw_email)
@@ -121,7 +143,7 @@ async def get_current_user(
     
     return user
 
-async def admin_only(current_user: User = Depends(get_current_user)):
+def admin_only(current_user: User = Depends(get_current_user)):
     """
     Dependency to restrict routes to admin users only.
     """

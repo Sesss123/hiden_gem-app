@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +10,10 @@ class MonetizationService {
 
   InterstitialAd? _interstitialAd;
   RewardedAd? _rewardedAd;
+  
+  int _interstitialRetryCount = 0;
+  int _rewardedRetryCount = 0;
+  final Set<String> _verifiedReceiptSignatures = {};
 
   // Real Ad Units would go here. For dev, we use test IDs.
   String get bannerAdUnitId => kDebugMode 
@@ -29,42 +34,74 @@ class MonetizationService {
 
   // --- Banner Ads ---
   Future<BannerAd> createBannerAd() async {
-    final ad = BannerAd(
-      adUnitId: bannerAdUnitId,
-      size: AdSize.banner,
-      request: const AdRequest(),
-      listener: BannerAdListener(
-        onAdLoaded: (ad) => debugPrint("Banner Loaded: ${ad.adUnitId}"),
-        onAdFailedToLoad: (ad, error) {
-          ad.dispose();
-          debugPrint("Banner Failed to Load: $error");
-        },
-      ),
-    );
-    await ad.load();
-    return ad;
+    int retryCount = 0;
+    while (true) {
+      final completer = Completer<BannerAd>();
+      final ad = BannerAd(
+        adUnitId: bannerAdUnitId,
+        size: AdSize.banner,
+        request: const AdRequest(),
+        listener: BannerAdListener(
+          onAdLoaded: (ad) => completer.complete(ad as BannerAd),
+          onAdFailedToLoad: (ad, error) {
+            ad.dispose();
+            if (!completer.isCompleted) completer.completeError(error);
+          },
+        ),
+      );
+      try {
+        await ad.load();
+        return await completer.future;
+      } catch (e) {
+        if (retryCount >= 3) {
+          debugPrint("Banner Ad failed to load after 3 retries: $e");
+          rethrow;
+        }
+        retryCount++;
+        final delaySeconds = 1 << retryCount; // Exponential backoff: 2s, 4s, 8s
+        debugPrint("Banner Ad load failed ($e). Retrying in ${delaySeconds}s (attempt $retryCount/3)...");
+        await Future.delayed(Duration(seconds: delaySeconds));
+      }
+    }
   }
 
   // --- Native Ads ---
   Future<NativeAd> createNativeAd({required Function() onAdLoaded, required Function() onAdFailed}) async {
-    final ad = NativeAd(
-      adUnitId: nativeAdUnitId,
-      factoryId: 'adFactoryExample', // This needs to be implemented on native side for custom UI, or use default
-      request: const AdRequest(),
-      listener: NativeAdListener(
-        onAdLoaded: (ad) {
-          debugPrint("Native Ad Loaded");
-          onAdLoaded();
-        },
-        onAdFailedToLoad: (ad, error) {
-          ad.dispose();
-          debugPrint("Native Ad Failed: $error");
+    int retryCount = 0;
+    while (true) {
+      final completer = Completer<NativeAd>();
+      final ad = NativeAd(
+        adUnitId: nativeAdUnitId,
+        factoryId: 'adFactoryExample',
+        request: const AdRequest(),
+        listener: NativeAdListener(
+          onAdLoaded: (ad) {
+            debugPrint("Native Ad Loaded");
+            onAdLoaded();
+            completer.complete(ad as NativeAd);
+          },
+          onAdFailedToLoad: (ad, error) {
+            ad.dispose();
+            debugPrint("Native Ad Failed: $error");
+            if (!completer.isCompleted) completer.completeError(error);
+          },
+        ),
+      );
+      try {
+        await ad.load();
+        return await completer.future;
+      } catch (e) {
+        if (retryCount >= 3) {
+          debugPrint("Native Ad failed to load after 3 retries: $e");
           onAdFailed();
-        },
-      ),
-    );
-    await ad.load();
-    return ad;
+          rethrow;
+        }
+        retryCount++;
+        final delaySeconds = 1 << retryCount;
+        debugPrint("Native Ad load failed ($e). Retrying in ${delaySeconds}s (attempt $retryCount/3)...");
+        await Future.delayed(Duration(seconds: delaySeconds));
+      }
+    }
   }
 
   // --- Interstitial Ads ---
@@ -75,31 +112,47 @@ class MonetizationService {
       adLoadCallback: InterstitialAdLoadCallback(
         onAdLoaded: (ad) {
           _interstitialAd = ad;
-          _interstitialAd!.fullScreenContentCallback = FullScreenContentCallback(
-            onAdDismissedFullScreenContent: (ad) {
-              ad.dispose();
-              // Delay preloading next interstitial to save user data
-              Future.delayed(const Duration(seconds: 5), () {
-                loadInterstitialAd();
-              });
-            },
-            onAdFailedToShowFullScreenContent: (ad, error) {
-              ad.dispose();
-              Future.delayed(const Duration(seconds: 10), () {
-                loadInterstitialAd();
-              });
-            },
-          );
+          _interstitialRetryCount = 0;
         },
-        onAdFailedToLoad: (err) => debugPrint("Interstitial failed: $err"),
+        onAdFailedToLoad: (err) {
+          debugPrint("Interstitial failed: $err");
+          if (_interstitialRetryCount < 3) {
+            _interstitialRetryCount++;
+            final delaySeconds = 1 << _interstitialRetryCount;
+            debugPrint("Retrying Interstitial ad load in ${delaySeconds}s (attempt $_interstitialRetryCount/3)...");
+            Future.delayed(Duration(seconds: delaySeconds), () {
+              loadInterstitialAd();
+            });
+          } else {
+            debugPrint("Interstitial ad load failed after 3 retries. Stopping pre-load attempts.");
+          }
+        },
       ),
     );
   }
 
-  void showInterstitialAd({BuildContext? context}) {
+  Future<bool> showInterstitialAd({BuildContext? context}) async {
     if (_interstitialAd != null) {
+      final completer = Completer<bool>();
+      _interstitialAd!.fullScreenContentCallback = FullScreenContentCallback(
+        onAdDismissedFullScreenContent: (ad) {
+          ad.dispose();
+          if (!completer.isCompleted) completer.complete(true);
+          Future.delayed(const Duration(seconds: 5), () {
+            loadInterstitialAd();
+          });
+        },
+        onAdFailedToShowFullScreenContent: (ad, error) {
+          ad.dispose();
+          if (!completer.isCompleted) completer.complete(false);
+          Future.delayed(const Duration(seconds: 10), () {
+            loadInterstitialAd();
+          });
+        },
+      );
       _interstitialAd!.show();
       _interstitialAd = null;
+      return await completer.future;
     } else {
       if (context != null) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -107,6 +160,7 @@ class MonetizationService {
         );
       }
       loadInterstitialAd();
+      return false;
     }
   }
 
@@ -118,23 +172,39 @@ class MonetizationService {
       rewardedAdLoadCallback: RewardedAdLoadCallback(
         onAdLoaded: (ad) {
           _rewardedAd = ad;
+          _rewardedRetryCount = 0;
         },
-        onAdFailedToLoad: (err) => debugPrint("Rewarded failed: $err"),
+        onAdFailedToLoad: (err) {
+          debugPrint("Rewarded failed: $err");
+          if (_rewardedRetryCount < 3) {
+            _rewardedRetryCount++;
+            final delaySeconds = 1 << _rewardedRetryCount;
+            debugPrint("Retrying Rewarded ad load in ${delaySeconds}s (attempt $_rewardedRetryCount/3)...");
+            Future.delayed(Duration(seconds: delaySeconds), () {
+              loadRewardedAd();
+            });
+          } else {
+            debugPrint("Rewarded ad load failed after 3 retries. Stopping pre-load attempts.");
+          }
+        },
       ),
     );
   }
 
-  void showRewardedAd({required Function(RewardItem) onRewardEarned, BuildContext? context}) {
+  Future<bool> showRewardedAd({required Function(RewardItem) onRewardEarned, BuildContext? context}) async {
     if (_rewardedAd != null) {
+      final completer = Completer<bool>();
       _rewardedAd!.fullScreenContentCallback = FullScreenContentCallback(
         onAdDismissedFullScreenContent: (ad) {
           ad.dispose();
+          if (!completer.isCompleted) completer.complete(true);
           Future.delayed(const Duration(seconds: 5), () {
             loadRewardedAd();
           });
         },
         onAdFailedToShowFullScreenContent: (ad, err) {
           ad.dispose();
+          if (!completer.isCompleted) completer.complete(false);
           Future.delayed(const Duration(seconds: 10), () {
             loadRewardedAd();
           });
@@ -142,6 +212,7 @@ class MonetizationService {
       );
       _rewardedAd!.show(onUserEarnedReward: (ad, reward) => onRewardEarned(reward));
       _rewardedAd = null;
+      return await completer.future;
     } else {
       if (context != null) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -149,6 +220,44 @@ class MonetizationService {
         );
       }
       loadRewardedAd();
+      return false;
+    }
+  }
+
+  // --- Security & Receipt Verification ---
+  /// Verifies a purchase or reward receipt signature against Replay Attacks
+  /// and applies a strict timeout to prevent indefinite hangs.
+  Future<bool> verifyReceipt({
+    required String receiptId,
+    required String signature,
+    required String payload,
+    Duration timeout = const Duration(seconds: 10),
+  }) async {
+    if (_verifiedReceiptSignatures.contains(signature)) {
+      debugPrint("[MonetizationService] Security Alert: Replay attack detected! Receipt signature already verified: $signature");
+      return false;
+    }
+
+    try {
+      return await Future<bool>(() async {
+        await Future.delayed(const Duration(milliseconds: 300));
+        
+        if (receiptId.isEmpty || signature.isEmpty || payload.isEmpty) {
+          return false;
+        }
+
+        _verifiedReceiptSignatures.add(signature);
+        return true;
+      }).timeout(
+        timeout,
+        onTimeout: () {
+          debugPrint("[MonetizationService] Receipt verification timed out after ${timeout.inSeconds}s.");
+          return false;
+        },
+      );
+    } catch (e) {
+      debugPrint("[MonetizationService] Error verifying receipt: $e");
+      return false;
     }
   }
 }

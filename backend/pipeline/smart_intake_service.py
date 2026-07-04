@@ -168,7 +168,7 @@ class SmartIntakeService:
                 lng=data.get("lng"),
                 ticket_range=data.get("financials", {}).get("ticket_range"),
                 external_image_url=data.get("external_image_url"),
-                status=data.get("status", "pending"),
+                status=data.get("status") if data.get("status") in ["approved", "rejected"] else ("approved" if data.get("_score", 0) >= 90 else "pending"),
                 verified=1 if data.get("_score", 0) >= 90 else 0,
                 data_source=data.get("data_source"),
                 created_at=datetime.utcnow()
@@ -195,8 +195,10 @@ class SmartIntakeService:
         try:
             mongo_db = await get_mongo_db()
             if mongo_db is not None:
-                # Add timestamp
+                # Add timestamp and status
                 data["created_at"] = datetime.utcnow()
+                if not data.get("status") or data.get("status") == "pending":
+                    data["status"] = "approved" if data.get("_score", 0) >= 90 else "pending"
                 # Check for existing place by name
                 existing = await mongo_db.places.find_one({"name": data.get("name")})
                 if existing:

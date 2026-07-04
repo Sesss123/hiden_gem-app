@@ -6,6 +6,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import '../../core/services/brute_force_service.dart';
 import '../../core/utils/secure_logger.dart';
 import 'user_preference_service.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -189,3 +190,7 @@ class AuthService {
     }
   }
 }
+
+final authStateProvider = StreamProvider<User?>((ref) {
+  return FirebaseAuth.instance.authStateChanges();
+});
