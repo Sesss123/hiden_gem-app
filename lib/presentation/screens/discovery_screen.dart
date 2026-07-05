@@ -18,8 +18,8 @@ import '../../data/datasources/village_experience_service.dart';
 import '../../core/utils/image_utils.dart';
 import '../../core/localization/l10n_utils.dart';
 import 'place_details_screen.dart';
+import 'package:shimmer/shimmer.dart';
 import 'event_calendar_screen.dart';
-
 class DiscoveryScreen extends ConsumerStatefulWidget {
   const DiscoveryScreen({super.key});
 
@@ -27,7 +27,9 @@ class DiscoveryScreen extends ConsumerStatefulWidget {
   ConsumerState<DiscoveryScreen> createState() => _DiscoveryScreenState();
 }
 
-class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
+class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
   Position? _currentPosition;
   
   List<DiscoveryPlace> _allPlaces = [];
@@ -89,11 +91,19 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
       final repo = ref.read(discoveryRepositoryProvider);
       _currentPosition = await repo.getCurrentLocation();
       
-      _allPlaces = await repo.getDiscoveryPlaces(
+      final result = await repo.getDiscoveryPlaces(
         userLat: _currentPosition?.latitude,
         userLng: _currentPosition?.longitude,
         forceRefresh: forceRefresh,
       );
+      
+      _allPlaces = result.valueOrNull ?? [];
+      
+      if (mounted) {
+        setState(() {
+          _filteredList = _allPlaces;
+        });
+      }
 
       _oraclePicks = await repo.getAiRecommendations(_allPlaces);
       
@@ -498,6 +508,7 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
@@ -819,7 +830,13 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
                               imageUrl: exp.imageUrl, 
                               fit: BoxFit.cover, 
                               width: double.infinity,
-                              placeholder: (context, url) => Container(color: Colors.white.withValues(alpha: 0.05)),
+                              memCacheWidth: 600,
+                              memCacheHeight: 400,
+                              placeholder: (context, url) => Shimmer.fromColors(
+                                baseColor: Colors.white.withValues(alpha: 0.05),
+                                highlightColor: Colors.white.withValues(alpha: 0.15),
+                                child: Container(color: Colors.white),
+                              ),
                               errorWidget: (context, url, error) => Container(
                                 color: Colors.black12,
                                 child: const Center(
@@ -1017,7 +1034,13 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
                                   imageUrl: place.imageUrl.isNotEmpty ? place.imageUrl : ImageUtils.getPlaceholderImage(place.category, place.name),
                                   width: double.infinity,
                                   fit: BoxFit.cover,
-                                  placeholder: (context, url) => Container(color: Colors.white.withValues(alpha: 0.05)),
+                                  memCacheWidth: 600,
+                                  memCacheHeight: 400,
+                                  placeholder: (context, url) => Shimmer.fromColors(
+                                    baseColor: Colors.white.withValues(alpha: 0.05),
+                                    highlightColor: Colors.white.withValues(alpha: 0.15),
+                                    child: Container(color: Colors.white),
+                                  ),
                                   errorWidget: (context, url, error) => Container(
                                     color: Colors.black12,
                                     child: const Center(
@@ -1204,7 +1227,13 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> {
                       child: CachedNetworkImage(
                         imageUrl: place.imageUrl.isNotEmpty ? place.imageUrl : ImageUtils.getPlaceholderImage(place.category, place.name),
                         fit: BoxFit.cover,
-                        placeholder: (context, url) => Container(color: Colors.white.withValues(alpha: 0.05)),
+                        memCacheWidth: 600,
+                        memCacheHeight: 400,
+                        placeholder: (context, url) => Shimmer.fromColors(
+                          baseColor: Colors.white.withValues(alpha: 0.05),
+                          highlightColor: Colors.white.withValues(alpha: 0.15),
+                          child: Container(color: Colors.white),
+                        ),
                         errorWidget: (context, url, error) => Container(
                           color: Colors.black12,
                           child: const Center(

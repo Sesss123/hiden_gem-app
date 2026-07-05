@@ -292,7 +292,7 @@ class AIExtractor:
             if not is_valid:
                 logger.warning(f"🚩 [Geofence] Point {lat}, {lng} is outside Sri Lanka!")
             return is_valid
-        except:
+        except Exception as e:
             return False
 
     async def cross_validate(self, claude_result: dict, gemini_result: dict) -> Tuple[dict, str]:
@@ -377,7 +377,7 @@ class AIExtractor:
             if provider == "groq": base_url = "https://api.groq.com/openai/v1"
             elif provider == "deepseek": base_url = "https://api.deepseek.com"
             
-            client = AsyncOpenAI(api_key=active_key, base_url=base_url)
+            client = AsyncOpenAI(api_key=active_key, base_url=base_url, timeout=30.0)
             return client, active_key
         except Exception as e:
             logger.error(f"Failed to refresh OpenAI-compatible model ({provider}): {e}")
@@ -390,7 +390,7 @@ class AIExtractor:
         # 1. Direct parse
         try:
             return json.loads(text.strip())
-        except:
+        except Exception as e:
             pass
             
         # 2. Markdown Cleanup
@@ -402,7 +402,7 @@ class AIExtractor:
             
         try:
             return json.loads(cleaned)
-        except:
+        except Exception as e:
             pass
             
         # 3. Last resort: Regex-like brace capture

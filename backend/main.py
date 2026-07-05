@@ -51,8 +51,23 @@ app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 app.add_middleware(SlowAPIMiddleware)
 
+# BUG-028 Fix: Enforce maximum request body size limit (8MB) to prevent DoS on AI image base64 endpoints
+@app.middleware("http")
+async def limit_upload_size(request: Request, call_next):
+    if request.method in ["POST", "PUT", "PATCH"]:
+        content_length = request.headers.get("content-length")
+        if content_length and int(content_length) > 8 * 1024 * 1024:  # 8 MB limit
+            from fastapi.responses import JSONResponse
+            return JSONResponse(status_code=413, content={"detail": "Payload too large. Maximum request body size is 8MB."})
+    return await call_next(request)
+
+
 # CORS Lockdown
-environment = os.getenv("ENV", "development")
+environment = os.getenv("ENV")
+if not environment:
+    # BUG-014 Fix: Force explicit environment configuration
+    raise RuntimeError("ENV environment variable must be explicitly set (e.g., 'development' or 'production').")
+
 if environment == "production":
     allowed_origins = [
         "https://hiddengemssl.com",

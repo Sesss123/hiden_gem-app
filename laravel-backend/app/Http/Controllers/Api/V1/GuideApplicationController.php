@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 use App\Services\FirestoreService;
 
 class GuideApplicationController extends Controller
@@ -106,17 +107,19 @@ class GuideApplicationController extends Controller
             ], 404);
         }
 
-        $application->update([
-            'status' => 'approved',
-            'reviewed_at' => now(),
-            'admin_comment' => null,
-        ]);
+        DB::transaction(function () use ($application) {
+            $application->update([
+                'status' => 'approved',
+                'reviewed_at' => now(),
+                'admin_comment' => null,
+            ]);
 
-        // If a local user exists in MySQL, update their role
-        $user = User::where('email', $application->email)->orWhere('id', $application->user_id)->first();
-        if ($user) {
-            $user->update(['role' => 'guide_approved']);
-        }
+            // If a local user exists in MySQL, update their role
+            $user = User::where('email', $application->email)->orWhere('id', $application->user_id)->first();
+            if ($user) {
+                $user->update(['role' => 'guide_approved']);
+            }
+        });
 
         // Sync to Firestore — guide_applications & users collections
         try {

@@ -28,7 +28,9 @@ class EventCalendarScreen extends StatefulWidget {
   State<EventCalendarScreen> createState() => _EventCalendarScreenState();
 }
 
-class _EventCalendarScreenState extends State<EventCalendarScreen> {
+class _EventCalendarScreenState extends State<EventCalendarScreen> with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
   List<EventModel> _selectedEvents = [];
@@ -109,6 +111,7 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Screenshot(
       controller: _screenshotController,
       child: Scaffold(

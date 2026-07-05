@@ -304,7 +304,7 @@ class _RealTimeFoodScannerScreenState extends State<RealTimeFoodScannerScreen>
         // Clean up temporary image file to avoid storage buildup
         try {
           await File(imageFile.path).delete();
-        } catch (_) {}
+        } catch (e, st) { SecureLogger.warning("Exception caught", e, st); }
 
         final base64Image = 'data:image/jpeg;base64,${base64Encode(bytes)}';
         final requestPayload = jsonEncode({

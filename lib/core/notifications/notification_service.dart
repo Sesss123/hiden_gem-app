@@ -134,4 +134,8 @@ class NotificationService {
     await _fcm.subscribeToTopic(topic);
     SecureLogger.info("Subscribed to topic: $topic", tag: "Notifications");
   }
+
+  void dispose() {
+    _foregroundMessageController.close();
+  }
 }

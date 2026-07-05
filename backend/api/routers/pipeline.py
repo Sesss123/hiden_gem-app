@@ -8,6 +8,7 @@ from typing import Optional
 from datetime import datetime
 import logging
 import os
+import asyncio
 
 from pipeline.logger import read_log_file, get_log_summary
 from pipeline.alert_manager import get_alert_manager
@@ -20,6 +21,8 @@ from core.security import get_current_user, verify_internal_key
 
 router = APIRouter(prefix="/api/pipeline", tags=["pipeline"])
 logger = logging.getLogger("PipelineAPI")
+
+vision_semaphore = asyncio.Semaphore(5)  # Limit concurrent vision AI processing
 
 # Lazy initializers for AI engines
 _discovery_engine = None
@@ -367,13 +370,14 @@ async def analyze_image_vision(request: VisionAnalysisRequest, user=Depends(get_
     if not request.image_url:
         raise HTTPException(status_code=400, detail="Image URL is required.")
 
-    result = await extractor.analyze_image_features(request.image_url, request.place_name)
-    if result is None:
-        return JSONResponse({
-            "success": False,
-            "message": "Vision AI analysis failed or unavailable.",
-            "features": None
-        }, status_code=500)
+    async with vision_semaphore:
+        result = await extractor.analyze_image_features(request.image_url, request.place_name)
+        if result is None:
+            return JSONResponse({
+                "success": False,
+                "message": "Vision AI analysis failed or unavailable.",
+                "features": None
+            }, status_code=500)
 
     return JSONResponse({
         "success": True,

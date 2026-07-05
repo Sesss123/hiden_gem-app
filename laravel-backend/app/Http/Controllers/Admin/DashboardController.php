@@ -27,6 +27,7 @@ class DashboardController extends Controller
 
         $totalWishlists = Schema::hasTable('wishlists') ? Wishlist::count() : 0;
 
+        // BUG-009 Fix: Document that DB::raw is safe here because inputs are hardcoded strings without user variables
         $byDistrict = Place::select('district', DB::raw('count(*) as total'))
             ->groupBy('district')
             ->orderByDesc('total')

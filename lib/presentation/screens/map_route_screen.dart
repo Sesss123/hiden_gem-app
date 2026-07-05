@@ -243,11 +243,14 @@ class _MapRouteScreenState extends State<MapRouteScreen> {
             bottom: 40,
             left: 20,
             right: 20,
-            child: Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
+            child: SafeArea(
+              bottom: true,
+              top: false,
+              child: Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withValues(alpha: 0.1),
@@ -299,8 +302,10 @@ class _MapRouteScreenState extends State<MapRouteScreen> {
                       ),
                     ),
                   ],
+                  ],
                 ],
               ),
+            ),
             ),
           ),
         ],

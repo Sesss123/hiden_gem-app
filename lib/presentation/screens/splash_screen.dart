@@ -255,7 +255,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                         style: GoogleFonts.inter(
                           fontSize: 10,
                           fontWeight: FontWeight.w700,
-                          color: primaryTextColor.withValues(alpha: 0.55),
+                          color: primaryTextColor.withValues(alpha: 0.65),
                           letterSpacing: 1.8,
                         ),
                       )

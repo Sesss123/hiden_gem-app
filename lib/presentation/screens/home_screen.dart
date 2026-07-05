@@ -82,10 +82,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Future<void> _loadLocalGems() async {
     try {
       final repo = ref.read(discoveryRepositoryProvider);
-      final places = await repo.getDiscoveryPlaces();
+      final result = await repo.getDiscoveryPlaces();
       if (mounted) {
         setState(() {
-          _localGems = places;
+          _localGems = result.valueOrNull ?? [];
         });
       }
     } catch (e) {
@@ -153,6 +153,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 child: CachedNetworkImage(
                   imageUrl: imageUrl,
                   fit: BoxFit.cover,
+                  memCacheWidth: 600,
+                  memCacheHeight: 400,
                   errorWidget: (c, u, e) => Image.asset("assets/images/sigiriya_sunset_bg.jpg", fit: BoxFit.cover),
                   placeholder: (c, u) => Container(color: Colors.black26),
                 ),

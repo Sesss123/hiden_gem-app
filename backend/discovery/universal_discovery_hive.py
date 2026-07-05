@@ -123,7 +123,7 @@ class UniversalDiscoveryHive:
             with open(self.results_file, "r", encoding="utf-8") as f:
                 try:
                     current_data = json.load(f)
-                except: current_data = []
+                except Exception as e: current_data = []
         
         current_data.extend(new_items)
         with open(self.results_file, "w", encoding="utf-8") as f:

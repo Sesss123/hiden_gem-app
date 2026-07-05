@@ -88,7 +88,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   child: Text(
                     l10n?.skipForNow.toUpperCase() ?? "SKIP", 
                     style: GoogleFonts.inter(
-                      color: AppPalette.earth.withValues(alpha: 0.55), 
+                      color: AppPalette.earth.withValues(alpha: 0.65), 
                       fontSize: 10, 
                       fontWeight: FontWeight.bold, 
                       letterSpacing: 2

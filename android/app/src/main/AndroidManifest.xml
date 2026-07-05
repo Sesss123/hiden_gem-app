@@ -20,6 +20,7 @@
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon"
         android:allowBackup="false"
+        android:usesCleartextTraffic="false"
         android:fullBackupOnly="false">
         
         <!-- AdMob App ID (Required - App crashes on startup without this) -->

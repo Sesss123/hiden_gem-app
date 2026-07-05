@@ -25,7 +25,7 @@ class SecureLogger {
   static const int maxHistory = 200;
 
   static void _record(String level, String tag, String message, [dynamic error, StackTrace? st, bool isBackground = false]) {
-    if (!kDebugMode) return;
+    if (kReleaseMode && level != '🔴 ERROR') return;
     
     final entry = LogEntry(level, tag, message, error, isBackground);
     _history.add(entry);

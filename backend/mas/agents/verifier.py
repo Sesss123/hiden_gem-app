@@ -108,7 +108,7 @@ class VerifierAgent:
             if r.get("name") == base.get("name"): match_count += 5
             try:
                 if abs(float(r.get("lat", 0)) - float(base.get("lat", 0))) < 0.001: match_count += 5
-            except: pass
+            except Exception as e: pass
             
         # Basic heuristic score
         score = min(100.0, (match_count / (5 * (len(results)-1))) * 100)

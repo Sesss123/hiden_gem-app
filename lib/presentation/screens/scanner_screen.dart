@@ -30,6 +30,31 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> with WidgetsBindi
 
   Future<void> _initCamera() async {
     final status = await Permission.camera.request();
+    if (status.isPermanentlyDenied) {
+      if (mounted) {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Camera Permission Required'),
+            content: const Text('Please enable camera access in app settings to use the scanner.'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  openAppSettings();
+                },
+                child: const Text('Open Settings'),
+              ),
+            ],
+          ),
+        );
+      }
+      return;
+    }
     if (!status.isGranted) return;
 
     final cameras = await availableCameras();

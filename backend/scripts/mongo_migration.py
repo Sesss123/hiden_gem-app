@@ -55,7 +55,7 @@ async def migrate():
         def g(key, default=None):
             try:
                 return row[key]
-            except:
+            except Exception as e:
                 return default
 
         cat_name, _ = categories.get(g('category_id'), ("General", "general"))
@@ -112,7 +112,7 @@ async def migrate():
         if isinstance(place_doc["createdAt"], str):
             try:
                 place_doc["createdAt"] = datetime.fromisoformat(place_doc["createdAt"])
-            except:
+            except Exception as e:
                 place_doc["createdAt"] = datetime.utcnow()
         elif not place_doc["createdAt"]:
             place_doc["createdAt"] = datetime.utcnow()

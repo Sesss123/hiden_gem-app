@@ -97,4 +97,13 @@ class DiscoveryLocalDataSource {
     _memCache.clear();
     _decodedCache.clear(); // BUG-066: Clear decoded cache too
   }
+
+  // BUG-045: Immediately invalidate L0 RAM cache and cancel pending debounces upon manual place mutation
+  void invalidateCache() {
+    clearMemory();
+    _diskWriteDebounce?.cancel();
+    _pendingKey = null;
+    _pendingJson = null;
+  }
 }
+

@@ -49,6 +49,8 @@ class CachedImage extends StatelessWidget {
       width: width,
       height: height,
       maxWidthDiskCache: maxWidthDiskCache,
+      memCacheWidth: 600,
+      memCacheHeight: 400,
       placeholder: (context, url) => placeholder ?? _buildShimmer(context),
       errorWidget: (context, url, error) {
         // BUG-P06 Fix: Explicit error logging instead of silent catch (_) {}

@@ -1,8 +1,8 @@
 // lumen_ai_service.dart
 // Lumen-1 Local AI Model Integration for Hidden Gems SL
-// Connects to the Lumen-1 FastAPI server running on the local machine.
-// Android Emulator: http://10.0.2.2:8000
-// Physical Device (USB/WiFi): http://<PC-LOCAL-IP>:8000
+// Connects to the Lumen-1 FastAPI server.
+// Base URL is configured via AppConfig.pythonUrl
+// Development defaults to localhost, production uses https://ai.hiddengemssl.com/api
 
 import 'dart:convert';
 import 'package:http/http.dart' as http;

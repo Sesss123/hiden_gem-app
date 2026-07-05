@@ -48,17 +48,17 @@ class AIDiscovery:
         if model_variant == "gpt-4o":
             active_key = multi_key_rotator.get_active_key("openai")
             if not active_key: return None, None
-            return AsyncOpenAI(api_key=active_key), "openai"
+            return AsyncOpenAI(api_key=active_key, timeout=30.0), "openai"
         
         if model_variant == "deepseek-chat":
             active_key = multi_key_rotator.get_active_key("deepseek")
             if not active_key: return None, None
-            return AsyncOpenAI(api_key=active_key, base_url="https://api.deepseek.com"), "deepseek"
+            return AsyncOpenAI(api_key=active_key, base_url="https://api.deepseek.com", timeout=30.0), "deepseek"
             
         if model_variant == "llama-3.3-70b-versatile":
             active_key = multi_key_rotator.get_active_key("groq")
             if not active_key: return None, None
-            return AsyncOpenAI(api_key=active_key, base_url="https://api.groq.com/openai/v1"), "groq"
+            return AsyncOpenAI(api_key=active_key, base_url="https://api.groq.com/openai/v1", timeout=30.0), "groq"
         
         active_key = multi_key_rotator.get_active_key("google")
         if not active_key:

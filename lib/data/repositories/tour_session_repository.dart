@@ -34,7 +34,7 @@ class TourSessionRepository {
           'startedAt': DateTime.now().toIso8601String(),
         });
       }
-    } catch (_) {}
+    } catch (e, st) { SecureLogger.warning("Exception caught", e, st); }
   }
 
   Future<void> endSession(String sessionId, {String status = 'completed_normally'}) async {
@@ -79,7 +79,7 @@ class TourSessionRepository {
           'payoutStatus': 'pending',
         });
       }
-    } catch (_) {}
+    } catch (e, st) { SecureLogger.warning("Exception caught", e, st); }
   }
 
   Future<TourSession?> getActiveOrInitialSessionForGuide(String guideId) async {

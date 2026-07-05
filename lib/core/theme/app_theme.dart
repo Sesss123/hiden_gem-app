@@ -43,7 +43,7 @@ class AppPaletteDark {
   static const Color blue = Color(0xFF3B82F6);
   
   static const Color text = Color(0xFFF8FAFC);
-  static const Color textSub = Color(0x8CF8FAFC); // 0.55 opacity F8FAFC
+  static const Color textSub = Color(0xA6F8FAFC); // 0.65 opacity F8FAFC
 }
 
 class AppTheme {
@@ -51,7 +51,7 @@ class AppTheme {
   static Color cardColor(BuildContext context) => Theme.of(context).cardColor;
   static Color borderColor(BuildContext context) => Theme.of(context).brightness == Brightness.dark ? Colors.white.withValues(alpha: 0.07) : AppPalette.ink.withValues(alpha: 0.12);
   static Color textPrimary(BuildContext context) => Theme.of(context).brightness == Brightness.dark ? AppPaletteDark.text : AppPalette.ink;
-  static Color textSecondary(BuildContext context) => Theme.of(context).brightness == Brightness.dark ? AppPaletteDark.textSub : AppPalette.ink.withValues(alpha: 0.55);
+  static Color textSecondary(BuildContext context) => Theme.of(context).brightness == Brightness.dark ? AppPaletteDark.textSub : AppPalette.ink.withValues(alpha: 0.65);
   static Color scaffoldColor(BuildContext context) => Theme.of(context).scaffoldBackgroundColor;
 
   // Semantic Aliases
@@ -143,7 +143,7 @@ class AppTheme {
       headlineMedium: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.w600, color: AppPalette.ink),
       titleLarge: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.w600, color: AppPalette.ink),
       bodyLarge: GoogleFonts.inter(fontSize: 16, color: AppPalette.ink),
-      bodyMedium: GoogleFonts.inter(fontSize: 14, color: AppPalette.ink.withValues(alpha: 0.55)),
+      bodyMedium: GoogleFonts.inter(fontSize: 14, color: AppPalette.ink.withValues(alpha: 0.65)),
     ),
     appBarTheme: AppBarTheme(
       backgroundColor: Colors.transparent,

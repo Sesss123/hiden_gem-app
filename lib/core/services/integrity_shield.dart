@@ -31,8 +31,8 @@ class IntegrityShield {
   static const String _expectedPackageName = 'com.hidden.gems.hidden_gems_sl';
   
   // SHA-256 Fingerprint of your production signing certificate.
-  // REPLACE THIS with your actual fingerprint from Google Play Console.
-  static const String _expectedSignatureHash = 'PLACEHOLDER_SHA256_FINGERPRINT';
+  // BUG-013 Fix: Use environment injection instead of hardcoded placeholder
+  static const String _expectedSignatureHash = String.fromEnvironment('SIGNATURE_HASH', defaultValue: '');
 
   // --- Public API ---
 

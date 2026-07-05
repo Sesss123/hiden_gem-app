@@ -284,6 +284,8 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
                         CachedNetworkImage(
                           imageUrl: _getDestinationImage(_activePlan.tripSummary.destinationCity),
                           fit: BoxFit.cover,
+                          memCacheWidth: 600,
+                          memCacheHeight: 400,
                         ),
                         Container(
                           decoration: BoxDecoration(

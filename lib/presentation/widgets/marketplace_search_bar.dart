@@ -216,6 +216,8 @@ class _SearchInputField extends StatelessWidget {
                 ),
           suffixIcon: controller.text.isNotEmpty
               ? IconButton(
+                  constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+                  padding: const EdgeInsets.all(12),
                   icon: const Icon(Icons.close_rounded, size: 18),
                   onPressed: onClear,
                   tooltip: 'Clear search',

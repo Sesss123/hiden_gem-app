@@ -274,9 +274,11 @@ class _BudgetTrackerScreenState extends State<BudgetTrackerScreen> {
                   const SizedBox(height: 48),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _statItem("PLAN LIMIT", _currencyFormat.format(_budget), AppTheme.textSecondary(context)),
-                      _statItem("CURRENT CONSUMPTION", _currencyFormat.format(_totalSpent), isOverBudget ? Colors.redAccent : Theme.of(context).colorScheme.primary),
+                      Expanded(child: _statItem("PLAN LIMIT", _currencyFormat.format(_budget), AppTheme.textSecondary(context))),
+                      const SizedBox(width: 16),
+                      Expanded(child: _statItem("CURRENT CONSUMPTION", _currencyFormat.format(_totalSpent), isOverBudget ? Colors.redAccent : Theme.of(context).colorScheme.primary)),
                     ],
                   ),
                 ],

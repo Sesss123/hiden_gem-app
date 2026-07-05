@@ -56,6 +56,7 @@ class DiscoveryPlace {
   final String bestTime;
   final List<String> facilities;
   final String openingHours;
+  final String updatedAt;
   final int syncVersion;
   final bool arSupported;
   final int arTier;
@@ -95,6 +96,7 @@ class DiscoveryPlace {
     required this.bestTime,
     required this.facilities,
     this.openingHours = '',
+    this.updatedAt = '',
     this.syncVersion = 0,
     this.arSupported = false,
     this.arTier = 3,
@@ -127,13 +129,36 @@ class DiscoveryPlace {
       return EncryptionUtil.decryptSync(val.toString());
     }
 
+    double parseCoord(dynamic val) {
+      if (val == null) return 0.0;
+      double? parsed;
+      if (val is num) {
+        parsed = val.toDouble();
+      } else {
+        parsed = double.tryParse(decryptVal(val));
+      }
+      if (parsed == null) return 0.0;
+      // BUG-042: Preserve up to 8 decimal places for GPS precision without truncation
+      return double.tryParse(parsed.toStringAsFixed(8)) ?? parsed;
+    }
+
+    String parseUtcTimestamp(dynamic val) {
+      if (val == null || val.toString().isEmpty) return DateTime.now().toUtc().toIso8601String();
+      try {
+        if (val is Timestamp) return val.toDate().toUtc().toIso8601String();
+        return DateTime.parse(val.toString()).toUtc().toIso8601String();
+      } catch (_) {
+        return DateTime.now().toUtc().toIso8601String();
+      }
+    }
+
     return DiscoveryPlace(
       id: json['id'].toString(),
       name: json['name'] as String? ?? '',
       district: json['district'] as String? ?? '',
       category: json['category'] as String? ?? '',
-      lat: double.tryParse(decryptVal(json['lat'])) ?? 0.0,
-      lng: double.tryParse(decryptVal(json['lng'])) ?? 0.0,
+      lat: parseCoord(json['lat']),
+      lng: parseCoord(json['lng']),
       rating: (json['rating'] as num?)?.toDouble() ?? 0.0,
       ticketRange: json['ticketRange'] as String? ?? json['ticket_range'] as String? ?? 'Free',
       roadType: json['roadType'] as String? ?? json['road_type'] as String? ?? '',
@@ -143,6 +168,7 @@ class DiscoveryPlace {
       bestTime: json['bestTime'] as String? ?? json['best_time'] as String? ?? '',
       facilities: List<String>.from(json['facilities'] ?? []),
       openingHours: json['openingHours'] as String? ?? json['opening_hours'] as String? ?? '',
+      updatedAt: parseUtcTimestamp(json['updatedAt'] ?? json['updated_at']),
       syncVersion: (json['syncVersion'] as num?)?.toInt() ?? (json['sync_version'] as num?)?.toInt() ?? 0,
       arSupported: json['arSupported'] as bool? ?? json['ar_supported'] as bool? ?? false,
       arTier: json['arTier'] as int? ?? json['ar_tier'] as int? ?? 3,
@@ -180,13 +206,32 @@ class DiscoveryPlace {
     final data = doc.data() as Map<String, dynamic>;
     final geoPoint = data['geoPoint'] as GeoPoint?;
     
+    double parseCoord(dynamic val, double? geoVal) {
+      if (geoVal != null) return double.tryParse(geoVal.toStringAsFixed(8)) ?? geoVal;
+      if (val == null) return 0.0;
+      double? parsed = val is num ? val.toDouble() : double.tryParse(val.toString());
+      if (parsed == null) return 0.0;
+      // BUG-042: Preserve up to 8 decimal places for GPS precision without truncation
+      return double.tryParse(parsed.toStringAsFixed(8)) ?? parsed;
+    }
+
+    String parseUtcTimestamp(dynamic val) {
+      if (val == null || val.toString().isEmpty) return DateTime.now().toUtc().toIso8601String();
+      try {
+        if (val is Timestamp) return val.toDate().toUtc().toIso8601String();
+        return DateTime.parse(val.toString()).toUtc().toIso8601String();
+      } catch (_) {
+        return DateTime.now().toUtc().toIso8601String();
+      }
+    }
+
     return DiscoveryPlace(
       id: doc.id,
       name: data['name'] ?? '',
       district: data['district'] ?? '',
       category: data['category'] ?? '',
-      lat: geoPoint?.latitude ?? (data['lat'] is String ? double.tryParse(data['lat']) : (data['lat'] as num?)?.toDouble()) ?? 0.0,
-      lng: geoPoint?.longitude ?? (data['lng'] is String ? double.tryParse(data['lng']) : (data['lng'] as num?)?.toDouble()) ?? 0.0,
+      lat: parseCoord(data['lat'], geoPoint?.latitude),
+      lng: parseCoord(data['lng'], geoPoint?.longitude),
       rating: (data['rating'] as num?)?.toDouble() ?? 0.0,
       ticketRange: data['ticketRange'] ?? data['ticket_range'] ?? '',
       roadType: data['roadType'] ?? data['road_type'] ?? '',
@@ -196,6 +241,7 @@ class DiscoveryPlace {
       bestTime: data['bestTime'] ?? data['best_time'] ?? '',
       facilities: List<String>.from(data['facilities'] ?? []),
       openingHours: data['openingHours'] ?? data['opening_hours'] ?? '',
+      updatedAt: parseUtcTimestamp(data['updatedAt'] ?? data['updated_at']),
       syncVersion: (data['syncVersion'] as num?)?.toInt() ?? (data['sync_version'] as num?)?.toInt() ?? 0,
       arSupported: data['arSupported'] ?? false,
       arTier: data['arTier'] ?? 3,
@@ -246,6 +292,8 @@ class DiscoveryPlace {
       'facilities': facilities,
       'openingHours': openingHours,
       'opening_hours': openingHours,
+      'updatedAt': updatedAt,
+      'updated_at': updatedAt,
       'syncVersion': syncVersion,
       'sync_version': syncVersion,
       'arSupported': arSupported,
@@ -275,4 +323,5 @@ class DiscoveryPlace {
     };
   }
 }
+
 

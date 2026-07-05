@@ -47,6 +47,13 @@ class _IncidentCenterScreenState extends ConsumerState<IncidentCenterScreen> {
                     child: Center(child: CircularProgressIndicator()),
                   );
                 }
+                if (snapshot.hasError) {
+                  return SliverFillRemaining(
+                    child: Center(
+                      child: Text("Offline Error: ${snapshot.error}", style: const TextStyle(color: Colors.redAccent)),
+                    ),
+                  );
+                }
                 
                 final incidents = snapshot.data ?? [];
                 if (incidents.isEmpty) {

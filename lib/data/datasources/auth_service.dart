@@ -63,6 +63,8 @@ class AuthService {
   // Send password reset email
   Future<void> sendPasswordResetEmail(String email) async {
     await _auth.sendPasswordResetEmail(email: email.trim());
+    // BUG-030 Fix: Clear local auth tokens upon triggering account recovery / password reset
+    await UserPreferenceService.clearAuthToken();
   }
 
   // Sign up with Email
@@ -165,6 +167,7 @@ class AuthService {
     }
     await _auth.signOut();
     await UserPreferenceService.clearProfile();
+    await UserPreferenceService.clearAuthToken();
   }
   
   // Delete Account (Permanent)
@@ -176,8 +179,9 @@ class AuthService {
       // BUG-014 Fix: Attempt Auth deletion FIRST to catch requires-recent-login before touching Firestore/profile
       await user.delete();
       
-      // 2. Clear local profile and sign out of providers
+      // 2. Clear local profile, auth tokens, and sign out of providers
       await UserPreferenceService.clearProfile();
+      await UserPreferenceService.clearAuthToken();
       if (!kIsWeb) {
         try { await _googleSignIn.signOut(); } catch (e) { SecureLogger.warning('Google sign out failed: $e'); }
       }

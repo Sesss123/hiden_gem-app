@@ -55,6 +55,8 @@ class StandardCard extends StatelessWidget {
                 child: CachedNetworkImage(
                   imageUrl: imageUrl,
                   fit: BoxFit.cover,
+                  memCacheWidth: 600,
+                  memCacheHeight: 400,
                   placeholder: (context, url) => Container(
                     color: Theme.of(context).dividerColor.withValues(alpha: 0.1),
                   ),

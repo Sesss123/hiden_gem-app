@@ -1,6 +1,8 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import '../models/user_profile.dart';
 import '../models/guide_profile.dart';
 import '../models/guide_status.dart';
@@ -36,6 +38,7 @@ class UserPreferenceService {
   static DateTime? _lastFlush;
   static const _flushCooldown = Duration(seconds: 2); // Minimum flush interval
   static bool _pendingFirestoreSync = false;
+  static StreamSubscription<List<ConnectivityResult>>? _connectivitySub;
 
   // ── Initialization ───────────────────────────────────────────────────────
 
@@ -51,7 +54,7 @@ class UserPreferenceService {
     try {
       final pendingRaw = await _secureStorage.read(key: 'pending_firestore_sync');
       _pendingFirestoreSync = pendingRaw == 'true';
-    } catch (_) {}
+    } catch (e, st) { SecureLogger.warning("Exception caught", e, st); }
 
     await _migrateIfNeeded();
     debugPrint('[UPS] Profile loaded. uid=${_cachedProfile?.uid}');
@@ -60,7 +63,17 @@ class UserPreferenceService {
       debugPrint('[UPS] Pending firestore sync detected. Retrying sync in background.');
       syncToFirestore();
     }
+
+    // BUG-043: Listen for network connectivity restoration to replay offline wishlist/itinerary mutations
+    _connectivitySub?.cancel();
+    _connectivitySub = Connectivity().onConnectivityChanged.listen((results) {
+      if (!results.contains(ConnectivityResult.none) && _pendingFirestoreSync) {
+        debugPrint('[UPS] Connectivity restored! Replaying pending offline wishlist/itinerary sync to Firestore.');
+        syncToFirestore();
+      }
+    });
   }
+
 
   // ── Public Read API ──────────────────────────────────────────────────────
 

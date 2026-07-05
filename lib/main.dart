@@ -49,6 +49,7 @@ import 'core/config/app_check_config.dart';
 import 'core/services/zenith_security_facade.dart';
 import 'core/services/emergency_control_service.dart';
 import 'core/services/monsoon_broadcast_service.dart';
+import 'core/services/consent_service.dart';
 
 class InitializationResult {
   final bool hiveSuccess;
@@ -395,7 +396,8 @@ void initializeOtherServices() {
   Future.microtask(() {
     try {
       if (!kIsWeb) {
-        MobileAds.instance.initialize();
+        // Initializes ATT (iOS) and UMP (GDPR) before calling MobileAds.instance.initialize()
+        ConsentService().init();
       }
     } catch (e) {
       SecureLogger.error("Ads Init Error: $e");

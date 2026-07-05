@@ -41,7 +41,7 @@ class DistrictDiscoveryAgent:
         # We use a simple prompt for name extraction
         try:
             place_names = await self.extractor.extract_names_batch(prompt) or []
-        except:
+        except Exception as e:
             # Fallback if AI fails, just use generic search queries
             place_names = [district_name + " attractions"] # Minimal fallback
             

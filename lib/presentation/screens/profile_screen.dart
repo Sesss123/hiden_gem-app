@@ -52,7 +52,9 @@ class ProfileScreen extends ConsumerStatefulWidget {
   ConsumerState<ProfileScreen> createState() => _ProfileScreenState();
 }
 
-class _ProfileScreenState extends ConsumerState<ProfileScreen> {
+class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
   late var profile = UserPreferenceService.getProfile();
   StreamSubscription? _userSub;
   StreamSubscription? _appSub;
@@ -89,7 +91,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   profile.guideStatus = newStatus;
                   changed = true;
                 }
-              } catch (_) {}
+              } catch (e, st) { SecureLogger.warning("Exception caught", e, st); }
             }
             if (changed) {
               await UserPreferenceService.saveProfile(profile);
@@ -122,7 +124,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   await UserPreferenceService.saveProfile(profile);
                   if (mounted) setState(() {});
                 }
-              } catch (_) {}
+              } catch (e, st) { SecureLogger.warning("Exception caught", e, st); }
             }
           }
         });
@@ -289,6 +291,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   // ── Main Build ───────────────────────────────────────────────────────────────
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     try {
       final isPremium = ref.watch(premiumNotifierProvider);
       final l10n = AppLocalizations.of(context);

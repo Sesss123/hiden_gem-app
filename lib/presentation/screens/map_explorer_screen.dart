@@ -51,14 +51,14 @@ class _MapExplorerScreenState extends ConsumerState<MapExplorerScreen> {
     try {
       // Load all places (proximity handled by DiscoveryRepository)
       final repo = ref.read(discoveryRepositoryProvider);
-      final places = await repo.getDiscoveryPlaces(
+      final result = await repo.getDiscoveryPlaces(
         userLat: widget.initialPosition.latitude,
         userLng: widget.initialPosition.longitude,
       );
 
       if (mounted) {
         setState(() {
-          _places = places;
+          _places = result.valueOrNull ?? [];
           _createMarkers();
         });
       }
@@ -217,7 +217,11 @@ class _MapExplorerScreenState extends ConsumerState<MapExplorerScreen> {
               bottom: 40,
               left: 20,
               right: 20,
-              child: _buildPlaceCard(_selectedPlace!),
+              child: SafeArea(
+                bottom: true,
+                top: false,
+                child: _buildPlaceCard(_selectedPlace!),
+              ),
             ),
 
             Center(child: CircularProgressIndicator(color: AppPalette.rust)),

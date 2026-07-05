@@ -21,8 +21,8 @@ return new class extends Migration
                     $table->boolean('is_admin')->default(false)->change();
                 });
             } catch (\Exception $e) {
-                // If doctrine/dbal is missing or database doesn't support ->change() without it,
-                // fallback to raw query or ignore if schema default is already set.
+                // BUG-007 Fix: Log exception instead of silent failure
+                \Log::warning("Migration failed to change is_admin default: " . $e->getMessage());
             }
 
             // First ensure canonical admin seeder account retains super_admin role and admin rights

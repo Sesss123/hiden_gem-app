@@ -200,7 +200,10 @@ class _ARViewerScreenState extends State<ARViewerScreen>
 
   void _startNavigationTracking() {
     _positionStream = Geolocator.getPositionStream(
-      locationSettings: const LocationSettings(accuracy: LocationAccuracy.bestForNavigation),
+      locationSettings: const LocationSettings(
+        accuracy: LocationAccuracy.balanced,
+        distanceFilter: 50,
+      ),
     ).listen((Position pos) {
       if (mounted) {
         setState(() {

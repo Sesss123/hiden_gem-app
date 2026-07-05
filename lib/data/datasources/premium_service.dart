@@ -8,7 +8,8 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import 'user_preference_service.dart';
 import '../../core/config/app_config.dart';
-import '../../core/utils/secure_logger.dart';
+import 'package:hidden_gems_sl/core/utils/secure_logger.dart';
+import '../../core/services/delta_sync_service.dart';
 import '../../core/services/secure_entitlements.dart';
 import '../../core/services/premium_unlock_service.dart';
 
@@ -152,8 +153,9 @@ class PremiumNotifier extends _$PremiumNotifier {
     }
   }
 
-  void _updateStateFromCustomerInfo(CustomerInfo customerInfo) async {
-    final bool isPremium = customerInfo.entitlements.active.containsKey(entitlementId);
+  Future<void> _updateStateFromCustomerInfo(CustomerInfo customerInfo) async {
+    try {
+      final bool isPremium = customerInfo.entitlements.active.containsKey(entitlementId);
     
     if (state != isPremium) {
       state = isPremium;
@@ -177,15 +179,30 @@ class PremiumNotifier extends _$PremiumNotifier {
           await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
             'isPremium': isPremium,
             'premiumExpiresAt': activeEntitlement?.expirationDate != null 
-                ? Timestamp.fromDate(DateTime.parse(activeEntitlement!.expirationDate!)) 
+                ? (DateTime.tryParse(activeEntitlement!.expirationDate!) != null 
+                    ? Timestamp.fromDate(DateTime.tryParse(activeEntitlement!.expirationDate!)!) 
+                    : null)
                 : null,
             'premiumPlanId': activeEntitlement?.productIdentifier ?? 'unknown',
             'premiumPlan': activeEntitlement?.productIdentifier ?? 'unknown',
             'premiumSource': 'revenuecat',
             'updatedAt': FieldValue.serverTimestamp(),
-          }).catchError((e) => SecureLogger.error("Firestore Sync Support Failed", e, null, "RevenueCat"));
+          }).catchError((e) {
+            DeltaSyncService().enqueueOutboxMutation(
+              collection: 'users',
+              documentId: user.uid,
+              data: {
+                'isPremium': isPremium,
+                'premiumPlanId': activeEntitlement?.productIdentifier ?? 'unknown',
+                'premiumSource': 'revenuecat',
+              }
+            );
+            SecureLogger.error("Firestore Sync Support Failed, queued in outbox", e, null, "RevenueCat");
+          });
         }
       }
+    } catch (e, st) {
+      SecureLogger.error("Failed to sync premium state", e, st, "RevenueCat");
     }
   }
 

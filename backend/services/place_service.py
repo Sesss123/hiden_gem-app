@@ -29,7 +29,7 @@ async def get_place_by_id(place_id: str) -> Optional[Dict[str, Any]]:
     try:
         if ObjectId.is_valid(place_id):
             query["$or"].append({"_id": ObjectId(place_id)})
-    except:
+    except Exception as e:
         pass
         
     place = await db.places.find_one(query)

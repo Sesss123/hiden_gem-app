@@ -167,6 +167,7 @@ class PlaceController extends Controller
             'audio_guide_url_en' => 'nullable|string|max:500',
             'geohash' => 'nullable|string|max:20',
             'access_tier' => 'nullable|string|in:Free,PRO,VIP',
+            'images' => 'nullable|array|max:5', // BUG-010 Fix: hard constraint on max files per upload
             'images.*' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
         ]);
     }

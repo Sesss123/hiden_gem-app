@@ -329,7 +329,9 @@ class _GuideReviewsScreenState extends ConsumerState<GuideReviewsScreen> {
             const SizedBox(height: 16),
             Text(
               review.comment,
-              style: GoogleFonts.inter(color: Colors.white70, fontSize: 14, height: 1.5),
+              style: GoogleFonts.inter(color: Colors.white70, fontSize: 14, height: 1.5).copyWith(
+                fontFamilyFallback: [GoogleFonts.abhayaLibre().fontFamily!, GoogleFonts.hindGuntur().fontFamily!],
+              ),
             ),
             const SizedBox(height: 20),
             Row(

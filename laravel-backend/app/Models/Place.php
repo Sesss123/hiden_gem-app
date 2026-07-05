@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Builder;
 
 class Place extends Model
 {
@@ -96,6 +97,13 @@ class Place extends Model
         self::COL_FACILITIES => 'array',
         self::COL_SYNC_VERSION => 'integer'
     ];
+
+    protected static function booted()
+    {
+        static::addGlobalScope('active', function (Builder $builder) {
+            $builder->where('is_deleted', false);
+        });
+    }
 
     public function images(): HasMany
     {

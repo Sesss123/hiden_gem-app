@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 import '../../data/models/discovery_place.dart';
 import '../../data/datasources/discovery_local_datasource.dart';
 import '../../core/utils/secure_logger.dart';
@@ -10,7 +11,27 @@ import '../../core/utils/secure_logger.dart';
 class SqliteStorageService {
   static final SqliteStorageService _instance = SqliteStorageService._internal();
   factory SqliteStorageService() => _instance;
-  SqliteStorageService._internal();
+  
+  AppLifecycleListener? _lifecycleListener;
+
+  SqliteStorageService._internal() {
+    // BUG-034: Close SQLite database connection on background service termination / detached state
+    try {
+      _lifecycleListener = AppLifecycleListener(
+        onDetach: () async {
+          await close();
+        },
+      );
+    } catch (e, st) { SecureLogger.warning("Exception caught", e, st); }
+  }
+
+  Future<void> close() async {
+    if (_database != null) {
+      SecureLogger.info("BUG-034: Closing SQLite database connection on termination.");
+      await _database!.close();
+      _database = null;
+    }
+  }
 
   static Database? _database;
 
@@ -52,7 +73,7 @@ class SqliteStorageService {
 
     return await openDatabase(
       path,
-      version: 1,
+      version: 2,
       onConfigure: (Database db) async {
         await db.execute('PRAGMA foreign_keys = ON;');
         await db.rawQuery('PRAGMA journal_mode = WAL;');
@@ -116,15 +137,32 @@ class SqliteStorageService {
         await db.execute('CREATE INDEX IF NOT EXISTS idx_places_sync_version ON places(sync_version);');
         await db.execute('CREATE INDEX IF NOT EXISTS idx_places_is_deleted ON places(is_deleted);');
         await db.execute('CREATE INDEX IF NOT EXISTS idx_place_images_place_id ON place_images(place_id);');
+        await db.execute('CREATE INDEX IF NOT EXISTS idx_places_cat_dist ON places(category, district, is_deleted);');
+        await db.execute('CREATE INDEX IF NOT EXISTS idx_places_name ON places(name);');
 
         // Initialize sync_counter row
         await db.insert('sync_counter', {'id': 1, 'current_version': 0}, conflictAlgorithm: ConflictAlgorithm.ignore);
       },
       onUpgrade: (Database db, int oldVersion, int newVersion) async {
         SecureLogger.info("Upgrading SQLite database from $oldVersion to $newVersion");
+        // BUG-035: Missing schema version migration logic when adding new columns
+        if (oldVersion < 2) {
+          try {
+            await db.execute('ALTER TABLE places ADD COLUMN rating REAL DEFAULT 0.0;');
+          } catch (e, st) { SecureLogger.warning("Exception caught", e, st); }
+          try {
+            await db.execute('ALTER TABLE places ADD COLUMN opening_hours TEXT DEFAULT "";');
+          } catch (e, st) { SecureLogger.warning("Exception caught", e, st); }
+          try {
+            await db.execute('ALTER TABLE places ADD COLUMN updated_at TEXT DEFAULT "";');
+          } catch (e, st) { SecureLogger.warning("Exception caught", e, st); }
+          // BUG-041: Composite index for category and district queries
+          await db.execute('CREATE INDEX IF NOT EXISTS idx_places_cat_dist ON places(category, district, is_deleted);');
+        }
       },
     );
   }
+
 
   Future<int> getLocalSyncVersion() {
     // BUG-090 / Exec #4: Query inside the writeQueue to block read until all pending writes finish,
@@ -166,6 +204,7 @@ class SqliteStorageService {
 
   // BUG-107 / BUG-127 / BUG-147 / Exec #7 / Exec #9: Serialised through write queue.
   // Uses background isolate compute for JSON encoding to prevent UI thread ANRs.
+  // BUG-038: Ensure all chunk upserts are wrapped in a single SQLite transaction block to prevent partial writes.
   Future<void> upsertPlaces(List<DiscoveryPlace> places, int syncVersion) {
     if (places.isEmpty) return Future.value();
     return _enqueueWrite(() async {
@@ -214,7 +253,7 @@ class SqliteStorageService {
             // If insertion succeeded, remove from quarantine if previously quarantined
             try {
               await txn.delete('sync_quarantine', where: 'id = ?', whereArgs: [place.id]);
-            } catch (_) {}
+            } catch (e, st) { SecureLogger.warning("Exception caught", e, st); }
           } catch (e) {
             SecureLogger.error("Failed to insert place ID: ${place.id}", e);
             try {
@@ -226,7 +265,7 @@ class SqliteStorageService {
                   'sync_version': place.syncVersion > 0 ? place.syncVersion : syncVersion,
                   'raw_json': rawJson,
                   'reason': 'SQLite insert error: $e',
-                  'failed_at': DateTime.now().toIso8601String(),
+                  'failed_at': DateTime.now().toUtc().toIso8601String(),
                 },
                 conflictAlgorithm: ConflictAlgorithm.replace,
               );
@@ -236,6 +275,9 @@ class SqliteStorageService {
           }
         }
       });
+
+      // BUG-045: Immediately invalidate L0 RAM cache upon successful local mutation
+      DiscoveryLocalDataSource().invalidateCache();
     });
   }
 
@@ -254,7 +296,7 @@ class SqliteStorageService {
               'sync_version': (item['sync_version'] as num?)?.toInt() ?? 0,
               'raw_json': item['raw_json'] is String ? item['raw_json'] : jsonEncode(item['raw_json'] ?? item),
               'reason': item['reason']?.toString() ?? 'Unknown error',
-              'failed_at': DateTime.now().toIso8601String(),
+              'failed_at': DateTime.now().toUtc().toIso8601String(),
             },
             conflictAlgorithm: ConflictAlgorithm.replace,
           );
@@ -336,7 +378,28 @@ class SqliteStorageService {
           SecureLogger.warning("Retry failed for quarantined place ID: $id ($e)");
         }
       }
+      if (recoveredCount > 0) {
+        // BUG-045: Invalidate L0 RAM cache upon successful recovery mutation
+        DiscoveryLocalDataSource().invalidateCache();
+      }
       return recoveredCount;
+    });
+  }
+
+  // BUG-036: Purge quarantined records older than 30 days to prevent infinite accumulation
+  Future<int> purgeOldQuarantinedItems() {
+    return _enqueueWrite(() async {
+      final db = await database;
+      final thirtyDaysAgo = DateTime.now().toUtc().subtract(const Duration(days: 30)).toIso8601String();
+      final deleted = await db.delete(
+        'sync_quarantine',
+        where: 'failed_at < ?',
+        whereArgs: [thirtyDaysAgo],
+      );
+      if (deleted > 0) {
+        SecureLogger.info("BUG-036: Purged $deleted old quarantined sync records.");
+      }
+      return deleted;
     });
   }
 
@@ -369,15 +432,8 @@ class SqliteStorageService {
         }
       });
 
-      // BUG-052: Also evict purged items from in-memory cache so UI stays consistent
-      final localDataSource = DiscoveryLocalDataSource();
-      final cached = localDataSource.getFromMemory('places');
-      if (cached != null) {
-        final deletedSet = deletedIds.toSet();
-        final updated = cached.where((p) => !deletedSet.contains(p.id)).toList();
-        localDataSource.cacheInMemory('places', updated);
-        SecureLogger.info('BUG-052: Evicted ${deletedIds.length} purged places from memory cache.');
-      }
+      // BUG-045: Immediately invalidate L0 RAM cache upon successful local deletion
+      DiscoveryLocalDataSource().invalidateCache();
     });
   }
 
@@ -426,6 +482,8 @@ class SqliteStorageService {
         await txn.delete('sync_quarantine');
         await txn.update('sync_counter', {'current_version': 0}, where: 'id = ?', whereArgs: [1]);
       });
+      // BUG-045: Invalidate L0 RAM cache upon database clearing
+      DiscoveryLocalDataSource().invalidateCache();
       // BUG-067: Close the database connection after cleanup to prevent lock races
       await db.close();
       _database = null;

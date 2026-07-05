@@ -46,7 +46,7 @@ class VoiceRecipeService extends ChangeNotifier {
     notifyListeners();
     try {
       await VoiceAssistantService.stop();
-    } catch (_) {}
+    } catch (e, st) { SecureLogger.warning("Exception caught", e, st); }
   }
 
   Future<void> nextStep() async {

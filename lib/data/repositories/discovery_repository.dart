@@ -12,6 +12,7 @@ import '../../core/utils/secure_logger.dart';
 import '../../core/config/remote_config_service.dart';
 import '../../core/services/delta_sync_service.dart';
 import '../../core/services/sqlite_storage_service.dart';
+import '../../core/utils/result.dart';
 
 final discoveryRemoteDataSourceProvider = Provider((ref) => DiscoveryRemoteDataSource());
 final discoveryLocalDataSourceProvider = Provider((ref) => DiscoveryLocalDataSource());
@@ -33,7 +34,7 @@ class DiscoveryRepository {
 
   Future<Position?> getCurrentLocation() => _remoteDataSource.getCurrentLocation();
 
-  Future<List<DiscoveryPlace>> getDiscoveryPlaces({
+  Future<Result<List<DiscoveryPlace>, AppError>> getDiscoveryPlaces({
     double? userLat,
     double? userLng,
     bool forceRefresh = false,
@@ -49,7 +50,7 @@ class DiscoveryRepository {
       final memCache = _localDataSource.getFromMemory(cacheKey);
       if (memCache != null && memCache.isNotEmpty) {
         SecureLogger.info("Discovery data loaded from Level-0 Memory Cache.");
-        return memCache;
+        return Success(memCache);
       }
     }
 
@@ -73,7 +74,7 @@ class DiscoveryRepository {
           SecureLogger.info("Discovery data loaded from Level-1 GeoHash Firestore.");
           places = await _processPlaces(places, userLat, userLng);
           _localDataSource.cacheInMemory(cacheKey, places);
-          return places;
+          return Success(places);
         }
       } catch (e) {
         SecureLogger.warning("GeoHash Firestore fetch failed or offline, falling back to SQLite/REST: $e");
@@ -149,7 +150,7 @@ class DiscoveryRepository {
 
     if (places.isEmpty) {
       SecureLogger.error("All discovery tiers failed (including asset fallback). No data available.", null);
-      throw Exception("Unable to load discovery places from any data source.");
+      return Failure(AppError("Unable to load discovery places from any data source."));
     }
 
     // 5. Processing (Distance measurement & Sorting)
@@ -157,7 +158,7 @@ class DiscoveryRepository {
     
     // 6. Update Memory Cache
     _localDataSource.cacheInMemory(cacheKey, places);
-    return places;
+    return Success(places);
   }
 
   Future<List<DiscoveryPlace>> getAiRecommendations(List<DiscoveryPlace> places, {String? customQuery}) async {

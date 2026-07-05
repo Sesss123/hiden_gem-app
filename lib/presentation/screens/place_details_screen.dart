@@ -385,6 +385,8 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
                       color: Theme.of(context).colorScheme.onSurface, 
                       height: 1.1,
                       letterSpacing: -0.5
+                    ).copyWith(
+                      fontFamilyFallback: [GoogleFonts.abhayaLibre().fontFamily!, GoogleFonts.hindGuntur().fontFamily!],
                     ),
                   ),
                   SizedBox(height: 12),
@@ -508,6 +510,8 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
               height: 1.7, 
               fontSize: 15,
               fontWeight: FontWeight.w400,
+            ).copyWith(
+              fontFamilyFallback: [GoogleFonts.abhayaLibre().fontFamily!, GoogleFonts.hindGuntur().fontFamily!],
             )
           ),
           if (widget.place.arSupported) ...[
@@ -1275,7 +1279,7 @@ class _ARPortalSheetState extends State<_ARPortalSheet> with SingleTickerProvide
   Widget _portalTip(IconData icon, String label) {
     return Row(
       children: [
-        Icon(icon, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.55), size: 18),
+        Icon(icon, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65), size: 18),
         SizedBox(width: 10),
         Expanded(child: Text(label, style: GoogleFonts.inter(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7), fontSize: 12))),
       ],

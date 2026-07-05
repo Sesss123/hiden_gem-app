@@ -121,6 +121,11 @@ class _TouristCompanionHubState extends State<TouristCompanionHub> {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
                 }
+                if (snapshot.hasError) {
+                  return Center(
+                    child: Text("Offline Error: ${snapshot.error}", style: const TextStyle(color: Colors.redAccent)),
+                  );
+                }
 
                 final session = snapshot.data;
                 if (session == null) {
