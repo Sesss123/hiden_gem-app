@@ -1,3 +1,6 @@
+import logging
+logger = logging.getLogger(__name__)
+
 # backend/pipeline/test_pipeline.py
 
 import asyncio
@@ -9,7 +12,7 @@ from .validator import DataValidator
 from .main_pipeline import orchestrate_item
 
 async def run_smoke_test():
-    print("🚀 Starting Pipeline Smoke Test...")
+    logger.info("🚀 Starting Pipeline Smoke Test...")
     
     # Mock data for when API keys are missing or to save credits
     mock_extracted = {
@@ -26,38 +29,38 @@ async def run_smoke_test():
 
     # 1. Test Scraper (using a reliable site)
     scraper = UniversalScraper()
-    print("Testing Scraper (Phase 2)...")
+    logger.info("Testing Scraper (Phase 2)...")
     html = await scraper.scrape("https://example.com", type="static")
     if html:
-        print("✅ Scraper works.")
+        logger.info("✅ Scraper works.")
     else:
-        print("❌ Scraper failed.")
+        logger.info("❌ Scraper failed.")
 
     # 2. Test Validator (Phase 4)
     validator = DataValidator()
-    print("Testing Validator (Phase 4)...")
+    logger.info("Testing Validator (Phase 4)...")
     is_approved, score = validator.validate_workflow(mock_extracted)
     if is_approved and score > 80:
-        print(f"✅ Validator works. Score: {score}")
+        logger.info(f"✅ Validator works. Score: {score}")
     else:
-        print(f"❌ Validator rejected valid mock data. Score: {score}")
+        logger.info(f"❌ Validator rejected valid mock data. Score: {score}")
 
     # 3. Test Full Orchestration with Mock (Phase 5 & 6)
-    print("Testing Storage (Phase 5)...")
+    logger.info("Testing Storage (Phase 5)...")
     # We'll need a way to pass mock data to orchestrate_item or just test storage directly
     # For this test, we verify we can import everything and components initialize
     try:
         extractor = AIExtractor()
-        print("✅ Components initialized.")
+        logger.info("✅ Components initialized.")
     except Exception as e:
-        print(f"❌ Component initialization failed: {e}")
+        logger.info(f"❌ Component initialization failed: {e}")
 
-    print("\n--- Smoke Test Summary ---")
-    print("Environment Check:")
-    print(f"- ANTHROPIC_API_KEY: {'Set' if os.getenv('ANTHROPIC_API_KEY') else 'Bypassed (Local BYOM Mode)'}")
-    print(f"- GOOGLE_API_KEY: {'Set' if os.getenv('GOOGLE_API_KEY') else 'Bypassed (Local BYOM Mode)'}")
+    logger.info("\n--- Smoke Test Summary ---")
+    logger.info("Environment Check:")
+    logger.info(f"- ANTHROPIC_API_KEY: {'Set' if os.getenv('ANTHROPIC_API_KEY') else 'Bypassed (Local BYOM Mode)'}")
+    logger.info(f"- GOOGLE_API_KEY: {'Set' if os.getenv('GOOGLE_API_KEY') else 'Bypassed (Local BYOM Mode)'}")
     
-    print("\nRun 'python -m pipeline.main_pipeline' for a real harvest run.")
+    logger.info("\nRun 'python -m pipeline.main_pipeline' for a real harvest run.")
 
 if __name__ == "__main__":
     asyncio.run(run_smoke_test())

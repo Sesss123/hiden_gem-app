@@ -1,3 +1,6 @@
+import logging
+logger = logging.getLogger(__name__)
+
 import sqlite3
 
 DB_PATH = "tripme.db"
@@ -14,12 +17,12 @@ new_cols = [
 
 for col_name, col_type in new_cols:
     try:
-        print(f"Adding {col_name}...")
+        logger.info(f"Adding {col_name}...")
         cur.execute(f"ALTER TABLE places ADD COLUMN {col_name} {col_type}")
-        print(f"Added {col_name}")
+        logger.info(f"Added {col_name}")
     except Exception as e:
-        print(f"Failed to add {col_name}: {e}")
+        logger.info(f"Failed to add {col_name}: {e}")
 
 conn.commit()
 conn.close()
-print("Migration done.")
+logger.info("Migration done.")

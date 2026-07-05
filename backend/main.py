@@ -129,10 +129,28 @@ app.include_router(weather_router)
 app.include_router(lumen_router)
 app.include_router(food_router)
 
-# Static Files (Uploads)
+# Secure Static Files (Uploads)
 UPLOAD_DIR = "uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
-app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
+
+from fastapi.responses import FileResponse
+import pathlib
+
+@app.get("/uploads/{file_path:path}")
+async def get_upload_file(file_path: str, user=Depends(get_current_user)):
+    if not user.get("is_authenticated"):
+        raise HTTPException(status_code=401, detail="Unauthorized access to uploads")
+    
+    base_dir = pathlib.Path(os.getcwd()) / UPLOAD_DIR
+    target_path = (base_dir / file_path).resolve()
+    
+    if not str(target_path).startswith(str(base_dir)):
+        raise HTTPException(status_code=400, detail="Path traversal attempt")
+        
+    if not target_path.is_file():
+        raise HTTPException(status_code=404, detail="File not found")
+        
+    return FileResponse(target_path)
 
 @app.get("/")
 async def root():

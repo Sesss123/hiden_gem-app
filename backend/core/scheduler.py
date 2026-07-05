@@ -114,7 +114,7 @@ class TripMeScheduler:
             # Remove existing if re-registering
             try:
                 self._scheduler.remove_job(jid)
-            except Exception:
+            except Exception as e:
                 pass
 
             self._scheduler.add_job(
@@ -137,7 +137,7 @@ class TripMeScheduler:
         try:
             self._scheduler.remove_job(job_id)
             logger.info(f"[Scheduler] Unregistered job: {job_id}")
-        except Exception:
+        except Exception as e:
             pass
 
     # ─── Job Execution ────────────────────────────────────────────────────────
@@ -242,7 +242,7 @@ class TripMeScheduler:
                             info["next_run"] = aps_job.next_run_time.isoformat()
                         else:
                             info["next_run"] = None
-                    except Exception:
+                    except Exception as e:
                         info["next_run"] = None
                 result.append(info)
             return result

@@ -75,6 +75,6 @@ if __name__ == "__main__":
     async def main():
         res = await search_engine.search("best hidden waterfalls in Sri Lanka site:lakdasun.org", 5)
         for r in res:
-            print(f"- {r['title']}: {r['href']}")
+            logger.info(f"- {r['title']}: {r['href']}")
             
     asyncio.run(main())

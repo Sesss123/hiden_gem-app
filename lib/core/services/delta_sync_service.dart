@@ -108,7 +108,7 @@ class DeltaSyncService {
       } else if (connectivityResult.contains(ConnectivityResult.mobile)) {
         return const Duration(seconds: 15); // Mobile network (rural 2G/3G) needs more time
       }
-    } catch (e, st) { SecureLogger.warning("Exception caught", e, st); }
+    } catch (e, st) { SecureLogger.error("Exception caught", e, st); }
     return const Duration(seconds: 15); // Fallback
   }
 
@@ -213,7 +213,7 @@ class DeltaSyncService {
     // BUG-036: Purge quarantined records older than 30 days during sync initiation
     try {
       await _sqliteService.purgeOldQuarantinedItems();
-    } catch (e, st) { SecureLogger.warning("Exception caught", e, st); }
+    } catch (e, st) { SecureLogger.error("Exception caught", e, st); }
 
     int currentVersion = forceFullResync ? 0 : await _sqliteService.getLocalSyncVersion();
     bool hasMore = true;

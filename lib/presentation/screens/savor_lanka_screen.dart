@@ -70,7 +70,7 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
     _voiceRecipeService.dispose();
     try {
       WidgetsBinding.instance.removeObserver(this);
-    } catch (e, st) { SecureLogger.warning("Exception caught", e, st); }
+    } catch (e, st) { SecureLogger.error("Exception caught", e, st); }
     final controller = _controller;
     _controller = null;
     _isInit = false;

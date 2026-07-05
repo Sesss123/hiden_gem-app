@@ -68,7 +68,7 @@ class DistrictDiscoveryAgent:
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print("Usage: python pipeline/district_discovery.py <DistrictName>")
+        logger.info("Usage: python pipeline/district_discovery.py <DistrictName>")
         sys.exit(1)
     
     district = sys.argv[1]

@@ -39,33 +39,13 @@ class WishlistController extends Controller
             ], 404);
         }
 
-        $existing = Wishlist::where('user_id', $user->id)
-                            ->where('place_id', $place->id)
-                            ->first();
+        $changes = $user->savedPlaces()->toggle($place->id);
+        $attached = count($changes['attached']) > 0;
 
-        if ($existing) {
-            // Remove from wishlist
-            $existing->delete();
-            return response()->json([
-                'status' => 'success',
-                'bookmarked' => false,
-                'message' => 'Removed from your Saved Hidden Gems.',
-            ]);
-        } else {
-            // Add to wishlist
-            try {
-                Wishlist::create([
-                    'user_id' => $user->id,
-                    'place_id' => $place->id,
-                ]);
-            } catch (\Illuminate\Database\QueryException $e) {
-                // BUG-C04 Fix: Handle check-then-act race condition on concurrent double-taps gracefully
-            }
-            return response()->json([
-                'status' => 'success',
-                'bookmarked' => true,
-                'message' => 'Saved to your Hidden Gems Wishlist!',
-            ], 201);
-        }
+        return response()->json([
+            'status' => 'success',
+            'bookmarked' => $attached,
+            'message' => $attached ? 'Saved to your Hidden Gems Wishlist!' : 'Removed from your Saved Hidden Gems.',
+        ], $attached ? 201 : 200);
     }
 }

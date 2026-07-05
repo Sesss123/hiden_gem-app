@@ -114,8 +114,8 @@ osm_discovery = OSMDiscoveryEngine()
 if __name__ == "__main__":
     async def main():
         gems = await osm_discovery.discover_all_natural_gems()
-        print(f"Found {len(gems)} items.")
+        logger.info(f"Found {len(gems)} items.")
         if gems:
-            print(f"Example: {gems[0]['name']} at {gems[0]['lat']}, {gems[0]['lon']}")
+            logger.info(f"Example: {gems[0]['name']} at {gems[0]['lat']}, {gems[0]['lon']}")
             
     asyncio.run(main())

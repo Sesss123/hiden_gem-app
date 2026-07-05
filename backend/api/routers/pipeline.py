@@ -41,7 +41,7 @@ def get_extractor_instance():
         try:
             from pipeline.ai_extractor import AIExtractor
             _extractor_instance = AIExtractor()
-        except Exception:
+        except Exception as e:
             _extractor_instance = None
     return _extractor_instance
 
@@ -407,7 +407,7 @@ async def get_cache_status(user=Depends(get_current_user)):
             try:
                 with open(meta_f, "r") as f:
                     meta = json.load(f)
-            except Exception: pass
+            except Exception as e: pass
         entries.append({
             "key": html_f.stem,
             "url": meta.get("url", "unknown"),

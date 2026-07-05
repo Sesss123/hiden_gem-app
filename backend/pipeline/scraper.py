@@ -100,7 +100,7 @@ class UniversalScraper:
         try:
             from urllib.parse import urlparse
             return urlparse(url).netloc
-        except Exception:
+        except Exception as e:
             return url
 
     async def get_static(self, url: str) -> str | None:

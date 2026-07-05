@@ -1,3 +1,6 @@
+import logging
+logger = logging.getLogger(__name__)
+
 import sqlite3
 import asyncio
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -22,7 +25,7 @@ def slugify(text):
 
 async def migrate():
     if not os.path.exists(SQLITE_DB):
-        print(f"SQLite DB not found at {SQLITE_DB}")
+        logger.info(f"SQLite DB not found at {SQLITE_DB}")
         return
 
     # SQLite Connection
@@ -34,7 +37,7 @@ async def migrate():
     mongo_client = AsyncIOMotorClient(MONGO_URI)
     mongo_db = mongo_client[MONGO_DB_NAME]
 
-    print("--- Starting Migration ---")
+    logger.info("--- Starting Migration ---")
 
     # 1. Fetch Categories & Districts for mapping
     cursor.execute("SELECT * FROM categories")
@@ -47,7 +50,7 @@ async def migrate():
     cursor.execute("SELECT * FROM places")
     places_sql = cursor.fetchall()
     
-    print(f"Found {len(places_sql)} places in SQLite.")
+    logger.info(f"Found {len(places_sql)} places in SQLite.")
     
     place_count = 0
     for row in places_sql:
@@ -136,9 +139,9 @@ async def migrate():
             )
             place_count += 1
         except Exception as e:
-            print(f"Failed to migrate {name}: {e}")
+            logger.info(f"Failed to migrate {name}: {e}")
 
-    print(f"Successfully migrated {place_count} places.")
+    logger.info(f"Successfully migrated {place_count} places.")
 
     # 3. Migrate Users
     cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='users'")
@@ -157,9 +160,9 @@ async def migrate():
                 {"$set": user_doc},
                 upsert=True
             )
-        print(f"Migrated {len(users_sql)} users.")
+        logger.info(f"Migrated {len(users_sql)} users.")
 
-    print("--- Migration Completed ---")
+    logger.info("--- Migration Completed ---")
     sqlite_conn.close()
     mongo_client.close()
 

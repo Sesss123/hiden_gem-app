@@ -32,7 +32,7 @@ def _load_seen_names() -> dict:
         try:
             with open(DUPLICATE_INDEX_FILE, "r", encoding="utf-8") as f:
                 return json.load(f)
-        except Exception:
+        except Exception as e:
             pass
     return {}
 

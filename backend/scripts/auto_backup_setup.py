@@ -1,3 +1,6 @@
+import logging
+logger = logging.getLogger(__name__)
+
 # backend/scripts/auto_backup_setup.py
 import os
 import subprocess
@@ -9,14 +12,14 @@ def setup_task():
     bat_file = script_dir / "run_backup.bat"
     
     if not bat_file.exists():
-        print(f"Error: {bat_file} not found.")
+        logger.info(f"Error: {bat_file} not found.")
         return
 
     task_name = "TripMe_Daily_Backup"
     bat_path = str(bat_file)
 
-    print(f"Setting up Daily Backup Task: {task_name}")
-    print(f"Backup script: {bat_path}")
+    logger.info(f"Setting up Daily Backup Task: {task_name}")
+    logger.info(f"Backup script: {bat_path}")
 
     # Use schtasks to create a daily task at 12:00 AM
     # /SC DAILY = Daily frequency
@@ -35,16 +38,16 @@ def setup_task():
         result = subprocess.run(cmd, capture_output=True, text=True)
         
         if result.returncode == 0:
-            print("\nSUCCESS: Daily backup task has been scheduled for 12:00 AM.")
-            print("You can see it in 'Windows Task Scheduler' under the name 'TripMe_Daily_Backup'.")
+            logger.info("\nSUCCESS: Daily backup task has been scheduled for 12:00 AM.")
+            logger.info("You can see it in 'Windows Task Scheduler' under the name 'TripMe_Daily_Backup'.")
         else:
-            print("\nERROR registering task:")
-            print(result.stderr)
+            logger.info("\nERROR registering task:")
+            logger.info(result.stderr)
             if "Access is denied" in result.stderr:
-                print("\nSuggestion: Try running your terminal as Administrator.")
+                logger.info("\nSuggestion: Try running your terminal as Administrator.")
             
     except Exception as e:
-        print(f"An error occurred: {e}")
+        logger.info(f"An error occurred: {e}")
 
 if __name__ == "__main__":
     setup_task()

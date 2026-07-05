@@ -1,3 +1,6 @@
+import logging
+logger = logging.getLogger(__name__)
+
 import asyncio
 import sys
 import os
@@ -29,7 +32,7 @@ async def test_weighted_scoring():
     score = await extractor.calculate_confidence_score(d1, d5)
     assert score == 80.0, f"Expected 80 (Name 50 + District 30), got {score}"
 
-    print("\n✅ Scoring Logic Verification Passed!")
+    logger.info("\n✅ Scoring Logic Verification Passed!")
 
 if __name__ == "__main__":
     asyncio.run(test_weighted_scoring())

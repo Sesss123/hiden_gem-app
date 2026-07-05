@@ -50,7 +50,7 @@ def init_firebase():
                 cred = credentials.ApplicationDefault()
                 firebase_admin.initialize_app(cred)
                 logger.info("✅ Firebase Admin initialized via Application Default Credentials (ADC)")
-            except Exception:
+            except Exception as e:
                 logger.warning("⚠️ No service account provided and ADC not available. API will run in MOCK AUTH mode.")
                 
     except Exception as e:

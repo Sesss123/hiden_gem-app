@@ -1,3 +1,6 @@
+import logging
+logger = logging.getLogger(__name__)
+
 # backend/scripts/system_guard.py
 import os
 import shutil
@@ -28,14 +31,14 @@ class SystemGuard:
         backup_dir = BACKUP_ROOT / f"backup_{timestamp}"
         backup_dir.mkdir()
 
-        print(f"Starting System Backup to: {backup_dir}")
+        logger.info(f"Starting System Backup to: {backup_dir}")
 
         # 1. SQLite Backup
         if SQLITE_DB_PATH.exists():
             shutil.copy2(SQLITE_DB_PATH, backup_dir / "tripme.db")
-            print(f"  [OK] SQLite: tripme.db backed up.")
+            logger.info(f"  [OK] SQLite: tripme.db backed up.")
         else:
-            print(f"  [WARN] SQLite: tripme.db NOT FOUND. Skipping.")
+            logger.info(f"  [WARN] SQLite: tripme.db NOT FOUND. Skipping.")
 
         def make_serializable(data):
             if isinstance(data, list):
@@ -62,31 +65,31 @@ class SystemGuard:
             
             with open(mongo_backup_dir / f"{coll_name}.json", "w") as f:
                 json.dump(data, f, indent=2)
-            print(f"  [OK] MongoDB: '{coll_name}' exported ({len(data)} docs).")
+            logger.info(f"  [OK] MongoDB: '{coll_name}' exported ({len(data)} docs).")
 
-        print(f"\nBackup completed successfully! Location: {backup_dir}")
-        print(f"Hint: Copy this folder to a safe location (Cloud/USB).")
+        logger.info(f"\nBackup completed successfully! Location: {backup_dir}")
+        logger.info(f"Hint: Copy this folder to a safe location (Cloud/USB).")
         return str(backup_dir.name)
 
     async def restore(self, backup_folder_name: str, skip_confirm: bool = False):
         backup_dir = (BACKUP_ROOT / backup_folder_name).resolve()
         if not str(backup_dir).startswith(str(BACKUP_ROOT.resolve())) or not backup_dir.exists():
-            print(f"RESTORE Error: Backup folder '{backup_folder_name}' not found or invalid in {BACKUP_ROOT}")
+            logger.info(f"RESTORE Error: Backup folder '{backup_folder_name}' not found or invalid in {BACKUP_ROOT}")
             return False
 
-        print(f"WARNING: This will OVERWRITE your current data with items from {backup_folder_name}")
+        logger.info(f"WARNING: This will OVERWRITE your current data with items from {backup_folder_name}")
         
         if not skip_confirm:
             confirm = input("Confirm Restore? (type 'yes' to proceed): ")
             if confirm.lower() != 'yes':
-                print("Restore cancelled.")
+                logger.info("Restore cancelled.")
                 return False
 
         # 1. Restore SQLite
         sqlite_backup = backup_dir / "tripme.db"
         if sqlite_backup.exists():
             shutil.copy2(sqlite_backup, SQLITE_DB_PATH)
-            print(f"  [OK] SQLite: tripme.db restored.")
+            logger.info(f"  [OK] SQLite: tripme.db restored.")
 
         # 2. Restore MongoDB
         mongo_backup_dir = backup_dir / "mongodb"
@@ -105,19 +108,19 @@ class SystemGuard:
                     # Note: We skip re-converting ID to ObjectId to maintain consistency with the JSON export
                     # If the app expects ObjectIds, this might need refinement.
                     await self.db[coll_name].insert_many(data)
-                print(f"  [OK] MongoDB: '{coll_name}' restored ({len(data)} docs).")
+                logger.info(f"  [OK] MongoDB: '{coll_name}' restored ({len(data)} docs).")
 
-        print(f"\nSystem restore completed successfully!")
+        logger.info(f"\nSystem restore completed successfully!")
         return True
 
     def list_backups(self):
         backups = sorted([d.name for d in BACKUP_ROOT.iterdir() if d.is_dir()], reverse=True)
         if not backups:
-            print("No backups found.")
+            logger.info("No backups found.")
             return
-        print("Available Backups (Latest first):")
+        logger.info("Available Backups (Latest first):")
         for b in backups:
-            print(f"  - {b}")
+            logger.info(f"  - {b}")
 
 async def main():
     parser = argparse.ArgumentParser(description="TripMe System Guard: Database Backup & Restore")
@@ -133,7 +136,7 @@ async def main():
         guard.list_backups()
     elif args.action == "restore":
         if not args.folder:
-            print("Error: --folder is required for restore action.")
+            logger.info("Error: --folder is required for restore action.")
             return
         await guard.restore(args.folder)
 

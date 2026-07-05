@@ -62,7 +62,7 @@ class JsonFileHandler(logging.Handler):
             with open(log_file, "a", encoding="utf-8") as f:
                 f.write(json.dumps(log_entry, ensure_ascii=False) + "\n")
         except Exception as e:
-            print(f"[LogHandler] Failed to write log: {e}")
+            logger.info(f"[LogHandler] Failed to write log: {e}")
 
 
 def get_pipeline_logger(name: str = "TripMeBackend") -> logging.Logger:

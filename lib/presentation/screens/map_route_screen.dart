@@ -302,7 +302,6 @@ class _MapRouteScreenState extends State<MapRouteScreen> {
                       ),
                     ),
                   ],
-                  ],
                 ],
               ),
             ),

@@ -1,3 +1,6 @@
+import logging
+logger = logging.getLogger(__name__)
+
 import urllib.request
 import urllib.parse
 import json
@@ -25,7 +28,7 @@ def translate_text(text, target_lang):
                 
             return translated
     except Exception as e:
-        print(f"Failed to translate: {text} to {target_lang}")
+        logger.info(f"Failed to translate: {text} to {target_lang}")
         return text
 
 # load en
@@ -33,7 +36,7 @@ with open('lib/l10n/app_en.arb', 'r', encoding='utf-8') as f:
     en_data = json.load(f)
 
 for lang, filename in [('ta', 'app_ta.arb'), ('ja', 'app_ja.arb'), ('ko', 'app_ko.arb'), ('ru', 'app_ru.arb')]:
-    print(f"Translating to {lang}...")
+    logger.info(f"Translating to {lang}...")
     with open('lib/l10n/' + filename, 'r', encoding='utf-8') as f:
         target_data = json.load(f)
     
@@ -55,7 +58,7 @@ for lang, filename in [('ta', 'app_ta.arb'), ('ja', 'app_ja.arb'), ('ko', 'app_k
         # Note: some keys might be legitimately same as english in other languages, but for our app, probably not many.
         # Let's just translate if they are equal to english val or missing.
         if key not in target_data or target_data[key] == val:
-            print(f"Translating key: {key}")
+            logger.info(f"Translating key: {key}")
             target_data[key] = translate_text(val, lang)
             time.sleep(0.5) # limit rate to avoid 429
             

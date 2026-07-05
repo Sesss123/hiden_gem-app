@@ -25,9 +25,9 @@ class GuideApplicationController extends Controller
             'license_number' => 'required|string|max:255',
             'bio' => 'nullable|string',
             'category' => 'required|string|max:100',
-            'license_doc_url' => ['nullable', 'string', 'max:500', 'url', 'regex:/^https:\/\/(firebasestorage\.googleapis\.com|cdn\.hiddengemssl\.com)\//'],
-            'nic_doc_url' => ['nullable', 'string', 'max:500', 'url', 'regex:/^https:\/\/(firebasestorage\.googleapis\.com|cdn\.hiddengemssl\.com)\//'],
-            'selfie_doc_url' => ['nullable', 'string', 'max:500', 'url', 'regex:/^https:\/\/(firebasestorage\.googleapis\.com|cdn\.hiddengemssl\.com)\//'],
+            'license_doc_url' => ['nullable', 'string', 'max:500', 'url', 'regex:/^https:\/\/(firebasestorage\.googleapis\.com\/v0\/b\/tripme-89742\.(firebasestorage\.app|appspot\.com)|cdn\.hiddengemssl\.com)\//'],
+            'nic_doc_url' => ['nullable', 'string', 'max:500', 'url', 'regex:/^https:\/\/(firebasestorage\.googleapis\.com\/v0\/b\/tripme-89742\.(firebasestorage\.app|appspot\.com)|cdn\.hiddengemssl\.com)\//'],
+            'selfie_doc_url' => ['nullable', 'string', 'max:500', 'url', 'regex:/^https:\/\/(firebasestorage\.googleapis\.com\/v0\/b\/tripme-89742\.(firebasestorage\.app|appspot\.com)|cdn\.hiddengemssl\.com)\//'],
         ]);
 
         if ($validator->fails()) {
@@ -98,7 +98,12 @@ class GuideApplicationController extends Controller
      */
     public function approve(Request $request, $id)
     {
-        $application = GuideApplication::where('id', $id)->orWhere('user_id', $id)->first();
+        $application = GuideApplication::where(function ($query) use ($id) {
+            if (is_numeric($id)) {
+                $query->where('id', $id);
+            }
+            $query->orWhere('user_id', $id);
+        })->first();
 
         if (!$application) {
             return response()->json([
@@ -122,20 +127,22 @@ class GuideApplicationController extends Controller
         });
 
         // Sync to Firestore — guide_applications & users collections
-        try {
-            $firestoreService = new FirestoreService();
-            $firestoreService->updateGuideApplication($application->user_id, [
-                'status' => 'approved',
-                'reviewedAt' => now()->toIso8601String(),
-            ]);
-            $firestoreService->updateGuideUser($application->user_id, [
-                'role' => 'guide_approved',
-                'guideStatus' => 'approved',
-                'isGuideApproved' => true,
-            ]);
-        } catch (\Exception $e) {
-            Log::warning("Firestore sync failed in API approve: " . $e->getMessage());
-        }
+        dispatch(function () use ($application) {
+            try {
+                $firestoreService = new FirestoreService();
+                $firestoreService->updateGuideApplication($application->user_id, [
+                    'status' => 'approved',
+                    'reviewedAt' => now()->toIso8601String(),
+                ]);
+                $firestoreService->updateGuideUser($application->user_id, [
+                    'role' => 'guide_approved',
+                    'guideStatus' => 'approved',
+                    'isGuideApproved' => true,
+                ]);
+            } catch (\Exception $e) {
+                Log::error("Firestore sync failed in API approve (queued): " . $e->getMessage());
+            }
+        });
 
         return response()->json([
             'status' => 'success',
@@ -161,7 +168,12 @@ class GuideApplicationController extends Controller
             ], 422);
         }
 
-        $application = GuideApplication::where('id', $id)->orWhere('user_id', $id)->first();
+        $application = GuideApplication::where(function ($query) use ($id) {
+            if (is_numeric($id)) {
+                $query->where('id', $id);
+            }
+            $query->orWhere('user_id', $id);
+        })->first();
 
         if (!$application) {
             return response()->json([
@@ -177,20 +189,22 @@ class GuideApplicationController extends Controller
         ]);
 
         // Sync to Firestore — guide_applications & users collections
-        try {
-            $firestoreService = new FirestoreService();
-            $firestoreService->updateGuideApplication($application->user_id, [
-                'status' => 'rejected',
-                'adminComment' => $request->input('admin_comment'),
-                'reviewedAt' => now()->toIso8601String(),
-            ]);
-            $firestoreService->updateGuideUser($application->user_id, [
-                'guideStatus' => 'rejected',
-                'guideRejectionReason' => $request->input('admin_comment'),
-            ]);
-        } catch (\Exception $e) {
-            Log::warning("Firestore sync failed in API reject: " . $e->getMessage());
-        }
+        dispatch(function () use ($application, $request) {
+            try {
+                $firestoreService = new FirestoreService();
+                $firestoreService->updateGuideApplication($application->user_id, [
+                    'status' => 'rejected',
+                    'adminComment' => $request->input('admin_comment'),
+                    'reviewedAt' => now()->toIso8601String(),
+                ]);
+                $firestoreService->updateGuideUser($application->user_id, [
+                    'guideStatus' => 'rejected',
+                    'guideRejectionReason' => $request->input('admin_comment'),
+                ]);
+            } catch (\Exception $e) {
+                Log::error("Firestore sync failed in API reject (queued): " . $e->getMessage());
+            }
+        });
 
         return response()->json([
             'status' => 'success',

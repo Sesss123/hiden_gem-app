@@ -1,3 +1,6 @@
+import logging
+logger = logging.getLogger(__name__)
+
 import json
 import sqlite3
 import uuid
@@ -16,9 +19,9 @@ def seed_db():
         try:
             with open(FALLBACK_FILE, 'r', encoding='utf-8') as f:
                 places = json.load(f)
-            print(f"Loaded {len(places)} places from fallback {FALLBACK_FILE}")
+            logger.info(f"Loaded {len(places)} places from fallback {FALLBACK_FILE}")
         except FileNotFoundError:
-            print(f"Error: {SAMPLE_FILE} and {FALLBACK_FILE} not found.")
+            logger.info(f"Error: {SAMPLE_FILE} and {FALLBACK_FILE} not found.")
             return
 
     conn = sqlite3.connect(DB_PATH)
@@ -33,7 +36,7 @@ def seed_db():
         # Check if already exists by name
         cur.execute("SELECT id FROM places WHERE name = ?", (p['name'],))
         if cur.fetchone():
-            print(f"Skipping {p['name']}, already exists.")
+            logger.info(f"Skipping {p['name']}, already exists.")
             continue
             
         cur.execute("""
@@ -59,7 +62,7 @@ def seed_db():
         
     conn.commit()
     conn.close()
-    print(f"Successfully seeded {count} places.")
+    logger.info(f"Successfully seeded {count} places.")
 
 if __name__ == "__main__":
     seed_db()

@@ -167,7 +167,7 @@ class PremiumNotifier extends _$PremiumNotifier {
         isPremium,
         plan: activeEntitlement?.productIdentifier,
         expiry: activeEntitlement?.expirationDate != null 
-            ? DateTime.tryParse(activeEntitlement!.expirationDate!) 
+            ? DateTime.tryParse(activeEntitlement!.expirationDate) 
             : null,
         source: 'revenuecat',
       );
@@ -179,8 +179,8 @@ class PremiumNotifier extends _$PremiumNotifier {
           await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
             'isPremium': isPremium,
             'premiumExpiresAt': activeEntitlement?.expirationDate != null 
-                ? (DateTime.tryParse(activeEntitlement!.expirationDate!) != null 
-                    ? Timestamp.fromDate(DateTime.tryParse(activeEntitlement!.expirationDate!)!) 
+                ? (DateTime.tryParse(activeEntitlement!.expirationDate) != null 
+                    ? Timestamp.fromDate(DateTime.tryParse(activeEntitlement!.expirationDate)!) 
                     : null)
                 : null,
             'premiumPlanId': activeEntitlement?.productIdentifier ?? 'unknown',
@@ -201,6 +201,7 @@ class PremiumNotifier extends _$PremiumNotifier {
           });
         }
       }
+    }
     } catch (e, st) {
       SecureLogger.error("Failed to sync premium state", e, st, "RevenueCat");
     }

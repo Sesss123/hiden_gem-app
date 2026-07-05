@@ -1,3 +1,6 @@
+import logging
+logger = logging.getLogger(__name__)
+
 from models.database_models import Base, District
 import database
 
@@ -34,16 +37,16 @@ def seed_db():
     try:
         existing_districts = db.query(District).count()
         if existing_districts == 0:
-            print("Seeding districts...")
+            logger.info("Seeding districts...")
             for district_data in DISTRICTS_DATA:
                 db_district = District(name=district_data["name"], province=district_data["province"])
                 db.add(db_district)
             db.commit()
-            print("Districts seeded successfully!")
+            logger.info("Districts seeded successfully!")
         else:
-            print(f"Database already contains {existing_districts} districts. Skipping seed.")
+            logger.info(f"Database already contains {existing_districts} districts. Skipping seed.")
     except Exception as e:
-        print(f"Error seeding database: {e}")
+        logger.info(f"Error seeding database: {e}")
     finally:
         db.close()
 

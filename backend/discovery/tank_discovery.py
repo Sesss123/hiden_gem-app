@@ -147,7 +147,7 @@ class TankDiscoveryBot:
             json.dump(final_list, f, indent=2, ensure_ascii=False)
             
         logger.info(f"🚀 Discovery Hive Complete! Total Unique Tanks: {len(final_list)}")
-        print(f"\n[SUMMARY] Saved {len(final_list)} tanks to {self.output_file}")
+        logger.info(f"\n[SUMMARY] Saved {len(final_list)} tanks to {self.output_file}")
         return final_list
 
 if __name__ == "__main__":

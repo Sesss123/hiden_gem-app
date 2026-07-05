@@ -1,3 +1,12 @@
+## Completed Milestone: Store Deployment Compliance (ATT & UMP) (Completed 2026-07-06)
+- [x] Integrate iOS App Tracking Transparency (ATT) via `app_tracking_transparency` package.
+- [x] Integrate Google User Messaging Platform (UMP) for GDPR consent.
+- [x] Create centralized `ConsentService` to block ads initialization until user consent is determined.
+- [x] Update `main.dart` to defer `MobileAds.instance.initialize()` using `ConsentService`.
+- [x] Verify no hardcoded local IPs exist in production backend connections (verified `AppConfig` usage).
+- [x] Verify Signature Hash injection is strictly controlled via environment parameters (`SIGNATURE_HASH`).
+- [x] Confirm In-App Purchases compliance (no external Stripe/PayPal links; relying strictly on native billing).
+
 ## Completed Milestone: Fix UI/UX Visual Bugs & Theme-Awareness on 5 Screens (v21.0) (Completed 2026-07-05)
 - [x] Booking Inbox & Request Linkage (`booking_inbox_screen.dart`)
   - [x] Replaced hardcoded white colors (`Colors.white`, `Colors.white60`, etc.) with theme-aware `AppTheme.textPrimary` and `AppTheme.textSecondary`
@@ -859,3 +868,5 @@
 - [x] Optimize startup performance in `lib/main.dart` by concurrently initializing Firebase and Hive storage using `Future.wait(...)`, drastically reducing main thread blocking and eliminating the `Skipped 20 frames...` UI lag/jank warning — 2026-07-04
 - [x] Fix Real-Time Sync for Guide Application Submit and Approval: Added `watchMyApplication(uid)` stream method to `GuideApplicationRepository` and wired real-time Firestore stream subscriptions in `guide_enrollment_screen.dart` and `profile_screen.dart`, ensuring instant UI status reflection upon admin approval/rejection without app restarts or relogging — 2026-07-04
 
+- [x] Completed Phase 1 of Comprehensive Enterprise Audit: Automated Static Analysis & Dependency Check (Recorded in Audit_Report.md)
+- [x] Completed Full Enterprise Code Audit (150+ Bugs Logged in Audit_Report.md)

@@ -54,7 +54,7 @@ class UserPreferenceService {
     try {
       final pendingRaw = await _secureStorage.read(key: 'pending_firestore_sync');
       _pendingFirestoreSync = pendingRaw == 'true';
-    } catch (e, st) { SecureLogger.warning("Exception caught", e, st); }
+    } catch (e, st) { SecureLogger.error("Exception caught", e, st); }
 
     await _migrateIfNeeded();
     debugPrint('[UPS] Profile loaded. uid=${_cachedProfile?.uid}');

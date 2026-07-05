@@ -64,8 +64,11 @@ class AuthController extends Controller
             ], 401);
         }
 
-        // Revoke all old tokens to prevent token bloat
-        $user->tokens()->delete();
+        // Limit token bloat: Keep only the most recent 4 tokens (so this new one makes 5)
+        $excessTokens = $user->tokens()->orderBy('created_at', 'desc')->skip(4)->pluck('id');
+        if ($excessTokens->isNotEmpty()) {
+            $user->tokens()->whereIn('id', $excessTokens)->delete();
+        }
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([

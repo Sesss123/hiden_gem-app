@@ -178,6 +178,9 @@ async def get_admin_stats(user=Depends(require_admin)):
 @limiter.limit("30/minute")
 async def track_telemetry(request: Request, place_id: Optional[str] = None, type: str = "view", search_term: Optional[str] = None, session_id: Optional[str] = None):
     """Endpoint for frontend to report user activity to MongoDB."""
+    api_key = request.headers.get("X-API-KEY")
+    if not api_key:
+        raise HTTPException(status_code=401, detail="API Key required for telemetry tracking.")
     db = await get_mongo_db()
     import uuid
     await db.visitor_analytics.insert_one({

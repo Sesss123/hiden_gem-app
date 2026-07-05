@@ -1,3 +1,6 @@
+import logging
+logger = logging.getLogger(__name__)
+
 import sqlite3
 import json
 import os
@@ -5,10 +8,10 @@ import os
 DB_PATH = "tripme.db"
 
 def generate_kb():
-    print("--- Generating TripMe AI Knowledge Base ---")
+    logger.info("--- Generating TripMe AI Knowledge Base ---")
     
     if not os.path.exists(DB_PATH):
-        print(f"Error: {DB_PATH} not found.")
+        logger.info(f"Error: {DB_PATH} not found.")
         return
 
     conn = sqlite3.connect(DB_PATH)
@@ -38,7 +41,7 @@ def generate_kb():
     # 1. Generate JSON KB
     with open("tripme_kb.json", "w", encoding="utf-8") as f:
         json.dump(kb_data, f, indent=4)
-    print(f"Created tripme_kb.json with {len(kb_data)} entries.")
+    logger.info(f"Created tripme_kb.json with {len(kb_data)} entries.")
 
     # 2. Generate Dart KB (Optional constant for Flutter)
     dart_content = "class TripMeKB {\n  static const List<Map<String, dynamic>> places = "
@@ -47,7 +50,7 @@ def generate_kb():
     
     with open("tripme_kb.dart", "w", encoding="utf-8") as f:
         f.write(dart_content)
-    print(f"Created tripme_kb.dart for Flutter inclusion.")
+    logger.info(f"Created tripme_kb.dart for Flutter inclusion.")
 
 if __name__ == "__main__":
     generate_kb()

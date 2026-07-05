@@ -1,3 +1,6 @@
+import logging
+logger = logging.getLogger(__name__)
+
 # backend/tests/test_batch_optimization.py
 
 import asyncio
@@ -12,15 +15,15 @@ sys.path.append(str(Path(__file__).parent.parent))
 from pipeline.main_pipeline import run_pipeline
 
 async def verify_batch_optimization():
-    print("\n--- [Optimization] Verifying Batch Intake & Concurrency ---")
+    logger.info("\n--- [Optimization] Verifying Batch Intake & Concurrency ---")
     
     # We'll run a standard pipeline run. 
     # Even if the dashboard is offline, we check the logs for 'Shipping batch'.
     try:
         results = await run_pipeline(run_id="TEST_OPTIMIZATION")
-        print(f"\n✅ Pipeline completed: {results}")
+        logger.info(f"\n✅ Pipeline completed: {results}")
     except Exception as e:
-        print(f"Pipeline failed: {e}")
+        logger.info(f"Pipeline failed: {e}")
 
 if __name__ == "__main__":
     asyncio.run(verify_batch_optimization())

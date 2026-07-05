@@ -1,3 +1,6 @@
+import logging
+logger = logging.getLogger(__name__)
+
 import sqlite3
 import uuid
 import datetime
@@ -11,7 +14,7 @@ def inject_mock_data():
     # Check if table exists
     cur.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='places'")
     if not cur.fetchone():
-        print("Places table missing! Running seed first...")
+        logger.info("Places table missing! Running seed first...")
         return
 
     mock_places = [
@@ -39,7 +42,7 @@ def inject_mock_data():
 
     conn.commit()
     conn.close()
-    print(f"Injected {count} mock places for UI visualization.")
+    logger.info(f"Injected {count} mock places for UI visualization.")
 
 if __name__ == "__main__":
     inject_mock_data()

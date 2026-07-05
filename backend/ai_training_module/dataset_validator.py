@@ -1,12 +1,15 @@
+import logging
+logger = logging.getLogger(__name__)
+
 import json
 import sys
 import os
 
 def validate_jsonl(file_path):
-    print(f"🔍 Validating Dataset: {file_path}")
+    logger.info(f"🔍 Validating Dataset: {file_path}")
     
     if not os.path.exists(file_path):
-        print("❌ Error: File does not exist.")
+        logger.info("❌ Error: File does not exist.")
         return False
         
     valid_lines = 0
@@ -29,27 +32,27 @@ def validate_jsonl(file_path):
                 elif "messages" in data:
                     valid_lines += 1
                 else:
-                    print(f"⚠️ Warning (Line {i}): JSON valid, but missing expected SFT keys (text, instruction/output, or messages).")
+                    logger.info(f"⚠️ Warning (Line {i}): JSON valid, but missing expected SFT keys (text, instruction/output, or messages).")
                     valid_lines += 1 # Technically valid JSON, but maybe wrong schema
                     
             except json.JSONDecodeError as e:
-                print(f"❌ Error (Line {i}): Invalid JSON -> {e}")
+                logger.info(f"❌ Error (Line {i}): Invalid JSON -> {e}")
                 errors += 1
                 
-    print("\n--- Validation Results ---")
-    print(f"✅ Valid lines: {valid_lines}")
-    print(f"❌ Errors: {errors}")
+    logger.info("\n--- Validation Results ---")
+    logger.info(f"✅ Valid lines: {valid_lines}")
+    logger.info(f"❌ Errors: {errors}")
     
     if errors == 0 and valid_lines > 0:
-        print("🎉 Dataset is READY for Google Colab training!")
+        logger.info("🎉 Dataset is READY for Google Colab training!")
         return True
     else:
-        print("⚠️ Please fix the errors before uploading to Colab.")
+        logger.info("⚠️ Please fix the errors before uploading to Colab.")
         return False
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print("Usage: python dataset_validator.py <path_to_jsonl_file>")
-        print("Example: python dataset_validator.py ../../data/sft_osm_data.jsonl")
+        logger.info("Usage: python dataset_validator.py <path_to_jsonl_file>")
+        logger.info("Example: python dataset_validator.py ../../data/sft_osm_data.jsonl")
     else:
         validate_jsonl(sys.argv[1])

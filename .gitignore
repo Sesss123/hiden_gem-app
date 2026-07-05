@@ -80,3 +80,8 @@ analysis_full.txt
 # Obsolete large media tracker
 assets/videos/splash.mp4
 
+
+# Security - Do not commit keystores or keys
+*.jks
+*.keystore
+key.properties

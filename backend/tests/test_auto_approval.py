@@ -1,3 +1,6 @@
+import logging
+logger = logging.getLogger(__name__)
+
 import asyncio
 import sys
 import os
@@ -13,7 +16,7 @@ from models.database_models import Place
 Place.metadata.create_all(bind=engine)
 
 async def test_auto_approval_insertion():
-    print("[TEST] Verifying Auto-Approval and SQLite Persistence...")
+    logger.info("[TEST] Verifying Auto-Approval and SQLite Persistence...")
     
     # Mock data with 95% score
     mock_data = {
@@ -40,13 +43,13 @@ async def test_auto_approval_insertion():
         assert place.status == "approved", f"Status expected 'approved', got '{place.status}'"
         assert place.verified == 1, "Place 'verified' flag should be 1"
         
-        print(f"✅ Auto-Approval Verification Passed! Site: {place.name} | Status: {place.status}")
+        logger.info(f"✅ Auto-Approval Verification Passed! Site: {place.name} | Status: {place.status}")
         
         # Cleanup
         db.delete(place)
         db.commit()
     except Exception as e:
-        print(f"❌ Verification Failed: {e}")
+        logger.info(f"❌ Verification Failed: {e}")
         raise e
     finally:
         db.close()

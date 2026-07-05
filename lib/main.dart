@@ -7,7 +7,6 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hidden_gems_sl/l10n/app_localizations.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'dart:io';
@@ -189,7 +188,7 @@ final appInitializationProvider = FutureProvider<AppInitState>((ref) async {
 
   UpdateType updateType = UpdateType.none;
   if (result.firebaseSuccess) {
-    initializeOtherServices();
+    await initializeOtherServices();
     try {
       updateType = await UpdateService().checkUpdate().timeout(
         const Duration(seconds: 5),
@@ -390,41 +389,37 @@ Future<InitializationResult> performInitialization() async {
 
 
 
-void initializeOtherServices() {
-  // BUG-105: Run non-critical initializers completely asynchronously in background tasks
-  // to ensure they never block UI rendering or cause startup hangs.
-  Future.microtask(() {
-    try {
-      if (!kIsWeb) {
-        // Initializes ATT (iOS) and UMP (GDPR) before calling MobileAds.instance.initialize()
-        ConsentService().init();
-      }
-    } catch (e) {
-      SecureLogger.error("Ads Init Error: $e");
+Future<void> initializeOtherServices() async {
+  try {
+    if (!kIsWeb) {
+      // Initializes ATT (iOS) and UMP (GDPR) before calling MobileAds.instance.initialize()
+      await ConsentService().init();
     }
+  } catch (e) {
+    SecureLogger.error("Ads Init Error: $e");
+  }
 
-    try {
-      NotificationService().init();
-    } catch (e) {
-      SecureLogger.error("Notify Init Error: $e");
-    }
+  try {
+    await NotificationService().init();
+  } catch (e) {
+    SecureLogger.error("Notify Init Error: $e");
+  }
 
-    try {
-      AnalyticsService().logEvent('app_opened');
-    } catch (e) {
-      SecureLogger.warning("Failed to log app_opened event: $e");
-    }
-    
-    // Ads & Voice Pre-load
-    MonetizationService().loadInterstitialAd();
-    MonetizationService().loadRewardedAd();
-    
-    try {
-      VoiceService().init();
-    } catch (e) {
-      debugPrint("Voice Init Error: $e");
-    }
-  });
+  try {
+    AnalyticsService().logEvent('app_opened');
+  } catch (e) {
+    SecureLogger.warning("Failed to log app_opened event: $e");
+  }
+  
+  // Ads & Voice Pre-load
+  MonetizationService().loadInterstitialAd();
+  MonetizationService().loadRewardedAd();
+  
+  try {
+    await VoiceService().init();
+  } catch (e) {
+    debugPrint("Voice Init Error: $e");
+  }
 }
 
 
@@ -627,7 +622,14 @@ class _HiddenGemsAppState extends ConsumerState<HiddenGemsApp> with WidgetsBindi
         
         if (snapshot.hasError) {
           return Scaffold(
-            body: Center(child: Text("Connection Error: ${snapshot.error}")),
+            backgroundColor: AppTheme.primaryBlue(context),
+            body: GracefulErrorWidget(
+              icon: Icons.wifi_off_rounded,
+              title: "Connection Error",
+              subtitle: snapshot.error.toString(),
+              buttonLabel: "Retry",
+              onRetry: () => ref.invalidate(appInitializationProvider),
+            ),
           );
         }
 

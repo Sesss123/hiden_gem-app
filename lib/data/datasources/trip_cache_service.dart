@@ -72,7 +72,7 @@ class TripCacheService {
           final key = Hive.generateSecureKey();
           await secureStorage.write(key: 'tripme_hive_aes', value: base64UrlEncode(key));
           cipher = HiveAesCipher(key);
-        } catch (e, st) { SecureLogger.warning("Exception caught", e, st); }
+        } catch (e, st) { SecureLogger.error("Exception caught", e, st); }
       }
 
       _isInitialized = await _openBoxes(cipher);
@@ -253,7 +253,7 @@ class TripCacheService {
             } else {
               box.delete(key);
             }
-          } catch (e, st) { SecureLogger.warning("Exception caught", e, st); }
+          } catch (e, st) { SecureLogger.error("Exception caught", e, st); }
         }
       }
       // Newest first
@@ -279,7 +279,7 @@ class TripCacheService {
           } else {
             box.delete(key);
           }
-        } catch (e, st) { SecureLogger.warning("Exception caught", e, st); }
+        } catch (e, st) { SecureLogger.error("Exception caught", e, st); }
       }
       // Newest first
       entries.sort((a, b) =>
@@ -394,7 +394,7 @@ class TripCacheService {
     try {
       final box = Hive.box<String>(_globalDataBox);
       box.put('${key}_last_check', DateTime.now().millisecondsSinceEpoch.toString());
-    } catch (e, st) { SecureLogger.warning("Exception caught", e, st); }
+    } catch (e, st) { SecureLogger.error("Exception caught", e, st); }
   }
 
   static bool shouldCheckServer(String key, {Duration ttl = const Duration(hours: 12)}) {
