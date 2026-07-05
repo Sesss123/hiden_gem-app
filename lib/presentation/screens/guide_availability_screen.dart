@@ -98,7 +98,7 @@ class _GuideAvailabilityScreenState extends ConsumerState<GuideAvailabilityScree
       lastDate: now.add(const Duration(days: 365)),
       builder: (context, child) => Theme(
         data: ThemeData.dark().copyWith(
-          colorScheme: const ColorScheme.dark(
+          colorScheme: ColorScheme.dark(
             primary: AppTheme.colors.amber,
             onPrimary: AppTheme.colors.black,
             surface: AppTheme.colors.primary,

@@ -905,7 +905,7 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
                 await UsageLimiterService.provideBonusArSession();
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
+                    SnackBar(
                       content: Text('✨ Oracle reward active! AR session unlocked.'),
                       backgroundColor: AppTheme.colors.green,
                     ),

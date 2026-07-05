@@ -409,7 +409,7 @@ class _GuideEarningsScreenState extends ConsumerState<GuideEarningsScreen> {
               Navigator.pop(ctx);
               SecureLogger.info("Guide requested payout: LKR $pendingPayout", tag: "Finance");
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
+                SnackBar(
                   content: Text("✅ Payout request submitted successfully!"),
                   backgroundColor: AppTheme.colors.green,
                 ),

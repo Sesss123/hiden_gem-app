@@ -41,7 +41,7 @@ class ModernGradientButton extends StatelessWidget {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         ),
         child: isLoading
-            ? const SizedBox(
+            ? SizedBox(
                 height: 24,
                 width: 24,
                 child: CircularProgressIndicator(
@@ -58,7 +58,7 @@ class ModernGradientButton extends StatelessWidget {
                   ],
                   Text(
                     label.toUpperCase(),
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontWeight: FontWeight.bold,
                       letterSpacing: 1.2,
                       color: AppTheme.colors.white,
@@ -109,7 +109,7 @@ class PrimaryButton extends StatelessWidget {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         ),
         child: isLoading
-            ? const SizedBox(
+            ? SizedBox(
                 height: 24,
                 width: 24,
                 child: CircularProgressIndicator(
@@ -119,7 +119,7 @@ class PrimaryButton extends StatelessWidget {
               )
             : Text(
                 label.toUpperCase(),
-                style: const TextStyle(
+                style: TextStyle(
                   fontWeight: FontWeight.bold,
                   letterSpacing: 1.2,
                   color: AppTheme.colors.white,

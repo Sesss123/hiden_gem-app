@@ -492,7 +492,7 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> {
                 borderColor: AppTheme.colors.white.withValues(alpha: 0.05),
                 child: TextField(
                   style: TextStyle(color: AppTheme.colors.white),
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     hintText: "Guardian Phone Number",
                     hintStyle: TextStyle(color: AppTheme.colors.white24, fontSize: 13),
                     border: InputBorder.none,

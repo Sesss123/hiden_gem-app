@@ -307,7 +307,7 @@ class _ARViewerScreenState extends State<ARViewerScreen>
               await UsageLimiterService.provideBonusArSession();
               if (!mounted) return;
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
+                SnackBar(
                   content: Text('✨ Oracle reward active! AR session unlocked.'),
                   backgroundColor: AppTheme.colors.green,
                 ),
@@ -896,7 +896,7 @@ class _ARViewerScreenState extends State<ARViewerScreen>
     top: false,
     child: Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.bottomCenter, end: Alignment.topCenter,
           colors: [AppTheme.colors.black87, AppTheme.colors.transparent],
@@ -1052,7 +1052,7 @@ class _ARViewerScreenState extends State<ARViewerScreen>
                   color: AppTheme.warningAmber
                       .withValues(alpha: 1 - _scanAnimController.value),
                   width: 2)),
-              child: const Icon(Icons.phone_android,
+              child: Icon(Icons.phone_android,
                   color: AppTheme.colors.white54, size: 36)),
           ),
         ),

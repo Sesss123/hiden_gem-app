@@ -116,7 +116,7 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
   void _generateLink() {
     final name = _nameController.text.trim();
     if (name.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text("⚠️ Please enter a recipient name."),
         behavior: SnackBarBehavior.floating,
         backgroundColor: AppTheme.colors.redAccent,

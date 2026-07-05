@@ -308,7 +308,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
                     preferredSize: const Size.fromHeight(60),
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 8),
-                      decoration: const BoxDecoration(
+                      decoration: BoxDecoration(
                         color: AppTheme.colors.white,
                         borderRadius: BorderRadius.only(
                           topLeft: Radius.circular(32),

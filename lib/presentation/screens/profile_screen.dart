@@ -299,7 +299,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
       final isDark = Theme.of(context).brightness == Brightness.dark;
 
       if (l10n == null) {
-        return const Scaffold(
+        return Scaffold(
           body: Center(child: Text("Localization error", style: TextStyle(color: AppTheme.colors.red))),
         );
       }
@@ -1012,7 +1012,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
                     Container(
                       width: 6,
                       height: 6,
-                      decoration: const BoxDecoration(
+                      decoration: BoxDecoration(
                         color: AppTheme.colors.greenAccent,
                         shape: BoxShape.circle,
                       ),

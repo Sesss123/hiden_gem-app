@@ -40,7 +40,7 @@ class LanguageSelectionScreen extends ConsumerWidget {
                   height: 80,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    gradient: const LinearGradient(
+                    gradient: LinearGradient(
                       colors: [AppTheme.colors.primary, AppTheme.colors.primary],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,

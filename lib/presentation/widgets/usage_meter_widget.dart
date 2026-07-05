@@ -62,7 +62,7 @@ class _UsageMeterWidgetState extends State<UsageMeterWidget> {
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return const SizedBox(
+      return SizedBox(
         height: 100,
         child: Center(child: CircularProgressIndicator(color: AppTheme.colors.primary)),
       );

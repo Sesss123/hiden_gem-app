@@ -516,7 +516,7 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(color: AppTheme.colors.amber, style: BorderStyle.solid, width: 1.5),
                     ),
-                    child: const Column(
+                    child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(Icons.add_a_photo_outlined, color: AppTheme.colors.amber, size: 28),

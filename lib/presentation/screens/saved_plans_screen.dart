@@ -299,7 +299,7 @@ class _SavedPlansScreenState extends ConsumerState<SavedPlansScreen> {
                                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                                 borderRadius: BorderRadius.circular(6),
                                 borderColor: AppTheme.colors.primary.withValues(alpha: 0.3),
-                                child: const Row(
+                                child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
                                     Icon(Icons.view_in_ar_rounded, size: 10, color: AppTheme.colors.primary),

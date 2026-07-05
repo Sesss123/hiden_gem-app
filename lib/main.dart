@@ -746,7 +746,7 @@ class _GlobalScreenshotWrapperState extends ConsumerState<GlobalScreenshotWrappe
                             )
                           ],
                         ),
-                        child: const Icon(
+                        child: Icon(
                           Icons.camera_alt_rounded,
                           color: AppTheme.colors.white,
                           size: 28,

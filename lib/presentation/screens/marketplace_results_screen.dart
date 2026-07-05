@@ -277,7 +277,7 @@ class _MarketplaceResultsScreenState extends ConsumerState<MarketplaceResultsScr
         itemCount: listings.length + (isLoadingMore ? 1 : 0),
         itemBuilder: (context, index) {
           if (index == listings.length) {
-            return const Padding(
+            return Padding(
               padding: EdgeInsets.symmetric(vertical: 20),
               child: Center(child: CircularProgressIndicator(color: AppTheme.colors.amber)),
             );

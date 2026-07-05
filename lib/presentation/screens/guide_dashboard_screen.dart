@@ -416,7 +416,7 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
         elevation: 0,
         indicatorColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
         labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-        destinations: const [
+        destinations: [
           NavigationDestination(
             icon: Icon(Icons.explore_outlined),
             selectedIcon: Icon(Icons.explore, color: AppTheme.colors.amber),

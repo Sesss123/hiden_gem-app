@@ -200,7 +200,7 @@ class _ARFallbackScreenState extends State<ARFallbackScreen> {
                                     await UsageLimiterService.provideBonusArSession();
                                     if (context.mounted) {
                                       ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(
+                                        SnackBar(
                                           content: Text('✨ Oracle reward active! Fallback modes and premium content unlocked.'),
                                           backgroundColor: AppTheme.colors.green,
                                         ),
@@ -348,7 +348,7 @@ class _ARFallbackScreenState extends State<ARFallbackScreen> {
               opacity: 0.6,
             ),
           ),
-          child: const Center(
+          child: Center(
             child: Icon(Icons.palette_outlined, color: AppTheme.colors.primary, size: 32),
           ),
         ),

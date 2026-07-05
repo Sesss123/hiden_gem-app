@@ -327,7 +327,7 @@ class _TouristCompanionHubState extends State<TouristCompanionHub> {
             ),
           ),
           const Spacer(),
-          const SizedBox(
+          SizedBox(
             width: 12,
             height: 12,
             child: CircularProgressIndicator(strokeWidth: 2, color: AppTheme.colors.white12),
@@ -670,7 +670,7 @@ class _TouristCompanionHubState extends State<TouristCompanionHub> {
     
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Text("SOS ALERT BROADCASTED TO ALL AUTHORITIES!"),
           backgroundColor: AppTheme.colors.redAccent,
         ),

@@ -477,7 +477,7 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
     // 🚧 Show Coming Soon Toast while AI model is in development!
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: const Row(
+        content: Row(
           children: [
             Icon(Icons.auto_awesome, color: AppTheme.colors.amberAccent, size: 20),
             SizedBox(width: 10),
@@ -839,7 +839,7 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
                               ),
                               errorWidget: (context, url, error) => Container(
                                 color: AppTheme.colors.black12,
-                                child: const Center(
+                                child: Center(
                                   child: Icon(Icons.broken_image_outlined, color: AppTheme.colors.white24, size: 32),
                                 ),
                               ),
@@ -1043,7 +1043,7 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
                                   ),
                                   errorWidget: (context, url, error) => Container(
                                     color: AppTheme.colors.black12,
-                                    child: const Center(
+                                    child: Center(
                                       child: Icon(Icons.broken_image_outlined, color: AppTheme.colors.white24, size: 32),
                                     ),
                                   ),
@@ -1236,7 +1236,7 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
                         ),
                         errorWidget: (context, url, error) => Container(
                           color: AppTheme.colors.black12,
-                          child: const Center(
+                          child: Center(
                             child: Icon(Icons.broken_image_outlined, color: AppTheme.colors.white24, size: 32),
                           ),
                         ),

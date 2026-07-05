@@ -14,12 +14,12 @@ class BatikBackground extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         gradient: isDark 
-            ? const LinearGradient(
+            ? LinearGradient(
                 colors: [AppTheme.colors.primary, AppTheme.colors.primary],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               )
-            : const LinearGradient(
+            : LinearGradient(
                 colors: [AppTheme.colors.primary, AppTheme.colors.primary],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,

@@ -89,7 +89,7 @@ class _OracleAuraWidgetState extends State<OracleAuraWidget>
                     end: Alignment.bottomRight,
                   ),
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.auto_awesome,
                   color: AppTheme.colors.white,
                   size: 40,

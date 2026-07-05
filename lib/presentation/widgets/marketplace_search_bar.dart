@@ -260,7 +260,7 @@ class _CooldownBar extends StatelessWidget {
       padding: const EdgeInsets.only(top: 6, left: 4, right: 4),
       child: Row(
         children: [
-          const Icon(Icons.warning_amber_rounded,
+          Icon(Icons.warning_amber_rounded,
               size: 14, color: AppTheme.colors.orange),
           const SizedBox(width: 6),
           Expanded(
@@ -299,7 +299,7 @@ class SearchMetricsDebugBadge extends ConsumerWidget {
         '📄 ${metrics.avgDocsPerSearch.toStringAsFixed(1)} docs/search | '
         '🚫 ${metrics.canceledRequests} canceled | '
         '⏱ ${metrics.rateLimitHits} rate-limited',
-        style: const TextStyle(
+        style: TextStyle(
           color: AppTheme.colors.white70,
           fontSize: 10,
           fontFamily: 'monospace',
