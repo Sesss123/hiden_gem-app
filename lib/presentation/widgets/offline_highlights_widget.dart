@@ -89,12 +89,12 @@ class OfflineHighlightsWidget extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.fromLTRB(16, 8, 16, 0),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppTheme.colors.white,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: AppTheme.secondaryBorder(context)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
+            color: AppTheme.colors.black.withValues(alpha: 0.03),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -102,9 +102,9 @@ class OfflineHighlightsWidget extends StatelessWidget {
       ),
       child: Theme(
         data: Theme.of(context).copyWith(
-          dividerColor: Colors.transparent,
-          splashColor: Colors.transparent,
-          highlightColor: Colors.transparent,
+          dividerColor: AppTheme.colors.transparent,
+          splashColor: AppTheme.colors.transparent,
+          highlightColor: AppTheme.colors.transparent,
         ),
         child: ExpansionTile(
           initiallyExpanded: true,
@@ -166,7 +166,7 @@ class OfflineHighlightsWidget extends StatelessWidget {
                             safety,
                             style: GoogleFonts.inter(
                               fontSize: 12,
-                              color: isDark ? Colors.red.shade200 : Colors.red.shade800,
+                              color: isDark ? AppTheme.colors.red.shade200 : AppTheme.colors.red.shade800,
                               height: 1.4,
                             ),
                           ),

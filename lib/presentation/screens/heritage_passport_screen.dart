@@ -99,9 +99,9 @@ class _HeritagePassportScreenState extends State<HeritagePassportScreen> {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(50),
               border: Border.all(color: AppTheme.secondaryBorder(context)),
-              color: Colors.white,
+              color: AppTheme.colors.white,
               boxShadow: [
-                 BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4)),
+                 BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4)),
               ],
             ),
             child: Icon(Icons.auto_awesome_motion_rounded, color: AppPalette.rust.withValues(alpha: 0.5), size: 64)
@@ -141,17 +141,17 @@ class _HeritagePassportScreenState extends State<HeritagePassportScreen> {
   Widget _buildStampCard(HeritageStamp stamp) {
     Color rarityColor = AppTheme.textSecondary(context);
     if (stamp.rarity == 'Rare') rarityColor = AppPalette.rust;
-    if (stamp.rarity == 'Mythic') rarityColor = const Color(0xFFD4AF37);
+    if (stamp.rarity == 'Mythic') rarityColor = const AppTheme.colors.primary;
 
     return GestureDetector(
       onTap: () => _showStampDetail(stamp),
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppTheme.colors.white,
           borderRadius: BorderRadius.circular(24),
           border: Border.all(color: rarityColor.withValues(alpha: 0.3)),
           boxShadow: [
-             BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4)),
+             BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4)),
           ],
         ),
         child: Column(
@@ -168,7 +168,7 @@ class _HeritagePassportScreenState extends State<HeritagePassportScreen> {
                     borderRadius: BorderRadius.circular(16),
                     gradient: LinearGradient(
                       begin: Alignment.topCenter, end: Alignment.bottomCenter,
-                      colors: [Colors.transparent, Colors.black.withValues(alpha: 0.6)],
+                      colors: [AppTheme.colors.transparent, AppTheme.colors.black.withValues(alpha: 0.6)],
                     ),
                   ),
                 ),
@@ -209,11 +209,11 @@ class _HeritagePassportScreenState extends State<HeritagePassportScreen> {
   void _showStampDetail(HeritageStamp stamp) {
     Color rarityColor = AppTheme.textSecondary(context);
     if (stamp.rarity == 'Rare') rarityColor = AppPalette.rust;
-    if (stamp.rarity == 'Mythic') rarityColor = const Color(0xFFD4AF37); // Gold
+    if (stamp.rarity == 'Mythic') rarityColor = const AppTheme.colors.primary; // Gold
 
     showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppTheme.colors.transparent,
       isScrollControlled: true,
       builder: (context) => Container(
         padding: const EdgeInsets.fromLTRB(32, 20, 32, 40),
@@ -235,7 +235,7 @@ class _HeritagePassportScreenState extends State<HeritagePassportScreen> {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(80),
                 border: Border.all(color: rarityColor.withValues(alpha: 0.3)),
-                color: Colors.white,
+                color: AppTheme.colors.white,
               ),
               child: Container(
                 margin: EdgeInsets.all(4),
@@ -261,7 +261,7 @@ class _HeritagePassportScreenState extends State<HeritagePassportScreen> {
             Container(
               padding: EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.white, 
+                color: AppTheme.colors.white, 
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(color: AppTheme.secondaryBorder(context)),
               ),

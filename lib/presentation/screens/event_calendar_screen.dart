@@ -58,7 +58,7 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> with Automati
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text("🚨 HAZARD WARNING: ${alert['message'] ?? 'Extreme weather alert!'}"),
-            backgroundColor: Colors.redAccent,
+            backgroundColor: AppTheme.colors.redAccent,
           ),
         );
       }
@@ -117,7 +117,7 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> with Automati
       child: Scaffold(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         appBar: AppBar(
-          backgroundColor: Colors.transparent,
+          backgroundColor: AppTheme.colors.transparent,
           automaticallyImplyLeading: false,
           actions: [
             IconButton(
@@ -215,7 +215,7 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> with Automati
               )
             ],
           ),
-          selectedTextStyle: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+          selectedTextStyle: const TextStyle(color: AppTheme.colors.black, fontWeight: FontWeight.bold),
           todayDecoration: BoxDecoration(
             color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1), 
             shape: BoxShape.circle,
@@ -381,7 +381,7 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> with Automati
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppTheme.colors.transparent,
       builder: (context) => DraggableScrollableSheet(
         initialChildSize: 0.8,
         maxChildSize: 0.95,
@@ -409,7 +409,7 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> with Automati
                     fit: StackFit.expand,
                     children: [
                       CachedImage(url: "https://images.unsplash.com/photo-1514525253361-bee8a4874051?w=800&q=80", fit: BoxFit.cover),
-                      Container(decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Colors.transparent, Colors.black.withValues(alpha: 0.6)]))),
+                      Container(decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [AppTheme.colors.transparent, AppTheme.colors.black.withValues(alpha: 0.6)]))),
                       Positioned(
                         bottom: 24, left: 24,
                         child: Column(
@@ -417,7 +417,7 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> with Automati
                           children: [
                             OracleUI.glassChip(context: context, label: event.category.name.toUpperCase(), isSelected: true),
                             SizedBox(height: 12),
-                            OracleUI.neonText(event.name.toUpperCase(), style: GoogleFonts.outfit(fontSize: 24, fontWeight: FontWeight.w900, color: Colors.white)),
+                            OracleUI.neonText(event.name.toUpperCase(), style: GoogleFonts.outfit(fontSize: 24, fontWeight: FontWeight.w900, color: AppTheme.colors.white)),
                           ],
                         ),
                       ),
@@ -445,7 +445,7 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> with Automati
                     label: Text("ACQUIRE PASS", style: TextStyle(fontWeight: FontWeight.w900, letterSpacing: 1)),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Theme.of(context).colorScheme.primary,
-                      foregroundColor: Colors.black,
+                      foregroundColor: AppTheme.colors.black,
                       padding: EdgeInsets.symmetric(vertical: 18),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                       elevation: 0,
@@ -603,9 +603,9 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> with Automati
   void _showPreferenceDialog() {
     showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppTheme.colors.transparent,
       isScrollControlled: true,
-      barrierColor: Colors.black.withValues(alpha: 0.7),
+      barrierColor: AppTheme.colors.black.withValues(alpha: 0.7),
       builder: (context) => BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
         child: StatefulBuilder(
@@ -673,7 +673,7 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> with Automati
                     onPressed: () { _loadData(); Navigator.pop(context); },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Theme.of(context).colorScheme.primary,
-                      foregroundColor: Colors.black,
+                      foregroundColor: AppTheme.colors.black,
                       padding: EdgeInsets.symmetric(vertical: 20),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                       elevation: 0,

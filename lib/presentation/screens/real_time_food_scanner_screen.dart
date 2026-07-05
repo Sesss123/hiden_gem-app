@@ -107,7 +107,7 @@ class AROverlayData {
       if (hex.length == 6) hex = 'FF$hex';
       return Color(int.parse(hex, radix: 16));
     } catch (_) {
-      return const Color(0xFF00F0FF); // Default Electric Blue
+      return const AppTheme.colors.primary; // Default Electric Blue
     }
   }
 }
@@ -361,14 +361,14 @@ class _RealTimeFoodScannerScreenState extends State<RealTimeFoodScannerScreen>
           children: [
             TextField(
               controller: ipController,
-              style: const TextStyle(color: Colors.white),
-              decoration: const InputDecoration(labelText: "Server IP (e.g. 192.168.1.5)", labelStyle: TextStyle(color: Colors.white70)),
+              style: const TextStyle(color: AppTheme.colors.white),
+              decoration: const InputDecoration(labelText: "Server IP (e.g. 192.168.1.5)", labelStyle: TextStyle(color: AppTheme.colors.white70)),
             ),
             const SizedBox(height: 12),
             TextField(
               controller: portController,
-              style: const TextStyle(color: Colors.white),
-              decoration: const InputDecoration(labelText: "Port (e.g. 8000)", labelStyle: TextStyle(color: Colors.white70)),
+              style: const TextStyle(color: AppTheme.colors.white),
+              decoration: const InputDecoration(labelText: "Port (e.g. 8000)", labelStyle: TextStyle(color: AppTheme.colors.white70)),
               keyboardType: TextInputType.number,
             ),
           ],
@@ -376,7 +376,7 @@ class _RealTimeFoodScannerScreenState extends State<RealTimeFoodScannerScreen>
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text("CANCEL", style: TextStyle(color: Colors.white54)),
+            child: const Text("CANCEL", style: TextStyle(color: AppTheme.colors.white54)),
           ),
           ElevatedButton(
             onPressed: () {
@@ -387,8 +387,8 @@ class _RealTimeFoodScannerScreenState extends State<RealTimeFoodScannerScreen>
               Navigator.pop(ctx);
               _connectWebSocket();
             },
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.cyanAccent),
-            child: const Text("CONNECT", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+            style: ElevatedButton.styleFrom(backgroundColor: AppTheme.colors.cyanAccent),
+            child: const Text("CONNECT", style: TextStyle(color: AppTheme.colors.black, fontWeight: FontWeight.bold)),
           ),
         ],
       ),
@@ -400,7 +400,7 @@ class _RealTimeFoodScannerScreenState extends State<RealTimeFoodScannerScreen>
 
     showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppTheme.colors.transparent,
       builder: (ctx) => OracleUI.glassContainer(
         opacity: 0.95,
         child: Column(
@@ -412,12 +412,12 @@ class _RealTimeFoodScannerScreenState extends State<RealTimeFoodScannerScreen>
               children: [
                 OracleUI.neonText("PORTION BREAKDOWN", style: GoogleFonts.outfit(fontSize: 18)),
                 IconButton(
-                  icon: const Icon(Icons.close, color: Colors.white70),
+                  icon: const Icon(Icons.close, color: AppTheme.colors.white70),
                   onPressed: () => Navigator.pop(ctx),
                 ),
               ],
             ),
-            const Divider(color: Colors.white24),
+            const Divider(color: AppTheme.colors.white24),
             const SizedBox(height: 12),
             ..._latestResponse!.components.map((comp) {
               return Padding(
@@ -427,18 +427,18 @@ class _RealTimeFoodScannerScreenState extends State<RealTimeFoodScannerScreen>
                   children: [
                     Text(
                       comp.name.toUpperCase(),
-                      style: GoogleFonts.inter(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
+                      style: GoogleFonts.inter(color: AppTheme.colors.white, fontWeight: FontWeight.bold, fontSize: 14),
                     ),
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                       decoration: BoxDecoration(
-                        color: Colors.cyanAccent.withValues(alpha: 0.2),
+                        color: AppTheme.colors.cyanAccent.withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: Colors.cyanAccent, width: 1),
+                        border: Border.all(color: AppTheme.colors.cyanAccent, width: 1),
                       ),
                       child: Text(
                         comp.estimatedPortion,
-                        style: GoogleFonts.outfit(color: Colors.cyanAccent, fontWeight: FontWeight.w800, fontSize: 13),
+                        style: GoogleFonts.outfit(color: AppTheme.colors.cyanAccent, fontWeight: FontWeight.w800, fontSize: 13),
                       ),
                     ),
                   ],
@@ -455,14 +455,14 @@ class _RealTimeFoodScannerScreenState extends State<RealTimeFoodScannerScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: AppTheme.colors.black,
       body: Stack(
         children: [
           // 1. Live Camera Preview
           Positioned.fill(
             child: _isCameraInitialized && _cameraController != null
                 ? CameraPreview(_cameraController!)
-                : const Center(child: CircularProgressIndicator(color: Colors.cyanAccent)),
+                : const Center(child: CircularProgressIndicator(color: AppTheme.colors.cyanAccent)),
           ),
 
           // 2. AR Bounding Box Overlay
@@ -481,10 +481,10 @@ class _RealTimeFoodScannerScreenState extends State<RealTimeFoodScannerScreen>
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    Colors.black.withValues(alpha: 0.85),
-                    Colors.transparent,
-                    Colors.transparent,
-                    Colors.black.withValues(alpha: 0.9),
+                    AppTheme.colors.black.withValues(alpha: 0.85),
+                    AppTheme.colors.transparent,
+                    AppTheme.colors.transparent,
+                    AppTheme.colors.black.withValues(alpha: 0.9),
                   ],
                   stops: const [0.0, 0.22, 0.6, 1.0],
                 ),
@@ -522,14 +522,14 @@ class _RealTimeFoodScannerScreenState extends State<RealTimeFoodScannerScreen>
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           IconButton(
-            icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
+            icon: const Icon(Icons.arrow_back_rounded, color: AppTheme.colors.white),
             onPressed: () => Navigator.pop(context),
           ),
           Column(
             children: [
               OracleUI.neonText(
                 "LIVE AI FOOD SCANNER",
-                style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.w900, letterSpacing: 3, fontSize: 14),
+                style: GoogleFonts.outfit(color: AppTheme.colors.white, fontWeight: FontWeight.w900, letterSpacing: 3, fontSize: 14),
               ),
               const SizedBox(height: 4),
               Row(
@@ -539,21 +539,21 @@ class _RealTimeFoodScannerScreenState extends State<RealTimeFoodScannerScreen>
                     width: 8,
                     height: 8,
                     decoration: BoxDecoration(
-                      color: _isConnected ? Colors.greenAccent : Colors.redAccent,
+                      color: _isConnected ? AppTheme.colors.greenAccent : AppTheme.colors.redAccent,
                       shape: BoxShape.circle,
                     ),
                   ),
                   const SizedBox(width: 6),
                   Text(
                     _isConnected ? "STREAMING 1 FPS (${_latestResponse?.processingTimeMs.toStringAsFixed(0) ?? 0}ms)" : "DISCONNECTED",
-                    style: GoogleFonts.inter(color: _isConnected ? Colors.greenAccent : Colors.redAccent, fontSize: 10, fontWeight: FontWeight.bold),
+                    style: GoogleFonts.inter(color: _isConnected ? AppTheme.colors.greenAccent : AppTheme.colors.redAccent, fontSize: 10, fontWeight: FontWeight.bold),
                   ),
                 ],
               ),
             ],
           ),
           IconButton(
-            icon: const Icon(Icons.settings_ethernet, color: Colors.cyanAccent),
+            icon: const Icon(Icons.settings_ethernet, color: AppTheme.colors.cyanAccent),
             onPressed: _showServerIpDialog,
           ),
         ],
@@ -576,14 +576,14 @@ class _RealTimeFoodScannerScreenState extends State<RealTimeFoodScannerScreen>
               margin: const EdgeInsets.only(right: 10),
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
               decoration: BoxDecoration(
-                color: isSelected ? Colors.cyanAccent : Colors.black.withValues(alpha: 0.6),
+                color: isSelected ? AppTheme.colors.cyanAccent : AppTheme.colors.black.withValues(alpha: 0.6),
                 borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: isSelected ? Colors.cyanAccent : Colors.white30, width: 1.5),
+                border: Border.all(color: isSelected ? AppTheme.colors.cyanAccent : AppTheme.colors.white30, width: 1.5),
               ),
               child: Text(
                 displayName,
                 style: GoogleFonts.outfit(
-                  color: isSelected ? Colors.black : Colors.white70,
+                  color: isSelected ? AppTheme.colors.black : AppTheme.colors.white70,
                   fontWeight: FontWeight.w800,
                   fontSize: 11,
                   letterSpacing: 1,
@@ -601,18 +601,18 @@ class _RealTimeFoodScannerScreenState extends State<RealTimeFoodScannerScreen>
       margin: const EdgeInsets.symmetric(horizontal: 24),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.black.withValues(alpha: 0.7),
+        color: AppTheme.colors.black.withValues(alpha: 0.7),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.cyanAccent.withValues(alpha: 0.3)),
+        border: Border.all(color: AppTheme.colors.cyanAccent.withValues(alpha: 0.3)),
       ),
       child: Column(
         children: [
-          const CircularProgressIndicator(color: Colors.cyanAccent),
+          const CircularProgressIndicator(color: AppTheme.colors.cyanAccent),
           const SizedBox(height: 12),
           Text(
             _isConnected ? "Point camera at food plate for live analysis..." : "Connecting to Backend WebSocket server...",
             textAlign: TextAlign.center,
-            style: GoogleFonts.inter(color: Colors.white, fontSize: 13),
+            style: GoogleFonts.inter(color: AppTheme.colors.white, fontSize: 13),
           ),
         ],
       ),
@@ -628,10 +628,10 @@ class _RealTimeFoodScannerScreenState extends State<RealTimeFoodScannerScreen>
       decoration: BoxDecoration(
         color: AppPaletteDark.card.withValues(alpha: 0.9),
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: Colors.cyanAccent, width: 1.5),
+        border: Border.all(color: AppTheme.colors.cyanAccent, width: 1.5),
         boxShadow: [
           BoxShadow(
-            color: Colors.cyanAccent.withValues(alpha: 0.2),
+            color: AppTheme.colors.cyanAccent.withValues(alpha: 0.2),
             blurRadius: 16,
             offset: const Offset(0, 4),
           ),
@@ -642,10 +642,10 @@ class _RealTimeFoodScannerScreenState extends State<RealTimeFoodScannerScreen>
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: Colors.cyanAccent.withValues(alpha: 0.2),
+              color: AppTheme.colors.cyanAccent.withValues(alpha: 0.2),
               shape: BoxShape.circle,
             ),
-            child: const Icon(Icons.auto_awesome, color: Colors.cyanAccent, size: 22),
+            child: const Icon(Icons.auto_awesome, color: AppTheme.colors.cyanAccent, size: 22),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -654,12 +654,12 @@ class _RealTimeFoodScannerScreenState extends State<RealTimeFoodScannerScreen>
               children: [
                 Text(
                   "AI DIET COACH (${_userMode.replaceAll('_', ' ').toUpperCase()})",
-                  style: GoogleFonts.outfit(color: Colors.cyanAccent, fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 1.5),
+                  style: GoogleFonts.outfit(color: AppTheme.colors.cyanAccent, fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 1.5),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   _latestResponse!.recommendation,
-                  style: GoogleFonts.inter(color: Colors.white, fontSize: 12, height: 1.3),
+                  style: GoogleFonts.inter(color: AppTheme.colors.white, fontSize: 12, height: 1.3),
                 ),
               ],
             ),
@@ -677,9 +677,9 @@ class _RealTimeFoodScannerScreenState extends State<RealTimeFoodScannerScreen>
         margin: const EdgeInsets.symmetric(horizontal: 16),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.black.withValues(alpha: 0.85),
+          color: AppTheme.colors.black.withValues(alpha: 0.85),
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: Colors.white24, width: 1),
+          border: Border.all(color: AppTheme.colors.white24, width: 1),
         ),
         child: Column(
           children: [
@@ -689,7 +689,7 @@ class _RealTimeFoodScannerScreenState extends State<RealTimeFoodScannerScreen>
                 Expanded(
                   child: Text(
                     _latestResponse!.dishName.toUpperCase(),
-                    style: GoogleFonts.outfit(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w900),
+                    style: GoogleFonts.outfit(color: AppTheme.colors.white, fontSize: 15, fontWeight: FontWeight.w900),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -698,9 +698,9 @@ class _RealTimeFoodScannerScreenState extends State<RealTimeFoodScannerScreen>
                   children: [
                     Text(
                       "TAP FOR PORTIONS",
-                      style: GoogleFonts.inter(color: Colors.cyanAccent, fontSize: 10, fontWeight: FontWeight.bold),
+                      style: GoogleFonts.inter(color: AppTheme.colors.cyanAccent, fontSize: 10, fontWeight: FontWeight.bold),
                     ),
-                    const Icon(Icons.chevron_right, color: Colors.cyanAccent, size: 16),
+                    const Icon(Icons.chevron_right, color: AppTheme.colors.cyanAccent, size: 16),
                   ],
                 ),
               ],
@@ -709,10 +709,10 @@ class _RealTimeFoodScannerScreenState extends State<RealTimeFoodScannerScreen>
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _buildMacroItem("CALORIES", "${nut.calories.toStringAsFixed(0)} kcal", Colors.orangeAccent),
-                _buildMacroItem("PROTEIN", "${nut.protein.toStringAsFixed(1)}g", Colors.cyanAccent),
-                _buildMacroItem("CARBS", "${nut.carbs.toStringAsFixed(1)}g", Colors.greenAccent),
-                _buildMacroItem("FAT", "${nut.fat.toStringAsFixed(1)}g", Colors.pinkAccent),
+                _buildMacroItem("CALORIES", "${nut.calories.toStringAsFixed(0)} kcal", AppTheme.colors.orangeAccent),
+                _buildMacroItem("PROTEIN", "${nut.protein.toStringAsFixed(1)}g", AppTheme.colors.cyanAccent),
+                _buildMacroItem("CARBS", "${nut.carbs.toStringAsFixed(1)}g", AppTheme.colors.greenAccent),
+                _buildMacroItem("FAT", "${nut.fat.toStringAsFixed(1)}g", AppTheme.colors.pinkAccent),
               ],
             ),
           ],
@@ -731,7 +731,7 @@ class _RealTimeFoodScannerScreenState extends State<RealTimeFoodScannerScreen>
         const SizedBox(height: 2),
         Text(
           label,
-          style: GoogleFonts.inter(color: Colors.white70, fontSize: 9, fontWeight: FontWeight.bold, letterSpacing: 1),
+          style: GoogleFonts.inter(color: AppTheme.colors.white70, fontSize: 9, fontWeight: FontWeight.bold, letterSpacing: 1),
         ),
       ],
     );
@@ -778,7 +778,7 @@ class ARBoundingBoxPainter extends CustomPainter {
     // Draw futuristic AR corner brackets
     final bracketLength = 20.0;
     final cornerPaint = Paint()
-      ..color = Colors.white
+      ..color = AppTheme.colors.white
       ..style = PaintingStyle.stroke
       ..strokeWidth = 4.0;
 
@@ -799,7 +799,7 @@ class ARBoundingBoxPainter extends CustomPainter {
     final textSpan = TextSpan(
       text: "  ${overlay.label}  ",
       style: GoogleFonts.outfit(
-        color: Colors.black,
+        color: AppTheme.colors.black,
         fontSize: 12,
         fontWeight: FontWeight.w900,
       ),

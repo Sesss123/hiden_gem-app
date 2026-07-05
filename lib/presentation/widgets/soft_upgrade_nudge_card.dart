@@ -50,7 +50,7 @@ class SoftUpgradeNudgeCard extends StatelessWidget {
                 if (onDismiss != null)
                   GestureDetector(
                     onTap: onDismiss,
-                    child: const Icon(Icons.close, color: Colors.white30, size: 16),
+                    child: const Icon(Icons.close, color: AppTheme.colors.white30, size: 16),
                   ),
               ],
             ),
@@ -58,7 +58,7 @@ class SoftUpgradeNudgeCard extends StatelessWidget {
             Text(
               'Approaching your limit for $featureName. Unlock unlimited AI travel plans, offline map caching, and verified guide support.',
               style: GoogleFonts.inter(
-                color: Colors.white70,
+                color: AppTheme.colors.white70,
                 fontSize: 12,
                 height: 1.4,
               ),
@@ -78,7 +78,7 @@ class SoftUpgradeNudgeCard extends StatelessWidget {
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppTheme.warningAmber,
-                      foregroundColor: Colors.black,
+                      foregroundColor: AppTheme.colors.black,
                       padding: const EdgeInsets.symmetric(vertical: 10),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                       elevation: 0,
@@ -95,8 +95,8 @@ class SoftUpgradeNudgeCard extends StatelessWidget {
                     child: OutlinedButton(
                       onPressed: onDismiss,
                       style: OutlinedButton.styleFrom(
-                        side: const BorderSide(color: Colors.white24),
-                        foregroundColor: Colors.white70,
+                        side: const BorderSide(color: AppTheme.colors.white24),
+                        foregroundColor: AppTheme.colors.white70,
                         padding: const EdgeInsets.symmetric(vertical: 10),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                       ),

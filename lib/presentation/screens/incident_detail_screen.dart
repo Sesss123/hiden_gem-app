@@ -78,20 +78,20 @@ class _IncidentDetailScreenState extends ConsumerState<IncidentDetailScreen> {
   }
 
   Widget _buildAppBar(IncidentReport incident) {
-    final severityColor = incident.severity == 'critical' ? Colors.redAccent : Colors.orangeAccent;
+    final severityColor = incident.severity == 'critical' ? AppTheme.colors.redAccent : AppTheme.colors.orangeAccent;
 
     return SliverAppBar(
       expandedHeight: 200.0,
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppTheme.colors.transparent,
       elevation: 0,
       pinned: true,
       leading: IconButton(
-        icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 20),
+        icon: const Icon(Icons.arrow_back_ios_new_rounded, color: AppTheme.colors.white, size: 20),
         onPressed: () => Navigator.pop(context),
       ),
       actions: [
         IconButton(
-          icon: const Icon(Icons.share_rounded, color: Colors.white60),
+          icon: const Icon(Icons.share_rounded, color: AppTheme.colors.white60),
           onPressed: () {},
         ),
       ],
@@ -109,7 +109,7 @@ class _IncidentDetailScreenState extends ConsumerState<IncidentDetailScreen> {
         background: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [severityColor.withValues(alpha: 0.15), Colors.transparent],
+              colors: [severityColor.withValues(alpha: 0.15), AppTheme.colors.transparent],
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
             ),
@@ -134,12 +134,12 @@ class _IncidentDetailScreenState extends ConsumerState<IncidentDetailScreen> {
               children: [
                 Text(
                   "CURRENT STATUS",
-                  style: GoogleFonts.inter(color: Colors.white24, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1),
+                  style: GoogleFonts.inter(color: AppTheme.colors.white24, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1),
                 ),
                 const SizedBox(height: 4),
                 OracleUI.neonText(
                   incident.status.toUpperCase(),
-                  style: GoogleFonts.inter(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 14),
+                  style: GoogleFonts.inter(color: AppTheme.colors.white, fontWeight: FontWeight.w900, fontSize: 14),
                 ),
               ],
             ),
@@ -148,20 +148,20 @@ class _IncidentDetailScreenState extends ConsumerState<IncidentDetailScreen> {
               children: [
                 Text(
                   "SEVERITY",
-                  style: GoogleFonts.inter(color: Colors.white24, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1),
+                  style: GoogleFonts.inter(color: AppTheme.colors.white24, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1),
                 ),
                 const SizedBox(height: 4),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                   decoration: BoxDecoration(
-                    color: incident.severity == 'critical' ? Colors.redAccent.withValues(alpha: 0.1) : Colors.orangeAccent.withValues(alpha: 0.1),
+                    color: incident.severity == 'critical' ? AppTheme.colors.redAccent.withValues(alpha: 0.1) : AppTheme.colors.orangeAccent.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: incident.severity == 'critical' ? Colors.redAccent.withValues(alpha: 0.3) : Colors.orangeAccent.withValues(alpha: 0.3)),
+                    border: Border.all(color: incident.severity == 'critical' ? AppTheme.colors.redAccent.withValues(alpha: 0.3) : AppTheme.colors.orangeAccent.withValues(alpha: 0.3)),
                   ),
                   child: Text(
                     incident.severity.toUpperCase(),
                     style: GoogleFonts.inter(
-                      color: incident.severity == 'critical' ? Colors.redAccent : Colors.orangeAccent,
+                      color: incident.severity == 'critical' ? AppTheme.colors.redAccent : AppTheme.colors.orangeAccent,
                       fontSize: 10,
                       fontWeight: FontWeight.w900,
                     ),
@@ -174,12 +174,12 @@ class _IncidentDetailScreenState extends ConsumerState<IncidentDetailScreen> {
         const SizedBox(height: 32),
         Text(
           incident.title,
-          style: GoogleFonts.outfit(color: Colors.white, fontSize: 24, fontWeight: FontWeight.w900),
+          style: GoogleFonts.outfit(color: AppTheme.colors.white, fontSize: 24, fontWeight: FontWeight.w900),
         ).animate().fadeIn().slideX(begin: 0.1),
         const SizedBox(height: 12),
         Text(
           incident.description,
-          style: GoogleFonts.inter(color: Colors.white70, fontSize: 14, height: 1.6),
+          style: GoogleFonts.inter(color: AppTheme.colors.white70, fontSize: 14, height: 1.6),
         ).animate().fadeIn(delay: 200.ms),
       ],
     );
@@ -191,7 +191,7 @@ class _IncidentDetailScreenState extends ConsumerState<IncidentDetailScreen> {
       children: [
         Text(
           "INCIDENT TIMELINE",
-          style: GoogleFonts.inter(color: Colors.white24, fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: 2),
+          style: GoogleFonts.inter(color: AppTheme.colors.white24, fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: 2),
         ),
         Text(
           "ENCRYPTED LOG",
@@ -203,7 +203,7 @@ class _IncidentDetailScreenState extends ConsumerState<IncidentDetailScreen> {
 
   List<Widget> _buildTimeline(IncidentReport incident) {
     if (incident.timelineEvents.isEmpty) {
-      return [const Text("No timeline active.", style: TextStyle(color: Colors.white12))];
+      return [const Text("No timeline active.", style: TextStyle(color: AppTheme.colors.white12))];
     }
 
     return incident.timelineEvents.map((e) {
@@ -224,7 +224,7 @@ class _IncidentDetailScreenState extends ConsumerState<IncidentDetailScreen> {
                 ),
                 if (!isLast)
                   Expanded(
-                    child: Container(width: 1, color: Colors.white.withValues(alpha: 0.1)),
+                    child: Container(width: 1, color: AppTheme.colors.white.withValues(alpha: 0.1)),
                   ),
               ],
             ),
@@ -240,18 +240,18 @@ class _IncidentDetailScreenState extends ConsumerState<IncidentDetailScreen> {
                       children: [
                         Text(
                           (e['type'] as String).toUpperCase().replaceAll('_', ' '),
-                          style: GoogleFonts.inter(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 11, letterSpacing: 0.5),
+                          style: GoogleFonts.inter(color: AppTheme.colors.white, fontWeight: FontWeight.w900, fontSize: 11, letterSpacing: 0.5),
                         ),
                         Text(
                           "2m ago", // In reality, format the timestamp
-                          style: GoogleFonts.inter(color: Colors.white10, fontSize: 10),
+                          style: GoogleFonts.inter(color: AppTheme.colors.white10, fontSize: 10),
                         ),
                       ],
                     ),
                     const SizedBox(height: 6),
                     Text(
                       e['description'] as String,
-                      style: GoogleFonts.inter(color: Colors.white30, fontSize: 12),
+                      style: GoogleFonts.inter(color: AppTheme.colors.white30, fontSize: 12),
                     ),
                   ],
                 ),
@@ -267,23 +267,23 @@ class _IncidentDetailScreenState extends ConsumerState<IncidentDetailScreen> {
     return OracleUI.glassContainer(
       padding: const EdgeInsets.all(24),
       borderRadius: BorderRadius.circular(24),
-      borderColor: Colors.white.withValues(alpha: 0.05),
+      borderColor: AppTheme.colors.white.withValues(alpha: 0.05),
       child: Column(
         children: [
           Row(
             children: [
-              const Icon(Icons.verified_user_rounded, color: Colors.cyanAccent, size: 20),
+              const Icon(Icons.verified_user_rounded, color: AppTheme.colors.cyanAccent, size: 20),
               const SizedBox(width: 12),
               Text(
                 "VERIFIED AUDIT LOG",
-                style: GoogleFonts.inter(color: Colors.cyanAccent, fontWeight: FontWeight.w900, fontSize: 11, letterSpacing: 1),
+                style: GoogleFonts.inter(color: AppTheme.colors.cyanAccent, fontWeight: FontWeight.w900, fontSize: 11, letterSpacing: 1),
               ),
             ],
           ),
           const SizedBox(height: 16),
           Text(
             "This report is locked for forensic integrity. Only authorized admins can modify status.",
-            style: GoogleFonts.inter(color: Colors.white24, fontSize: 11),
+            style: GoogleFonts.inter(color: AppTheme.colors.white24, fontSize: 11),
           ),
           const SizedBox(height: 24),
           Row(
@@ -292,8 +292,8 @@ class _IncidentDetailScreenState extends ConsumerState<IncidentDetailScreen> {
                 child: OutlinedButton(
                   onPressed: () {},
                   style: OutlinedButton.styleFrom(
-                    foregroundColor: Colors.white,
-                    side: BorderSide(color: Colors.white.withValues(alpha: 0.1)),
+                    foregroundColor: AppTheme.colors.white,
+                    side: BorderSide(color: AppTheme.colors.white.withValues(alpha: 0.1)),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
                   child: const Text("ADD EVIDENCE"),
@@ -305,7 +305,7 @@ class _IncidentDetailScreenState extends ConsumerState<IncidentDetailScreen> {
                   onPressed: () {},
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Theme.of(context).colorScheme.primary,
-                    foregroundColor: Colors.black,
+                    foregroundColor: AppTheme.colors.black,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
                   child: const Text("ESCALATE", style: TextStyle(fontWeight: FontWeight.bold)),

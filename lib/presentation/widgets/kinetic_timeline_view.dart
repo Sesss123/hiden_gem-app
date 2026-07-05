@@ -69,12 +69,12 @@ class KineticTimelineView extends StatelessWidget {
                 child: Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: AppTheme.colors.white,
                     border: Border.all(color: AppTheme.secondaryBorder(context)),
                     borderRadius: BorderRadius.circular(16),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.03),
+                        color: AppTheme.colors.black.withValues(alpha: 0.03),
                         blurRadius: 10,
                         offset: const Offset(0, 4),
                       ),
@@ -145,7 +145,7 @@ class KineticTimelineView extends StatelessWidget {
           width: 12,
           height: 12,
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: AppTheme.colors.white,
             shape: BoxShape.circle,
             border: Border.all(color: AppPalette.rust, width: 2),
           ),

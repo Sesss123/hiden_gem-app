@@ -60,21 +60,21 @@ class _SavedPlansScreenState extends ConsumerState<SavedPlansScreen> {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            const Color(0xFFFFD700).withValues(alpha: 0.8),
-            const Color(0xFFFFD700).withValues(alpha: 0.0),
+            const AppTheme.colors.primary.withValues(alpha: 0.8),
+            const AppTheme.colors.primary.withValues(alpha: 0.0),
           ],
         ),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Row(
         children: [
-          const Icon(Icons.view_in_ar, color: Colors.black, size: 28),
+          const Icon(Icons.view_in_ar, color: AppTheme.colors.black, size: 28),
           if (hasAR) ...[
             const SizedBox(width: 12),
             Text(
               "VIEW IN AR",
               style: GoogleFonts.outfit(
-                color: Colors.black,
+                color: AppTheme.colors.black,
                 fontWeight: FontWeight.bold,
                 fontSize: 14,
               ),
@@ -121,7 +121,7 @@ class _SavedPlansScreenState extends ConsumerState<SavedPlansScreen> {
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppTheme.colors.transparent,
         elevation: 0,
         centerTitle: true,
         iconTheme: IconThemeData(color: Theme.of(context).colorScheme.onSurface),
@@ -143,7 +143,7 @@ class _SavedPlansScreenState extends ConsumerState<SavedPlansScreen> {
                   context: context,
                   builder: (_) => OracleUI.glassContainer(
                     child: AlertDialog(
-                      backgroundColor: Colors.transparent,
+                      backgroundColor: AppTheme.colors.transparent,
                       title: OracleUI.neonText('Clear Archives', style: GoogleFonts.outfit(fontSize: 20)),
                       content: Text('This will permanently erase all local manifests.', style: GoogleFonts.inter(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7))),
                       actions: [
@@ -152,7 +152,7 @@ class _SavedPlansScreenState extends ConsumerState<SavedPlansScreen> {
                             child: Text('ABORT', style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4), fontWeight: FontWeight.bold))),
                         TextButton(
                             onPressed: () => Navigator.pop(context, true),
-                            child: const Text('ERASE ALL', style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold))),
+                            child: const Text('ERASE ALL', style: TextStyle(color: AppTheme.colors.redAccent, fontWeight: FontWeight.bold))),
                       ],
                     ),
                   ),
@@ -223,9 +223,9 @@ class _SavedPlansScreenState extends ConsumerState<SavedPlansScreen> {
             alignment: Alignment.centerRight,
             padding: const EdgeInsets.only(right: 20),
             decoration: BoxDecoration(
-                color: Colors.redAccent.withValues(alpha: 0.6),
+                color: AppTheme.colors.redAccent.withValues(alpha: 0.6),
                 borderRadius: BorderRadius.circular(20)),
-            child: const Icon(Icons.delete_outline, color: Colors.white),
+            child: const Icon(Icons.delete_outline, color: AppTheme.colors.white),
           ),
           confirmDismiss: (direction) async {
             if (direction == DismissDirection.startToEnd) {
@@ -297,16 +297,16 @@ class _SavedPlansScreenState extends ConsumerState<SavedPlansScreen> {
                               OracleUI.glassContainer(
                                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                                 borderRadius: BorderRadius.circular(6),
-                                borderColor: const Color(0xFFFFD700).withValues(alpha: 0.3),
+                                borderColor: const AppTheme.colors.primary.withValues(alpha: 0.3),
                                 child: const Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    Icon(Icons.view_in_ar_rounded, size: 10, color: Color(0xFFFFD700)),
+                                    Icon(Icons.view_in_ar_rounded, size: 10, color: AppTheme.colors.primary),
                                     SizedBox(width: 4),
                                     Text(
                                       "AR",
                                       style: TextStyle(
-                                        color: Color(0xFFFFD700),
+                                        color: AppTheme.colors.primary,
                                         fontWeight: FontWeight.w900,
                                         fontSize: 10,
                                       ),

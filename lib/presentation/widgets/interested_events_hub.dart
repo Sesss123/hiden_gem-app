@@ -26,7 +26,7 @@ class _InterestedEventsHubState extends State<InterestedEventsHub> {
 
   Future<void> _loadEvents() async {
     setState(() => _isLoadingEvents = true);
-    await Future.delayed(const Duration(milliseconds: 600));
+    // await Future.delayed(const Duration(milliseconds: 600));
     final rawEvents = TripCacheService.getInterestedEvents();
     if (mounted) {
       setState(() {

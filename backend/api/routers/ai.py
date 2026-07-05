@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
-from core.security import get_current_user
+from core.auth import get_current_user
 from core.database import get_db_connection
 from core.rate_limit import limiter
 from typing import List, Optional, Dict, Any

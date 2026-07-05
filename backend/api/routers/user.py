@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, Request
-from core.security import get_current_user
+from core.auth import get_current_user
 from core.database import get_db_connection
 from core.rate_limit import limiter
 from typing import List
@@ -24,8 +24,8 @@ def get_user_profile(request: Request, user=Depends(get_current_user)):
         history_count = cur.fetchone()[0]
         
         return {
-            "email": user["email"],
-            "tier": user["tier"],
+            "email": user.email,
+            "tier": user.tier,
             "stats": {
                 "favorites": fav_count,
                 "visited": history_count

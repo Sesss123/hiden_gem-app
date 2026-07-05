@@ -309,7 +309,7 @@ class _ARViewerScreenState extends State<ARViewerScreen>
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
                   content: Text('✨ Oracle reward active! AR session unlocked.'),
-                  backgroundColor: Colors.green,
+                  backgroundColor: AppTheme.colors.green,
                 ),
               );
               Navigator.pushReplacement(
@@ -426,7 +426,7 @@ class _ARViewerScreenState extends State<ARViewerScreen>
   void _showError(String msg) {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(msg), backgroundColor: Colors.red.shade800,
+      SnackBar(content: Text(msg), backgroundColor: AppTheme.colors.red.shade800,
           behavior: SnackBarBehavior.floating),
     );
   }
@@ -436,7 +436,7 @@ class _ARViewerScreenState extends State<ARViewerScreen>
         placeName: widget.placeName, hotspotId: h.label);
     showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppTheme.colors.transparent,
       builder: (_) => _hotspotSheet(h),
     );
   }
@@ -456,7 +456,7 @@ class _ARViewerScreenState extends State<ARViewerScreen>
     setState(() => _isCapturing = true);
 
     // Small delay to ensure UI redraws before capture
-    await Future.delayed(const Duration(milliseconds: 100));
+    // await Future.delayed(const Duration(milliseconds: 100));
 
     try {
       final image = await _screenshotController.capture();
@@ -489,7 +489,7 @@ class _ARViewerScreenState extends State<ARViewerScreen>
   void _showShareSheet(String path) {
     showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppTheme.colors.transparent,
       isScrollControlled: true,
       builder: (_) => _shareSheet(path),
     );
@@ -502,7 +502,7 @@ class _ARViewerScreenState extends State<ARViewerScreen>
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: Colors.white,
+        backgroundColor: AppTheme.colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24), side: BorderSide(color: AppPalette.rust.withValues(alpha: 0.3))),
         title: Text("Join Group Tour", style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.bold)),
         content: Column(
@@ -520,7 +520,7 @@ class _ARViewerScreenState extends State<ARViewerScreen>
               decoration: InputDecoration(
                 counterText: "",
                 filled: true,
-                fillColor: Colors.black.withValues(alpha: 0.05),
+                fillColor: AppTheme.colors.black.withValues(alpha: 0.05),
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
               ),
             ),
@@ -534,7 +534,7 @@ class _ARViewerScreenState extends State<ARViewerScreen>
               _joinSession(controller.text);
             },
             style: ElevatedButton.styleFrom(backgroundColor: AppPalette.rust),
-            child: const Text("JOIN", style: TextStyle(color: Colors.white)),
+            child: const Text("JOIN", style: TextStyle(color: AppTheme.colors.white)),
           ),
         ],
       ),
@@ -620,7 +620,7 @@ class _ARViewerScreenState extends State<ARViewerScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: AppTheme.colors.black,
       body: Screenshot(
         controller: _screenshotController,
         child: Stack(children: [
@@ -641,7 +641,7 @@ class _ARViewerScreenState extends State<ARViewerScreen>
               builder: (_, __) => IgnorePointer(
                 child: Opacity(
                   opacity: _thenNowAnim.value * 0.45,
-                  child: Container(color: const Color(0xFFA0522D)),
+                  child: Container(color: const AppTheme.colors.primary),
                 ),
               ),
             ),
@@ -721,7 +721,7 @@ class _ARViewerScreenState extends State<ARViewerScreen>
   Widget _buildFlashOverlay() => FadeTransition(
     opacity: _flashAnimation,
     child: IgnorePointer(
-      child: Container(color: Colors.white),
+      child: Container(color: AppTheme.colors.white),
     ),
   );
 
@@ -775,7 +775,7 @@ class _ARViewerScreenState extends State<ARViewerScreen>
         const SizedBox(width: 6),
         Text(
           "CODE: ${_currentSession?.id}",
-          style: GoogleFonts.inter(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+          style: GoogleFonts.inter(color: AppTheme.colors.white, fontSize: 10, fontWeight: FontWeight.bold),
         ),
         const SizedBox(width: 8),
         GestureDetector(
@@ -783,7 +783,7 @@ class _ARViewerScreenState extends State<ARViewerScreen>
             _sessionSubscription?.cancel();
             setState(() => _currentSession = null);
           },
-          child: const Icon(Icons.close, color: Colors.white54, size: 14),
+          child: const Icon(Icons.close, color: AppTheme.colors.white54, size: 14),
         ),
       ],
     ),
@@ -796,12 +796,12 @@ class _ARViewerScreenState extends State<ARViewerScreen>
       child: Container(
         padding: const EdgeInsets.all(3),
         decoration: BoxDecoration(
-          color: Colors.black54, borderRadius: BorderRadius.circular(30),
-          border: Border.all(color: Colors.white24),
+          color: AppTheme.colors.black54, borderRadius: BorderRadius.circular(30),
+          border: Border.all(color: AppTheme.colors.white24),
         ),
         child: Row(mainAxisSize: MainAxisSize.min, children: [
           _tab('THEN', _isThenMode, AppPalette.rust),
-          _tab('NOW', !_isThenMode, Colors.white),
+          _tab('NOW', !_isThenMode, AppTheme.colors.white),
         ]),
       ),
     ),
@@ -811,12 +811,12 @@ class _ARViewerScreenState extends State<ARViewerScreen>
     duration: const Duration(milliseconds: 300),
     padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
     decoration: BoxDecoration(
-      color: active ? c.withValues(alpha: 0.2) : Colors.transparent,
+      color: active ? c.withValues(alpha: 0.2) : AppTheme.colors.transparent,
       borderRadius: BorderRadius.circular(27),
-      border: Border.all(color: active ? c : Colors.transparent, width: 1.5),
+      border: Border.all(color: active ? c : AppTheme.colors.transparent, width: 1.5),
     ),
     child: Text(label, style: GoogleFonts.outfit(
-        color: active ? c : Colors.white54,
+        color: active ? c : AppTheme.colors.white54,
         fontWeight: FontWeight.bold, fontSize: 13)),
   );
 
@@ -831,7 +831,7 @@ class _ARViewerScreenState extends State<ARViewerScreen>
       GestureDetector(
         onTap: _toggleAudio,
         child: Icon(_isAudioPlaying ? Icons.pause_circle : Icons.play_circle,
-            color: Colors.white, size: 28),
+            color: AppTheme.colors.white, size: 28),
       ),
       const SizedBox(width: 8),
       Expanded(
@@ -850,7 +850,7 @@ class _ARViewerScreenState extends State<ARViewerScreen>
                 child: Slider(
                   value: pos, max: dur,
                   activeColor: AppTheme.warningAmber,
-                  inactiveColor: Colors.white24,
+                  inactiveColor: AppTheme.colors.white24,
                   onChanged: (v) =>
                       _audioPlayer.seek(Duration(seconds: v.toInt())),
                 ),
@@ -865,7 +865,7 @@ class _ARViewerScreenState extends State<ARViewerScreen>
           _audioPlayer.setVolume(_isMuted ? 0 : 1);
         },
         child: Icon(_isMuted ? Icons.volume_off : Icons.volume_up,
-            color: Colors.white70, size: 20),
+            color: AppTheme.colors.white70, size: 20),
       ),
     ]),
   );
@@ -879,13 +879,13 @@ class _ARViewerScreenState extends State<ARViewerScreen>
         decoration: BoxDecoration(
           color: active
               ? AppPalette.rust.withValues(alpha: 0.25)
-              : Colors.white12,
+              : AppTheme.colors.white12,
           borderRadius: BorderRadius.circular(8),
           border: Border.all(color: active
-              ? AppPalette.rust : Colors.white24),
+              ? AppPalette.rust : AppTheme.colors.white24),
         ),
         child: Text(label, style: GoogleFonts.inter(
-            color: active ? AppPalette.rust : Colors.white54,
+            color: active ? AppPalette.rust : AppTheme.colors.white54,
             fontWeight: FontWeight.bold, fontSize: 11)),
       ),
     );
@@ -899,7 +899,7 @@ class _ARViewerScreenState extends State<ARViewerScreen>
       decoration: const BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.bottomCenter, end: Alignment.topCenter,
-          colors: [Colors.black87, Colors.transparent],
+          colors: [AppTheme.colors.black87, AppTheme.colors.transparent],
         ),
       ),
       child: Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
@@ -922,14 +922,14 @@ class _ARViewerScreenState extends State<ARViewerScreen>
   );
 
   Widget _ctrlBtn(IconData icon, String label, VoidCallback onTap,
-      {Color color = Colors.white}) =>
+      {Color color = AppTheme.colors.white}) =>
       GestureDetector(
         onTap: onTap,
         child: Column(mainAxisSize: MainAxisSize.min, children: [
           _pill(padding: const EdgeInsets.all(12),
               child: Icon(icon, color: color, size: 22)),
           const SizedBox(height: 4),
-          Text(label, style: GoogleFonts.inter(color: Colors.white70, fontSize: 10)),
+          Text(label, style: GoogleFonts.inter(color: AppTheme.colors.white70, fontSize: 10)),
         ]),
       );
 
@@ -947,7 +947,7 @@ class _ARViewerScreenState extends State<ARViewerScreen>
                 const Icon(Icons.place, color: AppPalette.rust, size: 14),
                 const SizedBox(width: 4),
                 Text(h.label, style: GoogleFonts.inter(
-                    color: Colors.white, fontSize: 12,
+                    color: AppTheme.colors.white, fontSize: 12,
                     fontWeight: FontWeight.w600)),
               ]),
             ),
@@ -958,17 +958,17 @@ class _ARViewerScreenState extends State<ARViewerScreen>
   Widget _hotspotSheet(ARHotspot h) => Container(
     padding: const EdgeInsets.all(28),
     decoration: BoxDecoration(
-      color: Colors.white,
+      color: AppTheme.colors.white,
       borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
       border: Border.all(color: AppPalette.rust.withValues(alpha: 0.3)),
       boxShadow: [
-        BoxShadow(color: Colors.black.withValues(alpha: 0.1), blurRadius: 10, offset: const Offset(0, -4)),
+        BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.1), blurRadius: 10, offset: const Offset(0, -4)),
       ],
     ),
     child: Column(mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start, children: [
       Center(child: Container(width: 40, height: 4,
-          decoration: BoxDecoration(color: Colors.black12,
+          decoration: BoxDecoration(color: AppTheme.colors.black12,
               borderRadius: BorderRadius.circular(2)))),
       const SizedBox(height: 20),
       Row(children: [
@@ -989,7 +989,7 @@ class _ARViewerScreenState extends State<ARViewerScreen>
   // ──────────────────────── TUTORIAL / SCAN ────────────────────────────────
   Widget _productionLoadingOverlay() => Positioned.fill(
     child: Container(
-      color: Colors.black87,
+      color: AppTheme.colors.black87,
       child: Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -998,7 +998,7 @@ class _ARViewerScreenState extends State<ARViewerScreen>
             const SizedBox(height: 24),
             Text(
               "Preparing Heritage Assets...",
-              style: GoogleFonts.outfit(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+              style: GoogleFonts.outfit(color: AppTheme.colors.white, fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             ValueListenableBuilder<double>(
@@ -1009,17 +1009,17 @@ class _ARViewerScreenState extends State<ARViewerScreen>
                     width: 200,
                     height: 4,
                     clipBehavior: Clip.antiAlias,
-                    decoration: BoxDecoration(color: Colors.white10, borderRadius: BorderRadius.circular(2)),
+                    decoration: BoxDecoration(color: AppTheme.colors.white10, borderRadius: BorderRadius.circular(2)),
                     child: LinearProgressIndicator(
                       value: progress,
-                      backgroundColor: Colors.transparent,
+                      backgroundColor: AppTheme.colors.transparent,
                       valueColor: const AlwaysStoppedAnimation(AppPalette.rust),
                     ),
                   ),
                   const SizedBox(height: 12),
                   Text(
                     "${(progress * 100).toInt()}% • ${widget.arData.modelFileSizeMb} MB",
-                    style: GoogleFonts.inter(color: Colors.white38, fontSize: 12),
+                    style: GoogleFonts.inter(color: AppTheme.colors.white38, fontSize: 12),
                   ),
                 ],
               ),
@@ -1027,11 +1027,11 @@ class _ARViewerScreenState extends State<ARViewerScreen>
             const SizedBox(height: 40),
             Text(
               "Model: ${widget.placeName}",
-              style: GoogleFonts.inter(color: Colors.white54, fontSize: 13),
+              style: GoogleFonts.inter(color: AppTheme.colors.white54, fontSize: 13),
             ),
             Text(
               "Author: ${widget.arData.authorName}",
-              style: GoogleFonts.inter(color: Colors.white38, fontSize: 11),
+              style: GoogleFonts.inter(color: AppTheme.colors.white38, fontSize: 11),
             ),
           ],
         ),
@@ -1040,7 +1040,7 @@ class _ARViewerScreenState extends State<ARViewerScreen>
   );
 
   Widget _tutorialOverlay() => IgnorePointer(
-    child: Container(color: Colors.black54,
+    child: Container(color: AppTheme.colors.black54,
       child: Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
         AnimatedBuilder(
           animation: _scanAnimController,
@@ -1053,13 +1053,13 @@ class _ARViewerScreenState extends State<ARViewerScreen>
                       .withValues(alpha: 1 - _scanAnimController.value),
                   width: 2)),
               child: const Icon(Icons.phone_android,
-                  color: Colors.white54, size: 36)),
+                  color: AppTheme.colors.white54, size: 36)),
           ),
         ),
         const SizedBox(height: 20),
         Text('Move your phone slowly\nto scan a flat surface',
           textAlign: TextAlign.center,
-          style: GoogleFonts.outfit(color: Colors.white, fontSize: 16)),
+          style: GoogleFonts.outfit(color: AppTheme.colors.white, fontSize: 16)),
       ])),
     ),
   );
@@ -1068,7 +1068,7 @@ class _ARViewerScreenState extends State<ARViewerScreen>
     bottom: 180, left: 0, right: 0,
     child: Center(child: _pill(child: Text(
       '👇 Tap "Place" then tap a flat surface',
-      style: GoogleFonts.inter(color: Colors.white70, fontSize: 12)))),
+      style: GoogleFonts.inter(color: AppTheme.colors.white70, fontSize: 12)))),
   );
 
   Widget _demoOverlay() => Positioned(
@@ -1078,16 +1078,16 @@ class _ARViewerScreenState extends State<ARViewerScreen>
         valueListenable: _demoSecondsLeftNotifier,
         builder: (context, seconds, _) {
           return _pill(
-            color: Colors.redAccent.withValues(alpha: 0.2),
+            color: AppTheme.colors.redAccent.withValues(alpha: 0.2),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(Icons.timer_outlined, color: Colors.redAccent, size: 14),
+                const Icon(Icons.timer_outlined, color: AppTheme.colors.redAccent, size: 14),
                 const SizedBox(width: 8),
                 Text(
                   "DEMO MODE: $seconds REMAINING",
                   style: GoogleFonts.outfit(
-                    color: Colors.white,
+                    color: AppTheme.colors.white,
                     fontWeight: FontWeight.bold,
                     fontSize: 12,
                     letterSpacing: 1.2
@@ -1132,9 +1132,9 @@ class _ARViewerScreenState extends State<ARViewerScreen>
           padding: padding ??
               const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           decoration: BoxDecoration(
-            color: color ?? Colors.white.withValues(alpha: 0.12),
+            color: color ?? AppTheme.colors.white.withValues(alpha: 0.12),
             borderRadius: BorderRadius.circular(30),
-            border: Border.all(color: Colors.white24, width: 0.5),
+            border: Border.all(color: AppTheme.colors.white24, width: 0.5),
           ),
           child: child,
         ),
@@ -1185,7 +1185,7 @@ class _ARViewerScreenState extends State<ARViewerScreen>
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               child: Text(
                 (intensity * 100).toInt() > 0 ? "SIGNAL: ${(intensity * 100).toInt()}%" : "SEARCHING...",
-                style: GoogleFonts.inter(color: Colors.white, fontSize: 8, fontWeight: FontWeight.bold),
+                style: GoogleFonts.inter(color: AppTheme.colors.white, fontSize: 8, fontWeight: FontWeight.bold),
               ),
             ),
           ],
@@ -1208,7 +1208,7 @@ class _ARViewerScreenState extends State<ARViewerScreen>
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [const Color(0xFF1A1A2E), const Color(0xFF16213E).withValues(alpha: 0.9)],
+                  colors: [const AppTheme.colors.primary, const AppTheme.colors.primary.withValues(alpha: 0.9)],
                 ),
                 borderRadius: BorderRadius.circular(24),
                 border: Border.all(color: AppPalette.rust, width: 2),
@@ -1234,9 +1234,9 @@ class _ARViewerScreenState extends State<ARViewerScreen>
                       children: [
                         Text("ARTIFACT DISCOVERED!", style: GoogleFonts.outfit(color: AppPalette.rust, fontWeight: FontWeight.w900, fontSize: 12, letterSpacing: 1.5)),
                         const SizedBox(height: 4),
-                        Text(artifact.name, style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18)),
+                        Text(artifact.name, style: GoogleFonts.outfit(color: AppTheme.colors.white, fontWeight: FontWeight.bold, fontSize: 18)),
                         const SizedBox(height: 4),
-                        Text("+${artifact.points} PTS • ${artifact.rarity.toUpperCase()}", style: GoogleFonts.inter(color: Colors.white70, fontSize: 11, fontWeight: FontWeight.bold)),
+                        Text("+${artifact.points} PTS • ${artifact.rarity.toUpperCase()}", style: GoogleFonts.inter(color: AppTheme.colors.white70, fontSize: 11, fontWeight: FontWeight.bold)),
                       ],
                     ),
                   ),
@@ -1260,7 +1260,7 @@ class _ARViewerScreenState extends State<ARViewerScreen>
           Text(
             "HIDDEN GEMS SL",
             style: GoogleFonts.outfit(
-              color: Colors.white,
+              color: AppTheme.colors.white,
               fontWeight: FontWeight.w900,
               fontSize: 10,
               letterSpacing: 2,
@@ -1283,17 +1283,17 @@ class _ARViewerScreenState extends State<ARViewerScreen>
   Widget _shareSheet(String path) => Container(
     padding: const EdgeInsets.all(28),
     decoration: BoxDecoration(
-      color: Colors.white,
+      color: AppTheme.colors.white,
       borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
       border: Border.all(color: AppPalette.rust.withValues(alpha: 0.3)),
       boxShadow: [
-        BoxShadow(color: Colors.black.withValues(alpha: 0.1), blurRadius: 10, offset: const Offset(0, -4)),
+        BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.1), blurRadius: 10, offset: const Offset(0, -4)),
       ],
     ),
     child: Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.black12, borderRadius: BorderRadius.circular(2))),
+        Container(width: 40, height: 4, decoration: BoxDecoration(color: AppTheme.colors.black12, borderRadius: BorderRadius.circular(2))),
         const SizedBox(height: 24),
         Text("Capture Successful!", style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontSize: 22, fontWeight: FontWeight.bold)),
         const SizedBox(height: 8),
@@ -1309,17 +1309,17 @@ class _ARViewerScreenState extends State<ARViewerScreen>
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            _shareOption(Icons.camera, "Instagram", const Color(0xFFE4405F), () {
+            _shareOption(Icons.camera, "Instagram", const AppTheme.colors.primary, () {
               AnalyticsService().logARPhotoShared(
                   placeName: widget.placeName, platform: "instagram");
               SharePlus.instance.share(ShareParams(files: [XFile(path)], text: "Exploring ${widget.placeName} in AR with #HiddenGemsSL"));
             }),
-            _shareOption(Icons.music_note, "TikTok", Colors.black, () {
+            _shareOption(Icons.music_note, "TikTok", AppTheme.colors.black, () {
               AnalyticsService().logARPhotoShared(
                   placeName: widget.placeName, platform: "tiktok");
               SharePlus.instance.share(ShareParams(files: [XFile(path)], text: "History comes alive! #HiddenGemsSL #HeritageAR"));
             }),
-            _shareOption(Icons.check_circle_outline, "Saved", Colors.green, () {
+            _shareOption(Icons.check_circle_outline, "Saved", AppTheme.colors.green, () {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: const Text("Photo saved to your gallery!"),
@@ -1360,7 +1360,7 @@ class _ARViewerScreenState extends State<ARViewerScreen>
           child: Icon(icon, color: color, size: 28),
         ),
         const SizedBox(height: 12),
-        Text(label, style: GoogleFonts.inter(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold)),
+        Text(label, style: GoogleFonts.inter(color: AppTheme.colors.white70, fontSize: 12, fontWeight: FontWeight.bold)),
       ],
     ),
   );
@@ -1375,18 +1375,18 @@ class _ARViewerScreenState extends State<ARViewerScreen>
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
-              color: Colors.black54,
+              color: AppTheme.colors.black54,
               borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: Colors.green.withValues(alpha: 0.5)),
+              border: Border.all(color: AppTheme.colors.green.withValues(alpha: 0.5)),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(Icons.location_on, color: Colors.green, size: 14),
+                const Icon(Icons.location_on, color: AppTheme.colors.green, size: 14),
                 const SizedBox(width: 8),
                 Text(
                   "${_distanceToTarget.toStringAsFixed(0)}m to ${widget.placeName}",
-                  style: GoogleFonts.inter(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+                  style: GoogleFonts.inter(color: AppTheme.colors.white, fontSize: 12, fontWeight: FontWeight.bold),
                 ),
               ],
             ),
@@ -1395,7 +1395,7 @@ class _ARViewerScreenState extends State<ARViewerScreen>
           // Rotating Arrow (Compass)
           Transform.rotate(
             angle: (_bearing * math.pi / 180.0),
-            child: const Icon(Icons.navigation, color: Color(0xFFFFB300), size: 40),
+            child: const Icon(Icons.navigation, color: AppTheme.colors.primary, size: 40),
           ),
         ],
       ),
@@ -1419,12 +1419,12 @@ class _ARViewerScreenState extends State<ARViewerScreen>
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [const Color(0xFF1A1A2E), const Color(0xFF16213E).withValues(alpha: 0.9)],
+                    colors: [const AppTheme.colors.primary, const AppTheme.colors.primary.withValues(alpha: 0.9)],
                   ),
                   borderRadius: BorderRadius.circular(24),
                   border: Border.all(color: AppPalette.rust.withValues(alpha: 0.3)),
                   boxShadow: [
-                    BoxShadow(color: Colors.black.withValues(alpha: 0.5), blurRadius: 20, offset: const Offset(0, 5)),
+                    BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.5), blurRadius: 20, offset: const Offset(0, 5)),
                   ],
                 ),
                 child: Row(
@@ -1452,8 +1452,8 @@ class _ARViewerScreenState extends State<ARViewerScreen>
                             ],
                           ),
                           const SizedBox(height: 4),
-                          Text(partner.name, style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
-                          Text("${partner.category.toUpperCase()} • ${partner.rating} ★", style: GoogleFonts.inter(color: Colors.white70, fontSize: 10)),
+                          Text(partner.name, style: GoogleFonts.outfit(color: AppTheme.colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+                          Text("${partner.category.toUpperCase()} • ${partner.rating} ★", style: GoogleFonts.inter(color: AppTheme.colors.white70, fontSize: 10)),
                         ],
                       ),
                     ),
@@ -1461,7 +1461,7 @@ class _ARViewerScreenState extends State<ARViewerScreen>
                       onPressed: () => _launchURL(partner.bookingUrl),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppPalette.rust,
-                        foregroundColor: Colors.white,
+                        foregroundColor: AppTheme.colors.white,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                       ),
@@ -1488,7 +1488,7 @@ class _ARViewerScreenState extends State<ARViewerScreen>
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: Colors.white,
+        backgroundColor: AppTheme.colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24), side: BorderSide(color: AppPalette.rust.withValues(alpha: 0.3))),
         title: Text("Leave an AR Memory", style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.bold)),
         content: TextField(
@@ -1520,7 +1520,7 @@ class _ARViewerScreenState extends State<ARViewerScreen>
               ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Memory dropped into the AR universe!")));
             },
             style: ElevatedButton.styleFrom(backgroundColor: AppPalette.rust),
-            child: const Text("Drop", style: TextStyle(color: Colors.white)),
+            child: const Text("Drop", style: TextStyle(color: AppTheme.colors.white)),
           ),
         ],
       ),
@@ -1544,7 +1544,7 @@ class _ARViewerScreenState extends State<ARViewerScreen>
                 return Opacity(
                   opacity: value,
                   child: _pill(
-                    color: Colors.blueAccent.withValues(alpha: 0.2),
+                    color: AppTheme.colors.blueAccent.withValues(alpha: 0.2),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -1553,8 +1553,8 @@ class _ARViewerScreenState extends State<ARViewerScreen>
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(mem.userName, style: GoogleFonts.inter(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
-                            Text(mem.message, style: GoogleFonts.inter(color: Colors.white70, fontSize: 12)),
+                            Text(mem.userName, style: GoogleFonts.inter(color: AppTheme.colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
+                            Text(mem.message, style: GoogleFonts.inter(color: AppTheme.colors.white70, fontSize: 12)),
                           ],
                         ),
                       ],
@@ -1576,14 +1576,14 @@ class _ARViewerScreenState extends State<ARViewerScreen>
     }
   }
 
-  Widget _circleBtn(IconData icon, VoidCallback onTap, {Color color = Colors.white}) => GestureDetector(
+  Widget _circleBtn(IconData icon, VoidCallback onTap, {Color color = AppTheme.colors.white}) => GestureDetector(
     onTap: onTap,
     child: Container(
       width: 44, height: 44,
       decoration: BoxDecoration(
-        color: Colors.black45,
+        color: AppTheme.colors.black45,
         shape: BoxShape.circle,
-        border: Border.all(color: Colors.white24, width: 0.5)
+        border: Border.all(color: AppTheme.colors.white24, width: 0.5)
       ),
       child: Icon(icon, color: color, size: 24)
     ),

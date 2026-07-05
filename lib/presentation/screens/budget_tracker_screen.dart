@@ -35,15 +35,15 @@ class _BudgetTrackerScreenState extends State<BudgetTrackerScreen> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppTheme.colors.transparent,
       builder: (context) => StatefulBuilder(
           builder: (context, setModalState) => Container(
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: AppTheme.colors.white,
             borderRadius: const BorderRadius.vertical(top: Radius.circular(36)),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.1),
+                color: AppTheme.colors.black.withValues(alpha: 0.1),
                 blurRadius: 20,
                 offset: const Offset(0, -5),
               ),
@@ -109,13 +109,13 @@ class _BudgetTrackerScreenState extends State<BudgetTrackerScreen> {
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Theme.of(context).colorScheme.primary,
-                    foregroundColor: Colors.white,
+                    foregroundColor: AppTheme.colors.white,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                     elevation: 0,
                   ),
                   child: Text(
                     "SAVE RECORD",
-                    style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w900, color: Colors.white, letterSpacing: 1.5),
+                    style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w900, color: AppTheme.colors.white, letterSpacing: 1.5),
                   ),
                 ),
               ),
@@ -158,7 +158,7 @@ class _BudgetTrackerScreenState extends State<BudgetTrackerScreen> {
       ),
       child: DropdownButtonFormField<String>(
         initialValue: current,
-        dropdownColor: Colors.white,
+        dropdownColor: AppTheme.colors.white,
         style: GoogleFonts.inter(color: AppTheme.textPrimary(context), fontSize: 14, fontWeight: FontWeight.w600),
         decoration: InputDecoration(
           labelText: "Category",
@@ -182,7 +182,7 @@ class _BudgetTrackerScreenState extends State<BudgetTrackerScreen> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: AppTheme.colors.white,
         elevation: 0,
         scrolledUnderElevation: 0,
         shape: Border(bottom: BorderSide(color: AppTheme.secondaryBorder(context))),
@@ -205,7 +205,7 @@ class _BudgetTrackerScreenState extends State<BudgetTrackerScreen> {
             onPressed: _addExpense
           ),
           IconButton(
-            icon: Icon(Icons.auto_awesome, color: Colors.purpleAccent), 
+            icon: Icon(Icons.auto_awesome, color: AppTheme.colors.purpleAccent), 
             onPressed: () => Navigator.push(
               context, 
               MaterialPageRoute(builder: (context) => const BudgetConciergeScreen())
@@ -222,12 +222,12 @@ class _BudgetTrackerScreenState extends State<BudgetTrackerScreen> {
             Container(
               padding: const EdgeInsets.all(32),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: AppTheme.colors.white,
                 borderRadius: BorderRadius.circular(32),
                 border: Border.all(color: AppTheme.secondaryBorder(context)),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.03),
+                    color: AppTheme.colors.black.withValues(alpha: 0.03),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),
@@ -244,7 +244,7 @@ class _BudgetTrackerScreenState extends State<BudgetTrackerScreen> {
                           value: _percentUsed,
                           strokeWidth: 4,
                           backgroundColor: Theme.of(context).dividerColor.withValues(alpha: 0.05),
-                          color: isOverBudget ? Colors.redAccent : Theme.of(context).colorScheme.primary,
+                          color: isOverBudget ? AppTheme.colors.redAccent : Theme.of(context).colorScheme.primary,
                         ),
                       ),
                       Column(
@@ -278,7 +278,7 @@ class _BudgetTrackerScreenState extends State<BudgetTrackerScreen> {
                     children: [
                       Expanded(child: _statItem("PLAN LIMIT", _currencyFormat.format(_budget), AppTheme.textSecondary(context))),
                       const SizedBox(width: 16),
-                      Expanded(child: _statItem("CURRENT CONSUMPTION", _currencyFormat.format(_totalSpent), isOverBudget ? Colors.redAccent : Theme.of(context).colorScheme.primary)),
+                      Expanded(child: _statItem("CURRENT CONSUMPTION", _currencyFormat.format(_totalSpent), isOverBudget ? AppTheme.colors.redAccent : Theme.of(context).colorScheme.primary)),
                     ],
                   ),
                 ],
@@ -332,7 +332,7 @@ class _BudgetTrackerScreenState extends State<BudgetTrackerScreen> {
       width: double.infinity,
       padding: const EdgeInsets.all(48),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppTheme.colors.white,
         borderRadius: BorderRadius.circular(32),
         border: Border.all(color: AppTheme.secondaryBorder(context)),
       ),
@@ -362,12 +362,12 @@ class _BudgetTrackerScreenState extends State<BudgetTrackerScreen> {
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppTheme.colors.white,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: AppTheme.secondaryBorder(context)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.02),
+            color: AppTheme.colors.black.withValues(alpha: 0.02),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -406,10 +406,10 @@ class _BudgetTrackerScreenState extends State<BudgetTrackerScreen> {
     IconData icon;
     Color color;
     switch (category) {
-      case 'food': icon = Icons.restaurant; color = Colors.orangeAccent; break;
-      case 'transport': icon = Icons.directions_car; color = Colors.blueAccent; break;
-      case 'tickets': icon = Icons.confirmation_number; color = Colors.purpleAccent; break;
-      default: icon = Icons.shopping_bag; color = Colors.tealAccent;
+      case 'food': icon = Icons.restaurant; color = AppTheme.colors.orangeAccent; break;
+      case 'transport': icon = Icons.directions_car; color = AppTheme.colors.blueAccent; break;
+      case 'tickets': icon = Icons.confirmation_number; color = AppTheme.colors.purpleAccent; break;
+      default: icon = Icons.shopping_bag; color = AppTheme.colors.tealAccent;
     }
     return Container(
       padding: const EdgeInsets.all(10),

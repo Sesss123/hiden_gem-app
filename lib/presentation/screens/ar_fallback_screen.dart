@@ -87,9 +87,9 @@ class _ARFallbackScreenState extends State<ARFallbackScreen> {
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  Colors.black54, 
-                  _activeMode == "story" ? Colors.black87 : Colors.transparent, 
-                  Colors.black87
+                  AppTheme.colors.black54, 
+                  _activeMode == "story" ? AppTheme.colors.black87 : AppTheme.colors.transparent, 
+                  AppTheme.colors.black87
                 ],
               ),
             ),
@@ -144,7 +144,7 @@ class _ARFallbackScreenState extends State<ARFallbackScreen> {
                       border: Border.all(color: AppPalette.rust.withValues(alpha: 0.3)),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.1),
+                          color: AppTheme.colors.black.withValues(alpha: 0.1),
                           blurRadius: 10,
                           offset: const Offset(0, 4),
                         ),
@@ -202,18 +202,18 @@ class _ARFallbackScreenState extends State<ARFallbackScreen> {
                                       ScaffoldMessenger.of(context).showSnackBar(
                                         const SnackBar(
                                           content: Text('✨ Oracle reward active! Fallback modes and premium content unlocked.'),
-                                          backgroundColor: Colors.green,
+                                          backgroundColor: AppTheme.colors.green,
                                         ),
                                       );
                                     }
                                   },
                                 );
                               },
-                              icon: const Icon(Icons.play_circle_fill, color: Colors.white, size: 16),
+                              icon: const Icon(Icons.play_circle_fill, color: AppTheme.colors.white, size: 16),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: AppPalette.rust,
                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                                foregroundColor: Colors.white,
+                                foregroundColor: AppTheme.colors.white,
                               ),
                               label: const Text("WATCH AD (UNLOCK)"),
                             ),
@@ -239,12 +239,12 @@ class _ARFallbackScreenState extends State<ARFallbackScreen> {
     child: Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppTheme.colors.white,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: AppTheme.secondaryBorder(context)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
+            color: AppTheme.colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -266,23 +266,23 @@ class _ARFallbackScreenState extends State<ARFallbackScreen> {
   Widget _buildVideoBackground() {
     if (_hasError) {
       return Container(
-        color: Colors.black,
+        color: AppTheme.colors.black,
         child: Center(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.video_library_outlined, color: Colors.white24, size: 48),
+              const Icon(Icons.video_library_outlined, color: AppTheme.colors.white24, size: 48),
               const SizedBox(height: 16),
               Text(
                 "Cinematic preview unavailable",
-                style: GoogleFonts.inter(color: Colors.white38, fontSize: 13),
+                style: GoogleFonts.inter(color: AppTheme.colors.white38, fontSize: 13),
               ),
             ],
           ),
         ),
       );
     }
-    if (!_initialized) return const Center(child: CircularProgressIndicator(color: Color(0xFFFFB300)));
+    if (!_initialized) return const Center(child: CircularProgressIndicator(color: AppTheme.colors.primary));
     return SizedBox.expand(
       child: FittedBox(
         fit: BoxFit.cover,
@@ -299,7 +299,7 @@ class _ARFallbackScreenState extends State<ARFallbackScreen> {
     child: Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        const Icon(Icons.threed_rotation, color: Color(0xFFFFB300), size: 80),
+        const Icon(Icons.threed_rotation, color: AppTheme.colors.primary, size: 80),
         const SizedBox(height: 24),
         Text(
           "Interactive 3D View",
@@ -325,7 +325,7 @@ class _ARFallbackScreenState extends State<ARFallbackScreen> {
         const SizedBox(height: 16),
         Text(
           "Unveiling the ${widget.arData.historicalPeriod}",
-          style: GoogleFonts.outfit(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold),
+          style: GoogleFonts.outfit(color: AppTheme.colors.white, fontSize: 32, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 24),
         Text(
@@ -340,8 +340,8 @@ class _ARFallbackScreenState extends State<ARFallbackScreen> {
           width: double.infinity,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
-            color: Colors.white.withValues(alpha: 0.05),
-            border: Border.all(color: Colors.white10),
+            color: AppTheme.colors.white.withValues(alpha: 0.05),
+            border: Border.all(color: AppTheme.colors.white10),
             image: const DecorationImage(
               image: NetworkImage("https://images.unsplash.com/photo-1588615467652-3fb374d08122?auto=format&fit=crop&w=800"),
               fit: BoxFit.cover,
@@ -349,13 +349,13 @@ class _ARFallbackScreenState extends State<ARFallbackScreen> {
             ),
           ),
           child: const Center(
-            child: Icon(Icons.palette_outlined, color: Color(0xFFFFB300), size: 32),
+            child: Icon(Icons.palette_outlined, color: AppTheme.colors.primary, size: 32),
           ),
         ),
         const SizedBox(height: 8),
         Text(
           "Illustration: Ancient Engineering (Concept Art)",
-          style: GoogleFonts.inter(color: Colors.white38, fontSize: 12, fontStyle: FontStyle.italic),
+          style: GoogleFonts.inter(color: AppTheme.colors.white38, fontSize: 12, fontStyle: FontStyle.italic),
         ),
       ],
     ),
@@ -364,7 +364,7 @@ class _ARFallbackScreenState extends State<ARFallbackScreen> {
   Widget _buildAudioNarrationPill() => Container(
     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
     decoration: BoxDecoration(
-      color: Colors.white,
+      color: AppTheme.colors.white,
       borderRadius: BorderRadius.circular(30),
       border: Border.all(color: AppPalette.rust.withValues(alpha: 0.3)),
     ),
@@ -387,7 +387,7 @@ class _ARFallbackScreenState extends State<ARFallbackScreen> {
   Widget _buildModeSwitcher() => Container(
     padding: const EdgeInsets.all(2),
     decoration: BoxDecoration(
-      color: Colors.white.withValues(alpha: 0.1),
+      color: AppTheme.colors.white.withValues(alpha: 0.1),
       borderRadius: BorderRadius.circular(12),
     ),
     child: Row(
@@ -407,14 +407,14 @@ class _ARFallbackScreenState extends State<ARFallbackScreen> {
         duration: const Duration(milliseconds: 300),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
-          color: active ? Colors.white : Colors.transparent,
+          color: active ? AppTheme.colors.white : AppTheme.colors.transparent,
           borderRadius: BorderRadius.circular(10),
         ),
         child: Row(
           children: [
-            Icon(icon, color: active ? AppPalette.rust : Colors.white70, size: 14),
+            Icon(icon, color: active ? AppPalette.rust : AppTheme.colors.white70, size: 14),
             const SizedBox(width: 4),
-            Text(label, style: GoogleFonts.inter(color: active ? AppPalette.rust : Colors.white70, fontSize: 10, fontWeight: FontWeight.bold)),
+            Text(label, style: GoogleFonts.inter(color: active ? AppPalette.rust : AppTheme.colors.white70, fontSize: 10, fontWeight: FontWeight.bold)),
           ],
         ),
       ),
@@ -440,9 +440,9 @@ class _ARFallbackScreenState extends State<ARFallbackScreen> {
     child: Container(
       width: 40, height: 40,
       decoration: BoxDecoration(
-        color: Colors.black45,
+        color: AppTheme.colors.black45,
         shape: BoxShape.circle,
-        border: Border.all(color: Colors.white24, width: 0.5)
+        border: Border.all(color: AppTheme.colors.white24, width: 0.5)
       ),
       child: Icon(icon, color: AppTheme.textPrimary(context), size: 20)
     ),

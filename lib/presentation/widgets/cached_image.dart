@@ -53,7 +53,7 @@ class CachedImage extends StatelessWidget {
       memCacheHeight: 400,
       placeholder: (context, url) => placeholder ?? _buildShimmer(context),
       errorWidget: (context, url, error) {
-        // BUG-P06 Fix: Explicit error logging instead of silent catch (_) {}
+        // BUG-P06 Fix: Explicit error logging instead of silent catch
         SecureLogger.warning("Failed to load image from cache: $url | Error: $error", tag: "ImageCache", isBackground: true);
         return errorWidget ?? _buildError(context);
       },
@@ -75,7 +75,7 @@ class CachedImage extends StatelessWidget {
       width: width,
       height: height,
       color: isDark
-          ? const Color(0xFF1A2332)
+          ? const AppTheme.colors.primary
           : AppPalette.sand2,
       child: _ShimmerBox(width: width, height: height),
     );
@@ -147,9 +147,9 @@ class _ShimmerBoxState extends State<_ShimmerBox>
               end: Alignment(_animation.value, 0),
               colors: isDark
                   ? [
-                      const Color(0xFF1A2332),
-                      const Color(0xFF243044),
-                      const Color(0xFF1A2332),
+                      const AppTheme.colors.primary,
+                      const AppTheme.colors.primary,
+                      const AppTheme.colors.primary,
                     ]
                   : [
                       AppPalette.sand2,

@@ -12,7 +12,7 @@ class LimitReachedDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppTheme.colors.transparent,
       insetPadding: const EdgeInsets.symmetric(horizontal: 24),
       child: Container(
         padding: const EdgeInsets.all(24),
@@ -64,10 +64,10 @@ class LimitReachedDialog extends StatelessWidget {
                     Navigator.pop(context);
                     onWatchAd!();
                   },
-                  icon: const Icon(Icons.play_circle_outline_rounded, color: Colors.white),
+                  icon: const Icon(Icons.play_circle_outline_rounded, color: AppTheme.colors.white),
                   label: Text(
                     "WATCH AD TO UNLOCK ONE",
-                    style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 14, color: Colors.white),
+                    style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 14, color: AppTheme.colors.white),
                   ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Theme.of(context).colorScheme.primary,
@@ -90,7 +90,7 @@ class LimitReachedDialog extends StatelessWidget {
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppTheme.warningAmber,
-                  foregroundColor: Colors.black, // Gold buttons usually look better with dark text
+                  foregroundColor: AppTheme.colors.black, // Gold buttons usually look better with dark text
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),

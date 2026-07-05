@@ -18,22 +18,22 @@ class BillingHistoryScreen extends ConsumerWidget {
     final billingStream = ref.watch(subscriptionServiceProvider).getBillingHistory(user.uid);
 
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppTheme.colors.transparent,
       body: OracleUI.auraBackground(
         child: CustomScrollView(
           physics: const BouncingScrollPhysics(),
           slivers: [
             SliverAppBar(
               floating: true,
-              backgroundColor: Colors.transparent,
+              backgroundColor: AppTheme.colors.transparent,
               elevation: 0,
               leading: IconButton(
-                icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
+                icon: const Icon(Icons.arrow_back_rounded, color: AppTheme.colors.white),
                 onPressed: () => Navigator.pop(context),
               ),
               title: OracleUI.neonText(
                 "BILLING HISTORY",
-                style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.w900, letterSpacing: 4, color: Colors.white),
+                style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.w900, letterSpacing: 4, color: AppTheme.colors.white),
               ),
             ),
             SliverPadding(
@@ -42,18 +42,18 @@ class BillingHistoryScreen extends ConsumerWidget {
                 stream: billingStream,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const SliverFillRemaining(child: Center(child: CircularProgressIndicator(color: Colors.cyanAccent)));
+                    return const SliverFillRemaining(child: Center(child: CircularProgressIndicator(color: AppTheme.colors.cyanAccent)));
                   }
 
                   if (snapshot.hasError) {
-                    return SliverFillRemaining(child: Center(child: Text("Error: ${snapshot.error}", style: const TextStyle(color: Colors.redAccent))));
+                    return SliverFillRemaining(child: Center(child: Text("Error: ${snapshot.error}", style: const TextStyle(color: AppTheme.colors.redAccent))));
                   }
 
                   final records = snapshot.data ?? [];
                   if (records.isEmpty) {
                     return SliverFillRemaining(
                       child: Center(
-                        child: Text("No billing history found.", style: GoogleFonts.inter(color: Colors.white54, fontSize: 14)),
+                        child: Text("No billing history found.", style: GoogleFonts.inter(color: AppTheme.colors.white54, fontSize: 14)),
                       ),
                     );
                   }
@@ -81,10 +81,10 @@ class BillingHistoryScreen extends ConsumerWidget {
     final isExpired = record.status == 'expired';
     final isActive = record.status == 'active';
     
-    Color statusColor = Colors.white54;
-    if (isActive) statusColor = const Color(0xFF00E676);
-    if (isCancelled) statusColor = Colors.orangeAccent;
-    if (isExpired) statusColor = Colors.redAccent;
+    Color statusColor = AppTheme.colors.white54;
+    if (isActive) statusColor = const AppTheme.colors.primary;
+    if (isCancelled) statusColor = AppTheme.colors.orangeAccent;
+    if (isExpired) statusColor = AppTheme.colors.redAccent;
 
     final startedDate = DateFormat('MMM dd, yyyy').format(record.startedAt);
     final expiresDate = DateFormat('MMM dd, yyyy').format(record.expiresAt);
@@ -102,7 +102,7 @@ class BillingHistoryScreen extends ConsumerWidget {
               children: [
                 Text(
                   "PLAN: ${record.planId.toUpperCase()}",
-                  style: GoogleFonts.outfit(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w900),
+                  style: GoogleFonts.outfit(color: AppTheme.colors.white, fontSize: 16, fontWeight: FontWeight.w900),
                 ),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
@@ -119,7 +119,7 @@ class BillingHistoryScreen extends ConsumerWidget {
               ],
             ),
             const SizedBox(height: 12),
-            const Divider(color: Colors.white12, height: 1),
+            const Divider(color: AppTheme.colors.white12, height: 1),
             const SizedBox(height: 12),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -131,7 +131,7 @@ class BillingHistoryScreen extends ConsumerWidget {
             const SizedBox(height: 12),
             Text(
               "ID: ${record.subscriptionId}",
-              style: GoogleFonts.inter(color: Colors.white24, fontSize: 9, letterSpacing: 1),
+              style: GoogleFonts.inter(color: AppTheme.colors.white24, fontSize: 9, letterSpacing: 1),
             ),
           ],
         ),
@@ -143,9 +143,9 @@ class BillingHistoryScreen extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: GoogleFonts.inter(color: Colors.white54, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1)),
+        Text(label, style: GoogleFonts.inter(color: AppTheme.colors.white54, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1)),
         const SizedBox(height: 2),
-        Text(date, style: GoogleFonts.inter(color: Colors.white, fontSize: 12)),
+        Text(date, style: GoogleFonts.inter(color: AppTheme.colors.white, fontSize: 12)),
       ],
     );
   }

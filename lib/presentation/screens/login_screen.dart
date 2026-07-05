@@ -75,14 +75,14 @@ class _LoginScreenState extends State<LoginScreen> {
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              backgroundColor: Colors.transparent,
+              backgroundColor: AppTheme.colors.transparent,
               elevation: 0,
               content: OracleUI.glassContainer(
                 padding: const EdgeInsets.all(16),
-                borderColor: Colors.redAccent.withValues(alpha: 0.3),
+                borderColor: AppTheme.colors.redAccent.withValues(alpha: 0.3),
                 child: Row(
                   children: [
-                    const Icon(Icons.error_outline_rounded, color: Colors.redAccent),
+                    const Icon(Icons.error_outline_rounded, color: AppTheme.colors.redAccent),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
@@ -146,21 +146,21 @@ class _LoginScreenState extends State<LoginScreen> {
             child: OracleUI.glassContainer(
               margin: const EdgeInsets.symmetric(horizontal: 40),
               padding: const EdgeInsets.all(32),
-              borderColor: Colors.redAccent.withValues(alpha: 0.2),
+              borderColor: AppTheme.colors.redAccent.withValues(alpha: 0.2),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.lock_clock_rounded, color: Colors.redAccent, size: 48),
+                  const Icon(Icons.lock_clock_rounded, color: AppTheme.colors.redAccent, size: 48),
                   const SizedBox(height: 24),
                   OracleUI.neonText(
                     "ZENITH LOCK ACTIVE",
-                    style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.redAccent, letterSpacing: 2),
+                    style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.colors.redAccent, letterSpacing: 2),
                   ),
                   const SizedBox(height: 16),
                   Text(
                     "Multiple failed attempts detected.\nNeural link restricted to prevent brute force.",
                     textAlign: TextAlign.center,
-                    style: GoogleFonts.inter(color: Colors.white70, fontSize: 13),
+                    style: GoogleFonts.inter(color: AppTheme.colors.white70, fontSize: 13),
                   ),
                   const SizedBox(height: 32),
                   TweenAnimationBuilder<Duration>(
@@ -175,7 +175,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         style: GoogleFonts.outfit(
                           fontSize: 48,
                           fontWeight: FontWeight.w900,
-                          color: Colors.white,
+                          color: AppTheme.colors.white,
                           letterSpacing: 4,
                         ),
                       );
@@ -184,7 +184,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(height: 32),
                   Text(
                     "TIME REMAINING",
-                    style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.w900, color: Colors.white24, letterSpacing: 2),
+                    style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.w900, color: AppTheme.colors.white24, letterSpacing: 2),
                   ),
                 ],
               ),
@@ -223,14 +223,14 @@ class _LoginScreenState extends State<LoginScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            backgroundColor: Colors.transparent,
+            backgroundColor: AppTheme.colors.transparent,
             elevation: 0,
             content: OracleUI.glassContainer(
               padding: const EdgeInsets.all(16),
-              borderColor: Colors.redAccent.withValues(alpha: 0.3),
+              borderColor: AppTheme.colors.redAccent.withValues(alpha: 0.3),
               child: Row(
                 children: [
-                  const Icon(Icons.error_outline_rounded, color: Colors.redAccent),
+                  const Icon(Icons.error_outline_rounded, color: AppTheme.colors.redAccent),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
@@ -362,7 +362,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   Container(
                     padding: const EdgeInsets.all(24),
                     decoration: BoxDecoration(
-                      color: isDark ? Colors.grey[900]!.withValues(alpha: 0.6) : Colors.white,
+                      color: isDark ? AppTheme.colors.grey[900]!.withValues(alpha: 0.6) : AppTheme.colors.white,
                       borderRadius: BorderRadius.circular(24),
                       border: Border.all(
                         color: AppTheme.secondaryBorder(context),
@@ -370,7 +370,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.04),
+                          color: AppTheme.colors.black.withValues(alpha: 0.04),
                           blurRadius: 20,
                           offset: const Offset(0, 8),
                         ),
@@ -440,7 +440,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 onPressed: _isLoading ? null : _handleSubmit,
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: primaryColor,
-                                  foregroundColor: Colors.white,
+                                  foregroundColor: AppTheme.colors.white,
                                   elevation: 0,
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(16),
@@ -452,7 +452,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                         height: 22,
                                         child: CircularProgressIndicator(
                                           strokeWidth: 2.5,
-                                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                          valueColor: AlwaysStoppedAnimation<Color>(AppTheme.colors.white),
                                         ),
                                       )
                                     : Text(
@@ -461,7 +461,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                           fontWeight: FontWeight.w800, 
                                           letterSpacing: 1, 
                                           fontSize: 13, 
-                                          color: Colors.white,
+                                          color: AppTheme.colors.white,
                                         ),
                                       ),
                               ),
@@ -519,7 +519,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     width: double.infinity,
                     height: 54,
                     decoration: BoxDecoration(
-                      color: isDark ? Colors.grey[900]!.withValues(alpha: 0.6) : Colors.white,
+                      color: isDark ? AppTheme.colors.grey[900]!.withValues(alpha: 0.6) : AppTheme.colors.white,
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
                         color: AppTheme.secondaryBorder(context),
@@ -527,7 +527,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                     child: Material(
-                      color: Colors.transparent,
+                      color: AppTheme.colors.transparent,
                       child: InkWell(
                         onTap: _isLoading ? null : _handleGoogleSignIn,
                         borderRadius: BorderRadius.circular(16),
@@ -538,7 +538,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               width: 22,
                               height: 22,
                               decoration: BoxDecoration(
-                                color: isDark ? Colors.white.withValues(alpha: 0.1) : Colors.black.withValues(alpha: 0.05),
+                                color: isDark ? AppTheme.colors.white.withValues(alpha: 0.1) : AppTheme.colors.black.withValues(alpha: 0.05),
                                 shape: BoxShape.circle,
                               ),
                               alignment: Alignment.center,
@@ -616,19 +616,19 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
-          borderSide: BorderSide(color: Colors.redAccent.withValues(alpha: 0.4)),
+          borderSide: BorderSide(color: AppTheme.colors.redAccent.withValues(alpha: 0.4)),
         ),
         focusedErrorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
-          borderSide: BorderSide(color: Colors.redAccent.withValues(alpha: 0.6)),
+          borderSide: BorderSide(color: AppTheme.colors.redAccent.withValues(alpha: 0.6)),
         ),
         errorStyle: GoogleFonts.inter(
-          color: Colors.redAccent.withValues(alpha: 0.8), 
+          color: AppTheme.colors.redAccent.withValues(alpha: 0.8), 
           fontSize: 10, 
           fontWeight: FontWeight.bold,
         ),
         filled: true,
-        fillColor: isDark ? Colors.white.withValues(alpha: 0.02) : Colors.black.withValues(alpha: 0.02),
+        fillColor: isDark ? AppTheme.colors.white.withValues(alpha: 0.02) : AppTheme.colors.black.withValues(alpha: 0.02),
       ),
     );
   }

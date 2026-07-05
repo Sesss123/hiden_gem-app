@@ -49,7 +49,7 @@ class _AncestralPortalScreenState extends State<AncestralPortalScreen> {
                   decoration: BoxDecoration(
                     gradient: RadialGradient(
                       colors: [
-                        Colors.transparent, 
+                        AppTheme.colors.transparent, 
                         Theme.of(context).colorScheme.primary.withValues(alpha: 0.3), 
                         Theme.of(context).scaffoldBackgroundColor
                       ],
@@ -99,8 +99,8 @@ class _AncestralPortalScreenState extends State<AncestralPortalScreen> {
       child: OracleUI.glassContainer(
         padding: EdgeInsets.all(12),
         borderRadius: BorderRadius.circular(30),
-        borderColor: Colors.white.withValues(alpha: 0.1),
-        child: Icon(icon, color: Colors.white, size: 24),
+        borderColor: AppTheme.colors.white.withValues(alpha: 0.1),
+        child: Icon(icon, color: AppTheme.colors.white, size: 24),
       ),
     );
   }
@@ -143,18 +143,18 @@ class _AncestralPortalScreenState extends State<AncestralPortalScreen> {
                   SizedBox(height: 12),
                   Text(
                     widget.portal.locationName,
-                    style: GoogleFonts.outfit(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
+                    style: GoogleFonts.outfit(color: AppTheme.colors.white, fontSize: 24, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(height: 8),
                   Text(
                     widget.portal.description,
-                    style: GoogleFonts.inter(color: Colors.white70, fontSize: 13, height: 1.5),
+                    style: GoogleFonts.inter(color: AppTheme.colors.white70, fontSize: 13, height: 1.5),
                   ),
                   SizedBox(height: 16),
                   OracleUI.neonText(
                     "ANCIENT ARTIFACTS",
                     style: GoogleFonts.outfit(
-                      color: Colors.white24, 
+                      color: AppTheme.colors.white24, 
                       fontSize: 10, 
                       fontWeight: FontWeight.w900, 
                       letterSpacing: 2
@@ -179,11 +179,11 @@ class _AncestralPortalScreenState extends State<AncestralPortalScreen> {
     return OracleUI.glassContainer(
       padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       borderRadius: BorderRadius.circular(10),
-      borderColor: Colors.white.withValues(alpha: 0.05),
+      borderColor: AppTheme.colors.white.withValues(alpha: 0.05),
       child: Text(
         label, 
         style: GoogleFonts.inter(
-          color: Colors.white38, 
+          color: AppTheme.colors.white38, 
           fontSize: 11,
           fontWeight: FontWeight.w600
         )

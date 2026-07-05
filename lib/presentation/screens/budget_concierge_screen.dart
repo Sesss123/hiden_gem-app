@@ -230,11 +230,11 @@ class _BudgetConciergeScreenState extends ConsumerState<BudgetConciergeScreen> {
     IconData icon = Icons.receipt_long_rounded;
     Color color = Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5);
     switch(cat) {
-      case ExpenseCategory.food: icon = Icons.restaurant_rounded; color = Colors.orangeAccent; break;
-      case ExpenseCategory.transport: icon = Icons.directions_car_rounded; color = Colors.blueAccent; break;
+      case ExpenseCategory.food: icon = Icons.restaurant_rounded; color = AppTheme.colors.orangeAccent; break;
+      case ExpenseCategory.transport: icon = Icons.directions_car_rounded; color = AppTheme.colors.blueAccent; break;
       case ExpenseCategory.attraction: icon = Icons.temple_buddhist_rounded; color = Theme.of(context).colorScheme.primary; break;
-      case ExpenseCategory.lodging: icon = Icons.hotel_rounded; color = Colors.purpleAccent; break;
-      default: icon = Icons.more_horiz_rounded; color = Colors.grey;
+      case ExpenseCategory.lodging: icon = Icons.hotel_rounded; color = AppTheme.colors.purpleAccent; break;
+      default: icon = Icons.more_horiz_rounded; color = AppTheme.colors.grey;
     }
     return OracleUI.glassContainer(
       padding: EdgeInsets.all(10),
@@ -252,7 +252,7 @@ class _BudgetConciergeScreenState extends ConsumerState<BudgetConciergeScreen> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppTheme.colors.transparent,
       builder: (context) => OracleUI.glassContainer(
         padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom + 40, top: 24, left: 24, right: 24),
         borderRadius: const BorderRadius.vertical(top: Radius.circular(40)),
@@ -326,7 +326,7 @@ class _BudgetConciergeScreenState extends ConsumerState<BudgetConciergeScreen> {
                 child: OracleUI.neonText(
                   "SAVE TO ARCHIVES",
                   style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 12, letterSpacing: 1),
-                  glowColor: Colors.black12,
+                  glowColor: AppTheme.colors.black12,
                 ),
               ),
             ),

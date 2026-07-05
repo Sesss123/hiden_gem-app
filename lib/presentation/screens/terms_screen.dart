@@ -97,7 +97,7 @@ class _TermsScreenState extends ConsumerState<TermsScreen> {
             
             Container(
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: AppTheme.colors.white,
                 border: Border(top: BorderSide(color: AppTheme.secondaryBorder(context))),
               ),
               padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20.0),
@@ -141,7 +141,7 @@ class _TermsScreenState extends ConsumerState<TermsScreen> {
                       onPressed: (_agreedToTerms && _agreedToAiPolicy) ? _completeOnboarding : null,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: primaryColor,
-                        disabledBackgroundColor: Colors.black12,
+                        disabledBackgroundColor: AppTheme.colors.black12,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                         elevation: 0,
                       ),
@@ -150,7 +150,7 @@ class _TermsScreenState extends ConsumerState<TermsScreen> {
                         style: GoogleFonts.outfit(
                           fontSize: 14,
                           fontWeight: FontWeight.w900,
-                          color: Colors.white,
+                          color: AppTheme.colors.white,
                           letterSpacing: 2,
                         ),
                       ),
@@ -169,7 +169,7 @@ class _TermsScreenState extends ConsumerState<TermsScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppTheme.colors.white,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: AppTheme.secondaryBorder(context)),
       ),
@@ -222,7 +222,7 @@ class _TermsScreenState extends ConsumerState<TermsScreen> {
                 color: value ? primaryColor : AppTheme.textSecondary(context).withValues(alpha: 0.3),
                 width: 1.5,
               ),
-              color: value ? primaryColor.withValues(alpha: 0.1) : Colors.transparent,
+              color: value ? primaryColor.withValues(alpha: 0.1) : AppTheme.colors.transparent,
             ),
             child: value ? Icon(Icons.check_rounded, color: primaryColor, size: 16) : null,
           ),

@@ -19,7 +19,6 @@ class GuideApplicationController extends Controller
     public function submit(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'user_id' => 'required|string|max:128',
             'email' => 'nullable|email|max:255',
             'name' => 'nullable|string|max:255',
             'license_number' => 'required|string|max:255',
@@ -43,7 +42,7 @@ class GuideApplicationController extends Controller
         $validated['applied_at'] = now();
 
         $application = GuideApplication::updateOrCreate(
-            ['user_id' => $validated['user_id']],
+            ['user_id' => (string) $request->user()->id],
             $validated
         );
 
@@ -57,9 +56,9 @@ class GuideApplicationController extends Controller
     /**
      * Check application status for a specific user ID (Firebase UID).
      */
-    public function myStatus($userId)
+    public function myStatus(Request $request, $userId)
     {
-        $application = GuideApplication::where('user_id', $userId)->first();
+        $application = GuideApplication::where('user_id', (string) $request->user()->id)->first();
 
         if (!$application) {
             return response()->json([
@@ -188,18 +187,20 @@ class GuideApplicationController extends Controller
             'admin_comment' => $request->input('admin_comment'),
         ]);
 
+        $adminComment = $request->input('admin_comment');
+
         // Sync to Firestore — guide_applications & users collections
-        dispatch(function () use ($application, $request) {
+        dispatch(function () use ($application, $adminComment) {
             try {
                 $firestoreService = new FirestoreService();
                 $firestoreService->updateGuideApplication($application->user_id, [
                     'status' => 'rejected',
-                    'adminComment' => $request->input('admin_comment'),
+                    'adminComment' => $adminComment,
                     'reviewedAt' => now()->toIso8601String(),
                 ]);
                 $firestoreService->updateGuideUser($application->user_id, [
                     'guideStatus' => 'rejected',
-                    'guideRejectionReason' => $request->input('admin_comment'),
+                    'guideRejectionReason' => $adminComment,
                 ]);
             } catch (\Exception $e) {
                 Log::error("Firestore sync failed in API reject (queued): " . $e->getMessage());

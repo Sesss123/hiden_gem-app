@@ -121,7 +121,7 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
 
   Widget _buildLockOverlay(BuildContext context, AppLocalizations l10n) {
     return Container(
-      color: Colors.black.withValues(alpha: 0.9),
+      color: AppTheme.colors.black.withValues(alpha: 0.9),
       width: double.infinity,
       height: double.infinity,
       child: Center(
@@ -141,7 +141,7 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
               Text(
                 "This Oracle Vision is reserved for Premium Explorers. Watch a short Ad to unlock this place for today.",
                 textAlign: TextAlign.center,
-                style: GoogleFonts.inter(color: Colors.white70, height: 1.5),
+                style: GoogleFonts.inter(color: AppTheme.colors.white70, height: 1.5),
               ),
               const SizedBox(height: 32),
               SizedBox(
@@ -155,8 +155,8 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
                       },
                     );
                   },
-                  icon: const Icon(Icons.play_circle_outline, color: Colors.black),
-                  label: Text("WATCH AD TO UNLOCK", style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: Colors.black)),
+                  icon: const Icon(Icons.play_circle_outline, color: AppTheme.colors.black),
+                  label: Text("WATCH AD TO UNLOCK", style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: AppTheme.colors.black)),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppPalette.sigiriyaOchre,
                     padding: const EdgeInsets.symmetric(vertical: 16),
@@ -167,7 +167,7 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
               const SizedBox(height: 16),
               TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: const Text("Go Back", style: TextStyle(color: Colors.white38)),
+                child: const Text("Go Back", style: TextStyle(color: AppTheme.colors.white38)),
               ),
             ],
           ),
@@ -250,9 +250,9 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
       leading: Padding(
         padding: EdgeInsets.all(8.0),
         child: CircleAvatar(
-          backgroundColor: Colors.black.withValues(alpha: 0.3),
+          backgroundColor: AppTheme.colors.black.withValues(alpha: 0.3),
           child: IconButton(
-            icon: Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 18),
+            icon: Icon(Icons.arrow_back_ios_new, color: AppTheme.colors.white, size: 18),
             onPressed: () => Navigator.pop(context),
           ),
         ),
@@ -292,8 +292,8 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    Colors.black.withValues(alpha: 0.4), 
-                    Colors.transparent, 
+                    AppTheme.colors.black.withValues(alpha: 0.4), 
+                    AppTheme.colors.transparent, 
                   ],
                   stops: [0, 0.3],
                 ),
@@ -306,7 +306,7 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    Colors.transparent, 
+                    AppTheme.colors.transparent, 
                     Theme.of(context).scaffoldBackgroundColor.withValues(alpha: 0.5),
                     Theme.of(context).scaffoldBackgroundColor
                   ],
@@ -334,7 +334,7 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
     if (tier == 2) {
       icon = 'ðŸ”­';
       label = 'EXPLORE AR';
-      color = const Color(0xFF29B6F6);
+      color = const AppTheme.colors.primary;
     } else if (tier == 3) {
       icon = 'ðŸ“–';
       label = 'STORY VIEW';
@@ -361,7 +361,7 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
       ),
     ).animate(onPlay: (c) => c.repeat()).shimmer(
       duration: 3.seconds, 
-      color: (Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black).withValues(alpha: 0.1)
+      color: (Theme.of(context).brightness == Brightness.dark ? AppTheme.colors.white : AppTheme.colors.black).withValues(alpha: 0.1)
     );
   }
 
@@ -588,7 +588,7 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
             Icons.view_in_ar,
             l10n.reality,
             widget.place.arTier == 1 ? "Heritage" : (widget.place.arTier == 2 ? "Explore" : "Story"),
-            color: widget.place.arTier == 1 ? Theme.of(context).colorScheme.secondary : (widget.place.arTier == 2 ? const Color(0xFF29B6F6) : Theme.of(context).colorScheme.primary),
+            color: widget.place.arTier == 1 ? Theme.of(context).colorScheme.secondary : (widget.place.arTier == 2 ? const AppTheme.colors.primary : Theme.of(context).colorScheme.primary),
           ),
         ],
       ],
@@ -686,7 +686,7 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
     return Wrap(
       spacing: 12,
       runSpacing: 12,
-      children: widget.place.facilities.map((t) => _chip(context, t, const Color(0xFF29B6F6))).toList(),
+      children: widget.place.facilities.map((t) => _chip(context, t, const AppTheme.colors.primary)).toList(),
     );
   }
 
@@ -702,7 +702,7 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
 
   Widget _buildBottomActions(BuildContext context, WidgetRef ref, AppLocalizations l10n) {
     return Container(
-      color: Colors.transparent,
+      color: AppTheme.colors.transparent,
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
       child: OracleUI.glassContainer(
         padding: EdgeInsets.all(12),
@@ -757,9 +757,9 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
                 ),
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.transparent,
+                    backgroundColor: AppTheme.colors.transparent,
                     foregroundColor: Theme.of(context).scaffoldBackgroundColor,
-                    shadowColor: Colors.transparent,
+                    shadowColor: AppTheme.colors.transparent,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
                   ),
                   onPressed: () async {
@@ -822,7 +822,7 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
         SnackBar(
           content: Row(
             children: [
-              SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white)),
+              SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: AppTheme.colors.white)),
               SizedBox(width: 16),
               Text(l10n.syncingResonance),
             ],
@@ -907,7 +907,7 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
                       content: Text('✨ Oracle reward active! AR session unlocked.'),
-                      backgroundColor: Colors.green,
+                      backgroundColor: AppTheme.colors.green,
                     ),
                   );
                   _navigateToAR(context);
@@ -964,12 +964,12 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppTheme.colors.transparent,
         contentPadding: EdgeInsets.all(0),
         content: Container(
           padding: EdgeInsets.all(24),
           decoration: BoxDecoration(
-            color: (Theme.of(context).brightness == Brightness.dark ? Colors.black : Colors.white).withValues(alpha: 0.9),
+            color: (Theme.of(context).brightness == Brightness.dark ? AppTheme.colors.black : AppTheme.colors.white).withValues(alpha: 0.9),
             borderRadius: BorderRadius.circular(24),
             border: Border.all(color: AppTheme.errorRed.withValues(alpha: 0.3), width: 1),
           ),
@@ -1040,8 +1040,8 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
     // ðŸŽ¬ Cinematic "AR Portal" bottom sheet before launch
     showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.transparent,
-      barrierColor: Colors.black.withValues(alpha: 0.85),
+      backgroundColor: AppTheme.colors.transparent,
+      barrierColor: AppTheme.colors.black.withValues(alpha: 0.85),
       isScrollControlled: true,
       builder: (ctx) => _ARPortalSheet(
         place: widget.place,
@@ -1178,7 +1178,7 @@ class _ARPortalSheetState extends State<_ARPortalSheet> with SingleTickerProvide
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final Color accentColor = widget.isDemo ? const Color(0xFF29B6F6) : const Color(0xFFFFB300);
+    final Color accentColor = widget.isDemo ? const AppTheme.colors.primary : const AppTheme.colors.primary;
     final String tierLabel = widget.isDemo ? l10n.arDemoLabel : l10n.fullHeritageAr;
     final String tierIcon = widget.isDemo ? "â³" : "ðŸ›ï¸";
 
@@ -1257,7 +1257,7 @@ class _ARPortalSheetState extends State<_ARPortalSheet> with SingleTickerProvide
                 onPressed: widget.onLaunch,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: accentColor,
-                  foregroundColor: Colors.black,
+                  foregroundColor: AppTheme.colors.black,
                   padding: EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   elevation: 8,
@@ -1321,9 +1321,9 @@ class _DownloadButtonState extends State<_DownloadButton> {
     if (isDownloaded) {
       return Row(
         children: [
-          Icon(Icons.check_circle, color: Colors.green, size: 14),
+          Icon(Icons.check_circle, color: AppTheme.colors.green, size: 14),
           SizedBox(width: 4),
-          Text(l10n.offlineReady, style: GoogleFonts.inter(color: Colors.green, fontSize: 10, fontWeight: FontWeight.bold)),
+          Text(l10n.offlineReady, style: GoogleFonts.inter(color: AppTheme.colors.green, fontSize: 10, fontWeight: FontWeight.bold)),
         ],
       );
     }

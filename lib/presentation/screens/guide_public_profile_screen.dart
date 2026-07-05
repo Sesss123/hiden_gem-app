@@ -18,7 +18,7 @@ class GuidePublicProfileScreen extends ConsumerWidget {
     final packageFuture = marketplaceRepo.getGuidePackages(guideId);
 
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppTheme.colors.transparent,
       body: OracleUI.auraBackground(
         child: FutureBuilder<GuideListing?>(
           future: listingFuture,
@@ -28,7 +28,7 @@ class GuidePublicProfileScreen extends ConsumerWidget {
             }
             final guide = snapshot.data;
             if (guide == null) {
-              return const Center(child: Text("Guide profile not found", style: TextStyle(color: Colors.white24)));
+              return const Center(child: Text("Guide profile not found", style: TextStyle(color: AppTheme.colors.white24)));
             }
             
             // Track view on load
@@ -57,11 +57,11 @@ class GuidePublicProfileScreen extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               IconButton(
-                icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 20),
+                icon: const Icon(Icons.arrow_back_ios_new_rounded, color: AppTheme.colors.white, size: 20),
                 onPressed: () => Navigator.pop(context),
               ),
               IconButton(
-                icon: const Icon(Icons.share_rounded, color: Colors.white70),
+                icon: const Icon(Icons.share_rounded, color: AppTheme.colors.white70),
                 onPressed: () {},
               ),
             ],
@@ -100,7 +100,7 @@ class GuidePublicProfileScreen extends ConsumerWidget {
       height: 420,
       width: double.infinity,
       decoration: BoxDecoration(
-        color: Colors.black,
+        color: AppTheme.colors.black,
         image: guide.coverPhotos.isNotEmpty 
           ? DecorationImage(image: NetworkImage(guide.coverPhotos.first), fit: BoxFit.cover, opacity: 0.6)
           : null,
@@ -110,7 +110,7 @@ class GuidePublicProfileScreen extends ConsumerWidget {
           Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [Colors.black, Colors.black.withValues(alpha: 0.1), Colors.black],
+                colors: [AppTheme.colors.black, AppTheme.colors.black.withValues(alpha: 0.1), AppTheme.colors.black],
                 begin: Alignment.bottomCenter,
                 end: Alignment.topCenter,
               ),
@@ -124,28 +124,28 @@ class GuidePublicProfileScreen extends ConsumerWidget {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF00E676).withValues(alpha: 0.15),
+                    color: const AppTheme.colors.primary.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: const Color(0xFF00E676).withValues(alpha: 0.3)),
+                    border: Border.all(color: const AppTheme.colors.primary.withValues(alpha: 0.3)),
                   ),
                   child: Text(
                     guide.guideCategory.toUpperCase(),
-                    style: GoogleFonts.inter(color: const Color(0xFF00E676), fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 2),
+                    style: GoogleFonts.inter(color: const AppTheme.colors.primary, fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 2),
                   ),
                 ),
                 const SizedBox(height: 16),
                 Text(
                   guide.displayName,
-                  style: GoogleFonts.outfit(color: Colors.white, fontSize: 36, fontWeight: FontWeight.w900),
+                  style: GoogleFonts.outfit(color: AppTheme.colors.white, fontSize: 36, fontWeight: FontWeight.w900),
                 ),
                 const SizedBox(height: 8),
                 Row(
                   children: [
-                    const Icon(Icons.location_on_rounded, color: Colors.white24, size: 16),
+                    const Icon(Icons.location_on_rounded, color: AppTheme.colors.white24, size: 16),
                     const SizedBox(width: 8),
                     Text(
                       guide.regions.join(" • "),
-                      style: GoogleFonts.inter(color: Colors.white54, fontSize: 14),
+                      style: GoogleFonts.inter(color: AppTheme.colors.white54, fontSize: 14),
                     ),
                   ],
                 ),
@@ -176,13 +176,13 @@ class GuidePublicProfileScreen extends ConsumerWidget {
   Widget _buildStat(String label, String value, {IconData? icon}) {
     return Column(
       children: [
-        Text(label, style: GoogleFonts.inter(color: Colors.white24, fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 1.5)),
+        Text(label, style: GoogleFonts.inter(color: AppTheme.colors.white24, fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 1.5)),
         const SizedBox(height: 8),
         Row(
           children: [
-            if (icon != null) Icon(icon, color: Colors.amberAccent, size: 14),
+            if (icon != null) Icon(icon, color: AppTheme.colors.amberAccent, size: 14),
             if (icon != null) const SizedBox(width: 4),
-            Text(value, style: GoogleFonts.outfit(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w900)),
+            Text(value, style: GoogleFonts.outfit(color: AppTheme.colors.white, fontSize: 18, fontWeight: FontWeight.w900)),
           ],
         ),
       ],
@@ -190,7 +190,7 @@ class GuidePublicProfileScreen extends ConsumerWidget {
   }
 
   Widget _buildStatDivider() {
-    return Container(width: 1, height: 30, color: Colors.white.withValues(alpha: 0.05));
+    return Container(width: 1, height: 30, color: AppTheme.colors.white.withValues(alpha: 0.05));
   }
 
   Widget _buildBio(GuideListing guide) {
@@ -199,12 +199,12 @@ class GuidePublicProfileScreen extends ConsumerWidget {
       children: [
         Text(
           "ABOUT MISSIONS",
-          style: GoogleFonts.inter(color: Colors.white38, fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: 2),
+          style: GoogleFonts.inter(color: AppTheme.colors.white38, fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: 2),
         ),
         const SizedBox(height: 16),
         Text(
           guide.bio ?? "No mission brief provided.",
-          style: GoogleFonts.inter(color: Colors.white70, fontSize: 15, height: 1.6),
+          style: GoogleFonts.inter(color: AppTheme.colors.white70, fontSize: 15, height: 1.6),
         ),
         const SizedBox(height: 24),
         Wrap(
@@ -212,11 +212,11 @@ class GuidePublicProfileScreen extends ConsumerWidget {
           children: guide.specializations.map((s) => Container(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
             decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.05),
+              color: AppTheme.colors.white.withValues(alpha: 0.05),
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+              border: Border.all(color: AppTheme.colors.white.withValues(alpha: 0.05)),
             ),
-            child: Text(s, style: GoogleFonts.inter(color: Colors.white54, fontSize: 12, fontWeight: FontWeight.bold)),
+            child: Text(s, style: GoogleFonts.inter(color: AppTheme.colors.white54, fontSize: 12, fontWeight: FontWeight.bold)),
           )).toList(),
         ),
       ],
@@ -234,7 +234,7 @@ class GuidePublicProfileScreen extends ConsumerWidget {
           children: [
             Text(
               "MISSION PACKS",
-              style: GoogleFonts.inter(color: Colors.white38, fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: 2),
+              style: GoogleFonts.inter(color: AppTheme.colors.white38, fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: 2),
             ),
             const SizedBox(height: 20),
             ...snapshot.data!.map((p) => _buildPackageCard(context, p)),
@@ -258,24 +258,24 @@ class GuidePublicProfileScreen extends ConsumerWidget {
                 children: [
                   Text(
                     data['title'] ?? 'Standard Package',
-                    style: GoogleFonts.outfit(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                    style: GoogleFonts.outfit(color: AppTheme.colors.white, fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     data['description'] ?? '',
                     maxLines: 1, overflow: TextOverflow.ellipsis,
-                    style: GoogleFonts.inter(color: Colors.white38, fontSize: 12),
+                    style: GoogleFonts.inter(color: AppTheme.colors.white38, fontSize: 12),
                   ),
                   const SizedBox(height: 12),
                   Row(
                     children: [
-                      Icon(Icons.schedule_rounded, color: Colors.white24, size: 14),
+                      Icon(Icons.schedule_rounded, color: AppTheme.colors.white24, size: 14),
                       const SizedBox(width: 6),
-                      Text("${data['durationHours']}H", style: GoogleFonts.outfit(color: Colors.white54, fontSize: 12)),
+                      Text("${data['durationHours']}H", style: GoogleFonts.outfit(color: AppTheme.colors.white54, fontSize: 12)),
                       const SizedBox(width: 16),
-                      Icon(Icons.group_rounded, color: Colors.white24, size: 14),
+                      Icon(Icons.group_rounded, color: AppTheme.colors.white24, size: 14),
                       const SizedBox(width: 6),
-                      Text("${data['maxGuests']} GUESTS", style: GoogleFonts.outfit(color: Colors.white54, fontSize: 12)),
+                      Text("${data['maxGuests']} GUESTS", style: GoogleFonts.outfit(color: AppTheme.colors.white54, fontSize: 12)),
                     ],
                   ),
                 ],
@@ -287,9 +287,9 @@ class GuidePublicProfileScreen extends ConsumerWidget {
               children: [
                 Text(
                   "\$${data['price']}",
-                  style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 20),
+                  style: GoogleFonts.outfit(color: AppTheme.colors.white, fontWeight: FontWeight.w900, fontSize: 20),
                 ),
-                Text("TOTAL", style: GoogleFonts.inter(color: Colors.white10, fontSize: 10, fontWeight: FontWeight.w900)),
+                Text("TOTAL", style: GoogleFonts.inter(color: AppTheme.colors.white10, fontSize: 10, fontWeight: FontWeight.w900)),
               ],
             ),
           ],
@@ -305,7 +305,7 @@ class GuidePublicProfileScreen extends ConsumerWidget {
         padding: const EdgeInsets.fromLTRB(24, 20, 24, 40),
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [Colors.black, Colors.transparent],
+            colors: [AppTheme.colors.black, AppTheme.colors.transparent],
             begin: Alignment.bottomCenter, end: Alignment.topCenter,
           ),
         ),
@@ -314,7 +314,7 @@ class GuidePublicProfileScreen extends ConsumerWidget {
             OracleUI.glassContainer(
               padding: const EdgeInsets.all(16),
               borderRadius: BorderRadius.circular(16),
-              child: const Icon(Icons.chat_bubble_outline_rounded, color: Colors.white),
+              child: const Icon(Icons.chat_bubble_outline_rounded, color: AppTheme.colors.white),
             ),
             const SizedBox(width: 16),
             Expanded(
@@ -324,8 +324,8 @@ class GuidePublicProfileScreen extends ConsumerWidget {
                   MaterialPageRoute(builder: (context) => BookingRequestScreen(guideId: guide.guideId)),
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF00E676),
-                  foregroundColor: Colors.black,
+                  backgroundColor: const AppTheme.colors.primary,
+                  foregroundColor: AppTheme.colors.black,
                   padding: const EdgeInsets.symmetric(vertical: 20),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                 ),

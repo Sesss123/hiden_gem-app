@@ -62,7 +62,7 @@ class _OracleAuraWidgetState extends State<OracleAuraWidget>
                     colors: [
                       effectiveColor.withValues(alpha: 0.3),
                       effectiveColor.withValues(alpha: 0.1),
-                      Colors.transparent,
+                      AppTheme.colors.transparent,
                     ],
                   ),
                 ),
@@ -91,7 +91,7 @@ class _OracleAuraWidgetState extends State<OracleAuraWidget>
                 ),
                 child: const Icon(
                   Icons.auto_awesome,
-                  color: Colors.white,
+                  color: AppTheme.colors.white,
                   size: 40,
                 ),
               ),

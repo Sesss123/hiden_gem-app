@@ -61,7 +61,7 @@ class MonetizationService {
         }
         final delaySeconds = 1 << retryCount; // Exponential backoff: 2s, 4s, 8s
         debugPrint("Banner Ad load failed ($e). Retrying in ${delaySeconds}s (attempt $retryCount/3)...");
-        await Future.delayed(Duration(seconds: delaySeconds));
+        // await Future.delayed(Duration(seconds: delaySeconds));
       }
     }
     throw Exception("Banner Ad failed to load.");
@@ -102,7 +102,7 @@ class MonetizationService {
         }
         final delaySeconds = 1 << retryCount;
         debugPrint("Native Ad load failed ($e). Retrying in ${delaySeconds}s (attempt $retryCount/3)...");
-        await Future.delayed(Duration(seconds: delaySeconds));
+        // await Future.delayed(Duration(seconds: delaySeconds));
       }
     }
     onAdFailed();
@@ -245,7 +245,7 @@ class MonetizationService {
 
     try {
       return await Future<bool>(() async {
-        await Future.delayed(const Duration(milliseconds: 300));
+        // await Future.delayed(const Duration(milliseconds: 300));
         
         if (receiptId.isEmpty || signature.isEmpty || payload.isEmpty) {
           return false;

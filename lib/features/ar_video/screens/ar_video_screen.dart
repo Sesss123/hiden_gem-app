@@ -139,7 +139,7 @@ class _ARVideoScreenState extends State<ARVideoScreen>
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('No surface detected here. Try tapping directly on the dotted grid lines.'),
-          backgroundColor: Colors.amber,
+          backgroundColor: AppTheme.colors.amber,
           duration: Duration(seconds: 3),
         ),
       );
@@ -185,7 +185,7 @@ class _ARVideoScreenState extends State<ARVideoScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: AppTheme.colors.black,
       body: Stack(
         children: [
           // AR Camera background
@@ -202,7 +202,7 @@ class _ARVideoScreenState extends State<ARVideoScreen>
                 child: Text(
                   'AR Core is only supported on Android devices. Enjoy fallback view or check compatibility.',
                   textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.white, fontSize: 16),
+                  style: TextStyle(color: AppTheme.colors.white, fontSize: 16),
                 ),
               ),
             ),
@@ -272,7 +272,7 @@ class _ARVideoScreenState extends State<ARVideoScreen>
   Widget _buildLoadingOverlay() {
     return Positioned.fill(
       child: Container(
-        color: Colors.black87,
+        color: AppTheme.colors.black87,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -280,7 +280,7 @@ class _ARVideoScreenState extends State<ARVideoScreen>
             const SizedBox(height: 20),
             Text(
               'Preparing time portal…',
-              style: GoogleFonts.outfit(color: Colors.white70, fontSize: 16),
+              style: GoogleFonts.outfit(color: AppTheme.colors.white70, fontSize: 16),
             ),
           ],
         ),
@@ -291,13 +291,13 @@ class _ARVideoScreenState extends State<ARVideoScreen>
   Widget _buildErrorOverlay() {
     return Positioned.fill(
       child: Container(
-        color: Colors.black87,
+        color: AppTheme.colors.black87,
         child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-          const Icon(Icons.error_outline, color: Colors.redAccent, size: 56),
+          const Icon(Icons.error_outline, color: AppTheme.colors.redAccent, size: 56),
           const SizedBox(height: 16),
-          Text('Video unavailable', style: GoogleFonts.outfit(color: Colors.white, fontSize: 18)),
+          Text('Video unavailable', style: GoogleFonts.outfit(color: AppTheme.colors.white, fontSize: 18)),
           const SizedBox(height: 8),
-          Text(_errorMsg, style: GoogleFonts.inter(color: Colors.white38, fontSize: 12), textAlign: TextAlign.center),
+          Text(_errorMsg, style: GoogleFonts.inter(color: AppTheme.colors.white38, fontSize: 12), textAlign: TextAlign.center),
           const SizedBox(height: 24),
           TextButton(
             onPressed: () { setState(() { _hasError = false; }); _initVideo(); },
@@ -313,12 +313,12 @@ class _ARVideoScreenState extends State<ARVideoScreen>
       child: Column(mainAxisSize: MainAxisSize.min, children: [
         ScaleTransition(
           scale: _pulse,
-          child: const Icon(Icons.touch_app, color: Colors.white54, size: 72),
+          child: const Icon(Icons.touch_app, color: AppTheme.colors.white54, size: 72),
         ),
         const SizedBox(height: 16),
         Text(
           'Tap the ground to open the portal',
-          style: GoogleFonts.inter(color: Colors.white70, fontSize: 14, letterSpacing: 0.8),
+          style: GoogleFonts.inter(color: AppTheme.colors.white70, fontSize: 14, letterSpacing: 0.8),
         ),
       ]),
     );
@@ -337,7 +337,7 @@ class _ARVideoScreenState extends State<ARVideoScreen>
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
                 decoration: BoxDecoration(
-                  color: Colors.black54,
+                  color: AppTheme.colors.black54,
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(color: AppPalette.rust.withValues(alpha: 0.4)),
                 ),
@@ -377,13 +377,13 @@ class _ARVideoScreenState extends State<ARVideoScreen>
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
-              color: Colors.black54,
+              color: AppTheme.colors.black54,
               borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: Colors.white24),
+              border: Border.all(color: AppTheme.colors.white24),
             ),
             child: Text(
               _lang == NarrationLang.english ? 'EN | 🇬🇧' : 'SI | 🇱🇰',
-              style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
+              style: GoogleFonts.outfit(color: AppTheme.colors.white, fontWeight: FontWeight.bold, fontSize: 13),
             ),
           ),
         ),
@@ -397,16 +397,16 @@ class _ARVideoScreenState extends State<ARVideoScreen>
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
         decoration: BoxDecoration(
-          color: Colors.black.withValues(alpha: 0.65),
+          color: AppTheme.colors.black.withValues(alpha: 0.65),
           borderRadius: BorderRadius.circular(16),
         ),
         child: Text(
           _subtitle,
           textAlign: TextAlign.center,
           style: GoogleFonts.inter(
-            color: Colors.white,
+            color: AppTheme.colors.white,
             fontSize: 14, height: 1.5,
-            shadows: [const Shadow(blurRadius: 8, color: Colors.black)],
+            shadows: [const Shadow(blurRadius: 8, color: AppTheme.colors.black)],
           ),
         ),
       ),
@@ -419,10 +419,10 @@ class _ARVideoScreenState extends State<ARVideoScreen>
       child: Container(
         width: 44, height: 44,
         decoration: BoxDecoration(
-          color: Colors.black54, shape: BoxShape.circle,
-          border: Border.all(color: Colors.white24),
+          color: AppTheme.colors.black54, shape: BoxShape.circle,
+          border: Border.all(color: AppTheme.colors.white24),
         ),
-        child: Icon(icon, color: Colors.white, size: 20),
+        child: Icon(icon, color: AppTheme.colors.white, size: 20),
       ),
     );
   }
@@ -433,7 +433,7 @@ class _ARVideoScreenState extends State<ARVideoScreen>
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
         margin: const EdgeInsets.symmetric(horizontal: 32),
         decoration: BoxDecoration(
-          color: Colors.black.withValues(alpha: 0.8),
+          color: AppTheme.colors.black.withValues(alpha: 0.8),
           borderRadius: BorderRadius.circular(20),
           border: Border.all(color: AppPalette.rust.withValues(alpha: 0.3)),
         ),
@@ -451,7 +451,7 @@ class _ARVideoScreenState extends State<ARVideoScreen>
             Text(
               '🔍 SCANNING ENVIRONMENT...',
               style: GoogleFonts.outfit(
-                color: Colors.white,
+                color: AppTheme.colors.white,
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
                 letterSpacing: 1.5,
@@ -461,7 +461,7 @@ class _ARVideoScreenState extends State<ARVideoScreen>
             Text(
               'Move your phone slowly side-to-side to detect flat horizontal surfaces (like floor or table).',
               textAlign: TextAlign.center,
-              style: GoogleFonts.inter(color: Colors.white60, fontSize: 11),
+              style: GoogleFonts.inter(color: AppTheme.colors.white60, fontSize: 11),
             ),
           ],
         ),

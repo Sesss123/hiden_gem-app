@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, Request, Form, File, UploadFile
-from core.security import get_current_user
+from core.auth import get_current_user
 from core.rate_limit import limiter
 from services.place_service import get_all_places, get_place_by_id
 from services.masking_service import mask_place
@@ -46,7 +46,7 @@ async def list_places_for_map():
 async def list_places(request: Request, user=Depends(get_current_user)):
     """Returns places filtered by user tier."""
     places = await get_all_places()
-    tier = user.get("tier", "anonymous")
+    tier = user.tier if user else "anonymous"
     
     if tier == "anonymous":
         places = places[:20]

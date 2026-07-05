@@ -119,7 +119,7 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text("⚠️ Please enter a recipient name."),
         behavior: SnackBarBehavior.floating,
-        backgroundColor: Colors.redAccent,
+        backgroundColor: AppTheme.colors.redAccent,
       ));
       return;
     }
@@ -156,7 +156,7 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text("✅ Mission link generated for \"$name\"!"),
       behavior: SnackBarBehavior.floating,
-      backgroundColor: const Color(0xFF00E676),
+      backgroundColor: const AppTheme.colors.primary,
     ));
 
     _nameController.clear();
@@ -167,7 +167,7 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppTheme.colors.transparent,
       body: OracleUI.auraBackground(
         child: CustomScrollView(
           slivers: [
@@ -186,8 +186,8 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
                         Text("ACTIVE LINKS", style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: 2)),
                         TextButton.icon(
                           onPressed: _showCreateLinkSheet,
-                          icon: const Icon(Icons.add_rounded, color: Color(0xFF00E676)),
-                          label: Text("NEW", style: GoogleFonts.inter(color: const Color(0xFF00E676), fontWeight: FontWeight.bold)),
+                          icon: const Icon(Icons.add_rounded, color: AppTheme.colors.primary),
+                          label: Text("NEW", style: GoogleFonts.inter(color: const AppTheme.colors.primary, fontWeight: FontWeight.bold)),
                         ),
                       ],
                     ),
@@ -207,7 +207,7 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
   Widget _buildAppBar() {
     return SliverAppBar(
       floating: true,
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppTheme.colors.transparent,
       elevation: 0,
       title: OracleUI.neonText(
         "COORDINATION HUB",
@@ -221,7 +221,7 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
       padding: const EdgeInsets.all(32),
       child: Column(
         children: [
-          const Icon(Icons.hub_rounded, color: Color(0xFF00E676), size: 48),
+          const Icon(Icons.hub_rounded, color: AppTheme.colors.primary, size: 48),
           const SizedBox(height: 24),
           Text(
             "Share your mission status with trusted contacts.",
@@ -278,15 +278,15 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
                           const SizedBox(width: 8),
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                            decoration: BoxDecoration(color: Colors.redAccent.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(8), border: Border.all(color: Colors.redAccent)),
-                            child: Text("EXPIRED", style: GoogleFonts.inter(color: Colors.redAccent, fontSize: 9, fontWeight: FontWeight.bold)),
+                            decoration: BoxDecoration(color: AppTheme.colors.redAccent.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(8), border: Border.all(color: AppTheme.colors.redAccent)),
+                            child: Text("EXPIRED", style: GoogleFonts.inter(color: AppTheme.colors.redAccent, fontSize: 9, fontWeight: FontWeight.bold)),
                           ),
                         ] else if (link.viewCount > 0) ...[
                           const SizedBox(width: 8),
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                            decoration: BoxDecoration(color: const Color(0xFF00E676).withValues(alpha: 0.2), borderRadius: BorderRadius.circular(8), border: Border.all(color: const Color(0xFF00E676))),
-                            child: Text("VIEWED ${link.viewCount}X", style: GoogleFonts.inter(color: const Color(0xFF00E676), fontSize: 9, fontWeight: FontWeight.bold)),
+                            decoration: BoxDecoration(color: const AppTheme.colors.primary.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(8), border: Border.all(color: const AppTheme.colors.primary)),
+                            child: Text("VIEWED ${link.viewCount}X", style: GoogleFonts.inter(color: const AppTheme.colors.primary, fontSize: 9, fontWeight: FontWeight.bold)),
                           ),
                         ],
                       ],
@@ -309,7 +309,7 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
                 },
               ),
               IconButton(
-                icon: const Icon(Icons.delete_outline_rounded, color: Colors.redAccent),
+                icon: const Icon(Icons.delete_outline_rounded, color: AppTheme.colors.redAccent),
                 onPressed: () {
                   showDialog(
                     context: context,
@@ -337,7 +337,7 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
                               behavior: SnackBarBehavior.floating,
                             ));
                           },
-                          child: const Text("Remove", style: TextStyle(color: Colors.redAccent)),
+                          child: const Text("Remove", style: TextStyle(color: AppTheme.colors.redAccent)),
                         ),
                       ],
                     ),
@@ -359,7 +359,7 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppTheme.colors.transparent,
       builder: (context) => StatefulBuilder(
         builder: (context, setSheetState) => Padding(
           padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
@@ -400,8 +400,8 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
                     child: ElevatedButton(
                       onPressed: _generateLink,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF00E676),
-                        foregroundColor: Colors.black,
+                        backgroundColor: const AppTheme.colors.primary,
+                        foregroundColor: AppTheme.colors.black,
                         padding: const EdgeInsets.symmetric(vertical: 20),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                       ),
@@ -449,9 +449,9 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
           height: 50,
           alignment: Alignment.center,
           decoration: BoxDecoration(
-            color: isSelected ? const Color(0xFF00E676).withValues(alpha: 0.1) : AppTheme.borderColor(context),
+            color: isSelected ? const AppTheme.colors.primary.withValues(alpha: 0.1) : AppTheme.borderColor(context),
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: isSelected ? const Color(0xFF00E676) : AppTheme.borderColor(context)),
+            border: Border.all(color: isSelected ? const AppTheme.colors.primary : AppTheme.borderColor(context)),
           ),
           child: Text(label, style: GoogleFonts.inter(color: isSelected ? AppTheme.textPrimary(context) : AppTheme.textSecondary(context), fontSize: 11, fontWeight: FontWeight.bold)),
         ),
@@ -468,7 +468,7 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
           Text(label, style: GoogleFonts.inter(color: AppTheme.textPrimary(context), fontSize: 14)),
           Switch(
             value: value,
-            activeThumbColor: const Color(0xFF00E676),
+            activeThumbColor: const AppTheme.colors.primary,
             onChanged: onChanged,
           ),
         ],

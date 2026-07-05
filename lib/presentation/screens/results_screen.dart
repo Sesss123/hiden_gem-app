@@ -213,7 +213,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
                   leading: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: CircleAvatar(
-                      backgroundColor: Colors.white.withValues(alpha: 0.8),
+                      backgroundColor: AppTheme.colors.white.withValues(alpha: 0.8),
                       child: IconButton(
                         icon: Icon(Icons.arrow_back_ios_new, color: AppTheme.textPrimary(context), size: 18),
                         onPressed: () {
@@ -260,9 +260,9 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
                           style: GoogleFonts.outfit(
                             fontWeight: FontWeight.w900,
                             fontSize: 32,
-                            color: Colors.white,
+                            color: AppTheme.colors.white,
                             letterSpacing: 4,
-                            shadows: [Shadow(color: Colors.black.withValues(alpha: 0.8), blurRadius: 20)],
+                            shadows: [Shadow(color: AppTheme.colors.black.withValues(alpha: 0.8), blurRadius: 20)],
                           ),
                         ),
                         const SizedBox(height: 8),
@@ -271,9 +271,9 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
                           style: GoogleFonts.inter(
                             fontSize: 10, 
                             fontWeight: FontWeight.w900,
-                            color: Colors.white70,
+                            color: AppTheme.colors.white70,
                             letterSpacing: 3,
-                            shadows: [Shadow(color: Colors.black.withValues(alpha: 0.8), blurRadius: 10)],
+                            shadows: [Shadow(color: AppTheme.colors.black.withValues(alpha: 0.8), blurRadius: 10)],
                           ),
                         ),
                       ],
@@ -292,7 +292,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
                             gradient: LinearGradient(
                               colors: [
                                 Theme.of(context).scaffoldBackgroundColor.withValues(alpha: 0.2),
-                                Colors.transparent,
+                                AppTheme.colors.transparent,
                                 Theme.of(context).scaffoldBackgroundColor,
                               ],
                               begin: Alignment.topCenter,
@@ -309,7 +309,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 8),
                       decoration: const BoxDecoration(
-                        color: Colors.white,
+                        color: AppTheme.colors.white,
                         borderRadius: BorderRadius.only(
                           topLeft: Radius.circular(32),
                           topRight: Radius.circular(32),
@@ -318,7 +318,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
                       child: TabBar(
                         controller: _tabController,
                         isScrollable: true,
-                        dividerColor: Colors.transparent,
+                        dividerColor: AppTheme.colors.transparent,
                         indicator: BoxDecoration(
                           color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
                           border: Border.all(color: Theme.of(context).colorScheme.primary),
@@ -362,7 +362,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
               if (state == OracleState.idle) return const SizedBox.shrink();
               return Positioned.fill(
                 child: Container(
-                  color: Colors.black45,
+                  color: AppTheme.colors.black45,
                   child: BackdropFilter(
                     filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
                     child: OracleUI.auraBackground(
@@ -386,7 +386,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
                   color: Theme.of(context).scaffoldBackgroundColor,
                   border: Border(top: BorderSide(color: AppTheme.primaryBorder(context))),
                   boxShadow: [
-                    BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, -2))
+                    BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, -2))
                   ],
                 ),
                 child: SafeArea(
@@ -561,7 +561,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
               border: Border.all(color: AppTheme.secondaryBorder(context)),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.03),
+                  color: AppTheme.colors.black.withValues(alpha: 0.03),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),
@@ -696,7 +696,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
         border: Border.all(color: AppTheme.secondaryBorder(context)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
+            color: AppTheme.colors.black.withValues(alpha: 0.03),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -718,7 +718,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
                 ),
               ),
               if (isOver) 
-                Icon(Icons.warning_amber_rounded, color: Colors.orangeAccent, size: 20),
+                Icon(Icons.warning_amber_rounded, color: AppTheme.colors.orangeAccent, size: 20),
             ],
           ),
           SizedBox(height: 8),
@@ -738,7 +738,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
               minHeight: 12,
               backgroundColor: Theme.of(context).dividerColor.withValues(alpha: 0.1),
               valueColor: AlwaysStoppedAnimation<Color>(
-                isOver ? Colors.orangeAccent : Theme.of(context).colorScheme.primary,
+                isOver ? AppTheme.colors.orangeAccent : Theme.of(context).colorScheme.primary,
               ),
             ),
           ),
@@ -756,7 +756,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
               Text(
                 "${(progress * 100).toInt()}% Used", 
                 style: TextStyle(
-                  color: isOver ? Colors.orangeAccent : Theme.of(context).colorScheme.primary, 
+                  color: isOver ? AppTheme.colors.orangeAccent : Theme.of(context).colorScheme.primary, 
                   fontSize: 12, 
                   fontWeight: FontWeight.bold,
                 ),
@@ -774,7 +774,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppTheme.colors.white,
         // BUG-088: Unified border radius (24px) for cards to prevent sharp clash
         borderRadius: BorderRadius.circular(24),
         border: Border.all(color: AppTheme.secondaryBorder(context)),
@@ -785,7 +785,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
             width: 40,
             height: 40,
             decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary, shape: BoxShape.circle),
-            child: Icon(_getCategoryIcon(label), color: Colors.white, size: 20),
+            child: Icon(_getCategoryIcon(label), color: AppTheme.colors.white, size: 20),
           ),
           SizedBox(width: 16),
           // BUG-128: Wrap label text to prevent overflow on large text sizes
@@ -957,12 +957,12 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
         child: Container(
           padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: AppTheme.colors.white,
             borderRadius: BorderRadius.circular(24),
             border: Border.all(color: AppTheme.secondaryBorder(context)),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.05),
+                color: AppTheme.colors.black.withValues(alpha: 0.05),
                 blurRadius: 15,
                 offset: const Offset(0, 4),
               ),
@@ -1023,7 +1023,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
     return Container(
       padding: const EdgeInsets.all(28),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppTheme.colors.white,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5), width: 2),
         boxShadow: [
@@ -1086,7 +1086,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
               onPressed: () => ref.read(premiumProvider.notifier).buyPremium(),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppTheme.accentOchre(context),
-                foregroundColor: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.white, // Keep white for branding contrast if background is dark ochre
+                foregroundColor: Theme.of(context).brightness == Brightness.dark ? AppTheme.colors.white : AppTheme.colors.white, // Keep white for branding contrast if background is dark ochre
                 elevation: 0,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
               ),
@@ -1118,13 +1118,13 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppTheme.colors.white,
         // BUG-088: Unified card border-radii
         borderRadius: BorderRadius.circular(24),
         border: Border.all(color: AppTheme.secondaryBorder(context)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
+            color: AppTheme.colors.black.withValues(alpha: 0.03),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -1268,13 +1268,13 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
   Color _getOracleColor(BuildContext context, OracleState state) {
     switch (state) {
       case OracleState.listening:
-        return Colors.blueAccent;
+        return AppTheme.colors.blueAccent;
       case OracleState.thinking:
-        return Colors.amberAccent;
+        return AppTheme.colors.amberAccent;
       case OracleState.speaking:
         return AppTheme.accentOchre(context);
       case OracleState.idle:
-        return Colors.transparent;
+        return AppTheme.colors.transparent;
     }
   }
 

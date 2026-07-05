@@ -42,9 +42,9 @@ class _GuideReviewsScreenState extends ConsumerState<GuideReviewsScreen> {
             ),
           );
         },
-        backgroundColor: Colors.amberAccent,
-        icon: const Icon(Icons.edit_note, color: Colors.black87),
-        label: Text("WRITE REVIEW", style: GoogleFonts.outfit(color: Colors.black87, fontWeight: FontWeight.bold)),
+        backgroundColor: AppTheme.colors.amberAccent,
+        icon: const Icon(Icons.edit_note, color: AppTheme.colors.black87),
+        label: Text("WRITE REVIEW", style: GoogleFonts.outfit(color: AppTheme.colors.black87, fontWeight: FontWeight.bold)),
       ),
       body: OracleUI.auraBackground(
         child: CustomScrollView(
@@ -93,11 +93,11 @@ class _GuideReviewsScreenState extends ConsumerState<GuideReviewsScreen> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const Icon(Icons.error_outline, color: Colors.redAccent, size: 48),
+                            const Icon(Icons.error_outline, color: AppTheme.colors.redAccent, size: 48),
                             const SizedBox(height: 16),
                             Text(
                               "Failed to load reviews. Please try again.",
-                              style: GoogleFonts.inter(color: Colors.white70),
+                              style: GoogleFonts.inter(color: AppTheme.colors.white70),
                             ),
                           ],
                         ),
@@ -133,18 +133,18 @@ class _GuideReviewsScreenState extends ConsumerState<GuideReviewsScreen> {
   Widget _buildAppBar() {
     return SliverAppBar(
       expandedHeight: 100.0,
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppTheme.colors.transparent,
       elevation: 0,
       pinned: true,
       leading: IconButton(
-        icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 20),
+        icon: const Icon(Icons.arrow_back_ios_new_rounded, color: AppTheme.colors.white, size: 20),
         onPressed: () => Navigator.pop(context),
       ),
       flexibleSpace: FlexibleSpaceBar(
         titlePadding: const EdgeInsets.only(left: 56, bottom: 16),
         title: OracleUI.neonText(
           "REPUTATION LOG",
-          style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w900, letterSpacing: 2, color: Colors.white),
+          style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w900, letterSpacing: 2, color: AppTheme.colors.white),
         ),
       ),
     );
@@ -174,20 +174,20 @@ class _GuideReviewsScreenState extends ConsumerState<GuideReviewsScreen> {
       child: OracleUI.glassContainer(
         padding: const EdgeInsets.all(32),
         borderRadius: BorderRadius.circular(32),
-        borderColor: Colors.amber.withValues(alpha: 0.3),
+        borderColor: AppTheme.colors.amber.withValues(alpha: 0.3),
         child: Column(
           children: [
-            const Icon(Icons.lock_person_rounded, size: 48, color: Colors.amber),
+            const Icon(Icons.lock_person_rounded, size: 48, color: AppTheme.colors.amber),
             const SizedBox(height: 16),
             Text(
               "PREMIUM ANALYTICS LOCKED",
-              style: GoogleFonts.outfit(color: Colors.amber, fontSize: 14, fontWeight: FontWeight.w900, letterSpacing: 2),
+              style: GoogleFonts.outfit(color: AppTheme.colors.amber, fontSize: 14, fontWeight: FontWeight.w900, letterSpacing: 2),
             ),
             const SizedBox(height: 8),
             Text(
               "Upgrade to PRO or ELITE to unlock deep insights into your performance, trust score, and tourist feedback.",
               textAlign: TextAlign.center,
-              style: GoogleFonts.inter(color: Colors.white70, fontSize: 12),
+              style: GoogleFonts.inter(color: AppTheme.colors.white70, fontSize: 12),
             ),
             const SizedBox(height: 24),
             ElevatedButton(
@@ -196,8 +196,8 @@ class _GuideReviewsScreenState extends ConsumerState<GuideReviewsScreen> {
                 Navigator.push(context, MaterialPageRoute(builder: (_) => const SubscriptionScreen()));
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.amber,
-                foregroundColor: Colors.black,
+                backgroundColor: AppTheme.colors.amber,
+                foregroundColor: AppTheme.colors.black,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
               ),
               child: Text("UPGRADE NOW", style: GoogleFonts.outfit(fontWeight: FontWeight.bold)),
@@ -225,7 +225,7 @@ class _GuideReviewsScreenState extends ConsumerState<GuideReviewsScreen> {
                   children: [
                     Text(
                       "TRUST SCORE",
-                      style: GoogleFonts.inter(color: Colors.white24, fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 2),
+                      style: GoogleFonts.inter(color: AppTheme.colors.white24, fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 2),
                     ),
                     const SizedBox(height: 8),
                     Text(
@@ -254,10 +254,10 @@ class _GuideReviewsScreenState extends ConsumerState<GuideReviewsScreen> {
 
   Widget _buildTierBadge(double score) {
     String tier = "BRONZE";
-    Color color = Colors.brown;
-    if (score >= 0.9) { tier = "DIAMOND"; color = Colors.cyanAccent; }
-    else if (score >= 0.7) { tier = "GOLD"; color = Colors.amber; }
-    else if (score >= 0.5) { tier = "SILVER"; color = Colors.blueGrey; }
+    Color color = AppTheme.colors.brown;
+    if (score >= 0.9) { tier = "DIAMOND"; color = AppTheme.colors.cyanAccent; }
+    else if (score >= 0.7) { tier = "GOLD"; color = AppTheme.colors.amber; }
+    else if (score >= 0.5) { tier = "SILVER"; color = AppTheme.colors.blueGrey; }
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -282,8 +282,8 @@ class _GuideReviewsScreenState extends ConsumerState<GuideReviewsScreen> {
   Widget _buildMiniStat(String value, String label) {
     return Column(
       children: [
-        Text(value, style: GoogleFonts.outfit(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
-        Text(label, style: GoogleFonts.inter(color: Colors.white24, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1)),
+        Text(value, style: GoogleFonts.outfit(color: AppTheme.colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+        Text(label, style: GoogleFonts.inter(color: AppTheme.colors.white24, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1)),
       ],
     );
   }
@@ -294,7 +294,7 @@ class _GuideReviewsScreenState extends ConsumerState<GuideReviewsScreen> {
       child: OracleUI.glassContainer(
         padding: const EdgeInsets.all(20),
         borderRadius: BorderRadius.circular(24),
-        borderColor: Colors.white.withValues(alpha: 0.05),
+        borderColor: AppTheme.colors.white.withValues(alpha: 0.05),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -303,23 +303,23 @@ class _GuideReviewsScreenState extends ConsumerState<GuideReviewsScreen> {
                 ...List.generate(5, (index) => Icon(
                   Icons.star_rounded, 
                   size: 14, 
-                  color: index < review.overallRating ? Colors.amber : Colors.white12,
+                  color: index < review.overallRating ? AppTheme.colors.amber : AppTheme.colors.white12,
                 )),
                 const Spacer(),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: Colors.greenAccent.withValues(alpha: 0.1),
+                    color: AppTheme.colors.greenAccent.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.greenAccent.withValues(alpha: 0.2)),
+                    border: Border.all(color: AppTheme.colors.greenAccent.withValues(alpha: 0.2)),
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.verified_rounded, color: Colors.greenAccent, size: 10),
+                      const Icon(Icons.verified_rounded, color: AppTheme.colors.greenAccent, size: 10),
                       const SizedBox(width: 4),
                       Text(
                         "VERIFIED MISSION",
-                        style: GoogleFonts.inter(color: Colors.greenAccent, fontSize: 9, fontWeight: FontWeight.w900, letterSpacing: 0.5),
+                        style: GoogleFonts.inter(color: AppTheme.colors.greenAccent, fontSize: 9, fontWeight: FontWeight.w900, letterSpacing: 0.5),
                       ),
                     ],
                   ),
@@ -329,7 +329,7 @@ class _GuideReviewsScreenState extends ConsumerState<GuideReviewsScreen> {
             const SizedBox(height: 16),
             Text(
               review.comment,
-              style: GoogleFonts.inter(color: Colors.white70, fontSize: 14, height: 1.5).copyWith(
+              style: GoogleFonts.inter(color: AppTheme.colors.white70, fontSize: 14, height: 1.5).copyWith(
                 fontFamilyFallback: [GoogleFonts.abhayaLibre().fontFamily!, GoogleFonts.hindGuntur().fontFamily!],
               ),
             ),
@@ -338,18 +338,18 @@ class _GuideReviewsScreenState extends ConsumerState<GuideReviewsScreen> {
               children: [
                 Container(
                   width: 24, height: 24,
-                  decoration: BoxDecoration(color: Colors.white10, shape: BoxShape.circle),
-                  child: const Icon(Icons.person_rounded, color: Colors.white30, size: 14),
+                  decoration: BoxDecoration(color: AppTheme.colors.white10, shape: BoxShape.circle),
+                  child: const Icon(Icons.person_rounded, color: AppTheme.colors.white30, size: 14),
                 ),
                 const SizedBox(width: 8),
                 Text(
                   "Tourist ${review.touristId.substring(0, 4)}", // Simplified
-                  style: GoogleFonts.inter(color: Colors.white30, fontSize: 12, fontWeight: FontWeight.bold),
+                  style: GoogleFonts.inter(color: AppTheme.colors.white30, fontSize: 12, fontWeight: FontWeight.bold),
                 ),
                 const Spacer(),
                 Text(
                   "${review.createdAt.day}/${review.createdAt.month}/${review.createdAt.year}",
-                  style: GoogleFonts.inter(color: Colors.white12, fontSize: 11),
+                  style: GoogleFonts.inter(color: AppTheme.colors.white12, fontSize: 11),
                 ),
               ],
             ),
@@ -364,17 +364,17 @@ class _GuideReviewsScreenState extends ConsumerState<GuideReviewsScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.rate_review_outlined, size: 64, color: Colors.white.withValues(alpha: 0.05)),
+          Icon(Icons.rate_review_outlined, size: 64, color: AppTheme.colors.white.withValues(alpha: 0.05)),
           const SizedBox(height: 16),
           Text(
             "NO MISSION LOGS",
-            style: GoogleFonts.outfit(color: Colors.white12, fontWeight: FontWeight.w900, fontSize: 16, letterSpacing: 2),
+            style: GoogleFonts.outfit(color: AppTheme.colors.white12, fontWeight: FontWeight.w900, fontSize: 16, letterSpacing: 2),
           ),
           const SizedBox(height: 8),
           Text(
             "Verified participants can leave feedback after session completion.",
             textAlign: TextAlign.center,
-            style: GoogleFonts.inter(color: Colors.white10, fontSize: 12),
+            style: GoogleFonts.inter(color: AppTheme.colors.white10, fontSize: 12),
           ),
         ],
       ),

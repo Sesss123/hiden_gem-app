@@ -41,6 +41,10 @@ class ImageProcessingService
             $width = imagesx($sourceImage);
             $height = imagesy($sourceImage);
 
+            if ($width <= 0 || $height <= 0) {
+                throw new \InvalidArgumentException("Uploaded image has invalid dimensions.");
+            }
+
             // 1. Generate 1080px Hero WebP (if wider than 1080)
             $fullWidth = min($width, 1080);
             $fullHeight = (int) ($height * ($fullWidth / $width));

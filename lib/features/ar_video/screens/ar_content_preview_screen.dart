@@ -64,7 +64,7 @@ class _ARContentPreviewScreenState extends State<ARContentPreviewScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('${_currentContent.name} removed from bookmarks'),
-              backgroundColor: Colors.redAccent,
+              backgroundColor: AppTheme.colors.redAccent,
             ),
           );
         } else {
@@ -95,7 +95,7 @@ class _ARContentPreviewScreenState extends State<ARContentPreviewScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('${_currentContent.name} added to your active itinerary!'),
-        backgroundColor: Colors.green,
+        backgroundColor: AppTheme.colors.green,
       ),
     );
   }
@@ -157,7 +157,7 @@ class _ARContentPreviewScreenState extends State<ARContentPreviewScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: AppTheme.colors.black,
       body: BatikBackground(
         child: Stack(
           children: [
@@ -176,9 +176,9 @@ class _ARContentPreviewScreenState extends State<ARContentPreviewScreen> {
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         colors: [
-                          Colors.black87,
-                          Colors.black.withValues(alpha: 0.1),
-                          Colors.black87,
+                          AppTheme.colors.black87,
+                          AppTheme.colors.black.withValues(alpha: 0.1),
+                          AppTheme.colors.black87,
                         ],
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
@@ -195,7 +195,7 @@ class _ARContentPreviewScreenState extends State<ARContentPreviewScreen> {
                           color: AppPalette.rust,
                           size: 64,
                           shadows: const [
-                            Shadow(color: Colors.black, blurRadius: 10, offset: Offset(2, 2))
+                            Shadow(color: AppTheme.colors.black, blurRadius: 10, offset: Offset(2, 2))
                           ],
                         ),
                         const SizedBox(height: 12),
@@ -203,12 +203,12 @@ class _ARContentPreviewScreenState extends State<ARContentPreviewScreen> {
                           _currentContent.name.toUpperCase(),
                           textAlign: TextAlign.center,
                           style: GoogleFonts.outfit(
-                            color: Colors.white,
+                            color: AppTheme.colors.white,
                             fontSize: 30,
                             fontWeight: FontWeight.bold,
                             letterSpacing: 4,
                             shadows: const [
-                              Shadow(color: Colors.black, blurRadius: 15, offset: Offset(2, 2))
+                              Shadow(color: AppTheme.colors.black, blurRadius: 15, offset: Offset(2, 2))
                             ],
                           ),
                         ),
@@ -243,7 +243,7 @@ class _ARContentPreviewScreenState extends State<ARContentPreviewScreen> {
                   Align(
                     alignment: Alignment.topLeft,
                     child: IconButton(
-                      icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white),
+                      icon: const Icon(Icons.arrow_back_ios_new, color: AppTheme.colors.white),
                       onPressed: () => Navigator.pop(context),
                     ),
                   ),
@@ -251,9 +251,9 @@ class _ARContentPreviewScreenState extends State<ARContentPreviewScreen> {
                   Container(
                     padding: const EdgeInsets.all(24),
                     decoration: BoxDecoration(
-                      color: Colors.black.withValues(alpha: 0.9),
+                      color: AppTheme.colors.black.withValues(alpha: 0.9),
                       borderRadius: const BorderRadius.vertical(top: Radius.circular(40)),
-                      border: Border.all(color: Colors.white10),
+                      border: Border.all(color: AppTheme.colors.white10),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -273,18 +273,18 @@ class _ARContentPreviewScreenState extends State<ARContentPreviewScreen> {
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                               decoration: BoxDecoration(
-                                color: Colors.blueAccent.withValues(alpha: 0.15),
+                                color: AppTheme.colors.blueAccent.withValues(alpha: 0.15),
                                 borderRadius: BorderRadius.circular(8),
-                                border: Border.all(color: Colors.blueAccent.withValues(alpha: 0.3)),
+                                border: Border.all(color: AppTheme.colors.blueAccent.withValues(alpha: 0.3)),
                               ),
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  const Icon(Icons.verified, color: Colors.blueAccent, size: 14),
+                                  const Icon(Icons.verified, color: AppTheme.colors.blueAccent, size: 14),
                                   const SizedBox(width: 4),
                                   Text(
                                     'Verified',
-                                    style: GoogleFonts.inter(color: Colors.blueAccent, fontSize: 10, fontWeight: FontWeight.bold),
+                                    style: GoogleFonts.inter(color: AppTheme.colors.blueAccent, fontSize: 10, fontWeight: FontWeight.bold),
                                   ),
                                 ],
                               ),
@@ -311,7 +311,7 @@ class _ARContentPreviewScreenState extends State<ARContentPreviewScreen> {
                           maxLines: 3,
                           overflow: TextOverflow.ellipsis,
                           style: GoogleFonts.inter(
-                            color: Colors.white70,
+                            color: AppTheme.colors.white70,
                             fontSize: 13,
                             height: 1.5,
                           ),
@@ -334,9 +334,9 @@ class _ARContentPreviewScreenState extends State<ARContentPreviewScreen> {
                             Container(
                               padding: const EdgeInsets.all(2),
                               decoration: BoxDecoration(
-                                color: Colors.white10,
+                                color: AppTheme.colors.white10,
                                 borderRadius: BorderRadius.circular(10),
-                                border: Border.all(color: Colors.white24),
+                                border: Border.all(color: AppTheme.colors.white24),
                               ),
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
@@ -358,7 +358,7 @@ class _ARContentPreviewScreenState extends State<ARContentPreviewScreen> {
                             : _hasError
                               ? _buildErrorWidget()
                               : _currentContent.syncPoints.isEmpty 
-                                ? Center(child: Text('No timeline markers found.', style: GoogleFonts.inter(color: Colors.white38)))
+                                ? Center(child: Text('No timeline markers found.', style: GoogleFonts.inter(color: AppTheme.colors.white38)))
                                 : ListView.builder(
                                     scrollDirection: Axis.horizontal,
                                     itemCount: _currentContent.syncPoints.length,
@@ -388,7 +388,7 @@ class _ARContentPreviewScreenState extends State<ARContentPreviewScreen> {
                                 icon: Icons.share_rounded,
                                 label: 'Share',
                                 active: false,
-                                color: Colors.blueAccent,
+                                color: AppTheme.colors.blueAccent,
                                 onTap: _sharePortal,
                               ),
                             ),
@@ -398,7 +398,7 @@ class _ARContentPreviewScreenState extends State<ARContentPreviewScreen> {
                                 icon: Icons.calendar_today_rounded,
                                 label: 'Itinerary',
                                 active: false,
-                                color: Colors.green,
+                                color: AppTheme.colors.green,
                                 onTap: _addToItinerary,
                               ),
                             ),
@@ -424,17 +424,17 @@ class _ARContentPreviewScreenState extends State<ARContentPreviewScreen> {
                                 ),
                               );
                             },
-                            icon: const Icon(Icons.blur_on, color: Colors.black, size: 24),
+                            icon: const Icon(Icons.blur_on, color: AppTheme.colors.black, size: 24),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: AppPalette.rust,
-                              disabledBackgroundColor: Colors.white10,
+                              disabledBackgroundColor: AppTheme.colors.white10,
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                               elevation: 5,
                             ),
                             label: Text(
                               'ENTER TIME PORTAL',
                               style: GoogleFonts.outfit(
-                                color: Colors.black,
+                                color: AppTheme.colors.black,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16,
                                 letterSpacing: 2,
@@ -467,13 +467,13 @@ class _ARContentPreviewScreenState extends State<ARContentPreviewScreen> {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
-          color: active ? AppPalette.rust : Colors.transparent,
+          color: active ? AppPalette.rust : AppTheme.colors.transparent,
           borderRadius: BorderRadius.circular(8),
         ),
         child: Text(
           label,
           style: GoogleFonts.outfit(
-            color: active ? Colors.black : Colors.white60,
+            color: active ? AppTheme.colors.black : AppTheme.colors.white60,
             fontSize: 11,
             fontWeight: FontWeight.bold,
           ),
@@ -495,24 +495,24 @@ class _ARContentPreviewScreenState extends State<ARContentPreviewScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 10),
         decoration: BoxDecoration(
-          color: active ? color.withValues(alpha: 0.15) : Colors.white.withValues(alpha: 0.05),
+          color: active ? color.withValues(alpha: 0.15) : AppTheme.colors.white.withValues(alpha: 0.05),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: active ? color.withValues(alpha: 0.4) : Colors.white10,
+            color: active ? color.withValues(alpha: 0.4) : AppTheme.colors.white10,
           ),
         ),
         child: Column(
           children: [
             Icon(
               icon,
-              color: active ? color : Colors.white70,
+              color: active ? color : AppTheme.colors.white70,
               size: 20,
             ),
             const SizedBox(height: 4),
             Text(
               label,
               style: GoogleFonts.inter(
-                color: active ? color : Colors.white60,
+                color: active ? color : AppTheme.colors.white60,
                 fontSize: 10,
                 fontWeight: FontWeight.bold,
               ),
@@ -527,13 +527,13 @@ class _ARContentPreviewScreenState extends State<ARContentPreviewScreen> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.redAccent.withValues(alpha: 0.08),
+        color: AppTheme.colors.redAccent.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.redAccent.withValues(alpha: 0.2)),
+        border: Border.all(color: AppTheme.colors.redAccent.withValues(alpha: 0.2)),
       ),
       child: Row(
         children: [
-          const Icon(Icons.error_outline, color: Colors.redAccent, size: 32),
+          const Icon(Icons.error_outline, color: AppTheme.colors.redAccent, size: 32),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
@@ -542,14 +542,14 @@ class _ARContentPreviewScreenState extends State<ARContentPreviewScreen> {
               children: [
                 Text(
                   'Connection Problem',
-                  style: GoogleFonts.outfit(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold),
+                  style: GoogleFonts.outfit(color: AppTheme.colors.white, fontSize: 13, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   _errorMessage,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.inter(color: Colors.white54, fontSize: 10),
+                  style: GoogleFonts.inter(color: AppTheme.colors.white54, fontSize: 10),
                 ),
               ],
             ),
@@ -558,13 +558,13 @@ class _ARContentPreviewScreenState extends State<ARContentPreviewScreen> {
           ElevatedButton(
             onPressed: _fetchFullContent,
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.redAccent,
+              backgroundColor: AppTheme.colors.redAccent,
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
             ),
             child: Text(
               'RETRY',
-              style: GoogleFonts.outfit(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold),
+              style: GoogleFonts.outfit(color: AppTheme.colors.white, fontSize: 11, fontWeight: FontWeight.bold),
             ),
           ),
         ],
@@ -581,7 +581,7 @@ class _ARContentPreviewScreenState extends State<ARContentPreviewScreen> {
         margin: const EdgeInsets.only(right: 16),
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.05),
+          color: AppTheme.colors.white.withValues(alpha: 0.05),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
             color: AppPalette.rust.withValues(alpha: 0.15),
@@ -618,7 +618,7 @@ class _ARContentPreviewScreenState extends State<ARContentPreviewScreen> {
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: GoogleFonts.inter(
-                      color: Colors.white,
+                      color: AppTheme.colors.white,
                       fontSize: 10,
                       fontWeight: FontWeight.w500,
                     ),
@@ -629,7 +629,7 @@ class _ARContentPreviewScreenState extends State<ARContentPreviewScreen> {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: GoogleFonts.inter(
-                      color: Colors.white38,
+                      color: AppTheme.colors.white38,
                       fontSize: 9,
                       fontStyle: FontStyle.italic,
                     ),
@@ -646,14 +646,14 @@ class _ARContentPreviewScreenState extends State<ARContentPreviewScreen> {
   void _showSyncPointDetails(SyncPoint sp) {
     showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppTheme.colors.transparent,
       builder: (context) {
         return Container(
           padding: const EdgeInsets.all(28),
           decoration: BoxDecoration(
-            color: Colors.grey[950],
+            color: AppTheme.colors.grey[950],
             borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
-            border: Border.all(color: Colors.white10),
+            border: Border.all(color: AppTheme.colors.white10),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -680,7 +680,7 @@ class _ARContentPreviewScreenState extends State<ARContentPreviewScreen> {
                     ),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.close, color: Colors.white54, size: 20),
+                    icon: const Icon(Icons.close, color: AppTheme.colors.white54, size: 20),
                     onPressed: () => Navigator.pop(context),
                   ),
                 ],
@@ -689,7 +689,7 @@ class _ARContentPreviewScreenState extends State<ARContentPreviewScreen> {
               Text(
                 'Historical Narrative (English)',
                 style: GoogleFonts.outfit(
-                  color: Colors.white60,
+                  color: AppTheme.colors.white60,
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
                   letterSpacing: 1.5,
@@ -699,7 +699,7 @@ class _ARContentPreviewScreenState extends State<ARContentPreviewScreen> {
               Text(
                 sp.textEn,
                 style: GoogleFonts.inter(
-                  color: Colors.white,
+                  color: AppTheme.colors.white,
                   fontSize: 14,
                   height: 1.4,
                 ),
@@ -708,7 +708,7 @@ class _ARContentPreviewScreenState extends State<ARContentPreviewScreen> {
               Text(
                 'ඓතිහාසික විස්තරය (සිංහල)',
                 style: GoogleFonts.outfit(
-                  color: Colors.white60,
+                  color: AppTheme.colors.white60,
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
                   letterSpacing: 1.5,
@@ -718,7 +718,7 @@ class _ARContentPreviewScreenState extends State<ARContentPreviewScreen> {
               Text(
                 sp.textSi.isNotEmpty ? sp.textSi : 'විස්තරය ඇතුලත් කර නොමැත.',
                 style: GoogleFonts.inter(
-                  color: Colors.white,
+                  color: AppTheme.colors.white,
                   fontSize: 14,
                   height: 1.4,
                 ),
@@ -734,7 +734,7 @@ class _ARContentPreviewScreenState extends State<ARContentPreviewScreen> {
   Widget _buildInfoRow(IconData icon, String title, String subtitle) {
     return Row(
       children: [
-        Icon(icon, color: Colors.white54, size: 22),
+        Icon(icon, color: AppTheme.colors.white54, size: 22),
         const SizedBox(width: 12),
         Expanded(
           child: Column(
@@ -742,12 +742,12 @@ class _ARContentPreviewScreenState extends State<ARContentPreviewScreen> {
             children: [
               Text(
                 title,
-                style: GoogleFonts.outfit(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w600),
+                style: GoogleFonts.outfit(color: AppTheme.colors.white, fontSize: 15, fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 2),
               Text(
                 subtitle,
-                style: GoogleFonts.inter(color: Colors.white38, fontSize: 12),
+                style: GoogleFonts.inter(color: AppTheme.colors.white38, fontSize: 12),
               ),
             ],
           ),

@@ -11,7 +11,7 @@ import logging
 import time
 import random
 
-from core.security import get_current_user
+from core.auth import get_current_user
 from core.rate_limit import limiter
 
 router = APIRouter(prefix="/api/food", tags=["food"])
@@ -184,7 +184,7 @@ async def scan_food(
     if not req.image_base64 or len(req.image_base64) < 10:
         raise HTTPException(status_code=400, detail="Invalid or empty image data")
 
-    uid = user.get("uid", "anonymous")
+    uid = user.firebase_uid if user else "anonymous"
     logger.info(
         f"[FoodScan] Scan request: uid={uid}, mode={req.user_mode}, "
         f"spice={req.spice_preference}, image_size={len(req.image_base64)} chars"

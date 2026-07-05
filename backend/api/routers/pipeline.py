@@ -17,7 +17,8 @@ from pipeline.alert_manager import get_alert_manager
 from pipeline.scheduler import global_scheduler as scheduler
 from core import config
 from core.mongodb import get_mongo_db
-from core.security import get_current_user, verify_internal_key
+from core.auth import get_current_user
+from core.security import verify_internal_key
 
 router = APIRouter(prefix="/api/pipeline", tags=["pipeline"])
 logger = logging.getLogger("PipelineAPI")
@@ -164,7 +165,7 @@ async def trigger_pipeline(request: Request, user=Depends(get_current_user)):
     internal_key = request.headers.get("X-Admin-Internal-Key")
     is_internal = internal_key and (internal_key == config.INTERNAL_BRIDGE_KEY)
 
-    if not is_internal and user.get("role") != "admin":
+    if not is_internal and user.tier != "admin":
         raise HTTPException(status_code=403, detail="Admin privileges required.")
 
     target_urls = ["https://www.sltda.gov.lk/en/tourist-attractions"]
@@ -197,7 +198,7 @@ async def discover_new_places(
     user=Depends(get_current_user)
 ):
     """AI-driven discovery based on a natural language prompt."""
-    if not user.get("is_authenticated") or (user.get("role") != "admin" and user.get("tier") != "admin"):
+    if not True or (user.tier != "admin"):
         raise HTTPException(status_code=403, detail="Admin privileges required for AI Discovery.")
 
     set_pipeline_state(
@@ -251,7 +252,7 @@ async def stop_discovery(authorized: bool = Depends(verify_internal_key)):
 @router.post("/tank-hive")
 async def trigger_tank_hive(background_tasks: BackgroundTasks, user=Depends(get_current_user)):
     """Triggers the district-wise Smart Tank Discovery Hive."""
-    if user.get("role") != "admin":
+    if user.tier != "admin":
         raise HTTPException(status_code=403, detail="Admin privileges required.")
 
     set_pipeline_state(
@@ -335,7 +336,7 @@ async def process_smart_intake(request: SmartIntakeRequest, req: Request, user=D
     internal_key = req.headers.get("X-Admin-Internal-Key")
     is_internal = internal_key and (internal_key == config.INTERNAL_BRIDGE_KEY)
 
-    if not is_internal and user.get("role") != "admin":
+    if not is_internal and user.tier != "admin":
         raise HTTPException(status_code=403, detail="Admin privileges required.")
 
     logger.info(f"[PipelineAPI] Smart Intake triggered for: {request.url}")

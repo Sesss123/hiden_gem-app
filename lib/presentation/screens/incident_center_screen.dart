@@ -50,7 +50,7 @@ class _IncidentCenterScreenState extends ConsumerState<IncidentCenterScreen> {
                 if (snapshot.hasError) {
                   return SliverFillRemaining(
                     child: Center(
-                      child: Text("Offline Error: ${snapshot.error}", style: const TextStyle(color: Colors.redAccent)),
+                      child: Text("Offline Error: ${snapshot.error}", style: const TextStyle(color: AppTheme.colors.redAccent)),
                     ),
                   );
                 }
@@ -84,7 +84,7 @@ class _IncidentCenterScreenState extends ConsumerState<IncidentCenterScreen> {
   Widget _buildAppBar() {
     return SliverAppBar(
       expandedHeight: 120.0,
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppTheme.colors.transparent,
       elevation: 0,
       pinned: true,
       flexibleSpace: FlexibleSpaceBar(
@@ -95,13 +95,13 @@ class _IncidentCenterScreenState extends ConsumerState<IncidentCenterScreen> {
             fontSize: 16,
             fontWeight: FontWeight.w900,
             letterSpacing: 2,
-            color: Colors.white,
+            color: AppTheme.colors.white,
           ),
         ),
         background: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [Colors.redAccent.withValues(alpha: 0.1), Colors.transparent],
+              colors: [AppTheme.colors.redAccent.withValues(alpha: 0.1), AppTheme.colors.transparent],
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
             ),
@@ -115,16 +115,16 @@ class _IncidentCenterScreenState extends ConsumerState<IncidentCenterScreen> {
     return OracleUI.glassContainer(
       padding: const EdgeInsets.all(24),
       borderRadius: BorderRadius.circular(24),
-      borderColor: Colors.redAccent.withValues(alpha: 0.2),
+      borderColor: AppTheme.colors.redAccent.withValues(alpha: 0.2),
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.redAccent.withValues(alpha: 0.1),
+              color: AppTheme.colors.redAccent.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
-            child: const Icon(Icons.shield_rounded, color: Colors.redAccent, size: 28),
+            child: const Icon(Icons.shield_rounded, color: AppTheme.colors.redAccent, size: 28),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -134,7 +134,7 @@ class _IncidentCenterScreenState extends ConsumerState<IncidentCenterScreen> {
                 Text(
                   "SECURE OPERATIONS",
                   style: GoogleFonts.inter(
-                    color: Colors.white,
+                    color: AppTheme.colors.white,
                     fontWeight: FontWeight.w900,
                     fontSize: 12,
                     letterSpacing: 1,
@@ -144,7 +144,7 @@ class _IncidentCenterScreenState extends ConsumerState<IncidentCenterScreen> {
                 Text(
                   "All incident reports are logged with immutable audit trails.",
                   style: GoogleFonts.inter(
-                    color: Colors.white60,
+                    color: AppTheme.colors.white60,
                     fontSize: 10,
                     fontWeight: FontWeight.w500,
                   ),
@@ -180,7 +180,7 @@ class _IncidentCenterScreenState extends ConsumerState<IncidentCenterScreen> {
   }
 
   Widget _buildIncidentCard(IncidentReport incident) {
-    final severityColor = incident.severity == 'critical' ? Colors.redAccent : Colors.orangeAccent;
+    final severityColor = incident.severity == 'critical' ? AppTheme.colors.redAccent : AppTheme.colors.orangeAccent;
     
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
@@ -215,7 +215,7 @@ class _IncidentCenterScreenState extends ConsumerState<IncidentCenterScreen> {
               Text(
                 incident.title,
                 style: GoogleFonts.inter(
-                  color: Colors.white,
+                  color: AppTheme.colors.white,
                   fontWeight: FontWeight.bold,
                   fontSize: 15,
                 ),
@@ -226,18 +226,18 @@ class _IncidentCenterScreenState extends ConsumerState<IncidentCenterScreen> {
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style: GoogleFonts.inter(
-                  color: Colors.white60,
+                  color: AppTheme.colors.white60,
                   fontSize: 12,
                 ),
               ),
               const SizedBox(height: 16),
               Row(
                 children: [
-                  const Icon(Icons.access_time_rounded, color: Colors.white24, size: 14),
+                  const Icon(Icons.access_time_rounded, color: AppTheme.colors.white24, size: 14),
                   const SizedBox(width: 4),
                   Text(
                     "${incident.createdAt.hour}:${incident.createdAt.minute.toString().padLeft(2, '0')}",
-                    style: GoogleFonts.inter(color: Colors.white24, fontSize: 11),
+                    style: GoogleFonts.inter(color: AppTheme.colors.white24, fontSize: 11),
                   ),
                   const Spacer(),
                   Text(
@@ -261,14 +261,14 @@ class _IncidentCenterScreenState extends ConsumerState<IncidentCenterScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.05),
+        color: AppTheme.colors.white.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+        border: Border.all(color: AppTheme.colors.white.withValues(alpha: 0.1)),
       ),
       child: Text(
         status.toUpperCase(),
         style: GoogleFonts.inter(
-          color: Colors.white30,
+          color: AppTheme.colors.white30,
           fontSize: 9,
           fontWeight: FontWeight.w900,
           letterSpacing: 1,
@@ -282,12 +282,12 @@ class _IncidentCenterScreenState extends ConsumerState<IncidentCenterScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.check_circle_outline_rounded, size: 64, color: Colors.white.withValues(alpha: 0.05)),
+          Icon(Icons.check_circle_outline_rounded, size: 64, color: AppTheme.colors.white.withValues(alpha: 0.05)),
           const SizedBox(height: 16),
           Text(
             "NO CRITICAL INCIDENTS",
             style: GoogleFonts.outfit(
-              color: Colors.white12,
+              color: AppTheme.colors.white12,
               fontWeight: FontWeight.w900,
               fontSize: 16,
               letterSpacing: 2,
@@ -296,7 +296,7 @@ class _IncidentCenterScreenState extends ConsumerState<IncidentCenterScreen> {
           const SizedBox(height: 8),
           Text(
             "Session operations are within safety parameters.",
-            style: GoogleFonts.inter(color: Colors.white10, fontSize: 12),
+            style: GoogleFonts.inter(color: AppTheme.colors.white10, fontSize: 12),
           ),
         ],
       ),
@@ -306,8 +306,8 @@ class _IncidentCenterScreenState extends ConsumerState<IncidentCenterScreen> {
   Widget _buildReportFAB() {
     return FloatingActionButton.extended(
       onPressed: () => _showReportDialog(),
-      backgroundColor: Colors.redAccent,
-      icon: const Icon(Icons.add_alert_rounded, color: Colors.white),
+      backgroundColor: AppTheme.colors.redAccent,
+      icon: const Icon(Icons.add_alert_rounded, color: AppTheme.colors.white),
       label: Text(
         "REPORT INCIDENT",
         style: GoogleFonts.inter(fontWeight: FontWeight.w900, letterSpacing: 1),
@@ -319,16 +319,16 @@ class _IncidentCenterScreenState extends ConsumerState<IncidentCenterScreen> {
     // Simplified for now, in reality a multi-step form
     showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppTheme.colors.transparent,
       isScrollControlled: true,
       builder: (context) => DraggableScrollableSheet(
         initialChildSize: 0.7,
         maxChildSize: 0.9,
         builder: (_, controller) => Container(
           decoration: BoxDecoration(
-            color: const Color(0xFF0A0D11),
+            color: const AppTheme.colors.primary,
             borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+            border: Border.all(color: AppTheme.colors.white.withValues(alpha: 0.1)),
           ),
           child: ListView(
             controller: controller,
@@ -337,18 +337,18 @@ class _IncidentCenterScreenState extends ConsumerState<IncidentCenterScreen> {
               Center(
                 child: Container(
                   width: 40, height: 4,
-                  decoration: BoxDecoration(color: Colors.white10, borderRadius: BorderRadius.circular(2)),
+                  decoration: BoxDecoration(color: AppTheme.colors.white10, borderRadius: BorderRadius.circular(2)),
                 ),
               ),
               const SizedBox(height: 32),
               OracleUI.neonText(
                 "FILE INCIDENT",
-                style: GoogleFonts.outfit(fontSize: 24, fontWeight: FontWeight.w900, letterSpacing: 2, color: Colors.white),
+                style: GoogleFonts.outfit(fontSize: 24, fontWeight: FontWeight.w900, letterSpacing: 2, color: AppTheme.colors.white),
               ),
               const SizedBox(height: 8),
               Text(
                 "Provide accurate details. Forensic logging active.",
-                style: GoogleFonts.inter(color: Colors.white30, fontSize: 12),
+                style: GoogleFonts.inter(color: AppTheme.colors.white30, fontSize: 12),
               ),
               const SizedBox(height: 32),
               _buildLargeField("Incident Title", Icons.title_rounded),
@@ -361,8 +361,8 @@ class _IncidentCenterScreenState extends ConsumerState<IncidentCenterScreen> {
                 child: ElevatedButton(
                   onPressed: () => Navigator.pop(context),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.redAccent,
-                    foregroundColor: Colors.white,
+                    backgroundColor: AppTheme.colors.redAccent,
+                    foregroundColor: AppTheme.colors.white,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   ),
                   child: const Text("TRANSMIT REPORT", style: TextStyle(fontWeight: FontWeight.w900)),
@@ -379,14 +379,14 @@ class _IncidentCenterScreenState extends ConsumerState<IncidentCenterScreen> {
     return OracleUI.glassContainer(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       borderRadius: BorderRadius.circular(16),
-      borderColor: Colors.white.withValues(alpha: 0.05),
+      borderColor: AppTheme.colors.white.withValues(alpha: 0.05),
       child: TextField(
         maxLines: maxLines,
-        style: const TextStyle(color: Colors.white),
+        style: const TextStyle(color: AppTheme.colors.white),
         decoration: InputDecoration(
           hintText: hint,
-          prefixIcon: Icon(icon, color: Colors.white24, size: 20),
-          hintStyle: const TextStyle(color: Colors.white24, fontSize: 13),
+          prefixIcon: Icon(icon, color: AppTheme.colors.white24, size: 20),
+          hintStyle: const TextStyle(color: AppTheme.colors.white24, fontSize: 13),
           border: InputBorder.none,
         ),
       ),

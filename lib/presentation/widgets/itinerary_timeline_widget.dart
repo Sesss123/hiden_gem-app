@@ -55,7 +55,7 @@ class _ItineraryTimelineWidgetState extends State<ItineraryTimelineWidget> {
                 child: Text(
                   'Day ${widget.day.day}',
                   style: GoogleFonts.outfit(
-                    color: Colors.white, // High contrast on gradient
+                    color: AppTheme.colors.white, // High contrast on gradient
                     fontWeight: FontWeight.bold,
                     fontSize: 12,
                     letterSpacing: 1.2,
@@ -97,7 +97,7 @@ class _ItineraryTimelineWidgetState extends State<ItineraryTimelineWidget> {
           },
           proxyDecorator: (child, index, animation) {
             return Material(
-              color: Colors.transparent,
+              color: AppTheme.colors.transparent,
               child: ScaleTransition(
                 scale: animation.drive(
                   Tween<double>(begin: 1.0, end: 1.04)
@@ -267,13 +267,13 @@ class _TimelineItem extends StatelessWidget {
   (IconData, Color) _typeInfo(BuildContext context, String type) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     switch (type) {
-      case 'food': return (Icons.restaurant_outlined, isDark ? Colors.orange : Colors.orangeAccent);
-      case 'hotel': return (Icons.hotel_outlined, isDark ? Colors.purpleAccent : Colors.purple);
-      case 'transport': return (Icons.directions_car_outlined, isDark ? Colors.blueAccent : Colors.blue);
-      case 'rest': return (Icons.self_improvement_outlined, isDark ? Colors.greenAccent : Colors.green);
-      case 'nature': return (Icons.park_outlined, isDark ? const Color(0xFF81C784) : const Color(0xFF4CAF50));
-      case 'culture': return (Icons.temple_buddhist_outlined, isDark ? const Color(0xFFFFB74D) : const Color(0xFFFF9800));
-      case 'shopping': return (Icons.shopping_bag_outlined, isDark ? Colors.pinkAccent : Colors.pink);
+      case 'food': return (Icons.restaurant_outlined, isDark ? AppTheme.colors.orange : AppTheme.colors.orangeAccent);
+      case 'hotel': return (Icons.hotel_outlined, isDark ? AppTheme.colors.purpleAccent : AppTheme.colors.purple);
+      case 'transport': return (Icons.directions_car_outlined, isDark ? AppTheme.colors.blueAccent : AppTheme.colors.blue);
+      case 'rest': return (Icons.self_improvement_outlined, isDark ? AppTheme.colors.greenAccent : AppTheme.colors.green);
+      case 'nature': return (Icons.park_outlined, isDark ? const AppTheme.colors.primary : const AppTheme.colors.primary);
+      case 'culture': return (Icons.temple_buddhist_outlined, isDark ? const AppTheme.colors.primary : const AppTheme.colors.primary);
+      case 'shopping': return (Icons.shopping_bag_outlined, isDark ? AppTheme.colors.pinkAccent : AppTheme.colors.pink);
       default: return (Icons.place_outlined, AppTheme.modernGreen(context));
     }
   }

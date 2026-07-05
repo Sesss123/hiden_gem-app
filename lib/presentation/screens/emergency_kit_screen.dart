@@ -97,7 +97,7 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> {
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error: $e"), backgroundColor: Colors.red),
+        SnackBar(content: Text("Error: $e"), backgroundColor: AppTheme.colors.red),
       );
     } finally {
       if (mounted) setState(() => _isSendingSOS = false);
@@ -122,10 +122,10 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> {
       child: Scaffold(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         appBar: AppBar(
-          backgroundColor: Colors.transparent,
+          backgroundColor: AppTheme.colors.transparent,
           elevation: 0,
           leading: IconButton(
-            icon: Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 20),
+            icon: Icon(Icons.arrow_back_ios_new_rounded, color: AppTheme.colors.white, size: 20),
             onPressed: () => Navigator.pop(context),
           ),
           title: OracleUI.neonText(
@@ -134,7 +134,7 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> {
               fontSize: 16,
               fontWeight: FontWeight.w900,
               letterSpacing: 4,
-              color: Colors.white,
+              color: AppTheme.colors.white,
             ),
           ),
         ),
@@ -156,12 +156,12 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> {
                         fontSize: 12, 
                         fontWeight: FontWeight.w900, 
                         letterSpacing: 2, 
-                        color: Colors.white24
+                        color: AppTheme.colors.white24
                       ),
                     ),
                     Text(
                       "DIRECT LINES",
-                      style: GoogleFonts.inter(color: Colors.white10, fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 1)
+                      style: GoogleFonts.inter(color: AppTheme.colors.white10, fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 1)
                     ),
                   ],
                 ),
@@ -178,7 +178,7 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> {
                     fontSize: 12, 
                     fontWeight: FontWeight.w900, 
                     letterSpacing: 2, 
-                    color: Colors.white24
+                    color: AppTheme.colors.white24
                   ),
                 ),
                 SizedBox(height: 24),
@@ -196,7 +196,7 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> {
     return OracleUI.glassContainer(
       padding: EdgeInsets.all(32),
       borderRadius: BorderRadius.circular(32),
-      borderColor: Colors.redAccent.withValues(alpha: 0.1),
+      borderColor: AppTheme.colors.redAccent.withValues(alpha: 0.1),
       child: Column(
         children: [
           Stack(
@@ -207,7 +207,7 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> {
                 width: 140, height: 140,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  border: Border.all(color: Colors.redAccent.withValues(alpha: 0.2), width: 1),
+                  border: Border.all(color: AppTheme.colors.redAccent.withValues(alpha: 0.2), width: 1),
                 ),
               ).animate(onPlay: (c) => c.repeat()).scale(
                 begin: const Offset(1, 1), end: const Offset(1.5, 1.5), 
@@ -220,11 +220,11 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> {
                   width: 100,
                   height: 100,
                   decoration: BoxDecoration(
-                    color: Colors.redAccent,
+                    color: AppTheme.colors.redAccent,
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.redAccent.withValues(alpha: 0.5),
+                        color: AppTheme.colors.redAccent.withValues(alpha: 0.5),
                         blurRadius: 40,
                         spreadRadius: 5,
                       )
@@ -232,10 +232,10 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> {
                   ),
                   child: Center(
                     child: _isSendingSOS 
-                      ? CircularProgressIndicator(color: Colors.white, strokeWidth: 3)
+                      ? CircularProgressIndicator(color: AppTheme.colors.white, strokeWidth: 3)
                       : Text(
                           "SOS",
-                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 24, letterSpacing: 2),
+                          style: TextStyle(color: AppTheme.colors.white, fontWeight: FontWeight.w900, fontSize: 24, letterSpacing: 2),
                         ),
                   ),
                 ),
@@ -249,15 +249,15 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> {
               fontSize: 13, 
               fontWeight: FontWeight.w900, 
               letterSpacing: 1.5, 
-              color: Colors.white
+              color: AppTheme.colors.white
             ),
-            glowColor: Colors.redAccent,
+            glowColor: AppTheme.colors.redAccent,
           ),
           SizedBox(height: 8),
           Text(
             "Sends location-tagged alerts to contacts",
             textAlign: TextAlign.center,
-            style: GoogleFonts.inter(color: Colors.white30, fontSize: 11, fontWeight: FontWeight.w600),
+            style: GoogleFonts.inter(color: AppTheme.colors.white30, fontSize: 11, fontWeight: FontWeight.w600),
           ),
         ],
       ),
@@ -266,10 +266,10 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> {
 
   Widget _buildContactGrid() {
     final List<Map<String, dynamic>> contacts = [
-      {"name": "Police", "phone": "119", "icon": Icons.local_police, "color": Colors.blueAccent},
+      {"name": "Police", "phone": "119", "icon": Icons.local_police, "color": AppTheme.colors.blueAccent},
       {"name": "Ambulance", "phone": "1990", "icon": Icons.medical_services, "color": Theme.of(context).colorScheme.primary},
-      {"name": "Tourist Police", "phone": "0112421451", "icon": Icons.beach_access, "color": Colors.orangeAccent},
-      {"name": "Fire Dept", "phone": "110", "icon": Icons.fire_truck, "color": Colors.redAccent},
+      {"name": "Tourist Police", "phone": "0112421451", "icon": Icons.beach_access, "color": AppTheme.colors.orangeAccent},
+      {"name": "Fire Dept", "phone": "110", "icon": Icons.fire_truck, "color": AppTheme.colors.redAccent},
     ];
 
     return LayoutBuilder(
@@ -319,7 +319,7 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> {
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                             style: GoogleFonts.inter(
-                              color: Colors.white,
+                              color: AppTheme.colors.white,
                               fontWeight: FontWeight.w900,
                               fontSize: 10,
                               letterSpacing: 1,
@@ -330,7 +330,7 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> {
                         Flexible(
                           child: OracleUI.neonText(
                             contact['phone'] as String,
-                            style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.w900, color: Colors.white),
+                            style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.w900, color: AppTheme.colors.white),
                             glowColor: (contact['color'] as Color).withValues(alpha: 0.5),
                           ),
                         ),
@@ -352,7 +352,7 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> {
     return OracleUI.glassContainer(
       padding: EdgeInsets.all(24),
       borderRadius: BorderRadius.circular(24),
-      borderColor: Colors.white.withValues(alpha: 0.05),
+      borderColor: AppTheme.colors.white.withValues(alpha: 0.05),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -361,7 +361,7 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> {
             children: [
               Text(
                 "PRIVATE GUARDIANS", 
-                style: GoogleFonts.inter(color: Colors.white30, fontSize: 11, fontWeight: FontWeight.w900, letterSpacing: 2)
+                style: GoogleFonts.inter(color: AppTheme.colors.white30, fontSize: 11, fontWeight: FontWeight.w900, letterSpacing: 2)
               ),
               IconButton(
                 onPressed: _showAddContactDialog,
@@ -373,7 +373,7 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> {
           if (profile.sosContacts.isEmpty)
             Text(
               "No guardians assigned. Signals will default to emergency services.", 
-              style: GoogleFonts.inter(color: Colors.white12, fontSize: 11, fontStyle: FontStyle.italic)
+              style: GoogleFonts.inter(color: AppTheme.colors.white12, fontSize: 11, fontStyle: FontStyle.italic)
             )
           else
             Wrap(
@@ -386,7 +386,7 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(c, style: GoogleFonts.outfit(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
+                    Text(c, style: GoogleFonts.outfit(color: AppTheme.colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
                     SizedBox(width: 8),
                     GestureDetector(
                       onTap: () async {
@@ -396,7 +396,7 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> {
                         if (!mounted) return;
                         setState(() {});
                       },
-                      child: Icon(Icons.close_rounded, color: Colors.redAccent, size: 14),
+                      child: Icon(Icons.close_rounded, color: AppTheme.colors.redAccent, size: 14),
                     ),
                   ],
                 ),
@@ -422,7 +422,7 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> {
       margin: EdgeInsets.only(bottom: 16),
       padding: EdgeInsets.all(20),
       borderRadius: BorderRadius.circular(24),
-      borderColor: Colors.white.withValues(alpha: 0.05),
+      borderColor: AppTheme.colors.white.withValues(alpha: 0.05),
       child: Row(
         children: [
           OracleUI.glassContainer(
@@ -441,13 +441,13 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> {
                   name.toUpperCase(),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.inter(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 13, letterSpacing: 0.5),
+                  style: GoogleFonts.inter(color: AppTheme.colors.white, fontWeight: FontWeight.w900, fontSize: 13, letterSpacing: 0.5),
                 ),
                 Text(
                   "$location • $distance",
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.inter(color: Colors.white10, fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 1),
+                  style: GoogleFonts.inter(color: AppTheme.colors.white10, fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 1),
                 ),
               ],
             ),
@@ -458,7 +458,7 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> {
             height: 48,
             child: IconButton(
               padding: EdgeInsets.zero,
-              icon: Icon(Icons.phone_paused_rounded, color: Colors.white30, size: 20),
+              icon: Icon(Icons.phone_paused_rounded, color: AppTheme.colors.white30, size: 20),
               onPressed: () => _launchCaller(phone),
             ),
           ),
@@ -472,28 +472,28 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> {
     showDialog(
       context: context,
       builder: (context) => Dialog(
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppTheme.colors.transparent,
         child: OracleUI.glassContainer(
           padding: EdgeInsets.all(32),
           borderRadius: BorderRadius.circular(32),
-          borderColor: Colors.white.withValues(alpha: 0.1),
+          borderColor: AppTheme.colors.white.withValues(alpha: 0.1),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               OracleUI.neonText(
                 "LINK GUARDIAN", 
-                style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.w900, letterSpacing: 2, color: Colors.white)
+                style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.w900, letterSpacing: 2, color: AppTheme.colors.white)
               ),
               SizedBox(height: 24),
               OracleUI.glassContainer(
                 padding: EdgeInsets.symmetric(horizontal: 16),
                 borderRadius: BorderRadius.circular(16),
-                borderColor: Colors.white.withValues(alpha: 0.05),
+                borderColor: AppTheme.colors.white.withValues(alpha: 0.05),
                 child: TextField(
-                  style: TextStyle(color: Colors.white),
+                  style: TextStyle(color: AppTheme.colors.white),
                   decoration: const InputDecoration(
                     hintText: "Guardian Phone Number",
-                    hintStyle: TextStyle(color: Colors.white24, fontSize: 13),
+                    hintStyle: TextStyle(color: AppTheme.colors.white24, fontSize: 13),
                     border: InputBorder.none,
                   ),
                   keyboardType: TextInputType.phone,
@@ -516,7 +516,7 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> {
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Theme.of(context).colorScheme.primary,
-                    foregroundColor: Colors.black,
+                    foregroundColor: AppTheme.colors.black,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   ),
                   child: Text("ESTABLISH LINK", style: TextStyle(fontWeight: FontWeight.w900)),

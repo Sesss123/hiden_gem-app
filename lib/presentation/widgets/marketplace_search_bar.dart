@@ -175,12 +175,12 @@ class _SearchInputField extends StatelessWidget {
       duration: const Duration(milliseconds: 200),
       decoration: BoxDecoration(
         color: isDark
-            ? Colors.white.withValues(alpha: 0.08)
-            : Colors.black.withValues(alpha: 0.05),
+            ? AppTheme.colors.white.withValues(alpha: 0.08)
+            : AppTheme.colors.black.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: isCooldown
-              ? Colors.orange.withValues(alpha: 0.6)
+              ? AppTheme.colors.orange.withValues(alpha: 0.6)
               : theme.colorScheme.outline.withValues(alpha: 0.2),
           width: isCooldown ? 1.5 : 1.0,
         ),
@@ -196,7 +196,7 @@ class _SearchInputField extends StatelessWidget {
               : hintText,
           hintStyle: TextStyle(
             color: isCooldown
-                ? Colors.orange.withValues(alpha: 0.8)
+                ? AppTheme.colors.orange.withValues(alpha: 0.8)
                 : theme.colorScheme.onSurface.withValues(alpha: 0.4),
           ),
           prefixIcon: isLoading
@@ -211,7 +211,7 @@ class _SearchInputField extends StatelessWidget {
               : Icon(
                   isCooldown ? Icons.timer_outlined : Icons.search_rounded,
                   color: isCooldown
-                      ? Colors.orange
+                      ? AppTheme.colors.orange
                       : theme.colorScheme.onSurface.withValues(alpha: 0.5),
                 ),
           suffixIcon: controller.text.isNotEmpty
@@ -260,13 +260,13 @@ class _CooldownBar extends StatelessWidget {
       child: Row(
         children: [
           const Icon(Icons.warning_amber_rounded,
-              size: 14, color: Colors.orange),
+              size: 14, color: AppTheme.colors.orange),
           const SizedBox(width: 6),
           Expanded(
             child: Text(
               'Too many searches. Please wait ${seconds}s.',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Colors.orange,
+                    color: AppTheme.colors.orange,
                   ),
             ),
           ),
@@ -289,7 +289,7 @@ class SearchMetricsDebugBadge extends ConsumerWidget {
     return Container(
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
-        color: Colors.black87,
+        color: AppTheme.colors.black87,
         borderRadius: BorderRadius.circular(8),
       ),
       child: Text(
@@ -299,7 +299,7 @@ class SearchMetricsDebugBadge extends ConsumerWidget {
         '🚫 ${metrics.canceledRequests} canceled | '
         '⏱ ${metrics.rateLimitHits} rate-limited',
         style: const TextStyle(
-          color: Colors.white70,
+          color: AppTheme.colors.white70,
           fontSize: 10,
           fontFamily: 'monospace',
         ),

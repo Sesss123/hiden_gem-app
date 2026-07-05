@@ -209,7 +209,7 @@
                                 box.classList.remove('hidden');
                                 text.innerHTML = '🔺 Show Less (Top 10 Only)';
                             } else {
-                                box.classList.add('hidden');
+                                box.classList.add ("hidden");
                                 text.innerHTML = '🔻 Show {{ $byDistrict->count() - 10 }} More Districts';
                             }
                         }

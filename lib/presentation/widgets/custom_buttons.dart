@@ -35,9 +35,9 @@ class ModernGradientButton extends StatelessWidget {
       child: ElevatedButton(
         onPressed: isLoading ? null : onPressed,
         style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.transparent,
-          foregroundColor: Colors.white,
-          shadowColor: Colors.transparent,
+          backgroundColor: AppTheme.colors.transparent,
+          foregroundColor: AppTheme.colors.white,
+          shadowColor: AppTheme.colors.transparent,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         ),
         child: isLoading
@@ -46,14 +46,14 @@ class ModernGradientButton extends StatelessWidget {
                 width: 24,
                 child: CircularProgressIndicator(
                   strokeWidth: 3,
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  valueColor: AlwaysStoppedAnimation<Color>(AppTheme.colors.white),
                 ),
               )
             : Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   if (icon != null) ...[
-                    Icon(icon, size: 20, color: Colors.white),
+                    Icon(icon, size: 20, color: AppTheme.colors.white),
                     const SizedBox(width: 12),
                   ],
                   Text(
@@ -61,7 +61,7 @@ class ModernGradientButton extends StatelessWidget {
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       letterSpacing: 1.2,
-                      color: Colors.white,
+                      color: AppTheme.colors.white,
                     ),
                   ),
                 ],
@@ -103,9 +103,9 @@ class PrimaryButton extends StatelessWidget {
       child: ElevatedButton(
         onPressed: isLoading ? null : onPressed,
         style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.transparent,
-          foregroundColor: Colors.white,
-          shadowColor: Colors.transparent,
+          backgroundColor: AppTheme.colors.transparent,
+          foregroundColor: AppTheme.colors.white,
+          shadowColor: AppTheme.colors.transparent,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         ),
         child: isLoading
@@ -114,7 +114,7 @@ class PrimaryButton extends StatelessWidget {
                 width: 24,
                 child: CircularProgressIndicator(
                   strokeWidth: 3,
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  valueColor: AlwaysStoppedAnimation<Color>(AppTheme.colors.white),
                 ),
               )
             : Text(
@@ -122,7 +122,7 @@ class PrimaryButton extends StatelessWidget {
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   letterSpacing: 1.2,
-                  color: Colors.white,
+                  color: AppTheme.colors.white,
                 ),
               ),
       ),

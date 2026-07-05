@@ -67,7 +67,7 @@ class _GuideBroadcastScreenState extends State<GuideBroadcastScreen> {
         child: CustomScrollView(
           slivers: [
             SliverAppBar(
-              backgroundColor: Colors.transparent,
+              backgroundColor: AppTheme.colors.transparent,
               elevation: 0,
               title: OracleUI.neonText("BROADCAST CENTER", style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold)),
               leading: IconButton(
@@ -99,18 +99,18 @@ class _GuideBroadcastScreenState extends State<GuideBroadcastScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("CREATE BROADCAST", style: GoogleFonts.outfit(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white54)),
+          Text("CREATE BROADCAST", style: GoogleFonts.outfit(fontSize: 12, fontWeight: FontWeight.bold, color: AppTheme.colors.white54)),
           const SizedBox(height: 16),
           TextField(
             controller: _messageController,
             maxLines: 3,
-            style: GoogleFonts.inter(color: Colors.white),
+            style: GoogleFonts.inter(color: AppTheme.colors.white),
             decoration: InputDecoration(
               hintText: "Enter your message to travelers...",
-              hintStyle: GoogleFonts.inter(color: Colors.white24),
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Colors.white10)),
+              hintStyle: GoogleFonts.inter(color: AppTheme.colors.white24),
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: AppTheme.colors.white10)),
               filled: true,
-              fillColor: Colors.black12,
+              fillColor: AppTheme.colors.black12,
             ),
           ),
           const SizedBox(height: 24),
@@ -128,8 +128,8 @@ class _GuideBroadcastScreenState extends State<GuideBroadcastScreen> {
               ),
               onPressed: _isSending ? null : _sendBroadcast,
               child: _isSending 
-                ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.black))
-                : Text("SEND TO ALL TRAVELERS", style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: Colors.black)),
+                ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2, color: AppTheme.colors.black))
+                : Text("SEND TO ALL TRAVELERS", style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: AppTheme.colors.black)),
             ),
           ),
         ],
@@ -148,15 +148,15 @@ class _GuideBroadcastScreenState extends State<GuideBroadcastScreen> {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: BoxDecoration(
-              color: isSelected ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.2) : Colors.white.withValues(alpha: 0.05),
+              color: isSelected ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.2) : AppTheme.colors.white.withValues(alpha: 0.05),
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: isSelected ? Theme.of(context).colorScheme.primary : Colors.white10),
+              border: Border.all(color: isSelected ? Theme.of(context).colorScheme.primary : AppTheme.colors.white10),
             ),
             child: Text(
               type.name.toUpperCase(),
               style: GoogleFonts.outfit(
                 fontSize: 10,
-                color: isSelected ? Theme.of(context).colorScheme.primary : Colors.white54,
+                color: isSelected ? Theme.of(context).colorScheme.primary : AppTheme.colors.white54,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -169,7 +169,7 @@ class _GuideBroadcastScreenState extends State<GuideBroadcastScreen> {
   Widget _buildPrioritySelector() {
     return Row(
       children: [
-        Text("PRIORITY: ", style: GoogleFonts.outfit(fontSize: 10, color: Colors.white54)),
+        Text("PRIORITY: ", style: GoogleFonts.outfit(fontSize: 10, color: AppTheme.colors.white54)),
         const SizedBox(width: 8),
         ...BroadcastPriority.values.map((p) {
           final isSelected = _selectedPriority == p;
@@ -180,9 +180,9 @@ class _GuideBroadcastScreenState extends State<GuideBroadcastScreen> {
               selected: isSelected,
               onSelected: (val) => setState(() => _selectedPriority = p),
               selectedColor: _getPriorityColor(p).withValues(alpha: 0.3),
-              labelStyle: TextStyle(color: isSelected ? _getPriorityColor(p) : Colors.white54),
-              backgroundColor: Colors.transparent,
-              side: BorderSide(color: isSelected ? _getPriorityColor(p) : Colors.white10),
+              labelStyle: TextStyle(color: isSelected ? _getPriorityColor(p) : AppTheme.colors.white54),
+              backgroundColor: AppTheme.colors.transparent,
+              side: BorderSide(color: isSelected ? _getPriorityColor(p) : AppTheme.colors.white10),
             ),
           );
         }),
@@ -192,10 +192,10 @@ class _GuideBroadcastScreenState extends State<GuideBroadcastScreen> {
 
   Color _getPriorityColor(BroadcastPriority p) {
     switch (p) {
-      case BroadcastPriority.critical: return Colors.redAccent;
-      case BroadcastPriority.high: return Colors.orangeAccent;
-      case BroadcastPriority.normal: return Colors.blueAccent;
-      case BroadcastPriority.low: return Colors.grey;
+      case BroadcastPriority.critical: return AppTheme.colors.redAccent;
+      case BroadcastPriority.high: return AppTheme.colors.orangeAccent;
+      case BroadcastPriority.normal: return AppTheme.colors.blueAccent;
+      case BroadcastPriority.low: return AppTheme.colors.grey;
     }
   }
 
@@ -208,7 +208,7 @@ class _GuideBroadcastScreenState extends State<GuideBroadcastScreen> {
         
         if (messages.isEmpty) {
           return Center(
-            child: Text("No active broadcasts.", style: GoogleFonts.inter(color: Colors.white24)),
+            child: Text("No active broadcasts.", style: GoogleFonts.inter(color: AppTheme.colors.white24)),
           );
         }
 
@@ -238,23 +238,23 @@ class _GuideBroadcastScreenState extends State<GuideBroadcastScreen> {
                         ),
                         Text(
                           "${msg.acknowledgedBy.length} Acks",
-                          style: GoogleFonts.inter(fontSize: 10, color: Colors.white38),
+                          style: GoogleFonts.inter(fontSize: 10, color: AppTheme.colors.white38),
                         ),
                       ],
                     ),
                     const SizedBox(height: 8),
-                    Text(msg.body, style: GoogleFonts.inter(color: Colors.white70)),
+                    Text(msg.body, style: GoogleFonts.inter(color: AppTheme.colors.white70)),
                     const SizedBox(height: 12),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
                           "${msg.createdAt.hour}:${msg.createdAt.minute.toString().padLeft(2, '0')}",
-                          style: GoogleFonts.inter(fontSize: 10, color: Colors.white24),
+                          style: GoogleFonts.inter(fontSize: 10, color: AppTheme.colors.white24),
                         ),
                         TextButton(
                           onPressed: () => _broadcastRepo.deactivateBroadcast(widget.sessionId, msg.messageId),
-                          child: Text("EXPIRE", style: GoogleFonts.outfit(fontSize: 10, color: Colors.redAccent.withValues(alpha: 0.5))),
+                          child: Text("EXPIRE", style: GoogleFonts.outfit(fontSize: 10, color: AppTheme.colors.redAccent.withValues(alpha: 0.5))),
                         ),
                       ],
                     ),

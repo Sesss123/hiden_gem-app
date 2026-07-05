@@ -194,7 +194,7 @@ class _MapRouteScreenState extends State<MapRouteScreen> {
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         title: Text("Visual Route", style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: AppTheme.textPrimary(context))),
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppTheme.colors.transparent,
         elevation: 0,
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios_new, color: AppTheme.textPrimary(context), size: 20),
@@ -203,7 +203,7 @@ class _MapRouteScreenState extends State<MapRouteScreen> {
         flexibleSpace: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [Colors.black54, Colors.transparent],
+              colors: [AppTheme.colors.black54, AppTheme.colors.transparent],
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
             ),
@@ -249,11 +249,11 @@ class _MapRouteScreenState extends State<MapRouteScreen> {
               child: Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: AppTheme.colors.white,
                   borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.1),
+                    color: AppTheme.colors.black.withValues(alpha: 0.1),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),
@@ -295,7 +295,7 @@ class _MapRouteScreenState extends State<MapRouteScreen> {
                       label: const Text("FOCUS"),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppPalette.rust,
-                        foregroundColor: Colors.white,
+                        foregroundColor: AppTheme.colors.white,
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                         textStyle: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 13),

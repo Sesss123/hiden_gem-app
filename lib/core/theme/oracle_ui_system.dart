@@ -73,7 +73,7 @@ class OracleUI {
           ] : AppTheme.softShadow,
         ),
         child: Material(
-          color: Colors.transparent,
+          color: AppTheme.colors.transparent,
           child: child,
         ),
       );
@@ -109,7 +109,7 @@ class OracleUI {
           ] : AppTheme.premiumShadow,
         ),
         child: Material(
-          color: Colors.transparent,
+          color: AppTheme.colors.transparent,
           child: child,
         ),
       );
@@ -216,7 +216,7 @@ class OracleUI {
         duration: 300.ms,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: isSelected ? primary : Colors.transparent,
+          color: isSelected ? primary : AppTheme.colors.transparent,
           borderRadius: BorderRadius.circular(100),
           border: Border.all(
             color: isSelected ? primary : AppPalette.ink.withValues(alpha: 0.12),
@@ -237,7 +237,7 @@ class OracleUI {
               Icon(
                 icon, 
                 size: 16, 
-                color: isSelected ? Colors.white : earth,
+                color: isSelected ? AppTheme.colors.white : earth,
               ),
               const SizedBox(width: 8),
             ],
@@ -429,7 +429,7 @@ class OracleNotification {
         left: 20,
         right: 20,
         child: Material(
-          color: Colors.transparent,
+          color: AppTheme.colors.transparent,
           child: Dismissible(
             key: UniqueKey(),
             direction: DismissDirection.horizontal,

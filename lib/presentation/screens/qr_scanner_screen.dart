@@ -84,50 +84,50 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppTheme.colors.transparent,
       builder: (context) => StatefulBuilder(
         builder: (context, setSheetState) => BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
           child: Container(
             padding: const EdgeInsets.all(32),
             decoration: BoxDecoration(
-              color: const Color(0xFF0F172A).withValues(alpha: 0.9),
+              color: const AppTheme.colors.primary.withValues(alpha: 0.9),
               borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
-              border: Border.all(color: Colors.white10),
+              border: Border.all(color: AppTheme.colors.white10),
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text("TOUR VERIFICATION", style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
+                Text("TOUR VERIFICATION", style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.colors.white)),
                 const SizedBox(height: 24),
                 
                 // Guide Info Card
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.1),
+                    color: AppTheme.colors.white.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: Colors.white24),
+                    border: Border.all(color: AppTheme.colors.white24),
                   ),
                   child: Row(
                     children: [
                       CircleAvatar(
                         radius: 25, 
-                        backgroundColor: Colors.white10, 
+                        backgroundColor: AppTheme.colors.white10, 
                         backgroundImage: guideData['profileImagePath'] != null ? NetworkImage(guideData['profileImagePath']) : null,
-                        child: guideData['profileImagePath'] == null ? const Icon(Icons.person, color: Colors.white) : null,
+                        child: guideData['profileImagePath'] == null ? const Icon(Icons.person, color: AppTheme.colors.white) : null,
                       ),
                       const SizedBox(width: 16),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(guideData['displayName'] ?? "LOCAL GUIDE", style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: Colors.white)),
-                            Text(session.meetingPointName, style: GoogleFonts.inter(fontSize: 12, color: Colors.white54), overflow: TextOverflow.ellipsis),
+                            Text(guideData['displayName'] ?? "LOCAL GUIDE", style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: AppTheme.colors.white)),
+                            Text(session.meetingPointName, style: GoogleFonts.inter(fontSize: 12, color: AppTheme.colors.white54), overflow: TextOverflow.ellipsis),
                           ],
                         ),
                       ),
-                      const Icon(Icons.verified, color: Colors.blueAccent, size: 20),
+                      const Icon(Icons.verified, color: AppTheme.colors.blueAccent, size: 20),
                     ],
                   ),
                 ),
@@ -136,9 +136,9 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                 if (session.vehicleNumber != null)
                    Row(
                     children: [
-                      const Icon(Icons.garage_rounded, color: Colors.orangeAccent, size: 16),
+                      const Icon(Icons.garage_rounded, color: AppTheme.colors.orangeAccent, size: 16),
                       const SizedBox(width: 8),
-                      Text("VEHICLE: ${session.vehicleNumber}", style: GoogleFonts.inter(fontSize: 12, color: Colors.white70)),
+                      Text("VEHICLE: ${session.vehicleNumber}", style: GoogleFonts.inter(fontSize: 12, color: AppTheme.colors.white70)),
                     ],
                   ),
                 const SizedBox(height: 32),
@@ -162,7 +162,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                       Expanded(
                         child: Text(
                           "I consent to live location tracking and safety monitoring for this tour session.",
-                          style: GoogleFonts.inter(fontSize: 11, color: Colors.white54),
+                          style: GoogleFonts.inter(fontSize: 11, color: AppTheme.colors.white54),
                         ),
                       ),
                     ],
@@ -175,11 +175,11 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                   height: 60,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: _hasConsent ? Theme.of(context).colorScheme.primary : Colors.white.withValues(alpha: 0.05),
+                      backgroundColor: _hasConsent ? Theme.of(context).colorScheme.primary : AppTheme.colors.white.withValues(alpha: 0.05),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                     ),
                     onPressed: _hasConsent ? () => _finalJoin(session) : null,
-                    child: Text("CONNECT & SYNC", style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: _hasConsent ? Colors.black : Colors.white24)),
+                    child: Text("CONNECT & SYNC", style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: _hasConsent ? AppTheme.colors.black : AppTheme.colors.white24)),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -231,19 +231,19 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
           child: Container(
             padding: const EdgeInsets.all(32),
             decoration: BoxDecoration(
-              color: Colors.black.withValues(alpha: 0.8),
+              color: AppTheme.colors.black.withValues(alpha: 0.8),
               borderRadius: BorderRadius.circular(24),
-              border: Border.all(color: Colors.white24),
+              border: Border.all(color: AppTheme.colors.white24),
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(Icons.link_rounded, color: Colors.greenAccent, size: 64)
+                const Icon(Icons.link_rounded, color: AppTheme.colors.greenAccent, size: 64)
                     .animate().scale(duration: 600.ms, curve: Curves.elasticOut),
                 const SizedBox(height: 24),
-                Text("REALITY SYNCED", style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
+                Text("REALITY SYNCED", style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.bold, color: AppTheme.colors.white)),
                 const SizedBox(height: 16),
-                const Text("Global safety protocols and live tracking active.", textAlign: TextAlign.center, style: TextStyle(color: Colors.white70)),
+                const Text("Global safety protocols and live tracking active.", textAlign: TextAlign.center, style: TextStyle(color: AppTheme.colors.white70)),
                 const SizedBox(height: 32),
                 ElevatedButton(
                   onPressed: () {
@@ -268,7 +268,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message, style: GoogleFonts.outfit(fontWeight: FontWeight.bold)),
-        backgroundColor: Colors.redAccent,
+        backgroundColor: AppTheme.colors.redAccent,
         behavior: SnackBarBehavior.floating,
       ),
     );
@@ -277,7 +277,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: AppTheme.colors.black,
       body: Stack(
         children: [
           MobileScanner(
@@ -314,7 +314,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                 if (_isProcessing)
                   Padding(
                     padding: const EdgeInsets.only(top: 24),
-                    child: Text("DECRYPTING TOKEN...", style: GoogleFonts.outfit(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white)),
+                    child: Text("DECRYPTING TOKEN...", style: GoogleFonts.outfit(fontSize: 12, fontWeight: FontWeight.bold, color: AppTheme.colors.white)),
                   ),
               ],
             ),
@@ -324,7 +324,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
             top: 60,
             left: 20,
             child: IconButton(
-              icon: const Icon(Icons.close, color: Colors.white, size: 28),
+              icon: const Icon(Icons.close, color: AppTheme.colors.white, size: 28),
               onPressed: () => Navigator.pop(context),
             ),
           ),
@@ -336,9 +336,9 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
                 decoration: BoxDecoration(
-                  color: Colors.black.withValues(alpha: 0.5),
+                  color: AppTheme.colors.black.withValues(alpha: 0.5),
                   borderRadius: BorderRadius.circular(24),
-                  border: Border.all(color: Colors.white24),
+                  border: Border.all(color: AppTheme.colors.white24),
                 ),
                 child: Text(
                   "SCAN PROTECTED QR",
@@ -346,7 +346,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
                     letterSpacing: 2,
-                    color: Colors.white,
+                    color: AppTheme.colors.white,
                   ),
                 ),
               ),

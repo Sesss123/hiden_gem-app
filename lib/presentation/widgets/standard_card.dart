@@ -34,11 +34,11 @@ class StandardCard extends StatelessWidget {
         decoration: AppTheme.glassDecoration(
           context,
           opacity: isDark ? 0.05 : 0.02,
-          color: isDark ? null : Colors.white,
+          color: isDark ? null : AppTheme.colors.white,
         ).copyWith(
           boxShadow: isDark ? null : [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.03),
+              color: AppTheme.colors.black.withValues(alpha: 0.03),
               blurRadius: 15,
               offset: const Offset(0, 8),
             ),

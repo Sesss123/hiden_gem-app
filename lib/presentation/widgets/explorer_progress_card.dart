@@ -186,7 +186,7 @@ class _ExplorerProgressCardState extends State<ExplorerProgressCard>
                 current: widget.service.visitedSites.value,
                 total: ExplorerProgressService.totalSites,
                 progress: widget.service.sitesProgress,
-                color: const Color(0xFFFFB300), // Sites: Gold
+                color: const AppTheme.colors.primary, // Sites: Gold
               ),
               const SizedBox(height: 14),
               _CategoryRow(
@@ -204,7 +204,7 @@ class _ExplorerProgressCardState extends State<ExplorerProgressCard>
                 current: widget.service.badgeCount.value,
                 total: ExplorerProgressService.totalBadges,
                 progress: widget.service.badgesProgress,
-                color: const Color(0xFF7C4DFF), // Badges: Purple
+                color: const AppTheme.colors.primary, // Badges: Purple
               ),
 
               const SizedBox(height: 24),
@@ -286,7 +286,7 @@ class _ExplorerProgressCardState extends State<ExplorerProgressCard>
                       borderRadius: BorderRadius.circular(4),
                       child: LinearProgressIndicator(
                         value: progress,
-                        backgroundColor: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.1),
+                        backgroundColor: (isDark ? AppTheme.colors.white : AppTheme.colors.black).withValues(alpha: 0.1),
                         valueColor: AlwaysStoppedAnimation<Color>(_levelColor(level)),
                         minHeight: 5,
                       ),
@@ -311,10 +311,10 @@ class _ExplorerProgressCardState extends State<ExplorerProgressCard>
 
   Color _levelColor(ExplorerLevel level) {
     switch (level) {
-      case ExplorerLevel.beginner:    return const Color(0xFF66BB6A); // Green
-      case ExplorerLevel.discoverer:  return const Color(0xFF29B6F6); // Blue
-      case ExplorerLevel.hunter:      return const Color(0xFFFFB300); // Gold
-      case ExplorerLevel.master:      return const Color(0xFFE040FB); // Violet
+      case ExplorerLevel.beginner:    return const AppTheme.colors.primary; // Green
+      case ExplorerLevel.discoverer:  return const AppTheme.colors.primary; // Blue
+      case ExplorerLevel.hunter:      return const AppTheme.colors.primary; // Gold
+      case ExplorerLevel.master:      return const AppTheme.colors.primary; // Violet
     }
   }
 }
@@ -327,10 +327,10 @@ class _LevelBadge extends StatelessWidget {
 
   Color get _color {
     switch (level) {
-      case ExplorerLevel.beginner:    return const Color(0xFF66BB6A);
-      case ExplorerLevel.discoverer:  return const Color(0xFF29B6F6);
-      case ExplorerLevel.hunter:      return const Color(0xFFFFB300);
-      case ExplorerLevel.master:      return const Color(0xFFE040FB);
+      case ExplorerLevel.beginner:    return const AppTheme.colors.primary;
+      case ExplorerLevel.discoverer:  return const AppTheme.colors.primary;
+      case ExplorerLevel.hunter:      return const AppTheme.colors.primary;
+      case ExplorerLevel.master:      return const AppTheme.colors.primary;
     }
   }
 
@@ -398,7 +398,7 @@ class _AnimatedProgressBar extends StatelessWidget {
             Container(
               height: 10,
               decoration: BoxDecoration(
-                color: (Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black).withValues(alpha: isDark ? 0.1 : 0.15),
+                color: (Theme.of(context).brightness == Brightness.dark ? AppTheme.colors.white : AppTheme.colors.black).withValues(alpha: isDark ? 0.1 : 0.15),
                 borderRadius: BorderRadius.circular(8),
               ),
             ),
@@ -487,7 +487,7 @@ class _CategoryRow extends StatelessWidget {
                 borderRadius: BorderRadius.circular(4),
                 child: LinearProgressIndicator(
                   value: progress,
-                  backgroundColor: (Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black).withValues(alpha: isDark ? 0.08 : 0.12),
+                  backgroundColor: (Theme.of(context).brightness == Brightness.dark ? AppTheme.colors.white : AppTheme.colors.black).withValues(alpha: isDark ? 0.08 : 0.12),
                   valueColor: AlwaysStoppedAnimation<Color>(color),
                   minHeight: 4,
                 ),

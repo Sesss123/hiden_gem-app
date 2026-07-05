@@ -53,28 +53,28 @@ class _TouristCompanionHubState extends State<TouristCompanionHub> {
         context: context,
         barrierDismissible: false,
         builder: (ctx) => AlertDialog(
-          backgroundColor: const Color(0xFF1A1A1A),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16), side: const BorderSide(color: Colors.redAccent, width: 2)),
+          backgroundColor: const AppTheme.colors.primary,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16), side: const BorderSide(color: AppTheme.colors.redAccent, width: 2)),
           title: Row(
             children: [
-              const Icon(Icons.warning_amber_rounded, color: Colors.redAccent, size: 28),
+              const Icon(Icons.warning_amber_rounded, color: AppTheme.colors.redAccent, size: 28),
               const SizedBox(width: 10),
-              Expanded(child: Text("MONSOON HAZARD ALERT", style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18))),
+              Expanded(child: Text("MONSOON HAZARD ALERT", style: GoogleFonts.outfit(color: AppTheme.colors.white, fontWeight: FontWeight.bold, fontSize: 18))),
             ],
           ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("District: ${alert['district'] ?? 'General'}", style: GoogleFonts.inter(color: Colors.redAccent, fontWeight: FontWeight.w600)),
+              Text("District: ${alert['district'] ?? 'General'}", style: GoogleFonts.inter(color: AppTheme.colors.redAccent, fontWeight: FontWeight.w600)),
               const SizedBox(height: 10),
-              Text(alert['message']?.toString() ?? "Severe monsoon weather detected.", style: GoogleFonts.inter(color: Colors.white70, fontSize: 14)),
+              Text(alert['message']?.toString() ?? "Severe monsoon weather detected.", style: GoogleFonts.inter(color: AppTheme.colors.white70, fontSize: 14)),
             ],
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(ctx).pop(),
-              child: Text("ACKNOWLEDGE", style: GoogleFonts.outfit(color: Colors.amberAccent, fontWeight: FontWeight.bold)),
+              child: Text("ACKNOWLEDGE", style: GoogleFonts.outfit(color: AppTheme.colors.amberAccent, fontWeight: FontWeight.bold)),
             ),
           ],
         ),
@@ -123,7 +123,7 @@ class _TouristCompanionHubState extends State<TouristCompanionHub> {
                 }
                 if (snapshot.hasError) {
                   return Center(
-                    child: Text("Offline Error: ${snapshot.error}", style: const TextStyle(color: Colors.redAccent)),
+                    child: Text("Offline Error: ${snapshot.error}", style: const TextStyle(color: AppTheme.colors.redAccent)),
                   );
                 }
 
@@ -158,10 +158,10 @@ class _TouristCompanionHubState extends State<TouristCompanionHub> {
           barrierDismissible: true,
           builder: (ctx) => AlertDialog(
             backgroundColor: AppTheme.cardColor(context),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24), side: BorderSide(color: Colors.amber.withValues(alpha: 0.5))),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24), side: BorderSide(color: AppTheme.colors.amber.withValues(alpha: 0.5))),
             title: Row(
               children: [
-                const Icon(Icons.star_rounded, color: Colors.amber, size: 28),
+                const Icon(Icons.star_rounded, color: AppTheme.colors.amber, size: 28),
                 const SizedBox(width: 8),
                 Text("Tour Completed!", style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: AppTheme.textPrimary(context))),
               ],
@@ -177,7 +177,7 @@ class _TouristCompanionHubState extends State<TouristCompanionHub> {
                 child: Text("REMIND LATER", style: GoogleFonts.outfit(color: AppTheme.textSecondary(context), fontWeight: FontWeight.bold)),
               ),
               ElevatedButton(
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.amber, foregroundColor: Colors.black, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
+                style: ElevatedButton.styleFrom(backgroundColor: AppTheme.colors.amber, foregroundColor: AppTheme.colors.black, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
                 onPressed: () {
                   Navigator.pop(ctx);
                   Navigator.push(
@@ -235,9 +235,9 @@ class _TouristCompanionHubState extends State<TouristCompanionHub> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(Icons.error_outline, color: Colors.white24, size: 64),
+          const Icon(Icons.error_outline, color: AppTheme.colors.white24, size: 64),
           const SizedBox(height: 16),
-          Text("SESSION NOT FOUND", style: GoogleFonts.outfit(color: Colors.white38)),
+          Text("SESSION NOT FOUND", style: GoogleFonts.outfit(color: AppTheme.colors.white38)),
         ],
       ),
     );
@@ -245,7 +245,7 @@ class _TouristCompanionHubState extends State<TouristCompanionHub> {
 
   Widget _buildAppBar() {
     return SliverAppBar(
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppTheme.colors.transparent,
       elevation: 0,
       expandedHeight: 100,
       leading: IconButton(
@@ -268,10 +268,10 @@ class _TouristCompanionHubState extends State<TouristCompanionHub> {
       child: Row(
         children: [
           CircleAvatar(
-            backgroundColor: session.status == 'active' ? Colors.greenAccent.withValues(alpha: 0.2) : Colors.white10,
+            backgroundColor: session.status == 'active' ? AppTheme.colors.greenAccent.withValues(alpha: 0.2) : AppTheme.colors.white10,
             child: Icon(
               session.status == 'active' ? Icons.verified : Icons.hourglass_empty,
-              color: session.status == 'active' ? Colors.greenAccent : Colors.white38,
+              color: session.status == 'active' ? AppTheme.colors.greenAccent : AppTheme.colors.white38,
             ),
           ),
           const SizedBox(width: 16),
@@ -281,11 +281,11 @@ class _TouristCompanionHubState extends State<TouristCompanionHub> {
               children: [
                 Text(
                   session.status == 'active' ? "SECURE TOUR ACTIVE" : "PREPARING TOUR",
-                  style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold),
+                  style: GoogleFonts.outfit(color: AppTheme.colors.white, fontWeight: FontWeight.bold),
                 ),
                 Text(
                   "Status: ${session.status.toUpperCase()}",
-                  style: GoogleFonts.inter(color: Colors.white54, fontSize: 11),
+                  style: GoogleFonts.inter(color: AppTheme.colors.white54, fontSize: 11),
                 ),
               ],
             ),
@@ -297,11 +297,11 @@ class _TouristCompanionHubState extends State<TouristCompanionHub> {
 
   Widget _buildPhaseIndicator(TourSession session) {
     final phaseMap = {
-      'assembling': {'label': 'ASSEMBLING GROUP', 'icon': Icons.group_add_outlined, 'color': Colors.blueAccent},
-      'en_route': {'label': 'EN ROUTE', 'icon': Icons.directions_bus_filled_outlined, 'color': Colors.orangeAccent},
-      'at_site': {'label': 'AT DESTINATION', 'icon': Icons.museum_outlined, 'color': Colors.greenAccent},
-      'break_time': {'label': 'FREE TIME / BREAK', 'icon': Icons.coffee_outlined, 'color': Colors.purpleAccent},
-      'returning': {'label': 'RETURNING TO BASE', 'icon': Icons.keyboard_return_rounded, 'color': Colors.cyanAccent},
+      'assembling': {'label': 'ASSEMBLING GROUP', 'icon': Icons.group_add_outlined, 'color': AppTheme.colors.blueAccent},
+      'en_route': {'label': 'EN ROUTE', 'icon': Icons.directions_bus_filled_outlined, 'color': AppTheme.colors.orangeAccent},
+      'at_site': {'label': 'AT DESTINATION', 'icon': Icons.museum_outlined, 'color': AppTheme.colors.greenAccent},
+      'break_time': {'label': 'FREE TIME / BREAK', 'icon': Icons.coffee_outlined, 'color': AppTheme.colors.purpleAccent},
+      'returning': {'label': 'RETURNING TO BASE', 'icon': Icons.keyboard_return_rounded, 'color': AppTheme.colors.cyanAccent},
     };
 
     final current = phaseMap[session.currentPhase] ?? phaseMap['assembling']!;
@@ -330,7 +330,7 @@ class _TouristCompanionHubState extends State<TouristCompanionHub> {
           const SizedBox(
             width: 12,
             height: 12,
-            child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white12),
+            child: CircularProgressIndicator(strokeWidth: 2, color: AppTheme.colors.white12),
           ),
         ],
       ),
@@ -353,7 +353,7 @@ class _TouristCompanionHubState extends State<TouristCompanionHub> {
                 icon: Icons.person_pin_circle_outlined,
                 title: "FIND GUIDE",
                 subtitle: "Live Tracking",
-                color: Colors.blueAccent,
+                color: AppTheme.colors.blueAccent,
                 onTap: () => _openMap(session, 'guide'),
               ),
             ),
@@ -363,7 +363,7 @@ class _TouristCompanionHubState extends State<TouristCompanionHub> {
                 icon: Icons.location_searching_rounded,
                 title: "FIND VEHICLE",
                 subtitle: "Parked Spot",
-                color: Colors.orangeAccent,
+                color: AppTheme.colors.orangeAccent,
                 onTap: () => _openMap(session, 'vehicle'),
               ),
             ),
@@ -388,8 +388,8 @@ class _TouristCompanionHubState extends State<TouristCompanionHub> {
           children: [
             Icon(icon, color: color, size: 28),
             const SizedBox(height: 12),
-            Text(title, style: GoogleFonts.outfit(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.white)),
-            Text(subtitle, style: GoogleFonts.inter(fontSize: 9, color: Colors.white38)),
+            Text(title, style: GoogleFonts.outfit(fontSize: 11, fontWeight: FontWeight.bold, color: AppTheme.colors.white)),
+            Text(subtitle, style: GoogleFonts.inter(fontSize: 9, color: AppTheme.colors.white38)),
           ],
         ),
       ),
@@ -406,7 +406,7 @@ class _TouristCompanionHubState extends State<TouristCompanionHub> {
         children: [
           Row(
             children: [
-              const Icon(Icons.flag_rounded, color: Colors.greenAccent, size: 18),
+              const Icon(Icons.flag_rounded, color: AppTheme.colors.greenAccent, size: 18),
               const SizedBox(width: 8),
               OracleUI.neonText("MEETING POINT", style: GoogleFonts.outfit(fontSize: 10, fontWeight: FontWeight.bold)),
             ],
@@ -414,12 +414,12 @@ class _TouristCompanionHubState extends State<TouristCompanionHub> {
           const SizedBox(height: 12),
           Text(
             session.meetingPointName,
-            style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+            style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.colors.white),
           ),
           const SizedBox(height: 4),
           Text(
             "Return here if lost or separated from group.",
-            style: GoogleFonts.inter(fontSize: 11, color: Colors.white38),
+            style: GoogleFonts.inter(fontSize: 11, color: AppTheme.colors.white38),
           ),
           const SizedBox(height: 16),
           SizedBox(
@@ -429,8 +429,8 @@ class _TouristCompanionHubState extends State<TouristCompanionHub> {
               label: const Text("NAVIGATE TO POINT"),
               onPressed: () => _openMap(session, 'meeting'),
               style: TextButton.styleFrom(
-                foregroundColor: Colors.greenAccent,
-                backgroundColor: Colors.greenAccent.withValues(alpha: 0.05),
+                foregroundColor: AppTheme.colors.greenAccent,
+                backgroundColor: AppTheme.colors.greenAccent.withValues(alpha: 0.05),
               ),
             ),
           ),
@@ -461,23 +461,23 @@ class _TouristCompanionHubState extends State<TouristCompanionHub> {
               children: [
                 Row(
                   children: [
-                    const Icon(Icons.campaign_rounded, color: Colors.redAccent, size: 20),
+                    const Icon(Icons.campaign_rounded, color: AppTheme.colors.redAccent, size: 20),
                     const SizedBox(width: 8),
                     Text(
                       "GUIDE ANNOUNCEMENT",
-                      style: GoogleFonts.outfit(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.redAccent),
+                      style: GoogleFonts.outfit(fontSize: 10, fontWeight: FontWeight.bold, color: AppTheme.colors.redAccent),
                     ),
                     const Spacer(),
                     Text(
                       "JUST NOW",
-                      style: GoogleFonts.inter(fontSize: 8, color: Colors.white24),
+                      style: GoogleFonts.inter(fontSize: 8, color: AppTheme.colors.white24),
                     ),
                   ],
                 ),
                 const SizedBox(height: 12),
                 Text(
                   latest.body,
-                  style: GoogleFonts.inter(fontSize: 14, color: Colors.white, fontWeight: FontWeight.w500),
+                  style: GoogleFonts.inter(fontSize: 14, color: AppTheme.colors.white, fontWeight: FontWeight.w500),
                 ),
                 const SizedBox(height: 16),
                 if (latest.requiresAck)
@@ -485,14 +485,14 @@ class _TouristCompanionHubState extends State<TouristCompanionHub> {
                     width: double.infinity,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.greenAccent,
+                        backgroundColor: AppTheme.colors.greenAccent,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                         padding: const EdgeInsets.symmetric(vertical: 8),
                       ),
                       onPressed: () {
                         // Acknowledge logic
                       },
-                      child: Text("I ACKNOWLEDGE", style: GoogleFonts.outfit(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.black)),
+                      child: Text("I ACKNOWLEDGE", style: GoogleFonts.outfit(fontSize: 12, fontWeight: FontWeight.bold, color: AppTheme.colors.black)),
                     ),
                   ),
               ],
@@ -551,10 +551,10 @@ class _TouristCompanionHubState extends State<TouristCompanionHub> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, color: Colors.white70, size: 20),
+            Icon(icon, color: AppTheme.colors.white70, size: 20),
             const SizedBox(height: 8),
-            Text(title, style: GoogleFonts.outfit(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
-            Text(subtitle, style: GoogleFonts.inter(color: Colors.white38, fontSize: 9)),
+            Text(title, style: GoogleFonts.outfit(color: AppTheme.colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
+            Text(subtitle, style: GoogleFonts.inter(color: AppTheme.colors.white38, fontSize: 9)),
           ],
         ),
       ),
@@ -568,10 +568,10 @@ class _TouristCompanionHubState extends State<TouristCompanionHub> {
           width: double.infinity,
           height: 60,
           child: OutlinedButton.icon(
-            icon: const Icon(Icons.person_search_rounded, color: Colors.orangeAccent),
-            label: Text("HELP! I'M LOST", style: GoogleFonts.outfit(color: Colors.orangeAccent, fontWeight: FontWeight.bold, letterSpacing: 1)),
+            icon: const Icon(Icons.person_search_rounded, color: AppTheme.colors.orangeAccent),
+            label: Text("HELP! I'M LOST", style: GoogleFonts.outfit(color: AppTheme.colors.orangeAccent, fontWeight: FontWeight.bold, letterSpacing: 1)),
             style: OutlinedButton.styleFrom(
-              side: const BorderSide(color: Colors.orangeAccent, width: 1.5),
+              side: const BorderSide(color: AppTheme.colors.orangeAccent, width: 1.5),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
             ),
             onPressed: () => _triggerImLost(session),
@@ -583,20 +583,20 @@ class _TouristCompanionHubState extends State<TouristCompanionHub> {
           height: 80,
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.redAccent.withValues(alpha: 0.1),
-              side: const BorderSide(color: Colors.redAccent, width: 2),
+              backgroundColor: AppTheme.colors.redAccent.withValues(alpha: 0.1),
+              side: const BorderSide(color: AppTheme.colors.redAccent, width: 2),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
             ),
             onPressed: () => _triggerSos(session),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.warning_amber_rounded, color: Colors.redAccent, size: 28),
+                const Icon(Icons.warning_amber_rounded, color: AppTheme.colors.redAccent, size: 28),
                 const SizedBox(width: 16),
                 Text(
                   "EMERGENCY SOS",
                   style: GoogleFonts.outfit(
-                    color: Colors.redAccent,
+                    color: AppTheme.colors.redAccent,
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                     letterSpacing: 2,
@@ -605,11 +605,11 @@ class _TouristCompanionHubState extends State<TouristCompanionHub> {
               ],
             ),
           ),
-        ).animate().shimmer(duration: 2.seconds, color: Colors.redAccent.withValues(alpha: 0.2)),
+        ).animate().shimmer(duration: 2.seconds, color: AppTheme.colors.redAccent.withValues(alpha: 0.2)),
         const SizedBox(height: 16),
         Text(
           "Instant alert to Admin, Police, and Hub.",
-          style: GoogleFonts.inter(color: Colors.white24, fontSize: 11),
+          style: GoogleFonts.inter(color: AppTheme.colors.white24, fontSize: 11),
         ),
       ],
     );
@@ -645,7 +645,7 @@ class _TouristCompanionHubState extends State<TouristCompanionHub> {
       
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("SIGNAL SENT! STAY WHERE YOU ARE."), backgroundColor: Colors.orangeAccent),
+          const SnackBar(content: Text("SIGNAL SENT! STAY WHERE YOU ARE."), backgroundColor: AppTheme.colors.orangeAccent),
         );
       }
     } catch (e) {
@@ -672,7 +672,7 @@ class _TouristCompanionHubState extends State<TouristCompanionHub> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text("SOS ALERT BROADCASTED TO ALL AUTHORITIES!"),
-          backgroundColor: Colors.redAccent,
+          backgroundColor: AppTheme.colors.redAccent,
         ),
       );
     }

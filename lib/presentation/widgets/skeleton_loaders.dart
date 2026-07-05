@@ -19,10 +19,10 @@ class ModernTracerShimmer extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Shimmer.fromColors(
-      baseColor: isDark ? const Color(0xFF262B2A) : Colors.grey[300]!,
+      baseColor: isDark ? const AppTheme.colors.primary : AppTheme.colors.grey[300]!,
       highlightColor: isDark 
           ? AppTheme.modernGreen(context).withValues(alpha: 0.2)
-          : Colors.grey[100]!,
+          : AppTheme.colors.grey[100]!,
       period: const Duration(milliseconds: 1500),
       child: child,
     );

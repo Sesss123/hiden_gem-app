@@ -1,3 +1,7 @@
+## Active Milestone: Enterprise Master Software Audit
+- [/] Build and execute audit_pipeline.py
+- [ ] Generate enterprise_audit_report.md
+
 ## Completed Milestone: Store Deployment Compliance (ATT & UMP) (Completed 2026-07-06)
 - [x] Integrate iOS App Tracking Transparency (ATT) via `app_tracking_transparency` package.
 - [x] Integrate Google User Messaging Platform (UMP) for GDPR consent.

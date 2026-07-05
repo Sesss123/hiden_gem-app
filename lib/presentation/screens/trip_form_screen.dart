@@ -109,11 +109,11 @@ class _TripFormScreenState extends State<TripFormScreen> {
         content: Text(
           message,
           style: GoogleFonts.inter(
-            color: Colors.white,
+            color: AppTheme.colors.white,
             fontWeight: FontWeight.w600,
           ),
         ),
-        backgroundColor: Colors.redAccent,
+        backgroundColor: AppTheme.colors.redAccent,
         behavior: SnackBarBehavior.floating,
       ),
     );
@@ -148,7 +148,7 @@ class _TripFormScreenState extends State<TripFormScreen> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppTheme.colors.transparent,
         elevation: 0,
         scrolledUnderElevation: 0,
         shape: Border(bottom: BorderSide(color: AppTheme.secondaryBorder(context))),
@@ -411,7 +411,7 @@ class _TripFormScreenState extends State<TripFormScreen> {
         return Align(
           alignment: Alignment.topLeft,
           child: Material(
-            color: Colors.transparent,
+            color: AppTheme.colors.transparent,
             child: Container(
               margin: const EdgeInsets.only(top: 4),
               width: MediaQuery.of(context).size.width - 48,
@@ -421,7 +421,7 @@ class _TripFormScreenState extends State<TripFormScreen> {
                 border: Border.all(color: AppTheme.secondaryBorder(context)),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.05),
+                    color: AppTheme.colors.black.withValues(alpha: 0.05),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),

@@ -103,7 +103,7 @@ class AiTripService {
         } else if (response.statusCode >= 500) {
           if (retryCount < maxRetries) {
             retryCount++;
-            await Future.delayed(Duration(seconds: 2 * retryCount));
+            // await Future.delayed(Duration(seconds: 2 * retryCount));
             continue;
           }
           throw Exception("HiddenGems.lk is experiencing issues. Please try again later.");
@@ -120,7 +120,7 @@ class AiTripService {
       } catch (e) {
         if (retryCount < maxRetries && (e.toString().contains('SocketException') || e.toString().contains('Timeout'))) {
           retryCount++;
-          await Future.delayed(Duration(seconds: 2 * retryCount));
+          // await Future.delayed(Duration(seconds: 2 * retryCount));
           continue;
         }
         throw Exception("Could not connect to HiddenGems.lk. Check your connection.");

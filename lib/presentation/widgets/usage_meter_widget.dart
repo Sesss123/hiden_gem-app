@@ -64,7 +64,7 @@ class _UsageMeterWidgetState extends State<UsageMeterWidget> {
     if (_isLoading) {
       return const SizedBox(
         height: 100,
-        child: Center(child: CircularProgressIndicator(color: Color(0xFFFFB300))),
+        child: Center(child: CircularProgressIndicator(color: AppTheme.colors.primary)),
       );
     }
 
@@ -95,7 +95,7 @@ class _UsageMeterWidgetState extends State<UsageMeterWidget> {
         borderRadius: BorderRadius.circular(24),
         borderColor: hasWarning 
             ? AppTheme.warningAmber.withValues(alpha: 0.3) 
-            : Colors.white.withValues(alpha: 0.05),
+            : AppTheme.colors.white.withValues(alpha: 0.05),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -146,7 +146,7 @@ class _UsageMeterWidgetState extends State<UsageMeterWidget> {
                       child: Text(
                         'UPGRADE',
                         style: GoogleFonts.outfit(
-                          color: Colors.black,
+                          color: AppTheme.colors.black,
                           fontSize: 11,
                           fontWeight: FontWeight.bold,
                         ),
@@ -225,7 +225,7 @@ class _UsageMeterWidgetState extends State<UsageMeterWidget> {
     bool isUnlimited = false,
   }) {
     final color = isUnlimited
-        ? Colors.greenAccent
+        ? AppTheme.colors.greenAccent
         : (isHigh ? Colors.redAccent : AppTheme.warningAmber);
 
     return Column(
@@ -254,7 +254,7 @@ class _UsageMeterWidgetState extends State<UsageMeterWidget> {
           child: LinearProgressIndicator(
             value: isUnlimited ? 1.0 : percent,
             minHeight: 6,
-            backgroundColor: Theme.of(context).brightness == Brightness.dark ? Colors.white10 : Colors.black12,
+            backgroundColor: Theme.of(context).brightness == Brightness.dark ? AppTheme.colors.white10 : AppTheme.colors.black12,
             valueColor: AlwaysStoppedAnimation<Color>(color),
           ),
         ),

@@ -25,7 +25,7 @@ class ARUpgradeDialog extends StatelessWidget {
     return showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppTheme.colors.transparent,
       builder: (_) => ARUpgradeDialog(
         onUpgrade: onUpgrade,
         onPreview: onPreview,
@@ -44,12 +44,12 @@ class ARUpgradeDialog extends StatelessWidget {
         bottom: MediaQuery.of(context).viewInsets.bottom + 28,
       ),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppTheme.colors.white,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
         border: Border.all(color: AppPalette.rust.withValues(alpha: 0.3)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
+            color: AppTheme.colors.black.withValues(alpha: 0.1),
             blurRadius: 20,
             offset: const Offset(0, -4),
           ),
@@ -63,7 +63,7 @@ class ARUpgradeDialog extends StatelessWidget {
             child: Container(
               width: 40, height: 4,
               decoration: BoxDecoration(
-                color: Colors.black12,
+                color: AppTheme.colors.black12,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -144,13 +144,13 @@ class ARUpgradeDialog extends StatelessWidget {
               },
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 16),
-                backgroundColor: Colors.transparent,
-                shadowColor: Colors.transparent,
+                backgroundColor: AppTheme.colors.transparent,
+                shadowColor: AppTheme.colors.transparent,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
                 ),
               ).copyWith(
-                backgroundColor: WidgetStateProperty.all(Colors.transparent),
+                backgroundColor: WidgetStateProperty.all(AppTheme.colors.transparent),
               ),
               child: Ink(
                 decoration: BoxDecoration(
@@ -163,7 +163,7 @@ class ARUpgradeDialog extends StatelessWidget {
                   child: Text(
                     'Upgrade to Premium',
                     style: GoogleFonts.outfit(
-                      color: Colors.white,
+                      color: AppTheme.colors.white,
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
@@ -207,7 +207,7 @@ class ARUpgradeDialog extends StatelessWidget {
                   Navigator.pop(context);
                   onWatchAd!();
                 },
-                icon: const Icon(Icons.play_circle_fill, color: Colors.white, size: 20),
+                icon: const Icon(Icons.play_circle_fill, color: AppTheme.colors.white, size: 20),
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   backgroundColor: AppPalette.rust,
@@ -218,7 +218,7 @@ class ARUpgradeDialog extends StatelessWidget {
                 label: Text(
                   'Watch Ad to Unlock Session',
                   style: GoogleFonts.outfit(
-                    color: Colors.white,
+                    color: AppTheme.colors.white,
                     fontSize: 15,
                     fontWeight: FontWeight.bold,
                   ),

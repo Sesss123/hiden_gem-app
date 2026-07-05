@@ -99,10 +99,10 @@ class _GuideAvailabilityScreenState extends ConsumerState<GuideAvailabilityScree
       builder: (context, child) => Theme(
         data: ThemeData.dark().copyWith(
           colorScheme: const ColorScheme.dark(
-            primary: Colors.amber,
-            onPrimary: Colors.black,
-            surface: Color(0xFF1E1E1E),
-            onSurface: Colors.white,
+            primary: AppTheme.colors.amber,
+            onPrimary: AppTheme.colors.black,
+            surface: AppTheme.colors.primary,
+            onSurface: AppTheme.colors.white,
           ),
         ),
         child: child!,
@@ -134,7 +134,7 @@ class _GuideAvailabilityScreenState extends ConsumerState<GuideAvailabilityScree
       initialTime: initialTime,
       builder: (context, child) => Theme(
         data: ThemeData.dark().copyWith(
-          colorScheme: const ColorScheme.dark(primary: Colors.amber, onPrimary: Colors.black, surface: Color(0xFF1E1E1E), onSurface: Colors.white),
+          colorScheme: const ColorScheme.dark(primary: AppTheme.colors.amber, onPrimary: AppTheme.colors.black, surface: AppTheme.colors.primary, onSurface: AppTheme.colors.white),
         ),
         child: child!,
       ),
@@ -177,14 +177,14 @@ class _GuideAvailabilityScreenState extends ConsumerState<GuideAvailabilityScree
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('🎉 Availability & Schedule Updated!'), backgroundColor: Colors.green),
+          const SnackBar(content: Text('🎉 Availability & Schedule Updated!'), backgroundColor: AppTheme.colors.green),
         );
         Navigator.pop(context);
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error saving availability: $e'), backgroundColor: Colors.redAccent),
+          SnackBar(content: Text('Error saving availability: $e'), backgroundColor: AppTheme.colors.redAccent),
         );
       }
     } finally {
@@ -197,7 +197,7 @@ class _GuideAvailabilityScreenState extends ConsumerState<GuideAvailabilityScree
     if (_isLoading) {
       return Scaffold(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        body: const Center(child: CircularProgressIndicator(color: Colors.amber)),
+        body: const Center(child: CircularProgressIndicator(color: AppTheme.colors.amber)),
       );
     }
 
@@ -206,7 +206,7 @@ class _GuideAvailabilityScreenState extends ConsumerState<GuideAvailabilityScree
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppTheme.colors.transparent,
         elevation: 0,
         title: Text(
           'AVAILABILITY & SCHEDULE',
@@ -236,7 +236,7 @@ class _GuideAvailabilityScreenState extends ConsumerState<GuideAvailabilityScree
                       title: Text('Instant Book Enabled', style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.bold)),
                       subtitle: Text('Allow tourists to book immediately without manual approval', style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 12)),
                       value: _instantBookEnabled,
-                      activeThumbColor: Colors.amber,
+                      activeThumbColor: AppTheme.colors.amber,
                       contentPadding: EdgeInsets.zero,
                       onChanged: (val) => setState(() => _instantBookEnabled = val),
                     ),
@@ -260,13 +260,13 @@ class _GuideAvailabilityScreenState extends ConsumerState<GuideAvailabilityScree
                           decoration: BoxDecoration(
                             color: Theme.of(context).cardColor,
                             borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: Colors.amber.withValues(alpha: 0.5)),
+                            border: Border.all(color: AppTheme.colors.amber.withValues(alpha: 0.5)),
                           ),
                           child: DropdownButton<String>(
                             value: _advanceNoticeHours,
                             dropdownColor: Theme.of(context).cardColor,
                             underline: const SizedBox(),
-                            icon: const Icon(Icons.arrow_drop_down, color: Colors.amber),
+                            icon: const Icon(Icons.arrow_drop_down, color: AppTheme.colors.amber),
                             items: _noticeOptions.map((e) => DropdownMenuItem(value: e, child: Text('$e hrs', style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.bold)))).toList(),
                             onChanged: (val) => setState(() => _advanceNoticeHours = val!),
                           ),
@@ -310,7 +310,7 @@ class _GuideAvailabilityScreenState extends ConsumerState<GuideAvailabilityScree
                       ),
                       Switch(
                         value: isWorking,
-                        activeThumbColor: Colors.amber,
+                        activeThumbColor: AppTheme.colors.amber,
                         onChanged: (val) {
                           setState(() {
                             if (val) {
@@ -328,7 +328,7 @@ class _GuideAvailabilityScreenState extends ConsumerState<GuideAvailabilityScree
                           child: Container(
                             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
                             decoration: BoxDecoration(color: Theme.of(context).cardColor, borderRadius: BorderRadius.circular(8), border: Border.all(color: AppTheme.borderColor(context))),
-                            child: Text(slot.startTime, style: GoogleFonts.outfit(color: Colors.amber[400], fontWeight: FontWeight.bold, fontSize: 12)),
+                            child: Text(slot.startTime, style: GoogleFonts.outfit(color: AppTheme.colors.amber[400], fontWeight: FontWeight.bold, fontSize: 12)),
                           ),
                         ),
                         Padding(
@@ -340,7 +340,7 @@ class _GuideAvailabilityScreenState extends ConsumerState<GuideAvailabilityScree
                           child: Container(
                             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
                             decoration: BoxDecoration(color: Theme.of(context).cardColor, borderRadius: BorderRadius.circular(8), border: Border.all(color: AppTheme.borderColor(context))),
-                            child: Text(slot.endTime, style: GoogleFonts.outfit(color: Colors.amber[400], fontWeight: FontWeight.bold, fontSize: 12)),
+                            child: Text(slot.endTime, style: GoogleFonts.outfit(color: AppTheme.colors.amber[400], fontWeight: FontWeight.bold, fontSize: 12)),
                           ),
                         ),
                       ] else ...[
@@ -359,8 +359,8 @@ class _GuideAvailabilityScreenState extends ConsumerState<GuideAvailabilityScree
                   _buildSectionTitle('BLACKOUT DATES (${_blackoutDates.length})'),
                   TextButton.icon(
                     onPressed: _pickBlackoutDate,
-                    icon: const Icon(Icons.add_circle_outline, color: Colors.amber, size: 18),
-                    label: Text('ADD DATE', style: GoogleFonts.outfit(color: Colors.amber, fontWeight: FontWeight.bold, fontSize: 12)),
+                    icon: const Icon(Icons.add_circle_outline, color: AppTheme.colors.amber, size: 18),
+                    label: Text('ADD DATE', style: GoogleFonts.outfit(color: AppTheme.colors.amber, fontWeight: FontWeight.bold, fontSize: 12)),
                   ),
                 ],
               ),
@@ -382,10 +382,10 @@ class _GuideAvailabilityScreenState extends ConsumerState<GuideAvailabilityScree
                   runSpacing: 10,
                   children: _blackoutDates.map((date) {
                     return Chip(
-                      backgroundColor: Colors.redAccent.withValues(alpha: 0.2),
-                      side: BorderSide(color: Colors.redAccent.withValues(alpha: 0.5)),
+                      backgroundColor: AppTheme.colors.redAccent.withValues(alpha: 0.2),
+                      side: BorderSide(color: AppTheme.colors.redAccent.withValues(alpha: 0.5)),
                       label: Text(dateFormat.format(date), style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.w600)),
-                      deleteIcon: const Icon(Icons.close, size: 16, color: Colors.white70),
+                      deleteIcon: const Icon(Icons.close, size: 16, color: AppTheme.colors.white70),
                       onDeleted: () {
                         setState(() {
                           _blackoutDates.remove(date);
@@ -402,13 +402,13 @@ class _GuideAvailabilityScreenState extends ConsumerState<GuideAvailabilityScree
                 child: ElevatedButton(
                   onPressed: _isSaving ? null : _saveAvailability,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.amber,
-                    foregroundColor: Colors.black,
+                    backgroundColor: AppTheme.colors.amber,
+                    foregroundColor: AppTheme.colors.black,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
                     elevation: 8,
                   ),
                   child: _isSaving
-                      ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.black))
+                      ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2, color: AppTheme.colors.black))
                       : Text('SAVE AVAILABILITY & SCHEDULE 📅', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, letterSpacing: 1, fontSize: 15)),
                 ),
               ),
@@ -424,7 +424,7 @@ class _GuideAvailabilityScreenState extends ConsumerState<GuideAvailabilityScree
     return Text(
       title,
       style: GoogleFonts.outfit(
-        color: Colors.amber[400],
+        color: AppTheme.colors.amber[400],
         fontSize: 12,
         fontWeight: FontWeight.w800,
         letterSpacing: 2.0,

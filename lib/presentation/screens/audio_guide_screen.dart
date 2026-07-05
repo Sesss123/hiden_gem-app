@@ -278,7 +278,7 @@ class _AudioGuideScreenState extends State<AudioGuideScreen> with SingleTickerPr
         duration: const Duration(milliseconds: 300),
         padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
         decoration: BoxDecoration(
-          color: active ? Theme.of(context).colorScheme.primary : Colors.transparent,
+          color: active ? Theme.of(context).colorScheme.primary : AppTheme.colors.transparent,
           borderRadius: BorderRadius.circular(25),
         ),
         child: Text(

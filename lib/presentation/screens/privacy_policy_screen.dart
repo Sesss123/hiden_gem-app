@@ -57,14 +57,14 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
     final primaryColor = Theme.of(context).colorScheme.primary;
 
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppTheme.colors.transparent,
       body: OracleUI.auraBackground(
         child: CustomScrollView(
           physics: const BouncingScrollPhysics(),
           slivers: [
             SliverAppBar(
               floating: true,
-              backgroundColor: Colors.transparent,
+              backgroundColor: AppTheme.colors.transparent,
               elevation: 0,
               title: OracleUI.neonText(
                 "PRIVACY POLICY & LEGAL",
@@ -258,7 +258,7 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
         onPressed: _contactSupport,
         style: ElevatedButton.styleFrom(
           backgroundColor: primaryColor,
-          foregroundColor: Colors.white,
+          foregroundColor: AppTheme.colors.white,
           padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 24),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           elevation: 4,

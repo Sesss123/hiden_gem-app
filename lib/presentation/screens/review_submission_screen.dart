@@ -66,7 +66,7 @@ class _ReviewSubmissionScreenState extends ConsumerState<ReviewSubmissionScreen>
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Transmission Error: $e"), backgroundColor: Colors.red),
+        SnackBar(content: Text("Transmission Error: $e"), backgroundColor: AppTheme.colors.red),
       );
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
@@ -106,22 +106,22 @@ class _ReviewSubmissionScreenState extends ConsumerState<ReviewSubmissionScreen>
       children: [
         IconButton(
           onPressed: () => Navigator.pop(context),
-          icon: const Icon(Icons.close_rounded, color: Colors.white, size: 28),
+          icon: const Icon(Icons.close_rounded, color: AppTheme.colors.white, size: 28),
         ),
         const SizedBox(height: 24),
         OracleUI.neonText(
           "MISSION FEEDBACK",
-          style: GoogleFonts.outfit(fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: 4, color: Colors.white24),
+          style: GoogleFonts.outfit(fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: 4, color: AppTheme.colors.white24),
         ),
         const SizedBox(height: 8),
         Text(
           "Rate your guide's performance.",
-          style: GoogleFonts.outfit(color: Colors.white, fontSize: 28, fontWeight: FontWeight.w900),
+          style: GoogleFonts.outfit(color: AppTheme.colors.white, fontSize: 28, fontWeight: FontWeight.w900),
         ).animate().fadeIn().slideY(begin: 0.1),
         const SizedBox(height: 12),
         Text(
           "Your data is used to calculate the guide's Trust Score. Be objective and fair.",
-          style: GoogleFonts.inter(color: Colors.white10, fontSize: 13, fontWeight: FontWeight.bold),
+          style: GoogleFonts.inter(color: AppTheme.colors.white10, fontSize: 13, fontWeight: FontWeight.bold),
         ),
       ],
     );
@@ -133,7 +133,7 @@ class _ReviewSubmissionScreenState extends ConsumerState<ReviewSubmissionScreen>
       children: [
         Text(
           title,
-          style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: 2, color: Colors.white60),
+          style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: 2, color: AppTheme.colors.white60),
         ),
         const SizedBox(height: 24),
         Center(
@@ -150,14 +150,14 @@ class _ReviewSubmissionScreenState extends ConsumerState<ReviewSubmissionScreen>
                 max: 5.0,
                 divisions: 4,
                 activeColor: Theme.of(context).colorScheme.primary,
-                inactiveColor: Colors.white.withValues(alpha: 0.05),
+                inactiveColor: AppTheme.colors.white.withValues(alpha: 0.05),
                 onChanged: onChanged,
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text("AVERAGE", style: GoogleFonts.inter(color: Colors.white10, fontSize: 10, fontWeight: FontWeight.bold)),
-                  Text("EXCEPTIONAL", style: GoogleFonts.inter(color: Colors.white10, fontSize: 10, fontWeight: FontWeight.bold)),
+                  Text("AVERAGE", style: GoogleFonts.inter(color: AppTheme.colors.white10, fontSize: 10, fontWeight: FontWeight.bold)),
+                  Text("EXCEPTIONAL", style: GoogleFonts.inter(color: AppTheme.colors.white10, fontSize: 10, fontWeight: FontWeight.bold)),
                 ],
               ),
             ],
@@ -188,13 +188,13 @@ class _ReviewSubmissionScreenState extends ConsumerState<ReviewSubmissionScreen>
     return OracleUI.glassContainer(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       borderRadius: BorderRadius.circular(16),
-      borderColor: Colors.white.withValues(alpha: 0.05),
+      borderColor: AppTheme.colors.white.withValues(alpha: 0.05),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
             label,
-            style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.w900, color: Colors.white24, letterSpacing: 1),
+            style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.w900, color: AppTheme.colors.white24, letterSpacing: 1),
           ),
           const SizedBox(height: 8),
           Row(
@@ -202,15 +202,15 @@ class _ReviewSubmissionScreenState extends ConsumerState<ReviewSubmissionScreen>
             children: [
               IconButton(
                 onPressed: () => value > 1 ? onChanged(value - 1) : null,
-                icon: const Icon(Icons.remove_rounded, color: Colors.white10, size: 20),
+                icon: const Icon(Icons.remove_rounded, color: AppTheme.colors.white10, size: 20),
               ),
               Text(
                 value.toInt().toString(),
-                style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.w900, color: Colors.white),
+                style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.w900, color: AppTheme.colors.white),
               ),
               IconButton(
                 onPressed: () => value < 5 ? onChanged(value + 1) : null,
-                icon: const Icon(Icons.add_rounded, color: Colors.white10, size: 20),
+                icon: const Icon(Icons.add_rounded, color: AppTheme.colors.white10, size: 20),
               ),
             ],
           ),
@@ -225,20 +225,20 @@ class _ReviewSubmissionScreenState extends ConsumerState<ReviewSubmissionScreen>
       children: [
         Text(
           "FIELD NOTES",
-          style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: 2, color: Colors.white60),
+          style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: 2, color: AppTheme.colors.white60),
         ),
         const SizedBox(height: 16),
         OracleUI.glassContainer(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
           borderRadius: BorderRadius.circular(20),
-          borderColor: Colors.white.withValues(alpha: 0.05),
+          borderColor: AppTheme.colors.white.withValues(alpha: 0.05),
           child: TextField(
             controller: _commentController,
             maxLines: 4,
-            style: const TextStyle(color: Colors.white),
+            style: const TextStyle(color: AppTheme.colors.white),
             decoration: InputDecoration(
               hintText: "What impressed you? Where could they improve?",
-              hintStyle: GoogleFonts.inter(color: Colors.white12, fontSize: 13, height: 1.5),
+              hintStyle: GoogleFonts.inter(color: AppTheme.colors.white12, fontSize: 13, height: 1.5),
               border: InputBorder.none,
             ),
           ),
@@ -255,18 +255,18 @@ class _ReviewSubmissionScreenState extends ConsumerState<ReviewSubmissionScreen>
         onPressed: _isSubmitting ? null : _handleSubmit,
         style: ElevatedButton.styleFrom(
           backgroundColor: Theme.of(context).colorScheme.primary,
-          foregroundColor: Colors.black,
+          foregroundColor: AppTheme.colors.black,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           elevation: 20,
           shadowColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
         ),
         child: _isSubmitting 
-          ? const CircularProgressIndicator(color: Colors.black)
+          ? const CircularProgressIndicator(color: AppTheme.colors.black)
           : Text(
               "TRANSMIT FEEDBACK",
               style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w900, letterSpacing: 2),
             ),
-      ).animate(onPlay: (c) => c.repeat()).shimmer(duration: 3.seconds, color: Colors.white24),
+      ).animate(onPlay: (c) => c.repeat()).shimmer(duration: 3.seconds, color: AppTheme.colors.white24),
     );
   }
 }

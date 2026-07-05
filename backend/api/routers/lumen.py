@@ -8,7 +8,7 @@ from fastapi import APIRouter, HTTPException, Request, Depends
 from pydantic import BaseModel
 from typing import Optional
 from core.database import get_db_connection
-from core.security import get_current_user
+from core.auth import get_current_user
 from core.rate_limit import limiter
 import logging
 import time

@@ -128,7 +128,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     if (mounted) {
       _checkTodayEvents();
     }
-    await Future.delayed(const Duration(milliseconds: 800));
+    // await Future.delayed(const Duration(milliseconds: 800));
   }
 
   Widget _buildFeaturedDestinationCard() {
@@ -156,7 +156,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   memCacheWidth: 600,
                   memCacheHeight: 400,
                   errorWidget: (c, u, e) => Image.asset("assets/images/sigiriya_sunset_bg.jpg", fit: BoxFit.cover),
-                  placeholder: (c, u) => Container(color: Colors.black26),
+                  placeholder: (c, u) => Container(color: AppTheme.colors.black26),
                 ),
               ),
               Positioned.fill(
@@ -166,8 +166,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                       colors: [
-                        Colors.black.withValues(alpha: 0.2),
-                        Colors.black.withValues(alpha: 0.75),
+                        AppTheme.colors.black.withValues(alpha: 0.2),
+                        AppTheme.colors.black.withValues(alpha: 0.75),
                       ],
                     ),
                   ),
@@ -190,7 +190,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           child: Text(
                             "ORACLE'S FEATURED",
                             style: GoogleFonts.outfit(
-                              color: Colors.white,
+                              color: AppTheme.colors.white,
                               fontSize: 9,
                               fontWeight: FontWeight.bold,
                               letterSpacing: 1.5,
@@ -199,12 +199,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         ),
                         Row(
                           children: [
-                            const Icon(Icons.star_rounded, color: Colors.orangeAccent, size: 16),
+                            const Icon(Icons.star_rounded, color: AppTheme.colors.orangeAccent, size: 16),
                             const SizedBox(width: 4),
                             Text(
                               rating.toString(),
                               style: GoogleFonts.inter(
-                                color: Colors.white,
+                                color: AppTheme.colors.white,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 12,
                               ),
@@ -217,7 +217,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     Text(
                       name.toUpperCase(),
                       style: GoogleFonts.outfit(
-                        color: Colors.white,
+                        color: AppTheme.colors.white,
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                         letterSpacing: 0.5,
@@ -228,12 +228,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     const SizedBox(height: 4),
                     Row(
                       children: [
-                        const Icon(Icons.location_on_rounded, color: Colors.white70, size: 14),
+                        const Icon(Icons.location_on_rounded, color: AppTheme.colors.white70, size: 14),
                         const SizedBox(width: 4),
                         Text(
                           district.toUpperCase(),
                           style: GoogleFonts.inter(
-                            color: Colors.white70,
+                            color: AppTheme.colors.white70,
                             fontSize: 11,
                           ),
                         ),
@@ -253,8 +253,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             }
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            foregroundColor: Colors.black,
+                            backgroundColor: AppTheme.colors.white,
+                            foregroundColor: AppTheme.colors.black,
                             elevation: 0,
                             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                             shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(16))),
@@ -294,7 +294,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         _buildQuickActionItem(
           "Plan Trip",
           Icons.edit_calendar_outlined,
-          Colors.teal,
+          AppTheme.colors.teal,
           () {
             Haptics.medium();
             Navigator.push(context, MaterialPageRoute(builder: (context) => const TripFormScreen()));
@@ -303,7 +303,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         _buildQuickActionItem(
           "Find Guide",
           Icons.person_search_outlined,
-          Colors.amber,
+          AppTheme.colors.amber,
           () {
             Haptics.medium();
             Navigator.push(context, MaterialPageRoute(builder: (context) => const MarketplaceResultsScreen()));
@@ -312,7 +312,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         _buildQuickActionItem(
           "Food AI",
           Icons.restaurant_menu_outlined,
-          Colors.orangeAccent,
+          AppTheme.colors.orangeAccent,
           () {
             Haptics.medium();
             Navigator.push(context, MaterialPageRoute(builder: (context) => const SavorLankaScreen()));
@@ -321,7 +321,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         _buildQuickActionItem(
           "AR Portals",
           Icons.view_in_ar_rounded,
-          Colors.indigoAccent,
+          AppTheme.colors.indigoAccent,
           () {
             Haptics.medium();
             Navigator.push(context, MaterialPageRoute(builder: (context) => const ARVideoLibraryScreen()));
@@ -343,11 +343,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             decoration: BoxDecoration(
               color: Theme.of(context).brightness == Brightness.dark
                   ? AppPaletteDark.card
-                  : Colors.white,
+                  : AppTheme.colors.white,
               shape: BoxShape.circle,
               border: Border.all(
                 color: Theme.of(context).brightness == Brightness.dark
-                    ? Colors.white.withValues(alpha: 0.08)
+                    ? AppTheme.colors.white.withValues(alpha: 0.08)
                     : AppPalette.ink.withValues(alpha: 0.1),
                 width: 1.5,
               ),
@@ -580,7 +580,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       expandedHeight: 360,
       pinned: true,
       stretch: true,
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppTheme.colors.transparent,
       elevation: 0,
       flexibleSpace: FlexibleSpaceBar(
         stretchModes: const [StretchMode.zoomBackground, StretchMode.blurBackground],
@@ -602,8 +602,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    Colors.black.withValues(alpha: 0.5),
-                    Colors.transparent,
+                    AppTheme.colors.black.withValues(alpha: 0.5),
+                    AppTheme.colors.transparent,
                     Theme.of(context).scaffoldBackgroundColor.withValues(alpha: 0.8),
                     Theme.of(context).scaffoldBackgroundColor,
                   ],
@@ -623,7 +623,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       style: GoogleFonts.outfit(
                         fontSize: 32,
                         fontWeight: FontWeight.w900,
-                        color: Colors.white,
+                        color: AppTheme.colors.white,
                         letterSpacing: 4,
                       ),
                     ),
@@ -633,7 +633,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       style: GoogleFonts.inter(
                         fontSize: 10,
                         fontWeight: FontWeight.w900,
-                        color: Colors.white.withValues(alpha: 0.6),
+                        color: AppTheme.colors.white.withValues(alpha: 0.6),
                         letterSpacing: 3,
                       ),
                     ),
@@ -710,11 +710,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.cloud_off_rounded, color: Colors.redAccent, size: 14),
+            const Icon(Icons.cloud_off_rounded, color: AppTheme.colors.redAccent, size: 14),
             const SizedBox(width: 6),
             Text(
               "OFFLINE MODE",
-              style: GoogleFonts.outfit(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.redAccent),
+              style: GoogleFonts.outfit(fontSize: 10, fontWeight: FontWeight.bold, color: AppTheme.colors.redAccent),
             ),
           ],
         ),
@@ -835,8 +835,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             begin: Alignment.topCenter,
                             end: Alignment.bottomCenter,
                             colors: [
-                              Colors.black.withValues(alpha: 0.25),
-                              Colors.black.withValues(alpha: 0.65),
+                              AppTheme.colors.black.withValues(alpha: 0.25),
+                              AppTheme.colors.black.withValues(alpha: 0.65),
                             ],
                           ),
                         ),
@@ -848,7 +848,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          Icon(cat.$2, color: Colors.white, size: 22),
+                          Icon(cat.$2, color: AppTheme.colors.white, size: 22),
                           const SizedBox(height: 6),
                           Text(
                             cat.$1.toUpperCase(),
@@ -856,7 +856,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                               fontSize: 13,
                               fontWeight: FontWeight.bold,
                               letterSpacing: 1,
-                              color: Colors.white,
+                              color: AppTheme.colors.white,
                             ),
                           ),
                         ],
@@ -919,7 +919,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
-                  colors: [Colors.transparent, Colors.black.withValues(alpha: 0.8)],
+                  colors: [AppTheme.colors.transparent, AppTheme.colors.black.withValues(alpha: 0.8)],
                 ),
               ),
             ),
@@ -938,17 +938,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           children: [
                             Text(
                               title.toUpperCase(), 
-                              style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.white, letterSpacing: 1)
+                              style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 18, color: AppTheme.colors.white, letterSpacing: 1)
                             ),
                             const SizedBox(height: 4),
-                            Text(desc, style: GoogleFonts.inter(fontSize: 12, color: Colors.white70), maxLines: 1, overflow: TextOverflow.ellipsis),
+                            Text(desc, style: GoogleFonts.inter(fontSize: 12, color: AppTheme.colors.white70), maxLines: 1, overflow: TextOverflow.ellipsis),
                           ],
                         ),
                       ),
                       OracleUI.glassContainer(
                         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                         radius: BorderRadius.circular(12),
-                        child: Text(duration, style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 10)),
+                        child: Text(duration, style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: AppTheme.colors.white, fontSize: 10)),
                       ),
                     ],
                   ),
@@ -981,7 +981,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final double dynamicHeight = (70 * textScaleFactor).clamp(70.0, 110.0);
 
     return BottomAppBar(
-      color: Colors.transparent,
+      color: AppTheme.colors.transparent,
       elevation: 0,
       padding: EdgeInsets.zero,
       notchMargin: 10,
@@ -1080,7 +1080,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Icon(Icons.location_on_rounded, size: 14, color: Theme.of(context).colorScheme.primary),
-                        Text(gem.rating.toString(), style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.orangeAccent)),
+                        Text(gem.rating.toString(), style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.bold, color: AppTheme.colors.orangeAccent)),
                       ],
                     ),
                     const Spacer(),

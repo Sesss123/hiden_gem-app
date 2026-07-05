@@ -41,7 +41,7 @@ class LanguageSelectionScreen extends ConsumerWidget {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     gradient: const LinearGradient(
-                      colors: [Color(0xFFFDEBD8), Color(0xFFECC89A)],
+                      colors: [AppTheme.colors.primary, AppTheme.colors.primary],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                     ),
@@ -196,7 +196,7 @@ class LanguageSelectionScreen extends ConsumerWidget {
 
     // BUG-071: Wrap in Material Card with Clip.antiAlias to prevent container background color from masking the InkWell ripple splash
     return Card(
-      color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF1E2638) : Colors.white,
+      color: Theme.of(context).brightness == Brightness.dark ? const AppTheme.colors.primary : AppTheme.colors.white,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       elevation: 0,
       margin: EdgeInsets.zero,
@@ -228,7 +228,7 @@ class LanguageSelectionScreen extends ConsumerWidget {
                           ? GoogleFonts.notoSansSinhala(
                               fontWeight: FontWeight.w800,
                               fontSize: 16,
-                              color: Colors.black87,
+                              color: AppTheme.colors.black87,
                             )
                           : GoogleFonts.inter(
                               fontWeight: FontWeight.w800,
@@ -244,7 +244,7 @@ class LanguageSelectionScreen extends ConsumerWidget {
                           ? GoogleFonts.notoSansSinhala(
                               fontSize: 12,
                               fontWeight: FontWeight.w500,
-                              color: Colors.black54,
+                              color: AppTheme.colors.black54,
                             )
                           : GoogleFonts.inter(
                               color: AppTheme.textSecondary(context),

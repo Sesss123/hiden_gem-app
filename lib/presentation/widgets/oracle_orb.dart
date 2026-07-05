@@ -118,7 +118,7 @@ class _OracleOrbState extends State<OracleOrb> {
         ),
         child: Icon(
           _isListening ? Icons.graphic_eq_rounded : Icons.auto_awesome_rounded,
-          color: Colors.white,
+          color: AppTheme.colors.white,
           size: 32,
         ),
       )

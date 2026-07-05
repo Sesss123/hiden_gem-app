@@ -19,13 +19,13 @@ class SkeletonLoader extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     
     return Shimmer.fromColors(
-      baseColor: isDark ? Colors.white10 : Colors.grey[300]!,
-      highlightColor: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.grey[100]!,
+      baseColor: isDark ? AppTheme.colors.white10 : AppTheme.colors.grey[300]!,
+      highlightColor: isDark ? AppTheme.colors.white.withValues(alpha: 0.05) : AppTheme.colors.grey[100]!,
       child: Container(
         width: width,
         height: height,
         decoration: BoxDecoration(
-          color: isDark ? Colors.white10 : Colors.white,
+          color: isDark ? AppTheme.colors.white10 : AppTheme.colors.white,
           borderRadius: BorderRadius.circular(borderRadius),
         ),
       ),

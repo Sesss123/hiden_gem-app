@@ -32,9 +32,9 @@ class AiProxyController extends Controller
      */
     public function planItinerary(PlanItineraryRequest $request): \Illuminate\Http\JsonResponse
     {
-        $pythonUrl   = env('PYTHON_BACKEND_URL', 'http://localhost:8000');
-        $internalKey = env('INTERNAL_BRIDGE_KEY', '');
-        $timeout     = (int) env('AI_PLAN_TIMEOUT', 30);
+        $pythonUrl   = config('PYTHON_BACKEND_URL', 'http://localhost:8000');
+        $internalKey = config('INTERNAL_BRIDGE_KEY', '');
+        $timeout     = (int) config('AI_PLAN_TIMEOUT', 30);
 
         // BUG-Q006: Only forward the validated, whitelisted payload.
         $payload = $request->validated();
@@ -88,9 +88,9 @@ class AiProxyController extends Controller
      */
     public function recommendations(RecommendationsRequest $request): \Illuminate\Http\JsonResponse
     {
-        $pythonUrl   = env('PYTHON_BACKEND_URL', 'http://localhost:8000');
-        $internalKey = env('INTERNAL_BRIDGE_KEY', '');
-        $timeout     = (int) env('AI_REC_TIMEOUT', 15);
+        $pythonUrl   = config('PYTHON_BACKEND_URL', 'http://localhost:8000');
+        $internalKey = config('INTERNAL_BRIDGE_KEY', '');
+        $timeout     = (int) config('AI_REC_TIMEOUT', 15);
 
         // BUG-Q006: Only forward the validated, whitelisted payload.
         $payload = $request->validated();

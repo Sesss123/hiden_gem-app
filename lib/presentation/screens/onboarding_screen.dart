@@ -143,7 +143,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           OracleUI.neonText(
             "Discover Hidden Gems",
             style: GoogleFonts.outfit(
-              fontSize: 32, fontWeight: FontWeight.w800, color: Colors.white, height: 1.1,
+              fontSize: 32, fontWeight: FontWeight.w800, color: AppTheme.colors.white, height: 1.1,
             ),
           ),
           const SizedBox(height: 24),
@@ -162,7 +162,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       width: 120,
       padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 12),
       borderRadius: BorderRadius.circular(20),
-      borderColor: Colors.white.withValues(alpha: 0.05),
+      borderColor: AppTheme.colors.white.withValues(alpha: 0.05),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -235,14 +235,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               onPressed: _next,
               style: ElevatedButton.styleFrom(
                 backgroundColor: Theme.of(context).colorScheme.primary,
-                foregroundColor: Colors.black,
+                foregroundColor: AppTheme.colors.black,
                 elevation: 0,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
               ),
               child: OracleUI.neonText(
                 _currentPage == 4 ? "BEGIN JOURNEY 🚀" : (l10n?.continueButton.toUpperCase() ?? "CONTINUE"),
-                style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 14, color: Colors.black, letterSpacing: 1),
-                glowColor: Colors.white24,
+                style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 14, color: AppTheme.colors.black, letterSpacing: 1),
+                glowColor: AppTheme.colors.white24,
               ),
             ),
           ),
@@ -289,12 +289,12 @@ class _OnboardingSlide extends StatelessWidget {
             borderRadius: BorderRadius.circular(50),
             borderColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
             child: Icon(icon, size: 64, color: Theme.of(context).colorScheme.primary),
-          ).animate(onPlay: (c) => c.repeat()).shimmer(duration: 3.seconds, color: Colors.white10),
+          ).animate(onPlay: (c) => c.repeat()).shimmer(duration: 3.seconds, color: AppTheme.colors.white10),
           const SizedBox(height: 60),
           OracleUI.neonText(
             title,
             style: GoogleFonts.outfit(
-              fontSize: 32, fontWeight: FontWeight.w800, color: Colors.white, height: 1.1,
+              fontSize: 32, fontWeight: FontWeight.w800, color: AppTheme.colors.white, height: 1.1,
             ),
           ),
           const SizedBox(height: 24),

@@ -126,7 +126,7 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
       if (!mounted) return;
       setState(() => _isAnalyzing = false);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Oracle lost focus: $e"), backgroundColor: Colors.redAccent),
+        SnackBar(content: Text("Oracle lost focus: $e"), backgroundColor: AppTheme.colors.redAccent),
       );
     }
   }
@@ -141,7 +141,7 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
             Positioned.fill(
               child: _isInit && _controller != null
                 ? CameraPreview(_controller!)
-                : Container(color: Colors.black),
+                : Container(color: AppTheme.colors.black),
             ),
 
             Positioned.fill(
@@ -150,10 +150,10 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
                   gradient: LinearGradient(
                     begin: Alignment.topCenter, end: Alignment.bottomCenter,
                     colors: [
-                      Colors.black.withValues(alpha: 0.8),
-                      Colors.transparent,
-                      Colors.transparent,
-                      Colors.black.withValues(alpha: 0.9),
+                      AppTheme.colors.black.withValues(alpha: 0.8),
+                      AppTheme.colors.transparent,
+                      AppTheme.colors.transparent,
+                      AppTheme.colors.black.withValues(alpha: 0.9),
                     ],
                     stops: const [0.0, 0.2, 0.8, 1.0],
                   ),
@@ -190,7 +190,7 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           IconButton(
-            icon: Icon(Icons.arrow_back_rounded, color: Colors.white.withValues(alpha: 0.9)),
+            icon: Icon(Icons.arrow_back_rounded, color: AppTheme.colors.white.withValues(alpha: 0.9)),
             onPressed: () => Navigator.pop(context),
           ),
           Column(
@@ -198,7 +198,7 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
               OracleUI.neonText(
                 "SAVORLANKA AI",
                 style: GoogleFonts.outfit(
-                  color: Colors.white, fontWeight: FontWeight.w900,
+                  color: AppTheme.colors.white, fontWeight: FontWeight.w900,
                   letterSpacing: 4, fontSize: 13,
                 ),
               ),
@@ -228,12 +228,12 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
         margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         decoration: BoxDecoration(
-          color: Colors.cyanAccent.withValues(alpha: 0.15),
+          color: AppTheme.colors.cyanAccent.withValues(alpha: 0.15),
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: Colors.cyanAccent, width: 1.5),
+          border: Border.all(color: AppTheme.colors.cyanAccent, width: 1.5),
           boxShadow: [
             BoxShadow(
-              color: Colors.cyanAccent.withValues(alpha: 0.2),
+              color: AppTheme.colors.cyanAccent.withValues(alpha: 0.2),
               blurRadius: 12,
               offset: const Offset(0, 4),
             ),
@@ -242,12 +242,12 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.bolt_rounded, color: Colors.cyanAccent, size: 20),
+            const Icon(Icons.bolt_rounded, color: AppTheme.colors.cyanAccent, size: 20),
             const SizedBox(width: 8),
             Text(
               "⚡ LIVE REAL-TIME AI SCANNER (WEBSOCKET)",
               style: GoogleFonts.outfit(
-                color: Colors.cyanAccent,
+                color: AppTheme.colors.cyanAccent,
                 fontWeight: FontWeight.w900,
                 fontSize: 11,
                 letterSpacing: 1.5,
@@ -287,7 +287,7 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
               
               SizedBox(height: 24),
               _buildMetricsDashboard(res),
-              Divider(color: Colors.white.withValues(alpha: 0.05), height: 40),
+              Divider(color: AppTheme.colors.white.withValues(alpha: 0.05), height: 40),
               
               _buildCrossMatchEngine(res),
               SizedBox(height: 24),
@@ -364,7 +364,7 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
                   _buildConfidenceBadge(res.confidence, res.confidenceLabel),
                   OracleUI.neonText(
                     res.name.toUpperCase(),
-                    style: GoogleFonts.outfit(color: Colors.white, fontSize: 28, fontWeight: FontWeight.w900, letterSpacing: 2),
+                    style: GoogleFonts.outfit(color: AppTheme.colors.white, fontSize: 28, fontWeight: FontWeight.w900, letterSpacing: 2),
                   ),
                   SizedBox(height: 8),
                   _buildRegionBadge(res.primaryRegion, res.secondaryInfluences),
@@ -383,7 +383,7 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
         SizedBox(height: 16),
         Text(
           res.description,
-          style: GoogleFonts.inter(color: Colors.white70, fontSize: 14, height: 1.5, fontStyle: FontStyle.italic),
+          style: GoogleFonts.inter(color: AppTheme.colors.white70, fontSize: 14, height: 1.5, fontStyle: FontStyle.italic),
         ),
       ],
     );
@@ -413,7 +413,7 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
           SizedBox(height: 4),
           Text(
             "INFLUENCES: ${influences.join(', ')}",
-            style: GoogleFonts.inter(color: Colors.white38, fontSize: 8, fontWeight: FontWeight.w700),
+            style: GoogleFonts.inter(color: AppTheme.colors.white38, fontSize: 8, fontWeight: FontWeight.w700),
           ),
         ],
       ],
@@ -421,7 +421,7 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
   }
 
   Widget _buildConfidenceBadge(double confidence, String label) {
-    final Color color = confidence > 0.8 ? Colors.greenAccent : (confidence > 0.5 ? Colors.orangeAccent : Colors.redAccent);
+    final Color color = confidence > 0.8 ? AppTheme.colors.greenAccent : (confidence > 0.5 ? AppTheme.colors.orangeAccent : AppTheme.colors.redAccent);
 
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -441,7 +441,7 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
   }
 
   Widget _buildNutritionReliability(String reliability, String reason) {
-    final Color color = reliability == 'High' ? Colors.greenAccent : (reliability == 'Moderate' ? Colors.orangeAccent : Colors.redAccent);
+    final Color color = reliability == 'High' ? AppTheme.colors.greenAccent : (reliability == 'Moderate' ? AppTheme.colors.orangeAccent : AppTheme.colors.redAccent);
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
@@ -458,7 +458,7 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text("NUTRITION RELIABILITY: $reliability", style: GoogleFonts.outfit(color: color, fontSize: 9, fontWeight: FontWeight.w900)),
-                if (reason.isNotEmpty) Text(reason, style: GoogleFonts.inter(color: Colors.white38, fontSize: 8)),
+                if (reason.isNotEmpty) Text(reason, style: GoogleFonts.inter(color: AppTheme.colors.white38, fontSize: 8)),
               ],
             ),
           ),
@@ -488,7 +488,7 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
           SizedBox(height: 12),
           Text(
             basis.isEmpty ? "AI identified visual culinary markers consistent with $label." : basis,
-            style: GoogleFonts.inter(color: Colors.white70, fontSize: 13, height: 1.5),
+            style: GoogleFonts.inter(color: AppTheme.colors.white70, fontSize: 13, height: 1.5),
           ),
         ],
       ),
@@ -519,8 +519,8 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(style.toUpperCase(), style: GoogleFonts.outfit(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w900)),
-                  if (note.isNotEmpty) Text(note, style: GoogleFonts.inter(color: Colors.white38, fontSize: 11, height: 1.4)),
+                  Text(style.toUpperCase(), style: GoogleFonts.outfit(color: AppTheme.colors.white, fontSize: 14, fontWeight: FontWeight.w900)),
+                  if (note.isNotEmpty) Text(note, style: GoogleFonts.inter(color: AppTheme.colors.white38, fontSize: 11, height: 1.4)),
                 ],
               ),
             ),
@@ -546,12 +546,12 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
           ],
         ),
         SizedBox(height: 16),
-        _ingredientTier("CONFIRMED", res.confirmedIngredients, Colors.greenAccent),
+        _ingredientTier("CONFIRMED", res.confirmedIngredients, AppTheme.colors.greenAccent),
         SizedBox(height: 12),
-        _ingredientTier("LIKELY", res.likelyIngredients, Colors.orangeAccent),
+        _ingredientTier("LIKELY", res.likelyIngredients, AppTheme.colors.orangeAccent),
         if (res.optionalIngredients.isNotEmpty) ...[
           SizedBox(height: 12),
-          _ingredientTier("OPTIONAL / SIDES", res.optionalIngredients, Colors.blueAccent),
+          _ingredientTier("OPTIONAL / SIDES", res.optionalIngredients, AppTheme.colors.blueAccent),
         ],
       ],
     );
@@ -562,29 +562,29 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: Colors.black,
-        surfaceTintColor: Colors.transparent,
+        backgroundColor: AppTheme.colors.black,
+        surfaceTintColor: AppTheme.colors.transparent,
         title: Text(
           "MANUAL CULINARY OVERRIDE", 
-          style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 16, letterSpacing: 1)
+          style: GoogleFonts.outfit(color: AppTheme.colors.white, fontWeight: FontWeight.w900, fontSize: 16, letterSpacing: 1)
         ),
         content: TextField(
           controller: controller,
           maxLines: 5,
-          style: GoogleFonts.inter(color: Colors.white70),
+          style: GoogleFonts.inter(color: AppTheme.colors.white70),
           decoration: InputDecoration(
             hintText: "Refine ingredients (comma separated)...",
-            hintStyle: TextStyle(color: Colors.white24),
-            enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white12), borderRadius: BorderRadius.circular(15)),
+            hintStyle: TextStyle(color: AppTheme.colors.white24),
+            enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: AppTheme.colors.white12), borderRadius: BorderRadius.circular(15)),
             focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Theme.of(context).colorScheme.primary), borderRadius: BorderRadius.circular(15)),
             filled: true,
-            fillColor: Colors.white.withValues(alpha: 0.05),
+            fillColor: AppTheme.colors.white.withValues(alpha: 0.05),
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context), 
-            child: Text("CANCEL", style: GoogleFonts.inter(color: Colors.white38, fontWeight: FontWeight.bold))
+            child: Text("CANCEL", style: GoogleFonts.inter(color: AppTheme.colors.white38, fontWeight: FontWeight.bold))
           ),
           ElevatedButton(
             onPressed: () {
@@ -598,7 +598,7 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Theme.of(context).colorScheme.primary,
-              foregroundColor: Colors.black,
+              foregroundColor: AppTheme.colors.black,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
             ),
             child: Text("APPLY OVERRIDE", style: GoogleFonts.outfit(fontWeight: FontWeight.w900)),
@@ -624,7 +624,7 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
               borderRadius: BorderRadius.circular(10),
               border: Border.all(color: color.withValues(alpha: 0.1)),
             ),
-            child: Text(item, style: GoogleFonts.inter(color: Colors.white70, fontSize: 11)),
+            child: Text(item, style: GoogleFonts.inter(color: AppTheme.colors.white70, fontSize: 11)),
           )).toList(),
         ),
       ],
@@ -635,25 +635,25 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
     return Container(
       padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.03),
+        color: AppTheme.colors.white.withValues(alpha: 0.03),
         borderRadius: BorderRadius.circular(25),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+        border: Border.all(color: AppTheme.colors.white.withValues(alpha: 0.05)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(Icons.layers_rounded, color: Colors.blueAccent, size: 18),
+              Icon(Icons.layers_rounded, color: AppTheme.colors.blueAccent, size: 18),
               SizedBox(width: 10),
-              Text("MEAL CONTEXT: $context", style: GoogleFonts.outfit(color: Colors.blueAccent, fontSize: 11, fontWeight: FontWeight.w900)),
+              Text("MEAL CONTEXT: $context", style: GoogleFonts.outfit(color: AppTheme.colors.blueAccent, fontSize: 11, fontWeight: FontWeight.w900)),
             ],
           ),
           if (supporting.isNotEmpty) ...[
             SizedBox(height: 12),
-            Text("SUPPORTING ELEMENTS:", style: GoogleFonts.inter(color: Colors.white38, fontSize: 9, fontWeight: FontWeight.w900)),
+            Text("SUPPORTING ELEMENTS:", style: GoogleFonts.inter(color: AppTheme.colors.white38, fontSize: 9, fontWeight: FontWeight.w900)),
             SizedBox(height: 8),
-            Text(supporting.join(" • "), style: GoogleFonts.inter(color: Colors.white70, fontSize: 12)),
+            Text(supporting.join(" • "), style: GoogleFonts.inter(color: AppTheme.colors.white70, fontSize: 12)),
           ],
         ],
       ),
@@ -661,7 +661,7 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
   }
 
   Widget _buildFreshnessQualityLayer(FoodModel res) {
-    final Color color = res.freshnessIndex > 80 ? Colors.greenAccent : (res.freshnessIndex > 50 ? Colors.orangeAccent : Colors.redAccent);
+    final Color color = res.freshnessIndex > 80 ? AppTheme.colors.greenAccent : (res.freshnessIndex > 50 ? AppTheme.colors.orangeAccent : AppTheme.colors.redAccent);
     return Container(
       padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -702,7 +702,7 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
             borderRadius: BorderRadius.circular(10),
             child: LinearProgressIndicator(
               value: res.freshnessIndex / 100,
-              backgroundColor: Colors.white.withValues(alpha: 0.05),
+              backgroundColor: AppTheme.colors.white.withValues(alpha: 0.05),
               valueColor: AlwaysStoppedAnimation(color),
               minHeight: 6,
             ),
@@ -711,7 +711,7 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
             SizedBox(height: 16),
             Text(
               res.freshnessNote,
-              style: GoogleFonts.inter(color: Colors.white.withValues(alpha: 0.7), fontSize: 13, height: 1.5, fontStyle: FontStyle.italic),
+              style: GoogleFonts.inter(color: AppTheme.colors.white.withValues(alpha: 0.7), fontSize: 13, height: 1.5, fontStyle: FontStyle.italic),
             ),
           ],
         ],
@@ -723,11 +723,11 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.03),
+        color: AppTheme.colors.white.withValues(alpha: 0.03),
         borderRadius: BorderRadius.circular(10),
         border: Border.all(color: color.withValues(alpha: 0.1)),
       ),
-      child: Text(label.toUpperCase(), style: GoogleFonts.outfit(color: Colors.white38, fontSize: 9, fontWeight: FontWeight.w900)),
+      child: Text(label.toUpperCase(), style: GoogleFonts.outfit(color: AppTheme.colors.white38, fontSize: 9, fontWeight: FontWeight.w900)),
     );
   }
 
@@ -744,11 +744,11 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
         ),
         SizedBox(height: 20),
         if (res.verifiedHeritage.isNotEmpty)
-          _buildHeritageSection("VERIFIED LEGACY", res.verifiedHeritage, Icons.verified_user_rounded, Colors.blueAccent),
+          _buildHeritageSection("VERIFIED LEGACY", res.verifiedHeritage, Icons.verified_user_rounded, AppTheme.colors.blueAccent),
         if (res.regionalTradition.isNotEmpty)
-          _buildHeritageSection("REGIONAL TRADITION", res.regionalTradition, Icons.place_rounded, Colors.greenAccent),
+          _buildHeritageSection("REGIONAL TRADITION", res.regionalTradition, Icons.place_rounded, AppTheme.colors.greenAccent),
         if (res.folkloreNarrative.isNotEmpty)
-          _buildHeritageSection("FOLKLORE NARRATIVE", res.folkloreNarrative, Icons.auto_stories_rounded, Colors.purpleAccent),
+          _buildHeritageSection("FOLKLORE NARRATIVE", res.folkloreNarrative, Icons.auto_stories_rounded, AppTheme.colors.purpleAccent),
       ],
     );
   }
@@ -775,7 +775,7 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
           SizedBox(height: 12),
           Text(
             content,
-            style: GoogleFonts.inter(color: Colors.white.withValues(alpha: 0.8), fontSize: 13, height: 1.6),
+            style: GoogleFonts.inter(color: AppTheme.colors.white.withValues(alpha: 0.8), fontSize: 13, height: 1.6),
           ),
         ],
       ),
@@ -786,36 +786,36 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
     return Container(
       padding: EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: Colors.cyanAccent.withValues(alpha: 0.05),
+        color: AppTheme.colors.cyanAccent.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(30),
-        border: Border.all(color: Colors.cyanAccent.withValues(alpha: 0.1)),
+        border: Border.all(color: AppTheme.colors.cyanAccent.withValues(alpha: 0.1)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(Icons.extension_rounded, color: Colors.cyanAccent, size: 20),
+              Icon(Icons.extension_rounded, color: AppTheme.colors.cyanAccent, size: 20),
               SizedBox(width: 12),
-              OracleUI.neonText("CULINARY GAP & PAIRING ENGINE", style: GoogleFonts.outfit(color: Colors.cyanAccent, fontSize: 11, fontWeight: FontWeight.w900, letterSpacing: 3)),
+              OracleUI.neonText("CULINARY GAP & PAIRING ENGINE", style: GoogleFonts.outfit(color: AppTheme.colors.cyanAccent, fontSize: 11, fontWeight: FontWeight.w900, letterSpacing: 3)),
             ],
           ),
           SizedBox(height: 20),
-          Text("MISSING COMPANIONS:", style: GoogleFonts.inter(color: Colors.white38, fontSize: 9, fontWeight: FontWeight.w900)),
+          Text("MISSING COMPANIONS:", style: GoogleFonts.inter(color: AppTheme.colors.white38, fontSize: 9, fontWeight: FontWeight.w900)),
           SizedBox(height: 8),
           Wrap(
             spacing: 8, runSpacing: 8,
             children: res.missingCompanions.map((e) => Container(
               padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              decoration: BoxDecoration(color: Colors.redAccent.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(10)),
-              child: Text(e, style: GoogleFonts.inter(color: Colors.redAccent, fontSize: 11, fontWeight: FontWeight.bold)),
+              decoration: BoxDecoration(color: AppTheme.colors.redAccent.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(10)),
+              child: Text(e, style: GoogleFonts.inter(color: AppTheme.colors.redAccent, fontSize: 11, fontWeight: FontWeight.bold)),
             )).toList(),
           ),
           if (res.pairingNotes.isNotEmpty) ...[
             SizedBox(height: 20),
-            Text("ENGINE NOTES:", style: GoogleFonts.inter(color: Colors.white38, fontSize: 9, fontWeight: FontWeight.w900)),
+            Text("ENGINE NOTES:", style: GoogleFonts.inter(color: AppTheme.colors.white38, fontSize: 9, fontWeight: FontWeight.w900)),
             SizedBox(height: 8),
-            Text(res.pairingNotes, style: GoogleFonts.inter(color: Colors.white.withValues(alpha: 0.9), fontSize: 13, height: 1.5)),
+            Text(res.pairingNotes, style: GoogleFonts.inter(color: AppTheme.colors.white.withValues(alpha: 0.9), fontSize: 13, height: 1.5)),
           ],
         ],
       ),
@@ -827,34 +827,34 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
       padding: EdgeInsets.all(24),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [Colors.orangeAccent.withValues(alpha: 0.1), Colors.transparent],
+          colors: [AppTheme.colors.orangeAccent.withValues(alpha: 0.1), AppTheme.colors.transparent],
           begin: Alignment.topLeft, end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(30),
-        border: Border.all(color: Colors.orangeAccent.withValues(alpha: 0.2)),
+        border: Border.all(color: AppTheme.colors.orangeAccent.withValues(alpha: 0.2)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(Icons.settings_suggest_rounded, color: Colors.orangeAccent, size: 22),
+              Icon(Icons.settings_suggest_rounded, color: AppTheme.colors.orangeAccent, size: 22),
               SizedBox(width: 12),
-              OracleUI.neonText("RECIPE REFACTOR ENGINE", style: GoogleFonts.outfit(color: Colors.orangeAccent, fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: 3)),
+              OracleUI.neonText("RECIPE REFACTOR ENGINE", style: GoogleFonts.outfit(color: AppTheme.colors.orangeAccent, fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: 3)),
             ],
           ),
           SizedBox(height: 16),
           Container(
             padding: EdgeInsets.all(12),
-            decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.03), borderRadius: BorderRadius.circular(15)),
+            decoration: BoxDecoration(color: AppTheme.colors.white.withValues(alpha: 0.03), borderRadius: BorderRadius.circular(15)),
             child: Row(
               children: [
-                Icon(Icons.person_outline_rounded, color: Colors.white38, size: 16),
+                Icon(Icons.person_outline_rounded, color: AppTheme.colors.white38, size: 16),
                 SizedBox(width: 10),
                 Expanded(
                   child: Text(
                     res.spiceRefactorAdvice,
-                    style: GoogleFonts.inter(color: Colors.orangeAccent, fontSize: 12, fontWeight: FontWeight.w600, height: 1.4),
+                    style: GoogleFonts.inter(color: AppTheme.colors.orangeAccent, fontSize: 12, fontWeight: FontWeight.w600, height: 1.4),
                   ),
                 ),
               ],
@@ -862,16 +862,16 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
           ),
           if (res.personalizedSteps.isNotEmpty) ...[
             SizedBox(height: 20),
-            Text("REFACTORED STEPS FOR YOU:", style: GoogleFonts.inter(color: Colors.white38, fontSize: 9, fontWeight: FontWeight.w900)),
+            Text("REFACTORED STEPS FOR YOU:", style: GoogleFonts.inter(color: AppTheme.colors.white38, fontSize: 9, fontWeight: FontWeight.w900)),
             SizedBox(height: 12),
             ...res.personalizedSteps.map((step) => Padding(
               padding: const EdgeInsets.only(bottom: 12),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("•", style: TextStyle(color: Colors.orangeAccent, fontSize: 18)),
+                  Text("•", style: TextStyle(color: AppTheme.colors.orangeAccent, fontSize: 18)),
                   SizedBox(width: 12),
-                  Expanded(child: Text(step, style: GoogleFonts.inter(color: Colors.white70, fontSize: 13, height: 1.5))),
+                  Expanded(child: Text(step, style: GoogleFonts.inter(color: AppTheme.colors.white70, fontSize: 13, height: 1.5))),
                 ],
               ),
             )),
@@ -899,8 +899,8 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
         children: [
           Icon(icon, color: Theme.of(context).colorScheme.primary, size: 20),
           SizedBox(height: 6),
-          Text(value, style: GoogleFonts.outfit(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold)),
-          Text(label, style: GoogleFonts.inter(color: Colors.white38, fontSize: 8, fontWeight: FontWeight.w900, letterSpacing: 1)),
+          Text(value, style: GoogleFonts.outfit(color: AppTheme.colors.white, fontSize: 13, fontWeight: FontWeight.bold)),
+          Text(label, style: GoogleFonts.inter(color: AppTheme.colors.white38, fontSize: 8, fontWeight: FontWeight.w900, letterSpacing: 1)),
         ],
       ),
     );
@@ -928,14 +928,14 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
       margin: EdgeInsets.symmetric(horizontal: 4),
       padding: EdgeInsets.symmetric(vertical: 12),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.03),
+        color: AppTheme.colors.white.withValues(alpha: 0.03),
         borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+        border: Border.all(color: AppTheme.colors.white.withValues(alpha: 0.05)),
       ),
       child: Column(
         children: [
-          Text(value, style: GoogleFonts.outfit(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
-          Text(label.toUpperCase(), style: GoogleFonts.inter(color: Colors.white38, fontSize: 7, fontWeight: FontWeight.w900)),
+          Text(value, style: GoogleFonts.outfit(color: AppTheme.colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
+          Text(label.toUpperCase(), style: GoogleFonts.inter(color: AppTheme.colors.white38, fontSize: 7, fontWeight: FontWeight.w900)),
         ],
       ),
     );
@@ -948,7 +948,7 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text("HEALTH RATING", style: GoogleFonts.outfit(color: Colors.white38, fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 1)),
+            Text("HEALTH RATING", style: GoogleFonts.outfit(color: AppTheme.colors.white38, fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 1)),
             Text("$rating/10", style: GoogleFonts.outfit(color: Theme.of(context).colorScheme.primary, fontSize: 14, fontWeight: FontWeight.w900)),
           ],
         ),
@@ -957,7 +957,7 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
           borderRadius: BorderRadius.circular(5),
           child: LinearProgressIndicator(
             value: rating / 10,
-            backgroundColor: Colors.white.withValues(alpha: 0.05),
+            backgroundColor: AppTheme.colors.white.withValues(alpha: 0.05),
             valueColor: AlwaysStoppedAnimation(Theme.of(context).colorScheme.primary),
             minHeight: 6,
           ),
@@ -988,7 +988,7 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
                   border: Border.all(
                     color: isCurrent 
                       ? Theme.of(context).colorScheme.primary 
-                      : Colors.white.withValues(alpha: 0.05),
+                      : AppTheme.colors.white.withValues(alpha: 0.05),
                     width: isCurrent ? 2 : 1,
                   ),
                   boxShadow: isCurrent ? [
@@ -1011,7 +1011,7 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
                         child: Text(
                           entry.value,
                           style: GoogleFonts.inter(
-                            color: isCurrent ? Colors.white : Colors.white70, 
+                            color: isCurrent ? AppTheme.colors.white : AppTheme.colors.white70, 
                             fontSize: 13, 
                             height: 1.5,
                             fontWeight: isCurrent ? FontWeight.bold : FontWeight.normal,
@@ -1043,7 +1043,7 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
         child: Text(
           "$step", 
           style: GoogleFonts.outfit(
-            color: isCurrent ? Colors.black : Theme.of(context).colorScheme.primary, 
+            color: isCurrent ? AppTheme.colors.black : Theme.of(context).colorScheme.primary, 
             fontSize: 12, 
             fontWeight: FontWeight.w900
           )
@@ -1097,12 +1097,12 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(15),
                   gradient: LinearGradient(
-                    colors: [Colors.tealAccent.withValues(alpha: 0.05), Colors.tealAccent.withValues(alpha: 0.1)],
+                    colors: [AppTheme.colors.tealAccent.withValues(alpha: 0.05), AppTheme.colors.tealAccent.withValues(alpha: 0.1)],
                   ),
-                  border: Border.all(color: Colors.tealAccent.withValues(alpha: 0.1)),
+                  border: Border.all(color: AppTheme.colors.tealAccent.withValues(alpha: 0.1)),
                 ),
                 child: Center(
-                  child: Text(subs[idx], style: GoogleFonts.outfit(color: Colors.tealAccent, fontSize: 13, fontWeight: FontWeight.bold)),
+                  child: Text(subs[idx], style: GoogleFonts.outfit(color: AppTheme.colors.tealAccent, fontSize: 13, fontWeight: FontWeight.bold)),
                 ),
               );
             },
@@ -1119,11 +1119,11 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
       children: badges.map((badge) => Container(
         padding: EdgeInsets.symmetric(horizontal: 14, vertical: 6),
         decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.1),
+          color: AppTheme.colors.white.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(30),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+          border: Border.all(color: AppTheme.colors.white.withValues(alpha: 0.1)),
         ),
-        child: Text(badge, style: GoogleFonts.inter(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w600)),
+        child: Text(badge, style: GoogleFonts.inter(color: AppTheme.colors.white, fontSize: 11, fontWeight: FontWeight.w600)),
       )).toList(),
     );
   }
@@ -1139,7 +1139,7 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
           margin: EdgeInsets.symmetric(horizontal: 24),
           padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
           decoration: BoxDecoration(
-            color: Colors.black.withValues(alpha: 0.9),
+            color: AppTheme.colors.black.withValues(alpha: 0.9),
             borderRadius: BorderRadius.circular(30),
             border: Border.all(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.4)),
             boxShadow: [
@@ -1183,7 +1183,7 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
                   ),
                   child: Icon(
                     isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
-                    color: Colors.black,
+                    color: AppTheme.colors.black,
                     size: 32,
                   ),
                 ),
@@ -1224,14 +1224,14 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
           children: [
             Icon(
               icon, 
-              color: isActive ? Theme.of(context).colorScheme.primary : Colors.white70, 
+              color: isActive ? Theme.of(context).colorScheme.primary : AppTheme.colors.white70, 
               size: 20
             ),
             const SizedBox(height: 4),
             Text(
               label, 
               style: GoogleFonts.outfit(
-                color: isActive ? Theme.of(context).colorScheme.primary : Colors.white38, 
+                color: isActive ? Theme.of(context).colorScheme.primary : AppTheme.colors.white38, 
                 fontSize: 8, 
                 fontWeight: FontWeight.w900, 
                 letterSpacing: 1
@@ -1253,7 +1253,7 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
   Widget _buildAIInformationDisclaimer() {
     return Text(
       "AI-estimated values. Traditional variations may differ.",
-      style: GoogleFonts.inter(color: Colors.white24, fontSize: 10, fontStyle: FontStyle.italic),
+      style: GoogleFonts.inter(color: AppTheme.colors.white24, fontSize: 10, fontStyle: FontStyle.italic),
     );
   }
 
@@ -1272,12 +1272,12 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
         duration: const Duration(milliseconds: 300),
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
-          color: _isSaved ? Theme.of(context).colorScheme.primary : Colors.white.withValues(alpha: 0.1),
+          color: _isSaved ? Theme.of(context).colorScheme.primary : AppTheme.colors.white.withValues(alpha: 0.1),
           shape: BoxShape.circle,
         ),
         child: Icon(
           _isSaved ? Icons.bookmark_rounded : Icons.bookmark_add_outlined,
-          color: _isSaved ? Colors.black : Colors.white,
+          color: _isSaved ? AppTheme.colors.black : AppTheme.colors.white,
           size: 20,
         ),
       ),
@@ -1298,11 +1298,11 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
           child: Container(
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: Colors.white,
+              color: AppTheme.colors.white,
             ),
             child: _isAnalyzing 
-              ? Center(child: CircularProgressIndicator(color: Colors.black, strokeWidth: 3))
-              : Icon(Icons.restaurant_rounded, color: Colors.black, size: 36),
+              ? Center(child: CircularProgressIndicator(color: AppTheme.colors.black, strokeWidth: 3))
+              : Icon(Icons.restaurant_rounded, color: AppTheme.colors.black, size: 36),
           ),
         ),
       ),
@@ -1320,16 +1320,16 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
         Container(
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: Colors.deepPurpleAccent.withValues(alpha: 0.05),
+            color: AppTheme.colors.deepPurpleAccent.withValues(alpha: 0.05),
             borderRadius: BorderRadius.circular(25),
-            border: Border.all(color: Colors.deepPurpleAccent.withValues(alpha: 0.1)),
+            border: Border.all(color: AppTheme.colors.deepPurpleAccent.withValues(alpha: 0.1)),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 "VISUALLY SIMILAR ALTERNATIVES",
-                style: GoogleFonts.inter(color: Colors.deepPurpleAccent, fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 1),
+                style: GoogleFonts.inter(color: AppTheme.colors.deepPurpleAccent, fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 1),
               ),
               const SizedBox(height: 12),
               Wrap(
@@ -1337,22 +1337,22 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
                 children: res.alternateMatches.map((m) => Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.05),
+                    color: AppTheme.colors.white.withValues(alpha: 0.05),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Text(m, style: GoogleFonts.inter(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.w600)),
+                  child: Text(m, style: GoogleFonts.inter(color: AppTheme.colors.white70, fontSize: 12, fontWeight: FontWeight.w600)),
                 )).toList(),
               ),
               if (res.substitutionReasoning.isNotEmpty) ...[
                 const SizedBox(height: 20),
                 Text(
                   "AI CROSS-MATCH REASONING:",
-                  style: GoogleFonts.inter(color: Colors.white38, fontSize: 9, fontWeight: FontWeight.w900),
+                  style: GoogleFonts.inter(color: AppTheme.colors.white38, fontSize: 9, fontWeight: FontWeight.w900),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   res.substitutionReasoning,
-                  style: GoogleFonts.inter(color: Colors.white70, fontSize: 13, height: 1.5, fontStyle: FontStyle.italic),
+                  style: GoogleFonts.inter(color: AppTheme.colors.white70, fontSize: 13, height: 1.5, fontStyle: FontStyle.italic),
                 ),
               ],
             ],
@@ -1363,7 +1363,7 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
   }
 
   Widget _buildHygieneIntegrityLayer(FoodModel res) {
-    final Color color = res.hygieneScore > 90 ? Colors.cyanAccent : (res.hygieneScore > 70 ? Colors.orangeAccent : Colors.redAccent);
+    final Color color = res.hygieneScore > 90 ? AppTheme.colors.cyanAccent : (res.hygieneScore > 70 ? AppTheme.colors.orangeAccent : AppTheme.colors.redAccent);
     
     return Container(
       padding: const EdgeInsets.all(20),
@@ -1388,17 +1388,17 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
           if (res.presentationAnalysis.isNotEmpty)
             Text(
               res.presentationAnalysis,
-              style: GoogleFonts.inter(color: Colors.white70, fontSize: 12, height: 1.5),
+              style: GoogleFonts.inter(color: AppTheme.colors.white70, fontSize: 12, height: 1.5),
             ),
           const SizedBox(height: 12),
           Row(
             children: [
               Expanded(
-                child: _buildPresentationMiniMetric("PRESENTATION", res.presentationScore, Colors.blueAccent),
+                child: _buildPresentationMiniMetric("PRESENTATION", res.presentationScore, AppTheme.colors.blueAccent),
               ),
               const SizedBox(width: 8),
               Expanded(
-                child: _buildPresentationMiniMetric("INTEGRITY", res.hygieneScore, Colors.greenAccent),
+                child: _buildPresentationMiniMetric("INTEGRITY", res.hygieneScore, AppTheme.colors.greenAccent),
               ),
             ],
           ),
@@ -1411,12 +1411,12 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.03),
+        color: AppTheme.colors.white.withValues(alpha: 0.03),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
         children: [
-          Text(label, style: GoogleFonts.inter(color: Colors.white24, fontSize: 7, fontWeight: FontWeight.w900)),
+          Text(label, style: GoogleFonts.inter(color: AppTheme.colors.white24, fontSize: 7, fontWeight: FontWeight.w900)),
           const SizedBox(height: 4),
           Text("$score%", style: GoogleFonts.outfit(color: color, fontSize: 14, fontWeight: FontWeight.w900)),
         ],
@@ -1433,7 +1433,7 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
           child: _buildAssistantAction(
             label: _isSaved ? "SAVED" : "SAVE TO COOKBOOK",
             icon: _isSaved ? Icons.bookmark_rounded : Icons.bookmark_border_rounded,
-            color: _isSaved ? Color(0xFFD4AF37) : Colors.white24,
+            color: _isSaved ? AppTheme.colors.primary : AppTheme.colors.white24,
             onTap: _toggleSave,
           ),
         ),
@@ -1442,7 +1442,7 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
           child: _buildAssistantAction(
             label: "VOICE GUIDE",
             icon: Icons.graphic_eq_rounded,
-            color: Colors.blueAccent,
+            color: AppTheme.colors.blueAccent,
             onTap: () => _voiceRecipeService.startCooking(res),
           ),
         ),
@@ -1450,7 +1450,7 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
         _buildAssistantAction(
           label: "",
           icon: Icons.share_rounded,
-          color: Colors.white10,
+          color: AppTheme.colors.white10,
           onTap: () {
             SharePlus.instance.share(
               ShareParams(
@@ -1477,10 +1477,10 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, color: color == Colors.white24 ? Colors.white : color, size: 20),
+            Icon(icon, color: color == AppTheme.colors.white24 ? AppTheme.colors.white : color, size: 20),
             if (label.isNotEmpty) ...[
               SizedBox(width: 12),
-              Text(label, style: GoogleFonts.outfit(color: color == Colors.white24 ? Colors.white : color, fontSize: 12, fontWeight: FontWeight.w900)),
+              Text(label, style: GoogleFonts.outfit(color: color == AppTheme.colors.white24 ? AppTheme.colors.white : color, fontSize: 12, fontWeight: FontWeight.w900)),
             ],
           ],
         ),
@@ -1502,7 +1502,7 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
   Widget _buildScanningAnimation() {
     return Positioned.fill(
       child: Container(
-        color: Colors.black26,
+        color: AppTheme.colors.black26,
         child: _SavorScannerOverlay(),
       ),
     );
@@ -1545,11 +1545,11 @@ class _SavorScannerOverlayState extends State<_SavorScannerOverlay> with SingleT
                   gradient: LinearGradient(
                     begin: Alignment.topCenter, end: Alignment.bottomCenter,
                     colors: [
-                      Colors.transparent,
+                      AppTheme.colors.transparent,
                       Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
                       Theme.of(context).colorScheme.primary,
                       Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
-                      Colors.transparent,
+                      AppTheme.colors.transparent,
                     ],
                   ),
                 ),

@@ -266,7 +266,7 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
   void _showDiscoveryFilterModal() {
     showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppTheme.colors.transparent,
       isScrollControlled: true,
       builder: (context) => StatefulBuilder(
         builder: (context, setModalState) {
@@ -275,7 +275,7 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
           return Container(
             height: MediaQuery.of(context).size.height * 0.7,
             decoration: BoxDecoration(
-              color: isDark ? const Color(0xFF0F172A).withValues(alpha: 0.95) : Colors.white.withValues(alpha: 0.95),
+              color: isDark ? const AppTheme.colors.primary.withValues(alpha: 0.95) : AppTheme.colors.white.withValues(alpha: 0.95),
               borderRadius: const BorderRadius.vertical(top: Radius.circular(40)),
               border: Border.all(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2)),
             ),
@@ -354,12 +354,12 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
                           decoration: BoxDecoration(
                             color: isSelected
                                 ? primary.withValues(alpha: 0.15)
-                                : Colors.white.withValues(alpha: 0.06),
+                                : AppTheme.colors.white.withValues(alpha: 0.06),
                             borderRadius: BorderRadius.circular(30),
                             border: Border.all(
                               color: isSelected
                                   ? primary.withValues(alpha: 0.6)
-                                  : Colors.white.withValues(alpha: 0.15),
+                                  : AppTheme.colors.white.withValues(alpha: 0.15),
                               width: 1,
                             ),
                           ),
@@ -429,7 +429,7 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
                       ),
                       child: Text(
                         "REVEAL DESTINIES",
-                        style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold, letterSpacing: 2),
+                        style: GoogleFonts.outfit(color: AppTheme.colors.white, fontWeight: FontWeight.bold, letterSpacing: 2),
                       ),
                     ),
                   ),
@@ -479,7 +479,7 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
       SnackBar(
         content: const Row(
           children: [
-            Icon(Icons.auto_awesome, color: Colors.amberAccent, size: 20),
+            Icon(Icons.auto_awesome, color: AppTheme.colors.amberAccent, size: 20),
             SizedBox(width: 10),
             Expanded(child: Text("✨ AI Oracle Recommendations & Vibe Search — Coming Soon!")),
           ],
@@ -639,7 +639,7 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    Colors.black.withValues(alpha: 0.4),
+                    AppTheme.colors.black.withValues(alpha: 0.4),
                     Theme.of(context).scaffoldBackgroundColor.withValues(alpha: 0.8),
                     Theme.of(context).scaffoldBackgroundColor,
                   ],
@@ -656,10 +656,10 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
                     l10n.discoveryHeader,
                     style: GoogleFonts.outfit(
                       fontSize: 32,
-                      color: Colors.white,
+                      color: AppTheme.colors.white,
                       fontWeight: FontWeight.bold,
                       shadows: [
-                        Shadow(color: Colors.black38, offset: Offset(0, 2), blurRadius: 4)
+                        Shadow(color: AppTheme.colors.black38, offset: Offset(0, 2), blurRadius: 4)
                       ],
                     ),
                   ),
@@ -833,14 +833,14 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
                               memCacheWidth: 600,
                               memCacheHeight: 400,
                               placeholder: (context, url) => Shimmer.fromColors(
-                                baseColor: Colors.white.withValues(alpha: 0.05),
-                                highlightColor: Colors.white.withValues(alpha: 0.15),
-                                child: Container(color: Colors.white),
+                                baseColor: AppTheme.colors.white.withValues(alpha: 0.05),
+                                highlightColor: AppTheme.colors.white.withValues(alpha: 0.15),
+                                child: Container(color: AppTheme.colors.white),
                               ),
                               errorWidget: (context, url, error) => Container(
-                                color: Colors.black12,
+                                color: AppTheme.colors.black12,
                                 child: const Center(
-                                  child: Icon(Icons.broken_image_outlined, color: Colors.white24, size: 32),
+                                  child: Icon(Icons.broken_image_outlined, color: AppTheme.colors.white24, size: 32),
                                 ),
                               ),
                             ),
@@ -1037,14 +1037,14 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
                                   memCacheWidth: 600,
                                   memCacheHeight: 400,
                                   placeholder: (context, url) => Shimmer.fromColors(
-                                    baseColor: Colors.white.withValues(alpha: 0.05),
-                                    highlightColor: Colors.white.withValues(alpha: 0.15),
-                                    child: Container(color: Colors.white),
+                                    baseColor: AppTheme.colors.white.withValues(alpha: 0.05),
+                                    highlightColor: AppTheme.colors.white.withValues(alpha: 0.15),
+                                    child: Container(color: AppTheme.colors.white),
                                   ),
                                   errorWidget: (context, url, error) => Container(
-                                    color: Colors.black12,
+                                    color: AppTheme.colors.black12,
                                     child: const Center(
-                                      child: Icon(Icons.broken_image_outlined, color: Colors.white24, size: 32),
+                                      child: Icon(Icons.broken_image_outlined, color: AppTheme.colors.white24, size: 32),
                                     ),
                                   ),
                                 ),
@@ -1058,8 +1058,8 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
                                     begin: Alignment.topCenter,
                                     end: Alignment.bottomCenter,
                                     colors: [
-                                      Colors.black.withValues(alpha: 0.1),
-                                      Colors.black.withValues(alpha: 0.4),
+                                      AppTheme.colors.black.withValues(alpha: 0.1),
+                                      AppTheme.colors.black.withValues(alpha: 0.4),
                                     ],
                                   ),
                                 ),
@@ -1080,7 +1080,7 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
                                       const SizedBox(width: 6),
                                       Text(
                                         "AR",
-                                        style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 10, letterSpacing: 1),
+                                        style: GoogleFonts.outfit(color: AppTheme.colors.white, fontWeight: FontWeight.bold, fontSize: 10, letterSpacing: 1),
                                       ),
                                     ],
                                   ),
@@ -1092,17 +1092,17 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
                               child: Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                                 decoration: BoxDecoration(
-                                  color: Colors.black54,
+                                  color: AppTheme.colors.black54,
                                   borderRadius: BorderRadius.circular(10),
                                 ),
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    const Icon(Icons.star_rounded, color: Colors.orangeAccent, size: 12),
+                                    const Icon(Icons.star_rounded, color: AppTheme.colors.orangeAccent, size: 12),
                                     const SizedBox(width: 4),
                                     Text(
                                       place.rating.toString(),
-                                      style: GoogleFonts.inter(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 10),
+                                      style: GoogleFonts.inter(color: AppTheme.colors.white, fontWeight: FontWeight.bold, fontSize: 10),
                                     ),
                                   ],
                                 ),
@@ -1230,14 +1230,14 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
                         memCacheWidth: 600,
                         memCacheHeight: 400,
                         placeholder: (context, url) => Shimmer.fromColors(
-                          baseColor: Colors.white.withValues(alpha: 0.05),
-                          highlightColor: Colors.white.withValues(alpha: 0.15),
-                          child: Container(color: Colors.white),
+                          baseColor: AppTheme.colors.white.withValues(alpha: 0.05),
+                          highlightColor: AppTheme.colors.white.withValues(alpha: 0.15),
+                          child: Container(color: AppTheme.colors.white),
                         ),
                         errorWidget: (context, url, error) => Container(
-                          color: Colors.black12,
+                          color: AppTheme.colors.black12,
                           child: const Center(
-                            child: Icon(Icons.broken_image_outlined, color: Colors.white24, size: 32),
+                            child: Icon(Icons.broken_image_outlined, color: AppTheme.colors.white24, size: 32),
                           ),
                         ),
                       ),
@@ -1249,13 +1249,13 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
-                        color: Colors.black87,
+                        color: AppTheme.colors.black87,
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
                         L10nUtils.getLocalizedCategory(context, place.category).toUpperCase(),
                         style: GoogleFonts.outfit(
-                          color: Colors.white,
+                          color: AppTheme.colors.white,
                           fontSize: 8,
                           fontWeight: FontWeight.bold,
                           letterSpacing: 0.5,
@@ -1293,7 +1293,7 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
                           Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Icon(Icons.star_rounded, color: Colors.orangeAccent, size: 14),
+                              const Icon(Icons.star_rounded, color: AppTheme.colors.orangeAccent, size: 14),
                               const SizedBox(width: 2),
                               Text(
                                 place.rating.toString(),

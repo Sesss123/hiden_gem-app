@@ -122,15 +122,15 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
   void _showPhotoPicker(String type) {
     showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppTheme.colors.transparent,
       builder: (context) => Container(
         margin: const EdgeInsets.all(16),
         padding: const EdgeInsets.symmetric(vertical: 24),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppTheme.colors.white,
           borderRadius: BorderRadius.circular(24),
           border: Border.all(color: AppTheme.secondaryBorder(context)),
-          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4))],
+          boxShadow: [BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4))],
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -342,15 +342,15 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
             width: 300,
             padding: const EdgeInsets.all(32),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: AppTheme.colors.white,
               borderRadius: BorderRadius.circular(24),
               border: Border.all(color: AppTheme.secondaryBorder(context)),
-              boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4))],
+              boxShadow: [BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4))],
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(Icons.check_circle_outline, color: Colors.greenAccent, size: 64)
+                const Icon(Icons.check_circle_outline, color: AppTheme.colors.greenAccent, size: 64)
                     .animate()
                     .scale(duration: 600.ms, curve: Curves.elasticOut),
                 const SizedBox(height: 24),
@@ -391,7 +391,7 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
-            backgroundColor: Colors.transparent,
+            backgroundColor: AppTheme.colors.transparent,
             elevation: 0,
             leading: IconButton(
               icon: Icon(Icons.arrow_back_ios_new, size: 20, color: AppTheme.textPrimary(context)),
@@ -418,31 +418,31 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
                       _buildStatusBanner(
                         title: "⏳ APPLICATION UNDER REVIEW",
                         message: "Your guide application has been submitted and is currently being reviewed by the Oracle Council. You will be notified once a decision is made.",
-                        color: Colors.amber,
+                        color: AppTheme.colors.amber,
                       ),
                       const SizedBox(height: 20),
                     ] else if (_currentStatus == GuideStatus.rejected) ...[
                       _buildStatusBanner(
                         title: "❌ APPLICATION REJECTED",
                         message: "Reason: ${_rejectionReason ?? 'Documents incomplete or unclear.'}\n\nYou can re-submit your application below once you fix the required items.",
-                        color: Colors.redAccent,
+                        color: AppTheme.colors.redAccent,
                       ),
                       const SizedBox(height: 20),
                     ] else if (_currentStatus == GuideStatus.approved) ...[
                       _buildStatusBanner(
                         title: "✅ YOU ARE AN APPROVED GUIDE",
                         message: "Congratulations! Your guide identity is active. You can access the Guide Dashboard from your profile.",
-                        color: Colors.greenAccent,
+                        color: AppTheme.colors.greenAccent,
                       ),
                       const SizedBox(height: 20),
                     ],
                     Container(
                       padding: const EdgeInsets.all(24),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: AppTheme.colors.white,
                         borderRadius: BorderRadius.circular(24),
                         border: Border.all(color: AppTheme.secondaryBorder(context)),
-                        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4))],
+                        boxShadow: [BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4))],
                       ),
                       child: Column(
                         children: [
@@ -509,10 +509,10 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
                         ? Container(
                             padding: const EdgeInsets.all(32),
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: AppTheme.colors.white,
                               borderRadius: BorderRadius.circular(24),
                               border: Border.all(color: AppTheme.secondaryBorder(context)),
-                              boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4))],
+                              boxShadow: [BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4))],
                             ),
                             child: _buildLoadingAura(),
                           ).animate().fadeIn().scale(begin: const Offset(0.95, 0.95))
@@ -531,7 +531,7 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
                                 "SUBMIT APPLICATION",
                                 style: GoogleFonts.outfit(
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.white,
+                                  color: AppTheme.colors.white,
                                   letterSpacing: 2,
                                 ),
                               ),
@@ -588,10 +588,10 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppTheme.colors.white,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: AppTheme.secondaryBorder(context)),
-          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4))],
+          boxShadow: [BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4))],
         ),
         child: Row(
           children: [
@@ -636,10 +636,10 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: AppTheme.colors.white,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(color: AppTheme.secondaryBorder(context)),
-            boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4))],
+            boxShadow: [BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4))],
           ),
           child: TextField(
             controller: controller,

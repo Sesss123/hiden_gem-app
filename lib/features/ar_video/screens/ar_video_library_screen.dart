@@ -16,7 +16,7 @@ class ARVideoLibraryScreen extends StatelessWidget {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppTheme.colors.transparent,
         elevation: 0,
         title: Text(
           'TIME TRAVEL PORTALS',
@@ -24,7 +24,7 @@ class ARVideoLibraryScreen extends StatelessWidget {
             fontWeight: FontWeight.bold,
             letterSpacing: 2,
             fontSize: 16,
-            color: Colors.white,
+            color: AppTheme.colors.white,
           ),
         ),
         centerTitle: true,
@@ -109,7 +109,7 @@ class ARVideoLibraryScreen extends StatelessWidget {
                   Text(
                     content.name,
                     style: GoogleFonts.outfit(
-                      color: Colors.white,
+                      color: AppTheme.colors.white,
                       fontWeight: FontWeight.bold,
                       fontSize: 18,
                     ),
@@ -117,11 +117,11 @@ class ARVideoLibraryScreen extends StatelessWidget {
                   const SizedBox(height: 4),
                   Row(
                     children: [
-                      const Icon(Icons.videocam, color: Colors.white38, size: 12),
+                      const Icon(Icons.videocam, color: AppTheme.colors.white38, size: 12),
                       const SizedBox(width: 4),
                       Text(
                         'AR Core Ready',
-                        style: GoogleFonts.inter(color: Colors.white38, fontSize: 10),
+                        style: GoogleFonts.inter(color: AppTheme.colors.white38, fontSize: 10),
                       ),
                     ],
                   ),
@@ -139,16 +139,16 @@ class ARVideoLibraryScreen extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.auto_awesome, color: Colors.white24, size: 64),
+          Icon(Icons.auto_awesome, color: AppTheme.colors.white24, size: 64),
           const SizedBox(height: 24),
           Text(
             'The portals are closed for now',
-            style: GoogleFonts.outfit(color: Colors.white70, fontSize: 18),
+            style: GoogleFonts.outfit(color: AppTheme.colors.white70, fontSize: 18),
           ),
           const SizedBox(height: 8),
           Text(
             'Check back later for new historical vistas',
-            style: GoogleFonts.inter(color: Colors.white38, fontSize: 14),
+            style: GoogleFonts.inter(color: AppTheme.colors.white38, fontSize: 14),
           ),
         ],
       ),

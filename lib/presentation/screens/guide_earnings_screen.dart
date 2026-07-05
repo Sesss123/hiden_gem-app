@@ -26,7 +26,7 @@ class _GuideEarningsScreenState extends ConsumerState<GuideEarningsScreen> {
       return Scaffold(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         appBar: AppBar(title: const Text("Earnings & Payouts")),
-        body: const Center(child: Text("Please log in to view earnings.", style: TextStyle(color: Colors.white))),
+        body: const Center(child: Text("Please log in to view earnings.", style: TextStyle(color: AppTheme.colors.white))),
       );
     }
 
@@ -35,7 +35,7 @@ class _GuideEarningsScreenState extends ConsumerState<GuideEarningsScreen> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppTheme.colors.transparent,
         elevation: 0,
         title: Text(
           'EARNINGS & PAYOUTS',
@@ -49,11 +49,11 @@ class _GuideEarningsScreenState extends ConsumerState<GuideEarningsScreen> {
             stream: bookingRepo.getInbox(uid),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator(color: Colors.amber));
+                return const Center(child: CircularProgressIndicator(color: AppTheme.colors.amber));
               }
               if (snapshot.hasError) {
                 return Center(
-                  child: Text("Error loading financial data: ${snapshot.error}", style: const TextStyle(color: Colors.redAccent)),
+                  child: Text("Error loading financial data: ${snapshot.error}", style: const TextStyle(color: AppTheme.colors.redAccent)),
                 );
               }
 
@@ -129,7 +129,7 @@ class _GuideEarningsScreenState extends ConsumerState<GuideEarningsScreen> {
               gradient: LinearGradient(
                 colors: [
                   AppPalette.rust.withValues(alpha: 0.25),
-                  const Color(0xFF1B263B).withValues(alpha: 0.8),
+                  const AppTheme.colors.primary.withValues(alpha: 0.8),
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
@@ -150,34 +150,34 @@ class _GuideEarningsScreenState extends ConsumerState<GuideEarningsScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text("TOTAL NET EARNINGS", style: GoogleFonts.outfit(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white70, letterSpacing: 1.2)),
+                    Text("TOTAL NET EARNINGS", style: GoogleFonts.outfit(fontSize: 12, fontWeight: FontWeight.bold, color: AppTheme.colors.white70, letterSpacing: 1.2)),
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                      decoration: BoxDecoration(color: Colors.amber.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(12)),
-                      child: Text("90% ORACLE NET", style: GoogleFonts.outfit(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.amber)),
+                      decoration: BoxDecoration(color: AppTheme.colors.amber.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(12)),
+                      child: Text("90% ORACLE NET", style: GoogleFonts.outfit(fontSize: 10, fontWeight: FontWeight.bold, color: AppTheme.colors.amber)),
                     ),
                   ],
                 ),
                 const SizedBox(height: 8),
                 Text(
                   "LKR ${totalNet.toStringAsFixed(0)}",
-                  style: GoogleFonts.outfit(fontSize: 32, fontWeight: FontWeight.bold, color: Colors.white),
+                  style: GoogleFonts.outfit(fontSize: 32, fontWeight: FontWeight.bold, color: AppTheme.colors.white),
                 ),
                 const SizedBox(height: 16),
-                const Divider(color: Colors.white12, height: 1),
+                const Divider(color: AppTheme.colors.white12, height: 1),
                 const SizedBox(height: 16),
                 Row(
                   children: [
                     Expanded(
-                      child: _buildSubStat("⏳ PENDING PAYOUT", "LKR ${pendingPayout.toStringAsFixed(0)}", Colors.amberAccent),
+                      child: _buildSubStat("⏳ PENDING PAYOUT", "LKR ${pendingPayout.toStringAsFixed(0)}", AppTheme.colors.amberAccent),
                     ),
-                    Container(width: 1, height: 36, color: Colors.white12),
+                    Container(width: 1, height: 36, color: AppTheme.colors.white12),
                     Expanded(
-                      child: _buildSubStat("✅ PAID OUT", "LKR ${completedPayout.toStringAsFixed(0)}", Colors.greenAccent),
+                      child: _buildSubStat("✅ PAID OUT", "LKR ${completedPayout.toStringAsFixed(0)}", AppTheme.colors.greenAccent),
                     ),
-                    Container(width: 1, height: 36, color: Colors.white12),
+                    Container(width: 1, height: 36, color: AppTheme.colors.white12),
                     Expanded(
-                      child: _buildSubStat("🏛️ ORACLE FEE", "LKR ${totalCommission.toStringAsFixed(0)}", Colors.white60),
+                      child: _buildSubStat("🏛️ ORACLE FEE", "LKR ${totalCommission.toStringAsFixed(0)}", AppTheme.colors.white60),
                     ),
                   ],
                 ),
@@ -192,7 +192,7 @@ class _GuideEarningsScreenState extends ConsumerState<GuideEarningsScreen> {
   Widget _buildSubStat(String label, String value, Color valueColor) {
     return Column(
       children: [
-        Text(label, style: GoogleFonts.outfit(fontSize: 9, fontWeight: FontWeight.bold, color: Colors.white54)),
+        Text(label, style: GoogleFonts.outfit(fontSize: 9, fontWeight: FontWeight.bold, color: AppTheme.colors.white54)),
         const SizedBox(height: 4),
         Text(value, style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.bold, color: valueColor)),
       ],
@@ -210,7 +210,7 @@ class _GuideEarningsScreenState extends ConsumerState<GuideEarningsScreen> {
               onPressed: () => _showWithdrawDialog(context, pendingPayout),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppPalette.rust,
-                foregroundColor: Colors.white,
+                foregroundColor: AppTheme.colors.white,
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                 elevation: 4,
@@ -276,13 +276,13 @@ class _GuideEarningsScreenState extends ConsumerState<GuideEarningsScreen> {
     Color statusColor;
     String statusLabel;
     if (status == 'paid') {
-      statusColor = Colors.green;
+      statusColor = AppTheme.colors.green;
       statusLabel = "✅ PAID";
     } else if (status == 'disputed') {
-      statusColor = Colors.redAccent;
+      statusColor = AppTheme.colors.redAccent;
       statusLabel = "⚠️ DISPUTED";
     } else {
-      statusColor = Colors.orange;
+      statusColor = AppTheme.colors.orange;
       statusLabel = "⏳ PENDING";
     }
 
@@ -345,7 +345,7 @@ class _GuideEarningsScreenState extends ConsumerState<GuideEarningsScreen> {
             children: [
               Text(
                 "LKR ${net.toStringAsFixed(0)}",
-                style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.green[700]),
+                style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.bold, color: AppTheme.colors.green[700]),
               ),
               const SizedBox(height: 2),
               Text(
@@ -411,12 +411,12 @@ class _GuideEarningsScreenState extends ConsumerState<GuideEarningsScreen> {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
                   content: Text("✅ Payout request submitted successfully!"),
-                  backgroundColor: Colors.green,
+                  backgroundColor: AppTheme.colors.green,
                 ),
               );
             },
             style: ElevatedButton.styleFrom(backgroundColor: AppPalette.rust),
-            child: Text("CONFIRM PAYOUT", style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold)),
+            child: Text("CONFIRM PAYOUT", style: GoogleFonts.outfit(color: AppTheme.colors.white, fontWeight: FontWeight.bold)),
           ),
         ],
       ),
@@ -462,7 +462,7 @@ class _GuideEarningsScreenState extends ConsumerState<GuideEarningsScreen> {
               );
             },
             style: ElevatedButton.styleFrom(backgroundColor: AppPalette.rust),
-            child: Text("SAVE", style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold)),
+            child: Text("SAVE", style: GoogleFonts.outfit(color: AppTheme.colors.white, fontWeight: FontWeight.bold)),
           ),
         ],
       ),

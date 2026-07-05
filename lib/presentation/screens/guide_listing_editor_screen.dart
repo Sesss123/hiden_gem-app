@@ -106,7 +106,7 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
       if (!mounted) return;
       setState(() => _isSaving = true);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Uploading photo to vault...'), backgroundColor: Colors.amber),
+        const SnackBar(content: Text('Uploading photo to vault...'), backgroundColor: AppTheme.colors.amber),
       );
 
       final url = await _storage.uploadGuideDocument(
@@ -119,17 +119,17 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
           _coverPhotos.add(url);
         });
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Photo uploaded successfully!'), backgroundColor: Colors.green),
+          const SnackBar(content: Text('Photo uploaded successfully!'), backgroundColor: AppTheme.colors.green),
         );
       } else if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to upload photo.'), backgroundColor: Colors.redAccent),
+          const SnackBar(content: Text('Failed to upload photo.'), backgroundColor: AppTheme.colors.redAccent),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.redAccent),
+          SnackBar(content: Text('Error: $e'), backgroundColor: AppTheme.colors.redAccent),
         );
       }
     } finally {
@@ -203,7 +203,7 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(status == 'published' ? '🎉 Listing Published to Marketplace!' : '💾 Draft Saved Successfully'),
-            backgroundColor: status == 'published' ? Colors.green : Colors.blueAccent,
+            backgroundColor: status == 'published' ? AppTheme.colors.green : AppTheme.colors.blueAccent,
           ),
         );
         if (status == 'published') {
@@ -213,7 +213,7 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to save listing: $e'), backgroundColor: Colors.redAccent),
+          SnackBar(content: Text('Failed to save listing: $e'), backgroundColor: AppTheme.colors.redAccent),
         );
       }
     } finally {
@@ -238,14 +238,14 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
     if (_isLoading) {
       return Scaffold(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        body: const Center(child: CircularProgressIndicator(color: Colors.amber)),
+        body: const Center(child: CircularProgressIndicator(color: AppTheme.colors.amber)),
       );
     }
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppTheme.colors.transparent,
         elevation: 0,
         title: Text(
           'MY GUIDE LISTING',
@@ -351,7 +351,7 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
                     title: Text('Vehicle Available for Tours', style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.w600)),
                     subtitle: Text('Do you provide transportation?', style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 12)),
                     value: _vehicleAvailable,
-                    activeThumbColor: Colors.amber,
+                    activeThumbColor: AppTheme.colors.amber,
                     contentPadding: EdgeInsets.zero,
                     onChanged: (val) => setState(() => _vehicleAvailable = val),
                   ),
@@ -384,12 +384,12 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
                         onPressed: _isSaving ? null : () => _saveListing(status: 'draft'),
                         style: OutlinedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 16),
-                          side: const BorderSide(color: Colors.amber, width: 1.5),
+                          side: const BorderSide(color: AppTheme.colors.amber, width: 1.5),
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                         ),
                         child: Text(
                           'SAVE DRAFT',
-                          style: GoogleFonts.outfit(color: Colors.amber, fontWeight: FontWeight.bold, letterSpacing: 1),
+                          style: GoogleFonts.outfit(color: AppTheme.colors.amber, fontWeight: FontWeight.bold, letterSpacing: 1),
                         ),
                       ),
                     ),
@@ -399,14 +399,14 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
                       child: ElevatedButton(
                         onPressed: _isSaving ? null : () => _saveListing(status: 'published'),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.amber,
-                          foregroundColor: Colors.black,
+                          backgroundColor: AppTheme.colors.amber,
+                          foregroundColor: AppTheme.colors.black,
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                           elevation: 8,
                         ),
                         child: _isSaving
-                            ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.black))
+                            ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: AppTheme.colors.black))
                             : Text(
                                 'PUBLISH LISTING 🚀',
                                 style: GoogleFonts.outfit(fontWeight: FontWeight.bold, letterSpacing: 1, fontSize: 15),
@@ -428,7 +428,7 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
     return Text(
       title,
       style: GoogleFonts.outfit(
-        color: Colors.amber[400],
+        color: AppTheme.colors.amber[400],
         fontSize: 12,
         fontWeight: FontWeight.w800,
         letterSpacing: 2.0,
@@ -456,12 +456,12 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
         hintText: hint,
         labelStyle: GoogleFonts.outfit(color: AppTheme.textSecondary(context)),
         hintStyle: GoogleFonts.inter(color: AppTheme.textSecondary(context).withValues(alpha: 0.5), fontSize: 13),
-        prefixIcon: Icon(icon, color: Colors.amber[600], size: 20),
+        prefixIcon: Icon(icon, color: AppTheme.colors.amber[600], size: 20),
         filled: true,
         fillColor: Theme.of(context).cardColor,
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
         enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: AppTheme.borderColor(context))),
-        focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: const BorderSide(color: Colors.amber, width: 1.5)),
+        focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: const BorderSide(color: AppTheme.colors.amber, width: 1.5)),
       ),
     );
   }
@@ -512,16 +512,16 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
                     width: 100,
                     height: 100,
                     decoration: BoxDecoration(
-                      color: Colors.amber.withValues(alpha: 0.1),
+                      color: AppTheme.colors.amber.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: Colors.amber, style: BorderStyle.solid, width: 1.5),
+                      border: Border.all(color: AppTheme.colors.amber, style: BorderStyle.solid, width: 1.5),
                     ),
                     child: const Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.add_a_photo_outlined, color: Colors.amber, size: 28),
+                        Icon(Icons.add_a_photo_outlined, color: AppTheme.colors.amber, size: 28),
                         SizedBox(height: 6),
-                        Text('Add Photo', style: TextStyle(color: Colors.amber, fontSize: 11, fontWeight: FontWeight.bold)),
+                        Text('Add Photo', style: TextStyle(color: AppTheme.colors.amber, fontSize: 11, fontWeight: FontWeight.bold)),
                       ],
                     ),
                   ),
@@ -549,8 +549,8 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
                       },
                       child: Container(
                         padding: const EdgeInsets.all(4),
-                        decoration: const BoxDecoration(color: Colors.black87, shape: BoxShape.circle),
-                        child: const Icon(Icons.close, color: Colors.white, size: 14),
+                        decoration: const BoxDecoration(color: AppTheme.colors.black87, shape: BoxShape.circle),
+                        child: const Icon(Icons.close, color: AppTheme.colors.white, size: 14),
                       ),
                     ),
                   ),
@@ -579,17 +579,17 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
         decoration: BoxDecoration(
           color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.amber.withValues(alpha: 0.5)),
+          border: Border.all(color: AppTheme.colors.amber.withValues(alpha: 0.5)),
         ),
         child: Row(
           children: [
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.amber.withValues(alpha: 0.2),
+                color: AppTheme.colors.amber.withValues(alpha: 0.2),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(Icons.calendar_month_outlined, color: Colors.amber, size: 24),
+              child: const Icon(Icons.calendar_month_outlined, color: AppTheme.colors.amber, size: 24),
             ),
             const SizedBox(width: 16),
             Expanded(

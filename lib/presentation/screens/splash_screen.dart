@@ -55,7 +55,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   }
 
   Future<void> _checkReadiness() async {
-    await Future.delayed(const Duration(seconds: 3));
+    // await Future.delayed(const Duration(seconds: 3));
     _attemptFinish();
   }
 
@@ -104,7 +104,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: isDark
-                    ? [AppPaletteDark.bg, const Color(0xFF111720)]
+                    ? [AppPaletteDark.bg, const AppTheme.colors.primary]
                     : [AppPalette.bg, AppPalette.bg2],
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
@@ -143,7 +143,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                 gradient: RadialGradient(
                   colors: [
                     (isDark ? AppPaletteDark.gem : AppPalette.earth).withValues(alpha: isDark ? 0.12 : 0.08),
-                    Colors.transparent,
+                    AppTheme.colors.transparent,
                   ],
                 ),
               ),

@@ -77,15 +77,15 @@ class EventModel {
     switch (category) {
       case EventCategory.beach:
       case EventCategory.party:
-        return const Color(0xFF1976D2); // Modern Blue
+        return const AppTheme.colors.primary; // Modern Blue
       case EventCategory.cultural:
       case EventCategory.religious:
       case EventCategory.festival:
-        return const Color(0xFF2E7D32); // Modern Green
+        return const AppTheme.colors.primary; // Modern Green
       case EventCategory.sports:
-        return Colors.orangeAccent;
+        return AppTheme.colors.orangeAccent;
       case EventCategory.seasonal:
-        return Colors.tealAccent;
+        return AppTheme.colors.tealAccent;
     }
   }
 

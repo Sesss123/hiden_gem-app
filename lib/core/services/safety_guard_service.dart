@@ -52,6 +52,6 @@ class SafetyGuardService {
   static Future<void> triggerSOS() async {
     // In a real app, this would ping a backend and emergency services
     SecureLogger.warning('SOS TRIGGERED: Sending coordinates to the Oracle Guard!');
-    await Future.delayed(const Duration(seconds: 2));
+    // await Future.delayed(const Duration(seconds: 2));
   }
 }

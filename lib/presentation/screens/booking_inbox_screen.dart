@@ -30,7 +30,7 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
     if (uid == null) {
       return Scaffold(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        body: const Center(child: Text("Please log in to view booking requests.", style: TextStyle(color: Colors.white))),
+        body: const Center(child: Text("Please log in to view booking requests.", style: TextStyle(color: AppTheme.colors.white))),
       );
     }
 
@@ -39,7 +39,7 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppTheme.colors.transparent,
         elevation: 0,
         title: Text(
           'BOOKING INBOX',
@@ -58,11 +58,11 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
                   stream: bookingRepo.getInbox(uid),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(child: CircularProgressIndicator(color: Colors.amber));
+                      return const Center(child: CircularProgressIndicator(color: AppTheme.colors.amber));
                     }
                     if (snapshot.hasError) {
                       return Center(
-                        child: Text("Error loading inbox: ${snapshot.error}", style: const TextStyle(color: Colors.redAccent)),
+                        child: Text("Error loading inbox: ${snapshot.error}", style: const TextStyle(color: AppTheme.colors.redAccent)),
                       );
                     }
 
@@ -251,13 +251,13 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
                 width: double.infinity,
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: (Theme.of(context).brightness == Brightness.dark ? Colors.black : Colors.grey[200]!).withValues(alpha: 0.5),
+                  color: (Theme.of(context).brightness == Brightness.dark ? AppTheme.colors.black : AppTheme.colors.grey[200]!).withValues(alpha: 0.5),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("TOUR NOTES / REQUIREMENTS:", style: GoogleFonts.outfit(fontSize: 10, color: Colors.amber[800], fontWeight: FontWeight.bold, letterSpacing: 1)),
+                    Text("TOUR NOTES / REQUIREMENTS:", style: GoogleFonts.outfit(fontSize: 10, color: AppTheme.colors.amber[800], fontWeight: FontWeight.bold, letterSpacing: 1)),
                     const SizedBox(height: 4),
                     Text(request.notes!, style: GoogleFonts.inter(fontSize: 13, color: AppTheme.textPrimary(context))),
                   ],
@@ -277,10 +277,10 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
                       onPressed: () => _handleDecline(request),
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 14),
-                        side: const BorderSide(color: Colors.redAccent, width: 1.5),
+                        side: const BorderSide(color: AppTheme.colors.redAccent, width: 1.5),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                       ),
-                      child: Text("DECLINE", style: GoogleFonts.outfit(color: Colors.redAccent, fontWeight: FontWeight.bold, letterSpacing: 1)),
+                      child: Text("DECLINE", style: GoogleFonts.outfit(color: AppTheme.colors.redAccent, fontWeight: FontWeight.bold, letterSpacing: 1)),
                     ),
                   ),
                   const SizedBox(width: 16),
@@ -289,8 +289,8 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
                     child: ElevatedButton(
                       onPressed: () => _handleAccept(request),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.greenAccent[700],
-                        foregroundColor: Colors.white,
+                        backgroundColor: AppTheme.colors.greenAccent[700],
+                        foregroundColor: AppTheme.colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                         elevation: 4,
@@ -317,10 +317,10 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
                       ),
                     );
                   },
-                  icon: const Icon(Icons.play_arrow_rounded, color: Colors.white),
-                  label: Text("START / LAUNCH TOUR SESSION", style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold, letterSpacing: 1)),
+                  icon: const Icon(Icons.play_arrow_rounded, color: AppTheme.colors.white),
+                  label: Text("START / LAUNCH TOUR SESSION", style: GoogleFonts.outfit(color: AppTheme.colors.white, fontWeight: FontWeight.bold, letterSpacing: 1)),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.amber[800],
+                    backgroundColor: AppTheme.colors.amber[800],
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   ),
@@ -351,14 +351,14 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
 
   Color _getStatusColor(String status) {
     switch (status) {
-      case 'pending': return Colors.orangeAccent;
+      case 'pending': return AppTheme.colors.orangeAccent;
       case 'accepted':
-      case 'session_ready': return Colors.green;
-      case 'completed': return Colors.blueAccent;
+      case 'session_ready': return AppTheme.colors.green;
+      case 'completed': return AppTheme.colors.blueAccent;
       case 'declined':
       case 'cancelled':
       case 'cancelled_by_tourist':
-      case 'cancelled_by_guide': return Colors.redAccent;
+      case 'cancelled_by_guide': return AppTheme.colors.redAccent;
       default: return AppTheme.textSecondary(context);
     }
   }
@@ -412,13 +412,13 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("🎉 Booking accepted & Tour Session created!"), backgroundColor: Colors.green),
+          const SnackBar(content: Text("🎉 Booking accepted & Tour Session created!"), backgroundColor: AppTheme.colors.green),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Error accepting booking: $e"), backgroundColor: Colors.redAccent),
+          SnackBar(content: Text("Error accepting booking: $e"), backgroundColor: AppTheme.colors.redAccent),
         );
       }
     }
@@ -432,7 +432,7 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: Theme.of(context).cardColor,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20), side: const BorderSide(color: Colors.redAccent)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20), side: const BorderSide(color: AppTheme.colors.redAccent)),
         title: Text("Decline Booking?", style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.bold)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
@@ -458,7 +458,7 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
           TextButton(onPressed: () => Navigator.pop(context, false), child: Text("CANCEL", style: TextStyle(color: AppTheme.textSecondary(context)))),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent, foregroundColor: Colors.white),
+            style: ElevatedButton.styleFrom(backgroundColor: AppTheme.colors.redAccent, foregroundColor: AppTheme.colors.white),
             child: const Text("DECLINE"),
           ),
         ],
@@ -477,13 +477,13 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Booking declined."), backgroundColor: Colors.redAccent),
+          const SnackBar(content: Text("Booking declined."), backgroundColor: AppTheme.colors.redAccent),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Error declining booking: $e"), backgroundColor: Colors.redAccent),
+          SnackBar(content: Text("Error declining booking: $e"), backgroundColor: AppTheme.colors.redAccent),
         );
       }
     }

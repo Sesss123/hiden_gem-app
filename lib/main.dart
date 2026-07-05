@@ -454,23 +454,23 @@ class _HiddenGemsAppState extends ConsumerState<HiddenGemsApp> with WidgetsBindi
               children: [
                 Text(
                   message.notification!.title ?? 'New Notification',
-                  style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+                  style: const TextStyle(fontWeight: FontWeight.bold, color: AppTheme.colors.white),
                 ),
                 if (message.notification!.body != null)
                   Text(
                     message.notification!.body!,
-                    style: const TextStyle(color: Colors.white70),
+                    style: const TextStyle(color: AppTheme.colors.white70),
                   ),
               ],
             ),
-            backgroundColor: const Color(0xFF1B263B),
+            backgroundColor: const AppTheme.colors.primary,
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             margin: const EdgeInsets.all(16),
             duration: const Duration(seconds: 5),
             action: SnackBarAction(
               label: 'OPEN',
-              textColor: Colors.amber,
+              textColor: AppTheme.colors.amber,
               onPressed: () {
                 final nav = navigatorKey.currentState;
                 if (nav != null && message.data['type'] == 'new_booking') {
@@ -563,13 +563,13 @@ class _HiddenGemsAppState extends ConsumerState<HiddenGemsApp> with WidgetsBindi
   Widget _buildHomeModule(InitializationResult result) {
     if (result.isKillSwitchActive) {
       return Scaffold(
-        backgroundColor: Colors.black,
+        backgroundColor: AppTheme.colors.black,
         body: Center(
           child: Padding(
             padding: const EdgeInsets.all(40),
             child: Text(
               result.maintenanceMessage ?? "System maintenance is in progress.",
-              style: const TextStyle(color: Colors.white, fontSize: 18),
+              style: const TextStyle(color: AppTheme.colors.white, fontSize: 18),
               textAlign: TextAlign.center,
             ),
           ),
@@ -721,7 +721,7 @@ class _GlobalScreenshotWrapperState extends ConsumerState<GlobalScreenshotWrappe
                     child: child,
                   ),
                   child: Material(
-                    color: Colors.transparent,
+                    color: AppTheme.colors.transparent,
                     child: InkWell(
                       onTap: _handleCapture,
                       borderRadius: BorderRadius.circular(30),
@@ -748,7 +748,7 @@ class _GlobalScreenshotWrapperState extends ConsumerState<GlobalScreenshotWrappe
                         ),
                         child: const Icon(
                           Icons.camera_alt_rounded,
-                          color: Colors.white,
+                          color: AppTheme.colors.white,
                           size: 28,
                         ),
                       ),
@@ -768,7 +768,7 @@ class _GlobalScreenshotWrapperState extends ConsumerState<GlobalScreenshotWrappe
                       ? _flashController.value * 2 
                       : (1.0 - _flashController.value) * 2,
                   child: Container(
-                    color: Colors.white,
+                    color: AppTheme.colors.white,
                     width: double.infinity,
                     height: double.infinity,
                   ),

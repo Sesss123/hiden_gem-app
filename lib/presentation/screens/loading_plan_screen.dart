@@ -120,7 +120,7 @@ class _LoadingPlanScreenState extends State<LoadingPlanScreen>
 
   void _animateMessages() async {
     while (_msgIndex < _progressMessages.length - 1 && mounted) {
-      await Future.delayed(const Duration(milliseconds: 2800));
+      // await Future.delayed(const Duration(milliseconds: 2800));
       if (mounted) {
         setState(() {
           _msgIndex = (_msgIndex + 1) % _progressMessages.length;
@@ -184,7 +184,7 @@ class _LoadingPlanScreenState extends State<LoadingPlanScreen>
       final result = TripCacheService.getLastPlan(cacheKey);
       if (result.hasData && mounted) {
         setState(() => _isOfflineMode = true);
-        await Future.delayed(const Duration(milliseconds: 600));
+        // await Future.delayed(const Duration(milliseconds: 600));
         if (mounted) {
           Navigator.pushReplacement(
             context,
@@ -284,12 +284,12 @@ class _LoadingPlanScreenState extends State<LoadingPlanScreen>
     return Container(
       padding: const EdgeInsets.all(32),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppTheme.colors.white,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: Colors.redAccent.withValues(alpha: 0.5)),
+        border: Border.all(color: AppTheme.colors.redAccent.withValues(alpha: 0.5)),
         boxShadow: [
           BoxShadow(
-            color: Colors.redAccent.withValues(alpha: 0.1),
+            color: AppTheme.colors.redAccent.withValues(alpha: 0.1),
             blurRadius: 20,
           ),
         ],
@@ -297,7 +297,7 @@ class _LoadingPlanScreenState extends State<LoadingPlanScreen>
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(Icons.auto_fix_off, size: 60, color: Colors.redAccent),
+          const Icon(Icons.auto_fix_off, size: 60, color: AppTheme.colors.redAccent),
           const SizedBox(height: 24),
           Text(
             "THE CONNECTION FADED",
@@ -322,7 +322,7 @@ class _LoadingPlanScreenState extends State<LoadingPlanScreen>
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppPalette.rust,
-                foregroundColor: Colors.white,
+                foregroundColor: AppTheme.colors.white,
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               ),

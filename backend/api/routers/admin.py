@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, Query, Response, Request
-from core.security import get_current_user
+from core.auth import get_current_user
 from core.rate_limit import limiter
 from core.mongodb import get_mongo_db
 from schemas.admin_schemas import PipelineRunSchema, AdminAnalyticsSchema, BulkActionRequest
@@ -16,7 +16,7 @@ router = APIRouter(prefix="/api/admin", tags=["admin"])
 
 # BUG-C06 Fix: Centralized admin authorization dependency
 async def require_admin(user=Depends(get_current_user)):
-    if user.get("role") != "admin" and user.get("tier") != "admin":
+    if user.tier != "admin":
         raise HTTPException(status_code=403, detail="Admin access required.")
     return user
 

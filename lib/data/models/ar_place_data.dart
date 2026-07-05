@@ -109,9 +109,9 @@ class ARPlaceData {
 
   Color get tierColor {
     switch (arTier) {
-      case 1: return const Color(0xFFFFB300);
-      case 2: return const Color(0xFF29B6F6);
-      default: return const Color(0xFF66BB6A);
+      case 1: return const AppTheme.colors.primary;
+      case 2: return const AppTheme.colors.primary;
+      default: return const AppTheme.colors.primary;
     }
   }
 

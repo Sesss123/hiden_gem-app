@@ -195,11 +195,11 @@ class _MapExplorerScreenState extends ConsumerState<MapExplorerScreen> {
               child: Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: AppTheme.colors.white,
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.1),
+                      color: AppTheme.colors.black.withValues(alpha: 0.1),
                       blurRadius: 10,
                       offset: const Offset(0, 4),
                     ),
@@ -238,38 +238,38 @@ class _MapExplorerScreenState extends ConsumerState<MapExplorerScreen> {
     return BackdropFilter(
       filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
       child: Container(
-        color: Colors.red.withValues(alpha: 0.2),
+        color: AppTheme.colors.red.withValues(alpha: 0.2),
         width: double.infinity,
         height: double.infinity,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.warning_amber_rounded, color: Colors.white, size: 80)
+            const Icon(Icons.warning_amber_rounded, color: AppTheme.colors.white, size: 80)
                 .animate(onPlay: (c) => c.repeat(reverse: true))
                 .scale(begin: const Offset(1, 1), end: const Offset(1.2, 1.2), duration: 500.ms)
-                .tint(color: Colors.redAccent),
+                .tint(color: AppTheme.colors.redAccent),
             const SizedBox(height: 24),
             Text(
               "EMERGENCY SIGNAL",
-              style: GoogleFonts.outfit(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white),
+              style: GoogleFonts.outfit(fontSize: 28, fontWeight: FontWeight.bold, color: AppTheme.colors.white),
             ),
             const SizedBox(height: 16),
             Text(
               "YOUR GUIDE HAS TRIGGERED AN SOS",
               textAlign: TextAlign.center,
-              style: GoogleFonts.inter(color: Colors.white, fontWeight: FontWeight.bold, letterSpacing: 1),
+              style: GoogleFonts.inter(color: AppTheme.colors.white, fontWeight: FontWeight.bold, letterSpacing: 1),
             ),
             const SizedBox(height: 48),
             Container(
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color: Colors.black.withValues(alpha: 0.7),
+                color: AppTheme.colors.black.withValues(alpha: 0.7),
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: Colors.redAccent.withValues(alpha: 0.5)),
+                border: Border.all(color: AppTheme.colors.redAccent.withValues(alpha: 0.5)),
               ),
               child: Column(
                 children: [
-                   Text("SAFETY PROTOCOLS", style: GoogleFonts.outfit(color: Colors.redAccent, fontWeight: FontWeight.bold)),
+                   Text("SAFETY PROTOCOLS", style: GoogleFonts.outfit(color: AppTheme.colors.redAccent, fontWeight: FontWeight.bold)),
                    const SizedBox(height: 16),
                    _buildProtocolItem("1. Stay in your current location."),
                    _buildProtocolItem("2. Open your live map to track the guide."),
@@ -280,8 +280,8 @@ class _MapExplorerScreenState extends ConsumerState<MapExplorerScreen> {
             const SizedBox(height: 48),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white, 
-                foregroundColor: Colors.black,
+                backgroundColor: AppTheme.colors.white, 
+                foregroundColor: AppTheme.colors.black,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               ),
               onPressed: () => setState(() => _isSosActive = false),
@@ -290,14 +290,14 @@ class _MapExplorerScreenState extends ConsumerState<MapExplorerScreen> {
           ],
         ),
       ).animate(onPlay: (c) => c.repeat())
-       .shimmer(color: Colors.red.withValues(alpha: 0.3), duration: 2.seconds),
+       .shimmer(color: AppTheme.colors.red.withValues(alpha: 0.3), duration: 2.seconds),
     );
   }
 
   Widget _buildProtocolItem(String text) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Text(text, style: GoogleFonts.inter(color: Colors.white70, fontSize: 13)),
+      child: Text(text, style: GoogleFonts.inter(color: AppTheme.colors.white70, fontSize: 13)),
     );
   }
 
@@ -307,11 +307,11 @@ class _MapExplorerScreenState extends ConsumerState<MapExplorerScreen> {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppTheme.colors.white,
           borderRadius: BorderRadius.circular(24),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.1),
+              color: AppTheme.colors.black.withValues(alpha: 0.1),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),

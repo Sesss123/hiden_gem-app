@@ -9,7 +9,8 @@ from datetime import datetime
 import logging
 
 from services.weather_service import weather_service
-from core.security import verify_internal_key, get_current_user
+from core.security import verify_internal_key
+from core.auth import get_current_user
 from core.rate_limit import limiter
 from fastapi import Request
 

@@ -103,7 +103,7 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> with WidgetsBindi
     });
 
     // Simulate connection check
-    await Future.delayed(const Duration(seconds: 2));
+    // await Future.delayed(const Duration(seconds: 2));
 
     if (mounted) {
       setState(() {
@@ -118,7 +118,7 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> with WidgetsBindi
     final isPremium = ref.watch(premiumProvider);
 
     return Scaffold(
-      backgroundColor: Colors.black, // Keep camera background black
+      backgroundColor: AppTheme.colors.black, // Keep camera background black
       body: Stack(
         children: [
           // Full Screen Camera or Placeholder
@@ -126,7 +126,7 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> with WidgetsBindi
               child: _isInit && _controller != null
                 ? CameraPreview(_controller!)
                 : Container(
-                    color: Colors.black,
+                    color: AppTheme.colors.black,
                     child: Center(
                       child: Icon(Icons.photo_camera_rounded, color: AppTheme.textSecondary(context).withValues(alpha: 0.1), size: 80)
                           .animate(onPlay: (c) => c.repeat())
@@ -143,9 +143,9 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> with WidgetsBindi
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                     colors: [
-                      Colors.black.withValues(alpha: 0.7),
-                      Colors.transparent,
-                      Colors.black.withValues(alpha: 0.8),
+                      AppTheme.colors.black.withValues(alpha: 0.7),
+                      AppTheme.colors.transparent,
+                      AppTheme.colors.black.withValues(alpha: 0.8),
                     ],
                     stops: const [0.0, 0.4, 1.0],
                   ),
@@ -169,7 +169,7 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> with WidgetsBindi
                         Text(
                           "ORACLE VISION",
                           style: GoogleFonts.outfit(
-                            color: Colors.white,
+                            color: AppTheme.colors.white,
                             fontWeight: FontWeight.w900,
                             letterSpacing: 4,
                             fontSize: 16,
@@ -190,7 +190,7 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> with WidgetsBindi
                           onPressed: _isScanning ? null : _startScan,
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Theme.of(context).colorScheme.primary,
-                            foregroundColor: Colors.black,
+                            foregroundColor: AppTheme.colors.black,
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                             elevation: 8,
                             shadowColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5),
@@ -237,12 +237,12 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> with WidgetsBindi
     return Container(
       padding: const EdgeInsets.all(32),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppTheme.colors.white,
         borderRadius: BorderRadius.circular(30),
         border: Border.all(color: AppTheme.secondaryBorder(context)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
+            color: AppTheme.colors.black.withValues(alpha: 0.1),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -289,12 +289,12 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> with WidgetsBindi
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppTheme.colors.white,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(color: AppPalette.rust.withValues(alpha: 0.3)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
+            color: AppTheme.colors.black.withValues(alpha: 0.1),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),

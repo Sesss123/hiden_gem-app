@@ -32,7 +32,7 @@ class _BookingRequestScreenState extends ConsumerState<BookingRequestScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppTheme.colors.transparent,
       body: OracleUI.auraBackground(
         child: CustomScrollView(
           slivers: [
@@ -69,10 +69,10 @@ class _BookingRequestScreenState extends ConsumerState<BookingRequestScreen> {
   Widget _buildAppBar() {
     return SliverAppBar(
       floating: true,
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppTheme.colors.transparent,
       elevation: 0,
       leading: IconButton(
-        icon: const Icon(Icons.close_rounded, color: Colors.white, size: 24),
+        icon: const Icon(Icons.close_rounded, color: AppTheme.colors.white, size: 24),
         onPressed: () => Navigator.pop(context),
       ),
       title: OracleUI.neonText(
@@ -81,7 +81,7 @@ class _BookingRequestScreenState extends ConsumerState<BookingRequestScreen> {
           fontSize: 16,
           fontWeight: FontWeight.w900,
           letterSpacing: 4,
-          color: Colors.white,
+          color: AppTheme.colors.white,
         ),
       ),
     );
@@ -95,14 +95,14 @@ class _BookingRequestScreenState extends ConsumerState<BookingRequestScreen> {
           alignment: Alignment.center,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            border: Border.all(color: const Color(0xFF00E676), width: 1),
+            border: Border.all(color: const AppTheme.colors.primary, width: 1),
           ),
-          child: Text(number, style: GoogleFonts.outfit(color: const Color(0xFF00E676), fontSize: 12, fontWeight: FontWeight.w900)),
+          child: Text(number, style: GoogleFonts.outfit(color: const AppTheme.colors.primary, fontSize: 12, fontWeight: FontWeight.w900)),
         ),
         const SizedBox(width: 16),
         Text(
           label,
-          style: GoogleFonts.inter(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w900, letterSpacing: 2),
+          style: GoogleFonts.inter(color: AppTheme.colors.white, fontSize: 13, fontWeight: FontWeight.w900, letterSpacing: 2),
         ),
       ],
     );
@@ -129,15 +129,15 @@ class _BookingRequestScreenState extends ConsumerState<BookingRequestScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           IconButton(
-            icon: const Icon(Icons.remove_rounded, color: Colors.white),
+            icon: const Icon(Icons.remove_rounded, color: AppTheme.colors.white),
             onPressed: _guestCount > 1 ? () => setState(() => _guestCount--) : null,
           ),
           Text(
             "$_guestCount GUESTS",
-            style: GoogleFonts.outfit(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w900),
+            style: GoogleFonts.outfit(color: AppTheme.colors.white, fontSize: 18, fontWeight: FontWeight.w900),
           ),
           IconButton(
-            icon: const Icon(Icons.add_rounded, color: Colors.white),
+            icon: const Icon(Icons.add_rounded, color: AppTheme.colors.white),
             onPressed: () => setState(() => _guestCount++),
           ),
         ],
@@ -151,11 +151,11 @@ class _BookingRequestScreenState extends ConsumerState<BookingRequestScreen> {
       borderRadius: BorderRadius.circular(20),
       child: TextField(
         controller: _notesController,
-        style: const TextStyle(color: Colors.white70),
+        style: const TextStyle(color: AppTheme.colors.white70),
         maxLines: 4,
         decoration: InputDecoration(
           hintText: "E.g. We are traveling with seniors, need low-walking route...",
-          hintStyle: GoogleFonts.inter(color: Colors.white10, fontSize: 13),
+          hintStyle: GoogleFonts.inter(color: AppTheme.colors.white10, fontSize: 13),
           border: InputBorder.none,
         ),
       ),
@@ -168,14 +168,14 @@ class _BookingRequestScreenState extends ConsumerState<BookingRequestScreen> {
       child: ElevatedButton(
         onPressed: _isSubmitting ? null : _submitBooking,
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF00E676),
-          foregroundColor: Colors.black,
+          backgroundColor: const AppTheme.colors.primary,
+          foregroundColor: AppTheme.colors.black,
           padding: const EdgeInsets.symmetric(vertical: 20),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           elevation: 0,
         ),
         child: _isSubmitting 
-          ? const CircularProgressIndicator(color: Colors.black)
+          ? const CircularProgressIndicator(color: AppTheme.colors.black)
           : Text(
               "TRANSMIT REQUEST",
               style: GoogleFonts.outfit(fontWeight: FontWeight.w900, letterSpacing: 2),
@@ -236,17 +236,17 @@ class _BookingRequestScreenState extends ConsumerState<BookingRequestScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.check_circle_rounded, color: Color(0xFF00E676), size: 64),
+            const Icon(Icons.check_circle_rounded, color: AppTheme.colors.primary, size: 64),
             const SizedBox(height: 24),
             OracleUI.neonText(
               "REQUEST SENT",
-              style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.w900, letterSpacing: 2, color: Colors.white),
+              style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.w900, letterSpacing: 2, color: AppTheme.colors.white),
             ),
             const SizedBox(height: 16),
             Text(
               "Your mission request has been transmitted to the guide. You will receive a notification once they respond.",
               textAlign: TextAlign.center,
-              style: GoogleFonts.inter(color: Colors.white70, fontSize: 13, height: 1.5),
+              style: GoogleFonts.inter(color: AppTheme.colors.white70, fontSize: 13, height: 1.5),
             ),
             const SizedBox(height: 32),
             SizedBox(
@@ -257,8 +257,8 @@ class _BookingRequestScreenState extends ConsumerState<BookingRequestScreen> {
                   Navigator.pop(context); // Booking Screen
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white.withValues(alpha: 0.1),
-                  foregroundColor: Colors.white,
+                  backgroundColor: AppTheme.colors.white.withValues(alpha: 0.1),
+                  foregroundColor: AppTheme.colors.white,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   padding: const EdgeInsets.symmetric(vertical: 16),
                 ),

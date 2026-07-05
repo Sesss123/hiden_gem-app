@@ -40,7 +40,7 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppTheme.colors.transparent,
         elevation: 0,
         leading: IconButton(
           icon: Icon(Icons.close_rounded, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7)),
@@ -75,9 +75,9 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(70),
             border: Border.all(color: goldColor.withValues(alpha: 0.3)),
-            color: Colors.white,
+            color: AppTheme.colors.white,
             boxShadow: [
-              BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4)),
+              BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4)),
             ],
           ),
           child: Container(
@@ -163,11 +163,11 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
       child: Container(
         padding: EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppTheme.colors.white,
           borderRadius: BorderRadius.circular(24),
           border: Border.all(color: AppTheme.secondaryBorder(context)),
           boxShadow: [
-            BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4)),
+            BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4)),
           ],
         ),
         child: Row(
@@ -224,11 +224,11 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
           Container(
             padding: EdgeInsets.all(40),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: AppTheme.colors.white,
               borderRadius: BorderRadius.circular(32),
               border: Border.all(color: AppTheme.secondaryBorder(context)),
               boxShadow: [
-                BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4)),
+                BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4)),
               ],
             ),
             child: Column(
@@ -258,7 +258,7 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: AppTheme.colors.white,
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.05)),
                   ),
@@ -277,7 +277,7 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
             priceStr: "Rs. 499",
             billingCycle: "Billed monthly",
             features: ["20 AI Itineraries/mo", "Selected AR Places", "Offline Maps (Basic)"],
-            color: const Color(0xFF64B5F6),
+            color: const AppTheme.colors.primary,
             onPressed: () => ref.read(premiumProvider.notifier).buyPremium(productId: PremiumNotifier.explorerId),
           ),
           SizedBox(height: 20),
@@ -298,14 +298,14 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
             priceStr: "Waitlist",
             billingCycle: "Next-Gen Experience",
             features: ["VR Mode Support", "Historical Timelines", "Personal AI Curator"],
-            color: const Color(0xFFE1BEE7),
+            color: const AppTheme.colors.primary,
             isLocked: true,
             onPressed: () {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: const Text("🚀 Ultra Explorer is on the waitlist! We'll notify you when it launches."),
                   behavior: SnackBarBehavior.floating,
-                  backgroundColor: const Color(0xFFE1BEE7).withValues(alpha: 0.15),
+                  backgroundColor: const AppTheme.colors.primary.withValues(alpha: 0.15),
                 ),
               );
             },
@@ -340,14 +340,14 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        color: Colors.red.withValues(alpha: 0.1),
+        color: AppTheme.colors.red.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.red.withValues(alpha: 0.3)),
+        border: Border.all(color: AppTheme.colors.red.withValues(alpha: 0.3)),
       ),
       child: TextButton.icon(
-        icon: Icon(Icons.bug_report, color: Colors.redAccent, size: 16),
+        icon: Icon(Icons.bug_report, color: AppTheme.colors.redAccent, size: 16),
         label: Text("TEST BUY (DEV ONLY)", 
-          style: GoogleFonts.inter(color: Colors.redAccent, fontSize: 11, fontWeight: FontWeight.bold)),
+          style: GoogleFonts.inter(color: AppTheme.colors.redAccent, fontSize: 11, fontWeight: FontWeight.bold)),
         onPressed: () {
           ref.read(premiumProvider.notifier).simulateMockPurchase();
           ScaffoldMessenger.of(context).showSnackBar(
@@ -371,11 +371,11 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
   }) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppTheme.colors.white,
         borderRadius: BorderRadius.circular(32),
         border: Border.all(color: isRecommended ? color.withValues(alpha: 0.4) : AppTheme.secondaryBorder(context)),
         boxShadow: [
-          BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4)),
+          BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4)),
         ],
       ),
       padding: EdgeInsets.all(28),
@@ -462,8 +462,8 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
             child: ElevatedButton(
               onPressed: isLocked ? null : onPressed,
               style: ElevatedButton.styleFrom(
-                backgroundColor: isLocked ? Colors.white.withValues(alpha: 0.05) : color,
-                foregroundColor: isLocked ? Colors.white10 : Colors.black,
+                backgroundColor: isLocked ? AppTheme.colors.white.withValues(alpha: 0.05) : color,
+                foregroundColor: isLocked ? AppTheme.colors.white10 : AppTheme.colors.black,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                 elevation: 0,
               ),

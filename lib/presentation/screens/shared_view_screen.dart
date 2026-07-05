@@ -123,7 +123,7 @@ class _SharedViewScreenState extends State<SharedViewScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppTheme.colors.transparent,
       body: OracleUI.auraBackground(
         child: CustomScrollView(
           slivers: [
@@ -147,7 +147,7 @@ class _SharedViewScreenState extends State<SharedViewScreen> {
   Widget _buildAppBar() {
     return SliverAppBar(
       floating: true,
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppTheme.colors.transparent,
       elevation: 0,
       centerTitle: true,
       title: OracleUI.neonText(
@@ -156,7 +156,7 @@ class _SharedViewScreenState extends State<SharedViewScreen> {
           fontSize: 14,
           fontWeight: FontWeight.w900,
           letterSpacing: 4,
-          color: Colors.white,
+          color: AppTheme.colors.white,
         ),
       ),
     );
@@ -172,16 +172,16 @@ class _SharedViewScreenState extends State<SharedViewScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const CircularProgressIndicator(color: Color(0xFF00E676)),
+              const CircularProgressIndicator(color: AppTheme.colors.primary),
               const SizedBox(height: 24),
               Text(
                 "Verifying Security Token...",
-                style: GoogleFonts.outfit(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                style: GoogleFonts.outfit(color: AppTheme.colors.white, fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
               Text(
                 "Establishing encrypted connection to live mission feed.",
-                style: GoogleFonts.inter(color: Colors.white38, fontSize: 12),
+                style: GoogleFonts.inter(color: AppTheme.colors.white38, fontSize: 12),
               ),
             ],
           ),
@@ -200,34 +200,34 @@ class _SharedViewScreenState extends State<SharedViewScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.gpp_bad_rounded, color: Colors.redAccent, size: 64),
+              const Icon(Icons.gpp_bad_rounded, color: AppTheme.colors.redAccent, size: 64),
               const SizedBox(height: 24),
               Text(
                 "Link Expired or Invalid",
-                style: GoogleFonts.outfit(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold),
+                style: GoogleFonts.outfit(color: AppTheme.colors.white, fontSize: 22, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 16),
               Text(
                 "This sharing link has expired, been deactivated by the sender, or is no longer valid.",
                 textAlign: TextAlign.center,
-                style: GoogleFonts.inter(color: Colors.white60, fontSize: 14, height: 1.5),
+                style: GoogleFonts.inter(color: AppTheme.colors.white60, fontSize: 14, height: 1.5),
               ),
               const SizedBox(height: 32),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                 decoration: BoxDecoration(
-                  color: Colors.redAccent.withValues(alpha: 0.1),
+                  color: AppTheme.colors.redAccent.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: Colors.redAccent.withValues(alpha: 0.3)),
+                  border: Border.all(color: AppTheme.colors.redAccent.withValues(alpha: 0.3)),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Icons.lock_outline_rounded, color: Colors.redAccent, size: 16),
+                    const Icon(Icons.lock_outline_rounded, color: AppTheme.colors.redAccent, size: 16),
                     const SizedBox(width: 8),
                     Text(
                       "Security policy enforced server-side",
-                      style: GoogleFonts.inter(color: Colors.redAccent, fontSize: 11, fontWeight: FontWeight.bold),
+                      style: GoogleFonts.inter(color: AppTheme.colors.redAccent, fontSize: 11, fontWeight: FontWeight.bold),
                     ),
                   ],
                 ),
@@ -250,7 +250,7 @@ class _SharedViewScreenState extends State<SharedViewScreen> {
         const SizedBox(height: 32),
         Text(
           "AUTHORIZED FEED DATA",
-          style: GoogleFonts.inter(color: Colors.white38, fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: 2),
+          style: GoogleFonts.inter(color: AppTheme.colors.white38, fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: 2),
         ),
         const SizedBox(height: 16),
         if (perms['show_emergency'] == true) ...[
@@ -274,7 +274,7 @@ class _SharedViewScreenState extends State<SharedViewScreen> {
           child: Text(
             "🔒 End-to-end access protected by token authentication.\nAuto-refreshing every 30 seconds.",
             textAlign: TextAlign.center,
-            style: GoogleFonts.inter(color: Colors.white24, fontSize: 11, height: 1.5),
+            style: GoogleFonts.inter(color: AppTheme.colors.white24, fontSize: 11, height: 1.5),
           ),
         ),
         const SizedBox(height: 60),
@@ -292,35 +292,35 @@ class _SharedViewScreenState extends State<SharedViewScreen> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF00E676).withValues(alpha: 0.15),
+                  color: const AppTheme.colors.primary.withValues(alpha: 0.15),
                   shape: BoxShape.circle,
-                  border: Border.all(color: const Color(0xFF00E676)),
+                  border: Border.all(color: const AppTheme.colors.primary),
                 ),
-                child: const Icon(Icons.shield_rounded, color: Color(0xFF00E676), size: 28),
+                child: const Icon(Icons.shield_rounded, color: AppTheme.colors.primary, size: 28),
               ),
               const SizedBox(width: 16),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("ACTIVE MISSION LINK", style: GoogleFonts.inter(color: const Color(0xFF00E676), fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 2)),
+                    Text("ACTIVE MISSION LINK", style: GoogleFonts.inter(color: const AppTheme.colors.primary, fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 2)),
                     const SizedBox(height: 4),
-                    Text(link.recipientName, style: GoogleFonts.outfit(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
+                    Text(link.recipientName, style: GoogleFonts.outfit(color: AppTheme.colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
                   ],
                 ),
               ),
             ],
           ),
           const SizedBox(height: 20),
-          Divider(color: Colors.white.withValues(alpha: 0.1)),
+          Divider(color: AppTheme.colors.white.withValues(alpha: 0.1)),
           const SizedBox(height: 12),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text("Session Expiry:", style: GoogleFonts.inter(color: Colors.white54, fontSize: 12)),
+              Text("Session Expiry:", style: GoogleFonts.inter(color: AppTheme.colors.white54, fontSize: 12)),
               Text(
                 "${link.expiresAt.hour.toString().padLeft(2, '0')}:${link.expiresAt.minute.toString().padLeft(2, '0')}",
-                style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
+                style: GoogleFonts.outfit(color: AppTheme.colors.white, fontWeight: FontWeight.bold, fontSize: 14),
               ),
             ],
           ),
@@ -331,7 +331,7 @@ class _SharedViewScreenState extends State<SharedViewScreen> {
 
   Widget _buildEmergencySection() {
     final isSos = _session?.sosActive == true;
-    final color = isSos ? Colors.redAccent : const Color(0xFF00E676);
+    final color = isSos ? AppTheme.colors.redAccent : const AppTheme.colors.primary;
 
     return OracleUI.glassContainer(
       padding: const EdgeInsets.all(24),
@@ -354,7 +354,7 @@ class _SharedViewScreenState extends State<SharedViewScreen> {
             isSos
                 ? "Emergency alert has been triggered for this mission! Authorities and emergency responders have been notified."
                 : "All safety signals are normal. Live tracking is active and monitoring companion sensors.",
-            style: GoogleFonts.inter(color: Colors.white70, fontSize: 13, height: 1.5),
+            style: GoogleFonts.inter(color: AppTheme.colors.white70, fontSize: 13, height: 1.5),
           ),
         ],
       ),
@@ -374,15 +374,15 @@ class _SharedViewScreenState extends State<SharedViewScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text("MISSION STATUS", style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+              Text("MISSION STATUS", style: GoogleFonts.outfit(color: AppTheme.colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF00E676).withValues(alpha: 0.2),
+                  color: const AppTheme.colors.primary.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: const Color(0xFF00E676)),
+                  border: Border.all(color: const AppTheme.colors.primary),
                 ),
-                child: Text(status, style: GoogleFonts.inter(color: const Color(0xFF00E676), fontSize: 10, fontWeight: FontWeight.bold)),
+                child: Text(status, style: GoogleFonts.inter(color: const AppTheme.colors.primary, fontSize: 10, fontWeight: FontWeight.bold)),
               ),
             ],
           ),
@@ -406,7 +406,7 @@ class _SharedViewScreenState extends State<SharedViewScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("GUIDE & VEHICLE IDENTITY", style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+          Text("GUIDE & VEHICLE IDENTITY", style: GoogleFonts.outfit(color: AppTheme.colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
           const SizedBox(height: 16),
           _buildInfoRow("Assigned Guide ID", guideDisplay),
           const SizedBox(height: 8),
@@ -423,7 +423,7 @@ class _SharedViewScreenState extends State<SharedViewScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("DESIGNATED MEETING POINT", style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+          Text("DESIGNATED MEETING POINT", style: GoogleFonts.outfit(color: AppTheme.colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
           const SizedBox(height: 16),
           _buildInfoRow("Location", _session?.meetingPointName ?? "Designated Tour Landmark"),
           if (_session?.meetingPointLat != null && _session?.meetingPointLng != null) ...[
@@ -439,8 +439,8 @@ class _SharedViewScreenState extends State<SharedViewScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(label, style: GoogleFonts.inter(color: Colors.white54, fontSize: 13)),
-        Text(value, style: GoogleFonts.inter(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 13)),
+        Text(label, style: GoogleFonts.inter(color: AppTheme.colors.white54, fontSize: 13)),
+        Text(value, style: GoogleFonts.inter(color: AppTheme.colors.white, fontWeight: FontWeight.w600, fontSize: 13)),
       ],
     );
   }

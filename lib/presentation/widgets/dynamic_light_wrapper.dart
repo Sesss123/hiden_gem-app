@@ -47,9 +47,9 @@ class _DynamicLightWrapperState extends State<DynamicLightWrapper>
                 _controller.value + 0.2,
               ],
               colors: [
-                Colors.transparent,
+                AppTheme.colors.transparent,
                 AppTheme.modernGreen(context).withValues(alpha: 0.1),
-                Colors.transparent,
+                AppTheme.colors.transparent,
               ],
             ).createShader(bounds);
           },
