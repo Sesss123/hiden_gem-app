@@ -98,7 +98,7 @@ class AppTheme {
   static TextStyle oracleBrandHeading(BuildContext context) => GoogleFonts.outfit(
     fontSize: 28,
     fontWeight: FontWeight.w900,
-    color: AppPalette.ink,
+    color: textPrimary(context),
     letterSpacing: -1,
   );
 
@@ -112,13 +112,13 @@ class AppTheme {
     fontSize: 10,
     fontWeight: FontWeight.bold,
     letterSpacing: 2.0,
-    color: AppPalette.rust,
+    color: Theme.of(context).colorScheme.primary,
   );
 
   static TextStyle bodyStyle(BuildContext context) => GoogleFonts.inter(
     fontSize: 14,
     fontWeight: FontWeight.w400,
-    color: AppPalette.ink.withValues(alpha: 0.55),
+    color: textSecondary(context),
     height: 1.7,
   );
 
@@ -236,14 +236,14 @@ class AppTheme {
   static ThemeData get abyssTheme => darkTheme;
 
   // --- Legacy Compatibility Getters ---
-  static Color sigiriyaOchre(BuildContext context) => AppPalette.rust;
-  static Color modernGreen(BuildContext context) => AppPalette.rust;
-  static Color modernBlue(BuildContext context) => AppPalette.earth;
-  static Color accentOchre(BuildContext context) => AppPalette.rust;
-  static Color darkText(BuildContext context) => AppPalette.ink;
+  static Color sigiriyaOchre(BuildContext context) => Theme.of(context).colorScheme.primary;
+  static Color modernGreen(BuildContext context) => Theme.of(context).colorScheme.primary;
+  static Color modernBlue(BuildContext context) => Theme.of(context).colorScheme.secondary;
+  static Color accentOchre(BuildContext context) => Theme.of(context).colorScheme.primary;
+  static Color darkText(BuildContext context) => textPrimary(context);
   static Color getDynamicOverlay() => Colors.transparent;
-  static Color glassBackground(BuildContext context) => AppPalette.surface;
-  static Color glassBorder(BuildContext context) => AppPalette.ink.withValues(alpha: 0.12);
+  static Color glassBackground(BuildContext context) => cardColor(context);
+  static Color glassBorder(BuildContext context) => borderColor(context);
 
   static LinearGradient modernGradient(BuildContext context) => const LinearGradient(
     colors: [AppPalette.heroCream, AppPalette.heroOchre],
@@ -266,7 +266,7 @@ class AppTheme {
     bool? isDarkOverride,
   }) {
     return BoxDecoration(
-      color: (color ?? AppPalette.surface).withValues(alpha: opacity),
+      color: (color ?? cardColor(context)).withValues(alpha: opacity),
       borderRadius: shape == BoxShape.circle ? null : (radius ?? BorderRadius.circular(22)),
       shape: shape,
       boxShadow: AppTheme.premiumShadow,

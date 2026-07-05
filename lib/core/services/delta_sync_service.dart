@@ -156,7 +156,8 @@ class DeltaSyncService {
 
   /// Executes chunked paginated delta sync from server.
   /// Handles first-boot full sync (since_version=0) and incremental updates.
-  Future<int> performDeltaSync() async {
+  /// When [forceFullResync] is true, resets cursor to 0 to self-heal any version tracking gaps.
+  Future<int> performDeltaSync({bool forceFullResync = false}) async {
     // BUG-055: Guard against concurrent sync executions
     if (_isSyncing) {
       SecureLogger.warning('Delta sync already in progress — skipping duplicate invocation.');
@@ -172,12 +173,12 @@ class DeltaSyncService {
 
     _isSyncing = true;
 
-    int currentVersion = await _sqliteService.getLocalSyncVersion();
+    int currentVersion = forceFullResync ? 0 : await _sqliteService.getLocalSyncVersion();
     bool hasMore = true;
     int totalUpserted = 0;
     int totalPurged = 0;
 
-    SecureLogger.info("Starting Delta Sync loop from local version: $currentVersion");
+    SecureLogger.info("Starting Delta Sync loop from local version: $currentVersion (forceFullResync: $forceFullResync)");
 
     try {
       // IMPORTANT NOTE ON CURSOR ADVANCE & ERROR RECOVERY BEHAVIOR:

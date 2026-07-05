@@ -106,8 +106,20 @@ class MigratePlaceIds extends Command
                 // 1. Update place_images foreign key
                 DB::table('place_images')->where('place_id', $oldId)->update(['place_id' => $newId]);
 
-                // 2. Update places primary key
-                DB::table('places')->where('id', $oldId)->update(['id' => $newId]);
+                // 2. Update wishlists foreign key (Fix: prevent orphaned bookmarks)
+                DB::table('wishlists')->where('place_id', $oldId)->update(['place_id' => $newId]);
+
+                // 3. Increment global sync version so mobile clients pull this ID change
+                $counter = DB::table('sync_counter')->where('id', 1)->lockForUpdate()->first();
+                $newVersion = ($counter ? $counter->current_version : 0) + 1;
+                DB::table('sync_counter')->where('id', 1)->update(['current_version' => $newVersion]);
+
+                // 4. Update places primary key and bump sync_version
+                DB::table('places')->where('id', $oldId)->update([
+                    'id' => $newId,
+                    'sync_version' => $newVersion,
+                    'updated_at' => now(),
+                ]);
 
                 DB::commit();
                 $converted++;

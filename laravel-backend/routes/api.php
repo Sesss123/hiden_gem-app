@@ -49,14 +49,14 @@ Route::prefix('v1')->group(function () {
         Route::get('/delta', [PlaceSyncController::class, 'delta']);
     });
 
-    // Guide Applications API Routes (Protected by API Key & Rate Limiting)
-    Route::prefix('guide-applications')->middleware([VerifyApiKey::class, 'throttle:30,1'])->group(function () {
+    // Guide Applications API Routes (Protected by Sanctum Auth, API Key & Rate Limiting)
+    Route::prefix('guide-applications')->middleware(['auth:sanctum', VerifyApiKey::class, 'throttle:30,1'])->group(function () {
         Route::post('/', [GuideApplicationController::class, 'submit']);
         Route::get('/status/{userId}', [GuideApplicationController::class, 'myStatus']);
     });
 
-    // Admin Guide Applications Routes (Protected by API Key & Rate Limiting)
-    Route::prefix('admin/guide-applications')->middleware([VerifyApiKey::class, 'throttle:60,1'])->group(function () {
+    // Admin Guide Applications Routes (Protected by Sanctum Auth, Admin Role, API Key & Rate Limiting)
+    Route::prefix('admin/guide-applications')->middleware(['auth:sanctum', 'is_admin', VerifyApiKey::class, 'throttle:60,1'])->group(function () {
         Route::get('/', [GuideApplicationController::class, 'index']);
         Route::post('/{id}/approve', [GuideApplicationController::class, 'approve']);
         Route::post('/{id}/reject', [GuideApplicationController::class, 'reject']);

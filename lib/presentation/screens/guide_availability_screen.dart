@@ -109,6 +109,7 @@ class _GuideAvailabilityScreenState extends ConsumerState<GuideAvailabilityScree
       ),
     );
 
+    if (!mounted) return;
     if (picked != null) {
       final dateOnly = DateTime(picked.year, picked.month, picked.day);
       if (!_blackoutDates.any((d) => d.year == dateOnly.year && d.month == dateOnly.month && d.day == dateOnly.day)) {
@@ -139,6 +140,7 @@ class _GuideAvailabilityScreenState extends ConsumerState<GuideAvailabilityScree
       ),
     );
 
+    if (!mounted) return;
     if (picked != null) {
       final formatted = '${picked.hour.toString().padLeft(2, '0')}:${picked.minute.toString().padLeft(2, '0')}';
       setState(() {

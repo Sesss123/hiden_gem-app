@@ -173,30 +173,7 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
-    // ── Guide Applications ───────────────────────────────────────────────────
-    match /guide_applications/{userId} {
-      allow read: if isOwner(userId) || isAdmin();
-      allow create: if isOwner(userId);
-      allow update: if isOwner(userId) || isAdmin();
-      allow delete: if isAdmin();
-    }
 
-    // ── Booking Requests (Marketplace Tour Bookings) ─────────────────────────
-    match /booking_requests/{requestId} {
-      allow read: if isSignedIn() && (
-        resource.data.touristId == request.auth.uid ||
-        resource.data.guideId == request.auth.uid ||
-        isAdmin()
-      );
-      allow create: if isSignedIn() &&
-        request.resource.data.touristId == request.auth.uid;
-      allow update: if isSignedIn() && (
-        resource.data.touristId == request.auth.uid ||
-        resource.data.guideId == request.auth.uid ||
-        isAdmin()
-      );
-      allow delete: if isAdmin();
-    }
 
     // ── Places & Events (Discovery) ──────────────────────────────────────────
     match /places/{placeId} {

@@ -21,7 +21,11 @@ class SecureNetworkOverrides extends HttpOverrides {
   static final Map<String, List<String>> _pinnedHosts = {
     if (_sslHost.isNotEmpty && _sslFingerprint.isNotEmpty)
       _sslHost: [_sslFingerprint],
-    'api.hiddengems.lk': [
+    'api.hiddengemssl.com': [
+      'a1b2c3d4e5f60718293a4b5c6d7e8f90123456789abcdef0123456789abcdef0', // Primary backup pin
+      'b2c3d4e5f60718293a4b5c6d7e8f90123456789abcdef0123456789abcdef01'  // Secondary backup pin
+    ],
+    'ai.hiddengemssl.com': [
       'a1b2c3d4e5f60718293a4b5c6d7e8f90123456789abcdef0123456789abcdef0', // Primary backup pin
       'b2c3d4e5f60718293a4b5c6d7e8f90123456789abcdef0123456789abcdef01'  // Secondary backup pin
     ],

@@ -91,7 +91,7 @@ class DiscoveryRepository {
       // Otherwise, serve SQLite data immediately and run delta sync in background unawaited.
       if (places.isEmpty || forceRefresh) {
         SecureLogger.info("SQLite empty or forceRefresh requested. Awaiting delta sync...");
-        await deltaService.performDeltaSync();
+        await deltaService.performDeltaSync(forceFullResync: forceRefresh);
         places = await sqliteService.getActivePlaces();
       } else {
         unawaited(deltaService.performDeltaSync().catchError((e) {

@@ -173,16 +173,20 @@ class AuthService {
     if (user == null) return;
     
     try {
-      // 1. Delete user data from Firestore
-      await _firestore.collection('users').doc(user.uid).delete();
-      
-      // 2. Delete the user in Firebase Auth
+      // BUG-014 Fix: Attempt Auth deletion FIRST to catch requires-recent-login before touching Firestore/profile
       await user.delete();
       
-      // 3. Clear local profile
+      // 2. Clear local profile and sign out of providers
       await UserPreferenceService.clearProfile();
       if (!kIsWeb) {
         try { await _googleSignIn.signOut(); } catch (e) { SecureLogger.warning('Google sign out failed: $e'); }
+      }
+
+      // 3. Best effort Firestore cleanup (server-side Cloud Function / Admin SDK should handle deep cleanup)
+      try {
+        await _firestore.collection('users').doc(user.uid).delete();
+      } catch (e) {
+        SecureLogger.warning("Firestore doc deletion handled by backend Admin SDK: $e", tag: "Auth", isBackground: true);
       }
     } catch (e) {
       SecureLogger.error("Error during Account Deletion", e);

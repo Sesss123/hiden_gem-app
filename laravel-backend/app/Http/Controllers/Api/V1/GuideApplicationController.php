@@ -24,9 +24,9 @@ class GuideApplicationController extends Controller
             'license_number' => 'required|string|max:255',
             'bio' => 'nullable|string',
             'category' => 'required|string|max:100',
-            'license_doc_url' => 'nullable|string|max:500',
-            'nic_doc_url' => 'nullable|string|max:500',
-            'selfie_doc_url' => 'nullable|string|max:500',
+            'license_doc_url' => ['nullable', 'string', 'max:500', 'url', 'regex:/^https:\/\/(firebasestorage\.googleapis\.com|cdn\.hiddengemssl\.com)\//'],
+            'nic_doc_url' => ['nullable', 'string', 'max:500', 'url', 'regex:/^https:\/\/(firebasestorage\.googleapis\.com|cdn\.hiddengemssl\.com)\//'],
+            'selfie_doc_url' => ['nullable', 'string', 'max:500', 'url', 'regex:/^https:\/\/(firebasestorage\.googleapis\.com|cdn\.hiddengemssl\.com)\//'],
         ]);
 
         if ($validator->fails()) {

@@ -73,9 +73,12 @@ class SecureHttpClient extends http.BaseClient {
   Future<String> _getRequestBody(http.BaseRequest request) async {
     if (request is http.Request) {
       return request.body;
+    } else if (request is http.MultipartRequest) {
+      // BUG-009 Fix: Include multipart form fields and file metadata in HMAC signature
+      final fieldsStr = request.fields.entries.map((e) => '${e.key}=${e.value}').join('&');
+      final filesStr = request.files.map((f) => '${f.field}:${f.filename}:${f.length}').join('&');
+      return '$fieldsStr|$filesStr';
     }
-    // For MultipartRequest or StreamedRequest, body signing is more complex.
-    // For this implementation, we return empty or use a checksum of the stream.
     return ''; 
   }
 

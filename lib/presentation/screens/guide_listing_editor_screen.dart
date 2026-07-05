@@ -103,8 +103,8 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
       final XFile? image = await _picker.pickImage(source: ImageSource.gallery, imageQuality: 75);
       if (image == null) return;
 
-      setState(() => _isSaving = true);
       if (!mounted) return;
+      setState(() => _isSaving = true);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Uploading photo to vault...'), backgroundColor: Colors.amber),
       );
