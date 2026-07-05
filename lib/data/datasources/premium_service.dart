@@ -9,6 +9,8 @@ import 'package:purchases_flutter/purchases_flutter.dart';
 import 'user_preference_service.dart';
 import '../../core/config/app_config.dart';
 import '../../core/utils/secure_logger.dart';
+import '../../core/services/secure_entitlements.dart';
+import '../../core/services/premium_unlock_service.dart';
 
 part 'premium_service.g.dart';
 
@@ -103,8 +105,32 @@ class PremiumNotifier extends _$PremiumNotifier {
         .snapshots()
         .listen((doc) async {
       if (doc.exists && doc.data() != null) {
-        // We still keep the Firestore listener for auxiliary server-side flags
-        // but RevenueCat is the primary source of truth for "active" status.
+        final data = doc.data()!;
+        final isPrem = data['isPremium'] == true;
+        final expiry = data['premiumExpiresAt'] ?? data['subExpiresAt'];
+        DateTime? expiryDate;
+        if (expiry != null) {
+          expiryDate = expiry is Timestamp ? expiry.toDate() : DateTime.tryParse(expiry.toString());
+        }
+        
+        // BUG-5 Fix: Immediately invalidate client state if expired or revoked
+        if (!isPrem || (expiryDate != null && expiryDate.isBefore(DateTime.now()))) {
+          if (state == true) {
+            state = false;
+            SecureEntitlements().forceRefresh();
+            PremiumUnlockService.invalidateAllUnlocks();
+            await UserPreferenceService.updatePremiumStatus(false, source: 'expired');
+            SecureLogger.info("Premium status revoked or expired via server sync.", tag: "RevenueCat");
+          }
+        } else if (isPrem && state == false) {
+          state = true;
+          SecureEntitlements().forceRefresh();
+          await UserPreferenceService.updatePremiumStatus(
+            true, 
+            plan: data['premiumPlanId'] ?? data['premiumPlan'] ?? data['subscriptionPlan'], 
+            source: 'firestore'
+          );
+        }
       }
     });
 
@@ -153,6 +179,7 @@ class PremiumNotifier extends _$PremiumNotifier {
             'premiumExpiresAt': activeEntitlement?.expirationDate != null 
                 ? Timestamp.fromDate(DateTime.parse(activeEntitlement!.expirationDate!)) 
                 : null,
+            'premiumPlanId': activeEntitlement?.productIdentifier ?? 'unknown',
             'premiumPlan': activeEntitlement?.productIdentifier ?? 'unknown',
             'premiumSource': 'revenuecat',
             'updatedAt': FieldValue.serverTimestamp(),
@@ -215,6 +242,7 @@ class PremiumNotifier extends _$PremiumNotifier {
       if (user != null) {
         await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
           'isPremium': true,
+          'premiumPlanId': 'premium_mock_dev',
           'premiumPlan': 'premium_mock_dev',
           'premiumSource': 'mock_internal',
         });

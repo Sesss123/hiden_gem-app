@@ -22,7 +22,12 @@ class SubscriptionService {
         .get();
     
     if (snapshot.docs.isEmpty) return null;
-    return SubscriptionRecord.fromJson(snapshot.docs.first.data());
+    final record = SubscriptionRecord.fromJson(snapshot.docs.first.data());
+    // SAFETY NET CHECK: Immediately fall back to free-tier if local date is past expiresAt
+    if (record.expiresAt.isBefore(DateTime.now())) {
+      return null;
+    }
+    return record;
   }
 
   /// Checks if an account has a specific entitlement or remains within limits.
@@ -126,9 +131,14 @@ class SubscriptionService {
   Future<void> startSubscription(SubscriptionRecord record) async {
     await _subscriptionRef.doc(record.subscriptionId).set(record.toJson());
     
-    // Update the account's subscription info for quick access
+    // Update the account's subscription info with standardized fields
     final collection = record.accountType == 'guide' ? 'users' : 'operator_accounts';
     await _firestore.collection(collection).doc(record.accountId).update({
+      'isPremium': record.status == 'active',
+      'premiumPlanId': record.planId,
+      'premiumExpiresAt': Timestamp.fromDate(record.expiresAt),
+      'autoRenew': true,
+      // Keep legacy aliases for backwards compatibility
       'subscriptionPlan': record.planId,
       'subExpiresAt': record.expiresAt.toIso8601String(),
     });
@@ -145,9 +155,23 @@ class SubscriptionService {
 
   /// Cancels an active subscription.
   Future<void> cancelSubscription(String subscriptionId) async {
+    final docSnap = await _subscriptionRef.doc(subscriptionId).get();
     await _subscriptionRef.doc(subscriptionId).update({
       'status': 'cancelled',
+      'autoRenew': false,
       'cancelledAt': DateTime.now().toIso8601String(),
     });
+    
+    if (docSnap.exists && docSnap.data() != null) {
+      final data = docSnap.data()!;
+      final accountId = data['accountId'] as String?;
+      final accountType = data['accountType'] as String?;
+      if (accountId != null && accountType != null) {
+        final collection = accountType == 'guide' ? 'users' : 'operator_accounts';
+        await _firestore.collection(collection).doc(accountId).update({
+          'autoRenew': false,
+        });
+      }
+    }
   }
 }

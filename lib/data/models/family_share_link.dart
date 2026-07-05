@@ -60,4 +60,32 @@ class FamilyShareLink {
     permissions: Map<String, bool>.from(json['permissions'] ?? {}),
     viewCount: json['viewCount'] ?? 0,
   );
+
+  bool get isExpired => DateTime.now().isAfter(expiresAt);
+
+  FamilyShareLink copyWith({
+    String? shareId,
+    String? touristId,
+    String? sessionId,
+    String? recipientName,
+    String? recipientContact,
+    String? shareToken,
+    DateTime? expiresAt,
+    bool? isActive,
+    Map<String, bool>? permissions,
+    int? viewCount,
+  }) {
+    return FamilyShareLink(
+      shareId: shareId ?? this.shareId,
+      touristId: touristId ?? this.touristId,
+      sessionId: sessionId ?? this.sessionId,
+      recipientName: recipientName ?? this.recipientName,
+      recipientContact: recipientContact ?? this.recipientContact,
+      shareToken: shareToken ?? this.shareToken,
+      expiresAt: expiresAt ?? this.expiresAt,
+      isActive: isActive ?? this.isActive,
+      permissions: permissions ?? this.permissions,
+      viewCount: viewCount ?? this.viewCount,
+    );
+  }
 }

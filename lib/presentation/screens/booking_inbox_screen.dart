@@ -4,11 +4,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
+import '../../core/theme/app_theme.dart';
 import '../../core/theme/oracle_ui_system.dart';
 import '../../data/models/booking_request.dart';
 import '../../data/models/tour_session.dart';
 import '../../data/repositories/booking_repository.dart';
 import '../../data/repositories/tour_session_repository.dart';
+import '../../data/datasources/user_preference_service.dart';
 import 'tourist_companion_hub.dart';
 
 class BookingInboxScreen extends ConsumerStatefulWidget {
@@ -113,22 +115,11 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
           String label = filter.replaceAll('_', ' ').toUpperCase();
           if (filter == 'session_ready') label = 'READY FOR TOUR';
 
-          return ChoiceChip(
-            label: Text(
-              label,
-              style: GoogleFonts.inter(
-                fontSize: 12,
-                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                color: isSelected ? Colors.black : Colors.white70,
-              ),
-            ),
-            selected: isSelected,
-            selectedColor: Colors.amber[400],
-            backgroundColor: Colors.white.withValues(alpha: 0.08),
-            side: BorderSide(
-              color: isSelected ? Colors.amber : Colors.white.withValues(alpha: 0.2),
-            ),
-            onSelected: (_) {
+          return OracleUI.glassChip(
+            context: context,
+            label: label,
+            isSelected: isSelected,
+            onTap: () {
               HapticFeedback.lightImpact();
               setState(() => _selectedFilter = filter);
             },
@@ -145,12 +136,12 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.inbox_outlined, size: 64, color: Colors.white.withValues(alpha: 0.3)),
+            Icon(Icons.inbox_outlined, size: 64, color: AppTheme.textSecondary(context).withValues(alpha: 0.4)),
             const SizedBox(height: 16),
             Text(
               "No ${_selectedFilter == 'all' ? '' : _selectedFilter.replaceAll('_', ' ')} booking requests.",
               textAlign: TextAlign.center,
-              style: GoogleFonts.inter(fontSize: 16, color: Colors.white70),
+              style: GoogleFonts.inter(fontSize: 16, color: AppTheme.textSecondary(context)),
             ),
           ],
         ),
@@ -166,16 +157,10 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.08),
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(color: statusColor.withValues(alpha: 0.4), width: 1.5),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.2),
-            blurRadius: 15,
-            offset: const Offset(0, 8),
-          ),
-        ],
+        boxShadow: AppTheme.softShadow,
       ),
       child: Padding(
         padding: const EdgeInsets.all(20),
@@ -190,7 +175,7 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
                     Container(
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
-                        color: statusColor.withValues(alpha: 0.2),
+                        color: statusColor.withValues(alpha: 0.15),
                         shape: BoxShape.circle,
                       ),
                       child: Icon(_getStatusIcon(request.status), color: statusColor, size: 20),
@@ -204,12 +189,12 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
                           style: GoogleFonts.outfit(
                             fontSize: 14,
                             fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                            color: AppTheme.textPrimary(context),
                           ),
                         ),
                         Text(
                           "Requested ${timeFormat.format(request.createdAt)}",
-                          style: GoogleFonts.inter(fontSize: 11, color: Colors.white60),
+                          style: GoogleFonts.inter(fontSize: 11, color: AppTheme.textSecondary(context)),
                         ),
                       ],
                     ),
@@ -218,7 +203,7 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
-                    color: statusColor.withValues(alpha: 0.2),
+                    color: statusColor.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(color: statusColor),
                   ),
@@ -235,7 +220,7 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
               ],
             ),
             const SizedBox(height: 16),
-            Divider(color: Colors.white.withValues(alpha: 0.1)),
+            Divider(color: AppTheme.borderColor(context)),
             const SizedBox(height: 12),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -266,22 +251,22 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
                 width: double.infinity,
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.black.withValues(alpha: 0.2),
+                  color: (Theme.of(context).brightness == Brightness.dark ? Colors.black : Colors.grey[200]!).withValues(alpha: 0.5),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("TOUR NOTES / REQUIREMENTS:", style: GoogleFonts.outfit(fontSize: 10, color: Colors.amber[300], fontWeight: FontWeight.bold, letterSpacing: 1)),
+                    Text("TOUR NOTES / REQUIREMENTS:", style: GoogleFonts.outfit(fontSize: 10, color: Colors.amber[800], fontWeight: FontWeight.bold, letterSpacing: 1)),
                     const SizedBox(height: 4),
-                    Text(request.notes!, style: GoogleFonts.inter(fontSize: 13, color: Colors.white70)),
+                    Text(request.notes!, style: GoogleFonts.inter(fontSize: 13, color: AppTheme.textPrimary(context))),
                   ],
                 ),
               ),
             ],
             if (request.responseNote != null && request.responseNote!.isNotEmpty) ...[
               const SizedBox(height: 12),
-              Text("Your response note: ${request.responseNote}", style: GoogleFonts.inter(fontSize: 12, fontStyle: FontStyle.italic, color: Colors.white60)),
+              Text("Your response note: ${request.responseNote}", style: GoogleFonts.inter(fontSize: 12, fontStyle: FontStyle.italic, color: AppTheme.textSecondary(context))),
             ],
             if (request.status == 'pending') ...[
               const SizedBox(height: 20),
@@ -304,8 +289,8 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
                     child: ElevatedButton(
                       onPressed: () => _handleAccept(request),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.greenAccent[400],
-                        foregroundColor: Colors.black,
+                        backgroundColor: Colors.greenAccent[700],
+                        foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                         elevation: 4,
@@ -332,10 +317,10 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
                       ),
                     );
                   },
-                  icon: const Icon(Icons.play_arrow_rounded, color: Colors.black),
-                  label: Text("START / LAUNCH TOUR SESSION", style: GoogleFonts.outfit(color: Colors.black, fontWeight: FontWeight.bold, letterSpacing: 1)),
+                  icon: const Icon(Icons.play_arrow_rounded, color: Colors.white),
+                  label: Text("START / LAUNCH TOUR SESSION", style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold, letterSpacing: 1)),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.amber,
+                    backgroundColor: Colors.amber[800],
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   ),
@@ -351,13 +336,13 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
   Widget _buildDetailItem(IconData icon, String label, String value) {
     return Row(
       children: [
-        Icon(icon, color: Colors.white60, size: 16),
+        Icon(icon, color: AppTheme.textSecondary(context), size: 16),
         const SizedBox(width: 8),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(label, style: GoogleFonts.inter(fontSize: 10, color: Colors.white60)),
-            Text(value, style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white)),
+            Text(label, style: GoogleFonts.inter(fontSize: 10, color: AppTheme.textSecondary(context))),
+            Text(value, style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.bold, color: AppTheme.textPrimary(context))),
           ],
         ),
       ],
@@ -368,13 +353,13 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
     switch (status) {
       case 'pending': return Colors.orangeAccent;
       case 'accepted':
-      case 'session_ready': return Colors.greenAccent;
+      case 'session_ready': return Colors.green;
       case 'completed': return Colors.blueAccent;
       case 'declined':
       case 'cancelled':
       case 'cancelled_by_tourist':
       case 'cancelled_by_guide': return Colors.redAccent;
-      default: return Colors.white70;
+      default: return AppTheme.textSecondary(context);
     }
   }
 
@@ -421,6 +406,10 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
       await bookingRepo.respondToRequest(bookingId: request.bookingId, status: 'session_ready', note: 'Booking Accepted! Session ready.');
       await bookingRepo.updateLinkedSessionId(request.bookingId, sessionId);
 
+      final profile = UserPreferenceService.getProfile();
+      profile.currentBatchId = sessionId;
+      await UserPreferenceService.saveProfile(profile);
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("🎉 Booking accepted & Tour Session created!"), backgroundColor: Colors.green),
@@ -442,23 +431,23 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF1E1E1E),
+        backgroundColor: Theme.of(context).cardColor,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20), side: const BorderSide(color: Colors.redAccent)),
-        title: Text("Decline Booking?", style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold)),
+        title: Text("Decline Booking?", style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.bold)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("Please provide a reason for declining (optional):", style: GoogleFonts.inter(color: Colors.white70, fontSize: 13)),
+            Text("Please provide a reason for declining (optional):", style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 13)),
             const SizedBox(height: 12),
             TextField(
               controller: noteController,
-              style: GoogleFonts.inter(color: Colors.white),
+              style: GoogleFonts.inter(color: AppTheme.textPrimary(context)),
               decoration: InputDecoration(
                 hintText: "e.g. Fully booked on this date / Vehicle maintenance",
-                hintStyle: GoogleFonts.inter(color: Colors.white30, fontSize: 12),
+                hintStyle: GoogleFonts.inter(color: AppTheme.textSecondary(context).withValues(alpha: 0.5), fontSize: 12),
                 filled: true,
-                fillColor: Colors.white.withValues(alpha: 0.08),
+                fillColor: AppTheme.borderColor(context),
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
               ),
               maxLines: 2,
@@ -466,7 +455,7 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
           ],
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text("CANCEL", style: TextStyle(color: Colors.white70))),
+          TextButton(onPressed: () => Navigator.pop(context, false), child: Text("CANCEL", style: TextStyle(color: AppTheme.textSecondary(context)))),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent, foregroundColor: Colors.white),

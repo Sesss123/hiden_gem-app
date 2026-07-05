@@ -56,6 +56,8 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid == null) return;
 
+    _repo.getMyApplication().catchError((_) => null);
+
     _appSub = _repo.watchMyApplication(uid).listen((app) {
       if (app != null && mounted) {
         setState(() {

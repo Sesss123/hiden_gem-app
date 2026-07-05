@@ -1,22 +1,89 @@
-## Active Milestone: Combined Master Remediation Plan (v15.0)
+## Completed Milestone: Fix UI/UX Visual Bugs & Theme-Awareness on 5 Screens (v21.0) (Completed 2026-07-05)
+- [x] Booking Inbox & Request Linkage (`booking_inbox_screen.dart`)
+  - [x] Replaced hardcoded white colors (`Colors.white`, `Colors.white60`, etc.) with theme-aware `AppTheme.textPrimary` and `AppTheme.textSecondary`
+  - [x] Replaced standard ChoiceChip filter pills with custom `OracleUI.glassChip` for consistent tropical modern styling
+- [x] Coordination Hub (`family_share_screen.dart`)
+  - [x] Replaced all hardcoded white text, cards, and icons with theme-aware `AppTheme.textPrimary`, `AppTheme.textSecondary`, and `Theme.of(context).cardColor` to fix white-on-white unreadable text in Light Theme
+- [x] Earnings & Payouts (`guide_earnings_screen.dart`)
+  - [x] Fixed invisible "BANK" OutlinedButton which had hardcoded `foregroundColor: Colors.white` on cream background
+  - [x] Replaced hardcoded white background and text on transaction cards with theme-aware `Theme.of(context).cardColor` and `AppTheme.textPrimary`
+  - [x] Updated filter chips to use `OracleUI.glassChip`
+- [x] Manage Experience Listing (`guide_listing_editor_screen.dart`)
+  - [x] Replaced text fields, dropdowns, switches, and availability button containers which were previously using `Colors.white.withValues(alpha: 0.08)` (invisible white boxes on light theme) and `Colors.white` text with theme-aware card colors and text styles
+- [x] Availability & Schedule (`guide_availability_screen.dart`)
+  - [x] Replaced hardcoded white text and container backgrounds with theme-aware `AppTheme.textPrimary`, `AppTheme.textSecondary`, and `Theme.of(context).cardColor` to fix white-on-white unreadable text
+  - [x] Fixed right overflow by 27px in "Advance Notice Required" by wrapping text column in `Expanded(...)`
+  - [x] Fixed right overflow by 91px in "Recurring Weekly Schedule" by replacing rigid `SizedBox(width: 100)` with `Expanded(child: Text(dayName))` and tightening time picker button paddings
+
+## Completed Milestone: Phase 2 Core Features — Guide Dashboard Data Flow, Tour Session Linkage, Reviews & Earnings (v20.0) (Completed 2026-07-05)
+- [x] Tour Session Repository & Linkage Layer (`tour_session_repository.dart`)
+  - [x] Add `getActiveOrInitialSessionForGuide(String guideId)` to discover active or initial sessions automatically
+  - [x] Update `endSession(...)` to query linked `booking_requests`, update status to `'completed'`, and calculate 10% platform commission & 90% guide net earned
+- [x] Booking Inbox & Request Linkage (`booking_inbox_screen.dart`)
+  - [x] Ensure `_handleAccept` saves `currentBatchId` to device preferences and stores tourist count/meeting point properly on the session
+- [x] Guide Dashboard Data Flow & Manual Start (`guide_dashboard_screen.dart`)
+  - [x] Update `_loadActiveSession()` to call `getActiveOrInitialSessionForGuide(uid)` and sync local profile
+  - [x] Wire "Start Tour Session" button (Manual Start decision) to transition `'initial'` -> `'active'`, generate QR token, start location sync, and update booking status to `'in_progress'`
+  - [x] Implement Hybrid Review Prompt: show immediate review dialog 30s after session ends for tourists, with next-day reminder fallback if dismissed
+- [x] Earnings & Reviews Data Flow (`guide_earnings_screen.dart`, `review_submission_screen.dart`)
+  - [x] Ensure `GuideEarningsScreen` displays completed bookings with gross price, 10% commission deducted, and net earned
+  - [x] Verify review submission updates guide ratings and analytics snapshots
+- [x] Create automated test verifying commission calculation and session priority
+
+## Completed Milestone: Phase 1 Ecosystem Audit & Firestore Blocking Rules Fix (Completed 2026-07-05)
+- [x] Audit Phase 1 checklist against codebase: verified Guide Approval Real-Time Sync, Marketplace Discovery, Guide Listing Editor, Booking Inbox, and Tourist Booking Flow are built in Flutter & Laravel
+- [x] Fix Guide Reapplication Blocker: update `/guide_applications/{userId}` in `firestore.rules` to allow owners to update their application without restriction (`isOwner(userId) || isAdmin()`)
+- [x] Fix Marketplace Booking Blocker: add missing `/booking_requests/{requestId}` collection rules to `firestore.rules` so tourist booking submissions and guide inbox queries do not fail with permission denied errors
+
+## Completed Milestone: Fix Silent Data-Loss in Version-Based Delta Sync Pipeline (Completed 2026-07-05)
+- [x] In `parseDeltaPayload()`, capture malformed JSON/model records into `failedItems` and log via `SecureLogger.error`
+- [x] In `SqliteStorageService`, create persistent `sync_quarantine` SQLite table and `quarantineItems()` / `retryQuarantinedItems()` recovery methods (Strategy B & C)
+- [x] In `upsertPlaces()`, capture per-row SQLite insert failures into `sync_quarantine` instead of silently dropping
+- [x] Add diagnostic method `getSyncFailureLog()` to inspect quarantined records
+- [x] Add clear comment above `while (hasMore)` loop explaining cursor advancement and quarantine recovery behavior
+- [x] Create unit test `test/delta_sync_test.dart` confirming error capture, valid place upserts, and quarantine flagging
+
+## Completed Milestone: Fix Subscription Lifecycle Management (v19.0) (Completed 2026-07-05)
+- [x] Standardize subscription fields across subscription_service.dart and functions/index.ts (isPremium, premiumPlanId, premiumExpiresAt)
+- [x] Update revenuecat_webhook in functions/index.ts to propagate changes to users/operator_accounts
+- [x] Create daily scheduled Cloud Function for expiration safety net and renewal reminders
+- [x] Verify/fix client-side entitlement caching and invalidation (premium_service.dart, subscription_service.dart)
+- [x] Secure HMAC_SECRET using environment config/secrets
+- [x] Document manual test plan for subscription lifecycle
+
+## Completed Milestone: Combined Master Remediation Plan (v15.0)
 - [x] Phase 1: Laravel Backend & Database Schema
   - [x] Exec #1 & #16 / Audit #21: Update migration `2026_07_01_000002_create_places_table.php` (change `unique` to `index` for `sync_version`, change `id` length to 36)
   - [x] Exec #2 / Audit #2, #3, #14: Wrap `PlaceObserver::saving()` and `deleting()` in `DB::transaction`, and handle image cleanup on delete
   - [x] Exec #6, #10, #13 / Audit #13, #20, #23: Update `PlaceSyncController.php` (cursor pagination, secondary ordering, collection resolve, dynamic limit, off-by-one hasMore fix)
   - [x] Exec #17: Optimize `PlaceResource.php` null-coalescing evaluations
-- [/] Phase 2: Flutter Data & Core Layer (Sync Pipeline & Performance)
-  - [ ] Audit #5, #7, #12: Update `DiscoveryPlace` model (`openingHours`, `syncVersion`, null-safe `rating`, clean image fallback)
-  - [ ] Exec #4, #7, #9, #11, #18 / Audit #10, #11, #22: Update `SqliteStorageService`
-  - [ ] Audit #4, #6, #9: Update `DeltaSyncService`
-  - [ ] Exec #8 / Audit #1, Exec #14: Update `DiscoveryRemoteDataSource`
-  - [ ] Exec #12: Update `DiscoveryLocalDataSource`
-  - [ ] Exec #3, #5, #15 / Audit #8, #18: Update `DiscoveryRepository`
-- [ ] Phase 3: Layers A–E (Auth, Config & Lifecycle)
-  - [ ] Audit #16: Update `AuthService`
-  - [ ] Audit #17: Update `PremiumService`
-  - [ ] Audit #15: Update `AppConfig`
-  - [ ] Audit #19: Update `firebase_options.dart`
-- [ ] Phase 4: Verification & Quality Assurance
+- [x] Phase 2: Flutter Data & Core Layer (Sync Pipeline & Performance)
+  - [x] Audit #5, #7, #12: Update `DiscoveryPlace` model (`openingHours`, `syncVersion`, null-safe `rating`, clean image fallback)
+  - [x] Exec #4, #7, #9, #11, #18 / Audit #10, #11, #22: Update `SqliteStorageService`
+  - [x] Audit #4, #6, #9: Update `DeltaSyncService`
+  - [x] Exec #8 / Audit #1, Exec #14: Update `DiscoveryRemoteDataSource`
+  - [x] Exec #12: Update `DiscoveryLocalDataSource`
+  - [x] Exec #3, #5, #15 / Audit #8, #18: Update `DiscoveryRepository`
+- [x] Phase 3: Layers A–E (Auth, Config & Lifecycle)
+  - [x] Audit #16: Update `AuthService`
+  - [x] Audit #17: Update `PremiumService`
+  - [x] Audit #15: Update `AppConfig`
+  - [x] Audit #19: Update `firebase_options.dart`
+- [x] Phase 4: Verification & Quality Assurance
+
+## Completed Milestone: In-App Privacy Policy & Legal Compliance (v18.0) (Completed 2026-07-05)
+- [x] Create privacy_policy_screen.dart with expandable sections, OracleUI styling, Sri Lanka compliance, and contact button
+- [x] Add entry points in profile_screen.dart and terms_screen.dart
+
+## Completed Milestone: Fix Family Sharing Feature (v17.0) (Completed 2026-07-05)
+- [x] Fix non-functional Family Sharing in family_share_screen.dart (controller, stateful bottom sheet, random token, link generation, TODO comment)
+
+## Completed Milestone: Laravel-Driven Guide Approval with Firestore Sync (v16.0) (Completed 2026-07-05)
+- [x] Step 1: Install and configure Firebase Admin SDK (`kreait/firebase-php`) in Laravel
+- [x] Step 2: Create `FirestoreService.php` lightweight REST wrapper service (gRPC-free for Windows/XAMPP compatibility)
+- [x] Step 3: Update `GuideController.php` to sync approval and rejection to Firestore in database transaction
+- [x] Step 4: Verify and test `GuideController` syntax and integration
+- [x] Bug Fix: Add FirestoreService sync to API GuideApplicationController and auto-call getMyApplication() on screen load in Flutter app (Completed 2026-07-05)
 
 ## Completed Milestone: Master Enterprise Remediation Plan Execution (v12.0)
 - [x] 1. Laravel Backend & MySQL Schema / Sync (`laravel-backend/`)

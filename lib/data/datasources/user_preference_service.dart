@@ -180,6 +180,11 @@ class UserPreferenceService {
         p.premiumSource = source;
         p.premiumExpiresAt = expiry;
         p.premiumSignature = signature;
+      } else {
+        if (p.role == 'premium_user') p.role = 'user';
+        p.premiumPlan = null;
+        p.premiumExpiresAt = null;
+        p.premiumSignature = null;
       }
     });
     await _flushToDisk(force: true); // Financial — always flush immediately

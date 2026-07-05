@@ -72,6 +72,30 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
+    // ── Guide Applications (Enrollment & Approval) ───────────────────────────
+    match /guide_applications/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow create: if isOwner(userId);
+      allow update: if isAdmin() || (isOwner(userId) && resource.data.status == 'rejected');
+      allow delete: if isAdmin();
+    }
+
+    // ── Booking Requests (Marketplace Tour Bookings) ─────────────────────────
+    match /booking_requests/{bookingId} {
+      allow read: if isSignedIn() && (
+        resource.data.touristId == request.auth.uid ||
+        resource.data.guideId == request.auth.uid ||
+        isAdmin()
+      );
+      allow create: if isSignedIn() && request.resource.data.touristId == request.auth.uid;
+      allow update: if isSignedIn() && (
+        resource.data.touristId == request.auth.uid ||
+        resource.data.guideId == request.auth.uid ||
+        isAdmin()
+      );
+      allow delete: if isAdmin();
+    }
+
     // ── Tour Packages ────────────────────────────────────────────────────────
     match /tour_packages/{packageId} {
       allow read: if isSignedIn();
@@ -98,7 +122,7 @@ service cloud.firestore {
 
     // ── Tour Sessions ────────────────────────────────────────────────────────
     match /tour_sessions/{sessionId} {
-      allow read: if isSignedIn();
+      allow read: if isSignedIn() || resource.data.trackingEnabled == true || resource.data.isJoinOpen == true;
       allow create: if isVerifiedGuide() &&
         request.resource.data.guideId == request.auth.uid;
       allow update: if isSignedIn() && (
@@ -126,6 +150,17 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
+    // ── Family Share Links (Live Tracking & Safety) ─────────────────────────
+    match /family_share_links/{shareId} {
+      allow read, write: if isSignedIn() && (
+        resource == null || resource.data.touristId == request.auth.uid || request.resource.data.touristId == request.auth.uid
+      );
+      allow get: if resource.data.isActive == true && resource.data.expiresAt > request.time;
+      allow list: if isSignedIn() && resource.data.touristId == request.auth.uid;
+      allow update: if resource.data.isActive == true && resource.data.expiresAt > request.time &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['viewCount']);
+    }
+
     // ── Vehicles ─────────────────────────────────────────────────────────────
     match /vehicles/{vehicleId} {
       allow read: if isSignedIn();
@@ -142,7 +177,24 @@ service cloud.firestore {
     match /guide_applications/{userId} {
       allow read: if isOwner(userId) || isAdmin();
       allow create: if isOwner(userId);
-      allow update: if isAdmin() || (isOwner(userId) && resource.data.status == 'rejected');
+      allow update: if isOwner(userId) || isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // ── Booking Requests (Marketplace Tour Bookings) ─────────────────────────
+    match /booking_requests/{requestId} {
+      allow read: if isSignedIn() && (
+        resource.data.touristId == request.auth.uid ||
+        resource.data.guideId == request.auth.uid ||
+        isAdmin()
+      );
+      allow create: if isSignedIn() &&
+        request.resource.data.touristId == request.auth.uid;
+      allow update: if isSignedIn() && (
+        resource.data.touristId == request.auth.uid ||
+        resource.data.guideId == request.auth.uid ||
+        isAdmin()
+      );
       allow delete: if isAdmin();
     }
 
@@ -248,6 +300,12 @@ service cloud.firestore {
       allow create: if isSignedIn();
       allow read: if isAdmin();
       allow update, delete: if false;
+    }
+
+    // ── User Notifications (In-App Push & Alerts) ────────────────────────
+    match /user_notifications/{notiId} {
+      allow read, update, delete: if isSignedIn() && resource.data.recipientId == request.auth.uid;
+      allow create: if isSignedIn();
     }
 
     // ── Device Trust Graph (Phase 3: Account-Device Bindings) ────────────

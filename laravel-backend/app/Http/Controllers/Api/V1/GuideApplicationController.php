@@ -7,6 +7,8 @@ use App\Models\GuideApplication;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Log;
+use App\Services\FirestoreService;
 
 class GuideApplicationController extends Controller
 {
@@ -116,6 +118,22 @@ class GuideApplicationController extends Controller
             $user->update(['role' => 'guide_approved']);
         }
 
+        // Sync to Firestore — guide_applications & users collections
+        try {
+            $firestoreService = new FirestoreService();
+            $firestoreService->updateGuideApplication($application->user_id, [
+                'status' => 'approved',
+                'reviewedAt' => now()->toIso8601String(),
+            ]);
+            $firestoreService->updateGuideUser($application->user_id, [
+                'role' => 'guide_approved',
+                'guideStatus' => 'approved',
+                'isGuideApproved' => true,
+            ]);
+        } catch (\Exception $e) {
+            Log::warning("Firestore sync failed in API approve: " . $e->getMessage());
+        }
+
         return response()->json([
             'status' => 'success',
             'message' => 'Guide application approved successfully.',
@@ -154,6 +172,22 @@ class GuideApplicationController extends Controller
             'reviewed_at' => now(),
             'admin_comment' => $request->input('admin_comment'),
         ]);
+
+        // Sync to Firestore — guide_applications & users collections
+        try {
+            $firestoreService = new FirestoreService();
+            $firestoreService->updateGuideApplication($application->user_id, [
+                'status' => 'rejected',
+                'adminComment' => $request->input('admin_comment'),
+                'reviewedAt' => now()->toIso8601String(),
+            ]);
+            $firestoreService->updateGuideUser($application->user_id, [
+                'guideStatus' => 'rejected',
+                'guideRejectionReason' => $request->input('admin_comment'),
+            ]);
+        } catch (\Exception $e) {
+            Log::warning("Firestore sync failed in API reject: " . $e->getMessage());
+        }
 
         return response()->json([
             'status' => 'success',

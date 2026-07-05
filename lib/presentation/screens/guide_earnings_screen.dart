@@ -225,8 +225,8 @@ class _GuideEarningsScreenState extends ConsumerState<GuideEarningsScreen> {
             child: OutlinedButton.icon(
               onPressed: () => _showPayoutSettingsDialog(context),
               style: OutlinedButton.styleFrom(
-                foregroundColor: Colors.white,
-                side: BorderSide(color: Colors.white.withValues(alpha: 0.3)),
+                foregroundColor: AppTheme.textPrimary(context),
+                side: BorderSide(color: AppTheme.borderColor(context)),
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
               ),
@@ -260,25 +260,11 @@ class _GuideEarningsScreenState extends ConsumerState<GuideEarningsScreen> {
 
   Widget _filterChip(String filterKey, String label) {
     final isSelected = _selectedFilter == filterKey;
-    return GestureDetector(
+    return OracleUI.glassChip(
+      context: context,
+      label: label,
+      isSelected: isSelected,
       onTap: () => setState(() => _selectedFilter = filterKey),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        decoration: BoxDecoration(
-          color: isSelected ? AppPalette.rust : Colors.white.withValues(alpha: 0.08),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: isSelected ? AppPalette.rust : Colors.white24),
-        ),
-        child: Text(
-          label,
-          style: GoogleFonts.outfit(
-            color: isSelected ? Colors.white : Colors.white70,
-            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-            fontSize: 12,
-          ),
-        ),
-      ),
     );
   }
 
@@ -290,13 +276,13 @@ class _GuideEarningsScreenState extends ConsumerState<GuideEarningsScreen> {
     Color statusColor;
     String statusLabel;
     if (status == 'paid') {
-      statusColor = Colors.greenAccent;
+      statusColor = Colors.green;
       statusLabel = "✅ PAID";
     } else if (status == 'disputed') {
       statusColor = Colors.redAccent;
       statusLabel = "⚠️ DISPUTED";
     } else {
-      statusColor = Colors.amberAccent;
+      statusColor = Colors.orange;
       statusLabel = "⏳ PENDING";
     }
 
@@ -304,9 +290,10 @@ class _GuideEarningsScreenState extends ConsumerState<GuideEarningsScreen> {
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFF1B263B).withValues(alpha: 0.6),
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+        border: Border.all(color: AppTheme.borderColor(context)),
+        boxShadow: AppTheme.softShadow,
       ),
       child: Row(
         children: [
@@ -325,12 +312,12 @@ class _GuideEarningsScreenState extends ConsumerState<GuideEarningsScreen> {
               children: [
                 Text(
                   "Tour Booking #${req.bookingId.substring(0, 6).toUpperCase()}",
-                  style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),
+                  style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.bold, color: AppTheme.textPrimary(context)),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   "${req.guestCount} Guests • ${req.requestedDate.toString().split(' ')[0]}",
-                  style: GoogleFonts.inter(fontSize: 12, color: Colors.white60),
+                  style: GoogleFonts.inter(fontSize: 12, color: AppTheme.textSecondary(context)),
                 ),
                 const SizedBox(height: 6),
                 Row(
@@ -346,7 +333,7 @@ class _GuideEarningsScreenState extends ConsumerState<GuideEarningsScreen> {
                     const SizedBox(width: 8),
                     Text(
                       "Tour: ${req.status.toUpperCase()}",
-                      style: GoogleFonts.outfit(fontSize: 10, color: Colors.white54),
+                      style: GoogleFonts.outfit(fontSize: 10, color: AppTheme.textSecondary(context)),
                     ),
                   ],
                 ),
@@ -358,12 +345,12 @@ class _GuideEarningsScreenState extends ConsumerState<GuideEarningsScreen> {
             children: [
               Text(
                 "LKR ${net.toStringAsFixed(0)}",
-                style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.greenAccent),
+                style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.green[700]),
               ),
               const SizedBox(height: 2),
               Text(
                 "Gross: LKR ${gross.toStringAsFixed(0)}",
-                style: GoogleFonts.inter(fontSize: 11, color: Colors.white38, decoration: TextDecoration.lineThrough),
+                style: GoogleFonts.inter(fontSize: 11, color: AppTheme.textSecondary(context).withValues(alpha: 0.6), decoration: TextDecoration.lineThrough),
               ),
             ],
           ),
@@ -377,17 +364,17 @@ class _GuideEarningsScreenState extends ConsumerState<GuideEarningsScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.account_balance_wallet_outlined, size: 56, color: Colors.white.withValues(alpha: 0.2)),
+          Icon(Icons.account_balance_wallet_outlined, size: 56, color: AppTheme.textSecondary(context).withValues(alpha: 0.3)),
           const SizedBox(height: 16),
           Text(
             "No Transactions Found",
-            style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white70),
+            style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.textPrimary(context)),
           ),
           const SizedBox(height: 8),
           Text(
             "When you complete tour bookings, your net payouts\nwill appear here automatically.",
             textAlign: TextAlign.center,
-            style: GoogleFonts.inter(fontSize: 13, color: Colors.white38),
+            style: GoogleFonts.inter(fontSize: 13, color: AppTheme.textSecondary(context)),
           ),
         ],
       ),
@@ -405,17 +392,17 @@ class _GuideEarningsScreenState extends ConsumerState<GuideEarningsScreen> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: const Color(0xFF1B263B),
+        backgroundColor: Theme.of(context).cardColor,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text("Request Payout", style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold)),
+        title: Text("Request Payout", style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.bold)),
         content: Text(
           "You are requesting a transfer of LKR ${pendingPayout.toStringAsFixed(0)} to your registered Bank Account / Mobile Money wallet.\n\nTransfers are processed by the Oracle finance team within 24 business hours.",
-          style: GoogleFonts.inter(color: Colors.white70, fontSize: 13),
+          style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 13),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: Text("CANCEL", style: GoogleFonts.outfit(color: Colors.white54)),
+            child: Text("CANCEL", style: GoogleFonts.outfit(color: AppTheme.textSecondary(context))),
           ),
           ElevatedButton(
             onPressed: () {
@@ -443,29 +430,29 @@ class _GuideEarningsScreenState extends ConsumerState<GuideEarningsScreen> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: const Color(0xFF1B263B),
+        backgroundColor: Theme.of(context).cardColor,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text("Payout Account Settings", style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold)),
+        title: Text("Payout Account Settings", style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.bold)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             TextField(
               controller: bankController,
-              style: const TextStyle(color: Colors.white),
-              decoration: const InputDecoration(labelText: "Bank Name / Wallet Provider", labelStyle: TextStyle(color: Colors.white60)),
+              style: TextStyle(color: AppTheme.textPrimary(context)),
+              decoration: InputDecoration(labelText: "Bank Name / Wallet Provider", labelStyle: TextStyle(color: AppTheme.textSecondary(context))),
             ),
             const SizedBox(height: 12),
             TextField(
               controller: accController,
-              style: const TextStyle(color: Colors.white),
-              decoration: const InputDecoration(labelText: "Account / Phone Number", labelStyle: TextStyle(color: Colors.white60)),
+              style: TextStyle(color: AppTheme.textPrimary(context)),
+              decoration: InputDecoration(labelText: "Account / Phone Number", labelStyle: TextStyle(color: AppTheme.textSecondary(context))),
             ),
           ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: Text("CANCEL", style: GoogleFonts.outfit(color: Colors.white54)),
+            child: Text("CANCEL", style: GoogleFonts.outfit(color: AppTheme.textSecondary(context))),
           ),
           ElevatedButton(
             onPressed: () {

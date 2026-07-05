@@ -132,7 +132,17 @@ class SecureEntitlements {
     if (_serverClaimsCache != null &&
         _cacheExpiry != null &&
         DateTime.now().isBefore(_cacheExpiry!)) {
-      return _serverClaimsCache;
+      if (_serverClaimsCache!.containsKey('premiumExpiresAt')) {
+        final expiryMs = _serverClaimsCache!['premiumExpiresAt'] as int?;
+        if (expiryMs != null && DateTime.now().millisecondsSinceEpoch > expiryMs) {
+          debugPrint('[SecureEntitlements] Cached premiumExpiresAt passed. Invalidating cache.');
+          forceRefresh();
+        } else {
+          return _serverClaimsCache;
+        }
+      } else {
+        return _serverClaimsCache;
+      }
     }
 
     try {

@@ -9,6 +9,7 @@ import '../../data/datasources/user_preference_service.dart';
 import '../../data/datasources/auth_service.dart';
 import 'home_screen.dart';
 import 'login_screen.dart';
+import 'privacy_policy_screen.dart';
 
 class TermsScreen extends ConsumerStatefulWidget {
   const TermsScreen({super.key});
@@ -102,6 +103,25 @@ class _TermsScreenState extends ConsumerState<TermsScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20.0),
               child: Column(
                 children: [
+                  TextButton.icon(
+                    onPressed: () {
+                      HapticFeedback.selectionClick();
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const PrivacyPolicyScreen()),
+                      );
+                    },
+                    icon: const Icon(Icons.privacy_tip_outlined, size: 18),
+                    label: Text(
+                      "Read Full Privacy Policy & Legal Document",
+                      style: GoogleFonts.inter(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                        decoration: TextDecoration.underline,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
                   _buildCheckbox(
                     value: _agreedToTerms,
                     label: "I accept the Privacy Protocol & Terms of Service",

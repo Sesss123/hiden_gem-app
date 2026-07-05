@@ -101,17 +101,23 @@ class BookingRepository {
       query = query.where('guideId', isEqualTo: ownerId);
     }
 
-    return query.orderBy('createdAt', descending: true).snapshots().map((snapshot) =>
-        snapshot.docs.map((doc) => BookingRequest.fromJson(doc.data() as Map<String, dynamic>)).toList());
+    return query.snapshots().map((snapshot) {
+      final docs = snapshot.docs.map((doc) => BookingRequest.fromJson(doc.data() as Map<String, dynamic>)).toList();
+      docs.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+      return docs;
+    });
   }
 
   /// Retrieves a tourist's own booking history.
   Stream<List<BookingRequest>> getTouristBookings(String touristId) {
     return _bookingRef
         .where('touristId', isEqualTo: touristId)
-        .orderBy('createdAt', descending: true)
         .snapshots()
-        .map((snapshot) => snapshot.docs.map((doc) => BookingRequest.fromJson(doc.data())).toList());
+        .map((snapshot) {
+          final docs = snapshot.docs.map((doc) => BookingRequest.fromJson(doc.data() as Map<String, dynamic>)).toList();
+          docs.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+          return docs;
+        });
   }
 
   /// Gets the number of booking requests received by a guide in the current month.

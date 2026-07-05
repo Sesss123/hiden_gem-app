@@ -28,4 +28,10 @@ class PremiumUnlockService {
     _unlockedPlaceIds.add(placeId);
     debugPrint("[PremiumUnlockService] Place $placeId unlocked via Ad.");
   }
+
+  /// Invalidates all temporary unlocks (e.g., on subscription expiry or logout).
+  static void invalidateAllUnlocks() {
+    _unlockedPlaceIds.clear();
+    debugPrint("[PremiumUnlockService] All temporary unlocks invalidated.");
+  }
 }

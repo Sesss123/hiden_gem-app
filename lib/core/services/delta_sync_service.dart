@@ -16,6 +16,7 @@ class DeltaParseResult {
   final int nextCursor;
   final List<DiscoveryPlace> placesToUpsert;
   final List<String> deletedIds;
+  final List<Map<String, dynamic>> failedItems;
 
   DeltaParseResult({
     required this.newSyncVersion,
@@ -23,6 +24,7 @@ class DeltaParseResult {
     required this.nextCursor,
     required this.placesToUpsert,
     required this.deletedIds,
+    required this.failedItems,
   });
 }
 
@@ -35,10 +37,36 @@ DeltaParseResult parseDeltaPayload(String body) {
   // Parse upserts
   final List<dynamic> upsertRaw = payload['upsert_places'] ?? [];
   final List<DiscoveryPlace> placesToUpsert = [];
+  final List<Map<String, dynamic>> failedItems = [];
+
   for (final item in upsertRaw) {
-    try {
-      placesToUpsert.add(DiscoveryPlace.fromJson(item as Map<String, dynamic>));
-    } catch (_) {}
+    if (item is Map<String, dynamic>) {
+      try {
+        placesToUpsert.add(DiscoveryPlace.fromJson(item));
+      } catch (e, st) {
+        // Requirement 1: Collect failed items alongside successful ones and log with SecureLogger
+        final String placeId = item['id']?.toString() ?? 'unknown';
+        final String placeName = item['name']?.toString() ?? 'Unknown Place';
+        final int itemVersion = (item['sync_version'] as num?)?.toInt() ?? (item['syncVersion'] as num?)?.toInt() ?? nextCursor;
+        
+        SecureLogger.error(
+          "Delta sync parse failure for Place ID: $placeId ($placeName). Reason: $e",
+          e,
+          st,
+          "DeltaSync",
+        );
+
+        failedItems.add({
+          'id': placeId,
+          'name': placeName,
+          'sync_version': itemVersion,
+          'raw_json': item,
+          'reason': 'JSON Parse Error: $e',
+        });
+      }
+    } else {
+      SecureLogger.error("Delta sync received non-map item in upsert_places: $item", null, null, "DeltaSync");
+    }
   }
 
   // Parse deletions
@@ -51,6 +79,7 @@ DeltaParseResult parseDeltaPayload(String body) {
     nextCursor: nextCursor,
     placesToUpsert: placesToUpsert,
     deletedIds: deletedIds,
+    failedItems: failedItems,
   );
 }
 
@@ -151,6 +180,25 @@ class DeltaSyncService {
     SecureLogger.info("Starting Delta Sync loop from local version: $currentVersion");
 
     try {
+      // IMPORTANT NOTE ON CURSOR ADVANCE & ERROR RECOVERY BEHAVIOR:
+      // When performDeltaSync() executes, the sync cursor advances to nextCursor
+      // after processing each chunk, regardless of whether individual items within
+      // that chunk failed to parse or insert.
+      //
+      // Why? Because if we blocked cursor advancement due to a single malformed record
+      // from MySQL (e.g. schema mismatch or missing non-null field), the ENTIRE delta sync
+      // pipeline would halt indefinitely for all users, causing a complete denial-of-service
+      // for any new places added after that malformed record!
+      //
+      // To prevent silent data loss while preserving sync progression:
+      // 1. Any record that throws during DiscoveryPlace.fromJson() in parseDeltaPayload()
+      //    is captured in `parseResult.failedItems` along with its raw JSON and reason.
+      // 2. Any record that throws during SQLite insertion in upsertPlaces() is caught per-row.
+      // 3. Both types of failures are immediately logged via SecureLogger and saved into a
+      //    persistent SQLite `sync_quarantine` table (Strategy B & C).
+      // 4. Quarantined records can be inspected via getSyncFailureLog() and retried later
+      //    via retryQuarantinedItems() once the schema or backend data is fixed.
+      // NEVER remove the quarantine mechanism or revert to silent catch (_) blocks!
       while (hasMore) {
         final Uri url = Uri.parse('$baseUrl/delta?since_version=$currentVersion&limit=100');
         final timeoutDuration = await _getDynamicTimeout();
@@ -183,6 +231,7 @@ class DeltaSyncService {
         hasMore = parseResult.hasMore;
         final List<DiscoveryPlace> placesToUpsert = parseResult.placesToUpsert;
         final List<String> deletedIds = parseResult.deletedIds;
+        final List<Map<String, dynamic>> failedItems = parseResult.failedItems;
 
         // Commit to SQLite
         if (placesToUpsert.isNotEmpty) {
@@ -192,6 +241,10 @@ class DeltaSyncService {
         if (deletedIds.isNotEmpty) {
           await _sqliteService.purgeDeletedPlaces(deletedIds);
           totalPurged += deletedIds.length;
+        }
+        if (failedItems.isNotEmpty) {
+          await _sqliteService.quarantineItems(failedItems);
+          SecureLogger.warning("Quarantined ${failedItems.length} malformed places during sync chunk at cursor $nextCursor.");
         }
 
         currentVersion = nextCursor;
@@ -223,5 +276,15 @@ class DeltaSyncService {
     _localDataSource.cacheInMemory('places', places);
     SecureLogger.info("RAM cache hydrated with ${places.length} active places.");
     return places;
+  }
+
+  /// Requirement 4: Diagnostic/debug method to list places that failed to sync.
+  Future<List<Map<String, dynamic>>> getSyncFailureLog() {
+    return _sqliteService.getSyncFailureLog();
+  }
+
+  /// Retries parsing and inserting items previously saved in the quarantine table.
+  Future<int> retryQuarantinedItems() {
+    return _sqliteService.retryQuarantinedItems();
   }
 }

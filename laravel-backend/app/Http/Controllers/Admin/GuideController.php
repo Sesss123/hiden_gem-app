@@ -5,11 +5,23 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\GuideApplication;
 use App\Models\User;
+use App\Services\FirestoreService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class GuideController extends Controller
 {
+    private FirestoreService $firestoreService;
+
+    /**
+     * Initialize controller with Firestore wrapper service.
+     */
+    public function __construct()
+    {
+        $this->firestoreService = new FirestoreService();
+    }
+
     public function index(Request $request)
     {
         $status = $request->input('status', 'pending');
@@ -39,51 +51,133 @@ class GuideController extends Controller
         return view('admin.guides.show', compact('application'));
     }
 
+    /**
+     * Approve a guide application.
+     * Synchronously updates MySQL and Google Cloud Firestore so the Flutter app
+     * receives the status update in real time via watchMyApplication stream.
+     */
     public function approve($id)
     {
         $application = GuideApplication::findOrFail($id);
+        $userId = $application->user_id;
         
-        DB::transaction(function () use ($application) {
-            $application->update(['status' => 'approved']);
+        try {
+            DB::transaction(function () use ($application, $userId) {
+                // 1. Update MySQL database (single source of truth for admin panel)
+                $application->update(['status' => 'approved']);
+                $application->user->update(['role' => 'guide_approved']);
 
-            $user = $application->user;
-            $user->update(['role' => 'guide_approved']);
-        });
+                // 2. Sync to Firestore — guide_applications collection
+                // This triggers watchMyApplication stream in Flutter's guide_enrollment_screen.dart
+                $this->firestoreService->updateGuideApplication($userId, [
+                    'status' => 'approved',
+                    'reviewedAt' => now()->toIso8601String(),
+                ]);
 
-        return redirect()->route('admin.guides.index', ['status' => 'approved'])
-            ->with('success', "Guide application for '{$application->user->name}' has been approved. User role elevated to 'guide_approved'.");
+                // 3. Sync to Firestore — users collection
+                // This updates profile role directly so dashboard tiles unlock immediately without restart
+                $this->firestoreService->updateGuideUser($userId, [
+                    'role' => 'guide_approved',
+                    'guideStatus' => 'approved',
+                    'isGuideApproved' => true,
+                ]);
+            });
+
+            return redirect()->route('admin.guides.index', ['status' => 'approved'])
+                ->with('success', "✅ Approved '{$application->user->name}'. Firestore synced — guide will see status update in app instantly.");
+
+        } catch (\Exception $e) {
+            Log::error("Approval sync failed for guide {$id}: " . $e->getMessage());
+            return back()->with('error', "Approval failed (Firestore sync error). Check logs.");
+        }
     }
 
+    /**
+     * Reject a guide application with an admin comment/reason.
+     * Synchronously updates MySQL and Firestore so the guide can view the reason
+     * and reapply immediately in the Flutter app.
+     */
     public function reject(Request $request, $id)
     {
         $application = GuideApplication::findOrFail($id);
-        
-        DB::transaction(function () use ($application) {
-            $application->update(['status' => 'rejected']);
+        $userId = $application->user_id;
+        $adminComment = $request->input('admin_comment', 'Application does not meet requirements.');
 
-            $user = $application->user;
-            $user->update(['role' => 'tourist']); // demote back to tourist
-        });
+        try {
+            DB::transaction(function () use ($application, $userId, $adminComment) {
+                // 1. Update MySQL database
+                $application->update([
+                    'status' => 'rejected',
+                    'admin_comment' => $adminComment,
+                ]);
+                $application->user->update(['role' => 'tourist']); // demote back to tourist
 
-        return redirect()->route('admin.guides.index', ['status' => 'rejected'])
-            ->with('success', "Guide application for '{$application->user->name}' has been rejected.");
+                // 2. Sync to Firestore — guide_applications collection (includes rejection reason)
+                $this->firestoreService->updateGuideApplication($userId, [
+                    'status' => 'rejected',
+                    'adminComment' => $adminComment,
+                    'reviewedAt' => now()->toIso8601String(),
+                ]);
+
+                // 3. Sync to Firestore — users collection
+                $this->firestoreService->updateGuideUser($userId, [
+                    'guideStatus' => 'rejected',
+                    'guideRejectionReason' => $adminComment,
+                ]);
+            });
+
+            return redirect()->route('admin.guides.index', ['status' => 'rejected'])
+                ->with('success', "❌ Rejected '{$application->user->name}'. Reason sent to app — guide can reapply.");
+
+        } catch (\Exception $e) {
+            Log::error("Rejection sync failed for guide {$id}: " . $e->getMessage());
+            return back()->with('error', "Rejection failed (Firestore sync error). Check logs.");
+        }
     }
 
+    /**
+     * Permanently ban a guide/user.
+     */
     public function ban($id)
     {
         $application = GuideApplication::findOrFail($id);
         $user = $application->user;
         $user->update(['role' => 'banned']);
 
+        try {
+            $this->firestoreService->updateGuideUser($user->id, [
+                'role' => 'banned',
+                'guideStatus' => 'banned'
+            ]);
+        } catch (\Exception $e) {
+            Log::warning("Firestore sync for ban failed: " . $e->getMessage());
+        }
+
         return back()->with('success', "User '{$user->name}' has been permanently banned.");
     }
 
+    /**
+     * Remove guide association and delete application.
+     */
     public function remove($id)
     {
         $application = GuideApplication::findOrFail($id);
         $user = $application->user;
         $user->update(['role' => 'tourist']);
         
+        try {
+            $this->firestoreService->updateGuideUser($user->id, [
+                'role' => 'tourist',
+                'guideStatus' => 'removed',
+                'isGuideApproved' => false
+            ]);
+            $this->firestoreService->updateGuideApplication($user->id, [
+                'status' => 'removed'
+            ]);
+        } catch (\Exception $e) {
+            Log::warning("Firestore sync for remove failed: " . $e->getMessage());
+        }
+
         $application->delete();
 
         return redirect()->route('admin.guides.index')

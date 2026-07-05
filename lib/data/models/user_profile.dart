@@ -156,7 +156,10 @@ class UserProfile {
         'itineraryPlaceIds': itineraryPlaceIds,
       };
 
-  factory UserProfile.fromJson(Map<String, dynamic> json) => UserProfile(
+  factory UserProfile.fromJson(Map<String, dynamic> json) {
+    final roleStr = json['role'] ?? 'user';
+    final isApprovedGuide = roleStr == 'guide_approved' || (json['isGuideApproved'] == true) || (json['guideStatus'] == 'approved');
+    return UserProfile(
         uid: json['uid'] ?? 'N/A',
         preferredStyles: List<String>.from(json['preferredStyles'] ?? []),
         avgBudgetLkr: (json['avgBudgetLkr'] ?? 50000).toDouble(),
@@ -172,7 +175,7 @@ class UserProfile {
         showScreenshotButton: json['showScreenshotButton'] ?? true,
         hasAgreedToTerms: json['hasAgreedToTerms'] ?? false,
         hasCompletedOnboarding: json['hasCompletedOnboarding'] ?? false,
-        role: json['role'] ?? 'user',
+        role: roleStr,
         isPremium: json['isPremium'] ?? false,
         premiumPlan: json['premiumPlan'],
         premiumSource: json['premiumSource'],
@@ -180,12 +183,12 @@ class UserProfile {
         premiumExpiresAt: json['premiumExpiresAt'] != null ? DateTime.parse(json['premiumExpiresAt']) : null,
         trialUsed: json['trialUsed'] ?? false,
         ownedArPacks: List<String>.from(json['ownedArPacks'] ?? []),
-        guideStatus: GuideStatus.values.byName(json['guideStatus'] ?? 'none'),
+        guideStatus: isApprovedGuide ? GuideStatus.approved : GuideStatus.values.byName(json['guideStatus'] ?? 'none'),
         guideProfile: json['guideProfile'] != null ? GuideProfile.fromJson(json['guideProfile']) : null,
         hasMigratedToZenith: json['hasMigratedToZenith'] ?? false,
         guideLicense: json['guideLicense'],
         guideBio: json['guideBio'],
-        isGuideApproved: json['isGuideApproved'] ?? false,
+        isGuideApproved: isApprovedGuide,
         totalTouristsServed: json['totalTouristsServed'] ?? 0,
         currentBatchId: json['currentBatchId'],
         aiTripsUsedThisMonth: json['aiTripsUsedThisMonth'] ?? 0,
@@ -196,4 +199,5 @@ class UserProfile {
         bookmarkedPlaces: List<String>.from(json['bookmarkedPlaces'] ?? []),
         itineraryPlaceIds: List<String>.from(json['itineraryPlaceIds'] ?? []),
       );
+  }
 }

@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
+import '../../core/theme/app_theme.dart';
 import '../../core/theme/oracle_ui_system.dart';
 import '../../data/models/guide_availability.dart';
 import '../../data/models/guide_listing.dart';
@@ -207,7 +208,7 @@ class _GuideAvailabilityScreenState extends ConsumerState<GuideAvailabilityScree
         elevation: 0,
         title: Text(
           'AVAILABILITY & SCHEDULE',
-          style: GoogleFonts.outfit(fontWeight: FontWeight.bold, letterSpacing: 1.5, fontSize: 16),
+          style: GoogleFonts.outfit(fontWeight: FontWeight.bold, letterSpacing: 1.5, fontSize: 16, color: AppTheme.textPrimary(context)),
         ),
         centerTitle: true,
       ),
@@ -222,45 +223,49 @@ class _GuideAvailabilityScreenState extends ConsumerState<GuideAvailabilityScree
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.08),
+                  color: Theme.of(context).cardColor,
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: Colors.white.withValues(alpha: 0.15)),
+                  border: Border.all(color: AppTheme.borderColor(context)),
+                  boxShadow: AppTheme.softShadow,
                 ),
                 child: Column(
                   children: [
                     SwitchListTile(
-                      title: Text('Instant Book Enabled', style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold)),
-                      subtitle: Text('Allow tourists to book immediately without manual approval', style: GoogleFonts.inter(color: Colors.white60, fontSize: 12)),
+                      title: Text('Instant Book Enabled', style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.bold)),
+                      subtitle: Text('Allow tourists to book immediately without manual approval', style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 12)),
                       value: _instantBookEnabled,
                       activeThumbColor: Colors.amber,
                       contentPadding: EdgeInsets.zero,
                       onChanged: (val) => setState(() => _instantBookEnabled = val),
                     ),
-                    const Divider(color: Colors.white12),
+                    Divider(color: AppTheme.borderColor(context)),
                     const SizedBox(height: 8),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('Advance Notice Required', style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.w600)),
-                            Text('Minimum lead time before tour starts', style: GoogleFonts.inter(color: Colors.white60, fontSize: 12)),
-                          ],
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Advance Notice Required', style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.w600)),
+                              Text('Minimum lead time before tour starts', style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 12)),
+                            ],
+                          ),
                         ),
+                        const SizedBox(width: 8),
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                           decoration: BoxDecoration(
-                            color: Colors.black45,
+                            color: Theme.of(context).cardColor,
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(color: Colors.amber.withValues(alpha: 0.5)),
                           ),
                           child: DropdownButton<String>(
                             value: _advanceNoticeHours,
-                            dropdownColor: const Color(0xFF1E1E1E),
+                            dropdownColor: Theme.of(context).cardColor,
                             underline: const SizedBox(),
                             icon: const Icon(Icons.arrow_drop_down, color: Colors.amber),
-                            items: _noticeOptions.map((e) => DropdownMenuItem(value: e, child: Text('$e hrs', style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold)))).toList(),
+                            items: _noticeOptions.map((e) => DropdownMenuItem(value: e, child: Text('$e hrs', style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.bold)))).toList(),
                             onChanged: (val) => setState(() => _advanceNoticeHours = val!),
                           ),
                         ),
@@ -273,7 +278,7 @@ class _GuideAvailabilityScreenState extends ConsumerState<GuideAvailabilityScree
 
               _buildSectionTitle('RECURRING WEEKLY SCHEDULE'),
               const SizedBox(height: 4),
-              Text('Toggle working days and customize working hours', style: GoogleFonts.inter(color: Colors.white60, fontSize: 12)),
+              Text('Toggle working days and customize working hours', style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 12)),
               const SizedBox(height: 12),
               ...List.generate(7, (index) {
                 final dayIndex = index + 1;
@@ -283,22 +288,21 @@ class _GuideAvailabilityScreenState extends ConsumerState<GuideAvailabilityScree
 
                 return Container(
                   margin: const EdgeInsets.only(bottom: 12),
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                   decoration: BoxDecoration(
-                    color: isWorking ? Colors.white.withValues(alpha: 0.08) : Colors.white.withValues(alpha: 0.03),
+                    color: Theme.of(context).cardColor.withValues(alpha: isWorking ? 1.0 : 0.5),
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: isWorking ? Colors.amber.withValues(alpha: 0.4) : Colors.white.withValues(alpha: 0.08)),
+                    border: Border.all(color: isWorking ? Colors.amber.withValues(alpha: 0.4) : AppTheme.borderColor(context)),
                   ),
                   child: Row(
                     children: [
-                      SizedBox(
-                        width: 100,
+                      Expanded(
                         child: Text(
                           dayName,
                           style: GoogleFonts.outfit(
-                            color: isWorking ? Colors.white : Colors.white38,
+                            color: isWorking ? AppTheme.textPrimary(context) : AppTheme.textSecondary(context),
                             fontWeight: FontWeight.bold,
-                            fontSize: 15,
+                            fontSize: 14,
                           ),
                         ),
                       ),
@@ -315,30 +319,31 @@ class _GuideAvailabilityScreenState extends ConsumerState<GuideAvailabilityScree
                           });
                         },
                       ),
-                      const Spacer(),
                       if (isWorking) ...[
+                        const SizedBox(width: 4),
                         GestureDetector(
                           onTap: () => _pickTime(dayIndex, true),
                           child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                            decoration: BoxDecoration(color: Colors.black45, borderRadius: BorderRadius.circular(8), border: Border.all(color: Colors.white24)),
-                            child: Text(slot.startTime, style: GoogleFonts.outfit(color: Colors.amber[300], fontWeight: FontWeight.bold, fontSize: 13)),
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                            decoration: BoxDecoration(color: Theme.of(context).cardColor, borderRadius: BorderRadius.circular(8), border: Border.all(color: AppTheme.borderColor(context))),
+                            child: Text(slot.startTime, style: GoogleFonts.outfit(color: Colors.amber[400], fontWeight: FontWeight.bold, fontSize: 12)),
                           ),
                         ),
-                        const Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 6),
-                          child: Text('-', style: TextStyle(color: Colors.white60)),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 4),
+                          child: Text('-', style: TextStyle(color: AppTheme.textSecondary(context))),
                         ),
                         GestureDetector(
                           onTap: () => _pickTime(dayIndex, false),
                           child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                            decoration: BoxDecoration(color: Colors.black45, borderRadius: BorderRadius.circular(8), border: Border.all(color: Colors.white24)),
-                            child: Text(slot.endTime, style: GoogleFonts.outfit(color: Colors.amber[300], fontWeight: FontWeight.bold, fontSize: 13)),
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                            decoration: BoxDecoration(color: Theme.of(context).cardColor, borderRadius: BorderRadius.circular(8), border: Border.all(color: AppTheme.borderColor(context))),
+                            child: Text(slot.endTime, style: GoogleFonts.outfit(color: Colors.amber[400], fontWeight: FontWeight.bold, fontSize: 12)),
                           ),
                         ),
                       ] else ...[
-                        Text('OFF / UNAVAILABLE', style: GoogleFonts.inter(color: Colors.white30, fontSize: 12, fontWeight: FontWeight.w600)),
+                        const SizedBox(width: 8),
+                        Text('OFF', style: GoogleFonts.inter(color: AppTheme.textSecondary(context).withValues(alpha: 0.5), fontSize: 12, fontWeight: FontWeight.w600)),
                       ],
                     ],
                   ),
@@ -363,10 +368,11 @@ class _GuideAvailabilityScreenState extends ConsumerState<GuideAvailabilityScree
                   padding: const EdgeInsets.all(20),
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.04),
+                    color: Theme.of(context).cardColor,
                     borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: AppTheme.borderColor(context)),
                   ),
-                  child: Text('No blackout dates added. You are available according to your schedule.', textAlign: TextAlign.center, style: GoogleFonts.inter(color: Colors.white38, fontSize: 13)),
+                  child: Text('No blackout dates added. You are available according to your schedule.', textAlign: TextAlign.center, style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 13)),
                 )
               else
                 Wrap(
@@ -376,7 +382,7 @@ class _GuideAvailabilityScreenState extends ConsumerState<GuideAvailabilityScree
                     return Chip(
                       backgroundColor: Colors.redAccent.withValues(alpha: 0.2),
                       side: BorderSide(color: Colors.redAccent.withValues(alpha: 0.5)),
-                      label: Text(dateFormat.format(date), style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.w600)),
+                      label: Text(dateFormat.format(date), style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.w600)),
                       deleteIcon: const Icon(Icons.close, size: 16, color: Colors.white70),
                       onDeleted: () {
                         setState(() {

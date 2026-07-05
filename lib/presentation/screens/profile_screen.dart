@@ -4,7 +4,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:hidden_gems_sl/data/models/user_profile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:hidden_gems_sl/core/theme/theme_provider.dart';
@@ -40,11 +39,11 @@ import '../../core/services/ethical_travel_service.dart';
 import '../../core/rating/rating_service.dart';
 import '../../core/notifications/notification_service.dart';
 import 'guide_enrollment_screen.dart';
+import '../../data/repositories/guide_application_repository.dart';
 import 'package:hidden_gems_sl/data/models/guide_status.dart';
-import 'package:hidden_gems_sl/presentation/screens/guide_reviews_screen.dart';
-import 'package:hidden_gems_sl/presentation/screens/incident_center_screen.dart';
-import 'package:hidden_gems_sl/presentation/screens/subscription_screen.dart';
 import 'package:hidden_gems_sl/presentation/screens/family_share_screen.dart';
+import 'package:hidden_gems_sl/presentation/screens/privacy_policy_screen.dart';
+import 'package:hidden_gems_sl/presentation/screens/terms_screen.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
@@ -69,12 +68,17 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       final user = FirebaseAuth.instance.currentUser;
       if (user != null) {
         NotificationService().startWatchingUserNotifications(user.uid);
+        GuideApplicationRepository().getMyApplication().catchError((_) => null);
         _userSub = FirebaseFirestore.instance.collection('users').doc(user.uid).snapshots().listen((doc) async {
           if (doc.exists && doc.data() != null && mounted) {
             final data = doc.data()!;
             bool changed = false;
             if (data['role'] != null && profile.role != data['role']) {
               profile.role = data['role'];
+              if (profile.role == 'guide_approved') {
+                profile.guideStatus = GuideStatus.approved;
+                profile.isGuideApproved = true;
+              }
               changed = true;
             }
             if (data['guideStatus'] != null) {
@@ -315,6 +319,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const SizedBox(height: 28),
+
+                      // Guide Command Hub (Option 1 - Quick Access at the very top!)
+                      if (profile.guideStatus == GuideStatus.approved || profile.role == 'guide_approved' || profile.isGuideApproved || profile.role == 'admin') ...[
+                        _buildGuideCommandHub(),
+                        const SizedBox(height: 24),
+                      ],
 
                       // Stats Row
                       _buildStatsCard(),
@@ -919,47 +929,237 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     child: Divider(height: 1, color: AppTheme.borderColor(context).withValues(alpha: 0.5)),
   );
 
+  // ── Guide Command Hub (Option 1 - Redesigned for High Contrast & Luxury) ────
+  Widget _buildGuideCommandHub() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: isDark
+              ? [const Color(0xFF1E1810), const Color(0xFF141A20)]
+              : [const Color(0xFFFFF8E7), const Color(0xFFFFECC4)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(
+          color: isDark ? Colors.amber.withValues(alpha: 0.5) : const Color(0xFFD4AF37),
+          width: 1.5,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: isDark
+                ? Colors.amber.withValues(alpha: 0.08)
+                : const Color(0xFFD4AF37).withValues(alpha: 0.2),
+            blurRadius: 20,
+            spreadRadius: 2,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: isDark ? Colors.amber.withValues(alpha: 0.2) : const Color(0xFFFFD700).withValues(alpha: 0.3),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(Icons.explore, color: isDark ? Colors.amber[700] : const Color(0xFFB8860B), size: 20),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "GUIDE COMMAND HUB",
+                      style: GoogleFonts.outfit(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1.2,
+                        color: isDark ? Colors.white : const Color(0xFF1A1512),
+                      ),
+                    ),
+                    Text(
+                      "Quick access to your guide tools",
+                      style: GoogleFonts.inter(
+                        fontSize: 11,
+                        color: isDark ? Colors.white70 : const Color(0xFF5A4A3A),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: Colors.greenAccent.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: Colors.greenAccent, width: 1),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      width: 6,
+                      height: 6,
+                      decoration: const BoxDecoration(
+                        color: Colors.greenAccent,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      "ACTIVE",
+                      style: GoogleFonts.outfit(
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.greenAccent,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 18),
+          Row(
+            children: [
+              Expanded(
+                child: _buildGuideHubButton(
+                  Icons.explore_outlined,
+                  "Tour Dashboard",
+                  "Active tour & QR",
+                  isDark ? Colors.amber[700]! : const Color(0xFFD4AF37),
+                  () => Navigator.push(context, MaterialPageRoute(builder: (_) => const GuideDashboardScreen())),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _buildGuideHubButton(
+                  Icons.inbox_rounded,
+                  "Bookings",
+                  "Tour requests",
+                  isDark ? Colors.blueAccent : const Color(0xFF2563EB),
+                  () => Navigator.push(context, MaterialPageRoute(builder: (_) => const BookingInboxScreen())),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: _buildGuideHubButton(
+                  Icons.account_balance_wallet_outlined,
+                  "Earnings",
+                  "Payouts & stats",
+                  isDark ? Colors.greenAccent[400]! : const Color(0xFF16A34A),
+                  () => Navigator.push(context, MaterialPageRoute(builder: (_) => const GuideEarningsScreen())),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _buildGuideHubButton(
+                  Icons.edit_document,
+                  "My Listing",
+                  "Profile & vehicle",
+                  isDark ? Colors.orangeAccent : const Color(0xFFEA580C),
+                  () => Navigator.push(context, MaterialPageRoute(builder: (_) => const GuideListingEditorScreen())),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    ).animate().fadeIn(duration: 400.ms).slideY(begin: -0.1, curve: Curves.easeOutQuad);
+  }
+
+  Widget _buildGuideHubButton(IconData icon, String title, String subtitle, Color color, VoidCallback onTap) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return InkWell(
+      onTap: () {
+        HapticFeedback.lightImpact();
+        onTap();
+      },
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: isDark ? const Color(0xFF1F2937) : Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: isDark ? color.withValues(alpha: 0.4) : color,
+            width: 1.5,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: isDark ? Colors.black.withValues(alpha: 0.3) : color.withValues(alpha: 0.15),
+              blurRadius: 10,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: color.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Icon(icon, color: color, size: 20),
+                ),
+                const Spacer(),
+                Icon(
+                  Icons.arrow_forward_ios_rounded,
+                  size: 12,
+                  color: isDark ? Colors.white38 : const Color(0xFF9CA3AF),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Text(
+              title,
+              style: GoogleFonts.outfit(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+                color: isDark ? Colors.white : const Color(0xFF111827),
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+            const SizedBox(height: 2),
+            Text(
+              subtitle,
+              style: GoogleFonts.inter(
+                fontSize: 10,
+                color: isDark ? Colors.white70 : const Color(0xFF4B5563),
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   // ── Settings Section ─────────────────────────────────────────────────────────
   Widget _buildSettingsSection(AppLocalizations l10n) {
     return Column(
       children: [
-        // Guide-specific tiles
-        if (profile.guideStatus == GuideStatus.approved || profile.role == 'admin') ...[
-          _tile(Icons.explore_outlined, "Guide Dashboard",
-              iconColor: Colors.amber[700],
-              onTap: () => Navigator.push(
-                  context, MaterialPageRoute(builder: (_) => const GuideDashboardScreen()))),
-          _tile(Icons.edit_document, "My Listing",
-              iconColor: Colors.amber[700],
-              onTap: () => Navigator.push(
-                  context, MaterialPageRoute(builder: (_) => const GuideListingEditorScreen()))),
-          _tile(Icons.inbox_rounded, "Guide Bookings",
-              iconColor: Colors.amber[700],
-              onTap: () => Navigator.push(
-                  context, MaterialPageRoute(builder: (_) => const BookingInboxScreen()))),
-          _tile(Icons.account_balance_wallet_outlined, "Earnings & Payouts",
-              iconColor: Colors.greenAccent[400],
-              onTap: () => Navigator.push(
-                  context, MaterialPageRoute(builder: (_) => const GuideEarningsScreen()))),
-          _tile(Icons.card_membership_outlined, "Guide Subscription",
-              iconColor: Colors.amber[700],
-              onTap: () => Navigator.push(
-                  context, MaterialPageRoute(builder: (_) => const SubscriptionScreen()))),
-          _tile(Icons.star_outline_rounded, "My Reviews",
-              iconColor: Colors.amber[700],
-              onTap: () {
-                final uid = AuthService().currentUser?.uid;
-                if (uid != null) {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => GuideReviewsScreen(guideId: uid)));
-                }
-              }),
-          _tile(Icons.shield_outlined, "Safety Console",
-              iconColor: Colors.red[400],
-              onTap: () => Navigator.push(
-                  context, MaterialPageRoute(builder: (_) => const IncidentCenterScreen()))),
-        ] else ...[
+        // Guide Enrollment (only for non-guides)
+        if (profile.guideStatus != GuideStatus.approved && profile.role != 'guide_approved' && !profile.isGuideApproved && profile.role != 'admin') ...[
           _tile(Icons.badge_outlined, "Become a Guide",
               onTap: () => Navigator.push(
                   context, MaterialPageRoute(builder: (_) => const GuideEnrollmentScreen()))),
@@ -970,6 +1170,15 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             onTap: () => Navigator.push(
                 context, MaterialPageRoute(builder: (_) => const FamilyShareScreen()))),
 
+        _tile(Icons.privacy_tip_outlined, l10n.privacyPolicy,
+            iconColor: Colors.teal[400],
+            onTap: () => Navigator.push(
+                context, MaterialPageRoute(builder: (_) => const PrivacyPolicyScreen()))),
+
+        _tile(Icons.description_outlined, l10n.termsOfService,
+            iconColor: Colors.amber[600],
+            onTap: () => Navigator.push(
+                context, MaterialPageRoute(builder: (_) => const TermsScreen()))),
 
         _tile(Icons.qr_code_scanner_rounded, "Scan Guide QR",
             onTap: () => Navigator.push(
@@ -1000,18 +1209,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             iconColor: Colors.red[600],
             onTap: () => Navigator.push(
                 context, MaterialPageRoute(builder: (_) => const EmergencyKitScreen()))),
-
-        _tile(Icons.privacy_tip_outlined, l10n.privacyPolicy,
-            onTap: () async {
-              final url = Uri.parse("https://hiddengems.lk/privacy");
-              if (await canLaunchUrl(url)) await launchUrl(url, mode: LaunchMode.externalApplication);
-            }),
-
-        _tile(Icons.description_outlined, l10n.termsOfService,
-            onTap: () async {
-              final url = Uri.parse("https://hiddengems.lk/terms");
-              if (await canLaunchUrl(url)) await launchUrl(url, mode: LaunchMode.externalApplication);
-            }),
 
         _tile(Icons.star_rate_rounded, "Rate the App",
             onTap: () => RatingService().forceRequestReview()),

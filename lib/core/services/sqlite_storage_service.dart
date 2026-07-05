@@ -56,12 +56,33 @@ class SqliteStorageService {
       onConfigure: (Database db) async {
         await db.execute('PRAGMA foreign_keys = ON;');
         await db.rawQuery('PRAGMA journal_mode = WAL;');
+        await db.execute('''
+          CREATE TABLE IF NOT EXISTS sync_quarantine (
+            id TEXT PRIMARY KEY,
+            name TEXT,
+            sync_version INTEGER DEFAULT 0,
+            raw_json TEXT NOT NULL,
+            reason TEXT NOT NULL,
+            failed_at TEXT NOT NULL
+          );
+        ''');
       },
       onCreate: (Database db, int version) async {
         await db.execute('''
           CREATE TABLE IF NOT EXISTS sync_counter (
             id INTEGER PRIMARY KEY DEFAULT 1,
             current_version INTEGER DEFAULT 0
+          );
+        ''');
+
+        await db.execute('''
+          CREATE TABLE IF NOT EXISTS sync_quarantine (
+            id TEXT PRIMARY KEY,
+            name TEXT,
+            sync_version INTEGER DEFAULT 0,
+            raw_json TEXT NOT NULL,
+            reason TEXT NOT NULL,
+            failed_at TEXT NOT NULL
           );
         ''');
 
@@ -189,11 +210,133 @@ class SqliteStorageService {
                 conflictAlgorithm: ConflictAlgorithm.replace,
               );
             }
+
+            // If insertion succeeded, remove from quarantine if previously quarantined
+            try {
+              await txn.delete('sync_quarantine', where: 'id = ?', whereArgs: [place.id]);
+            } catch (_) {}
           } catch (e) {
             SecureLogger.error("Failed to insert place ID: ${place.id}", e);
+            try {
+              await txn.insert(
+                'sync_quarantine',
+                {
+                  'id': place.id,
+                  'name': place.name,
+                  'sync_version': place.syncVersion > 0 ? place.syncVersion : syncVersion,
+                  'raw_json': rawJson,
+                  'reason': 'SQLite insert error: $e',
+                  'failed_at': DateTime.now().toIso8601String(),
+                },
+                conflictAlgorithm: ConflictAlgorithm.replace,
+              );
+            } catch (qErr) {
+              SecureLogger.error("Failed to quarantine place ID: ${place.id}", qErr);
+            }
           }
         }
       });
+    });
+  }
+
+  /// Quarantines multiple failed items in a single transaction.
+  Future<void> quarantineItems(List<Map<String, dynamic>> failedItems) {
+    if (failedItems.isEmpty) return Future.value();
+    return _enqueueWrite(() async {
+      final db = await database;
+      await db.transaction((txn) async {
+        for (final item in failedItems) {
+          await txn.insert(
+            'sync_quarantine',
+            {
+              'id': item['id']?.toString() ?? 'unknown_${DateTime.now().millisecondsSinceEpoch}',
+              'name': item['name']?.toString() ?? 'Unknown Place',
+              'sync_version': (item['sync_version'] as num?)?.toInt() ?? 0,
+              'raw_json': item['raw_json'] is String ? item['raw_json'] : jsonEncode(item['raw_json'] ?? item),
+              'reason': item['reason']?.toString() ?? 'Unknown error',
+              'failed_at': DateTime.now().toIso8601String(),
+            },
+            conflictAlgorithm: ConflictAlgorithm.replace,
+          );
+        }
+      });
+    });
+  }
+
+  /// Requirement 4: Diagnostic/debug method to list places that failed to sync.
+  Future<List<Map<String, dynamic>>> getSyncFailureLog() {
+    return _enqueueWrite(() async {
+      final db = await database;
+      return await db.query(
+        'sync_quarantine',
+        orderBy: 'failed_at DESC',
+      );
+    });
+  }
+
+  /// Retries parsing and inserting quarantined items.
+  /// Returns the number of items successfully recovered.
+  Future<int> retryQuarantinedItems() {
+    return _enqueueWrite(() async {
+      final db = await database;
+      final List<Map<String, dynamic>> quarantined = await db.query('sync_quarantine');
+      if (quarantined.isEmpty) return 0;
+
+      int recoveredCount = 0;
+      for (final row in quarantined) {
+        final String id = row['id'] as String;
+        final String rawJsonStr = row['raw_json'] as String;
+        final int syncVer = (row['sync_version'] as num?)?.toInt() ?? 0;
+
+        try {
+          final Map<String, dynamic> data = jsonDecode(rawJsonStr);
+          final place = DiscoveryPlace.fromJson(data);
+
+          // Attempt insertion
+          await db.transaction((txn) async {
+            await txn.insert(
+              'places',
+              {
+                'id': place.id,
+                'name': place.name,
+                'district': place.district,
+                'category': place.category,
+                'lat': place.lat,
+                'lng': place.lng,
+                'sync_version': place.syncVersion > 0 ? place.syncVersion : syncVer,
+                'is_deleted': 0,
+                'raw_json': rawJsonStr,
+              },
+              conflictAlgorithm: ConflictAlgorithm.replace,
+            );
+
+            await txn.delete('place_images', where: 'place_id = ?', whereArgs: [place.id]);
+            for (int imgIdx = 0; imgIdx < place.images.length; imgIdx++) {
+              final img = place.images[imgIdx];
+              await txn.insert(
+                'place_images',
+                {
+                  'place_id': place.id,
+                  'image_path': img.fullPath,
+                  'thumb_path': img.thumbPath,
+                  'is_cover': img.isCover ? 1 : 0,
+                  'sort_order': imgIdx + 1,
+                  'sync_version': place.syncVersion > 0 ? place.syncVersion : syncVer,
+                },
+                conflictAlgorithm: ConflictAlgorithm.replace,
+              );
+            }
+          });
+
+          // Successfully inserted! Remove from quarantine
+          await db.delete('sync_quarantine', where: 'id = ?', whereArgs: [id]);
+          recoveredCount++;
+          SecureLogger.info("Successfully recovered quarantined place ID: $id");
+        } catch (e) {
+          SecureLogger.warning("Retry failed for quarantined place ID: $id ($e)");
+        }
+      }
+      return recoveredCount;
     });
   }
 
@@ -280,6 +423,7 @@ class SqliteStorageService {
       await db.transaction((txn) async {
         await txn.delete('places');
         await txn.delete('place_images');
+        await txn.delete('sync_quarantine');
         await txn.update('sync_counter', {'current_version': 0}, where: 'id = ?', whereArgs: [1]);
       });
       // BUG-067: Close the database connection after cleanup to prevent lock races

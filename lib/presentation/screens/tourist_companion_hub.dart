@@ -19,6 +19,8 @@ import 'dart:convert';
 import 'dart:async';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../../core/services/monsoon_broadcast_service.dart';
+import 'review_submission_screen.dart';
+import '../../core/theme/app_theme.dart';
 
 class TouristCompanionHub extends StatefulWidget {
   final String sessionId;
@@ -35,6 +37,7 @@ class _TouristCompanionHubState extends State<TouristCompanionHub> {
   DateTime? _lastSosTime;
   OfflineSnapshot? _cachedSnapshot;
   StreamSubscription? _broadcastSub;
+  bool _reviewPromptShown = false;
 
   @override
   void initState() {
@@ -128,6 +131,7 @@ class _TouristCompanionHubState extends State<TouristCompanionHub> {
 
                 // Update cache when online
                 _updateCache(session, []);
+                _checkAndTriggerReviewPrompt(session);
 
                 return _buildHubContent(session);
               },
@@ -137,6 +141,58 @@ class _TouristCompanionHubState extends State<TouristCompanionHub> {
         ),
       ),
     );
+  }
+
+  void _checkAndTriggerReviewPrompt(TourSession session) {
+    if (session.status == 'completed' && session.isReviewEnabled && !_reviewPromptShown) {
+      _reviewPromptShown = true;
+      Future.delayed(const Duration(seconds: 30), () {
+        if (!mounted) return;
+        showDialog(
+          context: context,
+          barrierDismissible: true,
+          builder: (ctx) => AlertDialog(
+            backgroundColor: AppTheme.cardColor(context),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24), side: BorderSide(color: Colors.amber.withValues(alpha: 0.5))),
+            title: Row(
+              children: [
+                const Icon(Icons.star_rounded, color: Colors.amber, size: 28),
+                const SizedBox(width: 8),
+                Text("Tour Completed!", style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: AppTheme.textPrimary(context))),
+              ],
+            ),
+            content: Text("We hope you had an amazing experience! Would you like to rate your guide now? Your feedback helps guides maintain high standards.",
+              style: GoogleFonts.inter(color: AppTheme.textSecondary(context))),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(ctx);
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("⏰ Reminder set! We'll send a notification tomorrow.")));
+                },
+                child: Text("REMIND LATER", style: GoogleFonts.outfit(color: AppTheme.textSecondary(context), fontWeight: FontWeight.bold)),
+              ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.amber, foregroundColor: Colors.black, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
+                onPressed: () {
+                  Navigator.pop(ctx);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => ReviewSubmissionScreen(
+                        sessionId: session.sessionId,
+                        guideId: session.guideId,
+                        touristId: AuthService().currentUser?.uid ?? 'guest_tourist',
+                      ),
+                    ),
+                  );
+                },
+                child: Text("RATE NOW ⭐", style: GoogleFonts.outfit(fontWeight: FontWeight.bold)),
+              ),
+            ],
+          ),
+        );
+      });
+    }
   }
 
   Widget _buildHubContent(TourSession session) {

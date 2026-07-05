@@ -124,13 +124,27 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
   }
 
   Future<void> _loadActiveSession() async {
-    final profile = UserPreferenceService.getProfile();
-    if (profile.currentBatchId != null) {
-      final session = await _sessionRepo.getSession(profile.currentBatchId!);
-      if (session != null) {
-        if (!mounted) return;
-        setState(() => _activeSession = session);
-        _setupMonsoonSafetyListener(session.meetingPointName);
+    final uid = AuthService().currentUser?.uid;
+    if (uid == null) return;
+
+    var session = await _sessionRepo.getActiveOrInitialSessionForGuide(uid);
+    if (session == null) {
+      final profile = UserPreferenceService.getProfile();
+      if (profile.currentBatchId != null) {
+        session = await _sessionRepo.getSession(profile.currentBatchId!);
+      }
+    }
+
+    if (session != null) {
+      final profile = UserPreferenceService.getProfile();
+      profile.currentBatchId = session.sessionId;
+      await UserPreferenceService.saveProfile(profile);
+
+      if (!mounted) return;
+      setState(() => _activeSession = session);
+      _setupMonsoonSafetyListener(session.meetingPointName);
+      if (session.status == 'active' && !session.isLocked) {
+        _startLocationSync();
       }
     }
   }
@@ -472,11 +486,11 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
     // Guard: crash-safe null check before any access
     final session = _activeSession;
     if (session == null) {
-      return const Center(
+      return Center(
         child: Padding(
-          padding: EdgeInsets.all(40),
+          padding: const EdgeInsets.all(40),
           child: Text("Session data unavailable.",
-              style: TextStyle(color: Colors.white38)),
+              style: TextStyle(color: AppTheme.textSecondary(context))),
         ),
       );
     }
@@ -484,6 +498,57 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
     return Column(
       children: [
         if (_activeMonsoonAlert != null) _buildMonsoonSafetyBanner(_activeMonsoonAlert!),
+        if (session.status == 'initial')
+          Container(
+            width: double.infinity,
+            margin: const EdgeInsets.only(bottom: 24),
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.amber.withValues(alpha: 0.15),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: Colors.amber, width: 1.5),
+            ),
+            child: Column(
+              children: [
+                Text("UPCOMING TOUR SESSION READY", style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.amber)),
+                const SizedBox(height: 8),
+                Text("Travelers and meeting point confirmed. Tap below when you and the travelers arrive at the meeting point to officially start the timer and tracking.",
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.inter(fontSize: 13, color: AppTheme.textPrimary(context))),
+                const SizedBox(height: 16),
+                SizedBox(
+                  width: double.infinity,
+                  height: 50,
+                  child: ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.amber,
+                      foregroundColor: Colors.black,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                    icon: const Icon(Icons.play_arrow_rounded, size: 24),
+                    label: Text("START TOUR SESSION", style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 15)),
+                    onPressed: () async {
+                      HapticFeedback.mediumImpact();
+                      setState(() => _isLoading = true);
+                      await _sessionRepo.startSession(session.sessionId);
+                      await _sessionRepo.generateJoinToken(session.sessionId);
+                      final updated = await _sessionRepo.getSession(session.sessionId);
+                      if (mounted) {
+                        setState(() {
+                          _activeSession = updated ?? session.copyWith(status: 'active');
+                          _isLoading = false;
+                        });
+                        _startLocationSync();
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text("🚀 Tour Session Started!"), backgroundColor: Colors.green),
+                        );
+                      }
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
         Row(
           children: [
             _buildStatCard("TRAVELERS", "${session.touristIds.length}", Icons.people_outline),
@@ -557,7 +622,7 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
         Container(
           padding: const EdgeInsets.all(32),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: AppTheme.cardColor(context),
             borderRadius: BorderRadius.circular(24),
             border: Border.all(color: AppTheme.secondaryBorder(context)),
             boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4))],
@@ -570,19 +635,19 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
                   version: QrVersions.auto,
                   size: 200.0,
                   eyeStyle: QrEyeStyle(eyeShape: QrEyeShape.square, color: Theme.of(context).colorScheme.primary),
-                  dataModuleStyle: QrDataModuleStyle(dataModuleShape: QrDataModuleShape.square, color: Colors.white),
+                  dataModuleStyle: QrDataModuleStyle(dataModuleShape: QrDataModuleShape.square, color: AppTheme.textPrimary(context)),
                 ).animate().scale(duration: 800.ms, curve: Curves.elasticOut)
               else
                 SizedBox(
                   height: 200,
                   child: Center(
-                    child: Text("JOINING PAUSED", style: GoogleFonts.outfit(color: Colors.white24, fontWeight: FontWeight.bold)),
+                    child: Text("JOINING PAUSED", style: GoogleFonts.outfit(color: AppTheme.textSecondary(context), fontWeight: FontWeight.bold)),
                   ),
                 ),
               const SizedBox(height: 16),
               TextButton.icon(
                 icon: const Icon(Icons.refresh, size: 14),
-                label: Text("REFRESH CODE", style: GoogleFonts.outfit(fontSize: 10, color: Colors.white54)),
+                label: Text("REFRESH CODE", style: GoogleFonts.outfit(fontSize: 10, color: AppTheme.textSecondary(context))),
                 onPressed: () => _sessionRepo.generateJoinToken(session.sessionId),
               ),
             ],
@@ -622,7 +687,7 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
         ),
         const SizedBox(height: 16),
         session.touristIds.isEmpty
-          ? Text("Waiting for scans...", style: GoogleFonts.inter(color: Colors.white.withValues(alpha: 0.4)))
+          ? Text("Waiting for scans...", style: GoogleFonts.inter(color: AppTheme.textSecondary(context)))
           : ListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
@@ -649,7 +714,7 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppTheme.cardColor(context),
         borderRadius: BorderRadius.circular(24),
         border: Border.all(color: AppTheme.secondaryBorder(context)),
         boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4))],
@@ -666,20 +731,20 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
                 margin: const EdgeInsets.only(right: 12),
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 decoration: BoxDecoration(
-                  color: isSelected ? Theme.of(context).colorScheme.primary : Colors.white.withValues(alpha: 0.05),
+                  color: isSelected ? Theme.of(context).colorScheme.primary : AppTheme.borderColor(context),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: isSelected ? Colors.transparent : Colors.white10),
+                  border: Border.all(color: isSelected ? Colors.transparent : AppTheme.borderColor(context)),
                 ),
                 child: Row(
                   children: [
-                    Icon(p['icon'] as IconData, size: 16, color: isSelected ? Colors.black : Colors.white54),
+                    Icon(p['icon'] as IconData, size: 16, color: isSelected ? Theme.of(context).colorScheme.onPrimary : AppTheme.textSecondary(context)),
                     const SizedBox(width: 8),
                     Text(
                       p['label'] as String,
                       style: GoogleFonts.outfit(
                         fontSize: 10,
                         fontWeight: FontWeight.bold,
-                        color: isSelected ? Colors.black : Colors.white54,
+                        color: isSelected ? Theme.of(context).colorScheme.onPrimary : AppTheme.textSecondary(context),
                         letterSpacing: 1,
                       ),
                     ),
@@ -725,7 +790,7 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
             onPressed: _stopTour,
             child: Text(
               "STOP TOUR SESSION",
-              style: GoogleFonts.outfit(color: Colors.white54, fontWeight: FontWeight.bold, letterSpacing: 1),
+              style: GoogleFonts.outfit(color: Colors.redAccent, fontWeight: FontWeight.bold, letterSpacing: 1),
             ),
           ),
         );
@@ -737,9 +802,9 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
       backgroundColor: Colors.transparent,
       builder: (context) => Container(
         decoration: BoxDecoration(
-          color: const Color(0xFF0F172A),
+          color: AppTheme.cardColor(context),
           borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
-          border: Border.all(color: Colors.white10),
+          border: Border.all(color: AppTheme.borderColor(context)),
         ),
         padding: const EdgeInsets.all(32),
         child: Material(
@@ -747,12 +812,12 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text("SELECT VEHICLE", style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
+              Text("SELECT VEHICLE", style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.textPrimary(context))),
               const SizedBox(height: 24),
                 ..._vehicles.map((v) => ListTile(
                   leading: const Icon(Icons.garage_rounded, color: Colors.orangeAccent),
-                  title: Text(v.type, style: GoogleFonts.outfit(color: Colors.white)),
-                  subtitle: Text(v.vehicleNumber, style: GoogleFonts.inter(color: Colors.white38)),
+                  title: Text(v.type, style: GoogleFonts.outfit(color: AppTheme.textPrimary(context))),
+                  subtitle: Text(v.vehicleNumber, style: GoogleFonts.inter(color: AppTheme.textSecondary(context))),
                   onTap: () => Navigator.pop(context, v),
                 )),
             ],
@@ -771,18 +836,18 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppTheme.cardColor(context),
           borderRadius: BorderRadius.circular(20),
           border: Border.all(color: AppTheme.secondaryBorder(context)),
           boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4))],
         ),
         child: Column(
           children: [
-            Icon(icon, size: 16, color: Colors.white54),
+            Icon(icon, size: 16, color: AppTheme.textSecondary(context)),
             const SizedBox(height: 8),
-            Text(value, style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
+            Text(value, style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.textPrimary(context))),
             const SizedBox(height: 4),
-            Text(label, style: GoogleFonts.inter(fontSize: 10, letterSpacing: 1, color: Colors.white54)),
+            Text(label, style: GoogleFonts.inter(fontSize: 10, letterSpacing: 1, color: AppTheme.textSecondary(context))),
           ],
         ),
       ),
@@ -793,7 +858,7 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppTheme.cardColor(context),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: AppTheme.secondaryBorder(context)),
         boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4))],
@@ -801,9 +866,9 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
       padding: const EdgeInsets.all(12),
       child: Row(
         children: [
-            const CircleAvatar(backgroundColor: Colors.white10, child: Icon(Icons.person, size: 20, color: Colors.white)),
+            CircleAvatar(backgroundColor: AppTheme.borderColor(context), child: Icon(Icons.person, size: 20, color: AppTheme.textPrimary(context))),
             const SizedBox(width: 16),
-            Text("Traveler ${uid.substring(0, 6)}", style: GoogleFonts.inter(color: Colors.white)),
+            Text("Traveler ${uid.substring(0, 6)}", style: GoogleFonts.inter(color: AppTheme.textPrimary(context))),
             const Spacer(),
             const Icon(Icons.location_on, size: 16, color: Colors.greenAccent),
           ],
@@ -858,7 +923,7 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
             ],
           ),
           const SizedBox(height: 8),
-          Text(msg, style: GoogleFonts.inter(color: Colors.white, fontSize: 12)),
+          Text(msg, style: GoogleFonts.inter(color: AppTheme.textPrimary(context), fontSize: 12)),
           const SizedBox(height: 14),
           Row(
             children: [
@@ -884,8 +949,8 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
                     }
                   },
                   style: OutlinedButton.styleFrom(
-                    foregroundColor: Colors.white,
-                    side: const BorderSide(color: Colors.white60),
+                    foregroundColor: AppTheme.textPrimary(context),
+                    side: BorderSide(color: AppTheme.borderColor(context)),
                     padding: const EdgeInsets.symmetric(vertical: 10),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                   ),

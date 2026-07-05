@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../../core/theme/app_theme.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../core/theme/oracle_ui_system.dart';
 import '../../data/models/guide_listing.dart';
@@ -342,13 +343,13 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.08),
+                    color: Theme.of(context).cardColor,
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: Colors.white.withValues(alpha: 0.15)),
+                    border: Border.all(color: AppTheme.borderColor(context)),
                   ),
                   child: SwitchListTile(
-                    title: Text('Vehicle Available for Tours', style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.w600)),
-                    subtitle: Text('Do you provide transportation?', style: GoogleFonts.inter(color: Colors.white60, fontSize: 12)),
+                    title: Text('Vehicle Available for Tours', style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.w600)),
+                    subtitle: Text('Do you provide transportation?', style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 12)),
                     value: _vehicleAvailable,
                     activeThumbColor: Colors.amber,
                     contentPadding: EdgeInsets.zero,
@@ -448,18 +449,18 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
       controller: controller,
       maxLines: maxLines,
       keyboardType: keyboardType,
-      style: GoogleFonts.inter(color: Colors.white, fontSize: 15),
+      style: GoogleFonts.inter(color: AppTheme.textPrimary(context), fontSize: 15),
       validator: validator,
       decoration: InputDecoration(
         labelText: label,
         hintText: hint,
-        labelStyle: GoogleFonts.outfit(color: Colors.white70),
-        hintStyle: GoogleFonts.inter(color: Colors.white30, fontSize: 13),
-        prefixIcon: Icon(icon, color: Colors.amber[300], size: 20),
+        labelStyle: GoogleFonts.outfit(color: AppTheme.textSecondary(context)),
+        hintStyle: GoogleFonts.inter(color: AppTheme.textSecondary(context).withValues(alpha: 0.5), fontSize: 13),
+        prefixIcon: Icon(icon, color: Colors.amber[600], size: 20),
         filled: true,
-        fillColor: Colors.white.withValues(alpha: 0.08),
+        fillColor: Theme.of(context).cardColor,
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
-        enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.15))),
+        enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: AppTheme.borderColor(context))),
         focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: const BorderSide(color: Colors.amber, width: 1.5)),
       ),
     );
@@ -474,19 +475,19 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.08),
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.15)),
+        border: Border.all(color: AppTheme.borderColor(context)),
       ),
       child: DropdownButtonFormField<String>(
         initialValue: value,
-        items: items.map((e) => DropdownMenuItem(value: e, child: Text(e, style: GoogleFonts.inter(color: Colors.white)))).toList(),
+        items: items.map((e) => DropdownMenuItem(value: e, child: Text(e, style: GoogleFonts.inter(color: AppTheme.textPrimary(context))))).toList(),
         onChanged: onChanged,
-        dropdownColor: const Color(0xFF1E1E1E),
-        style: GoogleFonts.inter(color: Colors.white),
+        dropdownColor: Theme.of(context).cardColor,
+        style: GoogleFonts.inter(color: AppTheme.textPrimary(context)),
         decoration: InputDecoration(
           labelText: label,
-          labelStyle: GoogleFonts.outfit(color: Colors.white70),
+          labelStyle: GoogleFonts.outfit(color: AppTheme.textSecondary(context)),
           border: InputBorder.none,
         ),
       ),
@@ -576,7 +577,7 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.08),
+          color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: Colors.amber.withValues(alpha: 0.5)),
         ),
@@ -595,13 +596,13 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Manage Availability', style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+                  Text('Manage Availability', style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.bold, fontSize: 16)),
                   const SizedBox(height: 4),
-                  Text('Set blackout dates & recurring working hours', style: GoogleFonts.inter(color: Colors.white60, fontSize: 12)),
+                  Text('Set blackout dates & recurring working hours', style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 12)),
                 ],
               ),
             ),
-            const Icon(Icons.arrow_forward_ios_rounded, color: Colors.white60, size: 16),
+            Icon(Icons.arrow_forward_ios_rounded, color: AppTheme.textSecondary(context), size: 16),
           ],
         ),
       ),

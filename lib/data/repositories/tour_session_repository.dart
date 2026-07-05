@@ -17,9 +17,24 @@ class TourSessionRepository {
   Future<void> startSession(String sessionId) async {
     await _firestore.collection('tour_sessions').doc(sessionId).update({
       'status': 'active',
+      'actualStartTime': FieldValue.serverTimestamp(),
+      'sessionStartedAt': DateTime.now().toIso8601String(),
       'startedAt': DateTime.now().toIso8601String(),
       'trackingEnabled': true,
     });
+
+    try {
+      final bookingQuery = await _firestore
+          .collection('booking_requests')
+          .where('linkedSessionId', isEqualTo: sessionId)
+          .get();
+      for (final bookingDoc in bookingQuery.docs) {
+        await bookingDoc.reference.update({
+          'status': 'in_progress',
+          'startedAt': DateTime.now().toIso8601String(),
+        });
+      }
+    } catch (_) {}
   }
 
   Future<void> endSession(String sessionId, {String status = 'completed_normally'}) async {
@@ -43,6 +58,54 @@ class TourSessionRepository {
       'isLocked': true,
       'isReviewEnabled': true,
     });
+
+    // Update linked booking requests (Phase 2 Financial & Completion Linkage)
+    try {
+      final bookingQuery = await _firestore
+          .collection('booking_requests')
+          .where('linkedSessionId', isEqualTo: sessionId)
+          .get();
+      for (final bookingDoc in bookingQuery.docs) {
+        final data = bookingDoc.data();
+        final quotedPrice = (data['quotedPrice'] as num?)?.toDouble() ?? 0.0;
+        final commission = quotedPrice * 0.10; // 10% platform commission
+        final netEarned = quotedPrice * 0.90;  // 90% guide net earned
+
+        await bookingDoc.reference.update({
+          'status': 'completed',
+          'completedAt': now.toIso8601String(),
+          'commissionAmount': commission,
+          'guideNetAmount': netEarned,
+          'payoutStatus': 'pending',
+        });
+      }
+    } catch (_) {}
+  }
+
+  Future<TourSession?> getActiveOrInitialSessionForGuide(String guideId) async {
+    // Check for active sessions first
+    final activeQuery = await _firestore
+        .collection('tour_sessions')
+        .where('guideId', isEqualTo: guideId)
+        .where('status', isEqualTo: 'active')
+        .limit(1)
+        .get();
+    if (activeQuery.docs.isNotEmpty) {
+      return TourSession.fromJson(activeQuery.docs.first.data());
+    }
+
+    // Check for initial/standby sessions next
+    final initialQuery = await _firestore
+        .collection('tour_sessions')
+        .where('guideId', isEqualTo: guideId)
+        .where('status', isEqualTo: 'initial')
+        .limit(1)
+        .get();
+    if (initialQuery.docs.isNotEmpty) {
+      return TourSession.fromJson(initialQuery.docs.first.data());
+    }
+
+    return null;
   }
 
   Future<void> updateSessionPhase(String sessionId, String phase) async {
