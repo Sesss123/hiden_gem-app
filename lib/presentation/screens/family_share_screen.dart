@@ -156,7 +156,7 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text("✅ Mission link generated for \"$name\"!"),
       behavior: SnackBarBehavior.floating,
-      backgroundColor: const AppTheme.colors.primary,
+      backgroundColor: AppTheme.colors.primary,
     ));
 
     _nameController.clear();
@@ -186,8 +186,8 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
                         Text("ACTIVE LINKS", style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: 2)),
                         TextButton.icon(
                           onPressed: _showCreateLinkSheet,
-                          icon: const Icon(Icons.add_rounded, color: AppTheme.colors.primary),
-                          label: Text("NEW", style: GoogleFonts.inter(color: const AppTheme.colors.primary, fontWeight: FontWeight.bold)),
+                          icon: Icon(Icons.add_rounded, color: AppTheme.colors.primary),
+                          label: Text("NEW", style: GoogleFonts.inter(color: AppTheme.colors.primary, fontWeight: FontWeight.bold)),
                         ),
                       ],
                     ),
@@ -221,7 +221,7 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
       padding: const EdgeInsets.all(32),
       child: Column(
         children: [
-          const Icon(Icons.hub_rounded, color: AppTheme.colors.primary, size: 48),
+          Icon(Icons.hub_rounded, color: AppTheme.colors.primary, size: 48),
           const SizedBox(height: 24),
           Text(
             "Share your mission status with trusted contacts.",
@@ -285,8 +285,8 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
                           const SizedBox(width: 8),
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                            decoration: BoxDecoration(color: const AppTheme.colors.primary.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(8), border: Border.all(color: const AppTheme.colors.primary)),
-                            child: Text("VIEWED ${link.viewCount}X", style: GoogleFonts.inter(color: const AppTheme.colors.primary, fontSize: 9, fontWeight: FontWeight.bold)),
+                            decoration: BoxDecoration(color: AppTheme.colors.primary.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(8), border: Border.all(color: AppTheme.colors.primary)),
+                            child: Text("VIEWED ${link.viewCount}X", style: GoogleFonts.inter(color: AppTheme.colors.primary, fontSize: 9, fontWeight: FontWeight.bold)),
                           ),
                         ],
                       ],
@@ -309,7 +309,7 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
                 },
               ),
               IconButton(
-                icon: const Icon(Icons.delete_outline_rounded, color: AppTheme.colors.redAccent),
+                icon: Icon(Icons.delete_outline_rounded, color: AppTheme.colors.redAccent),
                 onPressed: () {
                   showDialog(
                     context: context,
@@ -337,7 +337,7 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
                               behavior: SnackBarBehavior.floating,
                             ));
                           },
-                          child: const Text("Remove", style: TextStyle(color: AppTheme.colors.redAccent)),
+                          child: Text("Remove", style: TextStyle(color: AppTheme.colors.redAccent)),
                         ),
                       ],
                     ),
@@ -400,7 +400,7 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
                     child: ElevatedButton(
                       onPressed: _generateLink,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const AppTheme.colors.primary,
+                        backgroundColor: AppTheme.colors.primary,
                         foregroundColor: AppTheme.colors.black,
                         padding: const EdgeInsets.symmetric(vertical: 20),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
@@ -449,9 +449,9 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
           height: 50,
           alignment: Alignment.center,
           decoration: BoxDecoration(
-            color: isSelected ? const AppTheme.colors.primary.withValues(alpha: 0.1) : AppTheme.borderColor(context),
+            color: isSelected ? AppTheme.colors.primary.withValues(alpha: 0.1) : AppTheme.borderColor(context),
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: isSelected ? const AppTheme.colors.primary : AppTheme.borderColor(context)),
+            border: Border.all(color: isSelected ? AppTheme.colors.primary : AppTheme.borderColor(context)),
           ),
           child: Text(label, style: GoogleFonts.inter(color: isSelected ? AppTheme.textPrimary(context) : AppTheme.textSecondary(context), fontSize: 11, fontWeight: FontWeight.bold)),
         ),
@@ -468,7 +468,7 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
           Text(label, style: GoogleFonts.inter(color: AppTheme.textPrimary(context), fontSize: 14)),
           Switch(
             value: value,
-            activeThumbColor: const AppTheme.colors.primary,
+            activeThumbColor: AppTheme.colors.primary,
             onChanged: onChanged,
           ),
         ],

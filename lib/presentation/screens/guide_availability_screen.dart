@@ -134,7 +134,7 @@ class _GuideAvailabilityScreenState extends ConsumerState<GuideAvailabilityScree
       initialTime: initialTime,
       builder: (context, child) => Theme(
         data: ThemeData.dark().copyWith(
-          colorScheme: const ColorScheme.dark(primary: AppTheme.colors.amber, onPrimary: AppTheme.colors.black, surface: AppTheme.colors.primary, onSurface: AppTheme.colors.white),
+          colorScheme: ColorScheme.dark(primary: AppTheme.colors.amber, onPrimary: AppTheme.colors.black, surface: AppTheme.colors.primary, onSurface: AppTheme.colors.white),
         ),
         child: child!,
       ),
@@ -177,7 +177,7 @@ class _GuideAvailabilityScreenState extends ConsumerState<GuideAvailabilityScree
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('🎉 Availability & Schedule Updated!'), backgroundColor: AppTheme.colors.green),
+          SnackBar(content: Text('🎉 Availability & Schedule Updated!'), backgroundColor: AppTheme.colors.green),
         );
         Navigator.pop(context);
       }
@@ -197,7 +197,7 @@ class _GuideAvailabilityScreenState extends ConsumerState<GuideAvailabilityScree
     if (_isLoading) {
       return Scaffold(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        body: const Center(child: CircularProgressIndicator(color: AppTheme.colors.amber)),
+        body: Center(child: CircularProgressIndicator(color: AppTheme.colors.amber)),
       );
     }
 
@@ -266,7 +266,7 @@ class _GuideAvailabilityScreenState extends ConsumerState<GuideAvailabilityScree
                             value: _advanceNoticeHours,
                             dropdownColor: Theme.of(context).cardColor,
                             underline: const SizedBox(),
-                            icon: const Icon(Icons.arrow_drop_down, color: AppTheme.colors.amber),
+                            icon: Icon(Icons.arrow_drop_down, color: AppTheme.colors.amber),
                             items: _noticeOptions.map((e) => DropdownMenuItem(value: e, child: Text('$e hrs', style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.bold)))).toList(),
                             onChanged: (val) => setState(() => _advanceNoticeHours = val!),
                           ),
@@ -294,7 +294,7 @@ class _GuideAvailabilityScreenState extends ConsumerState<GuideAvailabilityScree
                   decoration: BoxDecoration(
                     color: Theme.of(context).cardColor.withValues(alpha: isWorking ? 1.0 : 0.5),
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: isWorking ? Colors.amber.withValues(alpha: 0.4) : AppTheme.borderColor(context)),
+                    border: Border.all(color: isWorking ? AppTheme.colors.amber.withValues(alpha: 0.4) : AppTheme.borderColor(context)),
                   ),
                   child: Row(
                     children: [
@@ -359,7 +359,7 @@ class _GuideAvailabilityScreenState extends ConsumerState<GuideAvailabilityScree
                   _buildSectionTitle('BLACKOUT DATES (${_blackoutDates.length})'),
                   TextButton.icon(
                     onPressed: _pickBlackoutDate,
-                    icon: const Icon(Icons.add_circle_outline, color: AppTheme.colors.amber, size: 18),
+                    icon: Icon(Icons.add_circle_outline, color: AppTheme.colors.amber, size: 18),
                     label: Text('ADD DATE', style: GoogleFonts.outfit(color: AppTheme.colors.amber, fontWeight: FontWeight.bold, fontSize: 12)),
                   ),
                 ],
@@ -385,7 +385,7 @@ class _GuideAvailabilityScreenState extends ConsumerState<GuideAvailabilityScree
                       backgroundColor: AppTheme.colors.redAccent.withValues(alpha: 0.2),
                       side: BorderSide(color: AppTheme.colors.redAccent.withValues(alpha: 0.5)),
                       label: Text(dateFormat.format(date), style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.w600)),
-                      deleteIcon: const Icon(Icons.close, size: 16, color: AppTheme.colors.white70),
+                      deleteIcon: Icon(Icons.close, size: 16, color: AppTheme.colors.white70),
                       onDeleted: () {
                         setState(() {
                           _blackoutDates.remove(date);
@@ -408,7 +408,7 @@ class _GuideAvailabilityScreenState extends ConsumerState<GuideAvailabilityScree
                     elevation: 8,
                   ),
                   child: _isSaving
-                      ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2, color: AppTheme.colors.black))
+                      ? SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2, color: AppTheme.colors.black))
                       : Text('SAVE AVAILABILITY & SCHEDULE 📅', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, letterSpacing: 1, fontSize: 15)),
                 ),
               ),

@@ -1,3 +1,4 @@
+import 'package:hidden_gems_sl/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -106,7 +107,7 @@ class _ReviewSubmissionScreenState extends ConsumerState<ReviewSubmissionScreen>
       children: [
         IconButton(
           onPressed: () => Navigator.pop(context),
-          icon: const Icon(Icons.close_rounded, color: AppTheme.colors.white, size: 28),
+          icon: Icon(Icons.close_rounded, color: AppTheme.colors.white, size: 28),
         ),
         const SizedBox(height: 24),
         OracleUI.neonText(
@@ -202,7 +203,7 @@ class _ReviewSubmissionScreenState extends ConsumerState<ReviewSubmissionScreen>
             children: [
               IconButton(
                 onPressed: () => value > 1 ? onChanged(value - 1) : null,
-                icon: const Icon(Icons.remove_rounded, color: AppTheme.colors.white10, size: 20),
+                icon: Icon(Icons.remove_rounded, color: AppTheme.colors.white10, size: 20),
               ),
               Text(
                 value.toInt().toString(),
@@ -210,7 +211,7 @@ class _ReviewSubmissionScreenState extends ConsumerState<ReviewSubmissionScreen>
               ),
               IconButton(
                 onPressed: () => value < 5 ? onChanged(value + 1) : null,
-                icon: const Icon(Icons.add_rounded, color: AppTheme.colors.white10, size: 20),
+                icon: Icon(Icons.add_rounded, color: AppTheme.colors.white10, size: 20),
               ),
             ],
           ),
@@ -235,7 +236,7 @@ class _ReviewSubmissionScreenState extends ConsumerState<ReviewSubmissionScreen>
           child: TextField(
             controller: _commentController,
             maxLines: 4,
-            style: const TextStyle(color: AppTheme.colors.white),
+            style: TextStyle(color: AppTheme.colors.white),
             decoration: InputDecoration(
               hintText: "What impressed you? Where could they improve?",
               hintStyle: GoogleFonts.inter(color: AppTheme.colors.white12, fontSize: 13, height: 1.5),
@@ -261,7 +262,7 @@ class _ReviewSubmissionScreenState extends ConsumerState<ReviewSubmissionScreen>
           shadowColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
         ),
         child: _isSubmitting 
-          ? const CircularProgressIndicator(color: AppTheme.colors.black)
+          ? CircularProgressIndicator(color: AppTheme.colors.black)
           : Text(
               "TRANSMIT FEEDBACK",
               style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w900, letterSpacing: 2),

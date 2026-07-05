@@ -182,7 +182,7 @@ class UpdateScreen extends StatelessWidget {
             style: GoogleFonts.inter(
               fontSize: 14,
               fontWeight: FontWeight.w900,
-              color: isPrimary ? Colors.black : AppTheme.textPrimary(context),
+              color: isPrimary ? AppTheme.colors.black : AppTheme.textPrimary(context),
               letterSpacing: 2,
             ),
           ),

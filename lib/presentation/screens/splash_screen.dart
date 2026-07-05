@@ -104,7 +104,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: isDark
-                    ? [AppPaletteDark.bg, const AppTheme.colors.primary]
+                    ? [AppPaletteDark.bg, AppTheme.colors.primary]
                     : [AppPalette.bg, AppPalette.bg2],
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,

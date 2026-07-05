@@ -26,7 +26,7 @@ class _GuideEarningsScreenState extends ConsumerState<GuideEarningsScreen> {
       return Scaffold(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         appBar: AppBar(title: const Text("Earnings & Payouts")),
-        body: const Center(child: Text("Please log in to view earnings.", style: TextStyle(color: AppTheme.colors.white))),
+        body: Center(child: Text("Please log in to view earnings.", style: TextStyle(color: AppTheme.colors.white))),
       );
     }
 
@@ -49,11 +49,11 @@ class _GuideEarningsScreenState extends ConsumerState<GuideEarningsScreen> {
             stream: bookingRepo.getInbox(uid),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator(color: AppTheme.colors.amber));
+                return Center(child: CircularProgressIndicator(color: AppTheme.colors.amber));
               }
               if (snapshot.hasError) {
                 return Center(
-                  child: Text("Error loading financial data: ${snapshot.error}", style: const TextStyle(color: AppTheme.colors.redAccent)),
+                  child: Text("Error loading financial data: ${snapshot.error}", style: TextStyle(color: AppTheme.colors.redAccent)),
                 );
               }
 
@@ -129,7 +129,7 @@ class _GuideEarningsScreenState extends ConsumerState<GuideEarningsScreen> {
               gradient: LinearGradient(
                 colors: [
                   AppPalette.rust.withValues(alpha: 0.25),
-                  const AppTheme.colors.primary.withValues(alpha: 0.8),
+                  AppTheme.colors.primary.withValues(alpha: 0.8),
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
@@ -164,7 +164,7 @@ class _GuideEarningsScreenState extends ConsumerState<GuideEarningsScreen> {
                   style: GoogleFonts.outfit(fontSize: 32, fontWeight: FontWeight.bold, color: AppTheme.colors.white),
                 ),
                 const SizedBox(height: 16),
-                const Divider(color: AppTheme.colors.white12, height: 1),
+                Divider(color: AppTheme.colors.white12, height: 1),
                 const SizedBox(height: 16),
                 Row(
                   children: [
@@ -466,6 +466,9 @@ class _GuideEarningsScreenState extends ConsumerState<GuideEarningsScreen> {
           ),
         ],
       ),
-    );
+    ).whenComplete(() {
+      bankController.dispose();
+      accController.dispose();
+    });
   }
 }

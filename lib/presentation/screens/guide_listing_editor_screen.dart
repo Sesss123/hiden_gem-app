@@ -106,7 +106,7 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
       if (!mounted) return;
       setState(() => _isSaving = true);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Uploading photo to vault...'), backgroundColor: AppTheme.colors.amber),
+        SnackBar(content: Text('Uploading photo to vault...'), backgroundColor: AppTheme.colors.amber),
       );
 
       final url = await _storage.uploadGuideDocument(
@@ -119,11 +119,11 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
           _coverPhotos.add(url);
         });
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Photo uploaded successfully!'), backgroundColor: AppTheme.colors.green),
+          SnackBar(content: Text('Photo uploaded successfully!'), backgroundColor: AppTheme.colors.green),
         );
       } else if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to upload photo.'), backgroundColor: AppTheme.colors.redAccent),
+          SnackBar(content: Text('Failed to upload photo.'), backgroundColor: AppTheme.colors.redAccent),
         );
       }
     } catch (e) {
@@ -238,7 +238,7 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
     if (_isLoading) {
       return Scaffold(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        body: const Center(child: CircularProgressIndicator(color: AppTheme.colors.amber)),
+        body: Center(child: CircularProgressIndicator(color: AppTheme.colors.amber)),
       );
     }
 
@@ -384,7 +384,7 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
                         onPressed: _isSaving ? null : () => _saveListing(status: 'draft'),
                         style: OutlinedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 16),
-                          side: const BorderSide(color: AppTheme.colors.amber, width: 1.5),
+                          side: BorderSide(color: AppTheme.colors.amber, width: 1.5),
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                         ),
                         child: Text(
@@ -406,7 +406,7 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
                           elevation: 8,
                         ),
                         child: _isSaving
-                            ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: AppTheme.colors.black))
+                            ? SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: AppTheme.colors.black))
                             : Text(
                                 'PUBLISH LISTING 🚀',
                                 style: GoogleFonts.outfit(fontWeight: FontWeight.bold, letterSpacing: 1, fontSize: 15),
@@ -461,7 +461,7 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
         fillColor: Theme.of(context).cardColor,
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
         enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: AppTheme.borderColor(context))),
-        focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: const BorderSide(color: AppTheme.colors.amber, width: 1.5)),
+        focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: AppTheme.colors.amber, width: 1.5)),
       ),
     );
   }
@@ -549,8 +549,8 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
                       },
                       child: Container(
                         padding: const EdgeInsets.all(4),
-                        decoration: const BoxDecoration(color: AppTheme.colors.black87, shape: BoxShape.circle),
-                        child: const Icon(Icons.close, color: AppTheme.colors.white, size: 14),
+                        decoration: BoxDecoration(color: AppTheme.colors.black87, shape: BoxShape.circle),
+                        child: Icon(Icons.close, color: AppTheme.colors.white, size: 14),
                       ),
                     ),
                   ),
@@ -589,7 +589,7 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
                 color: AppTheme.colors.amber.withValues(alpha: 0.2),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(Icons.calendar_month_outlined, color: AppTheme.colors.amber, size: 24),
+              child: Icon(Icons.calendar_month_outlined, color: AppTheme.colors.amber, size: 24),
             ),
             const SizedBox(width: 16),
             Expanded(

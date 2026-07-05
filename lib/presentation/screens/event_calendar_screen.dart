@@ -215,7 +215,7 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> with Automati
               )
             ],
           ),
-          selectedTextStyle: const TextStyle(color: AppTheme.colors.black, fontWeight: FontWeight.bold),
+          selectedTextStyle: TextStyle(color: AppTheme.colors.black, fontWeight: FontWeight.bold),
           todayDecoration: BoxDecoration(
             color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1), 
             shape: BoxShape.circle,

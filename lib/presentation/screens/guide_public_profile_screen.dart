@@ -1,3 +1,4 @@
+import 'package:hidden_gems_sl/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -28,7 +29,7 @@ class GuidePublicProfileScreen extends ConsumerWidget {
             }
             final guide = snapshot.data;
             if (guide == null) {
-              return const Center(child: Text("Guide profile not found", style: TextStyle(color: AppTheme.colors.white24)));
+              return Center(child: Text("Guide profile not found", style: TextStyle(color: AppTheme.colors.white24)));
             }
             
             // Track view on load
@@ -57,11 +58,11 @@ class GuidePublicProfileScreen extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               IconButton(
-                icon: const Icon(Icons.arrow_back_ios_new_rounded, color: AppTheme.colors.white, size: 20),
+                icon: Icon(Icons.arrow_back_ios_new_rounded, color: AppTheme.colors.white, size: 20),
                 onPressed: () => Navigator.pop(context),
               ),
               IconButton(
-                icon: const Icon(Icons.share_rounded, color: AppTheme.colors.white70),
+                icon: Icon(Icons.share_rounded, color: AppTheme.colors.white70),
                 onPressed: () {},
               ),
             ],
@@ -124,13 +125,13 @@ class GuidePublicProfileScreen extends ConsumerWidget {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
-                    color: const AppTheme.colors.primary.withValues(alpha: 0.15),
+                    color: AppTheme.colors.primary.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: const AppTheme.colors.primary.withValues(alpha: 0.3)),
+                    border: Border.all(color: AppTheme.colors.primary.withValues(alpha: 0.3)),
                   ),
                   child: Text(
                     guide.guideCategory.toUpperCase(),
-                    style: GoogleFonts.inter(color: const AppTheme.colors.primary, fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 2),
+                    style: GoogleFonts.inter(color: AppTheme.colors.primary, fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 2),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -141,7 +142,7 @@ class GuidePublicProfileScreen extends ConsumerWidget {
                 const SizedBox(height: 8),
                 Row(
                   children: [
-                    const Icon(Icons.location_on_rounded, color: AppTheme.colors.white24, size: 16),
+                    Icon(Icons.location_on_rounded, color: AppTheme.colors.white24, size: 16),
                     const SizedBox(width: 8),
                     Text(
                       guide.regions.join(" • "),
@@ -314,7 +315,7 @@ class GuidePublicProfileScreen extends ConsumerWidget {
             OracleUI.glassContainer(
               padding: const EdgeInsets.all(16),
               borderRadius: BorderRadius.circular(16),
-              child: const Icon(Icons.chat_bubble_outline_rounded, color: AppTheme.colors.white),
+              child: Icon(Icons.chat_bubble_outline_rounded, color: AppTheme.colors.white),
             ),
             const SizedBox(width: 16),
             Expanded(
@@ -324,7 +325,7 @@ class GuidePublicProfileScreen extends ConsumerWidget {
                   MaterialPageRoute(builder: (context) => BookingRequestScreen(guideId: guide.guideId)),
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const AppTheme.colors.primary,
+                  backgroundColor: AppTheme.colors.primary,
                   foregroundColor: AppTheme.colors.black,
                   padding: const EdgeInsets.symmetric(vertical: 20),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),

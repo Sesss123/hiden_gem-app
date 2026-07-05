@@ -1,3 +1,4 @@
+import 'package:hidden_gems_sl/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -60,15 +61,15 @@ class _SavedPlansScreenState extends ConsumerState<SavedPlansScreen> {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            const AppTheme.colors.primary.withValues(alpha: 0.8),
-            const AppTheme.colors.primary.withValues(alpha: 0.0),
+            AppTheme.colors.primary.withValues(alpha: 0.8),
+            AppTheme.colors.primary.withValues(alpha: 0.0),
           ],
         ),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Row(
         children: [
-          const Icon(Icons.view_in_ar, color: AppTheme.colors.black, size: 28),
+          Icon(Icons.view_in_ar, color: AppTheme.colors.black, size: 28),
           if (hasAR) ...[
             const SizedBox(width: 12),
             Text(
@@ -152,7 +153,7 @@ class _SavedPlansScreenState extends ConsumerState<SavedPlansScreen> {
                             child: Text('ABORT', style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4), fontWeight: FontWeight.bold))),
                         TextButton(
                             onPressed: () => Navigator.pop(context, true),
-                            child: const Text('ERASE ALL', style: TextStyle(color: AppTheme.colors.redAccent, fontWeight: FontWeight.bold))),
+                            child: Text('ERASE ALL', style: TextStyle(color: AppTheme.colors.redAccent, fontWeight: FontWeight.bold))),
                       ],
                     ),
                   ),
@@ -225,7 +226,7 @@ class _SavedPlansScreenState extends ConsumerState<SavedPlansScreen> {
             decoration: BoxDecoration(
                 color: AppTheme.colors.redAccent.withValues(alpha: 0.6),
                 borderRadius: BorderRadius.circular(20)),
-            child: const Icon(Icons.delete_outline, color: AppTheme.colors.white),
+            child: Icon(Icons.delete_outline, color: AppTheme.colors.white),
           ),
           confirmDismiss: (direction) async {
             if (direction == DismissDirection.startToEnd) {
@@ -297,7 +298,7 @@ class _SavedPlansScreenState extends ConsumerState<SavedPlansScreen> {
                               OracleUI.glassContainer(
                                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                                 borderRadius: BorderRadius.circular(6),
-                                borderColor: const AppTheme.colors.primary.withValues(alpha: 0.3),
+                                borderColor: AppTheme.colors.primary.withValues(alpha: 0.3),
                                 child: const Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [

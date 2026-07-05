@@ -50,7 +50,7 @@ class SoftUpgradeNudgeCard extends StatelessWidget {
                 if (onDismiss != null)
                   GestureDetector(
                     onTap: onDismiss,
-                    child: const Icon(Icons.close, color: AppTheme.colors.white30, size: 16),
+                    child: Icon(Icons.close, color: AppTheme.colors.white30, size: 16),
                   ),
               ],
             ),
@@ -95,7 +95,7 @@ class SoftUpgradeNudgeCard extends StatelessWidget {
                     child: OutlinedButton(
                       onPressed: onDismiss,
                       style: OutlinedButton.styleFrom(
-                        side: const BorderSide(color: AppTheme.colors.white24),
+                        side: BorderSide(color: AppTheme.colors.white24),
                         foregroundColor: AppTheme.colors.white70,
                         padding: const EdgeInsets.symmetric(vertical: 10),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),

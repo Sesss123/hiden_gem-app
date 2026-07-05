@@ -254,7 +254,7 @@ class _BudgetTrackerScreenState extends State<BudgetTrackerScreen> {
                             style: GoogleFonts.outfit(
                               fontSize: 32, 
                               fontWeight: FontWeight.w900, 
-                              color: isOverBudget ? Colors.redAccent : AppTheme.textPrimary(context),
+                              color: isOverBudget ? AppTheme.colors.redAccent : AppTheme.textPrimary(context),
                               letterSpacing: -1,
                             )
                           ),

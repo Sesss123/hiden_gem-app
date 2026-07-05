@@ -199,7 +199,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         ),
                         Row(
                           children: [
-                            const Icon(Icons.star_rounded, color: AppTheme.colors.orangeAccent, size: 16),
+                            Icon(Icons.star_rounded, color: AppTheme.colors.orangeAccent, size: 16),
                             const SizedBox(width: 4),
                             Text(
                               rating.toString(),
@@ -228,7 +228,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     const SizedBox(height: 4),
                     Row(
                       children: [
-                        const Icon(Icons.location_on_rounded, color: AppTheme.colors.white70, size: 14),
+                        Icon(Icons.location_on_rounded, color: AppTheme.colors.white70, size: 14),
                         const SizedBox(width: 4),
                         Text(
                           district.toUpperCase(),
@@ -710,7 +710,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.cloud_off_rounded, color: AppTheme.colors.redAccent, size: 14),
+            Icon(Icons.cloud_off_rounded, color: AppTheme.colors.redAccent, size: 14),
             const SizedBox(width: 6),
             Text(
               "OFFLINE MODE",

@@ -226,7 +226,7 @@ class _UsageMeterWidgetState extends State<UsageMeterWidget> {
   }) {
     final color = isUnlimited
         ? AppTheme.colors.greenAccent
-        : (isHigh ? Colors.redAccent : AppTheme.warningAmber);
+        : (isHigh ? AppTheme.colors.redAccent : AppTheme.warningAmber);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -241,7 +241,7 @@ class _UsageMeterWidgetState extends State<UsageMeterWidget> {
             Text(
               isUnlimited ? 'Unlimited' : '$used / $limit used',
               style: GoogleFonts.inter(
-                color: isHigh ? Colors.redAccent : AppTheme.textSecondary(context).withValues(alpha: 0.5),
+                color: isHigh ? AppTheme.colors.redAccent : AppTheme.textSecondary(context).withValues(alpha: 0.5),
                 fontSize: 11,
                 fontWeight: FontWeight.bold,
               ),

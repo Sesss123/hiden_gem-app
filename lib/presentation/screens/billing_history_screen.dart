@@ -1,3 +1,4 @@
+import 'package:hidden_gems_sl/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -28,7 +29,7 @@ class BillingHistoryScreen extends ConsumerWidget {
               backgroundColor: AppTheme.colors.transparent,
               elevation: 0,
               leading: IconButton(
-                icon: const Icon(Icons.arrow_back_rounded, color: AppTheme.colors.white),
+                icon: Icon(Icons.arrow_back_rounded, color: AppTheme.colors.white),
                 onPressed: () => Navigator.pop(context),
               ),
               title: OracleUI.neonText(
@@ -42,11 +43,11 @@ class BillingHistoryScreen extends ConsumerWidget {
                 stream: billingStream,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const SliverFillRemaining(child: Center(child: CircularProgressIndicator(color: AppTheme.colors.cyanAccent)));
+                    return SliverFillRemaining(child: Center(child: CircularProgressIndicator(color: AppTheme.colors.cyanAccent)));
                   }
 
                   if (snapshot.hasError) {
-                    return SliverFillRemaining(child: Center(child: Text("Error: ${snapshot.error}", style: const TextStyle(color: AppTheme.colors.redAccent))));
+                    return SliverFillRemaining(child: Center(child: Text("Error: ${snapshot.error}", style: TextStyle(color: AppTheme.colors.redAccent))));
                   }
 
                   final records = snapshot.data ?? [];
@@ -82,7 +83,7 @@ class BillingHistoryScreen extends ConsumerWidget {
     final isActive = record.status == 'active';
     
     Color statusColor = AppTheme.colors.white54;
-    if (isActive) statusColor = const AppTheme.colors.primary;
+    if (isActive) statusColor = AppTheme.colors.primary;
     if (isCancelled) statusColor = AppTheme.colors.orangeAccent;
     if (isExpired) statusColor = AppTheme.colors.redAccent;
 
@@ -119,7 +120,7 @@ class BillingHistoryScreen extends ConsumerWidget {
               ],
             ),
             const SizedBox(height: 12),
-            const Divider(color: AppTheme.colors.white12, height: 1),
+            Divider(color: AppTheme.colors.white12, height: 1),
             const SizedBox(height: 12),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,

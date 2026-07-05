@@ -196,7 +196,7 @@ class LanguageSelectionScreen extends ConsumerWidget {
 
     // BUG-071: Wrap in Material Card with Clip.antiAlias to prevent container background color from masking the InkWell ripple splash
     return Card(
-      color: Theme.of(context).brightness == Brightness.dark ? const AppTheme.colors.primary : AppTheme.colors.white,
+      color: Theme.of(context).brightness == Brightness.dark ? AppTheme.colors.primary : AppTheme.colors.white,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       elevation: 0,
       margin: EdgeInsets.zero,

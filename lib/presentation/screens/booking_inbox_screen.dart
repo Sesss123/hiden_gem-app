@@ -30,7 +30,7 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
     if (uid == null) {
       return Scaffold(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        body: const Center(child: Text("Please log in to view booking requests.", style: TextStyle(color: AppTheme.colors.white))),
+        body: Center(child: Text("Please log in to view booking requests.", style: TextStyle(color: AppTheme.colors.white))),
       );
     }
 
@@ -58,11 +58,11 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
                   stream: bookingRepo.getInbox(uid),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(child: CircularProgressIndicator(color: AppTheme.colors.amber));
+                      return Center(child: CircularProgressIndicator(color: AppTheme.colors.amber));
                     }
                     if (snapshot.hasError) {
                       return Center(
-                        child: Text("Error loading inbox: ${snapshot.error}", style: const TextStyle(color: AppTheme.colors.redAccent)),
+                        child: Text("Error loading inbox: ${snapshot.error}", style: TextStyle(color: AppTheme.colors.redAccent)),
                       );
                     }
 
@@ -277,7 +277,7 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
                       onPressed: () => _handleDecline(request),
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 14),
-                        side: const BorderSide(color: AppTheme.colors.redAccent, width: 1.5),
+                        side: BorderSide(color: AppTheme.colors.redAccent, width: 1.5),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                       ),
                       child: Text("DECLINE", style: GoogleFonts.outfit(color: AppTheme.colors.redAccent, fontWeight: FontWeight.bold, letterSpacing: 1)),
@@ -317,7 +317,7 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
                       ),
                     );
                   },
-                  icon: const Icon(Icons.play_arrow_rounded, color: AppTheme.colors.white),
+                  icon: Icon(Icons.play_arrow_rounded, color: AppTheme.colors.white),
                   label: Text("START / LAUNCH TOUR SESSION", style: GoogleFonts.outfit(color: AppTheme.colors.white, fontWeight: FontWeight.bold, letterSpacing: 1)),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppTheme.colors.amber[800],
@@ -412,7 +412,7 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("🎉 Booking accepted & Tour Session created!"), backgroundColor: AppTheme.colors.green),
+          SnackBar(content: Text("🎉 Booking accepted & Tour Session created!"), backgroundColor: AppTheme.colors.green),
         );
       }
     } catch (e) {
@@ -427,65 +427,68 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
   Future<void> _handleDecline(BookingRequest request) async {
     HapticFeedback.lightImpact();
     final noteController = TextEditingController();
-
-    final confirm = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: Theme.of(context).cardColor,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20), side: const BorderSide(color: AppTheme.colors.redAccent)),
-        title: Text("Decline Booking?", style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.bold)),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text("Please provide a reason for declining (optional):", style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 13)),
-            const SizedBox(height: 12),
-            TextField(
-              controller: noteController,
-              style: GoogleFonts.inter(color: AppTheme.textPrimary(context)),
-              decoration: InputDecoration(
-                hintText: "e.g. Fully booked on this date / Vehicle maintenance",
-                hintStyle: GoogleFonts.inter(color: AppTheme.textSecondary(context).withValues(alpha: 0.5), fontSize: 12),
-                filled: true,
-                fillColor: AppTheme.borderColor(context),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+    try {
+      final confirm = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          backgroundColor: Theme.of(context).cardColor,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20), side: BorderSide(color: AppTheme.colors.redAccent)),
+          title: Text("Decline Booking?", style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.bold)),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text("Please provide a reason for declining (optional):", style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 13)),
+              const SizedBox(height: 12),
+              TextField(
+                controller: noteController,
+                style: GoogleFonts.inter(color: AppTheme.textPrimary(context)),
+                decoration: InputDecoration(
+                  hintText: "e.g. Fully booked on this date / Vehicle maintenance",
+                  hintStyle: GoogleFonts.inter(color: AppTheme.textSecondary(context).withValues(alpha: 0.5), fontSize: 12),
+                  filled: true,
+                  fillColor: AppTheme.borderColor(context),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+                ),
+                maxLines: 2,
               ),
-              maxLines: 2,
+            ],
+          ),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(context, false), child: Text("CANCEL", style: TextStyle(color: AppTheme.textSecondary(context)))),
+            ElevatedButton(
+              onPressed: () => Navigator.pop(context, true),
+              style: ElevatedButton.styleFrom(backgroundColor: AppTheme.colors.redAccent, foregroundColor: AppTheme.colors.white),
+              child: const Text("DECLINE"),
             ),
           ],
         ),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: Text("CANCEL", style: TextStyle(color: AppTheme.textSecondary(context)))),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(context, true),
-            style: ElevatedButton.styleFrom(backgroundColor: AppTheme.colors.redAccent, foregroundColor: AppTheme.colors.white),
-            child: const Text("DECLINE"),
-          ),
-        ],
-      ),
-    );
-
-    if (confirm != true) return;
-
-    try {
-      final bookingRepo = ref.read(bookingRepositoryProvider);
-      await bookingRepo.respondToRequest(
-        bookingId: request.bookingId,
-        status: 'declined',
-        note: noteController.text.trim().isNotEmpty ? noteController.text.trim() : 'Declined by guide.',
       );
 
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Booking declined."), backgroundColor: AppTheme.colors.redAccent),
+      if (confirm != true) return;
+
+      try {
+        final bookingRepo = ref.read(bookingRepositoryProvider);
+        await bookingRepo.respondToRequest(
+          bookingId: request.bookingId,
+          status: 'declined',
+          note: noteController.text.trim().isNotEmpty ? noteController.text.trim() : 'Declined by guide.',
         );
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("Booking declined."), backgroundColor: AppTheme.colors.redAccent),
+          );
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("Error declining booking: $e"), backgroundColor: AppTheme.colors.redAccent),
+          );
+        }
       }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Error declining booking: $e"), backgroundColor: AppTheme.colors.redAccent),
-        );
-      }
+    } finally {
+      noteController.dispose();
     }
   }
 }

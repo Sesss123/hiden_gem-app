@@ -1,3 +1,4 @@
+import 'package:hidden_gems_sl/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -50,7 +51,7 @@ class _IncidentCenterScreenState extends ConsumerState<IncidentCenterScreen> {
                 if (snapshot.hasError) {
                   return SliverFillRemaining(
                     child: Center(
-                      child: Text("Offline Error: ${snapshot.error}", style: const TextStyle(color: AppTheme.colors.redAccent)),
+                      child: Text("Offline Error: ${snapshot.error}", style: TextStyle(color: AppTheme.colors.redAccent)),
                     ),
                   );
                 }
@@ -124,7 +125,7 @@ class _IncidentCenterScreenState extends ConsumerState<IncidentCenterScreen> {
               color: AppTheme.colors.redAccent.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
-            child: const Icon(Icons.shield_rounded, color: AppTheme.colors.redAccent, size: 28),
+            child: Icon(Icons.shield_rounded, color: AppTheme.colors.redAccent, size: 28),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -233,7 +234,7 @@ class _IncidentCenterScreenState extends ConsumerState<IncidentCenterScreen> {
               const SizedBox(height: 16),
               Row(
                 children: [
-                  const Icon(Icons.access_time_rounded, color: AppTheme.colors.white24, size: 14),
+                  Icon(Icons.access_time_rounded, color: AppTheme.colors.white24, size: 14),
                   const SizedBox(width: 4),
                   Text(
                     "${incident.createdAt.hour}:${incident.createdAt.minute.toString().padLeft(2, '0')}",
@@ -307,7 +308,7 @@ class _IncidentCenterScreenState extends ConsumerState<IncidentCenterScreen> {
     return FloatingActionButton.extended(
       onPressed: () => _showReportDialog(),
       backgroundColor: AppTheme.colors.redAccent,
-      icon: const Icon(Icons.add_alert_rounded, color: AppTheme.colors.white),
+      icon: Icon(Icons.add_alert_rounded, color: AppTheme.colors.white),
       label: Text(
         "REPORT INCIDENT",
         style: GoogleFonts.inter(fontWeight: FontWeight.w900, letterSpacing: 1),
@@ -326,7 +327,7 @@ class _IncidentCenterScreenState extends ConsumerState<IncidentCenterScreen> {
         maxChildSize: 0.9,
         builder: (_, controller) => Container(
           decoration: BoxDecoration(
-            color: const AppTheme.colors.primary,
+            color: AppTheme.colors.primary,
             borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
             border: Border.all(color: AppTheme.colors.white.withValues(alpha: 0.1)),
           ),
@@ -382,11 +383,11 @@ class _IncidentCenterScreenState extends ConsumerState<IncidentCenterScreen> {
       borderColor: AppTheme.colors.white.withValues(alpha: 0.05),
       child: TextField(
         maxLines: maxLines,
-        style: const TextStyle(color: AppTheme.colors.white),
+        style: TextStyle(color: AppTheme.colors.white),
         decoration: InputDecoration(
           hintText: hint,
           prefixIcon: Icon(icon, color: AppTheme.colors.white24, size: 20),
-          hintStyle: const TextStyle(color: AppTheme.colors.white24, fontSize: 13),
+          hintStyle: TextStyle(color: AppTheme.colors.white24, fontSize: 13),
           border: InputBorder.none,
         ),
       ),

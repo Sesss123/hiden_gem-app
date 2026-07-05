@@ -297,7 +297,7 @@ class _LoadingPlanScreenState extends State<LoadingPlanScreen>
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(Icons.auto_fix_off, size: 60, color: AppTheme.colors.redAccent),
+          Icon(Icons.auto_fix_off, size: 60, color: AppTheme.colors.redAccent),
           const SizedBox(height: 24),
           Text(
             "THE CONNECTION FADED",

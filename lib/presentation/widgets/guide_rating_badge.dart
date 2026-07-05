@@ -1,3 +1,4 @@
+import 'package:hidden_gems_sl/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -27,7 +28,7 @@ class GuideRatingBadge extends StatelessWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.star_rounded, color: AppTheme.colors.amber, size: 16),
+              Icon(Icons.star_rounded, color: AppTheme.colors.amber, size: 16),
               const SizedBox(width: 4),
               Text(
                 rating.toStringAsFixed(1),
@@ -59,7 +60,7 @@ class GuideRatingBadge extends StatelessWidget {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(Icons.verified_rounded, color: AppTheme.colors.blue, size: 14),
+                Icon(Icons.verified_rounded, color: AppTheme.colors.blue, size: 14),
                 const SizedBox(width: 4),
                 Text(
                   "Verified",

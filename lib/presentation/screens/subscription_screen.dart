@@ -1,3 +1,4 @@
+import 'package:hidden_gems_sl/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -32,7 +33,7 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text("✅ Subscribed to \"${planId.toUpperCase()}\" plan!"),
-          backgroundColor: const AppTheme.colors.primary.withValues(alpha: 0.2),
+          backgroundColor: AppTheme.colors.primary.withValues(alpha: 0.2),
           behavior: SnackBarBehavior.floating,
         ));
       }
@@ -56,7 +57,7 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: const Text("✅ Purchases restored successfully."),
-          backgroundColor: const AppTheme.colors.primary.withValues(alpha: 0.2),
+          backgroundColor: AppTheme.colors.primary.withValues(alpha: 0.2),
           behavior: SnackBarBehavior.floating,
         ));
       }
@@ -115,7 +116,7 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
                       description: "Elevate your visibility and tools.",
                       features: ["Featured Listings", "Advanced Analytics", "Client Analytics", "Priority SOS"],
                       isPopular: true,
-                      color: const AppTheme.colors.primary,
+                      color: AppTheme.colors.primary,
                     ),
                     _buildPlanCard(
                       title: "ELITE AGENCY",
@@ -148,14 +149,14 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
       ),
       actions: [
         IconButton(
-          icon: const Icon(Icons.history, color: AppTheme.colors.white70, size: 20),
+          icon: Icon(Icons.history, color: AppTheme.colors.white70, size: 20),
           onPressed: () {
             Navigator.push(context, MaterialPageRoute(builder: (_) => const BillingHistoryScreen()));
           },
         ),
         TextButton.icon(
           onPressed: _isProcessing ? null : _restorePurchases,
-          icon: const Icon(Icons.restore, color: AppTheme.colors.white70, size: 16),
+          icon: Icon(Icons.restore, color: AppTheme.colors.white70, size: 16),
           label: Text("RESTORE", style: GoogleFonts.inter(color: AppTheme.colors.white70, fontSize: 12, fontWeight: FontWeight.bold)),
         ),
       ],
@@ -174,8 +175,8 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
             children: [
               Container(
                 width: 48, height: 48,
-                decoration: BoxDecoration(shape: BoxShape.circle, color: const AppTheme.colors.primary.withValues(alpha: 0.1)),
-                child: const Icon(Icons.verified_user_rounded, color: AppTheme.colors.primary),
+                decoration: BoxDecoration(shape: BoxShape.circle, color: AppTheme.colors.primary.withValues(alpha: 0.1)),
+                child: Icon(Icons.verified_user_rounded, color: AppTheme.colors.primary),
               ),
               const SizedBox(width: 20),
               Expanded(
@@ -195,7 +196,7 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
               if (sub == null)
                 TextButton(
                   onPressed: _isProcessing ? null : () => _subscribe('pro', '29'),
-                  child: Text("UPGRADE", style: GoogleFonts.inter(color: const AppTheme.colors.primary, fontWeight: FontWeight.bold)))
+                  child: Text("UPGRADE", style: GoogleFonts.inter(color: AppTheme.colors.primary, fontWeight: FontWeight.bold)))
               else
                 TextButton(
                   onPressed: () => _manageSubscription(context),
@@ -244,7 +245,7 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 margin: const EdgeInsets.only(bottom: 16),
-                decoration: BoxDecoration(color: const AppTheme.colors.primary, borderRadius: BorderRadius.circular(6)),
+                decoration: BoxDecoration(color: AppTheme.colors.primary, borderRadius: BorderRadius.circular(6)),
                 child: Text("MOST POPULAR", style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.w900, color: AppTheme.colors.black)),
               ),
             Text(title, style: GoogleFonts.outfit(color: color, fontSize: 24, fontWeight: FontWeight.w900, letterSpacing: 2)),
@@ -265,7 +266,7 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
               padding: const EdgeInsets.only(bottom: 12),
               child: Row(
                 children: [
-                  const Icon(Icons.check_circle_rounded, color: AppTheme.colors.white12, size: 16),
+                  Icon(Icons.check_circle_rounded, color: AppTheme.colors.white12, size: 16),
                   const SizedBox(width: 12),
                   Text(f, style: GoogleFonts.inter(color: AppTheme.colors.white54, fontSize: 13)),
                 ],
@@ -277,14 +278,14 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
               child: ElevatedButton(
                 onPressed: planId == 'free' || _isProcessing ? null : () => _subscribe(planId, price),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: isPopular ? const AppTheme.colors.primary : AppTheme.colors.white.withValues(alpha: 0.05),
+                  backgroundColor: isPopular ? AppTheme.colors.primary : AppTheme.colors.white.withValues(alpha: 0.05),
                   foregroundColor: isPopular ? AppTheme.colors.black : AppTheme.colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 20),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   side: isPopular ? null : BorderSide(color: AppTheme.colors.white.withValues(alpha: 0.1)),
                 ),
                 child: _isProcessing
-                    ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2, color: AppTheme.colors.white))
+                    ? SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2, color: AppTheme.colors.white))
                     : Text(
                         planId == 'free' ? "CURRENT (FREE)" : "SELECT MISSION TIER",
                         style: GoogleFonts.outfit(fontWeight: FontWeight.w900, letterSpacing: 1.5)),

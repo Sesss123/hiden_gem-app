@@ -240,7 +240,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
             if (profile.profileImagePath != null) ...[
               const SizedBox(height: 16),
               TextButton.icon(
-                icon: const Icon(Icons.delete_outline, color: AppTheme.colors.redAccent, size: 18),
+                icon: Icon(Icons.delete_outline, color: AppTheme.colors.redAccent, size: 18),
                 label: Text("REMOVE PHOTO",
                     style: GoogleFonts.inter(
                         color: AppTheme.colors.redAccent, fontSize: 12, fontWeight: FontWeight.bold)),
@@ -378,7 +378,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(16),
             child: Text("PROFILE ERROR:\n$e\n\n$stack",
-                style: const TextStyle(color: AppTheme.colors.red, fontSize: 11)),
+                style: TextStyle(color: AppTheme.colors.red, fontSize: 11)),
           ),
         ),
       );
@@ -403,7 +403,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: isDark
-                      ? [const AppTheme.colors.primary, const AppTheme.colors.primary.withValues(alpha: 0)]
+                      ? [AppTheme.colors.primary, AppTheme.colors.primary.withValues(alpha: 0)]
                       : [AppPalette.heroOchre.withValues(alpha: 0.35), AppPalette.bg.withValues(alpha: 0)],
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
@@ -663,7 +663,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
           style: GoogleFonts.outfit(
             fontSize: 11,
             fontWeight: FontWeight.bold,
-            color: isSelected ? Colors.white : AppTheme.textSecondary(context),
+            color: isSelected ? AppTheme.colors.white : AppTheme.textSecondary(context),
             letterSpacing: 0.5,
           ),
         ),
@@ -686,7 +686,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
                   () => Navigator.push(context, MaterialPageRoute(builder: (_) => const BudgetConciergeScreen()))),
               _hubDivider(),
               _hubItem(Icons.workspace_premium_outlined, "Heritage Passport",
-                  "Verifiable visit collection", const AppTheme.colors.primary,
+                  "Verifiable visit collection", AppTheme.colors.primary,
                   () => Navigator.push(context, MaterialPageRoute(builder: (_) => const HeritagePassportScreen()))),
               _hubDivider(),
               FutureBuilder<int>(
@@ -695,7 +695,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
                   final score = snapshot.data ?? 0;
                   final rank = EthicalTravelService.getRank(score);
                   return _hubItem(Icons.eco_outlined, "Ethical Travel Meter",
-                      "Rank: $rank • Score: $score", const AppTheme.colors.primary, () => _showEthicalMeterDialog(context, score, rank));
+                      "Rank: $rank • Score: $score", AppTheme.colors.primary, () => _showEthicalMeterDialog(context, score, rank));
                 },
               ),
             ],
@@ -716,7 +716,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surface,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(36)),
-          border: Border.all(color: const AppTheme.colors.primary.withValues(alpha: 0.3), width: 1.5),
+          border: Border.all(color: AppTheme.colors.primary.withValues(alpha: 0.3), width: 1.5),
           boxShadow: [
             BoxShadow(
               color: AppTheme.colors.black.withValues(alpha: 0.2),
@@ -736,10 +736,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: const AppTheme.colors.primary.withValues(alpha: 0.15),
+                color: AppTheme.colors.primary.withValues(alpha: 0.15),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(Icons.eco_rounded, color: AppTheme.colors.primary, size: 40),
+              child: Icon(Icons.eco_rounded, color: AppTheme.colors.primary, size: 40),
             ),
             const SizedBox(height: 16),
             Text(
@@ -755,7 +755,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
             Text(
               "Rank: $rank • Score: $score Pts",
               style: GoogleFonts.inter(
-                color: const AppTheme.colors.primary,
+                color: AppTheme.colors.primary,
                 fontWeight: FontWeight.w800,
                 fontSize: 14,
               ),
@@ -812,7 +812,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
               child: ElevatedButton(
                 onPressed: () => Navigator.pop(context),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const AppTheme.colors.primary,
+                  backgroundColor: AppTheme.colors.primary,
                   foregroundColor: AppTheme.colors.white,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                 ),
@@ -834,13 +834,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       decoration: BoxDecoration(
-        color: const AppTheme.colors.primary.withValues(alpha: 0.06),
+        color: AppTheme.colors.primary.withValues(alpha: 0.06),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const AppTheme.colors.primary.withValues(alpha: 0.15)),
+        border: Border.all(color: AppTheme.colors.primary.withValues(alpha: 0.15)),
       ),
       child: Row(
         children: [
-          const Icon(Icons.card_giftcard_rounded, color: AppTheme.colors.primary, size: 18),
+          Icon(Icons.card_giftcard_rounded, color: AppTheme.colors.primary, size: 18),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
@@ -881,10 +881,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
             decoration: BoxDecoration(
-              color: const AppTheme.colors.primary.withValues(alpha: 0.15),
+              color: AppTheme.colors.primary.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: Text(points, style: GoogleFonts.outfit(color: const AppTheme.colors.primary, fontWeight: FontWeight.w900, fontSize: 12)),
+            child: Text(points, style: GoogleFonts.outfit(color: AppTheme.colors.primary, fontWeight: FontWeight.w900, fontSize: 12)),
           ),
         ],
       ),
@@ -941,21 +941,21 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: isDark
-              ? [const AppTheme.colors.primary, const AppTheme.colors.primary]
-              : [const AppTheme.colors.primary, const AppTheme.colors.primary],
+              ? [AppTheme.colors.primary, AppTheme.colors.primary]
+              : [AppTheme.colors.primary, AppTheme.colors.primary],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: isDark ? AppTheme.colors.amber.withValues(alpha: 0.5) : const AppTheme.colors.primary,
+          color: isDark ? AppTheme.colors.amber.withValues(alpha: 0.5) : AppTheme.colors.primary,
           width: 1.5,
         ),
         boxShadow: [
           BoxShadow(
             color: isDark
                 ? AppTheme.colors.amber.withValues(alpha: 0.08)
-                : const AppTheme.colors.primary.withValues(alpha: 0.2),
+                : AppTheme.colors.primary.withValues(alpha: 0.2),
             blurRadius: 20,
             spreadRadius: 2,
             offset: const Offset(0, 4),
@@ -970,10 +970,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: isDark ? AppTheme.colors.amber.withValues(alpha: 0.2) : const AppTheme.colors.primary.withValues(alpha: 0.3),
+                  color: isDark ? AppTheme.colors.amber.withValues(alpha: 0.2) : AppTheme.colors.primary.withValues(alpha: 0.3),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(Icons.explore, color: isDark ? AppTheme.colors.amber[700] : const AppTheme.colors.primary, size: 20),
+                child: Icon(Icons.explore, color: isDark ? AppTheme.colors.amber[700] : AppTheme.colors.primary, size: 20),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -986,14 +986,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
                         fontSize: 15,
                         fontWeight: FontWeight.bold,
                         letterSpacing: 1.2,
-                        color: isDark ? AppTheme.colors.white : const AppTheme.colors.primary,
+                        color: isDark ? AppTheme.colors.white : AppTheme.colors.primary,
                       ),
                     ),
                     Text(
                       "Quick access to your guide tools",
                       style: GoogleFonts.inter(
                         fontSize: 11,
-                        color: isDark ? AppTheme.colors.white70 : const AppTheme.colors.primary,
+                        color: isDark ? AppTheme.colors.white70 : AppTheme.colors.primary,
                       ),
                     ),
                   ],
@@ -1039,7 +1039,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
                   Icons.explore_outlined,
                   "Tour Dashboard",
                   "Active tour & QR",
-                  isDark ? AppTheme.colors.amber[700]! : const AppTheme.colors.primary,
+                  isDark ? AppTheme.colors.amber[700]! : AppTheme.colors.primary,
                   () => Navigator.push(context, MaterialPageRoute(builder: (_) => const GuideDashboardScreen())),
                 ),
               ),
@@ -1049,7 +1049,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
                   Icons.inbox_rounded,
                   "Bookings",
                   "Tour requests",
-                  isDark ? AppTheme.colors.blueAccent : const AppTheme.colors.primary,
+                  isDark ? AppTheme.colors.blueAccent : AppTheme.colors.primary,
                   () => Navigator.push(context, MaterialPageRoute(builder: (_) => const BookingInboxScreen())),
                 ),
               ),
@@ -1063,7 +1063,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
                   Icons.account_balance_wallet_outlined,
                   "Earnings",
                   "Payouts & stats",
-                  isDark ? AppTheme.colors.greenAccent[400]! : const AppTheme.colors.primary,
+                  isDark ? AppTheme.colors.greenAccent[400]! : AppTheme.colors.primary,
                   () => Navigator.push(context, MaterialPageRoute(builder: (_) => const GuideEarningsScreen())),
                 ),
               ),
@@ -1073,7 +1073,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
                   Icons.edit_document,
                   "My Listing",
                   "Profile & vehicle",
-                  isDark ? AppTheme.colors.orangeAccent : const AppTheme.colors.primary,
+                  isDark ? AppTheme.colors.orangeAccent : AppTheme.colors.primary,
                   () => Navigator.push(context, MaterialPageRoute(builder: (_) => const GuideListingEditorScreen())),
                 ),
               ),
@@ -1095,7 +1095,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
       child: Container(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: isDark ? const AppTheme.colors.primary : AppTheme.colors.white,
+          color: isDark ? AppTheme.colors.primary : AppTheme.colors.white,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
             color: isDark ? color.withValues(alpha: 0.4) : color,
@@ -1127,7 +1127,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
                 Icon(
                   Icons.arrow_forward_ios_rounded,
                   size: 12,
-                  color: isDark ? AppTheme.colors.white38 : const AppTheme.colors.primary,
+                  color: isDark ? AppTheme.colors.white38 : AppTheme.colors.primary,
                 ),
               ],
             ),
@@ -1137,7 +1137,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
               style: GoogleFonts.outfit(
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
-                color: isDark ? AppTheme.colors.white : const AppTheme.colors.primary,
+                color: isDark ? AppTheme.colors.white : AppTheme.colors.primary,
               ),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
@@ -1147,7 +1147,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
               subtitle,
               style: GoogleFonts.inter(
                 fontSize: 10,
-                color: isDark ? AppTheme.colors.white70 : const AppTheme.colors.primary,
+                color: isDark ? AppTheme.colors.white70 : AppTheme.colors.primary,
               ),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,

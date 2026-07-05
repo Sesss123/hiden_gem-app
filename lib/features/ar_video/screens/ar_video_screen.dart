@@ -293,7 +293,7 @@ class _ARVideoScreenState extends State<ARVideoScreen>
       child: Container(
         color: AppTheme.colors.black87,
         child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-          const Icon(Icons.error_outline, color: AppTheme.colors.redAccent, size: 56),
+          Icon(Icons.error_outline, color: AppTheme.colors.redAccent, size: 56),
           const SizedBox(height: 16),
           Text('Video unavailable', style: GoogleFonts.outfit(color: AppTheme.colors.white, fontSize: 18)),
           const SizedBox(height: 8),
@@ -313,7 +313,7 @@ class _ARVideoScreenState extends State<ARVideoScreen>
       child: Column(mainAxisSize: MainAxisSize.min, children: [
         ScaleTransition(
           scale: _pulse,
-          child: const Icon(Icons.touch_app, color: AppTheme.colors.white54, size: 72),
+          child: Icon(Icons.touch_app, color: AppTheme.colors.white54, size: 72),
         ),
         const SizedBox(height: 16),
         Text(
@@ -406,7 +406,7 @@ class _ARVideoScreenState extends State<ARVideoScreen>
           style: GoogleFonts.inter(
             color: AppTheme.colors.white,
             fontSize: 14, height: 1.5,
-            shadows: [const Shadow(blurRadius: 8, color: AppTheme.colors.black)],
+            shadows: [Shadow(blurRadius: 8, color: AppTheme.colors.black)],
           ),
         ),
       ),

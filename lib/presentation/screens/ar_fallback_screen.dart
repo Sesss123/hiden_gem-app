@@ -209,7 +209,7 @@ class _ARFallbackScreenState extends State<ARFallbackScreen> {
                                   },
                                 );
                               },
-                              icon: const Icon(Icons.play_circle_fill, color: AppTheme.colors.white, size: 16),
+                              icon: Icon(Icons.play_circle_fill, color: AppTheme.colors.white, size: 16),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: AppPalette.rust,
                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -271,7 +271,7 @@ class _ARFallbackScreenState extends State<ARFallbackScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.video_library_outlined, color: AppTheme.colors.white24, size: 48),
+              Icon(Icons.video_library_outlined, color: AppTheme.colors.white24, size: 48),
               const SizedBox(height: 16),
               Text(
                 "Cinematic preview unavailable",
@@ -282,7 +282,7 @@ class _ARFallbackScreenState extends State<ARFallbackScreen> {
         ),
       );
     }
-    if (!_initialized) return const Center(child: CircularProgressIndicator(color: AppTheme.colors.primary));
+    if (!_initialized) return Center(child: CircularProgressIndicator(color: AppTheme.colors.primary));
     return SizedBox.expand(
       child: FittedBox(
         fit: BoxFit.cover,
@@ -299,7 +299,7 @@ class _ARFallbackScreenState extends State<ARFallbackScreen> {
     child: Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        const Icon(Icons.threed_rotation, color: AppTheme.colors.primary, size: 80),
+        Icon(Icons.threed_rotation, color: AppTheme.colors.primary, size: 80),
         const SizedBox(height: 24),
         Text(
           "Interactive 3D View",

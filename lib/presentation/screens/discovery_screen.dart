@@ -275,7 +275,7 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
           return Container(
             height: MediaQuery.of(context).size.height * 0.7,
             decoration: BoxDecoration(
-              color: isDark ? const AppTheme.colors.primary.withValues(alpha: 0.95) : AppTheme.colors.white.withValues(alpha: 0.95),
+              color: isDark ? AppTheme.colors.primary.withValues(alpha: 0.95) : AppTheme.colors.white.withValues(alpha: 0.95),
               borderRadius: const BorderRadius.vertical(top: Radius.circular(40)),
               border: Border.all(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2)),
             ),
@@ -1098,7 +1098,7 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    const Icon(Icons.star_rounded, color: AppTheme.colors.orangeAccent, size: 12),
+                                    Icon(Icons.star_rounded, color: AppTheme.colors.orangeAccent, size: 12),
                                     const SizedBox(width: 4),
                                     Text(
                                       place.rating.toString(),
@@ -1293,7 +1293,7 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
                           Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Icon(Icons.star_rounded, color: AppTheme.colors.orangeAccent, size: 14),
+                              Icon(Icons.star_rounded, color: AppTheme.colors.orangeAccent, size: 14),
                               const SizedBox(width: 2),
                               Text(
                                 place.rating.toString(),

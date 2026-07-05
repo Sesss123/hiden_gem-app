@@ -243,7 +243,7 @@ class _ARContentPreviewScreenState extends State<ARContentPreviewScreen> {
                   Align(
                     alignment: Alignment.topLeft,
                     child: IconButton(
-                      icon: const Icon(Icons.arrow_back_ios_new, color: AppTheme.colors.white),
+                      icon: Icon(Icons.arrow_back_ios_new, color: AppTheme.colors.white),
                       onPressed: () => Navigator.pop(context),
                     ),
                   ),
@@ -280,7 +280,7 @@ class _ARContentPreviewScreenState extends State<ARContentPreviewScreen> {
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  const Icon(Icons.verified, color: AppTheme.colors.blueAccent, size: 14),
+                                  Icon(Icons.verified, color: AppTheme.colors.blueAccent, size: 14),
                                   const SizedBox(width: 4),
                                   Text(
                                     'Verified',
@@ -424,7 +424,7 @@ class _ARContentPreviewScreenState extends State<ARContentPreviewScreen> {
                                 ),
                               );
                             },
-                            icon: const Icon(Icons.blur_on, color: AppTheme.colors.black, size: 24),
+                            icon: Icon(Icons.blur_on, color: AppTheme.colors.black, size: 24),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: AppPalette.rust,
                               disabledBackgroundColor: AppTheme.colors.white10,
@@ -533,7 +533,7 @@ class _ARContentPreviewScreenState extends State<ARContentPreviewScreen> {
       ),
       child: Row(
         children: [
-          const Icon(Icons.error_outline, color: AppTheme.colors.redAccent, size: 32),
+          Icon(Icons.error_outline, color: AppTheme.colors.redAccent, size: 32),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
@@ -680,7 +680,7 @@ class _ARContentPreviewScreenState extends State<ARContentPreviewScreen> {
                     ),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.close, color: AppTheme.colors.white54, size: 20),
+                    icon: Icon(Icons.close, color: AppTheme.colors.white54, size: 20),
                     onPressed: () => Navigator.pop(context),
                   ),
                 ],

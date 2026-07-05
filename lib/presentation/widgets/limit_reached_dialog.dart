@@ -64,7 +64,7 @@ class LimitReachedDialog extends StatelessWidget {
                     Navigator.pop(context);
                     onWatchAd!();
                   },
-                  icon: const Icon(Icons.play_circle_outline_rounded, color: AppTheme.colors.white),
+                  icon: Icon(Icons.play_circle_outline_rounded, color: AppTheme.colors.white),
                   label: Text(
                     "WATCH AD TO UNLOCK ONE",
                     style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 14, color: AppTheme.colors.white),

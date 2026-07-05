@@ -1,3 +1,4 @@
+import 'package:hidden_gems_sl/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -86,12 +87,12 @@ class _IncidentDetailScreenState extends ConsumerState<IncidentDetailScreen> {
       elevation: 0,
       pinned: true,
       leading: IconButton(
-        icon: const Icon(Icons.arrow_back_ios_new_rounded, color: AppTheme.colors.white, size: 20),
+        icon: Icon(Icons.arrow_back_ios_new_rounded, color: AppTheme.colors.white, size: 20),
         onPressed: () => Navigator.pop(context),
       ),
       actions: [
         IconButton(
-          icon: const Icon(Icons.share_rounded, color: AppTheme.colors.white60),
+          icon: Icon(Icons.share_rounded, color: AppTheme.colors.white60),
           onPressed: () {},
         ),
       ],
@@ -203,7 +204,7 @@ class _IncidentDetailScreenState extends ConsumerState<IncidentDetailScreen> {
 
   List<Widget> _buildTimeline(IncidentReport incident) {
     if (incident.timelineEvents.isEmpty) {
-      return [const Text("No timeline active.", style: TextStyle(color: AppTheme.colors.white12))];
+      return [Text("No timeline active.", style: TextStyle(color: AppTheme.colors.white12))];
     }
 
     return incident.timelineEvents.map((e) {
@@ -272,7 +273,7 @@ class _IncidentDetailScreenState extends ConsumerState<IncidentDetailScreen> {
         children: [
           Row(
             children: [
-              const Icon(Icons.verified_user_rounded, color: AppTheme.colors.cyanAccent, size: 20),
+              Icon(Icons.verified_user_rounded, color: AppTheme.colors.cyanAccent, size: 20),
               const SizedBox(width: 12),
               Text(
                 "VERIFIED AUDIT LOG",

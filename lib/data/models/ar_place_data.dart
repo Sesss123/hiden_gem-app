@@ -1,3 +1,4 @@
+import 'package:hidden_gems_sl/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'ar_artifact.dart';
 
@@ -109,9 +110,9 @@ class ARPlaceData {
 
   Color get tierColor {
     switch (arTier) {
-      case 1: return const AppTheme.colors.primary;
-      case 2: return const AppTheme.colors.primary;
-      default: return const AppTheme.colors.primary;
+      case 1: return AppTheme.colors.primary;
+      case 2: return AppTheme.colors.primary;
+      default: return AppTheme.colors.primary;
     }
   }
 

@@ -75,7 +75,7 @@ class CachedImage extends StatelessWidget {
       width: width,
       height: height,
       color: isDark
-          ? const AppTheme.colors.primary
+          ? AppTheme.colors.primary
           : AppPalette.sand2,
       child: _ShimmerBox(width: width, height: height),
     );
@@ -147,9 +147,9 @@ class _ShimmerBoxState extends State<_ShimmerBox>
               end: Alignment(_animation.value, 0),
               colors: isDark
                   ? [
-                      const AppTheme.colors.primary,
-                      const AppTheme.colors.primary,
-                      const AppTheme.colors.primary,
+                      AppTheme.colors.primary,
+                      AppTheme.colors.primary,
+                      AppTheme.colors.primary,
                     ]
                   : [
                       AppPalette.sand2,

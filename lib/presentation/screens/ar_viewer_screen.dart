@@ -534,7 +534,7 @@ class _ARViewerScreenState extends State<ARViewerScreen>
               _joinSession(controller.text);
             },
             style: ElevatedButton.styleFrom(backgroundColor: AppPalette.rust),
-            child: const Text("JOIN", style: TextStyle(color: AppTheme.colors.white)),
+            child: Text("JOIN", style: TextStyle(color: AppTheme.colors.white)),
           ),
         ],
       ),
@@ -641,7 +641,7 @@ class _ARViewerScreenState extends State<ARViewerScreen>
               builder: (_, __) => IgnorePointer(
                 child: Opacity(
                   opacity: _thenNowAnim.value * 0.45,
-                  child: Container(color: const AppTheme.colors.primary),
+                  child: Container(color: AppTheme.colors.primary),
                 ),
               ),
             ),
@@ -742,7 +742,7 @@ class _ARViewerScreenState extends State<ARViewerScreen>
                 const SizedBox(width: 8),
                 _circleBtn(_showHotspots ? Icons.visibility : Icons.visibility_off, () {
                   setState(() => _showHotspots = !_showHotspots);
-                }, color: _showHotspots ? AppTheme.warningAmber : Colors.white),
+                }, color: _showHotspots ? AppTheme.warningAmber : AppTheme.colors.white),
                 const SizedBox(width: 8),
                 _circleBtn(Icons.camera_alt_outlined, _captureARPhoto),
               ],
@@ -783,7 +783,7 @@ class _ARViewerScreenState extends State<ARViewerScreen>
             _sessionSubscription?.cancel();
             setState(() => _currentSession = null);
           },
-          child: const Icon(Icons.close, color: AppTheme.colors.white54, size: 14),
+          child: Icon(Icons.close, color: AppTheme.colors.white54, size: 14),
         ),
       ],
     ),
@@ -1082,7 +1082,7 @@ class _ARViewerScreenState extends State<ARViewerScreen>
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(Icons.timer_outlined, color: AppTheme.colors.redAccent, size: 14),
+                Icon(Icons.timer_outlined, color: AppTheme.colors.redAccent, size: 14),
                 const SizedBox(width: 8),
                 Text(
                   "DEMO MODE: $seconds REMAINING",
@@ -1208,7 +1208,7 @@ class _ARViewerScreenState extends State<ARViewerScreen>
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [const AppTheme.colors.primary, const AppTheme.colors.primary.withValues(alpha: 0.9)],
+                  colors: [AppTheme.colors.primary, AppTheme.colors.primary.withValues(alpha: 0.9)],
                 ),
                 borderRadius: BorderRadius.circular(24),
                 border: Border.all(color: AppPalette.rust, width: 2),
@@ -1309,7 +1309,7 @@ class _ARViewerScreenState extends State<ARViewerScreen>
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            _shareOption(Icons.camera, "Instagram", const AppTheme.colors.primary, () {
+            _shareOption(Icons.camera, "Instagram", AppTheme.colors.primary, () {
               AnalyticsService().logARPhotoShared(
                   placeName: widget.placeName, platform: "instagram");
               SharePlus.instance.share(ShareParams(files: [XFile(path)], text: "Exploring ${widget.placeName} in AR with #HiddenGemsSL"));
@@ -1382,7 +1382,7 @@ class _ARViewerScreenState extends State<ARViewerScreen>
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(Icons.location_on, color: AppTheme.colors.green, size: 14),
+                Icon(Icons.location_on, color: AppTheme.colors.green, size: 14),
                 const SizedBox(width: 8),
                 Text(
                   "${_distanceToTarget.toStringAsFixed(0)}m to ${widget.placeName}",
@@ -1395,7 +1395,7 @@ class _ARViewerScreenState extends State<ARViewerScreen>
           // Rotating Arrow (Compass)
           Transform.rotate(
             angle: (_bearing * math.pi / 180.0),
-            child: const Icon(Icons.navigation, color: AppTheme.colors.primary, size: 40),
+            child: Icon(Icons.navigation, color: AppTheme.colors.primary, size: 40),
           ),
         ],
       ),
@@ -1419,7 +1419,7 @@ class _ARViewerScreenState extends State<ARViewerScreen>
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [const AppTheme.colors.primary, const AppTheme.colors.primary.withValues(alpha: 0.9)],
+                    colors: [AppTheme.colors.primary, AppTheme.colors.primary.withValues(alpha: 0.9)],
                   ),
                   borderRadius: BorderRadius.circular(24),
                   border: Border.all(color: AppPalette.rust.withValues(alpha: 0.3)),
@@ -1520,7 +1520,7 @@ class _ARViewerScreenState extends State<ARViewerScreen>
               ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Memory dropped into the AR universe!")));
             },
             style: ElevatedButton.styleFrom(backgroundColor: AppPalette.rust),
-            child: const Text("Drop", style: TextStyle(color: AppTheme.colors.white)),
+            child: Text("Drop", style: TextStyle(color: AppTheme.colors.white)),
           ),
         ],
       ),

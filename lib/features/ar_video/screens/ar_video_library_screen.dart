@@ -87,7 +87,7 @@ class ARVideoLibraryScreen extends StatelessWidget {
                 decoration: BoxDecoration(
                   borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
                   gradient: LinearGradient(
-                    colors: [Colors.black54, AppTheme.sigiriyaOchre(context).withValues(alpha: 0.2)],
+                    colors: [AppTheme.colors.black54, AppTheme.sigiriyaOchre(context).withValues(alpha: 0.2)],
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                   ),
@@ -117,7 +117,7 @@ class ARVideoLibraryScreen extends StatelessWidget {
                   const SizedBox(height: 4),
                   Row(
                     children: [
-                      const Icon(Icons.videocam, color: AppTheme.colors.white38, size: 12),
+                      Icon(Icons.videocam, color: AppTheme.colors.white38, size: 12),
                       const SizedBox(width: 4),
                       Text(
                         'AR Core Ready',

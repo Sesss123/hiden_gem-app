@@ -1,3 +1,4 @@
+import 'package:hidden_gems_sl/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -134,7 +135,7 @@ class _MarketplaceResultsScreenState extends ConsumerState<MarketplaceResultsScr
                 shape: BoxShape.circle,
                 border: Border.all(color: AppTheme.colors.white.withValues(alpha: 0.2)),
               ),
-              child: const Icon(Icons.arrow_back_ios_new_rounded, color: AppTheme.colors.white, size: 18),
+              child: Icon(Icons.arrow_back_ios_new_rounded, color: AppTheme.colors.white, size: 18),
             ),
           ),
           const SizedBox(width: 16),
@@ -205,11 +206,11 @@ class _MarketplaceResultsScreenState extends ConsumerState<MarketplaceResultsScr
       future: _defaultListingsFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator(color: AppTheme.colors.amber));
+          return Center(child: CircularProgressIndicator(color: AppTheme.colors.amber));
         }
         if (snapshot.hasError) {
           return Center(
-            child: Text("Error loading guides: ${snapshot.error}", style: const TextStyle(color: AppTheme.colors.white70)),
+            child: Text("Error loading guides: ${snapshot.error}", style: TextStyle(color: AppTheme.colors.white70)),
           );
         }
         final listings = snapshot.data ?? [];
@@ -223,11 +224,11 @@ class _MarketplaceResultsScreenState extends ConsumerState<MarketplaceResultsScr
 
   Widget _buildSearchResults(BuildContext context, MarketplaceSearchState state) {
     if (state.isLoading && state.results.isEmpty) {
-      return const Center(child: CircularProgressIndicator(color: AppTheme.colors.amber));
+      return Center(child: CircularProgressIndicator(color: AppTheme.colors.amber));
     }
     if (state.error != null && state.results.isEmpty) {
       return Center(
-        child: Text(state.error!, style: const TextStyle(color: AppTheme.colors.redAccent)),
+        child: Text(state.error!, style: TextStyle(color: AppTheme.colors.redAccent)),
       );
     }
     if (state.results.isEmpty) {
@@ -367,7 +368,7 @@ class _MarketplaceResultsScreenState extends ConsumerState<MarketplaceResultsScr
                         ),
                         Row(
                           children: [
-                            const Icon(Icons.star_rounded, color: AppTheme.colors.amber, size: 18),
+                            Icon(Icons.star_rounded, color: AppTheme.colors.amber, size: 18),
                             const SizedBox(width: 4),
                             Text(
                               listing.ratingAverage.toStringAsFixed(1),
@@ -405,7 +406,7 @@ class _MarketplaceResultsScreenState extends ConsumerState<MarketplaceResultsScr
                       children: [
                         Row(
                           children: [
-                            const Icon(Icons.language, color: AppTheme.colors.white60, size: 14),
+                            Icon(Icons.language, color: AppTheme.colors.white60, size: 14),
                             const SizedBox(width: 6),
                             Text(
                               listing.languages.take(2).join(", "),

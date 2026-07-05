@@ -19,7 +19,7 @@ class ModernTracerShimmer extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Shimmer.fromColors(
-      baseColor: isDark ? const AppTheme.colors.primary : AppTheme.colors.grey[300]!,
+      baseColor: isDark ? AppTheme.colors.primary : AppTheme.colors.grey[300]!,
       highlightColor: isDark 
           ? AppTheme.modernGreen(context).withValues(alpha: 0.2)
           : AppTheme.colors.grey[100]!,
@@ -39,7 +39,7 @@ class ModernTracerShimmer extends StatelessWidget {
       width: width,
       height: height,
       decoration: BoxDecoration(
-        color: isDark ? AppTheme.borderColor(context).withValues(alpha: 0.3) : Colors.grey[200],
+        color: isDark ? AppTheme.borderColor(context).withValues(alpha: 0.3) : AppTheme.colors.grey[200],
         borderRadius: BorderRadius.circular(borderRadius),
       ),
     );
@@ -52,7 +52,7 @@ class ModernTracerShimmer extends StatelessWidget {
       width: size,
       height: size,
       decoration: BoxDecoration(
-        color: isDark ? AppTheme.borderColor(context).withValues(alpha: 0.3) : Colors.grey[200],
+        color: isDark ? AppTheme.borderColor(context).withValues(alpha: 0.3) : AppTheme.colors.grey[200],
         shape: BoxShape.circle,
       ),
     );

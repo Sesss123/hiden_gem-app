@@ -1,3 +1,4 @@
+import 'package:hidden_gems_sl/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -72,7 +73,7 @@ class _BookingRequestScreenState extends ConsumerState<BookingRequestScreen> {
       backgroundColor: AppTheme.colors.transparent,
       elevation: 0,
       leading: IconButton(
-        icon: const Icon(Icons.close_rounded, color: AppTheme.colors.white, size: 24),
+        icon: Icon(Icons.close_rounded, color: AppTheme.colors.white, size: 24),
         onPressed: () => Navigator.pop(context),
       ),
       title: OracleUI.neonText(
@@ -95,9 +96,9 @@ class _BookingRequestScreenState extends ConsumerState<BookingRequestScreen> {
           alignment: Alignment.center,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            border: Border.all(color: const AppTheme.colors.primary, width: 1),
+            border: Border.all(color: AppTheme.colors.primary, width: 1),
           ),
-          child: Text(number, style: GoogleFonts.outfit(color: const AppTheme.colors.primary, fontSize: 12, fontWeight: FontWeight.w900)),
+          child: Text(number, style: GoogleFonts.outfit(color: AppTheme.colors.primary, fontSize: 12, fontWeight: FontWeight.w900)),
         ),
         const SizedBox(width: 16),
         Text(
@@ -129,7 +130,7 @@ class _BookingRequestScreenState extends ConsumerState<BookingRequestScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           IconButton(
-            icon: const Icon(Icons.remove_rounded, color: AppTheme.colors.white),
+            icon: Icon(Icons.remove_rounded, color: AppTheme.colors.white),
             onPressed: _guestCount > 1 ? () => setState(() => _guestCount--) : null,
           ),
           Text(
@@ -137,7 +138,7 @@ class _BookingRequestScreenState extends ConsumerState<BookingRequestScreen> {
             style: GoogleFonts.outfit(color: AppTheme.colors.white, fontSize: 18, fontWeight: FontWeight.w900),
           ),
           IconButton(
-            icon: const Icon(Icons.add_rounded, color: AppTheme.colors.white),
+            icon: Icon(Icons.add_rounded, color: AppTheme.colors.white),
             onPressed: () => setState(() => _guestCount++),
           ),
         ],
@@ -151,7 +152,7 @@ class _BookingRequestScreenState extends ConsumerState<BookingRequestScreen> {
       borderRadius: BorderRadius.circular(20),
       child: TextField(
         controller: _notesController,
-        style: const TextStyle(color: AppTheme.colors.white70),
+        style: TextStyle(color: AppTheme.colors.white70),
         maxLines: 4,
         decoration: InputDecoration(
           hintText: "E.g. We are traveling with seniors, need low-walking route...",
@@ -168,14 +169,14 @@ class _BookingRequestScreenState extends ConsumerState<BookingRequestScreen> {
       child: ElevatedButton(
         onPressed: _isSubmitting ? null : _submitBooking,
         style: ElevatedButton.styleFrom(
-          backgroundColor: const AppTheme.colors.primary,
+          backgroundColor: AppTheme.colors.primary,
           foregroundColor: AppTheme.colors.black,
           padding: const EdgeInsets.symmetric(vertical: 20),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           elevation: 0,
         ),
         child: _isSubmitting 
-          ? const CircularProgressIndicator(color: AppTheme.colors.black)
+          ? CircularProgressIndicator(color: AppTheme.colors.black)
           : Text(
               "TRANSMIT REQUEST",
               style: GoogleFonts.outfit(fontWeight: FontWeight.w900, letterSpacing: 2),
@@ -236,7 +237,7 @@ class _BookingRequestScreenState extends ConsumerState<BookingRequestScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.check_circle_rounded, color: AppTheme.colors.primary, size: 64),
+            Icon(Icons.check_circle_rounded, color: AppTheme.colors.primary, size: 64),
             const SizedBox(height: 24),
             OracleUI.neonText(
               "REQUEST SENT",

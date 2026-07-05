@@ -244,7 +244,7 @@ class _MapExplorerScreenState extends ConsumerState<MapExplorerScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.warning_amber_rounded, color: AppTheme.colors.white, size: 80)
+            Icon(Icons.warning_amber_rounded, color: AppTheme.colors.white, size: 80)
                 .animate(onPlay: (c) => c.repeat(reverse: true))
                 .scale(begin: const Offset(1, 1), end: const Offset(1.2, 1.2), duration: 500.ms)
                 .tint(color: AppTheme.colors.redAccent),

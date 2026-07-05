@@ -141,7 +141,7 @@ class _HeritagePassportScreenState extends State<HeritagePassportScreen> {
   Widget _buildStampCard(HeritageStamp stamp) {
     Color rarityColor = AppTheme.textSecondary(context);
     if (stamp.rarity == 'Rare') rarityColor = AppPalette.rust;
-    if (stamp.rarity == 'Mythic') rarityColor = const AppTheme.colors.primary;
+    if (stamp.rarity == 'Mythic') rarityColor = AppTheme.colors.primary;
 
     return GestureDetector(
       onTap: () => _showStampDetail(stamp),
@@ -209,7 +209,7 @@ class _HeritagePassportScreenState extends State<HeritagePassportScreen> {
   void _showStampDetail(HeritageStamp stamp) {
     Color rarityColor = AppTheme.textSecondary(context);
     if (stamp.rarity == 'Rare') rarityColor = AppPalette.rust;
-    if (stamp.rarity == 'Mythic') rarityColor = const AppTheme.colors.primary; // Gold
+    if (stamp.rarity == 'Mythic') rarityColor = AppTheme.colors.primary; // Gold
 
     showModalBottomSheet(
       context: context,

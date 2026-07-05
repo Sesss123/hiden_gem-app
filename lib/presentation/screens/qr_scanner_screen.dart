@@ -1,3 +1,4 @@
+import 'package:hidden_gems_sl/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
@@ -91,7 +92,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
           child: Container(
             padding: const EdgeInsets.all(32),
             decoration: BoxDecoration(
-              color: const AppTheme.colors.primary.withValues(alpha: 0.9),
+              color: AppTheme.colors.primary.withValues(alpha: 0.9),
               borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
               border: Border.all(color: AppTheme.colors.white10),
             ),
@@ -115,7 +116,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                         radius: 25, 
                         backgroundColor: AppTheme.colors.white10, 
                         backgroundImage: guideData['profileImagePath'] != null ? NetworkImage(guideData['profileImagePath']) : null,
-                        child: guideData['profileImagePath'] == null ? const Icon(Icons.person, color: AppTheme.colors.white) : null,
+                        child: guideData['profileImagePath'] == null ? Icon(Icons.person, color: AppTheme.colors.white) : null,
                       ),
                       const SizedBox(width: 16),
                       Expanded(
@@ -127,7 +128,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                           ],
                         ),
                       ),
-                      const Icon(Icons.verified, color: AppTheme.colors.blueAccent, size: 20),
+                      Icon(Icons.verified, color: AppTheme.colors.blueAccent, size: 20),
                     ],
                   ),
                 ),
@@ -136,7 +137,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                 if (session.vehicleNumber != null)
                    Row(
                     children: [
-                      const Icon(Icons.garage_rounded, color: AppTheme.colors.orangeAccent, size: 16),
+                      Icon(Icons.garage_rounded, color: AppTheme.colors.orangeAccent, size: 16),
                       const SizedBox(width: 8),
                       Text("VEHICLE: ${session.vehicleNumber}", style: GoogleFonts.inter(fontSize: 12, color: AppTheme.colors.white70)),
                     ],
@@ -238,12 +239,12 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(Icons.link_rounded, color: AppTheme.colors.greenAccent, size: 64)
+                Icon(Icons.link_rounded, color: AppTheme.colors.greenAccent, size: 64)
                     .animate().scale(duration: 600.ms, curve: Curves.elasticOut),
                 const SizedBox(height: 24),
                 Text("REALITY SYNCED", style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.bold, color: AppTheme.colors.white)),
                 const SizedBox(height: 16),
-                const Text("Global safety protocols and live tracking active.", textAlign: TextAlign.center, style: TextStyle(color: AppTheme.colors.white70)),
+                Text("Global safety protocols and live tracking active.", textAlign: TextAlign.center, style: TextStyle(color: AppTheme.colors.white70)),
                 const SizedBox(height: 32),
                 ElevatedButton(
                   onPressed: () {
@@ -324,7 +325,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
             top: 60,
             left: 20,
             child: IconButton(
-              icon: const Icon(Icons.close, color: AppTheme.colors.white, size: 28),
+              icon: Icon(Icons.close, color: AppTheme.colors.white, size: 28),
               onPressed: () => Navigator.pop(context),
             ),
           ),

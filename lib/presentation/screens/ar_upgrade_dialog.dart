@@ -207,7 +207,7 @@ class ARUpgradeDialog extends StatelessWidget {
                   Navigator.pop(context);
                   onWatchAd!();
                 },
-                icon: const Icon(Icons.play_circle_fill, color: AppTheme.colors.white, size: 20),
+                icon: Icon(Icons.play_circle_fill, color: AppTheme.colors.white, size: 20),
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   backgroundColor: AppPalette.rust,

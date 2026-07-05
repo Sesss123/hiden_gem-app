@@ -155,7 +155,7 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
                       },
                     );
                   },
-                  icon: const Icon(Icons.play_circle_outline, color: AppTheme.colors.black),
+                  icon: Icon(Icons.play_circle_outline, color: AppTheme.colors.black),
                   label: Text("WATCH AD TO UNLOCK", style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: AppTheme.colors.black)),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppPalette.sigiriyaOchre,
@@ -167,7 +167,7 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
               const SizedBox(height: 16),
               TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: const Text("Go Back", style: TextStyle(color: AppTheme.colors.white38)),
+                child: Text("Go Back", style: TextStyle(color: AppTheme.colors.white38)),
               ),
             ],
           ),
@@ -334,7 +334,7 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
     if (tier == 2) {
       icon = 'ðŸ”­';
       label = 'EXPLORE AR';
-      color = const AppTheme.colors.primary;
+      color = AppTheme.colors.primary;
     } else if (tier == 3) {
       icon = 'ðŸ“–';
       label = 'STORY VIEW';
@@ -588,7 +588,7 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
             Icons.view_in_ar,
             l10n.reality,
             widget.place.arTier == 1 ? "Heritage" : (widget.place.arTier == 2 ? "Explore" : "Story"),
-            color: widget.place.arTier == 1 ? Theme.of(context).colorScheme.secondary : (widget.place.arTier == 2 ? const AppTheme.colors.primary : Theme.of(context).colorScheme.primary),
+            color: widget.place.arTier == 1 ? Theme.of(context).colorScheme.secondary : (widget.place.arTier == 2 ? AppTheme.colors.primary : Theme.of(context).colorScheme.primary),
           ),
         ],
       ],
@@ -686,7 +686,7 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
     return Wrap(
       spacing: 12,
       runSpacing: 12,
-      children: widget.place.facilities.map((t) => _chip(context, t, const AppTheme.colors.primary)).toList(),
+      children: widget.place.facilities.map((t) => _chip(context, t, AppTheme.colors.primary)).toList(),
     );
   }
 
@@ -1178,7 +1178,7 @@ class _ARPortalSheetState extends State<_ARPortalSheet> with SingleTickerProvide
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final Color accentColor = widget.isDemo ? const AppTheme.colors.primary : const AppTheme.colors.primary;
+    final Color accentColor = widget.isDemo ? AppTheme.colors.primary : AppTheme.colors.primary;
     final String tierLabel = widget.isDemo ? l10n.arDemoLabel : l10n.fullHeritageAr;
     final String tierIcon = widget.isDemo ? "â³" : "ðŸ›ï¸";
 

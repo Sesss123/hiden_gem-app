@@ -1,29 +1,132 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+/// Central color-name proxy so the rest of the app can write
+/// `AppTheme.colors.X` instead of importing `Colors` everywhere.
+/// All fields are `final` and set via a `const` constructor (NOT getters),
+/// which is required so they can be used inside other `static const`
+/// declarations (e.g. AppPalette below) and other constant-expression call
+/// sites throughout the app.
+class AppThemeColors {
+  // --- Brand ---
+  final Color primary;
+
+  // --- Base ---
+  final Color white;
+  final Color black;
+  final Color transparent;
+
+  // --- White opacity variants ---
+  final Color white10;
+  final Color white12;
+  final Color white24;
+  final Color white30;
+  final Color white38;
+  final Color white54;
+  final Color white60;
+  final Color white70;
+
+  // --- Black opacity variants ---
+  final Color black12;
+  final Color black26;
+  final Color black38;
+  final Color black45;
+  final Color black54;
+  final Color black87;
+
+  // --- Material swatches (support .shadeXXX and [shade] indexing) ---
+  final MaterialColor red;
+  final MaterialColor grey;
+  final MaterialColor blueGrey;
+  final MaterialColor green;
+  final MaterialColor blue;
+  final MaterialColor amber;
+  final MaterialColor teal;
+  final MaterialColor orange;
+  final MaterialColor purple;
+  final MaterialColor pink;
+  final MaterialColor brown;
+
+  // --- Accent colors ---
+  final MaterialAccentColor redAccent;
+  final MaterialAccentColor greenAccent;
+  final MaterialAccentColor blueAccent;
+  final MaterialAccentColor amberAccent;
+  final MaterialAccentColor orangeAccent;
+  final MaterialAccentColor purpleAccent;
+  final MaterialAccentColor deepPurpleAccent;
+  final MaterialAccentColor pinkAccent;
+  final MaterialAccentColor cyanAccent;
+  final MaterialAccentColor tealAccent;
+  final MaterialAccentColor indigoAccent;
+
+  const AppThemeColors({
+    this.primary = const Color(0xFFC1440E), // brand rust/ochre
+    this.white = Colors.white,
+    this.black = Colors.black,
+    this.transparent = Colors.transparent,
+    this.white10 = Colors.white10,
+    this.white12 = Colors.white12,
+    this.white24 = Colors.white24,
+    this.white30 = Colors.white30,
+    this.white38 = Colors.white38,
+    this.white54 = Colors.white54,
+    this.white60 = Colors.white60,
+    this.white70 = Colors.white70,
+    this.black12 = Colors.black12,
+    this.black26 = Colors.black26,
+    this.black38 = Colors.black38,
+    this.black45 = Colors.black45,
+    this.black54 = Colors.black54,
+    this.black87 = Colors.black87,
+    this.red = Colors.red,
+    this.grey = Colors.grey,
+    this.blueGrey = Colors.blueGrey,
+    this.green = Colors.green,
+    this.blue = Colors.blue,
+    this.amber = Colors.amber,
+    this.teal = Colors.teal,
+    this.orange = Colors.orange,
+    this.purple = Colors.purple,
+    this.pink = Colors.pink,
+    this.brown = Colors.brown,
+    this.redAccent = Colors.redAccent,
+    this.greenAccent = Colors.greenAccent,
+    this.blueAccent = Colors.blueAccent,
+    this.amberAccent = Colors.amberAccent,
+    this.orangeAccent = Colors.orangeAccent,
+    this.purpleAccent = Colors.purpleAccent,
+    this.deepPurpleAccent = Colors.deepPurpleAccent,
+    this.pinkAccent = Colors.pinkAccent,
+    this.cyanAccent = Colors.cyanAccent,
+    this.tealAccent = Colors.tealAccent,
+    this.indigoAccent = Colors.indigoAccent,
+  });
+}
+
 class AppPalette {
   // --- Tropical / Earthy Modern (Light UI) ---
-  static const Color bg = AppTheme.colors.primary;
-  static const Color bg2 = AppTheme.colors.primary;
-  static const Color surface = AppTheme.colors.primary;
-  
-  static const Color rust = AppTheme.colors.primary;
-  static const Color rustDim = AppTheme.colors.primary;
-  
+  static const Color bg = Color(0xFFFBF6EE);
+  static const Color bg2 = Color(0xFFF3E9D8);
+  static const Color surface = Color(0xFFFFFFFF);
+
+  static const Color rust = Color(0xFFC1440E);
+  static const Color rustDim = Color(0xFF8C3009);
+
   // Hero Gradient
-  static const Color heroCream = AppTheme.colors.primary;
-  static const Color heroOchre = AppTheme.colors.primary;
-  
-  static const Color earth = AppTheme.colors.primary;
-  static const Color sand = AppTheme.colors.primary;
-  static const Color sand2 = AppTheme.colors.primary;
-  
-  static const Color ink = AppTheme.colors.primary;
-  
-  static const Color success = AppTheme.colors.primary;
-  static const Color error = AppTheme.colors.primary;
-  static const Color warning = AppTheme.colors.primary;
-  
+  static const Color heroCream = Color(0xFFF7E9CF);
+  static const Color heroOchre = Color(0xFFE0A93A);
+
+  static const Color earth = Color(0xFF6B4226);
+  static const Color sand = Color(0xFFE3CBA5);
+  static const Color sand2 = Color(0xFFD8B888);
+
+  static const Color ink = Color(0xFF2B211A);
+
+  static const Color success = Color(0xFF2E7D32);
+  static const Color error = Color(0xFFC62828);
+  static const Color warning = Color(0xFFE0A93A);
+
   // Legacy mappings to prevent breaking changes while we migrate
   static const Color ceylonBlue = earth;
   static const Color sigiriyaOchre = rust;
@@ -32,21 +135,24 @@ class AppPalette {
 }
 
 class AppPaletteDark {
-  static const Color bg = AppTheme.colors.primary;
-  static const Color surface = AppTheme.colors.primary;
-  static const Color card = AppTheme.colors.primary;
-  
-  static const Color gem = AppTheme.colors.primary;
-  static const Color gemDim = AppTheme.colors.primary;
-  
-  static const Color gold = AppTheme.colors.primary;
-  static const Color blue = AppTheme.colors.primary;
-  
-  static const Color text = AppTheme.colors.primary;
-  static const Color textSub = AppTheme.colors.primary; // 0.65 opacity F8FAFC
+  static const Color bg = Color(0xFF14100D);
+  static const Color surface = Color(0xFF1F1911);
+  static const Color card = Color(0xFF241D15);
+
+  static const Color gem = Color(0xFF2E9E6B);
+  static const Color gemDim = Color(0xFF1F6E4A);
+
+  static const Color gold = Color(0xFFE0A93A);
+  static const Color blue = Color(0xFF3B82F6);
+
+  static const Color text = Color(0xFFF8FAFC);
+  static const Color textSub = Color(0xA6F8FAFC); // 0.65 opacity F8FAFC
 }
 
 class AppTheme {
+  // --- Color name proxy (AppTheme.colors.red, .white, .amber[700], etc.) ---
+  static const AppThemeColors colors = AppThemeColors();
+
   // --- Dynamic Accessors (Theme Aware) ---
   static Color cardColor(BuildContext context) => Theme.of(context).cardColor;
   static Color borderColor(BuildContext context) => Theme.of(context).brightness == Brightness.dark ? AppTheme.colors.white.withValues(alpha: 0.07) : AppPalette.ink.withValues(alpha: 0.12);

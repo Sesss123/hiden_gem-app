@@ -246,7 +246,7 @@ class OracleUI {
               style: GoogleFonts.outfit(
                 fontSize: 13,
                 fontWeight: FontWeight.w700,
-                color: isSelected ? (Theme.of(context).brightness == Brightness.dark ? Colors.black : Colors.white) : AppTheme.textPrimary(context).withValues(alpha: 0.8),
+                color: isSelected ? (Theme.of(context).brightness == Brightness.dark ? AppTheme.colors.black : AppTheme.colors.white) : AppTheme.textPrimary(context).withValues(alpha: 0.8),
                 letterSpacing: 0.2,
               ),
             ),

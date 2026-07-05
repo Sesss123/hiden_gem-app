@@ -271,8 +271,8 @@ class _TimelineItem extends StatelessWidget {
       case 'hotel': return (Icons.hotel_outlined, isDark ? AppTheme.colors.purpleAccent : AppTheme.colors.purple);
       case 'transport': return (Icons.directions_car_outlined, isDark ? AppTheme.colors.blueAccent : AppTheme.colors.blue);
       case 'rest': return (Icons.self_improvement_outlined, isDark ? AppTheme.colors.greenAccent : AppTheme.colors.green);
-      case 'nature': return (Icons.park_outlined, isDark ? const AppTheme.colors.primary : const AppTheme.colors.primary);
-      case 'culture': return (Icons.temple_buddhist_outlined, isDark ? const AppTheme.colors.primary : const AppTheme.colors.primary);
+      case 'nature': return (Icons.park_outlined, isDark ? AppTheme.colors.primary : AppTheme.colors.primary);
+      case 'culture': return (Icons.temple_buddhist_outlined, isDark ? AppTheme.colors.primary : AppTheme.colors.primary);
       case 'shopping': return (Icons.shopping_bag_outlined, isDark ? AppTheme.colors.pinkAccent : AppTheme.colors.pink);
       default: return (Icons.place_outlined, AppTheme.modernGreen(context));
     }

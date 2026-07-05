@@ -304,7 +304,7 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
       await _presenceRepo.updateVehiclePresence(_activeSession!.sessionId, pos.latitude, pos.longitude);
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("VEHICLE POSITION MARKED"), backgroundColor: AppTheme.colors.orangeAccent),
+        SnackBar(content: Text("VEHICLE POSITION MARKED"), backgroundColor: AppTheme.colors.orangeAccent),
       );
     } catch (e) {
       if (mounted) {
@@ -540,7 +540,7 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
                         });
                         _startLocationSync();
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text("🚀 Tour Session Started!"), backgroundColor: AppTheme.colors.green),
+                          SnackBar(content: Text("🚀 Tour Session Started!"), backgroundColor: AppTheme.colors.green),
                         );
                       }
                     },
@@ -573,7 +573,7 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
                 label: Text(session.meetingPointName.isNotEmpty ? "UPDATE POINT" : "SET POINT"),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: AppTheme.colors.greenAccent,
-                  side: const BorderSide(color: AppTheme.colors.greenAccent, width: 1),
+                  side: BorderSide(color: AppTheme.colors.greenAccent, width: 1),
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),
@@ -587,7 +587,7 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
                 label: const Text("MARK VEHICLE"),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: AppTheme.colors.orangeAccent,
-                  side: const BorderSide(color: AppTheme.colors.orangeAccent, width: 1),
+                  side: BorderSide(color: AppTheme.colors.orangeAccent, width: 1),
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),
@@ -733,7 +733,7 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
                 decoration: BoxDecoration(
                   color: isSelected ? Theme.of(context).colorScheme.primary : AppTheme.borderColor(context),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: isSelected ? Colors.transparent : AppTheme.borderColor(context)),
+                  border: Border.all(color: isSelected ? AppTheme.colors.transparent : AppTheme.borderColor(context)),
                 ),
                 child: Row(
                   children: [
@@ -764,7 +764,7 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
       height: 60,
       child: OutlinedButton(
         style: OutlinedButton.styleFrom(
-          side: const BorderSide(color: AppTheme.colors.redAccent, width: 2),
+          side: BorderSide(color: AppTheme.colors.redAccent, width: 2),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         ),
         onPressed: () async {
@@ -815,7 +815,7 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
               Text("SELECT VEHICLE", style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.textPrimary(context))),
               const SizedBox(height: 24),
                 ..._vehicles.map((v) => ListTile(
-                  leading: const Icon(Icons.garage_rounded, color: AppTheme.colors.orangeAccent),
+                  leading: Icon(Icons.garage_rounded, color: AppTheme.colors.orangeAccent),
                   title: Text(v.type, style: GoogleFonts.outfit(color: AppTheme.textPrimary(context))),
                   subtitle: Text(v.vehicleNumber, style: GoogleFonts.inter(color: AppTheme.textSecondary(context))),
                   onTap: () => Navigator.pop(context, v),
@@ -870,7 +870,7 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
             const SizedBox(width: 16),
             Text("Traveler ${uid.substring(0, 6)}", style: GoogleFonts.inter(color: AppTheme.textPrimary(context))),
             const Spacer(),
-            const Icon(Icons.location_on, size: 16, color: AppTheme.colors.greenAccent),
+            Icon(Icons.location_on, size: 16, color: AppTheme.colors.greenAccent),
           ],
         ),
       );
@@ -907,7 +907,7 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
         children: [
           Row(
             children: [
-              const Icon(Icons.warning_amber_rounded, color: AppTheme.colors.redAccent, size: 28),
+              Icon(Icons.warning_amber_rounded, color: AppTheme.colors.redAccent, size: 28),
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
@@ -989,7 +989,7 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
       await repo.createIncident(report);
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("✅ Weather hazard logged to Safety Console!"), backgroundColor: AppTheme.colors.green),
+        SnackBar(content: Text("✅ Weather hazard logged to Safety Console!"), backgroundColor: AppTheme.colors.green),
       );
     } catch (e) {
       if (!mounted) return;

@@ -454,16 +454,16 @@ class _HiddenGemsAppState extends ConsumerState<HiddenGemsApp> with WidgetsBindi
               children: [
                 Text(
                   message.notification!.title ?? 'New Notification',
-                  style: const TextStyle(fontWeight: FontWeight.bold, color: AppTheme.colors.white),
+                  style: TextStyle(fontWeight: FontWeight.bold, color: AppTheme.colors.white),
                 ),
                 if (message.notification!.body != null)
                   Text(
                     message.notification!.body!,
-                    style: const TextStyle(color: AppTheme.colors.white70),
+                    style: TextStyle(color: AppTheme.colors.white70),
                   ),
               ],
             ),
-            backgroundColor: const AppTheme.colors.primary,
+            backgroundColor: AppTheme.colors.primary,
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             margin: const EdgeInsets.all(16),
@@ -569,7 +569,7 @@ class _HiddenGemsAppState extends ConsumerState<HiddenGemsApp> with WidgetsBindi
             padding: const EdgeInsets.all(40),
             child: Text(
               result.maintenanceMessage ?? "System maintenance is in progress.",
-              style: const TextStyle(color: AppTheme.colors.white, fontSize: 18),
+              style: TextStyle(color: AppTheme.colors.white, fontSize: 18),
               textAlign: TextAlign.center,
             ),
           ),

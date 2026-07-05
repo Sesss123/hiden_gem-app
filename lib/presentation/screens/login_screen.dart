@@ -82,7 +82,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 borderColor: AppTheme.colors.redAccent.withValues(alpha: 0.3),
                 child: Row(
                   children: [
-                    const Icon(Icons.error_outline_rounded, color: AppTheme.colors.redAccent),
+                    Icon(Icons.error_outline_rounded, color: AppTheme.colors.redAccent),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
@@ -150,7 +150,7 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.lock_clock_rounded, color: AppTheme.colors.redAccent, size: 48),
+                  Icon(Icons.lock_clock_rounded, color: AppTheme.colors.redAccent, size: 48),
                   const SizedBox(height: 24),
                   OracleUI.neonText(
                     "ZENITH LOCK ACTIVE",
@@ -230,7 +230,7 @@ class _LoginScreenState extends State<LoginScreen> {
               borderColor: AppTheme.colors.redAccent.withValues(alpha: 0.3),
               child: Row(
                 children: [
-                  const Icon(Icons.error_outline_rounded, color: AppTheme.colors.redAccent),
+                  Icon(Icons.error_outline_rounded, color: AppTheme.colors.redAccent),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(

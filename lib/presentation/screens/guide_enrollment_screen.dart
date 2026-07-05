@@ -350,7 +350,7 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(Icons.check_circle_outline, color: AppTheme.colors.greenAccent, size: 64)
+                Icon(Icons.check_circle_outline, color: AppTheme.colors.greenAccent, size: 64)
                     .animate()
                     .scale(duration: 600.ms, curve: Curves.elasticOut),
                 const SizedBox(height: 24),
@@ -571,7 +571,7 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
               onSelected: (val) => setState(() => _selectedCategory = cat),
               selectedColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
               labelStyle: GoogleFonts.inter(
-                color: isSelected ? Colors.white : AppTheme.textSecondary(context),
+                color: isSelected ? AppTheme.colors.white : AppTheme.textSecondary(context),
                 fontSize: 12,
               ),
             );
@@ -597,7 +597,7 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
           children: [
             Icon(
               file == null ? Icons.add_a_photo_outlined : Icons.check_circle_rounded,
-              color: file == null ? AppTheme.textSecondary(context).withValues(alpha: 0.3) : Colors.greenAccent,
+              color: file == null ? AppTheme.textSecondary(context).withValues(alpha: 0.3) : AppTheme.colors.greenAccent,
             ),
             const SizedBox(width: 16),
             Expanded(

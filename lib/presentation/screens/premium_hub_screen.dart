@@ -277,7 +277,7 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
             priceStr: "Rs. 499",
             billingCycle: "Billed monthly",
             features: ["20 AI Itineraries/mo", "Selected AR Places", "Offline Maps (Basic)"],
-            color: const AppTheme.colors.primary,
+            color: AppTheme.colors.primary,
             onPressed: () => ref.read(premiumProvider.notifier).buyPremium(productId: PremiumNotifier.explorerId),
           ),
           SizedBox(height: 20),
@@ -298,14 +298,14 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
             priceStr: "Waitlist",
             billingCycle: "Next-Gen Experience",
             features: ["VR Mode Support", "Historical Timelines", "Personal AI Curator"],
-            color: const AppTheme.colors.primary,
+            color: AppTheme.colors.primary,
             isLocked: true,
             onPressed: () {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: const Text("🚀 Ultra Explorer is on the waitlist! We'll notify you when it launches."),
                   behavior: SnackBarBehavior.floating,
-                  backgroundColor: const AppTheme.colors.primary.withValues(alpha: 0.15),
+                  backgroundColor: AppTheme.colors.primary.withValues(alpha: 0.15),
                 ),
               );
             },

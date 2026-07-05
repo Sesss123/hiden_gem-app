@@ -186,7 +186,7 @@ class _ExplorerProgressCardState extends State<ExplorerProgressCard>
                 current: widget.service.visitedSites.value,
                 total: ExplorerProgressService.totalSites,
                 progress: widget.service.sitesProgress,
-                color: const AppTheme.colors.primary, // Sites: Gold
+                color: AppTheme.colors.primary, // Sites: Gold
               ),
               const SizedBox(height: 14),
               _CategoryRow(
@@ -204,7 +204,7 @@ class _ExplorerProgressCardState extends State<ExplorerProgressCard>
                 current: widget.service.badgeCount.value,
                 total: ExplorerProgressService.totalBadges,
                 progress: widget.service.badgesProgress,
-                color: const AppTheme.colors.primary, // Badges: Purple
+                color: AppTheme.colors.primary, // Badges: Purple
               ),
 
               const SizedBox(height: 24),
@@ -311,10 +311,10 @@ class _ExplorerProgressCardState extends State<ExplorerProgressCard>
 
   Color _levelColor(ExplorerLevel level) {
     switch (level) {
-      case ExplorerLevel.beginner:    return const AppTheme.colors.primary; // Green
-      case ExplorerLevel.discoverer:  return const AppTheme.colors.primary; // Blue
-      case ExplorerLevel.hunter:      return const AppTheme.colors.primary; // Gold
-      case ExplorerLevel.master:      return const AppTheme.colors.primary; // Violet
+      case ExplorerLevel.beginner:    return AppTheme.colors.primary; // Green
+      case ExplorerLevel.discoverer:  return AppTheme.colors.primary; // Blue
+      case ExplorerLevel.hunter:      return AppTheme.colors.primary; // Gold
+      case ExplorerLevel.master:      return AppTheme.colors.primary; // Violet
     }
   }
 }
@@ -327,10 +327,10 @@ class _LevelBadge extends StatelessWidget {
 
   Color get _color {
     switch (level) {
-      case ExplorerLevel.beginner:    return const AppTheme.colors.primary;
-      case ExplorerLevel.discoverer:  return const AppTheme.colors.primary;
-      case ExplorerLevel.hunter:      return const AppTheme.colors.primary;
-      case ExplorerLevel.master:      return const AppTheme.colors.primary;
+      case ExplorerLevel.beginner:    return AppTheme.colors.primary;
+      case ExplorerLevel.discoverer:  return AppTheme.colors.primary;
+      case ExplorerLevel.hunter:      return AppTheme.colors.primary;
+      case ExplorerLevel.master:      return AppTheme.colors.primary;
     }
   }
 

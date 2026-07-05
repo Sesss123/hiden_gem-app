@@ -1,3 +1,4 @@
+import 'package:hidden_gems_sl/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -43,7 +44,7 @@ class _GuideReviewsScreenState extends ConsumerState<GuideReviewsScreen> {
           );
         },
         backgroundColor: AppTheme.colors.amberAccent,
-        icon: const Icon(Icons.edit_note, color: AppTheme.colors.black87),
+        icon: Icon(Icons.edit_note, color: AppTheme.colors.black87),
         label: Text("WRITE REVIEW", style: GoogleFonts.outfit(color: AppTheme.colors.black87, fontWeight: FontWeight.bold)),
       ),
       body: OracleUI.auraBackground(
@@ -93,7 +94,7 @@ class _GuideReviewsScreenState extends ConsumerState<GuideReviewsScreen> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const Icon(Icons.error_outline, color: AppTheme.colors.redAccent, size: 48),
+                            Icon(Icons.error_outline, color: AppTheme.colors.redAccent, size: 48),
                             const SizedBox(height: 16),
                             Text(
                               "Failed to load reviews. Please try again.",
@@ -137,7 +138,7 @@ class _GuideReviewsScreenState extends ConsumerState<GuideReviewsScreen> {
       elevation: 0,
       pinned: true,
       leading: IconButton(
-        icon: const Icon(Icons.arrow_back_ios_new_rounded, color: AppTheme.colors.white, size: 20),
+        icon: Icon(Icons.arrow_back_ios_new_rounded, color: AppTheme.colors.white, size: 20),
         onPressed: () => Navigator.pop(context),
       ),
       flexibleSpace: FlexibleSpaceBar(
@@ -177,7 +178,7 @@ class _GuideReviewsScreenState extends ConsumerState<GuideReviewsScreen> {
         borderColor: AppTheme.colors.amber.withValues(alpha: 0.3),
         child: Column(
           children: [
-            const Icon(Icons.lock_person_rounded, size: 48, color: AppTheme.colors.amber),
+            Icon(Icons.lock_person_rounded, size: 48, color: AppTheme.colors.amber),
             const SizedBox(height: 16),
             Text(
               "PREMIUM ANALYTICS LOCKED",
@@ -315,7 +316,7 @@ class _GuideReviewsScreenState extends ConsumerState<GuideReviewsScreen> {
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.verified_rounded, color: AppTheme.colors.greenAccent, size: 10),
+                      Icon(Icons.verified_rounded, color: AppTheme.colors.greenAccent, size: 10),
                       const SizedBox(width: 4),
                       Text(
                         "VERIFIED MISSION",
@@ -339,7 +340,7 @@ class _GuideReviewsScreenState extends ConsumerState<GuideReviewsScreen> {
                 Container(
                   width: 24, height: 24,
                   decoration: BoxDecoration(color: AppTheme.colors.white10, shape: BoxShape.circle),
-                  child: const Icon(Icons.person_rounded, color: AppTheme.colors.white30, size: 14),
+                  child: Icon(Icons.person_rounded, color: AppTheme.colors.white30, size: 14),
                 ),
                 const SizedBox(width: 8),
                 Text(

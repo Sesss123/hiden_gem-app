@@ -1,3 +1,4 @@
+import 'package:hidden_gems_sl/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 
 class Artist {
@@ -77,11 +78,11 @@ class EventModel {
     switch (category) {
       case EventCategory.beach:
       case EventCategory.party:
-        return const AppTheme.colors.primary; // Modern Blue
+        return AppTheme.colors.primary; // Modern Blue
       case EventCategory.cultural:
       case EventCategory.religious:
       case EventCategory.festival:
-        return const AppTheme.colors.primary; // Modern Green
+        return AppTheme.colors.primary; // Modern Green
       case EventCategory.sports:
         return AppTheme.colors.orangeAccent;
       case EventCategory.seasonal:

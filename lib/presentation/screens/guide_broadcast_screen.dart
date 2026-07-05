@@ -1,3 +1,4 @@
+import 'package:hidden_gems_sl/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:uuid/uuid.dart';
@@ -128,7 +129,7 @@ class _GuideBroadcastScreenState extends State<GuideBroadcastScreen> {
               ),
               onPressed: _isSending ? null : _sendBroadcast,
               child: _isSending 
-                ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2, color: AppTheme.colors.black))
+                ? SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2, color: AppTheme.colors.black))
                 : Text("SEND TO ALL TRAVELERS", style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: AppTheme.colors.black)),
             ),
           ),

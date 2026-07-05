@@ -242,7 +242,7 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.bolt_rounded, color: AppTheme.colors.cyanAccent, size: 20),
+            Icon(Icons.bolt_rounded, color: AppTheme.colors.cyanAccent, size: 20),
             const SizedBox(width: 8),
             Text(
               "⚡ LIVE REAL-TIME AI SCANNER (WEBSOCKET)",
