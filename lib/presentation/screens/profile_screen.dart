@@ -2,11 +2,13 @@ import 'dart:async';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import '../../core/utils/secure_logger.dart';
+import '../../core/theme/theme_provider.dart';
+import '../../core/providers/screenshot_provider.dart';
 import 'package:flutter/services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hidden_gems_sl/data/models/user_profile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:hidden_gems_sl/core/theme/theme_provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -14,7 +16,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/localization/locale_provider.dart';
-import '../../core/providers/screenshot_provider.dart';
 import '../../core/services/explorer_progress_service.dart';
 import '../../data/datasources/premium_service.dart';
 import '../../data/datasources/user_preference_service.dart';
@@ -167,7 +168,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
                 style: GoogleFonts.inter(color: Theme.of(context).colorScheme.onSurface),
               ),
               onTap: () {
-                ref.read(localeNotifierProvider.notifier).setLocale(Locale(lang['code']!));
+                ref.read(localeProvider.notifier).setLocale(Locale(lang['code']!));
                 Navigator.pop(context);
               },
             );
@@ -293,7 +294,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
   Widget build(BuildContext context) {
     super.build(context);
     try {
-      final isPremium = ref.watch(premiumNotifierProvider);
+      final isPremium = ref.watch(premiumProvider);
       final l10n = AppLocalizations.of(context);
       final isDark = Theme.of(context).brightness == Brightness.dark;
 
@@ -1189,9 +1190,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
 
         _tile(Icons.camera_alt_outlined, "Oracle Lens",
             trailing: Switch(
-              value: ref.watch(screenshotNotifierProvider),
+              value: ref.watch(screenshotProvider),
               onChanged: (val) =>
-                  ref.read(screenshotNotifierProvider.notifier).toggleVisibility(val),
+                  ref.read(screenshotProvider.notifier).toggleVisibility(val),
               activeThumbColor: AppPalette.rust,
             )),
 
@@ -1200,10 +1201,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
 
         _tile(Icons.translate_rounded, "Bilingual (EN/SI)",
             trailing: Switch(
-              value: ref.watch(localeNotifierProvider)?.languageCode == 'si',
+              value: ref.watch(localeProvider)?.languageCode == 'si',
               onChanged: (_) {
                 HapticFeedback.selectionClick();
-                ref.read(localeNotifierProvider.notifier).toggleBilingual();
+                ref.read(localeProvider.notifier).toggleBilingual();
               },
               activeThumbColor: AppPalette.rust,
             )),

@@ -12,6 +12,7 @@ class SqliteStorageService {
   static final SqliteStorageService _instance = SqliteStorageService._internal();
   factory SqliteStorageService() => _instance;
   
+  // ignore: unused_field
   AppLifecycleListener? _lifecycleListener;
 
   SqliteStorageService._internal() {

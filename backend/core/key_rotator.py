@@ -1,7 +1,7 @@
 # backend/core/key_rotator.py
 # Unified Multi-Provider AI Key Rotation System — UPGRADED
 #
-# Manages keys for: Google Gemini, OpenAI, and Anthropic Claude.
+# Manages keys for: Google Gemini.
 # Keys stored in:
 #   1. ENV vars (GOOGLE_API_KEY_N, OPENAI_API_KEY_N, ANTHROPIC_API_KEY_N)
 #   2. data/api_keys_config.json (managed via Admin Dashboard)
@@ -18,10 +18,6 @@ logger = logging.getLogger("KeyRotator")
 # ─── CONFIG ────────────────────────────────────────────────────────────────────
 SOFT_LIMITS = {
     "google": 2400,    # Google free-tier limit per day per key
-    "openai": 5000,    # Arbitrary limit for OpenAI (managed by balance mostly)
-    "anthropic": 1000, # Arbitrary limit
-    "deepseek": 3000,  # DeepSeek limit
-    "groq": 10000,     # Groq is very generous for Llama 3
 }
 
 MAX_KEYS_PER_PROVIDER = 10
@@ -37,11 +33,11 @@ class MultiProviderKeyRotator:
 
     def __init__(self):
         self._lock          = RLock()
-        self._keys: dict[str, list[str]] = {"google": [], "openai": [], "anthropic": [], "deepseek": [], "groq": []}
+        self._keys: dict[str, list[str]] = {"google": []}
         self._key_nicknames: dict[str, str] = {}  # key -> nickname
         self._key_providers: dict[str, str] = {}  # key -> provider
         self._usage: dict[str, dict] = {}
-        self._current_indices: dict[str, int] = {"google": 0, "openai": 0, "anthropic": 0, "deepseek": 0, "groq": 0}
+        self._current_indices: dict[str, int] = {"google": 0}
 
         self._migrate_old_config()
         self._reload_keys()
@@ -87,17 +83,13 @@ class MultiProviderKeyRotator:
             json.dump({"keys": entries, "updated_at": datetime.utcnow().isoformat()}, f, indent=2)
 
     def _reload_keys(self):
-        self._keys = {"google": [], "openai": [], "anthropic": [], "deepseek": [], "groq": []}
+        self._keys = {"google": []}
         self._key_nicknames = {}
         self._key_providers = {}
 
         # ── Source 1: ENV vars ──
         mappings = {
-            "google": ["GOOGLE_API_KEY", "GOOGLE_API_KEY_"],
-            "openai": ["OPENAI_API_KEY", "OPENAI_API_KEY_"],
-            "anthropic": ["ANTHROPIC_API_KEY", "ANTHROPIC_API_KEY_"],
-            "deepseek": ["DEEPSEEK_API_KEY", "DEEPSEEK_API_KEY_"],
-            "groq": ["GROQ_API_KEY", "GROQ_API_KEY_"]
+            "google": ["GOOGLE_API_KEY", "GOOGLE_API_KEY_"]
         }
 
         for provider, prefixes in mappings.items():

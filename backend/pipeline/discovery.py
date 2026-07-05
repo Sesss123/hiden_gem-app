@@ -7,7 +7,6 @@ import asyncio
 from typing import List, Dict, Any, Optional
 import google.generativeai as genai
 import os
-from openai import AsyncOpenAI
 
 from core.key_rotator import multi_key_rotator
 from pipeline.logger import get_pipeline_logger
@@ -39,27 +38,6 @@ class AIDiscovery:
         self.model_name = "models/gemini-2.0-flash" 
     
     async def _get_model(self, model_variant: str = "gemini-2.0-flash"):
-        if model_variant.startswith("claude-"):
-            active_key = multi_key_rotator.get_active_key("anthropic")
-            if not active_key: return None, None
-            from anthropic import AsyncAnthropic
-            return AsyncAnthropic(api_key=active_key), "anthropic"
-
-        if model_variant == "gpt-4o":
-            active_key = multi_key_rotator.get_active_key("openai")
-            if not active_key: return None, None
-            return AsyncOpenAI(api_key=active_key, timeout=30.0), "openai"
-        
-        if model_variant == "deepseek-chat":
-            active_key = multi_key_rotator.get_active_key("deepseek")
-            if not active_key: return None, None
-            return AsyncOpenAI(api_key=active_key, base_url="https://api.deepseek.com", timeout=30.0), "deepseek"
-            
-        if model_variant == "llama-3.3-70b-versatile":
-            active_key = multi_key_rotator.get_active_key("groq")
-            if not active_key: return None, None
-            return AsyncOpenAI(api_key=active_key, base_url="https://api.groq.com/openai/v1", timeout=30.0), "groq"
-        
         active_key = multi_key_rotator.get_active_key("google")
         if not active_key:
             return None, None
@@ -69,7 +47,7 @@ class AIDiscovery:
 
     async def generate_targets(self, user_prompt: str) -> Dict[str, Any]:
         """Uses AI to find where to scrape for the given prompt with automatic key rotation."""
-        from api.routes_pipeline import set_pipeline_state
+        from api.routers.pipeline import set_pipeline_state
         
         logger.info(f"[Discovery] Identifying targets for: '{user_prompt}'")
         prompt = DISCOVERY_PROMPT.format(user_prompt=user_prompt)
@@ -79,12 +57,8 @@ class AIDiscovery:
         max_attempts = max(1, status.get("total_keys", 1))
 
         models_to_try = [
-            "claude-3-5-sonnet-latest", # Anthropic — Highest intelligence
-            "llama-3.3-70b-versatile", # Groq — Speed
-            "deepseek-chat",           # DeepSeek fallback
-            "gemini-2.0-flash",        # Gemini
+            "gemini-2.0-flash",
             "gemini-1.5-flash",
-            "gpt-4o"                   # Final safety net
         ]
 
         for attempt in range(1, max_attempts + 1):
@@ -96,26 +70,8 @@ class AIDiscovery:
                     continue
 
                 try:
-                    text = ""
-                    if model_variant.startswith("claude-"):
-                        logger.info(f"[Discovery] 🧠 Shifting to {model_variant} (Anthropic)")
-                        response = await model.messages.create(
-                            model=model_variant,
-                            max_tokens=1024,
-                            messages=[{"role": "user", "content": prompt}]
-                        )
-                        text = response.content[0].text.strip()
-                    elif model_variant in ["gpt-4o", "deepseek-chat", "llama-3.3-70b-versatile"]:
-                        logger.info(f"[Discovery] 🚀 Shifting to {model_variant} ({active_key[:8]}...)")
-                        response = await model.chat.completions.create(
-                            model=model_variant,
-                            messages=[{"role": "user", "content": prompt}],
-                            response_format={"type": "json_object"}
-                        )
-                        text = response.choices[0].message.content.strip()
-                    else:
-                        response = await model.generate_content_async(prompt)
-                        text = response.text.strip()
+                    response = await model.generate_content_async(prompt)
+                    text = response.text.strip()
                     
                     # Clean JSON
                     if "```" in text:
@@ -156,7 +112,7 @@ class AIDiscovery:
 
     async def execute_discovery_pipeline(self, prompt: str, scheduler_instance):
         """Full orchestration with state tracking and real-time search."""
-        from api.routes_pipeline import set_pipeline_state
+        from api.routers.pipeline import set_pipeline_state
         
         try:
             targets = await self.generate_targets(prompt)

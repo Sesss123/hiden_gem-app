@@ -102,7 +102,7 @@ class BookingRepository {
     }
 
     return query.snapshots().map((snapshot) {
-      final docs = snapshot.docs.map((doc) => BookingRequest.fromJson(doc.data())).toList();
+      final docs = snapshot.docs.map((doc) => BookingRequest.fromJson(doc.data() as Map<String, dynamic>)).toList();
       docs.sort((a, b) => b.createdAt.compareTo(a.createdAt));
       return docs;
     });

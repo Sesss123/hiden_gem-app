@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:share_plus/share_plus.dart';
 import 'package:flutter/material.dart';
+import '../../core/utils/secure_logger.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:camera/camera.dart';
 import 'package:permission_handler/permission_handler.dart';

@@ -1,16 +1,11 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../data/models/guide_listing.dart';
 import '../../data/repositories/marketplace_repository.dart';
 import '../../core/services/behavior_analytics_engine.dart';
 
-// ── Providers ───────────────────────────────────────────────────────────────
-
-final marketplaceSearchControllerProvider =
-    StateNotifierProvider.autoDispose<MarketplaceSearchController, MarketplaceSearchState>(
-  (ref) => MarketplaceSearchController(ref.watch(marketplaceRepositoryProvider)),
-);
+part 'marketplace_search_controller.g.dart';
 
 // ── State ────────────────────────────────────────────────────────────────────
 
@@ -37,7 +32,7 @@ class MarketplaceSearchState {
   bool get isEmpty => results.isEmpty && !isLoading && normalizedQuery.isNotEmpty;
   bool get isBlank => normalizedQuery.isEmpty;
   bool get isCooldown => cooldownEndTimestamp != null && cooldownEndTimestamp!.isAfter(DateTime.now());
-  int get cooldownSeconds => cooldownEndTimestamp != null ? (cooldownEndTimestamp!.difference(DateTime.now()).inSeconds.clamp(0, 999)) : 0;
+  int get cooldownSeconds => isCooldown ? cooldownEndTimestamp!.difference(DateTime.now()).inSeconds : 0;
 
   MarketplaceSearchState copyWith({
     List<GuideListing>? results,
@@ -73,9 +68,9 @@ class MarketplaceSearchState {
 ///   ✅ Global fetch timeout (8 seconds)
 ///   ✅ Metrics telemetry (reads, cache hits, cancels, rate limits)
 ///   ✅ Pagination (loadMore via cursor)
-class MarketplaceSearchController
-    extends StateNotifier<MarketplaceSearchState> {
-  final MarketplaceRepository _repository;
+@riverpod
+class MarketplaceSearchController extends _$MarketplaceSearchController {
+  late final MarketplaceRepository _repository;
   final _analytics = BehaviorAnalyticsEngine();
 
   // ── Configuration ──────────────────────────────────────────────────────
@@ -86,8 +81,6 @@ class MarketplaceSearchController
   static const Duration _cooldownDuration = Duration(seconds: 10);
 
   // ── Cancelable Request State ────────────────────────────────────────────
-  /// Monotonically increasing ID. A result is only applied if its ID matches
-  /// the CURRENT _activeRequestId at the time of arrival.
   int _activeRequestId = 0;
 
   // ── Rate Limiting ───────────────────────────────────────────────────────
@@ -106,8 +99,14 @@ class MarketplaceSearchController
   String? _language;
   bool? _vehicleRequired;
 
-  MarketplaceSearchController(this._repository)
-      : super(const MarketplaceSearchState());
+  @override
+  MarketplaceSearchState build() {
+    _repository = ref.watch(marketplaceRepositoryProvider);
+    ref.onDispose(() {
+      _cooldownTimer?.cancel();
+    });
+    return const MarketplaceSearchState();
+  }
 
   // ── Public API ─────────────────────────────────────────────────────────
 
@@ -325,16 +324,8 @@ class MarketplaceSearchController
 
     _cooldownTimer?.cancel();
     _cooldownTimer = Timer(_cooldownDuration, () {
-      if (mounted) {
-        state = state.copyWith(clearCooldown: true);
-      }
+      state = state.copyWith(clearCooldown: true);
     });
-  }
-
-  @override
-  void dispose() {
-    _cooldownTimer?.cancel();
-    super.dispose();
   }
 }
 

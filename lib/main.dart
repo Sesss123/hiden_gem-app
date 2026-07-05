@@ -183,7 +183,7 @@ final appInitializationProvider = FutureProvider<AppInitState>((ref) async {
 
   // BUG-131: Invalidate locale and theme providers once initialization completes
   // to prevent settings from resetting during early app boot / hot restart.
-  ref.invalidate(localeNotifierProvider);
+  ref.invalidate(localeProvider);
   ref.invalidate(themeModeProvider);
 
   UpdateType updateType = UpdateType.none;
@@ -494,7 +494,7 @@ class _HiddenGemsAppState extends ConsumerState<HiddenGemsApp> with WidgetsBindi
   @override
   Widget build(BuildContext context) {
     final themeMode = ref.watch(themeModeProvider);
-    final locale = ref.watch(localeNotifierProvider);
+    final locale = ref.watch(localeProvider);
     final initAsync = ref.watch(appInitializationProvider);
 
     return MaterialApp(
@@ -700,7 +700,7 @@ class _GlobalScreenshotWrapperState extends ConsumerState<GlobalScreenshotWrappe
 
   @override
   Widget build(BuildContext context) {
-    final isVisible = ref.watch(screenshotNotifierProvider);
+    final isVisible = ref.watch(screenshotProvider);
 
     return Screenshot(
       controller: _screenshotService.controller,

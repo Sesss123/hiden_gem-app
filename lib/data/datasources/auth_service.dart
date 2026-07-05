@@ -10,10 +10,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  // google_sign_in v6 — stable cross-platform constructor
-  final GoogleSignIn _googleSignIn = GoogleSignIn(
-    scopes: ['email'],
-  );
+
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   // Stream of auth state changes
@@ -36,14 +33,17 @@ class AuthService {
         }
         return userCredential;
       } else {
-        // Mobile: google_sign_in v6 flow
-        final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
-        if (googleUser == null) return null;
+        // Mobile: google_sign_in v7 flow
+        final GoogleSignInAccount googleUser = await GoogleSignIn.instance.authenticate(scopeHint: ['email']);
 
-        final GoogleSignInAuthentication googleAuth =
-            await googleUser.authentication;
+        final GoogleSignInAuthentication googleAuth = googleUser.authentication;
+        
+        // Request authorization for scopes if accessToken is needed by Firebase
+        final GoogleSignInClientAuthorization authz = 
+            await googleUser.authorizationClient.authorizeScopes(['email']);
+
         final AuthCredential credential = GoogleAuthProvider.credential(
-          accessToken: googleAuth.accessToken,
+          accessToken: authz.accessToken,
           idToken: googleAuth.idToken,
         );
         final UserCredential userCredential =
@@ -163,7 +163,7 @@ class AuthService {
   // Sign out
   Future<void> signOut() async {
     if (!kIsWeb) {
-      try { await _googleSignIn.signOut(); } catch (e) { SecureLogger.warning('Google sign out failed: $e'); }
+      try { await GoogleSignIn.instance.signOut(); } catch (e) { SecureLogger.warning('Google sign out failed: $e'); }
     }
     await _auth.signOut();
     await UserPreferenceService.clearProfile();
@@ -183,7 +183,7 @@ class AuthService {
       await UserPreferenceService.clearProfile();
       await UserPreferenceService.clearAuthToken();
       if (!kIsWeb) {
-        try { await _googleSignIn.signOut(); } catch (e) { SecureLogger.warning('Google sign out failed: $e'); }
+        try { await GoogleSignIn.instance.signOut(); } catch (e) { SecureLogger.warning('Google sign out failed: $e'); }
       }
 
       // 3. Best effort Firestore cleanup (server-side Cloud Function / Admin SDK should handle deep cleanup)

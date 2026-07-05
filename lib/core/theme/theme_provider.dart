@@ -3,18 +3,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/datasources/user_preference_service.dart';
 
 // Provides the current ThemeMode (Light, Dark, or System)
-final themeModeProvider = StateNotifierProvider<ThemeModeNotifier, ThemeMode>((ref) {
-  return ThemeModeNotifier();
-});
-
-class ThemeModeNotifier extends StateNotifier<ThemeMode> {
-  ThemeModeNotifier() : super(ThemeMode.dark) {
-    _loadTheme();
+class ThemeModeNotifier extends Notifier<ThemeMode> {
+  @override
+  ThemeMode build() {
+    return _loadTheme();
   }
 
-  void _loadTheme() {
+  ThemeMode _loadTheme() {
     final profile = UserPreferenceService.getProfile();
-    state = _parseMode(profile.themeMode);
+    return _parseMode(profile.themeMode);
   }
 
   ThemeMode _parseMode(String mode) {
@@ -53,3 +50,7 @@ class ThemeModeNotifier extends StateNotifier<ThemeMode> {
     await UserPreferenceService.updateThemeMode(_modeToString(mode));
   }
 }
+
+final themeModeProvider = NotifierProvider<ThemeModeNotifier, ThemeMode>(() {
+  return ThemeModeNotifier();
+});

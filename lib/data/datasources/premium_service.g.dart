@@ -6,21 +6,51 @@ part of 'premium_service.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$premiumNotifierHash() => r'e5f8c38a9e5109b68fd6ab988739256df5b74d6f';
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
 
-/// See also [PremiumNotifier].
 @ProviderFor(PremiumNotifier)
-final premiumNotifierProvider =
-    AutoDisposeNotifierProvider<PremiumNotifier, bool>.internal(
-  PremiumNotifier.new,
-  name: r'premiumNotifierProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$premiumNotifierHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
+final premiumProvider = PremiumNotifierProvider._();
 
-typedef _$PremiumNotifier = AutoDisposeNotifier<bool>;
-// ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
+final class PremiumNotifierProvider
+    extends $NotifierProvider<PremiumNotifier, bool> {
+  PremiumNotifierProvider._()
+      : super(
+          from: null,
+          argument: null,
+          retry: null,
+          name: r'premiumProvider',
+          isAutoDispose: true,
+          dependencies: null,
+          $allTransitiveDependencies: null,
+        );
+
+  @override
+  String debugGetCreateSourceHash() => _$premiumNotifierHash();
+
+  @$internal
+  @override
+  PremiumNotifier create() => PremiumNotifier();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(bool value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<bool>(value),
+    );
+  }
+}
+
+String _$premiumNotifierHash() => r'13b6f78594aa1ac1eb60cc070f5a48a03bd10cdc';
+
+abstract class _$PremiumNotifier extends $Notifier<bool> {
+  bool build();
+  @$mustCallSuper
+  @override
+  WhenComplete runBuild() {
+    final ref = this.ref as $Ref<bool, bool>;
+    final element = ref.element as $ClassProviderElement<
+        AnyNotifier<bool, bool>, bool, Object?, Object?>;
+    return element.handleCreate(ref, build);
+  }
+}

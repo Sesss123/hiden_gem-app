@@ -6,22 +6,52 @@ part of 'screenshot_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
+
+@ProviderFor(ScreenshotNotifier)
+final screenshotProvider = ScreenshotNotifierProvider._();
+
+final class ScreenshotNotifierProvider
+    extends $NotifierProvider<ScreenshotNotifier, bool> {
+  ScreenshotNotifierProvider._()
+      : super(
+          from: null,
+          argument: null,
+          retry: null,
+          name: r'screenshotProvider',
+          isAutoDispose: true,
+          dependencies: null,
+          $allTransitiveDependencies: null,
+        );
+
+  @override
+  String debugGetCreateSourceHash() => _$screenshotNotifierHash();
+
+  @$internal
+  @override
+  ScreenshotNotifier create() => ScreenshotNotifier();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(bool value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<bool>(value),
+    );
+  }
+}
+
 String _$screenshotNotifierHash() =>
     r'463a89d5dd763c6a26c0cb6c788c8bd7d319be4d';
 
-/// See also [ScreenshotNotifier].
-@ProviderFor(ScreenshotNotifier)
-final screenshotNotifierProvider =
-    AutoDisposeNotifierProvider<ScreenshotNotifier, bool>.internal(
-  ScreenshotNotifier.new,
-  name: r'screenshotNotifierProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$screenshotNotifierHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
-
-typedef _$ScreenshotNotifier = AutoDisposeNotifier<bool>;
-// ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
+abstract class _$ScreenshotNotifier extends $Notifier<bool> {
+  bool build();
+  @$mustCallSuper
+  @override
+  WhenComplete runBuild() {
+    final ref = this.ref as $Ref<bool, bool>;
+    final element = ref.element as $ClassProviderElement<
+        AnyNotifier<bool, bool>, bool, Object?, Object?>;
+    return element.handleCreate(ref, build);
+  }
+}

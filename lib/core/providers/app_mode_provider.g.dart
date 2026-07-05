@@ -6,21 +6,51 @@ part of 'app_mode_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
+
+@ProviderFor(AppModeNotifier)
+final appModeProvider = AppModeNotifierProvider._();
+
+final class AppModeNotifierProvider
+    extends $NotifierProvider<AppModeNotifier, ThemeMode> {
+  AppModeNotifierProvider._()
+      : super(
+          from: null,
+          argument: null,
+          retry: null,
+          name: r'appModeProvider',
+          isAutoDispose: true,
+          dependencies: null,
+          $allTransitiveDependencies: null,
+        );
+
+  @override
+  String debugGetCreateSourceHash() => _$appModeNotifierHash();
+
+  @$internal
+  @override
+  AppModeNotifier create() => AppModeNotifier();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(ThemeMode value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<ThemeMode>(value),
+    );
+  }
+}
+
 String _$appModeNotifierHash() => r'89d341eb01c304137b96a60f3dd6f5636bb63d95';
 
-/// See also [AppModeNotifier].
-@ProviderFor(AppModeNotifier)
-final appModeNotifierProvider =
-    AutoDisposeNotifierProvider<AppModeNotifier, ThemeMode>.internal(
-  AppModeNotifier.new,
-  name: r'appModeNotifierProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$appModeNotifierHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
-
-typedef _$AppModeNotifier = AutoDisposeNotifier<ThemeMode>;
-// ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
+abstract class _$AppModeNotifier extends $Notifier<ThemeMode> {
+  ThemeMode build();
+  @$mustCallSuper
+  @override
+  WhenComplete runBuild() {
+    final ref = this.ref as $Ref<ThemeMode, ThemeMode>;
+    final element = ref.element as $ClassProviderElement<
+        AnyNotifier<ThemeMode, ThemeMode>, ThemeMode, Object?, Object?>;
+    return element.handleCreate(ref, build);
+  }
+}

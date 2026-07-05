@@ -145,7 +145,7 @@ class LanguageSelectionScreen extends ConsumerWidget {
                 
                 TextButton(
                   onPressed: () async {
-                    await ref.read(localeNotifierProvider.notifier).setLocale(const Locale('en'));
+                    await ref.read(localeProvider.notifier).setLocale(const Locale('en'));
                     if (context.mounted) {
                       _navigateNext(context, ref);
                     }
@@ -204,7 +204,7 @@ class LanguageSelectionScreen extends ConsumerWidget {
       child: InkWell(
         onTap: () async {
           HapticFeedback.mediumImpact();
-          await ref.read(localeNotifierProvider.notifier).setLocale(locale);
+          await ref.read(localeProvider.notifier).setLocale(locale);
           if (context.mounted) {
             _navigateNext(context, ref);
           }

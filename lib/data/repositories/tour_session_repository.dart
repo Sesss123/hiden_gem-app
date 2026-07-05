@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../../core/utils/secure_logger.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/tour_session.dart';
 import '../models/tour_link.dart';

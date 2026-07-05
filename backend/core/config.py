@@ -11,12 +11,8 @@ INTERNAL_BRIDGE_KEY = os.getenv("INTERNAL_BRIDGE_KEY", os.getenv("INTERNAL_API_K
 API_URL = os.getenv("API_URL", "http://localhost:8000")
 
 # --- AI Models ---
-CLAUDE_MODEL = "claude-3-5-sonnet-20240620"
 GEMINI_FLASH = "gemini-flash-latest"
 GEMINI_PRO = "gemini-pro-latest"
-GPT4O_MODEL = "gpt-4o"
-DEEPSEEK_MODEL = "deepseek-chat"
-GROQ_MODEL = "llama-3.3-70b-versatile"
 
 DEFAULT_TEMPERATURE = 0.1
 MAX_EXTRACTION_TOKENS = 2048

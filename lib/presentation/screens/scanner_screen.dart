@@ -115,7 +115,7 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> with WidgetsBindi
 
   @override
   Widget build(BuildContext context) {
-    final isPremium = ref.watch(premiumNotifierProvider);
+    final isPremium = ref.watch(premiumProvider);
 
     return Scaffold(
       backgroundColor: Colors.black, // Keep camera background black
@@ -269,7 +269,7 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> with WidgetsBindi
             width: double.infinity,
             height: 56,
             child: OutlinedButton(
-              onPressed: () => ref.read(premiumNotifierProvider.notifier).buyPremium(),
+              onPressed: () => ref.read(premiumProvider.notifier).buyPremium(),
               style: OutlinedButton.styleFrom(
                 side: BorderSide(color: Theme.of(context).colorScheme.primary),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),

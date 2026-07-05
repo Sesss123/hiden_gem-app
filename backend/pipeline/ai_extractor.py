@@ -11,22 +11,10 @@ import httpx
 import PIL.Image as PILImage
 
 try:
-    from anthropic import AsyncAnthropic
-    ANTHROPIC_AVAILABLE = True
-except ImportError:
-    ANTHROPIC_AVAILABLE = False
-
-try:
     import google.generativeai as genai
     GENAI_AVAILABLE = True
 except ImportError:
     GENAI_AVAILABLE = False
-
-try:
-    from openai import AsyncOpenAI
-    OPENAI_AVAILABLE = True
-except ImportError:
-    OPENAI_AVAILABLE = False
 
 from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
 
@@ -183,16 +171,9 @@ Your task: Extract high-fidelity tourism data from provided content.
 
 
 class AIExtractor:
-    def __init__(self, anthropic_key: str = None, google_key: str = None):
-        # ── Claude Setup ──
-        if ANTHROPIC_AVAILABLE:
-            self.anthropic_client = AsyncAnthropic(
-                api_key=anthropic_key or os.getenv("ANTHROPIC_API_KEY")
-            )
-        else:
-            self.anthropic_client = None
-            logger.warning("[AIExtractor] Anthropic library not installed. Claude extraction disabled.")
-
+    def __init__(self, google_key: str = None):
+        self.anthropic_client = None
+        
         # ── Gemini Setup (Key Rotator) ──
         if GENAI_AVAILABLE:
             try:
@@ -218,6 +199,14 @@ class AIExtractor:
         else:
             self.gemini_flash = None
             self.gemini_pro = None
+                    logger.warning("[AIExtractor] No active Gemini API key. Gemini disabled.")
+            except Exception as e:
+                logger.error(f"[AIExtractor] Gemini Initialization Failed: {e}")
+                self.gemini_flash = None
+                self.gemini_pro = None
+        else:
+            self.gemini_flash = None
+            self.gemini_pro = None
 
     async def _log_usage(self, run_id: str, model: str, prompt: str, completion: str, success: bool, error: str = None):
         """Log AI token usage and cost to MongoDB for auditing."""
@@ -229,7 +218,7 @@ class AIExtractor:
             total = p_tokens + c_tokens
             
             # Simple cost estimate ($/1M tokens)
-            rate = 3.0 if "claude" in model.lower() else 0.1
+            rate = 0.1
             cost = (total / 1_000_000) * rate
             
             log_entry = AIUsageLog(
@@ -340,9 +329,17 @@ class AIExtractor:
         return None
 
     async def _get_fresh_gemini_model(self, model_name: str) -> Tuple[Optional[Any], str]:
-        """Gets a fresh model instance (Gemini, Groq, DeepSeek) with the latest active key."""
-        if not GENAI_AVAILABLE and "gemini" in model_name.lower():
+        if not GENAI_AVAILABLE:
             return None, ""
+        
+        active_key = multi_key_rotator.get_active_key("google")
+        if not active_key: return None, ""
+        try:
+            genai.configure(api_key=active_key)
+            return genai.GenerativeModel(model_name), active_key
+        except Exception as e:
+            logger.error(f"Failed to refresh Gemini model: {e}")
+            return None, "" 
 
         if any(x in model_name.lower() for x in ["gemini"]):
             active_key = multi_key_rotator.get_active_key("google")
@@ -354,34 +351,9 @@ class AIExtractor:
                 logger.error(f"Failed to refresh Gemini model: {e}")
                 return None, ""
         
-        # Groq/DeepSeek (OpenAI compatible)
-        model_lower = model_name.lower()
-        if "groq" in model_lower or "llama" in model_lower or "mixtral" in model_lower:
-            provider = "groq"
-        elif "deepseek" in model_lower:
-            provider = "deepseek"
-        elif "gpt" in model_lower:
-            provider = "openai"
-        else:
-            provider = "openai" # Default to OpenAI for generic compatible requests
         
-        active_key = multi_key_rotator.get_active_key(provider)
-        if not active_key: return None, ""
-        
-        if not OPENAI_AVAILABLE:
-            logger.warning(f"[AIExtractor] OpenAI library not installed. {provider.upper()} extraction disabled.")
-            return None, ""
-
-        try:
-            base_url = None
-            if provider == "groq": base_url = "https://api.groq.com/openai/v1"
-            elif provider == "deepseek": base_url = "https://api.deepseek.com"
-            
-            client = AsyncOpenAI(api_key=active_key, base_url=base_url, timeout=30.0)
-            return client, active_key
-        except Exception as e:
-            logger.error(f"Failed to refresh OpenAI-compatible model ({provider}): {e}")
-            return None, ""
+        # Only Gemini is supported
+        return None, ""
 
     async def _safe_json_parse(self, text: str, model_tag: str) -> Optional[Dict[str, Any]]:
         """Attempt to parse JSON from AI response, cleaning up markdown or artifacts."""
@@ -417,56 +389,13 @@ class AIExtractor:
         return None
 
     async def extract_from_html(self, html_content: str, run_id: str = None, category_hint: str = None) -> Optional[Dict[str, Any]]:
-        """
-        Full dual-AI extraction with dynamic prompt selection and cross-validation.
-        """
         if not category_hint:
             category_hint = self._detect_category_hint(html_content)
             if category_hint:
                 logger.info(f"[AIExtractor] 💡 Detected category hint: {category_hint}")
 
-        # Specialized system prompt
         system_prompt = get_system_prompt(category_hint)
-
-        # ── Run Claude Task ──
-        async def run_claude():
-            if not self.anthropic_client: return None
-            prompt_input = f"<raw_content>\n{html_content[:15000]}\n</raw_content>"
-            try:
-                message = await self.anthropic_client.messages.create(
-                    model=config.CLAUDE_MODEL,
-                    max_tokens=config.MAX_EXTRACTION_TOKENS,
-                    system=system_prompt,
-                    messages=[{"role": "user", "content": f"Extract data:\n{prompt_input}"}]
-                )
-                txt = message.content[0].text.strip()
-                res = await self._safe_json_parse(txt, "claude")
-                if res:
-                    PlaceExtraction.model_validate(res)
-                    await self._log_usage(run_id, config.CLAUDE_MODEL, prompt_input, txt, True)
-                    return res
-            except Exception as e:
-                logger.error(f"[AIExtractor] Claude Error: {e}")
-                return None
-
-        # ── Run Gemini/Fallback Task ──
-        async def run_gemini():
-            # Inject dynamic system prompt into the multi-model loop
-            # This is slightly more complex as extract_with_gemini is a loop
-            return await self.extract_with_fallback(html_content, run_id, system_prompt)
-
-        claude_task = asyncio.create_task(run_claude())
-        gemini_task = asyncio.create_task(run_gemini())
-
-        claude_result, gemini_result = await asyncio.gather(claude_task, gemini_task)
-
-        # ── Both succeeded: Cross-validate ──
-        if claude_result and gemini_result:
-            final, confidence = await self.cross_validate(claude_result, gemini_result)
-            return final
-        
-        result = claude_result or gemini_result
-        return result
+        return await self.extract_with_fallback(html_content, run_id, system_prompt)
 
     async def apply_vision_enrichment(self, data: dict) -> dict:
         """
@@ -525,14 +454,16 @@ Each site's HTML is wrapped in <site_content index="N"> tags.
         
         full_input = "\n\n".join(snippets)
         
-        # We'll use the fallback batching logic (primarily Gemini/Groq for high context windows)
+        # We'll use the fallback batching logic (primarily Gemini for high context windows)
         results = await self.extract_with_fallback_batch(full_input, run_id, batch_prompt, len(contents))
         return results if results else [None] * len(contents)
 
     async def extract_with_fallback_batch(self, batch_input: str, run_id: str, system_prompt: str, expected_count: int) -> Optional[list[dict]]:
-        """Multi-model fallback chain for batch processing."""
-        models_to_try = [config.GEMINI_FLASH, config.GROQ_MODEL]
-        prompt = f"{system_prompt}\n\nSites to extract:\n{batch_input}"
+        models_to_try = [config.GEMINI_FLASH]
+        prompt = f"{system_prompt}
+
+Sites to extract:
+{batch_input}"
 
         for model_variant in models_to_try:
             logger.info(f"[AIExtractor] 🔄 Attempting BATCH extraction with: {model_variant}")
@@ -540,22 +471,11 @@ Each site's HTML is wrapped in <site_content index="N"> tags.
             if not model: continue
             
             try:
-                if model_variant == config.GROQ_MODEL:
-                    # Groq usually prefers smaller batches but we'll try
-                    resp = await model.chat.completions.create(
-                        model=model_variant,
-                        messages=[{"role": "user", "content": prompt}],
-                        temperature=0.1,
-                        response_format={"type": "json_object"} if "llama3" in model_variant.lower() else None
-                    )
-                    text = resp.choices[0].message.content
-                else:
-                    resp = await model.generate_content_async(prompt)
-                    text = resp.text
+                resp = await model.generate_content_async(prompt)
+                text = resp.text
                 
                 res = await self._safe_json_parse(text, f"BATCH:{model_variant}")
                 if isinstance(res, list) and len(res) == expected_count:
-                    # Validate each item
                     for item in res:
                         PlaceExtraction.model_validate(item)
                     
@@ -564,7 +484,6 @@ Each site's HTML is wrapped in <site_content index="N"> tags.
                     logger.info(f"[AIExtractor] ✅ Successful BATCH extraction with: {model_variant}")
                     return res
                 elif isinstance(res, dict) and "places" in res:
-                     # Some models wrap array in a "places" key
                      res_list = res["places"]
                      if len(res_list) == expected_count:
                          return res_list
@@ -574,11 +493,14 @@ Each site's HTML is wrapped in <site_content index="N"> tags.
         return None
 
     async def extract_with_fallback(self, html_content: str, run_id: str, system_prompt: str) -> Optional[Dict[str, Any]]:
-        """Multi-model fallback chain with dynamic system prompt."""
-        # Prioritize providers likely to have free tier or better connectivity in this environment
-        models_to_try = [config.GEMINI_FLASH, config.GROQ_MODEL, config.DEEPSEEK_MODEL]
-        prompt_input = f"<raw_content>\n{html_content[:12000]}\n</raw_content>"
-        prompt = f"{system_prompt}\n\nExtract from this content:\n{prompt_input}"
+        models_to_try = [config.GEMINI_FLASH]
+        prompt_input = f"<raw_content>
+{html_content[:12000]}
+</raw_content>"
+        prompt = f"{system_prompt}
+
+Extract from this content:
+{prompt_input}"
 
         for model_variant in models_to_try:
             logger.info(f"[AIExtractor] 🔄 Attempting fallback extraction with: {model_variant}")
@@ -587,36 +509,21 @@ Each site's HTML is wrapped in <site_content index="N"> tags.
                 logger.warning(f"[AIExtractor] ⚠️ No active key for {model_variant}. Skipping.")
                 continue
             try:
-                if model_variant in [config.GPT4O_MODEL, config.DEEPSEEK_MODEL, config.GROQ_MODEL]:
-                    resp = await model.chat.completions.create(
-                        model=model_variant,
-                        messages=[{"role": "user", "content": prompt}],
-                        temperature=0.1
-                    )
-                    text = resp.choices[0].message.content
-                else:
-                    resp = await model.generate_content_async(prompt)
-                    text = resp.text
+                resp = await model.generate_content_async(prompt)
+                text = resp.text
                 
                 res = await self._safe_json_parse(text, model_variant)
                 if res:
                     PlaceExtraction.model_validate(res)
                     await self._log_usage(run_id, model_variant, prompt, text, True)
-                    # Track usage for dashboard
                     multi_key_rotator.increment(active_key)
                     logger.info(f"[AIExtractor] ✅ Successful extraction with: {model_variant}")
                     return res
             except Exception as e:
                 logger.error(f"[AIExtractor] ❌ Model {model_variant} failed: {e}")
-                
-                # Proactively mark key as exhausted if we hit balance/quota limits
                 err_str = str(e).lower()
-                if any(x in err_str for x in ["402", "insufficient balance", "payment required", "credit balance"]):
-                    logger.warning(f"[AIExtractor] 🔴 Hard balance limit hit for {model_variant}. Shifting rotation.")
-                    multi_key_rotator.mark_exhausted(active_key, reason="Insufficient Balance", model=model_variant)
-                elif any(x in err_str for x in ["429", "quota", "limit"]):
+                if any(x in err_str for x in ["429", "quota", "limit"]):
                     multi_key_rotator.mark_exhausted(active_key, reason="Quota/Rate Limit", model=model_variant)
-                
                 continue
         return None
 

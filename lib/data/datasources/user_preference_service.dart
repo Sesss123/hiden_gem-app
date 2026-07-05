@@ -7,6 +7,7 @@ import '../models/user_profile.dart';
 import '../models/guide_profile.dart';
 import '../models/guide_status.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../../core/utils/secure_logger.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -35,7 +36,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     
     // Hide Screenshot button initially
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(screenshotNotifierProvider.notifier).toggleVisibility(false);
+      ref.read(screenshotProvider.notifier).toggleVisibility(false);
     });
 
     // Auto-proceed logic after a cinematic delay

@@ -34,7 +34,7 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
 
   @override
   Widget build(BuildContext context) {
-    final isPremium = ref.watch(premiumNotifierProvider);
+    final isPremium = ref.watch(premiumProvider);
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -215,7 +215,7 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
   }
 
   Widget _buildPricingCard(bool isPremium) {
-    final profile = ref.watch(premiumNotifierProvider.select((_) => UserPreferenceService.getProfile()));
+    final profile = ref.watch(premiumProvider.select((_) => UserPreferenceService.getProfile()));
     const goldColor = AppPalette.rust;
 
     return Column(
@@ -278,7 +278,7 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
             billingCycle: "Billed monthly",
             features: ["20 AI Itineraries/mo", "Selected AR Places", "Offline Maps (Basic)"],
             color: const Color(0xFF64B5F6),
-            onPressed: () => ref.read(premiumNotifierProvider.notifier).buyPremium(productId: PremiumNotifier.explorerId),
+            onPressed: () => ref.read(premiumProvider.notifier).buyPremium(productId: PremiumNotifier.explorerId),
           ),
           SizedBox(height: 20),
           _buildTierOption(
@@ -289,7 +289,7 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
             features: ["Unlimited AI Itineraries", "Full Heritage AR Access", "All Offline Features"],
             color: goldColor,
             isRecommended: true,
-            onPressed: () => ref.read(premiumNotifierProvider.notifier).buyPremium(productId: PremiumNotifier.premiumId),
+            onPressed: () => ref.read(premiumProvider.notifier).buyPremium(productId: PremiumNotifier.premiumId),
           ),
           SizedBox(height: 20),
           _buildTierOption(
@@ -312,7 +312,7 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
           ),
           SizedBox(height: 40),
           TextButton(
-            onPressed: () => ref.read(premiumNotifierProvider.notifier).restorePurchases(),
+            onPressed: () => ref.read(premiumProvider.notifier).restorePurchases(),
             child: Text(
               "RESTORE PREVIOUS ARCHIVES",
               style: GoogleFonts.inter(
@@ -349,7 +349,7 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
         label: Text("TEST BUY (DEV ONLY)", 
           style: GoogleFonts.inter(color: Colors.redAccent, fontSize: 11, fontWeight: FontWeight.bold)),
         onPressed: () {
-          ref.read(premiumNotifierProvider.notifier).simulateMockPurchase();
+          ref.read(premiumProvider.notifier).simulateMockPurchase();
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text("🚀 Mock Purchase Simulated. Refreshing...")),
           );

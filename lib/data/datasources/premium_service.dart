@@ -167,7 +167,7 @@ class PremiumNotifier extends _$PremiumNotifier {
         isPremium,
         plan: activeEntitlement?.productIdentifier,
         expiry: activeEntitlement?.expirationDate != null 
-            ? DateTime.tryParse(activeEntitlement!.expirationDate) 
+            ? DateTime.tryParse(activeEntitlement!.expirationDate!) 
             : null,
         source: 'revenuecat',
       );
@@ -176,13 +176,12 @@ class PremiumNotifier extends _$PremiumNotifier {
       if (_isFirebaseReady) {
         final user = FirebaseAuth.instance.currentUser;
         if (user != null) {
+          final expDateStr = activeEntitlement?.expirationDate;
+          final expDate = expDateStr != null ? DateTime.tryParse(expDateStr) : null;
+
           await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
             'isPremium': isPremium,
-            'premiumExpiresAt': activeEntitlement?.expirationDate != null 
-                ? (DateTime.tryParse(activeEntitlement!.expirationDate) != null 
-                    ? Timestamp.fromDate(DateTime.tryParse(activeEntitlement!.expirationDate)!) 
-                    : null)
-                : null,
+            'premiumExpiresAt': expDate != null ? Timestamp.fromDate(expDate) : null,
             'premiumPlanId': activeEntitlement?.productIdentifier ?? 'unknown',
             'premiumPlan': activeEntitlement?.productIdentifier ?? 'unknown',
             'premiumSource': 'revenuecat',

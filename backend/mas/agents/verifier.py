@@ -15,7 +15,7 @@ class VerifierAgent:
 
     async def run(self, state: AgentState) -> Dict[str, Any]:
         """
-        Majority Vote Consensus: Uses 3 models (Claude, Gemini, DeepSeek/Groq)
+        Consensus: Uses Gemini models
         to extract data from raw research logs and merged metadata.
         """
         name = state["destination_name"]
@@ -27,13 +27,12 @@ class VerifierAgent:
         logger.info(f"⚖️ [VerifierAgent] Starting Majority Vote Consensus for: {name}")
         
         await telemetry_service.update_agent_status(
-            "Verifier", "Multi-Model Extraction", f"Running consensus extraction using Claude, Gemini, and {config.DEEPSEEK_MODEL or 'DeepSeek'}..."
+            "Verifier", "Multi-Model Extraction", "Running consensus extraction using Gemini models..."
         )
-        # We'll use Claude, Gemini Flash, and DeepSeek (or Groq fallback)
+        # We'll use Gemini Flash and Pro
         tasks = [
-            self._extract_with_model(full_context, config.CLAUDE_MODEL),
             self._extract_with_model(full_context, config.GEMINI_FLASH),
-            self._extract_with_model(full_context, config.DEEPSEEK_MODEL or config.GROQ_MODEL)
+            self._extract_with_model(full_context, config.GEMINI_PRO)
         ]
         
         results = await asyncio.gather(*tasks)

@@ -61,7 +61,7 @@ class LanguageAuraSwitcher extends ConsumerWidget {
     HapticFeedback.mediumImpact();
     
     // Connect to the real LocaleNotifier
-    ref.read(localeNotifierProvider.notifier).setLocale(locale);
+    ref.read(localeProvider.notifier).setLocale(locale);
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(

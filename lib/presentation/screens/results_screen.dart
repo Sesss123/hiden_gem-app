@@ -143,7 +143,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
   }
 
   void _initBanner() async {
-    final isPremium = ref.read(premiumNotifierProvider);
+    final isPremium = ref.read(premiumProvider);
     if (!isPremium) {
       final ad = await MonetizationService().createBannerAd();
       if (mounted) {
@@ -188,7 +188,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
 
   @override
   Widget build(BuildContext context) {
-    final isPremium = ref.watch(premiumNotifierProvider);
+    final isPremium = ref.watch(premiumProvider);
     final l10n = AppLocalizations.of(context)!;
     final plan = _activePlan;
 
@@ -415,7 +415,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
 
 
   Widget _buildVoiceButton(BuildContext context, TripPlan plan, bool isPremium) {
-    final localeCode = ref.read(localeNotifierProvider)?.languageCode ?? 'en';
+    final localeCode = ref.read(localeProvider)?.languageCode ?? 'en';
     
     return IconButton(
       icon: Icon(
@@ -507,7 +507,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
   // TAB 1 – ITINERARY
   // ═══════════════════════════════════════════════════════════════════
   Widget _buildItineraryTab(TripPlan plan, AppLocalizations l10n) {
-    final isPremium = ref.read(premiumNotifierProvider);
+    final isPremium = ref.read(premiumProvider);
 
     // BUG-068: Handle empty itinerary state gracefully with a friendly message
     if (plan.itinerary.isEmpty) {
@@ -1006,7 +1006,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
               style: AppTheme.primaryButtonStyle(context),
             ),
             TextButton(
-              onPressed: () => ref.read(premiumNotifierProvider.notifier).buyPremium(),
+              onPressed: () => ref.read(premiumProvider.notifier).buyPremium(),
               child: Text(
                 "Go Premium for Ad-Free Experience", 
                 style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6)),
@@ -1083,7 +1083,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
               ],
             ),
             child: ElevatedButton(
-              onPressed: () => ref.read(premiumNotifierProvider.notifier).buyPremium(),
+              onPressed: () => ref.read(premiumProvider.notifier).buyPremium(),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppTheme.accentOchre(context),
                 foregroundColor: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.white, // Keep white for branding contrast if background is dark ochre
