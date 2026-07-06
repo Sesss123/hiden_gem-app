@@ -68,11 +68,26 @@ class FirestoreService
         if (is_bool($val)) return ['booleanValue' => $val];
         if (is_null($val)) return ['nullValue' => 'NULL_VALUE'];
         if (is_array($val)) {
-            $fields = [];
-            foreach ($val as $k => $v) {
-                $fields[$k] = $this->encodeValue($v);
+            // Check if array is associative or sequential
+            $isAssociative = false;
+            if (count($val) > 0) {
+                $keys = array_keys($val);
+                $isAssociative = array_keys($keys) !== $keys;
             }
-            return ['mapValue' => ['fields' => $fields]];
+
+            if ($isAssociative) {
+                $fields = [];
+                foreach ($val as $k => $v) {
+                    $fields[$k] = $this->encodeValue($v);
+                }
+                return ['mapValue' => ['fields' => $fields]];
+            } else {
+                $values = [];
+                foreach ($val as $v) {
+                    $values[] = $this->encodeValue($v);
+                }
+                return ['arrayValue' => ['values' => $values]];
+            }
         }
         return ['stringValue' => (string) $val];
     }

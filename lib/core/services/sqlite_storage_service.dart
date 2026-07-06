@@ -23,7 +23,7 @@ class SqliteStorageService {
           await close();
         },
       );
-    } catch (e, st) { SecureLogger.error("Exception caught", e, st); }
+    } catch (e, st) { SecureLogger.error("Exception caught: $e\n$st"); }
   }
 
   Future<void> close() async {
@@ -150,13 +150,13 @@ class SqliteStorageService {
         if (oldVersion < 2) {
           try {
             await db.execute('ALTER TABLE places ADD COLUMN rating REAL DEFAULT 0.0;');
-          } catch (e, st) { SecureLogger.error("Exception caught", e, st); }
+          } catch (e, st) { SecureLogger.error("Exception caught: $e\n$st"); }
           try {
             await db.execute('ALTER TABLE places ADD COLUMN opening_hours TEXT DEFAULT "";');
-          } catch (e, st) { SecureLogger.error("Exception caught", e, st); }
+          } catch (e, st) { SecureLogger.error("Exception caught: $e\n$st"); }
           try {
             await db.execute('ALTER TABLE places ADD COLUMN updated_at TEXT DEFAULT "";');
-          } catch (e, st) { SecureLogger.error("Exception caught", e, st); }
+          } catch (e, st) { SecureLogger.error("Exception caught: $e\n$st"); }
           // BUG-041: Composite index for category and district queries
           await db.execute('CREATE INDEX IF NOT EXISTS idx_places_cat_dist ON places(category, district, is_deleted);');
         }
@@ -254,9 +254,9 @@ class SqliteStorageService {
             // If insertion succeeded, remove from quarantine if previously quarantined
             try {
               await txn.delete('sync_quarantine', where: 'id = ?', whereArgs: [place.id]);
-            } catch (e, st) { SecureLogger.error("Exception caught", e, st); }
+            } catch (e, st) { SecureLogger.error("Exception caught: $e\n$st"); }
           } catch (e) {
-            SecureLogger.error("Failed to insert place ID: ${place.id}", e);
+            SecureLogger.error("Failed to insert place ID: ${place.id}: $e");
             try {
               await txn.insert(
                 'sync_quarantine',

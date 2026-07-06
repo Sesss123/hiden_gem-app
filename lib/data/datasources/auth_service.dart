@@ -54,7 +54,7 @@ class AuthService {
         return userCredential;
       }
     } catch (e) {
-      SecureLogger.error("Error during Google Sign-In", e);
+      SecureLogger.error("Error during Google Sign-In: $e");
       rethrow;
     }
   }
@@ -83,7 +83,7 @@ class AuthService {
       }
       return userCredential;
     } catch (e) {
-      SecureLogger.error("Error during Email Sign-Up", e);
+      SecureLogger.error("Error during Email Sign-Up: $e");
       rethrow;
     }
   }
@@ -115,7 +115,7 @@ class AuthService {
         await guard.recordFailure();
       }
       
-      SecureLogger.error("Error during Email Sign-In", e);
+      SecureLogger.error("Error during Email Sign-In: $e");
       rethrow;
     }
   }
@@ -193,7 +193,7 @@ class AuthService {
         SecureLogger.warning("Firestore doc deletion handled by backend Admin SDK: $e", tag: "Auth", isBackground: true);
       }
     } catch (e) {
-      SecureLogger.error("Error during Account Deletion", e);
+      SecureLogger.error("Error during Account Deletion: $e");
       rethrow;
     }
   }

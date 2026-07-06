@@ -87,7 +87,7 @@ class ArCoreView extends StatelessWidget {
     // Return a black screen with a warning or just black since it's a fallback
     return Container(
       color: AppTheme.colors.black,
-      child: const Center(
+      child: Center(
         child: Text(
           'AR Core is currently unavailable on this device.',
           style: TextStyle(color: AppTheme.colors.white),

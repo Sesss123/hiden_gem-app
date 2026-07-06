@@ -158,7 +158,7 @@ class DiscoveryRemoteDataSource {
         ...securityHeaders,
       },
       body: body,
-    );
+    ).timeout(const Duration(seconds: 15));
 
     if (response.statusCode == 200) {
       try {

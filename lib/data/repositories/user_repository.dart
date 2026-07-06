@@ -27,7 +27,7 @@ class UserRepository {
     try {
       await _firestore.collection('users').doc(uid).update({'role': role});
     } catch (e) {
-      SecureLogger.error("Failed to update user role", e);
+      SecureLogger.error("Failed to update user role: $e");
       rethrow;
     }
   }
@@ -40,7 +40,7 @@ class UserRepository {
         'premiumPlan': isPremium ? 'admin_granted' : null,
       });
     } catch (e) {
-      SecureLogger.error("Failed to toggle premium status", e);
+      SecureLogger.error("Failed to toggle premium status: $e");
       rethrow;
     }
   }
@@ -52,7 +52,7 @@ class UserRepository {
         'role': 'banned',
       });
     } catch (e) {
-      SecureLogger.error("Failed to ban user", e);
+      SecureLogger.error("Failed to ban user: $e");
       rethrow;
     }
   }

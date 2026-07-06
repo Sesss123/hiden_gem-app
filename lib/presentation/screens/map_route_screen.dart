@@ -105,7 +105,7 @@ class _MapRouteScreenState extends State<MapRouteScreen> {
                           }
                         }
                       } catch (e) {
-                        SecureLogger.error("Failed to auto-save trip map", e);
+                        SecureLogger.error("Failed to auto-save trip map: $e");
                       }
                     },
                   ),
@@ -115,7 +115,7 @@ class _MapRouteScreenState extends State<MapRouteScreen> {
         }
       }
     } catch (e) {
-      SecureLogger.error("Failed to save map snapshot", e);
+      SecureLogger.error("Failed to save map snapshot: $e");
       if (mounted) {
          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Failed to save map: $e")));
       }

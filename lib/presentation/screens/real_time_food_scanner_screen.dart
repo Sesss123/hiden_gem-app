@@ -178,6 +178,7 @@ class _RealTimeFoodScannerScreenState extends State<RealTimeFoodScannerScreen>
 
   // Throttling timer (1 frame per second)
   Timer? _frameTimer;
+  Timer? _reconnectTimer;
   bool _isProcessingFrame = false;
 
   // Selected User Mode: normal, weight_loss, muscle_gain, diabetic
@@ -238,27 +239,47 @@ class _RealTimeFoodScannerScreenState extends State<RealTimeFoodScannerScreen>
         },
         onDone: () {
           debugPrint("WebSocket disconnected.");
-          if (mounted) setState(() => _isConnected = false);
+          if (mounted) {
+            setState(() => _isConnected = false);
+            _reconnectWebSocketWithDelay();
+          }
         },
         onError: (err) {
           debugPrint("WebSocket error: $err");
-          if (mounted) setState(() => _isConnected = false);
+          if (mounted) {
+            setState(() => _isConnected = false);
+            _reconnectWebSocketWithDelay();
+          }
         },
       );
 
       _startFrameThrottler();
     } catch (e) {
       debugPrint("WebSocket connection failed: $e");
-      if (mounted) setState(() => _isConnected = false);
+      if (mounted) {
+        setState(() => _isConnected = false);
+        _reconnectWebSocketWithDelay();
+      }
     }
   }
 
   void _disconnectWebSocket() {
+    _reconnectTimer?.cancel();
     _frameTimer?.cancel();
     _socketSubscription?.cancel();
     _channel?.sink.close();
     _channel = null;
     _isConnected = false;
+  }
+
+  void _reconnectWebSocketWithDelay() {
+    _reconnectTimer?.cancel();
+    if (!mounted || _isConnected) return;
+    _reconnectTimer = Timer(const Duration(seconds: 3), () {
+      if (mounted && !_isConnected) {
+        _connectWebSocket();
+      }
+    });
   }
 
   /// Handles server JSON payload responses without freezing UI
@@ -304,7 +325,7 @@ class _RealTimeFoodScannerScreenState extends State<RealTimeFoodScannerScreen>
         // Clean up temporary image file to avoid storage buildup
         try {
           await File(imageFile.path).delete();
-        } catch (e, st) { SecureLogger.error("Exception caught", e, st); }
+        } catch (e) { SecureLogger.error("Exception caught: $e"); }
 
         final base64Image = 'data:image/jpeg;base64,${base64Encode(bytes)}';
         final requestPayload = jsonEncode({
@@ -323,14 +344,16 @@ class _RealTimeFoodScannerScreenState extends State<RealTimeFoodScannerScreen>
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (_cameraController == null || !_cameraController!.value.isInitialized) return;
-
     if (state == AppLifecycleState.inactive || state == AppLifecycleState.paused) {
       _disconnectWebSocket();
-      if (_cameraController!.value.isStreamingImages) {
-        _cameraController!.stopImageStream().catchError((_) {});
+      final controller = _cameraController;
+      _cameraController = null;
+      if (controller != null) {
+        if (controller.value.isInitialized && controller.value.isStreamingImages) {
+          controller.stopImageStream().catchError((_) {});
+        }
+        controller.dispose();
       }
-      _cameraController?.dispose();
     } else if (state == AppLifecycleState.resumed) {
       _initCameraAndSocket();
     }
@@ -340,10 +363,14 @@ class _RealTimeFoodScannerScreenState extends State<RealTimeFoodScannerScreen>
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     _disconnectWebSocket();
-    if (_cameraController != null && _cameraController!.value.isStreamingImages) {
-      _cameraController!.stopImageStream().catchError((_) {});
+    final controller = _cameraController;
+    _cameraController = null;
+    if (controller != null) {
+      if (controller.value.isInitialized && controller.value.isStreamingImages) {
+        controller.stopImageStream().catchError((_) {});
+      }
+      controller.dispose();
     }
-    _cameraController?.dispose();
     super.dispose();
   }
 

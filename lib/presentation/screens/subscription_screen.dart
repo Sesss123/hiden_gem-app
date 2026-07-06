@@ -231,8 +231,9 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
     required String description,
     required List<String> features,
     bool isPopular = false,
-    Color color = AppTheme.colors.white38,
+    Color? color,
   }) {
+    final actualColor = color ?? AppTheme.colors.white38;
     return Padding(
       padding: const EdgeInsets.only(bottom: 24),
       child: OracleUI.premiumGlassCard(
@@ -248,7 +249,7 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
                 decoration: BoxDecoration(color: AppTheme.colors.primary, borderRadius: BorderRadius.circular(6)),
                 child: Text("MOST POPULAR", style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.w900, color: AppTheme.colors.black)),
               ),
-            Text(title, style: GoogleFonts.outfit(color: color, fontSize: 24, fontWeight: FontWeight.w900, letterSpacing: 2)),
+            Text(title, style: GoogleFonts.outfit(color: actualColor, fontSize: 24, fontWeight: FontWeight.w900, letterSpacing: 2)),
             const SizedBox(height: 8),
             Row(
               textBaseline: TextBaseline.alphabetic,

@@ -23,28 +23,33 @@ class PlaceImageObserver
         }
 
         if (!$image->isDirty('sync_version')) {
-            DB::transaction(function () use ($image) {
-                $counter = DB::table('sync_counter')->where('id', 1)->lockForUpdate()->first();
-                $newVersion = ($counter ? $counter->current_version : 0) + 1;
-                DB::table('sync_counter')->where('id', 1)->update(['current_version' => $newVersion]);
-                $image->sync_version = $newVersion;
-            });
+            // Inherit the parent place's sync_version to prevent delta sync gaps
+            if ($image->place) {
+                $image->sync_version = $image->place->sync_version;
+            } else {
+                $image->sync_version = 0;
+            }
         }
     }
-
-    protected static $touchedPlaces = [];
 
     // BUG-075: Wrap parent touch in a transaction block with safety locks to prevent concurrent corruption
     protected function touchParentPlace($place)
     {
-        if ($place && !in_array($place->id, self::$touchedPlaces)) {
-            self::$touchedPlaces[] = $place->id;
-            DB::transaction(function () use ($place) {
-                $lockedPlace = DB::table('places')->where('id', $place->id)->lockForUpdate()->first();
-                if ($lockedPlace) {
-                    $place->touch();
-                }
-            }, 5);
+        if ($place) {
+            // Retrieve or initialize request-bound registry of touched places (resets on Swoole request terminate)
+            $registry = app()->has('touched_places_registry') ? app('touched_places_registry') : [];
+            
+            if (!in_array($place->id, $registry)) {
+                $registry[] = $place->id;
+                app()->instance('touched_places_registry', $registry);
+                
+                DB::transaction(function () use ($place) {
+                    $lockedPlace = DB::table('places')->where('id', $place->id)->lockForUpdate()->first();
+                    if ($lockedPlace) {
+                        $place->touch();
+                    }
+                }, 5);
+            }
         }
     }
 

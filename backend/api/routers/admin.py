@@ -85,7 +85,7 @@ async def get_analytics_overview(user=Depends(require_admin)):
     top_places = []
     for entry in top_entries:
         # Fetch name from places
-        place = await db.places.find_one({"slug": entry["_id"]})
+        place = await db.places.find_one({"uuid": entry["_id"]})
         top_places.append({
             "place_id": str(entry["_id"]) if entry.get("_id") is not None else None,
             "name": place["name"] if place else "Unknown",

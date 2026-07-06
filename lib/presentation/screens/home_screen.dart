@@ -73,7 +73,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       _imagesPrecached = true;
       for (final imagePath in _bgImages) {
         precacheImage(AssetImage(imagePath), context).catchError((e) {
-          SecureLogger.error("Failed to precache background image: $imagePath", e);
+          SecureLogger.error("Failed to precache background image: $imagePath: $e");
         });
       }
     }
@@ -89,7 +89,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         });
       }
     } catch (e) {
-      SecureLogger.error("Failed to load local gems in HomeScreen", e);
+      SecureLogger.error("Failed to load local gems in HomeScreen: $e");
       if (mounted) {
         setState(() {
           _localGems = [];

@@ -15,7 +15,7 @@ class ARSupportService {
       SecureLogger.info("ARCore Check: Installed=$isInstalled, Supported=$isSupported");
       return isInstalled && isSupported;
     } catch (e) {
-      SecureLogger.error("ARCore Availability Check Failed", e);
+      SecureLogger.error("ARCore Availability Check Failed: $e");
       return false;
     }
   }

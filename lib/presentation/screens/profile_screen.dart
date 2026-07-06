@@ -92,7 +92,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
                   profile.guideStatus = newStatus;
                   changed = true;
                 }
-              } catch (e, st) { SecureLogger.error("Exception caught", e, st); }
+              } catch (e, st) { SecureLogger.error("Exception caught: $e\n$st"); }
             }
             if (changed) {
               await UserPreferenceService.saveProfile(profile);
@@ -125,7 +125,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
                   await UserPreferenceService.saveProfile(profile);
                   if (mounted) setState(() {});
                 }
-              } catch (e, st) { SecureLogger.error("Exception caught", e, st); }
+              } catch (e, st) { SecureLogger.error("Exception caught: $e\n$st"); }
             }
           }
         });

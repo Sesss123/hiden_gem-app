@@ -35,7 +35,7 @@ class _ARVideoScreenState extends State<ARVideoScreen>
   // ── Services ───────────────────────────────────────────────────────────────
   late final ARVideoService _videoService;
   late final AudioPlayer _audioPlayer;
-  late ARSyncService _syncService;
+  ARSyncService? _syncService;
   late SubtitleService _subtitleService;
 
   // ── AR ─────────────────────────────────────────────────────────────────────
@@ -137,10 +137,10 @@ class _ARVideoScreenState extends State<ARVideoScreen>
     if (_videoPlaced || !_isReady) return;
     if (hits.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('No surface detected here. Try tapping directly on the dotted grid lines.'),
+        SnackBar(
+          content: const Text('No surface detected here. Try tapping directly on the dotted grid lines.'),
           backgroundColor: AppTheme.colors.amber,
-          duration: Duration(seconds: 3),
+          duration: const Duration(seconds: 3),
         ),
       );
       return;
@@ -151,7 +151,7 @@ class _ARVideoScreenState extends State<ARVideoScreen>
     final narUrl = _lang == NarrationLang.english
         ? widget.content.narrationUrlEn
         : widget.content.narrationUrlSi;
-    await _syncService.start(narrationUrl: narUrl);
+    await _syncService?.start(narrationUrl: narUrl);
   }
 
   // ── Language toggle ─────────────────────────────────────────────────────────
@@ -163,7 +163,7 @@ class _ARVideoScreenState extends State<ARVideoScreen>
         ? widget.content.narrationUrlEn
         : widget.content.narrationUrlSi;
     if (newUrl.isNotEmpty) {
-      await _syncService.switchNarration(newUrl);
+      await _syncService?.switchNarration(newUrl);
     }
 
     HapticFeedback.selectionClick();
@@ -173,7 +173,7 @@ class _ARVideoScreenState extends State<ARVideoScreen>
   void dispose() {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     _videoService.controller?.removeListener(_onVideoTick);
-    _syncService.dispose();
+    _syncService?.dispose();
     _videoService.dispose();
     _arController?.dispose();
     _portalController.dispose();
@@ -196,9 +196,9 @@ class _ARVideoScreenState extends State<ARVideoScreen>
               enablePlaneRenderer: true,
             )
           else
-            const Center(
+            Center(
               child: Padding(
-                padding: EdgeInsets.all(32.0),
+                padding: const EdgeInsets.all(32.0),
                 child: Text(
                   'AR Core is only supported on Android devices. Enjoy fallback view or check compatibility.',
                   textAlign: TextAlign.center,
@@ -366,8 +366,8 @@ class _ARVideoScreenState extends State<ARVideoScreen>
           _videoService.state == ARVideoState.playing ? Icons.pause : Icons.play_arrow,
           () {
             _videoService.state == ARVideoState.playing
-                ? _syncService.pause()
-                : _syncService.resume();
+                ? _syncService?.pause()
+                : _syncService?.resume();
             setState(() {});
           },
         ),

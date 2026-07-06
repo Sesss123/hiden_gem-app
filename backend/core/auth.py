@@ -83,7 +83,7 @@ class FirebaseAuthService:
             logger.error(f"Error verifying Firebase token: {e}")
             raise HTTPException(
                 status_code=401,
-                detail=f"Invalid authentication credentials: {str(e)}"
+                detail="Invalid authentication token."
             )
 
 def verify_firebase_token(id_token: str):

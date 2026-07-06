@@ -194,8 +194,8 @@ class _ARContentPreviewScreenState extends State<ARContentPreviewScreen> {
                           Icons.history_edu,
                           color: AppPalette.rust,
                           size: 64,
-                          shadows: const [
-                            Shadow(color: AppTheme.colors.black, blurRadius: 10, offset: Offset(2, 2))
+                          shadows: [
+                            Shadow(color: AppTheme.colors.black, blurRadius: 10, offset: const Offset(2, 2))
                           ],
                         ),
                         const SizedBox(height: 12),
@@ -207,8 +207,8 @@ class _ARContentPreviewScreenState extends State<ARContentPreviewScreen> {
                             fontSize: 30,
                             fontWeight: FontWeight.bold,
                             letterSpacing: 4,
-                            shadows: const [
-                              Shadow(color: AppTheme.colors.black, blurRadius: 15, offset: Offset(2, 2))
+                            shadows: [
+                              Shadow(color: AppTheme.colors.black, blurRadius: 15, offset: const Offset(2, 2))
                             ],
                           ),
                         ),

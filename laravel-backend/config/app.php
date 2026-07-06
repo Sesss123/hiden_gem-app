@@ -125,6 +125,11 @@ return [
 
     'api_key' => env('API_KEY'),
 
+    'python_backend_url' => env('PYTHON_BACKEND_URL', 'http://localhost:8000'),
+    'internal_bridge_key' => env('INTERNAL_BRIDGE_KEY'),
+    'ai_plan_timeout' => (int) env('AI_PLAN_TIMEOUT', 30),
+    'ai_rec_timeout' => (int) env('AI_REC_TIMEOUT', 15),
+
     'cipher' => 'AES-256-CBC',
 
     /*

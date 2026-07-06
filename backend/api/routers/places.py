@@ -76,7 +76,7 @@ async def add_place(
     lng: str = Form(""),
     user_context=Depends(get_current_user),
 ):
-    if not user_context.get("is_authenticated"):
+    if not user_context or not user_context.firebase_uid:
         raise HTTPException(status_code=401, detail="Authentication required to submit places.")
 
     db = await get_mongo_db()
@@ -99,7 +99,7 @@ async def add_place(
         "lat": float(lat) if lat else None,
         "lng": float(lng) if lng else None,
         "status": "pending_review",
-        "submitted_by": user_context.get("uid"),
+        "submitted_by": user_context.firebase_uid,
         "created_at": now,
         "updated_at": now,
         "images": []
@@ -110,7 +110,7 @@ async def add_place(
 
 @router.patch("/places/{place_id}")
 async def update_place(place_id: str, request: Request, user_context=Depends(get_current_user)):
-    if not user_context.get("is_authenticated"):
+    if not user_context or not user_context.firebase_uid:
         raise HTTPException(status_code=401, detail="Authentication required to modify places.")
         
     data = await request.json()
@@ -120,7 +120,7 @@ async def update_place(place_id: str, request: Request, user_context=Depends(get
     if ObjectId.is_valid(place_id):
         query["$or"].append({"_id": ObjectId(place_id)})
 
-    role = user_context.get("role", "user")
+    role = "admin" if user_context.tier == "admin" else "user"
     allowed_fields = {"name", "description", "lat", "lng", "category_id", "district_id"}
     if role == "admin":
         allowed_fields.update({"status", "country", "is_deleted"})

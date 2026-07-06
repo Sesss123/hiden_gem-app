@@ -16,11 +16,11 @@ def get_user_profile(request: Request, user=Depends(get_current_user)):
     cur = conn.cursor()
     try:
         # Count favorites
-        cur.execute("SELECT COUNT(*) FROM user_favorites WHERE user_id = ?", (user["id"],))
+        cur.execute("SELECT COUNT(*) FROM user_favorites WHERE user_id = ?", (user.id,))
         fav_count = cur.fetchone()[0]
         
         # Count history
-        cur.execute("SELECT COUNT(*) FROM user_history WHERE user_id = ?", (user["id"],))
+        cur.execute("SELECT COUNT(*) FROM user_history WHERE user_id = ?", (user.id,))
         history_count = cur.fetchone()[0]
         
         return {
@@ -46,7 +46,7 @@ def get_favorites(request: Request, user=Depends(get_current_user)):
             FROM user_favorites f
             JOIN places p ON f.place_id = p.id
             WHERE f.user_id = ?
-        """, (user["id"],))
+        """, (user.id,))
         rows = cur.fetchall()
         return [dict(row) for row in rows]
     finally:
@@ -59,7 +59,7 @@ def toggle_favorite(request: Request, place_id: str, user=Depends(get_current_us
     conn = get_db_connection()
     cur = conn.cursor()
     try:
-        cur.execute("SELECT id FROM user_favorites WHERE user_id = ? AND place_id = ?", (user["id"], place_id))
+        cur.execute("SELECT id FROM user_favorites WHERE user_id = ? AND place_id = ?", (user.id, place_id))
         existing = cur.fetchone()
         
         if existing:
@@ -70,7 +70,7 @@ def toggle_favorite(request: Request, place_id: str, user=Depends(get_current_us
             fid = str(uuid.uuid4())
             now = datetime.now().isoformat()
             cur.execute("INSERT INTO user_favorites (id, user_id, place_id, created_at) VALUES (?, ?, ?, ?)", 
-                        (fid, user["id"], place_id, now))
+                        (fid, user.id, place_id, now))
             message = "Added to favorites"
             active = True
             
@@ -89,7 +89,7 @@ def log_visit(request: Request, place_id: str, notes: str = "", user=Depends(get
         hid = str(uuid.uuid4())
         now = datetime.now().isoformat()
         cur.execute("INSERT INTO user_history (id, user_id, place_id, visited_at, notes) VALUES (?, ?, ?, ?, ?)", 
-                    (hid, user["id"], place_id, now, notes))
+                    (hid, user.id, place_id, now, notes))
         conn.commit()
         return {"message": "Visit logged"}
     finally:

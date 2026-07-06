@@ -48,18 +48,35 @@ class PlaceController extends Controller
     {
         $data = $this->validatePlace($request);
         
-        // BUG-L004 & BUG-L006: Wrap ID generation, model creation, and image processing in a transaction
-        $place = DB::transaction(function () use ($data, $request) {
-            if (empty($data['id'])) {
-                $data['id'] = $this->generateSmartId($data['category'] ?? 'General', $data['district'] ?? 'SL');
+        $place = null;
+        $maxRetries = 3;
+        $retryCount = 0;
+        
+        while ($retryCount < $maxRetries) {
+            try {
+                // BUG-L004 & BUG-L006: Wrap ID generation, model creation, and image processing in a transaction
+                $place = DB::transaction(function () use ($data, $request) {
+                    if (empty($data['id'])) {
+                        $data['id'] = $this->generateSmartId($data['category'] ?? 'General', $data['district'] ?? 'SL');
+                    }
+
+                    // Creating will trigger PlaceObserver::saving to stamp sync_version
+                    $place = Place::create($data);
+
+                    $this->handleImages($request, $place);
+                    return $place;
+                });
+                break;
+            } catch (\Illuminate\Database\QueryException $e) {
+                // Catch unique constraint collision (23000) and retry after generating next seq ID
+                if ($e->getCode() == 23000 && $retryCount < $maxRetries - 1) {
+                    $retryCount++;
+                    $data['id'] = null; // force regeneration on next attempt
+                    continue;
+                }
+                throw $e;
             }
-
-            // Creating will trigger PlaceObserver::saving to stamp sync_version
-            $place = Place::create($data);
-
-            $this->handleImages($request, $place);
-            return $place;
-        });
+        }
 
         return redirect()->route('admin.places.index')->with('success', "Place '{$place->name}' created successfully.");
     }

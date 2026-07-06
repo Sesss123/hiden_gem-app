@@ -1,5 +1,6 @@
 import logging
 import asyncio
+from datetime import datetime
 from typing import Optional, List, Dict
 from core.mongodb import get_mongo_db
 from pipeline.ai_extractor import AIExtractor
@@ -99,7 +100,7 @@ class ImageRepairService:
                 "$set": {
                     "external_image_url": best_candidate,
                     "vision_metadata": best_metadata,
-                    "updated_at": asyncio.get_event_loop().time() # or datetime.utcnow
+                    "updated_at": datetime.utcnow()
                 }
             })
             

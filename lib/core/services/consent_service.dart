@@ -43,7 +43,7 @@ class ConsentService {
         },
       );
     } catch (e) {
-      SecureLogger.error("Error in ConsentService init", e);
+      SecureLogger.error("Error in ConsentService init: $e");
       _initializeAds();
     }
   }
@@ -79,7 +79,7 @@ class ConsentService {
       MobileAds.instance.initialize();
       SecureLogger.info("MobileAds initialized after consent check.");
     } catch (e) {
-      SecureLogger.error("MobileAds Init Error", e);
+      SecureLogger.error("MobileAds Init Error: $e");
     }
   }
 }

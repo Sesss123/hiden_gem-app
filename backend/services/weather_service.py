@@ -9,6 +9,7 @@ class WeatherService:
     def __init__(self):
         self.api_key = os.getenv("OPENWEATHERMAP_API_KEY")
         self.base_url = "https://api.openweathermap.org/data/2.5/weather"
+        self.client = httpx.AsyncClient()
 
     async def get_weather_for_district(self, district: str) -> Dict[str, Any]:
         """
@@ -19,25 +20,24 @@ class WeatherService:
             return self._simulate_weather(district)
 
         try:
-            async with httpx.AsyncClient() as client:
-                params = {
-                    "q": f"{district},LK",
-                    "appid": self.api_key,
-                    "units": "metric"
+            params = {
+                "q": f"{district},LK",
+                "appid": self.api_key,
+                "units": "metric"
+            }
+            response = await self.client.get(self.base_url, params=params)
+            if response.status_code == 200:
+                data = response.json()
+                return {
+                    "temp": data["main"]["temp"],
+                    "condition": data["weather"][0]["main"],
+                    "description": data["weather"][0]["description"],
+                    "humidity": data["main"]["humidity"],
+                    "is_simulated": False,
+                    "monsoon_advice": self._get_monsoon_advice(district)
                 }
-                response = await client.get(self.base_url, params=params)
-                if response.status_code == 200:
-                    data = response.json()
-                    return {
-                        "temp": data["main"]["temp"],
-                        "condition": data["weather"][0]["main"],
-                        "description": data["weather"][0]["description"],
-                        "humidity": data["main"]["humidity"],
-                        "is_simulated": False,
-                        "monsoon_advice": self._get_monsoon_advice(district)
-                    }
-                else:
-                    return self._simulate_weather(district)
+            else:
+                return self._simulate_weather(district)
         except Exception as e:
             logger.error(f"❌ Weather API Error: {e}")
             return self._simulate_weather(district)

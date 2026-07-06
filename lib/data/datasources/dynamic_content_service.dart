@@ -38,7 +38,7 @@ class DynamicContentService {
         }
       }
     } catch (e) {
-      SecureLogger.error("Dynamic events fetch failed, checking cache or local", e);
+      SecureLogger.error("Dynamic events fetch failed, checking cache or local: $e");
       final String? cachedData = TripCacheService.getGlobalData('events');
       if (cachedData != null) {
         return List<Map<String, dynamic>>.from(json.decode(cachedData));
@@ -59,7 +59,7 @@ class DynamicContentService {
         return json.decode(response.body);
       }
     } catch (e) {
-      SecureLogger.error("Remote config fetch failed", e);
+      SecureLogger.error("Remote config fetch failed: $e");
     }
     
     // Default config

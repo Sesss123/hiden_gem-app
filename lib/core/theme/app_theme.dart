@@ -234,7 +234,7 @@ class AppTheme {
     brightness: Brightness.light,
     primaryColor: AppPalette.rust,
     scaffoldBackgroundColor: AppPalette.bg,
-    colorScheme: const ColorScheme.light(
+    colorScheme: ColorScheme.light(
       primary: AppPalette.rust,
       secondary: AppPalette.earth,
       surface: AppPalette.surface,
@@ -276,7 +276,7 @@ class AppTheme {
         side: BorderSide(color: AppPalette.ink.withValues(alpha: 0.07), width: 1),
       ),
     ),
-    floatingActionButtonTheme: const FloatingActionButtonThemeData(
+    floatingActionButtonTheme: FloatingActionButtonThemeData(
       backgroundColor: AppPalette.rust,
       foregroundColor: AppTheme.colors.white,
     ),
@@ -289,7 +289,7 @@ class AppTheme {
     brightness: Brightness.dark,
     primaryColor: AppPaletteDark.gem,
     scaffoldBackgroundColor: AppPaletteDark.bg,
-    colorScheme: const ColorScheme.dark(
+    colorScheme: ColorScheme.dark(
       primary: AppPaletteDark.gem,
       secondary: AppPaletteDark.gold,
       surface: AppPaletteDark.surface,
@@ -331,7 +331,7 @@ class AppTheme {
         side: BorderSide(color: AppTheme.colors.white.withValues(alpha: 0.07), width: 1),
       ),
     ),
-    floatingActionButtonTheme: const FloatingActionButtonThemeData(
+    floatingActionButtonTheme: FloatingActionButtonThemeData(
       backgroundColor: AppPaletteDark.gem,
       foregroundColor: AppTheme.colors.black,
     ),

@@ -443,8 +443,17 @@ class _ARViewerScreenState extends State<ARViewerScreen>
 
   Future<void> _captureARPhoto() async {
     // 1. Check permissions first
-    final status = await Permission.storage.request();
-    if (status.isDenied) {
+    PermissionStatus status;
+    if (Platform.isAndroid) {
+      status = await Permission.photos.request();
+      if (status.isDenied) {
+        status = await Permission.storage.request();
+      }
+    } else {
+      status = await Permission.photos.request();
+    }
+
+    if (status.isDenied && !status.isLimited && !status.isGranted) {
       _showError("Gallery permission denied");
       return;
     }
@@ -538,7 +547,9 @@ class _ARViewerScreenState extends State<ARViewerScreen>
           ),
         ],
       ),
-    );
+    ).then((_) {
+      controller.dispose();
+    });
   }
 
   Future<void> _hostSession() async {
@@ -922,16 +933,18 @@ class _ARViewerScreenState extends State<ARViewerScreen>
   );
 
   Widget _ctrlBtn(IconData icon, String label, VoidCallback onTap,
-      {Color color = AppTheme.colors.white}) =>
-      GestureDetector(
-        onTap: onTap,
-        child: Column(mainAxisSize: MainAxisSize.min, children: [
-          _pill(padding: const EdgeInsets.all(12),
-              child: Icon(icon, color: color, size: 22)),
-          const SizedBox(height: 4),
-          Text(label, style: GoogleFonts.inter(color: AppTheme.colors.white70, fontSize: 10)),
-        ]),
-      );
+      {Color? color}) {
+    final actualColor = color ?? AppTheme.colors.white;
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(mainAxisSize: MainAxisSize.min, children: [
+        _pill(padding: const EdgeInsets.all(12),
+            child: Icon(icon, color: actualColor, size: 22)),
+        const SizedBox(height: 4),
+        Text(label, style: GoogleFonts.inter(color: AppTheme.colors.white70, fontSize: 10)),
+      ]),
+    );
+  }
 
   // ──────────────────────────── HOTSPOTS ────────────────────────────────────
   List<Widget> _hotspotLabels() =>
@@ -1576,18 +1589,21 @@ class _ARViewerScreenState extends State<ARViewerScreen>
     }
   }
 
-  Widget _circleBtn(IconData icon, VoidCallback onTap, {Color color = AppTheme.colors.white}) => GestureDetector(
-    onTap: onTap,
-    child: Container(
-      width: 44, height: 44,
-      decoration: BoxDecoration(
-        color: AppTheme.colors.black45,
-        shape: BoxShape.circle,
-        border: Border.all(color: AppTheme.colors.white24, width: 0.5)
+  Widget _circleBtn(IconData icon, VoidCallback onTap, {Color? color}) {
+    final actualColor = color ?? AppTheme.colors.white;
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 44, height: 44,
+        decoration: BoxDecoration(
+          color: AppTheme.colors.black45,
+          shape: BoxShape.circle,
+          border: Border.all(color: AppTheme.colors.white24, width: 0.5)
+        ),
+        child: Icon(icon, color: actualColor, size: 24)
       ),
-      child: Icon(icon, color: color, size: 24)
-    ),
-  );
+    );
+  }
 }
 
 extension on double {

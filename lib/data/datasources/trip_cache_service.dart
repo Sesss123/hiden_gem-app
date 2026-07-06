@@ -72,12 +72,12 @@ class TripCacheService {
           final key = Hive.generateSecureKey();
           await secureStorage.write(key: 'tripme_hive_aes', value: base64UrlEncode(key));
           cipher = HiveAesCipher(key);
-        } catch (e, st) { SecureLogger.error("Exception caught", e, st); }
+        } catch (e, st) { SecureLogger.error("Exception caught: $e\n$st"); }
       }
 
       _isInitialized = await _openBoxes(cipher);
     } catch (e) {
-      SecureLogger.error("CRITICAL: Hive init failed", e);
+      SecureLogger.error("CRITICAL: Hive init failed: $e");
       _isInitialized = false;
     }
   }
@@ -102,7 +102,7 @@ class TripCacheService {
       }
       return true;
     } catch (e) {
-      SecureLogger.error("Failed to open encrypted Hive boxes. Deleting existing unencrypted data to upgrade.", e);
+      SecureLogger.error("Failed to open encrypted Hive boxes. Deleting existing unencrypted data to upgrade.: $e");
       try {
         await Hive.deleteBoxFromDisk(_lastPlanBox);
         await Hive.deleteBoxFromDisk(_savedPlansBox);
@@ -253,7 +253,7 @@ class TripCacheService {
             } else {
               box.delete(key);
             }
-          } catch (e, st) { SecureLogger.error("Exception caught", e, st); }
+          } catch (e, st) { SecureLogger.error("Exception caught: $e\n$st"); }
         }
       }
       // Newest first
@@ -279,7 +279,7 @@ class TripCacheService {
           } else {
             box.delete(key);
           }
-        } catch (e, st) { SecureLogger.error("Exception caught", e, st); }
+        } catch (e, st) { SecureLogger.error("Exception caught: $e\n$st"); }
       }
       // Newest first
       entries.sort((a, b) =>
@@ -394,7 +394,7 @@ class TripCacheService {
     try {
       final box = Hive.box<String>(_globalDataBox);
       box.put('${key}_last_check', DateTime.now().millisecondsSinceEpoch.toString());
-    } catch (e, st) { SecureLogger.error("Exception caught", e, st); }
+    } catch (e, st) { SecureLogger.error("Exception caught: $e\n$st"); }
   }
 
   static bool shouldCheckServer(String key, {Duration ttl = const Duration(hours: 12)}) {

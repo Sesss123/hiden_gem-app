@@ -108,7 +108,7 @@ class EncryptionUtil {
       // Final Format: IV:Cipher:Signature
       return '$payload:${signature.toString()}';
     } catch (e) {
-      SecureLogger.error("Encryption Failure.", e);
+      SecureLogger.error("Encryption Failure.: $e");
       throw StateError("Encryption failed: $e");
     }
   }
@@ -130,7 +130,7 @@ class EncryptionUtil {
       
       return '$payload:${signature.toString()}';
     } catch (e) {
-      SecureLogger.error("Encryption Failure Sync.", e);
+      SecureLogger.error("Encryption Failure Sync.: $e");
       throw StateError("Encryption sync failed: $e");
     }
   }
@@ -167,7 +167,7 @@ class EncryptionUtil {
       
       return encrypter.decrypt64(cipherText, iv: iv);
     } catch (e) {
-      SecureLogger.error("Security Decryption Failure!", e);
+      SecureLogger.error("Security Decryption Failure!: $e");
       return '{}';
     }
   }

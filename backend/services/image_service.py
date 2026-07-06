@@ -2,6 +2,7 @@ import os
 import uuid
 import shutil
 import logging
+import asyncio
 from PIL import Image
 from fastapi import UploadFile, HTTPException
 
@@ -28,7 +29,7 @@ def get_absolute_url(rel_path: str, base_url: str = None) -> str:
     api_url = os.getenv("API_URL", "http://localhost:8000")
     return f"{api_url.rstrip('/')}/{rel_path.lstrip('/')}"
 
-def process_image(file: UploadFile, place_id: str, index: int):
+async def process_image(file: UploadFile, place_id: str, index: int):
     ext = os.path.splitext(file.filename or "")[1].lower()
     if ext not in ALLOWED_EXTENSIONS:
         raise HTTPException(status_code=400, detail="Unsupported image file format.")
@@ -38,19 +39,29 @@ def process_image(file: UploadFile, place_id: str, index: int):
     rel_path = os.path.join(UPLOAD_DIR, filename)
     abs_path = os.path.join(os.getcwd(), rel_path)
     
-    with open(abs_path, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
+    loop = asyncio.get_event_loop()
+    
+    # Offload blocking write to executor
+    def _write_file():
+        with open(abs_path, "wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
+            
+    await loop.run_in_executor(None, _write_file)
     
     # thumbnail
     thumb_filename = f"{file_uuid}_thumb.jpg"
     thumb_rel = os.path.join("uploads", "thumbnails", thumb_filename)
     thumb_abs = os.path.join(os.getcwd(), thumb_rel)
     
-    try:
+    # Offload PIL image processing and thumbnail save to executor
+    def _process_pil():
         with Image.open(abs_path) as img:
             img.verify()  # Verify image integrity
         with Image.open(abs_path) as img:
             img.convert('RGB').save(thumb_abs, "JPEG", quality=80, optimize=True)
+            
+    try:
+        await loop.run_in_executor(None, _process_pil)
     except Exception as e:
         logger.warning(f"Thumbnail generation or image verification failed for {filename}: {e}")
         thumb_rel = rel_path # fallback

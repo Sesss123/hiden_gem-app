@@ -35,7 +35,7 @@ class BusinessDiscoveryService {
         ..sort((a, b) => a.distanceKm.compareTo(b.distanceKm));
         
     } catch (e) {
-      SecureLogger.error("Error fetching nearby business partners", e);
+      SecureLogger.error("Error fetching nearby business partners: $e");
       return [];
     }
   }

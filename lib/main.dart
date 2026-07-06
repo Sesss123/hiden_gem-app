@@ -83,7 +83,7 @@ void main() async {
         FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
       }
     } catch (e) {
-      SecureLogger.error("Suppressing Crashlytics error during reporting", e);
+      SecureLogger.error("Suppressing Crashlytics error during reporting: $e");
     }
     
     // 2. Log to Analytics (Safe for Web/Mobile)
@@ -110,7 +110,7 @@ void main() async {
         FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
       }
     } catch (e) {
-      SecureLogger.error("Suppressing Crashlytics error in dispatcher", e);
+      SecureLogger.error("Suppressing Crashlytics error in dispatcher: $e");
     }
     return true;
   };
@@ -125,7 +125,7 @@ void main() async {
     try {
       options = DefaultFirebaseOptions.currentPlatform;
     } catch (e) {
-      SecureLogger.error("Firebase config not available for this platform", e);
+      SecureLogger.error("Firebase config not available for this platform: $e");
     }
 
     await Future.wait([
@@ -144,7 +144,7 @@ void main() async {
     await UserPreferenceService.ensureProfileLoaded();
     SecureLogger.info("Core storage and Firebase ready.");
   } catch (e) {
-    SecureLogger.error("CRITICAL Startup Init Error", e);
+    SecureLogger.error("CRITICAL Startup Init Error: $e");
   }
 
   // Apply Strict HTTPS Security and SSL Pinning configuration globally
@@ -214,7 +214,7 @@ Future<InitializationResult> performInitialization() async {
   try {
     AppConfig.validate();
   } catch (e) {
-    SecureLogger.error("Validation error", e);
+    SecureLogger.error("Validation error: $e");
     return InitializationResult(
       hiveSuccess: storageStatus,
       firebaseSuccess: false,
@@ -230,7 +230,7 @@ Future<InitializationResult> performInitialization() async {
     SecureLogger.info("Encryption system initialized.");
 
   } catch (e) {
-    SecureLogger.error("Encryption init error", e);
+    SecureLogger.error("Encryption init error: $e");
   }
 
   try {
@@ -244,7 +244,7 @@ Future<InitializationResult> performInitialization() async {
       }
     }
   } catch (e, st) {
-    SecureLogger.error("Jailbreak verification failed, continuing safely", e, st);
+    SecureLogger.error("Jailbreak verification failed, continuing safely: $e\n$st");
   }
 
   if (isCompromised) {
@@ -260,7 +260,7 @@ Future<InitializationResult> performInitialization() async {
       try {
         options = DefaultFirebaseOptions.currentPlatform;
       } catch (e) {
-        SecureLogger.error("Firebase config not available for this platform", e);
+        SecureLogger.error("Firebase config not available for this platform: $e");
       }
       if (options != null) {
         await Firebase.initializeApp(
@@ -282,7 +282,7 @@ Future<InitializationResult> performInitialization() async {
           await AppCheckConfig.initialize()
               .timeout(const Duration(seconds: 8));
         } catch (e) {
-          SecureLogger.error("AppCheck initialization error", e);
+          SecureLogger.error("AppCheck initialization error: $e");
         }
         
         if (!kIsWeb) {
@@ -291,7 +291,7 @@ Future<InitializationResult> performInitialization() async {
                 .setCrashlyticsCollectionEnabled(true)
                 .timeout(const Duration(seconds: 5));
           } catch (e) {
-            SecureLogger.error("Crashlytics setup error", e);
+            SecureLogger.error("Crashlytics setup error: $e");
           }
         }
 
@@ -301,7 +301,7 @@ Future<InitializationResult> performInitialization() async {
         try {
           await UserPreferenceService.syncToFirestore();
         } catch (e) {
-          SecureLogger.error("Failed to sync profile to Firestore at startup", e);
+          SecureLogger.error("Failed to sync profile to Firestore at startup: $e");
         }
 
         // 🛡️ ZENITH STRESS DEFENSE: FINAL HARDENING (Points 11 & 12)
@@ -331,10 +331,10 @@ Future<InitializationResult> performInitialization() async {
               .timeout(const Duration(seconds: 10));
           SecureLogger.info("[ZenithSecurity] Stack initialized. Risk: ${ZenithSecurityFacade().shield.riskScore}");
         } catch (e) {
-          SecureLogger.error("[ZenithSecurity] Init failed (non-critical)", e);
+          SecureLogger.error("[ZenithSecurity] Init failed (non-critical): $e");
         }
       } on Exception catch (e) {
-        SecureLogger.error("Firebase init error. Proceeding in offline mode.", e);
+        SecureLogger.error("Firebase init error. Proceeding in offline mode.: $e");
       }
     } else {
       SecureLogger.warning("Skipping Firebase initialization due to missing config.");

@@ -42,26 +42,50 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
     _initCamera();
   }
 
+  bool _isInitializingCamera = false;
+
   Future<void> _initCamera() async {
-    final status = await Permission.camera.request();
-    if (!status.isGranted) return;
-
-    final cameras = await availableCameras();
-    if (cameras.isEmpty) return;
-
-    _controller = CameraController(
-      cameras.first,
-      ResolutionPreset.high,
-      enableAudio: false,
-    );
+    if (_isInitializingCamera) return;
+    _isInitializingCamera = true;
 
     try {
-      await _controller!.initialize();
-      if (mounted) {
+      final status = await Permission.camera.request();
+      if (!status.isGranted) {
+        _isInitializingCamera = false;
+        return;
+      }
+
+      final cameras = await availableCameras();
+      if (cameras.isEmpty) {
+        _isInitializingCamera = false;
+        return;
+      }
+
+      // Dispose existing controller if any
+      final oldController = _controller;
+      if (oldController != null) {
+        _controller = null;
+        if (mounted) {
+          setState(() => _isInit = false);
+        }
+        await oldController.dispose();
+      }
+
+      final controller = CameraController(
+        cameras.first,
+        ResolutionPreset.high,
+        enableAudio: false,
+      );
+      _controller = controller;
+
+      await controller.initialize();
+      if (mounted && _controller == controller) {
         setState(() => _isInit = true);
       }
     } catch (e) {
       debugPrint("Camera init error: $e");
+    } finally {
+      _isInitializingCamera = false;
     }
   }
 
@@ -71,7 +95,7 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
     _voiceRecipeService.dispose();
     try {
       WidgetsBinding.instance.removeObserver(this);
-    } catch (e, st) { SecureLogger.error("Exception caught", e, st); }
+    } catch (e, st) { SecureLogger.error("Exception caught: $e\n$st"); }
     final controller = _controller;
     _controller = null;
     _isInit = false;
