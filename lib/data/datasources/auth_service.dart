@@ -7,6 +7,8 @@ import '../../core/services/brute_force_service.dart';
 import '../../core/utils/secure_logger.dart';
 import 'user_preference_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -157,6 +159,32 @@ class AuthService {
       }
     } catch (e) {
       SecureLogger.warning("Could not sync FCM token during login: $e", tag: "Auth", isBackground: true);
+    }
+    
+    // BUG-QA-001 Fix: Sync Firebase Auth with Laravel Sanctum
+    await _syncWithLaravelSanctum(user);
+  }
+
+  Future<void> _syncWithLaravelSanctum(User user) async {
+    try {
+      final idToken = await user.getIdToken();
+      if (idToken == null) return;
+      
+      final response = await http.post(
+        Uri.parse('https://api.hiddengemssl.com/api/v1/auth/firebase-login'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'firebase_token': idToken}),
+      );
+      
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final token = data['data']['access_token'];
+        if (token != null) {
+          await UserPreferenceService.saveAuthToken(token);
+        }
+      }
+    } catch (e) {
+      SecureLogger.error("Error syncing with Sanctum: $e");
     }
   }
 

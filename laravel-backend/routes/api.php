@@ -31,6 +31,7 @@ Route::prefix('v1')->group(function () {
     Route::middleware('throttle:5,1')->group(function () {
         Route::post('/auth/register', [AuthController::class, 'register']);
         Route::post('/auth/login', [AuthController::class, 'login']);
+        Route::post('/auth/firebase-login', [AuthController::class, 'firebaseLogin']);
     });
 
     // Protected Auth & Wishlist Routes (Require Sanctum Bearer Token)

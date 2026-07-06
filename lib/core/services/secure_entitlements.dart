@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/foundation.dart';
 import 'integrity_shield.dart';
 import 'behavior_analytics_engine.dart';
@@ -120,6 +122,12 @@ class SecureEntitlements {
   void forceRefresh() {
     _serverClaimsCache = null;
     _cacheExpiry = null;
+    final uid = _auth.currentUser?.uid;
+    if (uid != null) {
+      SharedPreferences.getInstance().then((prefs) {
+        prefs.remove('secure_entitlements_cache_$uid');
+      });
+    }
   }
 
   // --- Internal ---
@@ -135,13 +143,42 @@ class SecureEntitlements {
       if (_serverClaimsCache!.containsKey('premiumExpiresAt')) {
         final expiryMs = _serverClaimsCache!['premiumExpiresAt'] as int?;
         if (expiryMs != null && DateTime.now().millisecondsSinceEpoch > expiryMs) {
-          debugPrint('[SecureEntitlements] Cached premiumExpiresAt passed. Invalidating cache.');
+          debugPrint('[SecureEntitlements] Cached premiumExpiresAt passed. Invalidating memory cache.');
           forceRefresh();
         } else {
           return _serverClaimsCache;
         }
       } else {
         return _serverClaimsCache;
+      }
+    }
+
+    // Serve from SharedPreferences disk cache (TTL: 24 hours) to drastically reduce Cloud Function costs
+    final prefs = await SharedPreferences.getInstance();
+    final cachedStr = prefs.getString('secure_entitlements_cache_$uid');
+    if (cachedStr != null) {
+      try {
+        final Map<String, dynamic> diskCache = json.decode(cachedStr);
+        final expiry = diskCache['__cacheExpiry'] as int?;
+        if (expiry != null && DateTime.now().millisecondsSinceEpoch < expiry) {
+          // Verify signature isn't expired
+          if (diskCache.containsKey('premiumExpiresAt')) {
+            final premiumExpiryMs = diskCache['premiumExpiresAt'] as int?;
+            if (premiumExpiryMs == null || DateTime.now().millisecondsSinceEpoch < premiumExpiryMs) {
+              _serverClaimsCache = diskCache;
+              _cacheExpiry = DateTime.fromMillisecondsSinceEpoch(expiry);
+              debugPrint('[SecureEntitlements] Served from SharedPreferences disk cache.');
+              return _serverClaimsCache;
+            }
+          } else {
+            _serverClaimsCache = diskCache;
+            _cacheExpiry = DateTime.fromMillisecondsSinceEpoch(expiry);
+            debugPrint('[SecureEntitlements] Served from SharedPreferences disk cache.');
+            return _serverClaimsCache;
+          }
+        }
+      } catch (e) {
+        debugPrint('[SecureEntitlements] Error reading disk cache: $e');
       }
     }
 
@@ -158,6 +195,10 @@ class SecureEntitlements {
       // to prove authenticity (Point 5).
       _serverClaimsCache = data;
       _cacheExpiry = DateTime.now().add(const Duration(minutes: 5));
+
+      // Save to disk cache for 24 hours
+      data['__cacheExpiry'] = DateTime.now().add(const Duration(hours: 24)).millisecondsSinceEpoch;
+      prefs.setString('secure_entitlements_cache_$uid', json.encode(data));
       
       // Auto-heal local state if server says they are clearly NOT premium
       if (_serverClaimsCache!['isPremium'] != true && 

@@ -5,19 +5,19 @@
  * migrated from the mobile app to prevent client-side tampering.
  */
 
-import * as functions from 'firebase-functions';
+import * as functions from 'firebase-functions/v1';
 import * as admin from 'firebase-admin';
 import * as crypto from 'crypto';
 
 admin.initializeApp();
 
-const HMAC_SECRET = process.env.HMAC_SECRET || functions.config().security?.hmac_secret || 'ZENITH_EXPIRY_SIGN_KEY_2026'; // Security Fix: Using env secrets/config
+const HMAC_SECRET = process.env.HMAC_SECRET || 'ZENITH_EXPIRY_SIGN_KEY_2026'; // Security Fix: Using env secrets/config
 
 /**
  * 🛡️ verify_entitlements
  * Decides if a user is truly premium.
  */
-export const verify_entitlements = functions.https.onCall(async (data, context) => {
+export const verify_entitlements = functions.https.onCall(async (data: any, context: functions.https.CallableContext) => {
     if (!context.auth) throw new functions.https.HttpsError('unauthenticated', 'Nexus login required.');
     
     const uid = context.auth.uid;
@@ -58,7 +58,7 @@ export const verify_entitlements = functions.https.onCall(async (data, context) 
  * 👮 report_forensic_signals
  * Processes raw signals from the app and calculates the Backend Risk Score.
  */
-export const report_forensic_signals = functions.https.onCall(async (data, context) => {
+export const report_forensic_signals = functions.https.onCall(async (data: any, context: functions.https.CallableContext) => {
     if (!context.auth) return { riskScore: 100 }; // Unauth reporting is critical risk
     
     const uid = context.auth.uid;
@@ -92,7 +92,7 @@ export const report_forensic_signals = functions.https.onCall(async (data, conte
  * 💰 revenuecat_webhook
  * Processes incoming RevenueCat events to securely manage Firestore subscriptions.
  */
-export const revenuecat_webhook = functions.https.onRequest(async (req, res) => {
+export const revenuecat_webhook = functions.https.onRequest(async (req: functions.https.Request, res: functions.Response) => {
     const body = req.body;
     const event = body?.event;
 
@@ -200,7 +200,7 @@ export const revenuecat_webhook = functions.https.onRequest(async (req, res) => 
  * ⏰ daily_subscription_safety_net
  * Runs daily to expire old subscriptions and send renewal reminders.
  */
-export const daily_subscription_safety_net = functions.pubsub.schedule('0 0 * * *').onRun(async (context) => {
+export const daily_subscription_safety_net = functions.pubsub.schedule('0 0 * * *').onRun(async (context: functions.EventContext) => {
     const now = new Date();
     const threeDaysFromNow = new Date();
     threeDaysFromNow.setDate(now.getDate() + 3);
@@ -297,3 +297,38 @@ export const daily_subscription_safety_net = functions.pubsub.schedule('0 0 * * 
         }
     }
 });
+
+/**
+ * 📍 detectLocationSpoof
+ * Records a location spoofing incident and flags the user if threshold is reached.
+ */
+export const detectLocationSpoof = functions.https.onCall(async (data: any, context: functions.https.CallableContext) => {
+    if (!context.auth) throw new functions.https.HttpsError('unauthenticated', 'User must be authenticated.');
+
+    const uid = context.auth.uid;
+    const { reason, detectedSpeed, lat, lng } = data;
+
+    const userRef = admin.firestore().collection('users').doc(uid);
+    const postureRef = userRef.collection('security').doc('posture');
+
+    const postureDoc = await postureRef.get();
+    let spoofCount = postureDoc.exists ? (postureDoc.data()?.spoofCount || 0) : 0;
+    
+    spoofCount += 1;
+    const flagged = spoofCount >= 3;
+
+    await postureRef.set({
+        spoofCount,
+        lastSpoofReason: reason,
+        lastSpoofSpeed: detectedSpeed || null,
+        lastSpoofLocation: new admin.firestore.GeoPoint(lat || 0, lng || 0),
+        lastSpoofAt: admin.firestore.FieldValue.serverTimestamp()
+    }, { merge: true });
+
+    if (flagged) {
+        await userRef.set({ isFlagged: true }, { merge: true });
+    }
+
+    return { flagged, spoofCount };
+});
+

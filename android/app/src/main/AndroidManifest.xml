@@ -18,7 +18,7 @@
     <application
         android:label="Hidden Gems SL"
         android:name="${applicationName}"
-        android:icon="@mipmap/launcher_icon"
+        android:icon="@mipmap/ic_launcher"
         android:allowBackup="false"
         android:usesCleartextTraffic="false"
         android:fullBackupOnly="false">

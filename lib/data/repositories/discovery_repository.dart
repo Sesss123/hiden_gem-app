@@ -1,15 +1,12 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:math' as math;
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:firebase_core/firebase_core.dart';
 import '../models/discovery_place.dart';
 import '../datasources/discovery_remote_datasource.dart';
 import '../datasources/discovery_local_datasource.dart';
 import '../../core/utils/secure_logger.dart';
-import '../../core/config/remote_config_service.dart';
 import '../../core/services/delta_sync_service.dart';
 import '../../core/services/sqlite_storage_service.dart';
 import '../../core/utils/result.dart';
@@ -54,32 +51,8 @@ class DiscoveryRepository {
       }
     }
 
-    // 2. GeoHash Firestore check (L1) - if location available and Firebase is ready
-    if (userLat != null && userLng != null && Firebase.apps.isNotEmpty) {
-      try {
-        final position = Position(
-          latitude: userLat, 
-          longitude: userLng, 
-          timestamp: DateTime.now(), 
-          accuracy: 0, 
-          altitude: 0, 
-          heading: 0, 
-          speed: 0, 
-          speedAccuracy: 0, 
-          altitudeAccuracy: 0, 
-          headingAccuracy: 0
-        );
-        places = await _remoteDataSource.fetchNearbyPlacesFirestore(center: position);
-        if (places.isNotEmpty) {
-          SecureLogger.info("Discovery data loaded from Level-1 GeoHash Firestore.");
-          places = await _processPlaces(places, userLat, userLng);
-          _localDataSource.cacheInMemory(cacheKey, places);
-          return Success(places);
-        }
-      } catch (e) {
-        SecureLogger.warning("GeoHash Firestore fetch failed or offline, falling back to SQLite/REST: $e");
-      }
-    }
+    // Level-1 (Firestore GeoHash) has been REMOVED to eliminate massive Firestore billing costs.
+    // The app now relies entirely on Level-2 SQLite + Background Delta Sync for all geo-spatial queries.
 
     // 3. SQLite / Delta Sync check (L2)
     try {
@@ -108,43 +81,19 @@ class DiscoveryRepository {
       SecureLogger.warning("SQLite / Delta sync fetch failed, falling back to L3 REST: $e");
     }
 
-    // 4. REST API / Persistent Cache check (L3) if SQLite returned empty
+    // 4. Fallback to Firestore / Assets if SQLite is completely empty and delta sync failed
     if (places.isEmpty) {
       try {
-        final String? cachedJson = _localDataSource.getCachedPlaces('places');
-        final remoteConfig = await RemoteConfigService.getInstance();
-        final remoteTimestamp = remoteConfig.dataRefreshTimestamp;
-        final localTimestamp = _localDataSource.getCacheTimestamp('places');
-
-        bool useCache = !forceRefresh && cachedJson != null;
-        if (useCache && !_localDataSource.isCacheValid('places', const Duration(hours: 12))) {
-          if (localTimestamp < remoteTimestamp) {
-            useCache = false;
-          }
-        }
-
-        if (useCache) {
-          SecureLogger.info("Discovery data loaded from Level-3 Persistent Cache.");
-          places = await _parsePlaces(json.decode(cachedJson!));
+        SecureLogger.warning("SQLite / Delta Sync empty, falling back to Firestore 'places' collection");
+        places = await _remoteDataSource.fetchAllPlacesFirestore();
+        if (places.isNotEmpty) {
+          SecureLogger.info("Discovery data loaded from Firestore 'places' collection.");
         } else {
-          SecureLogger.info("Fetching discovery data from Level-3 REST API...");
-          final String remoteJson = await _remoteDataSource.fetchPlacesRest();
-          await _localDataSource.cachePlaces('places', remoteJson);
-          places = await _parsePlaces(json.decode(remoteJson));
-        }
-      } catch (e) {
-        SecureLogger.warning("REST/Cache fetch failed, falling back to Firestore places collection: $e");
-        try {
-          places = await _remoteDataSource.fetchAllPlacesFirestore();
-          if (places.isNotEmpty) {
-            SecureLogger.info("Discovery data loaded from Firestore 'places' collection.");
-          } else {
-            places = await _localDataSource.getAssetPlaces();
-          }
-        } catch (e2) {
-          SecureLogger.warning("Firestore fetch failed, falling back to assets: $e2");
           places = await _localDataSource.getAssetPlaces();
         }
+      } catch (e2) {
+        SecureLogger.warning("Firestore fetch failed, falling back to assets: $e2");
+        places = await _localDataSource.getAssetPlaces();
       }
     }
 
@@ -200,16 +149,6 @@ class DiscoveryRepository {
 
   // --- Private Helpers ---
 
-  Future<List<DiscoveryPlace>> _parsePlaces(dynamic data) async {
-    if (data is! List) return [];
-    final list = data.whereType<Map<String, dynamic>>().toList();
-    if (list.length > 50) {
-      return await compute(_parsePlacesIsolate, list);
-    } else {
-      return list.map((j) => DiscoveryPlace.fromJson(j)).toList();
-    }
-  }
-
   Future<List<DiscoveryPlace>> _processPlaces(List<DiscoveryPlace> places, double? lat, double? lng) async {
     if (lat == null || lng == null) return places;
 
@@ -218,10 +157,6 @@ class DiscoveryRepository {
       'lat': lat,
       'lng': lng,
     });
-  }
-
-  static List<DiscoveryPlace> _parsePlacesIsolate(List<Map<String, dynamic>> data) {
-    return data.map((json) => DiscoveryPlace.fromJson(json)).toList();
   }
 
   static double _haversineDistanceKm(double lat1, double lon1, double lat2, double lon2) {

@@ -15,7 +15,10 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // No background tasks scheduled
+        // Automatically repair sync_version for raw SQL inserts
+        $schedule->command('places:repair-sync')
+                 ->everyMinute()
+                 ->withoutOverlapping();
     }
 
     /**

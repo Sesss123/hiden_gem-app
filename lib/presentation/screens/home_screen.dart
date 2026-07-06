@@ -47,36 +47,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   bool _showEventBanner = true;
   List<DiscoveryPlace> _localGems = [];
   bool _imagesPrecached = false;
-  
-  late Timer _bgTimer;
-  int _bgImageIndex = 0;
-  final List<String> _bgImages = [
-    "assets/images/sigiriya_sunset_bg.jpg",
-    "assets/images/ella_nine_arch_bg.jpg",
-    "assets/images/kandy_lake_bg.jpg",
-    "assets/images/galle_fort_bg.jpg",
-    "assets/images/nuwara_eliya_tea_bg.jpg",
-  ];
 
   @override
   void initState() {
     super.initState();
     _checkTodayEvents();
-    _startBgTimer();
     _loadLocalGems();
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    if (!_imagesPrecached) {
-      _imagesPrecached = true;
-      for (final imagePath in _bgImages) {
-        precacheImage(AssetImage(imagePath), context).catchError((e) {
-          SecureLogger.error("Failed to precache background image: $imagePath: $e");
-        });
-      }
-    }
   }
 
   Future<void> _loadLocalGems() async {
@@ -98,19 +79,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     }
   }
 
-  void _startBgTimer() {
-    _bgTimer = Timer.periodic(const Duration(seconds: 4), (timer) {
-      if (mounted) {
-        setState(() {
-          _bgImageIndex = (_bgImageIndex + 1) % _bgImages.length;
-        });
-      }
-    });
-  }
-
   @override
   void dispose() {
-    _bgTimer.cancel();
     super.dispose();
   }
 
@@ -587,30 +557,22 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         background: Stack(
           fit: StackFit.expand,
           children: [
-            OracleUI.heroCrossfade(
-              child: Image.asset(
-                _bgImages[_bgImageIndex],
-                key: ValueKey<int>(_bgImageIndex),
-                fit: BoxFit.cover,
-                width: double.infinity,
-                height: double.infinity,
-                gaplessPlayback: true,
-                errorBuilder: (context, error, stackTrace) => Container(color: Theme.of(context).colorScheme.primary),
-              ),
-            ),
             Container(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    AppTheme.colors.black.withValues(alpha: 0.5),
-                    AppTheme.colors.transparent,
-                    Theme.of(context).scaffoldBackgroundColor.withValues(alpha: 0.8),
+                    AppTheme.colors.orange.shade800,
+                    AppTheme.colors.orange.shade600,
                     Theme.of(context).scaffoldBackgroundColor,
                   ],
-                  stops: const [0.0, 0.4, 0.8, 1.0],
+                  stops: const [0.0, 0.4, 1.0],
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                 ),
+              ),
+              child: const BatikBackground(
+                opacity: 0.05,
+                child: SizedBox.expand(),
               ),
             ),
             Center(

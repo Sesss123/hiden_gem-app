@@ -1,20 +1,10 @@
-import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import '../utils/secure_logger.dart';
 
 class AppConfig {
-  // Audit #15: Helper to decode obfuscated credentials in memory.
-  // NOTE: Base64 encoding is used here ONLY as a layer of basic obfuscation against
-  // automated binary string scanners (e.g., strings/grep tools on compiled APK/IPA binaries),
-  // NOT as cryptographic encryption. In CI/CD production builds, these default placeholders
+  // Audit #15: Replaced pseudo-encryption Base64 with direct strings.
+  // In CI/CD production builds, these default placeholders
   // are overridden via `--dart-define=KEY=VALUE` environment parameters.
-  static String _decryptString(String base64Str) {
-    try {
-      return utf8.decode(base64.decode(base64Str));
-    } catch (_) {
-      return base64Str;
-    }
-  }
 
   static const String laravelUrl = String.fromEnvironment(
     'LARAVEL_BACKEND_URL',
@@ -60,22 +50,22 @@ class AppConfig {
 
   // BUG-113 / Audit #15: Obfuscate raw API keys using base64 wrapper string constants.
   // The default values below are non-production development placeholders overridden by CI/CD.
-  static final String hiddenGemsApiKey = _decryptString(const String.fromEnvironment(
+  static final String hiddenGemsApiKey = const String.fromEnvironment(
     'HIDDEN_GEMS_API_KEY',
-    defaultValue: "ZGV2LWtleS1sb2NhbA==", // Non-prod placeholder: "dev-key-local"
-  ));
+    defaultValue: "dev-key-local", // Non-prod placeholder
+  );
 
   static String get tripMeApiKey => hiddenGemsApiKey;
 
-  static final String sharedSecret = _decryptString(const String.fromEnvironment(
+  static final String sharedSecret = const String.fromEnvironment(
     'HMAC_SECRET',
-    defaultValue: "REVGQVVMVF9OT05fUFJPRF9TRUNSRVQ=", // Non-prod placeholder: "DEFAULT_NON_PROD_SECRET"
-  ));
+    defaultValue: "DEFAULT_NON_PROD_SECRET", // Non-prod placeholder
+  );
 
-  static final String vaultSignKey = _decryptString(const String.fromEnvironment(
+  static final String vaultSignKey = const String.fromEnvironment(
     'VAULT_SIGN_KEY',
-    defaultValue: "SElEREVOX0dFTVNfVjFfU1RBR0lOR19LRVlfU0hISA==", // Non-prod placeholder: "HIDDEN_GEMS_V1_STAGING_KEY_SHHH"
-  ));
+    defaultValue: "HIDDEN_GEMS_V1_STAGING_KEY_SHHH", // Non-prod placeholder
+  );
 
   static const String nodeProxyUrl = String.fromEnvironment(
     'NODE_PROXY_URL',
@@ -87,20 +77,20 @@ class AppConfig {
     defaultValue: "https://cdn.hiddengemssl.com",
   );
 
-  static final String revenueCatApiKeyAndroid = _decryptString(const String.fromEnvironment(
+  static final String revenueCatApiKeyAndroid = const String.fromEnvironment(
     'REVENUECAT_API_KEY_ANDROID',
-    defaultValue: "Z29vZ19leGFtcGxlX2tleQ==", // Non-prod placeholder: "goog_example_key"
-  ));
+    defaultValue: "goog_example_key", // Non-prod placeholder
+  );
 
-  static final String revenueCatApiKeyIos = _decryptString(const String.fromEnvironment(
+  static final String revenueCatApiKeyIos = const String.fromEnvironment(
     'REVENUECAT_API_KEY_IOS',
-    defaultValue: "YXBwbF9leGFtcGxlX2tleQ==", // Non-prod placeholder: "appl_example_key"
-  ));
+    defaultValue: "appl_example_key", // Non-prod placeholder
+  );
 
-  static final String geminiApiKey = _decryptString(const String.fromEnvironment(
+  static final String geminiApiKey = const String.fromEnvironment(
     'GEMINI_API_KEY',
     defaultValue: "",
-  ));
+  );
 
   static const String llmModelName = String.fromEnvironment(
     'LLM_MODEL_NAME',
@@ -112,27 +102,27 @@ class AppConfig {
     defaultValue: "https://generativelanguage.googleapis.com/v1beta",
   );
 
-  static final String weatherApiKey = _decryptString(const String.fromEnvironment(
+  static final String weatherApiKey = const String.fromEnvironment(
     'WEATHER_API_KEY',
     defaultValue: "",
-  ));
+  );
 
   static const bool ragEnabled = true;
 
-  static final String sharedAesKey = _decryptString(const String.fromEnvironment(
+  static final String sharedAesKey = const String.fromEnvironment(
     'SHARED_AES_KEY',
-    defaultValue: "REVGQVVMVF9OT05fUFJPRF9BRVNfS0VZ", // Non-prod placeholder: "DEFAULT_NON_PROD_AES_KEY"
-  ));
+    defaultValue: "DEFAULT_NON_PROD_AES_KEY", // Non-prod placeholder
+  );
 
-  static final String sharedHmacKey = _decryptString(const String.fromEnvironment(
+  static final String sharedHmacKey = const String.fromEnvironment(
     'SHARED_HMAC_KEY',
-    defaultValue: "REVGQVVMVF9OT05fUFJPRF9ITUFDX0tFWQ==", // Non-prod placeholder: "DEFAULT_NON_PROD_HMAC_KEY"
-  ));
+    defaultValue: "DEFAULT_NON_PROD_HMAC_KEY", // Non-prod placeholder
+  );
 
-  static final String hmacExpirySecret = _decryptString(const String.fromEnvironment(
+  static final String hmacExpirySecret = const String.fromEnvironment(
     'HMAC_EXPIRY_SECRET',
-    defaultValue: "REVGQVVMVF9OT05fUFJPRF9FWFBJUllfU0VDUkVU", // Non-prod placeholder: "DEFAULT_NON_PROD_EXPIRY_SECRET"
-  ));
+    defaultValue: "DEFAULT_NON_PROD_EXPIRY_SECRET", // Non-prod placeholder
+  );
 
   static const String appStoreId = String.fromEnvironment(
     'APP_STORE_ID',

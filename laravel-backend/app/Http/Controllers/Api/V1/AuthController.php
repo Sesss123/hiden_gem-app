@@ -107,4 +107,82 @@ class AuthController extends Controller
             'message' => 'Successfully logged out and token revoked.',
         ]);
     }
+
+    /**
+     * Authenticate a user via a Firebase ID token.
+     */
+    public function firebaseLogin(Request $request)
+    {
+        $request->validate([
+            'firebase_token' => 'required|string',
+        ]);
+
+        try {
+            // Instantiate the Kreait Firebase Factory
+            $credentials = env('FIREBASE_CREDENTIALS'); 
+            
+            $factory = new \Kreait\Firebase\Factory();
+            
+            if ($credentials) {
+                // BUG-QA-003 fix: Use environment variable JSON string if available
+                $factory = $factory->withServiceAccount(json_decode($credentials, true));
+            } else {
+                // Fallback to path if the string isn't set
+                $path = base_path(config('firebase.credentials', 'config/firebase-credentials.json'));
+                if (file_exists($path)) {
+                    $factory = $factory->withServiceAccount($path);
+                } else {
+                    // For local development bypass or if not configured properly, just decode the token payload insecurely if needed,
+                    // but we should fail secure.
+                    throw new \Exception("Firebase credentials not configured.");
+                }
+            }
+
+            $auth = $factory->createAuth();
+
+            // Verify the token
+            $verifiedIdToken = $auth->verifyIdToken($request->firebase_token);
+            $uid = $verifiedIdToken->claims()->get('sub');
+            $email = $verifiedIdToken->claims()->get('email');
+            $name = $verifiedIdToken->claims()->get('name') ?? 'Firebase User';
+
+            // Find or create the user
+            $user = User::firstOrCreate(
+                ['firebase_uid' => $uid],
+                [
+                    'email' => $email,
+                    'name' => $name,
+                    'password' => Hash::make(\Illuminate\Support\Str::random(32)),
+                    'role' => 'tourist',
+                    'subscription_tier' => 'Free',
+                ]
+            );
+
+            // Limit token bloat
+            $excessTokens = $user->tokens()->orderBy('created_at', 'desc')->skip(4)->pluck('id');
+            if ($excessTokens->isNotEmpty()) {
+                $user->tokens()->whereIn('id', $excessTokens)->delete();
+            }
+
+            $token = $user->createToken('auth_token')->plainTextToken;
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Firebase login successful!',
+                'data' => [
+                    'user' => $user,
+                    'access_token' => $token,
+                    'token_type' => 'Bearer',
+                ],
+            ]);
+
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error("Firebase Login Error: " . $e->getMessage());
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Invalid or expired Firebase token.',
+                'debug_message' => $e->getMessage()
+            ], 401);
+        }
+    }
 }

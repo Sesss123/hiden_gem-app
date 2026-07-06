@@ -1,6 +1,7 @@
 import 'dart:io' as io;
 import 'package:flutter/foundation.dart' show kIsWeb, debugPrint;
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -22,15 +23,44 @@ class FirebaseStorageService {
       late TaskSnapshot uploadTask;
       if (kIsWeb) {
         final bytes = await file.readAsBytes();
-        uploadTask = await ref.putData(
+        
+        // Compress for web
+        final compressedBytes = await FlutterImageCompress.compressWithList(
           bytes,
-          SettableMetadata(contentType: 'image/jpeg'),
+          minWidth: 1080,
+          minHeight: 1080,
+          quality: 80,
+          format: CompressFormat.webp,
+        );
+
+        uploadTask = await ref.putData(
+          compressedBytes,
+          SettableMetadata(contentType: 'image/webp'),
         );
       } else {
-        uploadTask = await ref.putFile(
-          io.File(file.path),
-          SettableMetadata(contentType: 'image/jpeg'),
+        // Compress for mobile
+        final tempPath = '${io.Directory.systemTemp.path}/$fileName.webp';
+        final compressedFile = await FlutterImageCompress.compressAndGetFile(
+          file.path,
+          tempPath,
+          minWidth: 1080,
+          minHeight: 1080,
+          quality: 80,
+          format: CompressFormat.webp,
         );
+
+        if (compressedFile != null) {
+          uploadTask = await ref.putFile(
+            io.File(compressedFile.path),
+            SettableMetadata(contentType: 'image/webp'),
+          );
+        } else {
+          // Fallback if compression fails
+          uploadTask = await ref.putFile(
+            io.File(file.path),
+            SettableMetadata(contentType: 'image/jpeg'),
+          );
+        }
       }
 
       if (uploadTask.state == TaskState.success) {

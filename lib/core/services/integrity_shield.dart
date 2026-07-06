@@ -78,10 +78,9 @@ class IntegrityShield {
         _addSignal('spectre_dev_mode_detected', score: 30);
       }
       
-      // If they are debugging a RELEASE build:
-      if (kDebugMode) {
-        _addSignal('spectre_debugger_attached', score: 80);
-      }
+      // BUG-QA-005 Fix: Removed contradictory kDebugMode check in Release build.
+      // True runtime debugger detection requires a native plugin (e.g. freerasp)
+      // as kDebugMode is a compile-time constant that evaluates to false in release.
     } catch (e) {
       debugPrint('[IntegrityShield] Spectre check error: $e');
     }
@@ -171,10 +170,9 @@ class IntegrityShield {
   Future<void> _checkRuntimeIntegrity() async {
     if (kIsWeb) return;
 
-    // 🛡️ POINT 11: Real-time Debugger Detection (Only critical if attached to a release build)
-    if (kReleaseMode && kDebugMode) {
-       _addSignal('debugger_attached', score: 80);
-    }
+    // BUG-QA-004 Fix: Removed contradictory kReleaseMode && kDebugMode check.
+    // Real-time debugger detection requires a native app shielding SDK (e.g. freerasp).
+    // Flutter's kDebugMode is a compile-time constant and will always be false in release builds.
 
     // ADB Detection (If development mode is on and we are on Android in release mode)
     if (Platform.isAndroid && kReleaseMode) {

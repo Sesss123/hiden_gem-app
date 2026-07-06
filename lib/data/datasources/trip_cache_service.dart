@@ -367,20 +367,9 @@ class TripCacheService {
     try {
       // BUG-057: Check available disk space before writing large data files
       if (!kIsWeb) {
-        try {
-          final dir = await getApplicationDocumentsDirectory();
-          final stat = await dir.stat();
-          // Use a 10MB minimum free-space threshold
-          if (stat.size > 0 && jsonString.length > 1024) {
-            // stat.size gives directory size, not free space — use a write probe
-            final testFile = File('${dir.path}/.space_check');
-            await testFile.writeAsString('x');
-            await testFile.delete();
-          }
-        } catch (spaceError) {
-          SecureLogger.warning('[TripCache] Disk space check failed — skipping cache write: $spaceError');
-          return;
-        }
+        // We removed the manual 1-byte file probe as it's inaccurate and causes IO overhead.
+        // Hive's box.put will natively throw a FileSystemException (errno 28) if the device is full,
+        // which will be caught by the generic catch block below.
       }
       final box = Hive.box<String>(_globalDataBox);
       await box.put(key, jsonString);

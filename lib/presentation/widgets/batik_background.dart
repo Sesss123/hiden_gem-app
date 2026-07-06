@@ -1,4 +1,3 @@
-import 'package:hidden_gems_sl/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 
 class BatikBackground extends StatelessWidget {
@@ -9,24 +8,11 @@ class BatikBackground extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
 
-    return Container(
-      decoration: BoxDecoration(
-        gradient: isDark 
-            ? LinearGradient(
-                colors: [AppTheme.colors.primary, AppTheme.colors.primary],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              )
-            : LinearGradient(
-                colors: [AppTheme.colors.primary, AppTheme.colors.primary],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-      ),
-      child: Stack(
-        children: [
+    // The background color is naturally inherited from the Scaffold (Cream/Dark).
+    // We removed the solid orange (primary) gradient that was painting over everything.
+    return Stack(
+      children: [
           Positioned.fill(
             child: RepaintBoundary(
               child: CustomPaint(
@@ -38,7 +24,6 @@ class BatikBackground extends StatelessWidget {
           ),
           child,
         ],
-      ),
     );
   }
 }

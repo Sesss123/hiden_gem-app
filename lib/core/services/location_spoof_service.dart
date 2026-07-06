@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/foundation.dart';
@@ -120,6 +121,18 @@ class LocationSpoofService {
     required double lng,
   }) async {
     try {
+      final prefs = await SharedPreferences.getInstance();
+      final lastReport = prefs.getInt('last_spoof_report_time') ?? 0;
+      final now = DateTime.now().millisecondsSinceEpoch;
+      
+      // Throttle: Max 1 report per hour to save Cloud Function costs
+      if (now - lastReport < 3600000) {
+        debugPrint('[LocationSpoof] Throttled. Last report was within 1 hour.');
+        return;
+      }
+      
+      await prefs.setInt('last_spoof_report_time', now);
+
       final result = await FirebaseFunctions.instance
           .httpsCallable('detectLocationSpoof')
           .call({

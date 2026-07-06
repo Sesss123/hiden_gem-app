@@ -215,7 +215,15 @@ class DeltaSyncService {
       await _sqliteService.purgeOldQuarantinedItems();
     } catch (e, st) { SecureLogger.error("Exception caught: $e\n$st"); }
 
-    int currentVersion = forceFullResync ? 0 : await _sqliteService.getLocalSyncVersion();
+    int currentVersion;
+    if (forceFullResync) {
+      SecureLogger.info("BUG-QA-002: Clearing local SQLite database for full resync...");
+      await _sqliteService.clearDatabase();
+      currentVersion = 0;
+    } else {
+      currentVersion = await _sqliteService.getLocalSyncVersion();
+    }
+    
     bool hasMore = true;
     int totalUpserted = 0;
     int totalPurged = 0;

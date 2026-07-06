@@ -4,7 +4,6 @@ import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:geoflutterfire_plus/geoflutterfire_plus.dart';
 import 'package:geolocator/geolocator.dart';
 import '../models/discovery_place.dart';
 import '../../core/config/app_config.dart';
@@ -46,82 +45,6 @@ class DiscoveryRemoteDataSource {
     }
   }
 
-  static Map<String, dynamic> _decodeRestPayload(String body) {
-    return json.decode(body) as Map<String, dynamic>;
-  }
-
-  static String _encodeRestPayload(List<dynamic> places) {
-    return json.encode(places);
-  }
-
-  Future<String> fetchPlacesRest() async {
-    final List<dynamic> allPlaces = [];
-    String? cursor;
-    bool hasMore = true;
-    int pageCount = 0;
-    const int maxPages = 20; // Bounded pagination to prevent memory exhaustion / infinite loop
-
-    while (hasMore && pageCount < maxPages) {
-      pageCount++;
-      final queryParam = cursor != null ? '?cursor=$cursor' : '';
-      final securityHeaders = await VaultService.getSecurityHeaders('/places$queryParam');
-      
-      final response = await _client.get(
-        Uri.parse('${AppConfig.laravelUrl}/places$queryParam'),
-        headers: {
-          'Accept': 'application/json',
-          'Accept-Encoding': 'gzip',
-          'X-API-KEY': AppConfig.hiddenGemsApiKey,
-          'X-HiddenGems-Key': AppConfig.hiddenGemsApiKey,
-          ...securityHeaders,
-        },
-      ).timeout(const Duration(seconds: 10));
-
-      if (response.statusCode == 200) {
-        Map<String, dynamic> data;
-        try {
-          // Exec #14: Offload JSON decode to background isolate using compute
-          data = await compute(_decodeRestPayload, response.body);
-        } on FormatException catch (e) {
-          throw FormatException("Invalid JSON payload from REST API (/places): $e");
-        }
-        final List<dynamic> places = data['places'] ?? [];
-        allPlaces.addAll(places);
-        cursor = data['next_cursor']?.toString();
-        hasMore = data['has_more'] as bool? ?? false;
-      } else {
-        throw Exception("API returned status ${response.statusCode}");
-      }
-    }
-
-    // Exec #14: Offload JSON encode to background isolate using compute
-    return await compute(_encodeRestPayload, allPlaces);
-  }
-
-  Future<List<DiscoveryPlace>> fetchNearbyPlacesFirestore({
-    required Position center,
-    double radiusKm = 50.0,
-  }) async {
-    final CollectionReference<Map<String, dynamic>> collectionReference = 
-        FirebaseFirestore.instance.collection('locations');
-    final centerPoint = GeoFirePoint(GeoPoint(center.latitude, center.longitude));
-    
-    final Stream<List<DocumentSnapshot<Map<String, dynamic>>>> stream = 
-        GeoCollectionReference<Map<String, dynamic>>(collectionReference)
-        .subscribeWithin(
-          center: centerPoint,
-          radiusInKm: radiusKm,
-          field: 'geo',
-          geopointFrom: (data) => (data['geo'] as Map<String, dynamic>)['geopoint'] as GeoPoint,
-        );
-
-    final List<DocumentSnapshot> snapshots = await stream.first.timeout(
-      const Duration(seconds: 5),
-      onTimeout: () => throw TimeoutException("GeoHash Firestore stream timed out after 5 seconds."),
-    );
-
-    return snapshots.map((doc) => DiscoveryPlace.fromFirestore(doc)).toList();
-  }
 
   Future<List<DiscoveryPlace>> fetchAllPlacesFirestore() async {
     final querySnapshot = await FirebaseFirestore.instance.collection('places').get();

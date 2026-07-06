@@ -36,28 +36,41 @@ class SqliteStorageService {
 
   static Database? _database;
 
-  // BUG-087 / BUG-107 / BUG-127 / BUG-147:
-  // Write queue that serialises all database write operations so that
-  // concurrent callers never overlap. Uses a Future chain (Dart's lock-free
-  // mutex idiom) — no external packages required.
-  Future<void> _writeQueue = Future.value();
+  bool _isProcessingQueue = false;
+  final List<Function> _operationQueue = [];
 
   /// Enqueue [operation] so it runs only after every previously-queued
-  /// write has finished. Errors are caught and re-thrown but do NOT
-  /// poison the queue for subsequent writers (Exec #4 / Audit #22).
+  /// write has finished. Avoids unbounded Future chaining.
   Future<T> _enqueueWrite<T>(Future<T> Function() operation) {
     final completer = Completer<T>();
-    _writeQueue = _writeQueue.then((_) async {
+    
+    _operationQueue.add(() async {
       try {
         final result = await operation();
         if (!completer.isCompleted) completer.complete(result);
       } catch (e, st) {
         if (!completer.isCompleted) completer.completeError(e, st);
       }
-    }).catchError((e, st) {
-      if (!completer.isCompleted) completer.completeError(e, st);
     });
+
+    _processQueue();
     return completer.future;
+  }
+
+  Future<void> _processQueue() async {
+    if (_isProcessingQueue) return;
+    _isProcessingQueue = true;
+
+    while (_operationQueue.isNotEmpty) {
+      final nextOperation = _operationQueue.removeAt(0);
+      try {
+        await nextOperation();
+      } catch (e) {
+        // Errors are already handled inside the closure
+      }
+    }
+
+    _isProcessingQueue = false;
   }
 
   Future<Database> get database async {

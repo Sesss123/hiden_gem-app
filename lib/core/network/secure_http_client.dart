@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:crypto/crypto.dart';
 import 'package:uuid/uuid.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../config/app_config.dart';
 
 /// [SecureHttpClient] — Hardened network layer with signing and replay protection.
@@ -55,9 +56,26 @@ class SecureHttpClient extends http.BaseClient {
     request.headers['X-Zenith-Signature'] = signature;
     request.headers['X-Zenith-Version'] = '1.0';
 
+    // BUG-QA-001 Fix: Inject Sanctum Auth Token for Laravel APIs
+    // Only inject if it exists and the request is going to our API host
+    if (request.url.host.contains('hiddengemssl.com') || request.url.host.contains('10.0.2.2')) {
+      final authToken = await _getSanctumToken();
+      if (authToken != null && !request.headers.containsKey('Authorization')) {
+        request.headers['Authorization'] = 'Bearer $authToken';
+      }
+    }
+
     debugPrint('[SecureHTTP] Sending ${request.method} to ${request.url.path} | Signed: true');
 
     return _inner.send(request);
+  }
+
+  Future<String?> _getSanctumToken() async {
+    // Importing dynamically to avoid circular dependencies if any, 
+    // but a direct import is cleaner. For this file, we can just use the storage package directly 
+    // or rely on UserPreferenceService.
+    const storage = FlutterSecureStorage();
+    return await storage.read(key: 'auth_token');
   }
 
   // --- Internal Helpers ---
