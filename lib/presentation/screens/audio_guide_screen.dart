@@ -8,6 +8,7 @@ import '../../data/models/discovery_place.dart';
 import '../../core/theme/oracle_ui_system.dart';
 import '../../core/services/asset_cache_service.dart';
 import '../widgets/cached_image.dart';
+import 'package:hidden_gems_sl/core/utils/secure_logger.dart';
 
 class AudioGuideScreen extends StatefulWidget {
   final DiscoveryPlace place;
@@ -44,8 +45,8 @@ class _AudioGuideScreenState extends State<AudioGuideScreen> with SingleTickerPr
       } else {
         await _player.setUrl(url);
       }
-    } catch (e) {
-      debugPrint("Audio init error: $e");
+    } catch (e, st) {
+      SecureLogger.error("Audio init error", e, st, "AudioGuide");
     }
 
     _player.playerStateStream.listen((state) {

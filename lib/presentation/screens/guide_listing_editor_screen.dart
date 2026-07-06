@@ -12,6 +12,7 @@ import '../../data/repositories/marketplace_repository.dart';
 import '../../data/datasources/firebase_storage_service.dart';
 import '../widgets/cached_image.dart';
 import 'guide_availability_screen.dart';
+import 'package:hidden_gems_sl/core/utils/secure_logger.dart';
 
 class GuideListingEditorScreen extends ConsumerStatefulWidget {
   const GuideListingEditorScreen({super.key});
@@ -91,8 +92,8 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
         _regionsController.text = 'Central, Southern, Western';
         _hourlyRateController.text = '25';
       }
-    } catch (e) {
-      debugPrint('Error loading listing: $e');
+    } catch (e, st) {
+      SecureLogger.error("Error loading listing", e, st, "GuideListingEditor");
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }

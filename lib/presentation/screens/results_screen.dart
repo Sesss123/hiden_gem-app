@@ -22,6 +22,7 @@ import 'map_route_screen.dart';
 import 'budget_tracker_screen.dart';
 
 import 'package:hidden_gems_sl/l10n/app_localizations.dart';
+import 'package:hidden_gems_sl/core/utils/secure_logger.dart';
 import 'dart:ui';
 import '../../core/analytics/analytics_service.dart';
 import '../../core/rating/rating_service.dart';
@@ -137,8 +138,8 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
 
       // 3. Check for Rating Prompt (Milestone trigger)
       await RatingService().checkAndRequestReview();
-    } catch (e) {
-      debugPrint("Post Generation Event Error: $e");
+    } catch (e, st) {
+      SecureLogger.error("Post Generation Event Error", e, st, "ResultsScreen");
     }
   }
 

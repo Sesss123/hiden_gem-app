@@ -137,7 +137,7 @@ class UniversalScraper:
 
                         if response.status == 200:
                             html = await response.text()
-                            return self.clean_html(html)
+                            return await self.clean_html_async(html)
                         else:
                             logger.warning(f"[Scraper] Unexpected status {response.status} on attempt {attempt}")
 
@@ -194,7 +194,7 @@ class UniversalScraper:
                     await page.wait_for_selector("body", timeout=5000)
                     
                     html = await page.content()
-                    return self.clean_html(html)
+                    return await self.clean_html_async(html)
                 finally:
                     await page.close()
                     await context.close()
@@ -251,6 +251,50 @@ class UniversalScraper:
 
         logger.info(f"[Scraper] Content cleaned: {len(html)} → {len(cleaned_text)} chars")
         return cleaned_text[:15000] # Cap for safety
+ 
+    async def clean_html_async(self, html: str) -> str:
+        """Asynchronously offload html cleaning to a separate thread pool."""
+        return await asyncio.to_thread(self.clean_html, html)
+
+    def _parse_and_extract_main_image(self, html: str, url: str) -> str | None:
+        """Synchronously parse html to extract main image using BeautifulSoup."""
+        if BeautifulSoup is None:
+            return None
+        soup = BeautifulSoup(html, "html.parser")
+        
+        # ── Strategy 1: OpenGraph Images (Standard) ──
+        og_image = soup.find("meta", property="og:image")
+        if og_image and og_image.get("content"):
+            return og_image["content"]
+
+        # ── Strategy 2: Wikipedia Specific ──
+        if "wikipedia.org" in url:
+            # Find the first image in the infobox
+            infobox = soup.find("table", class_="infobox")
+            if infobox:
+                img = infobox.find("img")
+                if img:
+                    src = img.get("src")
+                    if src:
+                        # Convert thumbnail to original
+                        if "/thumb/" in src:
+                            parts = src.split("/")
+                            original_src = "/".join(parts[:-1]).replace("/thumb/", "/")
+                            return f"https:{original_src}" if original_src.startswith("//") else original_src
+                        return f"https:{src}" if src.startswith("//") else src
+
+        # ── Strategy 3: Large image search ──
+        imgs = soup.find_all("img")
+        for img in imgs:
+            src = img.get("src")
+            if not src: continue
+            width = img.get("width")
+            if width and width.isdigit() and int(width) < 200: continue
+            if "logo" in src.lower() or "icon" in src.lower(): continue
+            
+            full_src = src if src.startswith("http") else f"https:{src}" if src.startswith("//") else None
+            if full_src: return full_src
+        return None
 
     async def extract_main_image(self, url: str) -> str | None:
         """
@@ -266,45 +310,7 @@ class UniversalScraper:
                 async with session.get(url, timeout=10) as response:
                     if response.status != 200: return None
                     html = await response.text()
-                    soup = BeautifulSoup(html, "html.parser")
-                    
-                    # ── Strategy 1: OpenGraph Images (Standard) ──
-                    og_image = soup.find("meta", property="og:image")
-                    if og_image and og_image.get("content"):
-                        return og_image["content"]
-
-                    # ── Strategy 2: Wikipedia Specific ──
-                    if "wikipedia.org" in url:
-                        # Find the first image in the infobox
-                        infobox = soup.find("table", class_="infobox")
-                        if infobox:
-                            img = infobox.find("img")
-                            if img:
-                                src = img.get("src")
-                                if src:
-                                    # Convert thumbnail to original
-                                    # Wikipedia thumbnails look like: //upload.wikimedia.org/.../200px-Image.jpg
-                                    # Original is: //upload.wikimedia.org/.../Image.jpg
-                                    if "/thumb/" in src:
-                                        parts = src.split("/")
-                                        # Remove the thumb and the last scale part
-                                        original_src = "/".join(parts[:-1]).replace("/thumb/", "/")
-                                        return f"https:{original_src}" if original_src.startswith("//") else original_src
-                                    return f"https:{src}" if src.startswith("//") else src
-
-                    # ── Strategy 3: Large image search ──
-                    imgs = soup.find_all("img")
-                    # Filter for large-ish images
-                    for img in imgs:
-                        src = img.get("src")
-                        if not src: continue
-                        # Skip small icons
-                        width = img.get("width")
-                        if width and width.isdigit() and int(width) < 200: continue
-                        if "logo" in src.lower() or "icon" in src.lower(): continue
-                        
-                        full_src = src if src.startswith("http") else f"https:{src}" if src.startswith("//") else None
-                        if full_src: return full_src
+                    return await asyncio.to_thread(self._parse_and_extract_main_image, html, url)
 
         except Exception as e:
             logger.warning(f"[Scraper] Image extraction failed for {url}: {e}")

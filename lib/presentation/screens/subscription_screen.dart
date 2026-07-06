@@ -10,6 +10,8 @@ import '../../data/models/subscription_record.dart';
 import 'billing_history_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
+import 'package:hidden_gems_sl/core/utils/secure_logger.dart';
+
 
 class SubscriptionScreen extends ConsumerStatefulWidget {
   const SubscriptionScreen({super.key});
@@ -219,8 +221,8 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
         final url = Uri.parse("https://play.google.com/store/account/subscriptions");
         if (await canLaunchUrl(url)) await launchUrl(url, mode: LaunchMode.externalApplication);
       }
-    } catch (e) {
-      debugPrint("Could not launch store: $e");
+    } catch (e, st) {
+      SecureLogger.error("Could not launch store", e, st, "SubscriptionScreen");
     }
   }
 

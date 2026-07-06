@@ -4,7 +4,7 @@ import android.view.LayoutInflater
 import android.widget.TextView
 import com.google.android.gms.ads.nativead.NativeAd
 import com.google.android.gms.ads.nativead.NativeAdView
-import io.flutter.plugins.googlemobileads.GoogleMobileAdsPlugin.NativeAdFactory
+import io.flutter.plugins.googlemobileads.NativeAdFactory
 
 class NativeAdFactoryExample(private val layoutInflater: LayoutInflater) : NativeAdFactory {
     override fun createNativeAd(nativeAd: NativeAd, customOptions: MutableMap<String, Any>?): NativeAdView {

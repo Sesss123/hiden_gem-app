@@ -9,6 +9,7 @@ import '../../core/theme/oracle_ui_system.dart';
 import '../../data/models/guide_availability.dart';
 import '../../data/models/guide_listing.dart';
 import '../../data/repositories/marketplace_repository.dart';
+import 'package:hidden_gems_sl/core/utils/secure_logger.dart';
 
 class GuideAvailabilityScreen extends ConsumerStatefulWidget {
   final GuideListing? listing;
@@ -54,8 +55,8 @@ class _GuideAvailabilityScreenState extends ConsumerState<GuideAvailabilityScree
         final repo = ref.read(marketplaceRepositoryProvider);
         final listing = await repo.getListing(uid);
         avail = listing?.availability;
-      } catch (e) {
-        debugPrint('Error fetching availability: $e');
+      } catch (e, st) {
+        SecureLogger.error("Error fetching availability", e, st, "GuideAvailability");
       }
     }
 

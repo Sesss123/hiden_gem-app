@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:share_plus/share_plus.dart';
 import 'package:flutter/material.dart';
-import '../../core/utils/secure_logger.dart';
+import 'package:hidden_gems_sl/core/utils/secure_logger.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:camera/camera.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -82,8 +82,8 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
       if (mounted && _controller == controller) {
         setState(() => _isInit = true);
       }
-    } catch (e) {
-      debugPrint("Camera init error: $e");
+    } catch (e, st) {
+      SecureLogger.error("Camera init error", e, st, "SavorLankaScreen");
     } finally {
       _isInitializingCamera = false;
     }

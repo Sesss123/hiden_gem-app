@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import '../../core/utils/secure_logger.dart';
+import 'package:hidden_gems_sl/core/utils/secure_logger.dart';
 import '../../core/theme/theme_provider.dart';
 import '../../core/providers/screenshot_provider.dart';
 import 'package:flutter/services.dart';
@@ -130,8 +130,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
           }
         });
       }
-    } catch (e) {
-      debugPrint("Error syncing role: $e");
+    } catch (e, st) {
+      SecureLogger.error("Error syncing role", e, st, "ProfileScreen");
     }
   }
 

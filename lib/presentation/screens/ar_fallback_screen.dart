@@ -6,6 +6,7 @@ import '../../data/models/ar_place_data.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/services/usage_limiter_service.dart';
 import '../../data/datasources/monetization_service.dart';
+import 'package:hidden_gems_sl/core/utils/secure_logger.dart';
 
 class ARFallbackScreen extends StatefulWidget {
   final ARPlaceData arData;
@@ -52,8 +53,8 @@ class _ARFallbackScreenState extends State<ARFallbackScreen> {
         _controller.setVolume(0.0); // Muted by default as per requirement
         _controller.play();
       }
-    }).catchError((e) {
-      debugPrint("Video Player initialization error: $e");
+    }).catchError((e, st) {
+      SecureLogger.error("Video Player initialization error", e, st, "ArFallback");
       if (mounted) {
         setState(() {
           _initialized = false;

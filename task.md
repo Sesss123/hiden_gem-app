@@ -9,8 +9,8 @@
 - [x] TASK 2: Fix undefined name typo `PdfAppTheme.colors.grey` to `AppTheme.colors.grey` in `lib/data/datasources/pdf_service.dart`
 - [x] TASK 3: Verify and run `flutter analyze` ensuring 0 errors remain
 
-## Active Milestone: Resolve Gradle Wrapper Lock Timeout
-- [/] Terminate zombie Java processes and clean Gradle wrapper lock file
+## Completed Milestone: Resolve Gradle Wrapper Lock Timeout (Completed 2026-07-06)
+- [x] Terminate zombie Java processes and clean Gradle wrapper lock file
 
 ## Completed Milestone: Enterprise Master Audit Bug Fixes (Completed 2026-07-06)
 - [x] Fix Swoole/Octane state leakage & delta sync version gap in PlaceImageObserver.php

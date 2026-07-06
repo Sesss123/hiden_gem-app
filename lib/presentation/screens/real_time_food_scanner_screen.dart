@@ -8,7 +8,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../../core/config/app_config.dart';
-import '../../core/utils/secure_logger.dart';
+import 'package:hidden_gems_sl/core/utils/secure_logger.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/theme/oracle_ui_system.dart';
 
@@ -215,8 +215,8 @@ class _RealTimeFoodScannerScreenState extends State<RealTimeFoodScannerScreen>
         setState(() => _isCameraInitialized = true);
         _connectWebSocket();
       }
-    } catch (e) {
-      debugPrint("Camera initialization error: $e");
+    } catch (e, st) {
+      SecureLogger.error("Camera initialization error", e, st, "RealTimeFoodScanner");
     }
   }
 
@@ -238,14 +238,14 @@ class _RealTimeFoodScannerScreenState extends State<RealTimeFoodScannerScreen>
           _handleServerMessage(data);
         },
         onDone: () {
-          debugPrint("WebSocket disconnected.");
+          SecureLogger.info("WebSocket disconnected", tag: "RealTimeFoodScanner");
           if (mounted) {
             setState(() => _isConnected = false);
             _reconnectWebSocketWithDelay();
           }
         },
         onError: (err) {
-          debugPrint("WebSocket error: $err");
+          SecureLogger.error("WebSocket error", err, null, "RealTimeFoodScanner");
           if (mounted) {
             setState(() => _isConnected = false);
             _reconnectWebSocketWithDelay();
@@ -254,8 +254,8 @@ class _RealTimeFoodScannerScreenState extends State<RealTimeFoodScannerScreen>
       );
 
       _startFrameThrottler();
-    } catch (e) {
-      debugPrint("WebSocket connection failed: $e");
+    } catch (e, st) {
+      SecureLogger.error("WebSocket connection failed", e, st, "RealTimeFoodScanner");
       if (mounted) {
         setState(() => _isConnected = false);
         _reconnectWebSocketWithDelay();
@@ -301,8 +301,8 @@ class _RealTimeFoodScannerScreenState extends State<RealTimeFoodScannerScreen>
           });
         }
       }
-    } catch (e) {
-      debugPrint("Error parsing WebSocket response: $e");
+    } catch (e, st) {
+      SecureLogger.error("Error parsing WebSocket response", e, st, "RealTimeFoodScanner");
     }
   }
 
@@ -334,8 +334,8 @@ class _RealTimeFoodScannerScreenState extends State<RealTimeFoodScannerScreen>
         });
 
         _channel?.sink.add(requestPayload);
-      } catch (e) {
-        debugPrint("Error capturing/sending frame: $e");
+      } catch (e, st) {
+        SecureLogger.error("Error capturing/sending frame", e, st, "RealTimeFoodScanner");
       } finally {
         _isProcessingFrame = false;
       }

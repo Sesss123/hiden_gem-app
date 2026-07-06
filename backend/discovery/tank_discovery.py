@@ -68,6 +68,28 @@ class TankDiscoveryBot:
             logger.error(f"❌ OSM Query failed: {e}")
             return []
 
+    def _parse_wikipedia_page(self, html: str) -> list[dict]:
+        """Synchronously parse Wikipedia categories to extract major reservoirs using BeautifulSoup."""
+        soup = BeautifulSoup(html, "html.parser")
+        
+        category_div = soup.find("div", id="mw-pages")
+        if not category_div: return []
+        
+        links = category_div.find_all("a")
+        wiki_tanks = []
+        for link in links:
+            title = link.get("title")
+            href = link.get("href")
+            if title and href and not ":" in title:
+                wiki_tanks.append({
+                    "name": title,
+                    "type": "tank",
+                    "source": "wikipedia",
+                    "url": f"https://en.wikipedia.org{href}",
+                    "priority": "high"
+                })
+        return wiki_tanks
+
     async def discover_via_wikipedia(self) -> list[dict]:
         """
         Scrape Wikipedia categories for major Sri Lankan reservoirs.
@@ -81,25 +103,7 @@ class TankDiscoveryBot:
                 async with session.get(wiki_url) as response:
                     if response.status != 200: return []
                     html = await response.text()
-                    soup = BeautifulSoup(html, "html.parser")
-                    
-                    category_div = soup.find("div", id="mw-pages")
-                    if not category_div: return []
-                    
-                    links = category_div.find_all("a")
-                    wiki_tanks = []
-                    for link in links:
-                        title = link.get("title")
-                        href = link.get("href")
-                        if title and href and not ":" in title:
-                            wiki_tanks.append({
-                                "name": title,
-                                "type": "tank",
-                                "source": "wikipedia",
-                                "url": f"https://en.wikipedia.org{href}",
-                                "priority": "high"
-                            })
-                    
+                    wiki_tanks = await asyncio.to_thread(self._parse_wikipedia_page, html)
                     logger.info(f"✅ Wikipedia Discovery found {len(wiki_tanks)} major tanks.")
                     return wiki_tanks
         except Exception as e:

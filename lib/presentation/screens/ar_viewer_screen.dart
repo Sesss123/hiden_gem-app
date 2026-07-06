@@ -23,6 +23,7 @@ import 'ar_upgrade_dialog.dart';
 import 'premium_hub_screen.dart';
 import 'heritage_passport_screen.dart';
 import '../../core/services/gamification_service.dart';
+import 'package:hidden_gems_sl/core/utils/secure_logger.dart';
 import '../widgets/cached_image.dart';
 import '../../core/services/business_discovery_service.dart';
 import '../../data/models/ar_artifact.dart';
@@ -249,8 +250,8 @@ class _ARViewerScreenState extends State<ARViewerScreen>
       Future.delayed(const Duration(seconds: 5), () {
         _lastFoundArtifact.value = null;
       });
-    } catch (e) {
-      debugPrint("Artifact not found in data list: $artifactId");
+    } catch (e, st) {
+      SecureLogger.error("Artifact not found in data list: $artifactId", e, st, "ArViewer");
     }
   }
 
@@ -401,10 +402,10 @@ class _ARViewerScreenState extends State<ARViewerScreen>
         // Phase 2: Offline Heritage Mode — Check local cache for audio
         final localPath = await AssetCacheService.getLocalPath(url);
         if (localPath != null) {
-          debugPrint("[Offline] Playing audio from cache: $localPath");
+          SecureLogger.info("[Offline] Playing audio from cache: $localPath", tag: "ArViewer");
           await _audioPlayer.setFilePath(localPath);
         } else {
-          debugPrint("[Offline] Streaming audio from remote URL.");
+          SecureLogger.info("[Offline] Streaming audio from remote URL.", tag: "ArViewer");
           await _audioPlayer.setUrl(url);
         }
         await _audioPlayer.play();

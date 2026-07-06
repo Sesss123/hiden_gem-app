@@ -7,6 +7,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 
 import '../../core/theme/app_theme.dart';
 import '../../data/datasources/premium_service.dart';
+import 'package:hidden_gems_sl/core/utils/secure_logger.dart';
 
 class ScannerScreen extends ConsumerStatefulWidget {
   const ScannerScreen({super.key});
@@ -71,8 +72,8 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> with WidgetsBindi
       if (mounted) {
         setState(() => _isInit = true);
       }
-    } catch (e) {
-      debugPrint("Camera init error: $e");
+    } catch (e, st) {
+      SecureLogger.error("Camera init error", e, st, "ScannerScreen");
     }
   }
 

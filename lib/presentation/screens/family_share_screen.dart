@@ -10,6 +10,7 @@ import '../../core/theme/app_theme.dart';
 import '../../core/theme/oracle_ui_system.dart';
 import 'package:flutter/services.dart';
 import '../../data/models/family_share_link.dart';
+import 'package:hidden_gems_sl/core/utils/secure_logger.dart';
 
 class FamilyShareScreen extends ConsumerStatefulWidget {
   const FamilyShareScreen({super.key});
@@ -66,8 +67,8 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
         });
         _checkAndCleanExpiredLinks();
       }
-    }, onError: (e) {
-      debugPrint("Error fetching share links: $e");
+    }, onError: (e, st) {
+      SecureLogger.error("Error fetching share links", e, st, "FamilyShare");
     });
   }
 

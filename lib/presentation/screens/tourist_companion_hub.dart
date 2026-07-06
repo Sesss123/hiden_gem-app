@@ -21,6 +21,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../../core/services/monsoon_broadcast_service.dart';
 import 'review_submission_screen.dart';
 import '../../core/theme/app_theme.dart';
+import 'package:hidden_gems_sl/core/utils/secure_logger.dart';
 
 class TouristCompanionHub extends StatefulWidget {
   final String sessionId;
@@ -648,8 +649,8 @@ class _TouristCompanionHubState extends State<TouristCompanionHub> {
           SnackBar(content: Text("SIGNAL SENT! STAY WHERE YOU ARE."), backgroundColor: AppTheme.colors.orangeAccent),
         );
       }
-    } catch (e) {
-      debugPrint("Lost Trigger Error: $e");
+    } catch (e, st) {
+      SecureLogger.error("Lost Trigger Error", e, st, "TouristCompanionHub");
     }
   }
 

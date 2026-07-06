@@ -8,6 +8,7 @@ import '../../core/theme/oracle_ui_system.dart';
 import '../../core/services/expense_service.dart';
 import '../../data/models/expense_model.dart';
 import '../../core/config/app_config.dart';
+import 'package:hidden_gems_sl/core/utils/secure_logger.dart';
 
 class BudgetConciergeScreen extends ConsumerStatefulWidget {
   const BudgetConciergeScreen({super.key});
@@ -61,7 +62,7 @@ class _BudgetConciergeScreenState extends ConsumerState<BudgetConciergeScreen> {
         }
       }
     } catch (e) {
-      debugPrint('[BudgetConcierge] External LLM skipped or failed: $e');
+      SecureLogger.warning("External LLM skipped or failed: $e", tag: "BudgetConcierge");
     }
     
     // 🏛️ Offline / Self-Hosted Rule-Based Cinematic Fallback
