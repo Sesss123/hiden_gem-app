@@ -570,9 +570,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   end: Alignment.bottomCenter,
                 ),
               ),
-              child: const BatikBackground(
-                opacity: 0.05,
-                child: SizedBox.expand(),
+            ),
+            Positioned.fill(
+              child: const RepaintBoundary(
+                child: BatikBackground(
+                  opacity: 0.03,
+                  child: SizedBox.expand(),
+                ),
               ),
             ),
             Center(
@@ -876,15 +880,23 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   ),
                 ),
               ),
-            Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [AppTheme.colors.transparent, AppTheme.colors.black.withValues(alpha: 0.8)],
+                RepaintBoundary(
+                  child: BatikBackground(
+                    opacity: 0.04,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            AppTheme.colors.orange.withOpacity(0.05),
+                            Colors.transparent,
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
-              ),
-            ),
             Padding(
               padding: const EdgeInsets.all(20),
               child: Column(

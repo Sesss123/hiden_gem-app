@@ -1,8 +1,0 @@
-[
-  {
-    "origin": ["http://localhost:*", "http://localhost", "https://hiddengemssl.com", "https://api.hiddengemssl.com"],
-    "method": ["GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS"],
-    "maxAgeSeconds": 3600,
-    "responseHeader": ["Content-Type", "Authorization", "Content-Length", "X-Requested-With", "x-goog-resumable"]
-  }
-]

@@ -481,6 +481,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.7.13"
+  dio:
+    dependency: transitive
+    description:
+      name: dio
+      sha256: ea2bad3c89a27635ce2d85cce4d6b199da49a5a48ec77b03e45b65a3b90922b0
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.10.0"
+  dio_web_adapter:
+    dependency: transitive
+    description:
+      name: dio_web_adapter
+      sha256: dd58dc3861eb36edb13b217efc006a1c21e5bbc341de8c229b85634fa5e362e4
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.2.0"
   encrypt:
     dependency: "direct main"
     description:
@@ -957,6 +973,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  freerasp:
+    dependency: "direct main"
+    description:
+      name: freerasp
+      sha256: "10dac84c12896a641ba6159f799e1cb9cb4529b928af4813b013dc9d1c172f5d"
+      url: "https://pub.dev"
+    source: hosted
+    version: "8.0.0"
   freezed_annotation:
     dependency: transitive
     description:
@@ -1237,6 +1261,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.6.0"
+  http_certificate_pinning:
+    dependency: "direct main"
+    description:
+      name: http_certificate_pinning
+      sha256: "1501c69142a3906a5ad4876d7e71696fa6a6a187fc6f4a746d7a5ba32f9f8fcf"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.1"
   http_multi_server:
     dependency: transitive
     description:
@@ -2211,7 +2243,7 @@ packages:
     source: hosted
     version: "1.4.1"
   synchronized:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: synchronized
       sha256: "93b153dcb6a26dcddee6ca087dd634b53e38c10b5aa163e8e49501a776456153"

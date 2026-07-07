@@ -10,6 +10,7 @@ import '../../core/utils/secure_logger.dart';
 import 'sqlite_storage_service.dart';
 import '../config/app_config.dart';
 import '../network/secure_http_client.dart';
+import 'package:synchronized/synchronized.dart';
 
 class DeltaParseResult {
   final int newSyncVersion;
@@ -88,6 +89,8 @@ class DeltaSyncService {
   static final DeltaSyncService _instance = DeltaSyncService._internal();
   factory DeltaSyncService() => _instance;
   DeltaSyncService._internal();
+
+  static final Lock _dbLock = Lock();
 
   // Configurable base URL for Laravel backend
   static String get baseUrl => '${AppConfig.baseUrl}/places';
@@ -279,23 +282,25 @@ class DeltaSyncService {
         final List<Map<String, dynamic>> failedItems = parseResult.failedItems;
 
         // Commit to SQLite
-        if (placesToUpsert.isNotEmpty) {
-          await _sqliteService.upsertPlaces(placesToUpsert, nextCursor);
-          totalUpserted += placesToUpsert.length;
-        }
-        if (deletedIds.isNotEmpty) {
-          await _sqliteService.purgeDeletedPlaces(deletedIds);
-          totalPurged += deletedIds.length;
-        }
-        if (failedItems.isNotEmpty) {
-          await _sqliteService.quarantineItems(failedItems);
-          SecureLogger.warning("Quarantined ${failedItems.length} malformed places during sync chunk at cursor $nextCursor.");
-        }
+        await _dbLock.synchronized(() async {
+          if (placesToUpsert.isNotEmpty) {
+            await _sqliteService.upsertPlaces(placesToUpsert, nextCursor);
+            totalUpserted += placesToUpsert.length;
+          }
+          if (deletedIds.isNotEmpty) {
+            await _sqliteService.purgeDeletedPlaces(deletedIds);
+            totalPurged += deletedIds.length;
+          }
+          if (failedItems.isNotEmpty) {
+            await _sqliteService.quarantineItems(failedItems);
+            SecureLogger.warning("Quarantined ${failedItems.length} malformed places during sync chunk at cursor $nextCursor.");
+          }
 
-        currentVersion = nextCursor;
+          currentVersion = nextCursor;
 
-        // Audit #9: Checkpoint sync version after each chunk so progress is preserved on interruption.
-        await _sqliteService.setLocalSyncVersion(currentVersion);
+          // Audit #9: Checkpoint sync version after each chunk so progress is preserved on interruption.
+          await _sqliteService.setLocalSyncVersion(currentVersion);
+        });
 
         SecureLogger.info('Chunk synced: +$totalUpserted places, -$totalPurged purged -> cursor committed: $currentVersion');
       }

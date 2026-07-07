@@ -80,6 +80,7 @@ class AiTripService {
 
     int retryCount = 0;
     const maxRetries = 2;
+    int currentTimeoutSeconds = 30; // Start with 30s timeout
 
     while (retryCount <= maxRetries) {
       try {
@@ -90,7 +91,7 @@ class AiTripService {
             "X-HiddenGems-Key": _apiKey,
           },
           body: json.encode(body),
-        ).timeout(const Duration(seconds: 45));
+        ).timeout(Duration(seconds: currentTimeoutSeconds));
 
         if (response.statusCode == 200) {
           final Map<String, dynamic> data = json.decode(response.body);
@@ -101,12 +102,7 @@ class AiTripService {
         } else if (response.statusCode == 429) {
           throw Exception("Rate limit reached. Try again soon.");
         } else if (response.statusCode >= 500) {
-          if (retryCount < maxRetries) {
-            retryCount++;
-            // await Future.delayed(Duration(seconds: 2 * retryCount));
-            continue;
-          }
-          throw Exception("HiddenGems.lk is experiencing issues. Please try again later.");
+          throw Exception("HiddenGems.lk is experiencing issues. Status: ${response.statusCode}");
         } else {
           String errorMessage = "Unknown API error (${response.statusCode})";
           try {

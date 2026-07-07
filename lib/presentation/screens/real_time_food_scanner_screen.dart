@@ -314,10 +314,10 @@ class _RealTimeFoodScannerScreenState extends State<RealTimeFoodScannerScreen>
     }
   }
 
-  /// Streams camera frames throttled to exactly 1 frame per second
+  /// Streams camera frames throttled to exactly 1 frame per 1.5 seconds
   void _startFrameThrottler() {
     _frameTimer?.cancel();
-    _frameTimer = Timer.periodic(const Duration(milliseconds: 1000), (timer) async {
+    _frameTimer = Timer.periodic(const Duration(milliseconds: 1500), (timer) async {
       if (!_isConnected ||
           _isProcessingFrame ||
           _cameraController == null ||

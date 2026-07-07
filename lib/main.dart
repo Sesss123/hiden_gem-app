@@ -49,6 +49,8 @@ import 'core/services/zenith_security_facade.dart';
 import 'core/services/emergency_control_service.dart';
 import 'core/services/monsoon_broadcast_service.dart';
 import 'core/services/consent_service.dart';
+import 'package:freerasp/freerasp.dart';
+import 'presentation/widgets/app_lock_wrapper.dart';
 
 class InitializationResult {
   final bool hiveSuccess;
@@ -150,6 +152,42 @@ void main() async {
   // Apply Strict HTTPS Security and SSL Pinning configuration globally
   if (!kIsWeb) {
     HttpOverrides.global = SecureNetworkOverrides();
+
+    // Initialize freeRASP for Runtime App Self-Protection
+    try {
+      final config = TalsecConfig(
+        androidConfig: AndroidConfig(
+          packageName: 'com.hidden.gems.hidden_gems_sl',
+          signingCertHashes: ['PLACEHOLDER_HASH'],
+          supportedAlternativeStores: [],
+        ),
+        iosConfig: IOSConfig(
+          bundleIds: ['com.hidden.gems.hiddenGemsSl'],
+          teamId: 'PLACEHOLDER_TEAM_ID',
+        ),
+        watcherMail: 'support@hiddengemssl.com',
+        isProd: kReleaseMode,
+      );
+      final callback = ThreatCallback(
+        onAppIntegrity: () => SystemNavigator.pop(),
+        onObfuscationIssues: () => SystemNavigator.pop(),
+        onDebug: () => SystemNavigator.pop(),
+        onDeviceBinding: () => SystemNavigator.pop(),
+        onDeviceID: () => SystemNavigator.pop(),
+        onHooks: () => SystemNavigator.pop(),
+        onPrivilegeEscalation: () => SystemNavigator.pop(), // Force close on root/jailbreak
+        onSecureHardwareNotAvailable: () => {},
+        onSimulator: () {
+          if (kReleaseMode) SystemNavigator.pop();
+        },
+        onUnofficialStore: () => {},
+      );
+      Talsec.instance.start(config);
+      Talsec.instance.attachListener(callback);
+      SecureLogger.info("freeRASP Security Shield Activated");
+    } catch(e) {
+      SecureLogger.error("freeRASP Initialization Error: $e");
+    }
   }
 
   // FLAG_SECURE is now handled directly in android/app/src/main/kotlin/com/hidden/gems/hidden_gems_sl/MainActivity.kt
@@ -556,7 +594,9 @@ class _HiddenGemsAppState extends ConsumerState<HiddenGemsApp> with WidgetsBindi
           ),
         ),
       ),
-      builder: (context, child) => GlobalScreenshotWrapper(child: child!),
+      builder: (context, child) => GlobalScreenshotWrapper(
+        child: AppLockWrapper(child: child!),
+      ),
     );
   }
 
