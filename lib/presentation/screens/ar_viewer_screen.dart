@@ -163,20 +163,7 @@ class _ARViewerScreenState extends State<ARViewerScreen>
     _initMemoryStream();
   }
 
-  @override
-  void dispose() {
-    _sessionSubscription?.cancel();
-    _memorySubscription?.cancel();
-    _positionStream?.cancel();
-    _radarTimer?.cancel();
-    _demoTimer?.cancel();
-    _partnerRotateTimer?.cancel();
-    _scanAnimController.dispose();
-    _thenNowController.dispose();
-    _flashController.dispose();
-    _audioPlayer.dispose();
-    super.dispose();
-  }
+
 
   void _initMemoryStream() {
     _memorySubscription = MemoryService.getNearbyMemories(

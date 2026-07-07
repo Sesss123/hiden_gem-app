@@ -46,7 +46,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   List<EventModel> _todayEvents = [];
   bool _showEventBanner = true;
   List<DiscoveryPlace> _localGems = [];
-  bool _imagesPrecached = false;
+
 
   @override
   void initState() {
@@ -889,7 +889,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
                           colors: [
-                            AppTheme.colors.orange.withOpacity(0.05),
+                            AppTheme.colors.orange.withValues(alpha: 0.05),
                             Colors.transparent,
                           ],
                         ),

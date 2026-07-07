@@ -195,13 +195,7 @@ class _RealTimeFoodScannerScreenState extends State<RealTimeFoodScannerScreen>
     _initCameraAndSocket();
   }
 
-  @override
-  void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
-    _disconnectWebSocket();
-    _cameraController?.dispose();
-    super.dispose();
-  }
+
 
   Future<void> _initCameraAndSocket() async {
     // Request camera permission

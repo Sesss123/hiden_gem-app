@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:flutter/services.dart';
 import 'package:hidden_gems_sl/core/theme/app_theme.dart';
-import 'package:hidden_gems_sl/core/theme/oracle_ui_system.dart';
+
 import 'package:google_fonts/google_fonts.dart';
 
 class AppLockWrapper extends StatefulWidget {
@@ -63,10 +63,6 @@ class _AppLockWrapperState extends State<AppLockWrapper> with WidgetsBindingObse
     try {
       authenticated = await auth.authenticate(
         localizedReason: 'Scan your fingerprint or face to access Hidden Gems SL',
-        options: const AuthenticationOptions(
-          stickyAuth: true,
-          biometricOnly: true,
-        ),
       );
     } on PlatformException catch (e) {
       debugPrint("Biometric Error: $e");
@@ -106,9 +102,14 @@ class _AppLockWrapperState extends State<AppLockWrapper> with WidgetsBindingObse
                       ),
                     ),
                     const SizedBox(height: 16),
-                    OracleUI.glowingButton(
-                      text: "Unlock Now",
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppTheme.colors.orange,
+                        padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      ),
                       onPressed: _authenticate,
+                      child: Text("Unlock Now", style: GoogleFonts.outfit(color: AppTheme.colors.white)),
                     ),
                   ],
                 ),

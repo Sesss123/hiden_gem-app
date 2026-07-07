@@ -159,7 +159,6 @@ void main() async {
         androidConfig: AndroidConfig(
           packageName: 'com.hidden.gems.hidden_gems_sl',
           signingCertHashes: ['PLACEHOLDER_HASH'],
-          supportedAlternativeStores: [],
         ),
         iosConfig: IOSConfig(
           bundleIds: ['com.hidden.gems.hiddenGemsSl'],
@@ -175,7 +174,6 @@ void main() async {
         onDeviceBinding: () => SystemNavigator.pop(),
         onDeviceID: () => SystemNavigator.pop(),
         onHooks: () => SystemNavigator.pop(),
-        onPrivilegeEscalation: () => SystemNavigator.pop(), // Force close on root/jailbreak
         onSecureHardwareNotAvailable: () => {},
         onSimulator: () {
           if (kReleaseMode) SystemNavigator.pop();
