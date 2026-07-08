@@ -586,36 +586,6 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
     }
   }
 
-  int _getFilterCount(String filter) {
-    if (filter == 'all') return _allPlaces.length;
-    
-    final cleanFilter = filter.toLowerCase();
-    return _allPlaces.where((p) {
-      final cat = p.category.toLowerCase();
-      final name = p.name.toLowerCase();
-      final resolvedDistrict = _resolveDistrict(p).toLowerCase();
-
-      if (cleanFilter == "nature") {
-        return cat.contains("nature") || cat.contains("hiking") || cat.contains("waterfall") || cat.contains("park") || cat.contains("village");
-      } else if (cleanFilter == "waterfall") {
-        return cat.contains("waterfall") || name.contains("waterfall") || name.contains("ella");
-      } else if (cleanFilter == "hiking") {
-        return cat.contains("hiking") || cat.contains("mountain") || cat.contains("peak") || name.contains("peak");
-      } else if (cleanFilter == "culture") {
-        return cat.contains("culture") || cat.contains("histor") || cat.contains("temple") || cat.contains("village");
-      } else if (cleanFilter == "coastal") {
-        return cat.contains("coast") || cat.contains("beach") || cat.contains("ocean") || resolvedDistrict.contains("galle") || resolvedDistrict.contains("jaffna");
-      } else if (cleanFilter == "budget") {
-        return p.ticketRange.toLowerCase().contains("free") || p.ticketRange.contains("50") || p.ticketRange.contains("100");
-      } else if (cleanFilter == "family") {
-        return p.vehicleAccess.toLowerCase().contains("all vehicles") || p.roadType.toLowerCase().contains("paved");
-      } else if (cleanFilter == "ar") {
-        return p.arSupported;
-      }
-      return cat.contains(cleanFilter) || name.contains(cleanFilter) || resolvedDistrict.contains(cleanFilter);
-    }).length;
-  }
-
   Widget _buildLocationHeader() {
     final l10n = AppLocalizations.of(context)!;
     return SliverAppBar(
@@ -652,27 +622,32 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  OracleUI.neonText(
+                  Text(
                     l10n.discoveryHeader,
                     style: GoogleFonts.outfit(
-                      fontSize: 32,
+                      fontSize: 28,
                       color: AppTheme.colors.white,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: -0.4,
                       shadows: [
                         Shadow(color: AppTheme.colors.black38, offset: Offset(0, 2), blurRadius: 4)
                       ],
                     ),
                   ),
                   const SizedBox(height: 16),
-                  OracleUI.glassContainer(
-                    height: 54,
+                  Container(
+                    height: 50,
                     width: double.infinity,
                     padding: const EdgeInsets.symmetric(horizontal: 16),
-                    radius: BorderRadius.circular(27),
-                    opacity: 0.85,
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? AppTheme.surfaceMuted(context)
+                          : AppTheme.colors.white.withValues(alpha: 0.92),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
                     child: Row(
                       children: [
-                        Icon(Icons.search, color: Theme.of(context).colorScheme.primary, size: 22),
+                        Icon(Icons.search, color: AppTheme.textSecondary(context), size: 20),
                         const SizedBox(width: 12),
                         Expanded(
                           child: TextField(
@@ -735,12 +710,11 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
         itemBuilder: (context, index) {
           final filter = _filters[index];
           final isSelected = _selectedFilter == filter;
-          final count = _getFilterCount(filter);
           return Padding(
             padding: const EdgeInsets.only(right: 8),
             child: OracleUI.glassChip(
               context: context,
-              label: "${L10nUtils.getFilterLabel(context, filter)} ($count)",
+              label: L10nUtils.getFilterLabel(context, filter),
               isSelected: isSelected,
               icon: _getFilterIcon(filter),
               onTap: () => _onFilterChanged(filter),
@@ -974,16 +948,22 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Icon(icon, color: Theme.of(context).colorScheme.primary, size: 18),
-          const SizedBox(width: 12),
-          OracleUI.neonText(
-            title.toUpperCase(), 
+          Text(
+            title,
             style: GoogleFonts.outfit(
-              fontSize: 14, 
-              fontWeight: FontWeight.bold, 
+              fontSize: 15,
+              fontWeight: FontWeight.w700,
               color: AppTheme.textPrimary(context),
-              letterSpacing: 2,
+            ),
+          ),
+          Text(
+            "See all",
+            style: GoogleFonts.inter(
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+              color: Theme.of(context).colorScheme.primary,
             ),
           ),
         ],
@@ -1119,12 +1099,11 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                place.name.toUpperCase(),
+                                place.name,
                                 style: GoogleFonts.outfit(
-                                  fontSize: isOracle ? 15 : 13,
-                                  fontWeight: FontWeight.bold,
+                                  fontSize: isOracle ? 16 : 13,
+                                  fontWeight: FontWeight.w800,
                                   color: AppTheme.textPrimary(context),
-                                  letterSpacing: 0.5,
                                 ),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
@@ -1132,24 +1111,22 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
                               const SizedBox(height: 6),
                               Row(
                                 children: [
-                                  Icon(Icons.location_on_rounded, size: 12, color: Theme.of(context).colorScheme.primary),
-                                  const SizedBox(width: 4),
                                   Text(
-                                    "${place.distanceKm.toStringAsFixed(1)} KM",
+                                    "${place.distanceKm.toStringAsFixed(1)} km",
                                     style: GoogleFonts.inter(
-                                      fontSize: 10,
+                                      fontSize: 11,
                                       color: AppTheme.textSecondary(context),
-                                      fontWeight: FontWeight.bold,
+                                      fontWeight: FontWeight.w500,
                                     ),
                                   ),
                                   const Spacer(),
                                   Flexible(
-                                    child: OracleUI.neonText(
-                                      place.ticketRange.toUpperCase(),
+                                    child: Text(
+                                      place.ticketRange,
                                       style: GoogleFonts.outfit(
-                                        fontSize: 10,
+                                        fontSize: 11,
                                         color: Theme.of(context).colorScheme.primary,
-                                        fontWeight: FontWeight.w900,
+                                        fontWeight: FontWeight.w700,
                                       ),
                                     ),
                                   ),
@@ -1278,12 +1255,11 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
                         children: [
                           Expanded(
                             child: Text(
-                              place.name.toUpperCase(),
+                              place.name,
                               style: GoogleFonts.outfit(
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
+                                fontSize: 15,
+                                fontWeight: FontWeight.w700,
                                 color: AppTheme.textPrimary(context),
-                                letterSpacing: 0.5,
                               ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
@@ -1340,21 +1316,20 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
                           Icon(Icons.location_on_rounded, size: 14, color: Theme.of(context).colorScheme.primary),
                           const SizedBox(width: 4),
                           Text(
-                            "${place.distanceKm.toStringAsFixed(1)} KM",
+                            "${place.distanceKm.toStringAsFixed(1)} km",
                             style: GoogleFonts.inter(
                               fontSize: 11,
-                              fontWeight: FontWeight.bold,
+                              fontWeight: FontWeight.w500,
                               color: AppTheme.textSecondary(context),
                             ),
                           ),
                           const Spacer(),
                           Text(
-                            place.ticketRange.toUpperCase(),
+                            place.ticketRange,
                             style: GoogleFonts.outfit(
-                              fontSize: 10,
-                              fontWeight: FontWeight.w900,
+                              fontSize: 11,
+                              fontWeight: FontWeight.w700,
                               color: Theme.of(context).colorScheme.primary,
-                              letterSpacing: 0.5,
                             ),
                           ),
                           const SizedBox(width: 8),

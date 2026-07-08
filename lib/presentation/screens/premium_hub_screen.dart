@@ -50,11 +50,10 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
       body: SingleChildScrollView(
         child: Column(
           children: [
-            SizedBox(height: 100),
             _buildModernHeader(isPremium),
-            SizedBox(height: 40),
+            SizedBox(height: 32),
             _buildBenefitList(),
-            SizedBox(height: 60),
+            SizedBox(height: 40),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 24),
               child: _buildPricingCard(isPremium),
@@ -67,62 +66,66 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
   }
 
   Widget _buildModernHeader(bool isPremium) {
-    const goldColor = AppPalette.rust;
-    return Column(
-      children: [
-        Container(
-          width: 140, height: 140,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(70),
-            border: Border.all(color: goldColor.withValues(alpha: 0.3)),
-            color: AppTheme.colors.white,
-            boxShadow: [
-              BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4)),
-            ],
-          ),
-          child: Container(
-            margin: EdgeInsets.all(8),
+    final goldColor = AppPalette.heroOchre;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(24, 100, 24, 32),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: isDark ? [AppPaletteDark.card, AppPaletteDark.bg] : [AppPalette.ink, const Color(0xFF4A2F1C)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: const BorderRadius.only(
+          bottomLeft: Radius.circular(36),
+          bottomRight: Radius.circular(36),
+        ),
+      ),
+      child: Column(
+        children: [
+          Container(
+            width: 88, height: 88,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: goldColor.withValues(alpha: 0.1),
+              color: goldColor.withValues(alpha: 0.18),
             ),
-            child: Icon(Icons.stars_rounded, color: goldColor, size: 64),
-          ),
-        )
-        .animate(onPlay: (c) => c.repeat())
-        .shimmer(duration: 3.seconds)
-        .scale(duration: 2.seconds, begin: const Offset(0.95, 0.95), end: const Offset(1.05, 1.05), curve: Curves.easeInOut),
-        SizedBox(height: 32),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            if (isPremium) Icon(Icons.workspace_premium_rounded, color: goldColor, size: 28),
-            if (isPremium) SizedBox(width: 12),
-            Flexible(
-              child: Text(
-                "UNLEASH THE ORACLE",
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: GoogleFonts.outfit(
-                  fontSize: 26,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: 2,
-                  color: Theme.of(context).colorScheme.onSurface,
+            child: Icon(Icons.stars_rounded, color: goldColor, size: 40),
+          )
+          .animate(onPlay: (c) => c.repeat())
+          .shimmer(duration: 3.seconds)
+          .scale(duration: 2.seconds, begin: const Offset(0.95, 0.95), end: const Offset(1.05, 1.05), curve: Curves.easeInOut),
+          SizedBox(height: 20),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (isPremium) Icon(Icons.workspace_premium_rounded, color: goldColor, size: 22),
+              if (isPremium) SizedBox(width: 10),
+              Flexible(
+                child: Text(
+                  "Go Premium",
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: GoogleFonts.outfit(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w800,
+                    color: AppTheme.colors.white,
+                  ),
                 ),
               ),
-            ),
-          ],
-        ),
-        SizedBox(height: 12),
-        Text(
-          "Elevate your Sri Lankan journey to Premium",
-          style: GoogleFonts.inter(
-            fontSize: 14,
-            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
-            fontWeight: FontWeight.w600,
+            ],
           ),
-        ),
-      ],
+          SizedBox(height: 8),
+          Text(
+            "Full AR & unlimited AI trips",
+            style: GoogleFonts.inter(
+              fontSize: 13,
+              color: AppTheme.colors.white.withValues(alpha: 0.7),
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      ),
     ).animate().fadeIn(duration: 800.ms).slideY(begin: 0.1);
   }
 
@@ -157,32 +160,27 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
   }
 
   Widget _benefitRow(IconData icon, String title, String desc) {
-    const goldColor = AppPalette.rust;
+    final iconColor = Theme.of(context).colorScheme.primary;
     return Padding(
-      padding: EdgeInsets.only(bottom: 24),
+      padding: EdgeInsets.only(bottom: 16),
       child: Container(
-        padding: EdgeInsets.all(20),
+        padding: EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: AppTheme.colors.white,
-          borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: AppTheme.secondaryBorder(context)),
-          boxShadow: [
-            BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4)),
-          ],
+          color: AppTheme.surfaceMuted(context),
+          borderRadius: BorderRadius.circular(18),
         ),
         child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Container(
-              padding: EdgeInsets.all(12),
+              padding: EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: goldColor.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: goldColor.withValues(alpha: 0.2)),
+                color: iconColor.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(12),
               ),
-              child: Icon(icon, color: goldColor, size: 24),
+              child: Icon(icon, color: iconColor, size: 20),
             ),
-            SizedBox(width: 20),
+            SizedBox(width: 14),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -190,19 +188,19 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
                   Text(
                     title,
                     style: GoogleFonts.outfit(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w900,
-                      color: Theme.of(context).colorScheme.onSurface,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                      color: AppTheme.textPrimary(context),
                     ),
                   ),
-                  SizedBox(height: 6),
+                  SizedBox(height: 3),
                   Text(
                     desc,
                     style: GoogleFonts.inter(
-                      fontSize: 13,
-                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
-                      height: 1.5,
-                      fontWeight: FontWeight.w600,
+                      fontSize: 11,
+                      color: AppTheme.textSecondary(context),
+                      height: 1.4,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                 ],
@@ -222,49 +220,43 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
       children: [
         if (isPremium) ...[
           Container(
-            padding: EdgeInsets.all(40),
+            padding: EdgeInsets.all(32),
             decoration: BoxDecoration(
-              color: AppTheme.colors.white,
-              borderRadius: BorderRadius.circular(32),
-              border: Border.all(color: AppTheme.secondaryBorder(context)),
-              boxShadow: [
-                BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4)),
-              ],
+              color: AppTheme.surfaceMuted(context),
+              borderRadius: BorderRadius.circular(28),
             ),
             child: Column(
               children: [
-                Icon(Icons.verified_user_rounded, color: goldColor, size: 64)
+                Icon(Icons.verified_user_rounded, color: goldColor, size: 56)
                     .animate(onPlay: (c) => c.repeat())
                     .shimmer(duration: 4.seconds),
-                SizedBox(height: 24),
+                SizedBox(height: 20),
                 Text(
-                  "${(profile.premiumPlan ?? 'PREMIUM').toUpperCase()} ACTIVE",
+                  "${profile.premiumPlan ?? 'Premium'} active",
                   style: GoogleFonts.outfit(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w900,
-                    color: Theme.of(context).colorScheme.onSurface,
-                    letterSpacing: 2,
+                    fontSize: 17,
+                    fontWeight: FontWeight.w700,
+                    color: AppTheme.textPrimary(context),
                   ),
                 ),
                 if (profile.premiumExpiresAt != null)
                   Padding(
-                    padding: EdgeInsets.only(top: 12),
+                    padding: EdgeInsets.only(top: 10),
                     child: Text(
                       "Renewing on ${profile.premiumExpiresAt!.day}/${profile.premiumExpiresAt!.month}/${profile.premiumExpiresAt!.year}",
-                      style: GoogleFonts.inter(fontSize: 12, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4), fontWeight: FontWeight.w900),
+                      style: GoogleFonts.inter(fontSize: 12, color: AppTheme.textSecondary(context), fontWeight: FontWeight.w600),
                     ),
                   ),
-                SizedBox(height: 32),
+                SizedBox(height: 24),
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding: EdgeInsets.symmetric(horizontal: 14, vertical: 7),
                   decoration: BoxDecoration(
-                    color: AppTheme.colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.05)),
+                    color: Theme.of(context).colorScheme.surface,
+                    borderRadius: BorderRadius.circular(100),
                   ),
                   child: Text(
-                    "ARCHIVED VIA ${profile.premiumSource?.replaceAll('_', ' ').toUpperCase() ?? 'STORE'}",
-                    style: GoogleFonts.inter(fontSize: 9, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5), fontWeight: FontWeight.w900, letterSpacing: 1),
+                    "Via ${profile.premiumSource?.replaceAll('_', ' ') ?? 'store'}",
+                    style: GoogleFonts.inter(fontSize: 10, color: AppTheme.textSecondary(context), fontWeight: FontWeight.w600),
                   ),
                 ),
               ],
@@ -310,23 +302,22 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
               );
             },
           ),
-          SizedBox(height: 40),
+          SizedBox(height: 32),
           TextButton(
             onPressed: () => ref.read(premiumProvider.notifier).restorePurchases(),
             child: Text(
-              "RESTORE PREVIOUS ARCHIVES",
+              "Restore previous purchases",
               style: GoogleFonts.inter(
-                fontSize: 12,
-                color: goldColor,
-                fontWeight: FontWeight.w900,
-                letterSpacing: 1,
+                fontSize: 13,
+                color: Theme.of(context).colorScheme.primary,
+                fontWeight: FontWeight.w700,
               ),
             ),
           ),
-          SizedBox(height: 12),
+          SizedBox(height: 8),
           Text(
             "Terms of Service  •  Privacy Policy",
-            style: GoogleFonts.inter(fontSize: 11, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.2), fontWeight: FontWeight.w800),
+            style: GoogleFonts.inter(fontSize: 11, color: AppTheme.textSecondary(context).withValues(alpha: 0.7), fontWeight: FontWeight.w600),
           ),
           SizedBox(height: 24),
           if (kDebugMode)
@@ -369,16 +360,24 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
     bool isRecommended = false,
     bool isLocked = false,
   }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    // Recommended tier gets the dark "premium" treatment (gold-on-charcoal);
+    // other tiers stay as plain shadow cards.
+    final cardBg = isRecommended ? AppPalette.ink : (isDark ? AppPaletteDark.card : Theme.of(context).colorScheme.surface);
+    final titleColor = isRecommended ? AppPalette.heroOchre : AppTheme.textPrimary(context);
+    final priceColor = isRecommended ? AppTheme.colors.white : AppTheme.textPrimary(context);
+    final featureTextColor = isRecommended ? AppTheme.colors.white.withValues(alpha: 0.75) : AppTheme.textSecondary(context);
+    final checkColor = isRecommended ? AppPalette.heroOchre : color;
+
     return Container(
       decoration: BoxDecoration(
-        color: AppTheme.colors.white,
-        borderRadius: BorderRadius.circular(32),
-        border: Border.all(color: isRecommended ? color.withValues(alpha: 0.4) : AppTheme.secondaryBorder(context)),
-        boxShadow: [
-          BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4)),
+        color: cardBg,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: isRecommended ? null : [
+          BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.05), blurRadius: 16, offset: const Offset(0, 6)),
         ],
       ),
-      padding: EdgeInsets.all(28),
+      padding: EdgeInsets.all(24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -387,12 +386,11 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
             children: [
               Expanded(
                 child: Text(
-                  title.toUpperCase(),
-                  style: GoogleFonts.inter(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: 2,
-                    color: color,
+                  title,
+                  style: GoogleFonts.outfit(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: titleColor,
                   ),
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -400,76 +398,76 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
               if (isRecommended) ...[
                 SizedBox(width: 8),
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
-                    color: color.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: color.withValues(alpha: 0.4)),
+                    color: AppPalette.heroOchre,
+                    borderRadius: BorderRadius.circular(100),
                   ),
                   child: Text(
-                    "MOST POPULAR",
-                    style: GoogleFonts.inter(fontSize: 8, fontWeight: FontWeight.w900, color: color, letterSpacing: 1),
+                    "Popular",
+                    style: GoogleFonts.inter(fontSize: 9, fontWeight: FontWeight.w700, color: AppPalette.ink),
                   ),
                 ),
               ],
               if (isLocked)
                 Text(
-                   "LOCKED",
-                  style: GoogleFonts.inter(fontSize: 9, fontWeight: FontWeight.w900, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.2), letterSpacing: 2),
+                   "Locked",
+                  style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.w600, color: AppTheme.textSecondary(context).withValues(alpha: 0.6)),
                 ),
             ],
           ),
-          SizedBox(height: 20),
+          SizedBox(height: 12),
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
                 priceStr,
                 style: GoogleFonts.outfit(
-                  fontSize: 34,
-                  fontWeight: FontWeight.w900,
-                  color: Theme.of(context).colorScheme.onSurface,
-                  letterSpacing: -1,
+                  fontSize: 28,
+                  fontWeight: FontWeight.w800,
+                  color: priceColor,
                 ),
               ),
-              SizedBox(width: 8),
+              SizedBox(width: 6),
               Padding(
-                padding: EdgeInsets.only(bottom: 6),
+                padding: EdgeInsets.only(bottom: 5),
                 child: Text(
                   "/ month",
-                  style: GoogleFonts.inter(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.3), fontSize: 13, fontWeight: FontWeight.w800),
+                  style: GoogleFonts.inter(color: featureTextColor, fontSize: 12, fontWeight: FontWeight.w600),
                 ),
               ),
             ],
           ),
-          SizedBox(height: 24),
+          SizedBox(height: 18),
           ...features.map((f) => Padding(
-            padding: EdgeInsets.only(bottom: 12),
+            padding: EdgeInsets.only(bottom: 10),
             child: Row(
               children: [
-                Icon(Icons.check_circle_rounded, size: 18, color: color.withValues(alpha: 0.6)),
-                SizedBox(width: 12),
+                Icon(Icons.check_circle_rounded, size: 16, color: checkColor),
+                SizedBox(width: 10),
                 Expanded(
-                  child: Text(f, style: GoogleFonts.inter(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7), fontSize: 13, fontWeight: FontWeight.w600)),
+                  child: Text(f, style: GoogleFonts.inter(color: featureTextColor, fontSize: 12, fontWeight: FontWeight.w500)),
                 ),
               ],
             ),
           )),
-          SizedBox(height: 32),
+          SizedBox(height: 20),
           SizedBox(
             width: double.infinity,
-            height: 60,
+            height: 52,
             child: ElevatedButton(
               onPressed: isLocked ? null : onPressed,
               style: ElevatedButton.styleFrom(
-                backgroundColor: isLocked ? AppTheme.colors.white.withValues(alpha: 0.05) : color,
-                foregroundColor: isLocked ? AppTheme.colors.white10 : AppTheme.colors.black,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                backgroundColor: isLocked
+                    ? AppTheme.surfaceMuted(context)
+                    : (isRecommended ? AppPalette.heroOchre : color),
+                foregroundColor: isLocked ? AppTheme.textSecondary(context) : AppPalette.ink,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
                 elevation: 0,
               ),
               child: Text(
-                isLocked ? "COMING SOON" : "UPGRADE NOW",
-                style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 12, letterSpacing: 1),
+                isLocked ? "Coming soon" : "Upgrade now",
+                style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 13),
               ),
             ),
           ),

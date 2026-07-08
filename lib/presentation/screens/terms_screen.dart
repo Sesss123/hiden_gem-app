@@ -53,22 +53,21 @@ class _TermsScreenState extends ConsumerState<TermsScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "TERMS & PRIVACY",
+                    "Terms & privacy",
                     style: GoogleFonts.outfit(
-                      fontSize: 28,
-                      fontWeight: FontWeight.w900,
+                      fontSize: 26,
+                      fontWeight: FontWeight.w800,
                       color: AppTheme.textPrimary(context),
                       letterSpacing: -0.5,
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 6),
                   Text(
-                    "GOVERNANCE PROTOCOLS v2.0",
+                    "Please review before continuing",
                     style: GoogleFonts.inter(
-                      fontSize: 10,
-                      fontWeight: FontWeight.w800,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
                       color: AppTheme.textSecondary(context),
-                      letterSpacing: 2,
                     ),
                   ),
                 ],
@@ -83,11 +82,23 @@ class _TermsScreenState extends ConsumerState<TermsScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      _sectionCard("I. DATA ARCHIVAL & SOVEREIGNTY", "The Oracle respects your digital footprint. We securely archive your profile frequencies and saved journeys within a secure local vault. Your neural data remains under your absolute control."),
+                      _sectionCard(
+                        color: AppTheme.successGreen,
+                        title: "Data & privacy",
+                        body: "We keep your data secure. We securely store your profile and saved trips, and never sell your data to third parties.",
+                      ),
                       const SizedBox(height: 12),
-                      _sectionCard("II. AI ORACLE PREDICTIVE PROTOCOLS", "The AI Oracle is a predictive engine. While we strive for absolute precision in our transmissions, its revelations may diverge from real-time physical realities. You must verify critical information independently.\n\nBy engaging the Oracle, you agree:\n• To use results for enlightenment, not malice.\n• To never attempt a recursive prompt exploitation.\n• To accept all insights as hypothetical transmissions."),
+                      _sectionCard(
+                        color: AppTheme.warningAmber,
+                        title: "AI trip planning",
+                        body: "Our AI planner is a predictive tool. While we strive for accuracy, its suggestions may differ from real-time conditions, so please verify critical information independently.\n\nBy using the AI planner, you agree to:\n• Use results responsibly, not maliciously.\n• Never attempt to exploit or manipulate the AI.\n• Treat all suggestions as guidance, not guarantees.",
+                      ),
                       const SizedBox(height: 12),
-                      _sectionCard("III. EXPLORER CONDUCT MATRIX", "You agree to traverse the application with respect, ensuring the stability of the collective infrastructure and the sanctity of other explorers' journeys."),
+                      _sectionCard(
+                        color: Theme.of(context).colorScheme.primary,
+                        title: "Community conduct",
+                        body: "You agree to use the app respectfully, helping keep the platform safe and reliable for other travelers.",
+                      ),
                       const SizedBox(height: 32),
                     ],
                   ),
@@ -97,40 +108,44 @@ class _TermsScreenState extends ConsumerState<TermsScreen> {
             
             Container(
               decoration: BoxDecoration(
-                color: AppTheme.colors.white,
+                color: Theme.of(context).cardColor,
                 border: Border(top: BorderSide(color: AppTheme.secondaryBorder(context))),
               ),
               padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20.0),
               child: Column(
                 children: [
-                  TextButton.icon(
-                    onPressed: () {
-                      HapticFeedback.selectionClick();
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (_) => const PrivacyPolicyScreen()),
-                      );
-                    },
-                    icon: const Icon(Icons.privacy_tip_outlined, size: 18),
-                    label: Text(
-                      "Read Full Privacy Policy & Legal Document",
-                      style: GoogleFonts.inter(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700,
-                        decoration: TextDecoration.underline,
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: TextButton(
+                      onPressed: () {
+                        HapticFeedback.selectionClick();
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => const PrivacyPolicyScreen()),
+                        );
+                      },
+                      style: TextButton.styleFrom(padding: EdgeInsets.zero, alignment: Alignment.centerLeft),
+                      child: Text(
+                        "Read the full privacy policy",
+                        style: GoogleFonts.inter(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                          color: primaryColor,
+                          decoration: TextDecoration.underline,
+                        ),
                       ),
                     ),
                   ),
                   const SizedBox(height: 8),
                   _buildCheckbox(
                     value: _agreedToTerms,
-                    label: "I accept the Privacy Protocol & Terms of Service",
+                    label: "I accept the Terms of Service & Privacy Policy",
                     onChanged: (val) => setState(() => _agreedToTerms = val ?? false),
                   ),
                   const SizedBox(height: 12),
                   _buildCheckbox(
                     value: _agreedToAiPolicy,
-                    label: "I acknowledge the Oracle Protocols and limitations",
+                    label: "I understand the AI planner's limitations",
                     onChanged: (val) => setState(() => _agreedToAiPolicy = val ?? false),
                   ),
                   const SizedBox(height: 20),
@@ -142,16 +157,15 @@ class _TermsScreenState extends ConsumerState<TermsScreen> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: primaryColor,
                         disabledBackgroundColor: AppTheme.colors.black12,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
                         elevation: 0,
                       ),
                       child: Text(
-                        "INITIATE LINK",
-                        style: GoogleFonts.outfit(
+                        "Continue",
+                        style: GoogleFonts.inter(
                           fontSize: 14,
-                          fontWeight: FontWeight.w900,
+                          fontWeight: FontWeight.w700,
                           color: AppTheme.colors.white,
-                          letterSpacing: 2,
                         ),
                       ),
                     ),
@@ -165,27 +179,38 @@ class _TermsScreenState extends ConsumerState<TermsScreen> {
     );
   }
 
-  Widget _sectionCard(String title, String body) {
+  Widget _sectionCard({required Color color, required String title, required String body}) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppTheme.colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppTheme.secondaryBorder(context)),
+        color: AppTheme.surfaceMuted(context),
+        borderRadius: BorderRadius.circular(18),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            title,
-            style: GoogleFonts.outfit(
-              fontSize: 12,
-              fontWeight: FontWeight.w800,
-              color: AppTheme.modernGreen(context),
-              letterSpacing: 1,
-            ),
+          Row(
+            children: [
+              Container(
+                width: 22,
+                height: 22,
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.35),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Text(
+                title,
+                style: GoogleFonts.inter(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                  color: AppTheme.textPrimary(context),
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 10),
           Text(
             body,
             style: GoogleFonts.inter(

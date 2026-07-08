@@ -36,43 +36,47 @@ class LanguageSelectionScreen extends ConsumerWidget {
                 
                 // Lang Orb
                 Container(
-                  width: 80,
-                  height: 80,
+                  width: 64,
+                  height: 64,
                   decoration: BoxDecoration(
-                    shape: BoxShape.circle,
+                    borderRadius: BorderRadius.circular(20),
                     gradient: LinearGradient(
-                      colors: [AppTheme.colors.primary, AppTheme.colors.primary],
+                      colors: [
+                        Theme.of(context).colorScheme.primary,
+                        Theme.of(context).colorScheme.primary.withValues(alpha: 0.75),
+                      ],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                     ),
-                    border: Border.all(color: AppPalette.rust.withValues(alpha: 0.2)),
                   ),
                   child: const Icon(
                     Icons.translate_rounded,
-                    size: 32,
-                    color: AppPalette.rust,
+                    size: 30,
+                    color: Colors.white,
                   ),
                 ).animate().scale(duration: 600.ms, curve: Curves.easeOutBack),
-                
+
                 const SizedBox(height: 24),
-                
+
                 // Title
                 Text(
-                  "Choose Your Path",
+                  "Choose your language",
                   style: GoogleFonts.outfit(
-                    fontSize: 24,
-                    fontWeight: FontWeight.w900,
+                    fontSize: 22,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: -0.5,
                     color: AppTheme.textPrimary(context),
                   ),
                 ).animate().fadeIn(duration: 800.ms).slideY(begin: 0.1),
-                
+
                 const SizedBox(height: 8),
-                
+
                 // Subtitle
                 Text(
-                  l10n.selectOracleLanguage,
+                  "You can change this later in settings",
                   style: GoogleFonts.inter(
                     color: AppTheme.textSecondary(context),
+                    fontWeight: FontWeight.w500,
                     fontSize: 12,
                   ),
                   textAlign: TextAlign.center,
@@ -88,8 +92,8 @@ class LanguageSelectionScreen extends ConsumerWidget {
                     _buildLanguageOption(
                       context: context,
                       ref: ref,
-                      label: "ENGLISH",
-                      subLabel: "English - Global Standard",
+                      label: "English",
+                      subLabel: "Global standard",
                       locale: const Locale('en'),
                       delay: 300.ms,
                     ),
@@ -98,7 +102,7 @@ class LanguageSelectionScreen extends ConsumerWidget {
                       context: context,
                       ref: ref,
                       label: "සිංහල",
-                      subLabel: "Sinhala - දේශීය අත්දැකීම",
+                      subLabel: "Local experience",
                       locale: const Locale('si'),
                       delay: 400.ms,
                     ),
@@ -107,7 +111,7 @@ class LanguageSelectionScreen extends ConsumerWidget {
                       context: context,
                       ref: ref,
                       label: "தமிழ்",
-                      subLabel: "Tamil - உள்ளூர் அனுபவம்",
+                      subLabel: "Local experience",
                       locale: const Locale('ta'),
                       delay: 500.ms,
                     ),
@@ -151,12 +155,11 @@ class LanguageSelectionScreen extends ConsumerWidget {
                     }
                   },
                   child: Text(
-                    l10n.skipForNow.toUpperCase(),
+                    l10n.skipForNow,
                     style: GoogleFonts.inter(
-                      color: AppTheme.textSecondary(context).withValues(alpha: 0.5),
-                      fontWeight: FontWeight.w800,
-                      fontSize: 10,
-                      letterSpacing: 2,
+                      color: AppTheme.textSecondary(context),
+                      fontWeight: FontWeight.w600,
+                      fontSize: 12,
                     ),
                   ),
                 ).animate().fadeIn(delay: 800.ms),
@@ -196,7 +199,7 @@ class LanguageSelectionScreen extends ConsumerWidget {
 
     // BUG-071: Wrap in Material Card with Clip.antiAlias to prevent container background color from masking the InkWell ripple splash
     return Card(
-      color: Theme.of(context).brightness == Brightness.dark ? AppTheme.colors.primary : AppTheme.colors.white,
+      color: AppTheme.surfaceMuted(context),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       elevation: 0,
       margin: EdgeInsets.zero,
@@ -212,10 +215,6 @@ class LanguageSelectionScreen extends ConsumerWidget {
         child: Container(
           // BUG-091: Support RTL layouts using direction-aware padding (EdgeInsetsDirectional)
           padding: const EdgeInsetsDirectional.only(start: 20, end: 20, top: 16, bottom: 16),
-          decoration: BoxDecoration(
-            border: Border.all(color: AppTheme.secondaryBorder(context)),
-            borderRadius: BorderRadius.circular(16),
-          ),
           child: Row(
             children: [
               Expanded(
@@ -226,15 +225,15 @@ class LanguageSelectionScreen extends ConsumerWidget {
                       label,
                       style: locale.languageCode == 'si'
                           ? GoogleFonts.notoSansSinhala(
-                              fontWeight: FontWeight.w800,
-                              fontSize: 16,
-                              color: AppTheme.colors.black87,
-                            )
-                          : GoogleFonts.inter(
-                              fontWeight: FontWeight.w800,
-                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                              fontSize: 15,
                               color: AppTheme.textPrimary(context),
-                              letterSpacing: 0.5,
+                            )
+                          : GoogleFonts.outfit(
+                              fontWeight: FontWeight.w700,
+                              fontSize: 15,
+                              color: AppTheme.textPrimary(context),
+                              letterSpacing: -0.2,
                             ),
                     ),
                     const SizedBox(height: 2),
@@ -242,13 +241,13 @@ class LanguageSelectionScreen extends ConsumerWidget {
                       subLabel,
                       style: locale.languageCode == 'si'
                           ? GoogleFonts.notoSansSinhala(
-                              fontSize: 12,
+                              fontSize: 11,
                               fontWeight: FontWeight.w500,
-                              color: AppTheme.colors.black54,
+                              color: AppTheme.textSecondary(context),
                             )
                           : GoogleFonts.inter(
                               color: AppTheme.textSecondary(context),
-                              fontSize: 12,
+                              fontSize: 11,
                               fontWeight: FontWeight.w500,
                             ),
                     ),
@@ -258,7 +257,7 @@ class LanguageSelectionScreen extends ConsumerWidget {
               // BUG-091: Use direction-aware icons matching directionality of the context
               Icon(
                 isRtl ? Icons.arrow_back_ios_new_rounded : Icons.arrow_forward_ios_rounded,
-                color: AppTheme.textSecondary(context).withValues(alpha: 0.3),
+                color: AppTheme.textSecondary(context),
                 size: 16,
               ),
             ],

@@ -2,7 +2,6 @@ import 'package:hidden_gems_sl/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:uuid/uuid.dart';
-import '../../core/theme/oracle_ui_system.dart';
 import '../../data/models/broadcast_message.dart';
 import '../../data/repositories/broadcast_repository.dart';
 import '../../data/datasources/auth_service.dart';
@@ -56,7 +55,7 @@ class _GuideBroadcastScreenState extends State<GuideBroadcastScreen> {
     
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("BROADCAST SENT SUCCESSFULLY")),
+        const SnackBar(content: Text("Broadcast sent successfully")),
       );
     }
   }
@@ -64,73 +63,83 @@ class _GuideBroadcastScreenState extends State<GuideBroadcastScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: OracleUI.auraBackground(
-        child: CustomScrollView(
-          slivers: [
-            SliverAppBar(
-              backgroundColor: AppTheme.colors.transparent,
-              elevation: 0,
-              title: OracleUI.neonText("BROADCAST CENTER", style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold)),
-              leading: IconButton(
-                icon: const Icon(Icons.close),
-                onPressed: () => Navigator.pop(context),
-              ),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+            elevation: 0,
+            title: Text(
+              "Broadcast",
+              style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.w800, letterSpacing: -0.5, color: AppTheme.textPrimary(context)),
             ),
-            SliverPadding(
-              padding: const EdgeInsets.all(24),
-              sliver: SliverList(
-                delegate: SliverChildListDelegate([
-                  _buildMessageInput(),
-                  const SizedBox(height: 32),
-                  OracleUI.neonText("ACTIVE BROADCASTS", style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 16),
-                  _buildBroadcastStream(),
-                ]),
-              ),
+            leading: IconButton(
+              icon: Icon(Icons.close, color: AppTheme.textPrimary(context)),
+              onPressed: () => Navigator.pop(context),
             ),
-          ],
-        ),
+          ),
+          SliverPadding(
+            padding: const EdgeInsets.all(20),
+            sliver: SliverList(
+              delegate: SliverChildListDelegate([
+                _buildMessageInput(),
+                const SizedBox(height: 28),
+                Text(
+                  "Active broadcasts",
+                  style: GoogleFonts.outfit(fontSize: 15, fontWeight: FontWeight.w700, letterSpacing: -0.2, color: AppTheme.textPrimary(context)),
+                ),
+                const SizedBox(height: 16),
+                _buildBroadcastStream(),
+              ]),
+            ),
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildMessageInput() {
-    return OracleUI.glassContainer(
-      padding: const EdgeInsets.all(24),
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: AppTheme.surfaceMuted(context),
+        borderRadius: BorderRadius.circular(20),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("CREATE BROADCAST", style: GoogleFonts.outfit(fontSize: 12, fontWeight: FontWeight.bold, color: AppTheme.colors.white54)),
-          const SizedBox(height: 16),
+          Text("Message to travelers", style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w700, color: AppTheme.textPrimary(context))),
+          const SizedBox(height: 12),
           TextField(
             controller: _messageController,
             maxLines: 3,
-            style: GoogleFonts.inter(color: AppTheme.colors.white),
+            style: TextStyle(color: AppTheme.textPrimary(context)),
             decoration: InputDecoration(
               hintText: "Enter your message to travelers...",
-              hintStyle: GoogleFonts.inter(color: AppTheme.colors.white24),
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: AppTheme.colors.white10)),
+              hintStyle: GoogleFonts.inter(color: AppTheme.textSecondary(context)),
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
               filled: true,
-              fillColor: AppTheme.colors.black12,
+              fillColor: Theme.of(context).colorScheme.surface,
             ),
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 16),
           _buildTypeSelector(),
-          const SizedBox(height: 24),
+          const SizedBox(height: 20),
           _buildPrioritySelector(),
-          const SizedBox(height: 32),
+          const SizedBox(height: 20),
           SizedBox(
             width: double.infinity,
-            height: 54,
+            height: 50,
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: Theme.of(context).colorScheme.primary,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
+                elevation: 0,
               ),
               onPressed: _isSending ? null : _sendBroadcast,
-              child: _isSending 
-                ? SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2, color: AppTheme.colors.black))
-                : Text("SEND TO ALL TRAVELERS", style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: AppTheme.colors.black)),
+              child: _isSending
+                ? SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2, color: AppTheme.colors.white))
+                : Text("Send to all travelers", style: GoogleFonts.inter(fontWeight: FontWeight.w700, color: AppTheme.colors.white)),
             ),
           ),
         ],
@@ -147,18 +156,17 @@ class _GuideBroadcastScreenState extends State<GuideBroadcastScreen> {
         return GestureDetector(
           onTap: () => setState(() => _selectedType = type),
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
             decoration: BoxDecoration(
-              color: isSelected ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.2) : AppTheme.colors.white.withValues(alpha: 0.05),
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: isSelected ? Theme.of(context).colorScheme.primary : AppTheme.colors.white10),
+              color: isSelected ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.surface,
+              borderRadius: BorderRadius.circular(100),
             ),
             child: Text(
-              type.name.toUpperCase(),
-              style: GoogleFonts.outfit(
-                fontSize: 10,
-                color: isSelected ? Theme.of(context).colorScheme.primary : AppTheme.colors.white54,
-                fontWeight: FontWeight.bold,
+              _capitalize(type.name),
+              style: GoogleFonts.inter(
+                fontSize: 11,
+                color: isSelected ? AppTheme.colors.white : AppTheme.textSecondary(context),
+                fontWeight: FontWeight.w600,
               ),
             ),
           ),
@@ -170,26 +178,33 @@ class _GuideBroadcastScreenState extends State<GuideBroadcastScreen> {
   Widget _buildPrioritySelector() {
     return Row(
       children: [
-        Text("PRIORITY: ", style: GoogleFonts.outfit(fontSize: 10, color: AppTheme.colors.white54)),
+        Text("Priority", style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: AppTheme.textSecondary(context))),
         const SizedBox(width: 8),
         ...BroadcastPriority.values.map((p) {
           final isSelected = _selectedPriority == p;
           return Padding(
             padding: const EdgeInsets.only(right: 8),
-            child: ChoiceChip(
-              label: Text(p.name.toUpperCase(), style: const TextStyle(fontSize: 10)),
-              selected: isSelected,
-              onSelected: (val) => setState(() => _selectedPriority = p),
-              selectedColor: _getPriorityColor(p).withValues(alpha: 0.3),
-              labelStyle: TextStyle(color: isSelected ? _getPriorityColor(p) : AppTheme.colors.white54),
-              backgroundColor: AppTheme.colors.transparent,
-              side: BorderSide(color: isSelected ? _getPriorityColor(p) : AppTheme.colors.white10),
+            child: GestureDetector(
+              onTap: () => setState(() => _selectedPriority = p),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                decoration: BoxDecoration(
+                  color: isSelected ? _getPriorityColor(p).withValues(alpha: 0.15) : Theme.of(context).colorScheme.surface,
+                  borderRadius: BorderRadius.circular(100),
+                ),
+                child: Text(
+                  _capitalize(p.name),
+                  style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.w600, color: isSelected ? _getPriorityColor(p) : AppTheme.textSecondary(context)),
+                ),
+              ),
             ),
           );
         }),
       ],
     );
   }
+
+  String _capitalize(String s) => s.isEmpty ? s : s[0].toUpperCase() + s.substring(1);
 
   Color _getPriorityColor(BroadcastPriority p) {
     switch (p) {
@@ -209,7 +224,7 @@ class _GuideBroadcastScreenState extends State<GuideBroadcastScreen> {
         
         if (messages.isEmpty) {
           return Center(
-            child: Text("No active broadcasts.", style: GoogleFonts.inter(color: AppTheme.colors.white24)),
+            child: Text("No active broadcasts", style: GoogleFonts.inter(color: AppTheme.textSecondary(context))),
           );
         }
 
@@ -221,46 +236,51 @@ class _GuideBroadcastScreenState extends State<GuideBroadcastScreen> {
             final msg = messages[index];
             return Container(
               margin: const EdgeInsets.only(bottom: 12),
-              child: OracleUI.glassContainer(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          msg.type.name.toUpperCase(),
-                          style: GoogleFonts.outfit(
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
-                            color: _getPriorityColor(msg.priority),
-                          ),
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surface,
+                borderRadius: BorderRadius.circular(18),
+                boxShadow: [
+                  BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.05), blurRadius: 14, offset: const Offset(0, 5)),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        _capitalize(msg.type.name),
+                        style: GoogleFonts.outfit(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
+                          color: _getPriorityColor(msg.priority),
                         ),
-                        Text(
-                          "${msg.acknowledgedBy.length} Acks",
-                          style: GoogleFonts.inter(fontSize: 10, color: AppTheme.colors.white38),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Text(msg.body, style: GoogleFonts.inter(color: AppTheme.colors.white70)),
-                    const SizedBox(height: 12),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          "${msg.createdAt.hour}:${msg.createdAt.minute.toString().padLeft(2, '0')}",
-                          style: GoogleFonts.inter(fontSize: 10, color: AppTheme.colors.white24),
-                        ),
-                        TextButton(
-                          onPressed: () => _broadcastRepo.deactivateBroadcast(widget.sessionId, msg.messageId),
-                          child: Text("EXPIRE", style: GoogleFonts.outfit(fontSize: 10, color: AppTheme.colors.redAccent.withValues(alpha: 0.5))),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+                      ),
+                      Text(
+                        "${msg.acknowledgedBy.length} acks",
+                        style: GoogleFonts.inter(fontSize: 11, color: AppTheme.textSecondary(context)),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Text(msg.body, style: GoogleFonts.inter(color: AppTheme.textPrimary(context))),
+                  const SizedBox(height: 12),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "${msg.createdAt.hour}:${msg.createdAt.minute.toString().padLeft(2, '0')}",
+                        style: GoogleFonts.inter(fontSize: 11, color: AppTheme.textSecondary(context)),
+                      ),
+                      TextButton(
+                        onPressed: () => _broadcastRepo.deactivateBroadcast(widget.sessionId, msg.messageId),
+                        child: Text("Expire", style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: AppTheme.colors.redAccent)),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ).animate().fadeIn(delay: (index * 100).ms);
           },

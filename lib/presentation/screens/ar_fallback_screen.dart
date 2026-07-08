@@ -136,64 +136,61 @@ class _ARFallbackScreenState extends State<ARFallbackScreen> {
                 Padding(
                   padding: const EdgeInsets.all(24.0),
                   child: Container(
-                    padding: const EdgeInsets.all(20),
+                    padding: const EdgeInsets.all(24),
                     decoration: BoxDecoration(
                       // BUG-056: Use theme-aware card color instead of hardcoded white
                       // so text remains readable in both light and dark themes
-                      color: Theme.of(context).cardColor,
-                      borderRadius: BorderRadius.circular(24),
-                      border: Border.all(color: AppPalette.rust.withValues(alpha: 0.3)),
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? AppTheme.colors.black.withValues(alpha: 0.93)
+                          : Theme.of(context).cardColor.withValues(alpha: 0.95),
+                      borderRadius: BorderRadius.circular(26),
                       boxShadow: [
                         BoxShadow(
-                          color: AppTheme.colors.black.withValues(alpha: 0.1),
-                          blurRadius: 10,
-                          offset: const Offset(0, 4),
+                          color: AppTheme.colors.black.withValues(alpha: 0.2),
+                          blurRadius: 24,
+                          offset: const Offset(0, 8),
                         ),
                       ],
                     ),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(
-                          widget.reason == "denied" ? Icons.no_photography_outlined : Icons.videocam_outlined,
-                          color: AppPalette.rust,
-                          size: 32,
-                        ),
-                        const SizedBox(height: 16),
                         Text(
                           _getTitle(),
                           textAlign: TextAlign.center,
                           style: GoogleFonts.outfit(
-                            color: AppTheme.textPrimary(context), 
-                            fontSize: 18, 
-                            fontWeight: FontWeight.bold
+                            color: AppTheme.colors.white,
+                            fontSize: 17,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: -0.3,
                           ),
                         ),
-                        const SizedBox(height: 8),
+                        const SizedBox(height: 10),
                         Text(
                           _getMessage(),
                           textAlign: TextAlign.center,
                           style: GoogleFonts.inter(
-                            color: AppTheme.textSecondary(context), 
-                            fontSize: 14,
+                            color: AppTheme.colors.white.withValues(alpha: 0.7),
+                            fontSize: 13,
                             height: 1.5,
                           ),
                         ),
-                        const SizedBox(height: 24),
+                        const SizedBox(height: 20),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             OutlinedButton(
                               onPressed: () => Navigator.pop(context),
                               style: OutlinedButton.styleFrom(
-                                side: const BorderSide(color: AppPalette.rust),
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                                foregroundColor: AppPalette.rust,
+                                side: BorderSide(color: AppTheme.colors.white.withValues(alpha: 0.3), width: 1.5),
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
+                                foregroundColor: AppTheme.colors.white,
+                                padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
                               ),
-                              child: const Text("CLOSE VIEW"),
+                              child: const Text("Close"),
                             ),
                             const SizedBox(width: 12),
-                            ElevatedButton.icon(
+                            ElevatedButton(
                               onPressed: () {
                                 MonetizationService().showRewardedAd(
                                   context: context,
@@ -210,13 +207,14 @@ class _ARFallbackScreenState extends State<ARFallbackScreen> {
                                   },
                                 );
                               },
-                              icon: Icon(Icons.play_circle_fill, color: AppTheme.colors.white, size: 16),
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: AppPalette.rust,
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                                foregroundColor: AppTheme.colors.white,
+                                backgroundColor: AppPaletteDark.gold,
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
+                                foregroundColor: AppPalette.ink,
+                                elevation: 0,
+                                padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
                               ),
-                              label: const Text("WATCH AD (UNLOCK)"),
+                              child: const Text("Watch ad to unlock"),
                             ),
                           ],
                         ),
@@ -240,24 +238,23 @@ class _ARFallbackScreenState extends State<ARFallbackScreen> {
     child: Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: AppTheme.colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppTheme.secondaryBorder(context)),
+        color: Theme.of(context).cardColor,
+        borderRadius: BorderRadius.circular(100),
         boxShadow: [
           BoxShadow(
-            color: AppTheme.colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
+            color: AppTheme.colors.black.withValues(alpha: 0.08),
+            blurRadius: 12,
             offset: const Offset(0, 4),
           ),
         ],
       ),
       child: Row(
         children: [
-          const Icon(Icons.info_outline, color: AppPalette.rust, size: 16),
+          Icon(Icons.info_outline, color: Theme.of(context).colorScheme.primary, size: 16),
           const SizedBox(width: 12),
           Text(
-            "AR not available on this device · Showing 360° view",
-            style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 11),
+            "AR isn't available on this device · Showing 360° view",
+            style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 11, fontWeight: FontWeight.w500),
           ),
         ],
       ),
@@ -320,13 +317,13 @@ class _ARFallbackScreenState extends State<ARFallbackScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "HISTORICAL STORY",
-          style: GoogleFonts.inter(color: AppPalette.rust, fontSize: 12, fontWeight: FontWeight.bold, letterSpacing: 2),
+          "Historical story",
+          style: GoogleFonts.inter(color: Theme.of(context).colorScheme.primary, fontSize: 12, fontWeight: FontWeight.w700, letterSpacing: 0.5),
         ),
         const SizedBox(height: 16),
         Text(
           "Unveiling the ${widget.arData.historicalPeriod}",
-          style: GoogleFonts.outfit(color: AppTheme.colors.white, fontSize: 32, fontWeight: FontWeight.bold),
+          style: GoogleFonts.outfit(color: AppTheme.colors.white, fontSize: 30, fontWeight: FontWeight.w700, letterSpacing: -0.5),
         ),
         const SizedBox(height: 24),
         Text(
@@ -365,19 +362,25 @@ class _ARFallbackScreenState extends State<ARFallbackScreen> {
   Widget _buildAudioNarrationPill() => Container(
     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
     decoration: BoxDecoration(
-      color: AppTheme.colors.white,
-      borderRadius: BorderRadius.circular(30),
-      border: Border.all(color: AppPalette.rust.withValues(alpha: 0.3)),
+      color: Theme.of(context).cardColor,
+      borderRadius: BorderRadius.circular(100),
+      boxShadow: [
+        BoxShadow(
+          color: AppTheme.colors.black.withValues(alpha: 0.08),
+          blurRadius: 12,
+          offset: const Offset(0, 4),
+        ),
+      ],
     ),
     child: Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        const Icon(Icons.play_circle_fill, color: AppPalette.rust, size: 24),
+        Icon(Icons.play_circle_fill, color: Theme.of(context).colorScheme.primary, size: 24),
         const SizedBox(width: 12),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("LISTEN TO NARRATION", style: GoogleFonts.inter(color: AppPalette.rust, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1)),
+            Text("Listen to narration", style: GoogleFonts.inter(color: Theme.of(context).colorScheme.primary, fontSize: 11, fontWeight: FontWeight.w700)),
             Text("Sinhala & English available", style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 10)),
           ],
         ),
@@ -386,10 +389,10 @@ class _ARFallbackScreenState extends State<ARFallbackScreen> {
   );
 
   Widget _buildModeSwitcher() => Container(
-    padding: const EdgeInsets.all(2),
+    padding: const EdgeInsets.all(4),
     decoration: BoxDecoration(
-      color: AppTheme.colors.white.withValues(alpha: 0.1),
-      borderRadius: BorderRadius.circular(12),
+      color: AppTheme.colors.white.withValues(alpha: 0.13),
+      borderRadius: BorderRadius.circular(100),
     ),
     child: Row(
       children: [
@@ -406,16 +409,16 @@ class _ARFallbackScreenState extends State<ARFallbackScreen> {
       onTap: () => setState(() => _activeMode = mode),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 300),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: BoxDecoration(
-          color: active ? AppTheme.colors.white : AppTheme.colors.transparent,
-          borderRadius: BorderRadius.circular(10),
+          color: active ? AppPaletteDark.gold : AppTheme.colors.transparent,
+          borderRadius: BorderRadius.circular(100),
         ),
         child: Row(
           children: [
-            Icon(icon, color: active ? AppPalette.rust : AppTheme.colors.white70, size: 14),
+            Icon(icon, color: active ? AppPalette.ink : AppTheme.colors.white, size: 14),
             const SizedBox(width: 4),
-            Text(label, style: GoogleFonts.inter(color: active ? AppPalette.rust : AppTheme.colors.white70, fontSize: 10, fontWeight: FontWeight.bold)),
+            Text(label, style: GoogleFonts.inter(color: active ? AppPalette.ink : AppTheme.colors.white, fontSize: 11, fontWeight: FontWeight.w600)),
           ],
         ),
       ),
@@ -424,16 +427,16 @@ class _ARFallbackScreenState extends State<ARFallbackScreen> {
 
   String _getTitle() {
     if (_activeMode != "video") return "";
-    if (widget.reason == "denied") return "Camera Permission Required";
-    if (widget.reason == "unsupported") return "Device Not AR Ready";
-    return "AR Loading Failed";
+    if (widget.reason == "denied") return "Camera access needed";
+    if (widget.reason == "unsupported") return "AR isn't available on this device";
+    return "AR couldn't load this time";
   }
 
   String _getMessage() {
     if (_activeMode != "video") return "";
-    if (widget.reason == "denied") return "Camera access is needed for AR features. Enjoy this cinematic reconstruction video instead.";
-    if (widget.reason == "unsupported") return "Your device doesn't support full ARCore/ARKit. Experience the historical era via this immersive cinematic view.";
-    return "We couldn't load the historical 3D model. Showing the cinematic fallback view.";
+    if (widget.reason == "denied") return "Camera access is needed for AR features. Here's a cinematic reconstruction instead.";
+    if (widget.reason == "unsupported") return "Here's a cinematic 360° view of the same era instead.";
+    return "We couldn't load the historical 3D model. Here's the cinematic fallback view instead.";
   }
 
   Widget _circleBtn(IconData icon, VoidCallback onTap) => GestureDetector(

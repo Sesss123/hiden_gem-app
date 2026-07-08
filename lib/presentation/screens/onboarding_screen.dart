@@ -9,6 +9,7 @@ import '../../l10n/app_localizations.dart';
 import 'login_screen.dart';
 import 'language_selection_screen.dart';
 import 'terms_screen.dart';
+import '../widgets/custom_buttons.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -86,12 +87,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 child: TextButton(
                   onPressed: _finish,
                   child: Text(
-                    l10n?.skipForNow.toUpperCase() ?? "SKIP", 
+                    l10n?.skipForNow ?? "Skip for now",
                     style: GoogleFonts.inter(
-                      color: AppPalette.earth.withValues(alpha: 0.65), 
-                      fontSize: 10, 
-                      fontWeight: FontWeight.bold, 
-                      letterSpacing: 2
+                      color: AppTheme.textSecondary(context),
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
                     )
                   ),
                 ),
@@ -140,17 +140,18 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             children: gems.asMap().entries.map((e) => _gemBubble(e.value.$1, e.value.$2, e.key)).toList(),
           ),
           const SizedBox(height: 60),
-          OracleUI.neonText(
-            "Discover Hidden Gems",
+          Text(
+            "Discover hidden gems",
+            textAlign: TextAlign.center,
             style: GoogleFonts.outfit(
-              fontSize: 32, fontWeight: FontWeight.w800, color: AppTheme.colors.white, height: 1.1,
+              fontSize: 30, fontWeight: FontWeight.w800, color: AppTheme.textPrimary(context), height: 1.1, letterSpacing: -0.5,
             ),
           ),
           const SizedBox(height: 24),
           Text(
             "Explore over 500 off-the-beaten-path locations curated by locals — places you won't find in any guidebook.",
             textAlign: TextAlign.center,
-            style: GoogleFonts.inter(fontSize: 16, color: AppPalette.earth, height: 1.6),
+            style: GoogleFonts.inter(fontSize: 15, color: AppTheme.textSecondary(context), height: 1.6),
           ),
         ],
       ).animate().fadeIn(duration: 600.ms).slideY(begin: 0.1, end: 0),
@@ -162,16 +163,15 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       width: 120,
       padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 12),
       borderRadius: BorderRadius.circular(20),
-      borderColor: AppTheme.colors.white.withValues(alpha: 0.05),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.8), size: 28),
+          Icon(icon, color: Theme.of(context).colorScheme.primary, size: 26),
           const SizedBox(height: 12),
           Text(
-            label, 
+            label,
             textAlign: TextAlign.center,
-            style: GoogleFonts.inter(fontSize: 11, color: AppPalette.ink.withValues(alpha: 0.65), fontWeight: FontWeight.w600, letterSpacing: 0.5)
+            style: GoogleFonts.inter(fontSize: 11, color: AppTheme.textSecondary(context), fontWeight: FontWeight.w600)
           ),
         ],
       ),
@@ -228,25 +228,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         // CTA button
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 32),
-          child: SizedBox(
-            width: double.infinity,
-            height: 60,
-            child: ElevatedButton(
-              onPressed: _next,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Theme.of(context).colorScheme.primary,
-                foregroundColor: AppTheme.colors.black,
-                elevation: 0,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-              ),
-              child: OracleUI.neonText(
-                _currentPage == 4 ? "BEGIN JOURNEY 🚀" : (l10n?.continueButton.toUpperCase() ?? "CONTINUE"),
-                style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 14, color: AppTheme.colors.black, letterSpacing: 1),
-                glowColor: AppTheme.colors.white24,
-              ),
-            ),
+          child: PrimaryButton(
+            label: _currentPage == 4 ? "Begin journey" : (l10n?.continueButton ?? "Continue"),
+            onPressed: _next,
           ),
-        ).animate().fadeIn(duration: 600.ms, delay: 1000.ms),
+        ),
       ],
     );
   }
@@ -259,7 +245,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       width: active ? 28 : 8,
       height: 6,
       decoration: BoxDecoration(
-        color: active ? Theme.of(context).colorScheme.primary : AppPalette.sand,
+        color: active ? Theme.of(context).colorScheme.primary : AppTheme.surfaceMuted(context),
         borderRadius: BorderRadius.circular(4),
       ),
     );
@@ -289,19 +275,20 @@ class _OnboardingSlide extends StatelessWidget {
             borderRadius: BorderRadius.circular(50),
             borderColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
             child: Icon(icon, size: 64, color: Theme.of(context).colorScheme.primary),
-          ).animate(onPlay: (c) => c.repeat()).shimmer(duration: 3.seconds, color: AppTheme.colors.white10),
+          ),
           const SizedBox(height: 60),
-          OracleUI.neonText(
+          Text(
             title,
+            textAlign: TextAlign.center,
             style: GoogleFonts.outfit(
-              fontSize: 32, fontWeight: FontWeight.w800, color: AppTheme.colors.white, height: 1.1,
+              fontSize: 30, fontWeight: FontWeight.w800, color: AppTheme.textPrimary(context), height: 1.1, letterSpacing: -0.5,
             ),
           ),
           const SizedBox(height: 24),
           Text(
             description,
             textAlign: TextAlign.center,
-            style: GoogleFonts.inter(fontSize: 16, color: AppPalette.earth, height: 1.6),
+            style: GoogleFonts.inter(fontSize: 15, color: AppTheme.textSecondary(context), height: 1.6),
           ),
         ],
       ).animate().fadeIn(duration: 600.ms).slideY(begin: 0.1, end: 0),

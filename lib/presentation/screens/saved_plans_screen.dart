@@ -61,8 +61,8 @@ class _SavedPlansScreenState extends ConsumerState<SavedPlansScreen> {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            AppTheme.colors.primary.withValues(alpha: 0.8),
-            AppTheme.colors.primary.withValues(alpha: 0.0),
+            Theme.of(context).colorScheme.primary.withValues(alpha: 0.8),
+            Theme.of(context).colorScheme.primary.withValues(alpha: 0.0),
           ],
         ),
         borderRadius: BorderRadius.circular(20),
@@ -73,10 +73,10 @@ class _SavedPlansScreenState extends ConsumerState<SavedPlansScreen> {
           if (hasAR) ...[
             const SizedBox(width: 12),
             Text(
-              "VIEW IN AR",
+              "View in AR",
               style: GoogleFonts.outfit(
                 color: AppTheme.colors.black,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w700,
                 fontSize: 14,
               ),
             ),
@@ -124,15 +124,15 @@ class _SavedPlansScreenState extends ConsumerState<SavedPlansScreen> {
       appBar: AppBar(
         backgroundColor: AppTheme.colors.transparent,
         elevation: 0,
-        centerTitle: true,
+        centerTitle: false,
         iconTheme: IconThemeData(color: Theme.of(context).colorScheme.onSurface),
-        title: OracleUI.neonText(
-          "SAVED JOURNEYS",
+        title: Text(
+          "Saved trips",
           style: GoogleFonts.outfit(
-            fontWeight: FontWeight.w900,
-            fontSize: 14,
-            letterSpacing: 2,
-            color: Theme.of(context).colorScheme.onSurface,
+            fontWeight: FontWeight.w800,
+            fontSize: 20,
+            letterSpacing: -0.5,
+            color: AppTheme.textPrimary(context),
           ),
         ),
         actions: [
@@ -142,20 +142,19 @@ class _SavedPlansScreenState extends ConsumerState<SavedPlansScreen> {
               onPressed: () async {
                 final confirm = await showDialog<bool>(
                   context: context,
-                  builder: (_) => OracleUI.glassContainer(
-                    child: AlertDialog(
-                      backgroundColor: AppTheme.colors.transparent,
-                      title: OracleUI.neonText('Clear Archives', style: GoogleFonts.outfit(fontSize: 20)),
-                      content: Text('This will permanently erase all local manifests.', style: GoogleFonts.inter(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7))),
-                      actions: [
-                        TextButton(
-                            onPressed: () => Navigator.pop(context, false),
-                            child: Text('ABORT', style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4), fontWeight: FontWeight.bold))),
-                        TextButton(
-                            onPressed: () => Navigator.pop(context, true),
-                            child: Text('ERASE ALL', style: TextStyle(color: AppTheme.colors.redAccent, fontWeight: FontWeight.bold))),
-                      ],
-                    ),
+                  builder: (_) => AlertDialog(
+                    backgroundColor: Theme.of(context).colorScheme.surface,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+                    title: Text('Clear saved trips', style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.w700, letterSpacing: -0.3, color: AppTheme.textPrimary(context))),
+                    content: Text('This will permanently remove all saved trips from this device.', style: GoogleFonts.inter(color: AppTheme.textSecondary(context))),
+                    actions: [
+                      TextButton(
+                          onPressed: () => Navigator.pop(context, false),
+                          child: Text('Cancel', style: TextStyle(color: AppTheme.textSecondary(context), fontWeight: FontWeight.w600))),
+                      TextButton(
+                          onPressed: () => Navigator.pop(context, true),
+                          child: Text('Erase all', style: TextStyle(color: AppTheme.colors.redAccent, fontWeight: FontWeight.w700))),
+                    ],
                   ),
                 );
                 if (confirm == true) {
@@ -187,18 +186,20 @@ class _SavedPlansScreenState extends ConsumerState<SavedPlansScreen> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          OracleUI.glassContainer(
+          Container(
             padding: const EdgeInsets.all(32),
-            borderRadius: BorderRadius.circular(50),
-            borderColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
+            decoration: BoxDecoration(
+              color: AppTheme.surfaceMuted(context),
+              shape: BoxShape.circle,
+            ),
             child: Icon(Icons.bookmark_outline_rounded, size: 56, color: Theme.of(context).colorScheme.primary),
-          ).animate(onPlay: (c) => c.repeat()).shimmer(duration: 3.seconds),
+          ),
           const SizedBox(height: 24),
-          OracleUI.neonText('The Oracle Archives Are Empty', style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold)),
+          Text('No saved trips yet', style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.w700, letterSpacing: -0.3, color: AppTheme.textPrimary(context))),
           const SizedBox(height: 8),
-          Text('Manifest your journey to see it saved here.',
+          Text('Plan a trip to see it saved here.',
               textAlign: TextAlign.center,
-              style: GoogleFonts.inter(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4), fontSize: 13)),
+              style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 13)),
         ],
       ).animate().fadeIn(duration: 600.ms).slideY(begin: 0.1),
     );
@@ -259,17 +260,28 @@ class _SavedPlansScreenState extends ConsumerState<SavedPlansScreen> {
                 _launchARShortcut(context, arItem.title);
               }
             },
-            child: OracleUI.glassContainer(
+            child: Container(
               padding: const EdgeInsets.all(16),
-              borderRadius: BorderRadius.circular(20),
-              borderColor: Theme.of(context).dividerColor.withValues(alpha: 0.1),
+              decoration: BoxDecoration(
+                color: Theme.of(context).cardColor,
+                borderRadius: BorderRadius.circular(22),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppTheme.colors.black.withValues(alpha: 0.10),
+                    blurRadius: 24,
+                    offset: const Offset(0, 12),
+                  ),
+                ],
+              ),
               child: Row(
                 children: [
-                  OracleUI.glassContainer(
+                  Container(
                     width: 52,
                     height: 52,
-                    borderRadius: BorderRadius.circular(12),
-                    borderColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.07),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                     child: Icon(Icons.map_rounded, color: Theme.of(context).colorScheme.primary, size: 24),
                   ),
                   const SizedBox(width: 14),
@@ -290,25 +302,27 @@ class _SavedPlansScreenState extends ConsumerState<SavedPlansScreen> {
                           spacing: 12,
                           runSpacing: 4,
                           children: [
-                            _chip(Icons.nights_stay_outlined, '${summary.days}d'),
+                            _chip(Icons.nights_stay_outlined, '${summary.days} days'),
                             _chip(Icons.people_outline, summary.groupType),
                             _chip(Icons.account_balance_wallet_outlined,
-                                'Rs. ${_fmt(summary.userBudgetLkr)}'),
+                                'Rs ${_fmt(summary.userBudgetLkr)}'),
                             if (plan.itinerary.any((day) => day.items.any((item) => item.arSupported)))
-                              OracleUI.glassContainer(
+                              Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                borderRadius: BorderRadius.circular(6),
-                                borderColor: AppTheme.colors.primary.withValues(alpha: 0.3),
+                                decoration: BoxDecoration(
+                                  color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+                                  borderRadius: BorderRadius.circular(100),
+                                ),
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    Icon(Icons.view_in_ar_rounded, size: 10, color: AppTheme.colors.primary),
+                                    Icon(Icons.view_in_ar_rounded, size: 10, color: Theme.of(context).colorScheme.primary),
                                     SizedBox(width: 4),
                                     Text(
                                       "AR",
                                       style: TextStyle(
-                                        color: AppTheme.colors.primary,
-                                        fontWeight: FontWeight.w900,
+                                        color: Theme.of(context).colorScheme.primary,
+                                        fontWeight: FontWeight.w700,
                                         fontSize: 10,
                                       ),
                                     ),
@@ -319,12 +333,11 @@ class _SavedPlansScreenState extends ConsumerState<SavedPlansScreen> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'SAVED $cachedAgo',
+                          'Saved $cachedAgo',
                           style: GoogleFonts.inter(
-                            fontSize: 10,
-                            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.2),
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 1,
+                            fontSize: 9,
+                            color: AppTheme.textSecondary(context).withValues(alpha: 0.6),
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
                       ],
@@ -347,12 +360,11 @@ class _SavedPlansScreenState extends ConsumerState<SavedPlansScreen> {
         Icon(icon, size: 12, color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5)),
         const SizedBox(width: 5),
         Text(
-          label.toUpperCase(),
+          label,
           style: GoogleFonts.inter(
             fontSize: 10,
-            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
-            fontWeight: FontWeight.bold,
-            letterSpacing: 0.5,
+            color: AppTheme.textSecondary(context),
+            fontWeight: FontWeight.w500,
           ),
         ),
       ],

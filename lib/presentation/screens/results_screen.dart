@@ -251,29 +251,28 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
                   ],
                   flexibleSpace: FlexibleSpaceBar(
                     stretchModes: const [StretchMode.zoomBackground, StretchMode.blurBackground],
-                    titlePadding: EdgeInsets.only(left: 20, bottom: 60),
+                    titlePadding: EdgeInsets.only(left: 20, bottom: 64),
                     title: Column(
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        OracleUI.neonText(
-                          _activePlan.tripSummary.destinationCity.toUpperCase(),
+                        Text(
+                          _activePlan.tripSummary.destinationCity,
                           style: GoogleFonts.outfit(
-                            fontWeight: FontWeight.w900,
-                            fontSize: 32,
+                            fontWeight: FontWeight.w800,
+                            fontSize: 26,
+                            letterSpacing: -0.5,
                             color: AppTheme.colors.white,
-                            letterSpacing: 4,
                             shadows: [Shadow(color: AppTheme.colors.black.withValues(alpha: 0.8), blurRadius: 20)],
                           ),
                         ),
-                        const SizedBox(height: 8),
+                        const SizedBox(height: 6),
                         Text(
-                          "AUTHENTICATED BY THE ORACLE",
+                          "${_activePlan.tripSummary.days}-day ${_activePlan.tripSummary.style} trip",
                           style: GoogleFonts.inter(
-                            fontSize: 10, 
-                            fontWeight: FontWeight.w900,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500,
                             color: AppTheme.colors.white70,
-                            letterSpacing: 3,
                             shadows: [Shadow(color: AppTheme.colors.black.withValues(alpha: 0.8), blurRadius: 10)],
                           ),
                         ),
@@ -306,14 +305,14 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
                     ),
                   ),
                   bottom: PreferredSize(
-                    preferredSize: const Size.fromHeight(60),
+                    preferredSize: const Size.fromHeight(48),
                     child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      padding: const EdgeInsets.symmetric(vertical: 4),
                       decoration: BoxDecoration(
-                        color: AppTheme.colors.white,
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(32),
-                          topRight: Radius.circular(32),
+                        color: Theme.of(context).colorScheme.surface,
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(24),
+                          topRight: Radius.circular(24),
                         ),
                       ),
                       child: TabBar(
@@ -321,20 +320,21 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
                         isScrollable: true,
                         dividerColor: AppTheme.colors.transparent,
                         indicator: BoxDecoration(
-                          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
-                          border: Border.all(color: Theme.of(context).colorScheme.primary),
-                          borderRadius: BorderRadius.circular(30),
+                          color: Theme.of(context).colorScheme.primary,
+                          borderRadius: BorderRadius.circular(100),
                         ),
-                        indicatorPadding: const EdgeInsets.symmetric(horizontal: -16, vertical: 8),
-                        labelColor: Theme.of(context).colorScheme.primary,
+                        indicatorSize: TabBarIndicatorSize.tab,
+                        indicatorPadding: const EdgeInsets.symmetric(horizontal: -12, vertical: 8),
+                        labelColor: AppTheme.colors.white,
                         unselectedLabelColor: AppTheme.textSecondary(context),
-                        labelStyle: GoogleFonts.inter(fontWeight: FontWeight.bold, fontSize: 11, letterSpacing: 1.5),
+                        labelStyle: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 10),
+                        unselectedLabelStyle: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 10),
                         tabs: [
-                          Tab(text: l10n.itinerary.toUpperCase()),
-                          const Tab(text: "BUDGET"),
-                          const Tab(text: "MAP"),
-                          Tab(text: l10n.planB.toUpperCase()),
-                          Tab(text: l10n.tips.toUpperCase()),
+                          Tab(text: l10n.itinerary),
+                          const Tab(text: "Budget"),
+                          const Tab(text: "Map"),
+                          Tab(text: l10n.planB),
+                          Tab(text: l10n.tips),
                         ],
                       ),
                     ),
@@ -521,11 +521,10 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
               Icon(Icons.explore_off_outlined, size: 64, color: AppTheme.textSecondary(context).withValues(alpha: 0.3)),
               const SizedBox(height: 16),
               Text(
-                "NO PATH FOUND",
+                "No path found",
                 style: GoogleFonts.outfit(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  letterSpacing: 2,
                   color: AppTheme.textPrimary(context),
                 ),
               ),
@@ -556,45 +555,34 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
           child: Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              // BUG-068: Use theme-aware card color so the panel is visible in dark mode
-              color: Theme.of(context).cardColor,
-              borderRadius: BorderRadius.circular(24),
-              border: Border.all(color: AppTheme.secondaryBorder(context)),
-              boxShadow: [
-                BoxShadow(
-                  color: AppTheme.colors.black.withValues(alpha: 0.03),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
-                ),
-              ],
+              color: AppTheme.surfaceMuted(context),
+              borderRadius: BorderRadius.circular(22),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
                   children: [
-                    Icon(Icons.auto_awesome, color: Theme.of(context).colorScheme.primary, size: 20),
-                    const SizedBox(width: 12),
                     Text(
-                      "ORACLE'S VISION",
+                      "Trip overview",
                       style: GoogleFonts.inter(
-                        color: Theme.of(context).colorScheme.primary, 
-                        fontWeight: FontWeight.w900, 
-                        letterSpacing: 4, 
-                        fontSize: 12,
+                        color: Theme.of(context).colorScheme.primary,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 0.5,
+                        fontSize: 10,
                       ),
                     ),
                     const Spacer(),
                     _buildVoiceButton(context, plan, isPremium),
                   ],
                 ),
-                SizedBox(height: 12),
+                SizedBox(height: 10),
                 Text(
                   plan.humanText,
                   style: GoogleFonts.inter(
-                    color: AppTheme.textSecondary(context), 
-                    height: 1.6, 
-                    fontSize: 14,
+                    color: AppTheme.textPrimary(context).withValues(alpha: 0.7),
+                    height: 1.6,
+                    fontSize: 12,
                   ),
                 ),
               ],
@@ -710,12 +698,11 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                "ESTIMATED TOTAL", 
+                "Estimated total",
                 style: GoogleFonts.inter(
-                  color: AppTheme.modernGreen(context), 
-                  fontWeight: FontWeight.bold, 
-                  fontSize: 12, 
-                  letterSpacing: 1.5,
+                  color: Theme.of(context).colorScheme.primary,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 12,
                 ),
               ),
               if (isOver) 
@@ -748,7 +735,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                "User Budget: ${_fmtLkr(userBudget)}", 
+                "User budget: ${_fmtLkr(userBudget)}",
                 style: TextStyle(
                   color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6), 
                   fontSize: 12,
@@ -775,10 +762,12 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppTheme.colors.white,
+        color: Theme.of(context).colorScheme.surface,
         // BUG-088: Unified border radius (24px) for cards to prevent sharp clash
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: AppTheme.secondaryBorder(context)),
+        boxShadow: [
+          BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.05), blurRadius: 14, offset: const Offset(0, 5)),
+        ],
       ),
       child: Row(
         children: [
@@ -958,9 +947,8 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
         child: Container(
           padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(
-            color: AppTheme.colors.white,
+            color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: AppTheme.secondaryBorder(context)),
             boxShadow: [
               BoxShadow(
                 color: AppTheme.colors.black.withValues(alpha: 0.05),
@@ -1003,7 +991,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
                 });
               },
               icon: Icon(Icons.play_circle_fill),
-              label: Text("UNLOCK WITH AD"),
+              label: Text("Unlock with ad"),
               style: AppTheme.primaryButtonStyle(context),
             ),
             TextButton(
@@ -1024,14 +1012,13 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
     return Container(
       padding: const EdgeInsets.all(28),
       decoration: BoxDecoration(
-        color: AppTheme.colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5), width: 2),
         boxShadow: [
           BoxShadow(
-            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
-            blurRadius: 20,
-            offset: const Offset(0, 4),
+            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.15),
+            blurRadius: 24,
+            offset: const Offset(0, 10),
           ),
         ],
       ),
@@ -1046,11 +1033,11 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
           ),
           SizedBox(height: 20),
           Text(
-            "HIDDEN GEMS LUXURY",
+            "Hidden Gems luxury",
             style: GoogleFonts.outfit(
-              color: Theme.of(context).colorScheme.onSurface, 
-              fontWeight: FontWeight.bold, 
-              letterSpacing: 4,
+              color: Theme.of(context).colorScheme.onSurface,
+              fontWeight: FontWeight.w800,
+              letterSpacing: -0.4,
               fontSize: 18,
             ),
           ),
@@ -1074,7 +1061,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
             width: double.infinity,
             height: 56,
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(100),
               boxShadow: [
                 BoxShadow(
                   color: AppTheme.accentOchre(context).withValues(alpha: 0.4),
@@ -1087,13 +1074,13 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
               onPressed: () => ref.read(premiumProvider.notifier).buyPremium(),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppTheme.accentOchre(context),
-                foregroundColor: Theme.of(context).brightness == Brightness.dark ? AppTheme.colors.white : AppTheme.colors.white, // Keep white for branding contrast if background is dark ochre
+                foregroundColor: AppTheme.colors.white, // Keep white for branding contrast against ochre
                 elevation: 0,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
               ),
               child: Text(
-                "UNLEASH THE ORACLE", 
-                style: GoogleFonts.outfit(fontWeight: FontWeight.bold, letterSpacing: 1.5),
+                "Unleash the Oracle",
+                style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 14),
               ),
             ),
           ),
@@ -1119,15 +1106,14 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppTheme.colors.white,
+        color: Theme.of(context).colorScheme.surface,
         // BUG-088: Unified card border-radii
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: AppTheme.secondaryBorder(context)),
         boxShadow: [
           BoxShadow(
-            color: AppTheme.colors.black.withValues(alpha: 0.03),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+            color: AppTheme.colors.black.withValues(alpha: 0.05),
+            blurRadius: 14,
+            offset: const Offset(0, 5),
           ),
         ],
       ),
@@ -1135,7 +1121,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
             Text(
-              item.title, 
+              item.title,
               style: GoogleFonts.outfit(
                 fontWeight: FontWeight.bold, 
                 fontSize: 18, 

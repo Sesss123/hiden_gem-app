@@ -51,7 +51,7 @@ class KineticTimelineView extends StatelessWidget {
                         style: GoogleFonts.outfit(
                           fontSize: 12,
                           fontWeight: FontWeight.w800,
-                          color: AppPalette.rust,
+                          color: Theme.of(context).colorScheme.primary,
                           letterSpacing: 1,
                         ),
                       ),
@@ -69,14 +69,13 @@ class KineticTimelineView extends StatelessWidget {
                 child: Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: AppTheme.colors.white,
-                    border: Border.all(color: AppTheme.secondaryBorder(context)),
-                    borderRadius: BorderRadius.circular(16),
+                    color: Theme.of(context).cardColor,
+                    borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
-                        color: AppTheme.colors.black.withValues(alpha: 0.03),
-                        blurRadius: 10,
-                        offset: const Offset(0, 4),
+                        color: AppTheme.colors.black.withValues(alpha: 0.06),
+                        blurRadius: 20,
+                        offset: const Offset(0, 8),
                       ),
                     ],
                   ),
@@ -85,20 +84,20 @@ class KineticTimelineView extends StatelessWidget {
                     children: [
                       Text(
                         item.time,
-                        style: GoogleFonts.outfit(
-                          color: AppPalette.rust,
-                          fontWeight: FontWeight.w800,
-                          fontSize: 12,
-                          letterSpacing: 1,
+                        style: GoogleFonts.inter(
+                          color: AppTheme.textSecondary(context),
+                          fontWeight: FontWeight.w500,
+                          fontSize: 10,
                         ),
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 6),
                       Text(
                         item.title,
-                        style: GoogleFonts.outfit(
+                        style: GoogleFonts.inter(
                           color: AppTheme.textPrimary(context),
-                          fontSize: 18,
-                          fontWeight: FontWeight.w900,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: -0.1,
                           height: 1.2,
                         ),
                       ),
@@ -145,9 +144,15 @@ class KineticTimelineView extends StatelessWidget {
           width: 12,
           height: 12,
           decoration: BoxDecoration(
-            color: AppTheme.colors.white,
+            color: Theme.of(context).colorScheme.primary,
             shape: BoxShape.circle,
-            border: Border.all(color: AppPalette.rust, width: 2),
+            boxShadow: [
+              BoxShadow(
+                color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.13),
+                blurRadius: 0,
+                spreadRadius: 4,
+              ),
+            ],
           ),
         ),
         if (!isLast)

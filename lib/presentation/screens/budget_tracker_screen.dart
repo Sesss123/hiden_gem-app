@@ -39,7 +39,7 @@ class _BudgetTrackerScreenState extends State<BudgetTrackerScreen> {
       builder: (context) => StatefulBuilder(
           builder: (context, setModalState) => Container(
           decoration: BoxDecoration(
-            color: AppTheme.colors.white,
+            color: Theme.of(context).colorScheme.surface,
             borderRadius: const BorderRadius.vertical(top: Radius.circular(36)),
             boxShadow: [
               BoxShadow(
@@ -65,12 +65,11 @@ class _BudgetTrackerScreenState extends State<BudgetTrackerScreen> {
               ),
               const SizedBox(height: 32),
               Text(
-                "DOCUMENT EXPENSE",
-                style: GoogleFonts.inter(
-                  fontSize: 12, 
-                  fontWeight: FontWeight.w900, 
-                  letterSpacing: 2, 
-                  color: AppTheme.textSecondary(context),
+                "Add expense",
+                style: GoogleFonts.outfit(
+                  fontSize: 17,
+                  fontWeight: FontWeight.w700,
+                  color: AppTheme.textPrimary(context),
                 ),
               ),
               const SizedBox(height: 32),
@@ -109,13 +108,13 @@ class _BudgetTrackerScreenState extends State<BudgetTrackerScreen> {
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Theme.of(context).colorScheme.primary,
-                    foregroundColor: AppTheme.colors.white,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                    foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
                     elevation: 0,
                   ),
                   child: Text(
-                    "SAVE RECORD",
-                    style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w900, color: AppTheme.colors.white, letterSpacing: 1.5),
+                    "Save expense",
+                    style: AppTheme.buttonLabelStyle(context),
                   ),
                 ),
               ),
@@ -182,20 +181,19 @@ class _BudgetTrackerScreenState extends State<BudgetTrackerScreen> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: AppTheme.colors.white,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         elevation: 0,
         scrolledUnderElevation: 0,
-        shape: Border(bottom: BorderSide(color: AppTheme.secondaryBorder(context))),
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios_new, size: 20, color: AppTheme.textPrimary(context)),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          "BUDGET TRACKER",
+          "Budget",
           style: GoogleFonts.outfit(
-            fontSize: 18,
-            fontWeight: FontWeight.w900,
-            letterSpacing: 2,
+            fontSize: 20,
+            fontWeight: FontWeight.w800,
+            letterSpacing: -0.3,
             color: AppTheme.textPrimary(context),
           ),
         ),
@@ -220,18 +218,16 @@ class _BudgetTrackerScreenState extends State<BudgetTrackerScreen> {
           children: [
             // Visualization Card
             Container(
-              padding: const EdgeInsets.all(32),
+              padding: const EdgeInsets.all(28),
               decoration: BoxDecoration(
-                color: AppTheme.colors.white,
-                borderRadius: BorderRadius.circular(32),
-                border: Border.all(color: AppTheme.secondaryBorder(context)),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppTheme.colors.black.withValues(alpha: 0.03),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
+                gradient: LinearGradient(
+                  colors: isOverBudget
+                      ? [AppTheme.colors.redAccent, AppTheme.colors.red[900]!]
+                      : [Theme.of(context).colorScheme.primary, AppPalette.rustDim],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(28),
               ),
               child: Column(
                 children: [
@@ -239,72 +235,61 @@ class _BudgetTrackerScreenState extends State<BudgetTrackerScreen> {
                     alignment: Alignment.center,
                     children: [
                       SizedBox(
-                        width: 160, height: 160,
+                        width: 150, height: 150,
                         child: CircularProgressIndicator(
                           value: _percentUsed,
-                          strokeWidth: 4,
-                          backgroundColor: Theme.of(context).dividerColor.withValues(alpha: 0.05),
-                          color: isOverBudget ? AppTheme.colors.redAccent : Theme.of(context).colorScheme.primary,
+                          strokeWidth: 9,
+                          backgroundColor: AppTheme.colors.white.withValues(alpha: 0.15),
+                          color: AppTheme.colors.white,
                         ),
                       ),
                       Column(
                         children: [
                           Text(
-                            "${(_percentUsed * 100).toInt()}%", 
+                            "${(_percentUsed * 100).toInt()}%",
                             style: GoogleFonts.outfit(
-                              fontSize: 32, 
-                              fontWeight: FontWeight.w900, 
-                              color: isOverBudget ? AppTheme.colors.redAccent : AppTheme.textPrimary(context),
-                              letterSpacing: -1,
-                            )
-                          ),
-                          Text(
-                            "USED", 
-                            style: GoogleFonts.inter(
-                              color: AppTheme.textSecondary(context), 
-                              fontSize: 10, 
-                              fontWeight: FontWeight.w900, 
-                              letterSpacing: 2
+                              fontSize: 26,
+                              fontWeight: FontWeight.w800,
+                              color: AppTheme.colors.white,
                             )
                           ),
                         ],
                       ),
                     ],
                   ),
-                  const SizedBox(height: 48),
+                  const SizedBox(height: 24),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Expanded(child: _statItem("PLAN LIMIT", _currencyFormat.format(_budget), AppTheme.textSecondary(context))),
+                      Expanded(child: _statItem("Plan limit", _currencyFormat.format(_budget), AppTheme.colors.white)),
                       const SizedBox(width: 16),
-                      Expanded(child: _statItem("CURRENT CONSUMPTION", _currencyFormat.format(_totalSpent), isOverBudget ? AppTheme.colors.redAccent : Theme.of(context).colorScheme.primary)),
+                      Expanded(child: _statItem("Spent", _currencyFormat.format(_totalSpent), AppTheme.colors.white)),
                     ],
                   ),
                 ],
               ),
             ).animate().fadeIn(duration: 600.ms).scale(begin: const Offset(0.95, 0.95)),
 
-            const SizedBox(height: 48),
+            const SizedBox(height: 32),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  "EXPENSE LEDGER",
-                  style: GoogleFonts.inter(
-                    fontSize: 12, 
-                    fontWeight: FontWeight.w900, 
-                    letterSpacing: 2, 
-                    color: AppTheme.textSecondary(context),
+                  "Expense ledger",
+                  style: GoogleFonts.outfit(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                    color: AppTheme.textPrimary(context),
                   ),
                 ),
                 Text(
-                  "${widget.plan.realizedExpenses.length} ENTRIES", 
-                  style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 1)
+                  "${widget.plan.realizedExpenses.length} entries",
+                  style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 11, fontWeight: FontWeight.w600)
                 ),
               ],
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 16),
 
             if (widget.plan.realizedExpenses.isEmpty)
               _buildEmptyState()
@@ -320,9 +305,9 @@ class _BudgetTrackerScreenState extends State<BudgetTrackerScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: GoogleFonts.inter(fontSize: 10, color: AppTheme.textSecondary(context).withValues(alpha: 0.5), fontWeight: FontWeight.w900, letterSpacing: 2)),
-        SizedBox(height: 8),
-        Text(value, style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.w900, color: valueColor, letterSpacing: -0.5)),
+        Text(label, style: GoogleFonts.inter(fontSize: 10, color: valueColor.withValues(alpha: 0.7), fontWeight: FontWeight.w600)),
+        const SizedBox(height: 4),
+        Text(value, style: GoogleFonts.outfit(fontSize: 15, fontWeight: FontWeight.w700, color: valueColor)),
       ],
     );
   }
@@ -330,26 +315,25 @@ class _BudgetTrackerScreenState extends State<BudgetTrackerScreen> {
   Widget _buildEmptyState() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(48),
+      padding: const EdgeInsets.all(40),
       decoration: BoxDecoration(
-        color: AppTheme.colors.white,
-        borderRadius: BorderRadius.circular(32),
-        border: Border.all(color: AppTheme.secondaryBorder(context)),
+        color: AppTheme.surfaceMuted(context),
+        borderRadius: BorderRadius.circular(24),
       ),
       child: Column(
         children: [
-          Icon(Icons.receipt_long_outlined, size: 48, color: AppTheme.textSecondary(context).withValues(alpha: 0.3)),
-          const SizedBox(height: 24),
+          Icon(Icons.receipt_long_outlined, size: 40, color: AppTheme.textSecondary(context).withValues(alpha: 0.4)),
+          const SizedBox(height: 20),
           Text(
-            "NO ENTRIES DISCOVERED", 
-            style: GoogleFonts.inter(color: AppTheme.textSecondary(context).withValues(alpha: 0.6), fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: 2)
+            "No entries yet",
+            style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 13, fontWeight: FontWeight.w600)
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 20),
           TextButton(
-            onPressed: _addExpense, 
+            onPressed: _addExpense,
             child: Text(
-              "SYNC FIRST ENTRY", 
-              style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w900, color: Theme.of(context).colorScheme.primary),
+              "Add first entry",
+              style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w700, color: Theme.of(context).colorScheme.primary),
             )
           ),
         ],
@@ -359,43 +343,42 @@ class _BudgetTrackerScreenState extends State<BudgetTrackerScreen> {
 
   Widget _buildExpenseItem(Expense e) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      padding: const EdgeInsets.all(20),
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppTheme.colors.white,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppTheme.secondaryBorder(context)),
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(18),
         boxShadow: [
           BoxShadow(
-            color: AppTheme.colors.black.withValues(alpha: 0.02),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
+            color: AppTheme.colors.black.withValues(alpha: 0.05),
+            blurRadius: 16,
+            offset: const Offset(0, 6),
           ),
         ],
       ),
       child: Row(
         children: [
           _categoryIcon(e.category),
-          const SizedBox(width: 20),
+          const SizedBox(width: 14),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  e.title.toUpperCase(), 
-                  style: GoogleFonts.inter(color: AppTheme.textPrimary(context), fontWeight: FontWeight.w900, fontSize: 13, letterSpacing: 0.5)
+                  e.title,
+                  style: GoogleFonts.inter(color: AppTheme.textPrimary(context), fontWeight: FontWeight.w700, fontSize: 13)
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 2),
                 Text(
-                  DateFormat('MMM dd, HH:mm').format(e.timestamp), 
-                  style: GoogleFonts.inter(color: AppTheme.textSecondary(context).withValues(alpha: 0.6), fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 1)
+                  DateFormat('MMM d, h:mma').format(e.timestamp),
+                  style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 11, fontWeight: FontWeight.w500)
                 ),
               ],
             ),
           ),
           Text(
-            _currencyFormat.format(e.amountLkr), 
-            style: GoogleFonts.outfit(fontWeight: FontWeight.w900, color: AppTheme.textPrimary(context), fontSize: 16, letterSpacing: -0.5)
+            _currencyFormat.format(e.amountLkr),
+            style: GoogleFonts.outfit(fontWeight: FontWeight.w700, color: AppTheme.textPrimary(context), fontSize: 14)
           ),
         ],
       ),

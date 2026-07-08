@@ -36,7 +36,7 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
   final _bioController = TextEditingController();
 
   bool _isLoading = false;
-  String _loadingStatus = "INITIATING VERIFICATION...";
+  String _loadingStatus = "Verifying your details...";
   String _selectedCategory = 'National';
   String? _rejectionReason;
   GuideStatus _currentStatus = GuideStatus.none;
@@ -127,29 +127,28 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
         margin: const EdgeInsets.all(16),
         padding: const EdgeInsets.symmetric(vertical: 24),
         decoration: BoxDecoration(
-          color: AppTheme.colors.white,
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: AppTheme.secondaryBorder(context)),
-          boxShadow: [BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4))],
+          boxShadow: [BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.08), blurRadius: 20, offset: const Offset(0, 8))],
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              type == 'selfie' ? "IDENTIFY SELFIE" : "UPLOAD DOCUMENT",
+              type == 'selfie' ? "Take a selfie" : "Upload document",
               style: GoogleFonts.outfit(
-                color: AppPalette.rust, 
-                fontSize: 16, 
-                fontWeight: FontWeight.bold, 
-                letterSpacing: 2
+                color: AppTheme.textPrimary(context),
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                letterSpacing: -0.3,
               ),
             ),
             const SizedBox(height: 32),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                _photoOption(Icons.camera_alt_outlined, "CAMERA", ImageSource.camera, type),
-                _photoOption(Icons.photo_library_outlined, "GALLERY", ImageSource.gallery, type),
+                _photoOption(Icons.camera_alt_outlined, "Camera", ImageSource.camera, type),
+                _photoOption(Icons.photo_library_outlined, "Gallery", ImageSource.gallery, type),
               ],
             ),
             const SizedBox(height: 16),
@@ -170,20 +169,18 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Theme.of(context).scaffoldBackgroundColor,
+              color: AppTheme.surfaceMuted(context),
               shape: BoxShape.circle,
-              border: Border.all(color: AppTheme.secondaryBorder(context)),
             ),
             child: Icon(icon, color: AppTheme.textPrimary(context), size: 28),
           ),
           const SizedBox(height: 12),
           Text(
             label,
-            style: GoogleFonts.outfit(
+            style: GoogleFonts.inter(
               color: AppTheme.textSecondary(context),
-              fontSize: 10,
-              fontWeight: FontWeight.bold,
-              letterSpacing: 1,
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
             ),
           ),
         ],
@@ -248,7 +245,7 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
 
       // 3. Update Local Cache
       if (!mounted) return;
-      setState(() => _loadingStatus = "ORACLE SYNCHRONIZING...");
+      setState(() => _loadingStatus = "Synchronizing application...");
       
       final obfuscatedStatus = guardian.obfuscateStatus('PENDING');
       guardian.secureLog("Transitioned state to $obfuscatedStatus");
@@ -270,7 +267,7 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
       if (mounted) {
         setState(() {
           _isLoading = false;
-          _loadingStatus = "INITIATING VERIFICATION...";
+          _loadingStatus = "Verifying your details...";
         });
       }
     }
@@ -312,18 +309,17 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
         Text(
           _loadingStatus,
           style: GoogleFonts.outfit(
-            fontSize: 12,
-            fontWeight: FontWeight.bold,
-            letterSpacing: 2,
+            fontSize: 13,
+            fontWeight: FontWeight.w700,
             color: AppTheme.modernGreen(context),
           ),
         ).animate(onPlay: (c) => c.repeat()).shimmer(duration: 2.seconds),
         const SizedBox(height: 8),
         Text(
-          "The Oracle is synchronizing your credentials with the blockchain.",
+          "Your credentials are being securely verified.",
           textAlign: TextAlign.center,
           style: GoogleFonts.inter(
-            fontSize: 10,
+            fontSize: 11,
             color: AppTheme.textSecondary(context),
           ),
         ),
@@ -342,10 +338,9 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
             width: 300,
             padding: const EdgeInsets.all(32),
             decoration: BoxDecoration(
-              color: AppTheme.colors.white,
+              color: Theme.of(context).colorScheme.surface,
               borderRadius: BorderRadius.circular(24),
-              border: Border.all(color: AppTheme.secondaryBorder(context)),
-              boxShadow: [BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4))],
+              boxShadow: [BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.12), blurRadius: 24, offset: const Offset(0, 10))],
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -355,26 +350,32 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
                     .scale(duration: 600.ms, curve: Curves.elasticOut),
                 const SizedBox(height: 24),
                 Text(
-                  "SUBMITTED",
-                  style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.bold, color: AppTheme.textPrimary(context)),
+                  "Submitted",
+                  style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.w700, letterSpacing: -0.3, color: AppTheme.textPrimary(context)),
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  "The Oracle Council will review your application soon.",
+                  "Our team will review your application soon.",
                   textAlign: TextAlign.center,
                   style: GoogleFonts.inter(color: AppTheme.textSecondary(context)),
                 ),
                 const SizedBox(height: 32),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Theme.of(context).colorScheme.primary,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Theme.of(context).colorScheme.primary,
+                      foregroundColor: AppTheme.colors.white,
+                      elevation: 0,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
+                    ),
+                    onPressed: () {
+                      Navigator.pop(context); // Close dialog
+                      Navigator.pop(context); // Close screen
+                    },
+                    child: Text("Return", style: GoogleFonts.inter(fontWeight: FontWeight.w700)),
                   ),
-                  onPressed: () {
-                    Navigator.pop(context); // Close dialog
-                    Navigator.pop(context); // Close screen
-                  },
-                  child: const Text("RETURN"),
                 ),
               ],
             ),
@@ -398,11 +399,11 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
               onPressed: () => Navigator.pop(context),
             ),
             title: Text(
-              "ENROLL AS GUIDE",
+              "Become a guide",
               style: GoogleFonts.outfit(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 2,
+                fontSize: 20,
+                fontWeight: FontWeight.w800,
+                letterSpacing: -0.5,
                 color: AppTheme.textPrimary(context),
               ),
             ),
@@ -416,123 +417,137 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
                     const SizedBox(height: 20),
                     if (_currentStatus == GuideStatus.pending) ...[
                       _buildStatusBanner(
-                        title: "⏳ APPLICATION UNDER REVIEW",
-                        message: "Your guide application has been submitted and is currently being reviewed by the Oracle Council. You will be notified once a decision is made.",
+                        title: "Application under review",
+                        message: "Your guide application has been submitted and is currently being reviewed. You will be notified once a decision is made.",
                         color: AppTheme.colors.amber,
                       ),
                       const SizedBox(height: 20),
                     ] else if (_currentStatus == GuideStatus.rejected) ...[
                       _buildStatusBanner(
-                        title: "❌ APPLICATION REJECTED",
+                        title: "Application rejected",
                         message: "Reason: ${_rejectionReason ?? 'Documents incomplete or unclear.'}\n\nYou can re-submit your application below once you fix the required items.",
                         color: AppTheme.colors.redAccent,
                       ),
                       const SizedBox(height: 20),
                     ] else if (_currentStatus == GuideStatus.approved) ...[
                       _buildStatusBanner(
-                        title: "✅ YOU ARE AN APPROVED GUIDE",
+                        title: "You are an approved guide",
                         message: "Congratulations! Your guide identity is active. You can access the Guide Dashboard from your profile.",
                         color: AppTheme.colors.greenAccent,
                       ),
                       const SizedBox(height: 20),
                     ],
                     Container(
+                      width: double.infinity,
                       padding: const EdgeInsets.all(24),
                       decoration: BoxDecoration(
-                        color: AppTheme.colors.white,
-                        borderRadius: BorderRadius.circular(24),
-                        border: Border.all(color: AppTheme.secondaryBorder(context)),
-                        boxShadow: [BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4))],
+                        borderRadius: BorderRadius.circular(22),
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            Theme.of(context).colorScheme.primary,
+                            AppPalette.rustDim,
+                          ],
+                        ),
                       ),
                       child: Column(
                         children: [
-                          Icon(
-                            Icons.verified_user_outlined,
-                            size: 48,
-                            color: Theme.of(context).colorScheme.primary,
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            "BECOME THE ORACLE",
-                            style: GoogleFonts.outfit(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: AppTheme.textPrimary(context),
+                          Container(
+                            width: 44,
+                            height: 44,
+                            decoration: BoxDecoration(
+                              color: AppTheme.colors.white.withValues(alpha: 0.2),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: const Icon(
+                              Icons.verified_user_outlined,
+                              size: 22,
+                              color: Colors.white,
                             ),
                           ),
-                          const SizedBox(height: 12),
+                          const SizedBox(height: 14),
                           Text(
-                            "Share your local wisdom with international travelers. As a guide, you'll unlock tools to manage groups and ensure their safety.",
+                            "Share your local knowledge",
+                            style: GoogleFonts.outfit(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w700,
+                              color: AppTheme.colors.white,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            "Guide travelers and earn on your own schedule.",
                             textAlign: TextAlign.center,
                             style: GoogleFonts.inter(
-                              fontSize: 13,
-                              color: AppTheme.textSecondary(context),
+                              fontSize: 11,
+                              color: AppTheme.colors.white.withValues(alpha: 0.8),
                               height: 1.5,
                             ),
                           ),
                         ],
                       ),
                     ).animate().fadeIn(duration: 800.ms).slideY(begin: 0.1, end: 0),
-                    const SizedBox(height: 32),
+                    const SizedBox(height: 28),
                     _buildCategorySelector(),
                     const SizedBox(height: 24),
                     _buildInputField(
-                      "LICENSE NUMBER",
+                      "License number",
                       "SLTDA-XXXX-XXXX",
                       _licenseController,
                     ).animate().fadeIn(delay: 200.ms, duration: 800.ms).slideX(begin: -0.1, end: 0),
                     const SizedBox(height: 24),
                     _buildInputField(
-                      "SHORT BIO",
+                      "Short bio",
                       "Tell us about your experience...",
                       _bioController,
                       maxLines: 4,
                     ).animate().fadeIn(delay: 400.ms, duration: 800.ms).slideX(begin: 0.1, end: 0),
-                    const SizedBox(height: 32),
+                    const SizedBox(height: 28),
                     Text(
-                      "DOCUMENT VERIFICATION",
+                      "Verification documents",
                       style: GoogleFonts.outfit(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 2,
-                        color: Theme.of(context).colorScheme.primary,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: -0.2,
+                        color: AppTheme.textPrimary(context),
                       ),
                     ),
                     const SizedBox(height: 16),
-                    _buildDocPicker("GUIDE LICENSE", _licenseFile, () => _showPhotoPicker('license')),
-                    const SizedBox(height: 16),
-                    _buildDocPicker("NIC / PASSPORT", _nicFile, () => _showPhotoPicker('nic')),
-                    const SizedBox(height: 16),
-                    _buildDocPicker("SELFIE FOR IDENTITY", _selfieFile, () => _showPhotoPicker('selfie')),
-                    const SizedBox(height: 48),
+                    _buildDocPicker("Guide license", _licenseFile, () => _showPhotoPicker('license')),
+                    const SizedBox(height: 12),
+                    _buildDocPicker("NIC / passport", _nicFile, () => _showPhotoPicker('nic')),
+                    const SizedBox(height: 12),
+                    _buildDocPicker("Selfie for identity", _selfieFile, () => _showPhotoPicker('selfie')),
+                    const SizedBox(height: 40),
                     _isLoading
                         ? Container(
                             padding: const EdgeInsets.all(32),
                             decoration: BoxDecoration(
-                              color: AppTheme.colors.white,
-                              borderRadius: BorderRadius.circular(24),
-                              border: Border.all(color: AppTheme.secondaryBorder(context)),
-                              boxShadow: [BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4))],
+                              color: Theme.of(context).colorScheme.surface,
+                              borderRadius: BorderRadius.circular(22),
+                              boxShadow: [BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.06), blurRadius: 16, offset: const Offset(0, 6))],
                             ),
                             child: _buildLoadingAura(),
                           ).animate().fadeIn().scale(begin: const Offset(0.95, 0.95))
                         : SizedBox(
                             width: double.infinity,
-                            height: 60,
+                            height: 56,
                             child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Theme.of(context).colorScheme.primary,
+                                elevation: 0,
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(16),
+                                  borderRadius: BorderRadius.circular(100),
                                 ),
                               ),
                               onPressed: _submitApplication,
                               child: Text(
-                                "SUBMIT APPLICATION",
-                                style: GoogleFonts.outfit(
-                                  fontWeight: FontWeight.bold,
+                                "Submit application",
+                                style: GoogleFonts.inter(
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 14,
                                   color: AppTheme.colors.white,
-                                  letterSpacing: 2,
                                 ),
                               ),
                             ),
@@ -552,12 +567,12 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "GUIDE CATEGORY",
+          "Guide category",
           style: GoogleFonts.outfit(
-            fontSize: 12,
-            fontWeight: FontWeight.bold,
-            letterSpacing: 2,
-            color: Theme.of(context).colorScheme.primary,
+            fontSize: 14,
+            fontWeight: FontWeight.w700,
+            letterSpacing: -0.2,
+            color: AppTheme.textPrimary(context),
           ),
         ),
         const SizedBox(height: 12),
@@ -565,14 +580,22 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
           spacing: 8,
           children: ['National', 'Provincial', 'Site'].map((cat) {
             final isSelected = _selectedCategory == cat;
-            return ChoiceChip(
-              label: Text(cat),
-              selected: isSelected,
-              onSelected: (val) => setState(() => _selectedCategory = cat),
-              selectedColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
-              labelStyle: GoogleFonts.inter(
-                color: isSelected ? AppTheme.colors.white : AppTheme.textSecondary(context),
-                fontSize: 12,
+            return GestureDetector(
+              onTap: () => setState(() => _selectedCategory = cat),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                decoration: BoxDecoration(
+                  color: isSelected ? Theme.of(context).colorScheme.primary : AppTheme.surfaceMuted(context),
+                  borderRadius: BorderRadius.circular(100),
+                ),
+                child: Text(
+                  cat,
+                  style: GoogleFonts.inter(
+                    color: isSelected ? AppTheme.colors.white : AppTheme.textSecondary(context),
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
               ),
             );
           }).toList(),
@@ -584,31 +607,29 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
   Widget _buildDocPicker(String label, XFile? file, VoidCallback onTap) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(14),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         decoration: BoxDecoration(
-          color: AppTheme.colors.white,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppTheme.secondaryBorder(context)),
-          boxShadow: [BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4))],
+          color: AppTheme.surfaceMuted(context),
+          borderRadius: BorderRadius.circular(14),
         ),
         child: Row(
           children: [
             Icon(
               file == null ? Icons.add_a_photo_outlined : Icons.check_circle_rounded,
-              color: file == null ? AppTheme.textSecondary(context).withValues(alpha: 0.3) : AppTheme.colors.greenAccent,
+              color: file == null ? AppTheme.textSecondary(context) : AppTheme.colors.greenAccent,
             ),
-            const SizedBox(width: 16),
+            const SizedBox(width: 14),
             Expanded(
               child: Text(
                 label,
-                style: GoogleFonts.inter(color: AppTheme.textPrimary(context), fontSize: 13),
+                style: GoogleFonts.inter(color: AppTheme.textPrimary(context), fontSize: 13, fontWeight: FontWeight.w500),
               ),
             ),
             if (file != null)
               ClipRRect(
-                borderRadius: BorderRadius.circular(4),
+                borderRadius: BorderRadius.circular(8),
                 child: kIsWeb
                     ? Image.network(file.path, width: 40, height: 40, fit: BoxFit.cover)
                     : Image.file(io.File(file.path), width: 40, height: 40, fit: BoxFit.cover),
@@ -625,21 +646,18 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
       children: [
         Text(
           label,
-          style: GoogleFonts.outfit(
-            fontSize: 12,
-            fontWeight: FontWeight.bold,
-            letterSpacing: 2,
-            color: Theme.of(context).colorScheme.primary,
+          style: GoogleFonts.inter(
+            fontSize: 13,
+            fontWeight: FontWeight.w700,
+            color: AppTheme.textPrimary(context),
           ),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 10),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           decoration: BoxDecoration(
-            color: AppTheme.colors.white,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: AppTheme.secondaryBorder(context)),
-            boxShadow: [BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4))],
+            color: AppTheme.surfaceMuted(context),
+            borderRadius: BorderRadius.circular(14),
           ),
           child: TextField(
             controller: controller,
@@ -647,7 +665,7 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
             style: GoogleFonts.inter(color: AppTheme.textPrimary(context)),
             decoration: InputDecoration(
               hintText: hint,
-              hintStyle: GoogleFonts.inter(color: AppTheme.textSecondary(context).withValues(alpha: 0.5)),
+              hintStyle: GoogleFonts.inter(color: AppTheme.textSecondary(context)),
               border: InputBorder.none,
             ),
           ),
@@ -661,14 +679,17 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: color.withValues(alpha: 0.5), width: 1.5),
+        border: Border(left: BorderSide(color: color, width: 4)),
+        boxShadow: [
+          BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.05), blurRadius: 14, offset: const Offset(0, 5)),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: GoogleFonts.outfit(color: color, fontSize: 16, fontWeight: FontWeight.bold, letterSpacing: 1.2)),
+          Text(title, style: GoogleFonts.outfit(color: color, fontSize: 14, fontWeight: FontWeight.w700, letterSpacing: -0.2)),
           const SizedBox(height: 8),
           Text(message, style: GoogleFonts.inter(color: AppTheme.textPrimary(context), fontSize: 13, height: 1.5)),
         ],

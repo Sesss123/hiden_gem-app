@@ -105,10 +105,15 @@ class AppThemeColors {
 }
 
 class AppPalette {
-  // --- Tropical / Earthy Modern (Light UI) ---
-  static const Color bg = Color(0xFFFBF6EE);
+  // --- Tropical / Earthy Modern (Light UI / "Breeze") ---
+  // Matches "Hidden Gems SL - UI Refresh.dc.html" refresh mockups exactly.
+  static const Color bg = Color(0xFFFFFDF8);
   static const Color bg2 = Color(0xFFF3E9D8);
   static const Color surface = Color(0xFFFFFFFF);
+  // Muted surface used for input fields, filter chips (unselected), stat tiles.
+  static const Color surfaceMuted = Color(0xFFF3ECE0);
+  // Secondary/caption text tone used across refresh mockups.
+  static const Color textMuted = Color(0xFF8C7A6A);
 
   static const Color rust = Color(0xFFC1440E);
   static const Color rustDim = Color(0xFF8C3009);
@@ -139,8 +144,9 @@ class AppPaletteDark {
   static const Color surface = Color(0xFF1F1911);
   static const Color card = Color(0xFF241D15);
 
-  static const Color gem = Color(0xFF2E9E6B);
-  static const Color gemDim = Color(0xFF1F6E4A);
+  // Brand rust/ochre in the dark theme too — no green anywhere in the app.
+  static const Color gem = Color(0xFFC1440E);
+  static const Color gemDim = Color(0xFF8C3009);
 
   static const Color gold = Color(0xFFE0A93A);
   static const Color blue = Color(0xFF3B82F6);
@@ -157,8 +163,10 @@ class AppTheme {
   static Color cardColor(BuildContext context) => Theme.of(context).cardColor;
   static Color borderColor(BuildContext context) => Theme.of(context).brightness == Brightness.dark ? AppTheme.colors.white.withValues(alpha: 0.07) : AppPalette.ink.withValues(alpha: 0.12);
   static Color textPrimary(BuildContext context) => Theme.of(context).brightness == Brightness.dark ? AppPaletteDark.text : AppPalette.ink;
-  static Color textSecondary(BuildContext context) => Theme.of(context).brightness == Brightness.dark ? AppPaletteDark.textSub : AppPalette.ink.withValues(alpha: 0.65);
+  static Color textSecondary(BuildContext context) => Theme.of(context).brightness == Brightness.dark ? AppPaletteDark.textSub : AppPalette.textMuted;
   static Color scaffoldColor(BuildContext context) => Theme.of(context).scaffoldBackgroundColor;
+  // Muted surface for inputs, unselected chips, stat tiles (Breeze: #F3ECE0, Abyss: card color).
+  static Color surfaceMuted(BuildContext context) => Theme.of(context).brightness == Brightness.dark ? AppPaletteDark.card : AppPalette.surfaceMuted;
 
   // Semantic Aliases
   static Color primaryBlue(BuildContext context) => Theme.of(context).colorScheme.secondary;
@@ -294,8 +302,8 @@ class AppTheme {
       secondary: AppPaletteDark.gold,
       surface: AppPaletteDark.surface,
       onSurface: AppPaletteDark.text,
-      onPrimary: AppTheme.colors.black,
-      onSecondary: AppTheme.colors.white,
+      onPrimary: AppTheme.colors.white,
+      onSecondary: AppTheme.colors.black,
       error: AppPalette.error,
     ),
     textTheme: GoogleFonts.interTextTheme(ThemeData.dark().textTheme).copyWith(
@@ -316,7 +324,7 @@ class AppTheme {
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
         backgroundColor: AppPaletteDark.gem,
-        foregroundColor: AppTheme.colors.black,
+        foregroundColor: AppTheme.colors.white,
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
         textStyle: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 14, letterSpacing: 0.2),
@@ -333,7 +341,7 @@ class AppTheme {
     ),
     floatingActionButtonTheme: FloatingActionButtonThemeData(
       backgroundColor: AppPaletteDark.gem,
-      foregroundColor: AppTheme.colors.black,
+      foregroundColor: AppTheme.colors.white,
     ),
     dividerColor: AppTheme.colors.white.withValues(alpha: 0.07),
   );
@@ -358,9 +366,18 @@ class AppTheme {
   );
 
   static ButtonStyle primaryButtonStyle(BuildContext context) => ElevatedButton.styleFrom(
-    backgroundColor: AppPalette.rust,
-    foregroundColor: AppTheme.colors.white,
+    backgroundColor: Theme.of(context).colorScheme.primary,
+    foregroundColor: Theme.of(context).colorScheme.onPrimary,
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
+  );
+
+  /// Button label style used by the refresh: sentence case, modest tracking
+  /// (the old style forced ALL CAPS with 1.2px tracking on every button).
+  static TextStyle buttonLabelStyle(BuildContext context) => GoogleFonts.inter(
+    fontSize: 14,
+    fontWeight: FontWeight.w700,
+    letterSpacing: 0.2,
+    color: Theme.of(context).colorScheme.onPrimary,
   );
 
   static BoxDecoration glassDecoration(BuildContext context, {

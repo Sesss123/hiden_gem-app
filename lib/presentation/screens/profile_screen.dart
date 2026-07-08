@@ -350,7 +350,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
                       const SizedBox(height: 28),
 
                       // Theme Toggle
-                      _sectionLabel("APPEARANCE"),
+                      _sectionLabel("Appearance"),
                       const SizedBox(height: 12),
                       _buildThemeToggle(),
                       const SizedBox(height: 28),
@@ -360,7 +360,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
                       const SizedBox(height: 28),
 
                       // Settings
-                      _sectionLabel("SETTINGS"),
+                      _sectionLabel("Settings"),
                       const SizedBox(height: 12),
                       _buildSettingsSection(l10n),
                     ],
@@ -387,130 +387,109 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
 
   // ── Hero App Bar ─────────────────────────────────────────────────────────────
   Widget _buildHeroAppBar(bool isPremium, AppLocalizations l10n, bool isDark) {
-    final accentColor = isPremium ? AppPalette.rust : AppPalette.rust;
+    final primary = Theme.of(context).colorScheme.primary;
+    final secondary = Theme.of(context).colorScheme.secondary;
 
     return SliverAppBar(
-      expandedHeight: 300,
+      expandedHeight: 148,
       pinned: true,
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       elevation: 0,
+      automaticallyImplyLeading: false,
       flexibleSpace: FlexibleSpaceBar(
-        background: Stack(
-          fit: StackFit.expand,
-          children: [
-            // Background gradient
-            Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: isDark
-                      ? [AppTheme.colors.primary, AppTheme.colors.primary.withValues(alpha: 0)]
-                      : [AppPalette.heroOchre.withValues(alpha: 0.35), AppPalette.bg.withValues(alpha: 0)],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                ),
-              ),
+        background: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [primary, secondary],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
             ),
-
-            // Content
-            SafeArea(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+            borderRadius: const BorderRadius.only(
+              bottomLeft: Radius.circular(36),
+              bottomRight: Radius.circular(36),
+            ),
+          ),
+          child: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(22, 8, 22, 22),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const SizedBox(height: 16),
-
-                  // Avatar with pulsing ring
+                  // Avatar
                   GestureDetector(
                     onTap: () => _pickImage(l10n),
                     child: Stack(
-                      alignment: Alignment.center,
+                      clipBehavior: Clip.none,
                       children: [
-                        // Outer glow ring
                         Container(
-                          width: 112,
-                          height: 112,
+                          width: 72,
+                          height: 72,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            border: Border.all(color: accentColor.withValues(alpha: 0.25), width: 3),
-                            boxShadow: [
-                              BoxShadow(
-                                color: accentColor.withValues(alpha: 0.2),
-                                blurRadius: 24,
-                                spreadRadius: 4,
-                              ),
-                            ],
-                          ),
-                        ),
-                        // Avatar
-                        Container(
-                          width: 96,
-                          height: 96,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(color: accentColor, width: 2.5),
+                            border: Border.all(color: AppTheme.colors.white.withValues(alpha: 0.55), width: 2.5),
                           ),
                           child: ClipOval(child: _buildProfileImage(profile, isPremium)),
                         ),
-                        // Edit badge
                         Positioned(
-                          right: 2,
-                          bottom: 2,
+                          right: -2,
+                          bottom: -2,
                           child: Container(
-                            padding: const EdgeInsets.all(6),
+                            padding: const EdgeInsets.all(5),
                             decoration: BoxDecoration(
-                              color: accentColor,
+                              color: AppPalette.heroOchre,
                               shape: BoxShape.circle,
-                              border: Border.all(
-                                  color: Theme.of(context).scaffoldBackgroundColor, width: 2),
+                              border: Border.all(color: primary, width: 2),
                             ),
                             child: Icon(
                               isPremium ? Icons.verified_rounded : Icons.camera_alt_rounded,
-                              color: AppTheme.colors.white,
+                              color: AppPalette.ink,
                               size: 12,
                             ),
                           ),
                         ),
                       ],
                     ).animate(onPlay: (c) => c.repeat()).shimmer(
-                        duration: 3.seconds, delay: 2.seconds, color: accentColor.withValues(alpha: 0.3)),
+                        duration: 3.seconds, delay: 2.seconds, color: AppTheme.colors.white.withValues(alpha: 0.3)),
                   ),
-
-                  const SizedBox(height: 16),
-
+                  const SizedBox(width: 16),
                   // Name / title
-                  Text(
-                    isPremium ? "PREMIUM TRAVELER" : "ORACLE TRAVELER",
-                    style: GoogleFonts.outfit(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w900,
-                      color: AppTheme.textPrimary(context),
-                      letterSpacing: 2.5,
-                    ),
-                  ),
-
-                  const SizedBox(height: 4),
-
-                  // Level badge
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
-                    decoration: BoxDecoration(
-                      color: accentColor.withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: accentColor.withValues(alpha: 0.3)),
-                    ),
-                    child: Text(
-                      ExplorerProgressService().currentLevel.title.toUpperCase(),
-                      style: GoogleFonts.inter(
-                        fontSize: 10,
-                        color: accentColor,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 2,
-                      ),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          isPremium ? "Premium Traveler" : "Oracle Traveler",
+                          style: GoogleFonts.outfit(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w800,
+                            color: AppTheme.colors.white,
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: AppTheme.colors.white.withValues(alpha: 0.15),
+                            borderRadius: BorderRadius.circular(100),
+                          ),
+                          child: Text(
+                            "${ExplorerProgressService().currentLevel.title} · Level 1",
+                            style: GoogleFonts.inter(
+                              fontSize: 10,
+                              color: AppTheme.colors.white,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 0.3,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
               ),
             ),
-          ],
+          ),
         ),
       ),
     );
@@ -518,103 +497,101 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
 
   // ── Stats Card ───────────────────────────────────────────────────────────────
   Widget _buildStatsCard() {
-    return _Card(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 20),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            _statItem(profile.totalTripsGenerated.toString(), "TRIPS", Icons.route_rounded),
-            _divider(),
-            _statItem(profile.visitedPlaces.length.toString(), "PLACES", Icons.place_rounded),
-            _divider(),
-            _statItem("1", "LEVEL", Icons.workspace_premium_rounded),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _statItem(String value, String label, IconData icon) {
-    return Column(
+    return Row(
       children: [
-        Icon(icon, color: AppPalette.rust, size: 20),
-        const SizedBox(height: 6),
-        Text(value,
-            style: GoogleFonts.outfit(
-                fontSize: 22, fontWeight: FontWeight.bold, color: AppTheme.textPrimary(context))),
-        Text(label,
-            style: GoogleFonts.inter(
-                fontSize: 9,
-                color: AppTheme.textSecondary(context),
-                fontWeight: FontWeight.bold,
-                letterSpacing: 1)),
+        Expanded(child: _statTile(profile.totalTripsGenerated.toString(), "Trips")),
+        const SizedBox(width: 10),
+        Expanded(child: _statTile(profile.visitedPlaces.length.toString(), "Places")),
+        const SizedBox(width: 10),
+        Expanded(child: _statTile("1", "Level")),
       ],
     );
   }
 
-  Widget _divider() =>
-      Container(height: 36, width: 1, color: AppTheme.borderColor(context).withValues(alpha: 0.5));
+  Widget _statTile(String value, String label) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 16),
+      decoration: BoxDecoration(
+        color: AppTheme.surfaceMuted(context),
+        borderRadius: BorderRadius.circular(18),
+      ),
+      child: Column(
+        children: [
+          Text(value,
+              style: GoogleFonts.outfit(
+                  fontSize: 20, fontWeight: FontWeight.w800, color: AppTheme.textPrimary(context))),
+          const SizedBox(height: 2),
+          Text(label,
+              style: GoogleFonts.inter(
+                  fontSize: 10,
+                  color: AppTheme.textSecondary(context),
+                  fontWeight: FontWeight.w600)),
+        ],
+      ),
+    );
+  }
 
   // ── Premium Card ─────────────────────────────────────────────────────────────
   Widget _buildPremiumCard(bool isPremium) {
-    return _Card(
-      child: Padding(
-        padding: const EdgeInsets.all(18),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: isPremium
-                    ? AppPalette.rust.withValues(alpha: 0.12)
-                    : AppTheme.borderColor(context).withValues(alpha: 0.3),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                isPremium ? Icons.view_in_ar_rounded : Icons.lock_outline_rounded,
-                color: isPremium ? AppPalette.rust : AppTheme.textSecondary(context),
-                size: 22,
-              ),
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardBg = isDark ? AppPaletteDark.card : AppPalette.ink;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+      decoration: BoxDecoration(
+        color: cardBg,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: AppPalette.heroOchre.withValues(alpha: 0.18),
+              borderRadius: BorderRadius.circular(12),
             ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    isPremium ? "ORACLE EXPLORER" : "INITIATE",
-                    style: GoogleFonts.outfit(
-                        color: isPremium ? AppPalette.rust : AppTheme.textPrimary(context),
-                        fontWeight: FontWeight.bold,
-                        fontSize: 13,
-                        letterSpacing: 0.5),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    isPremium ? "Full AR & AI access granted" : "Upgrade to unlock all features",
-                    style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 11),
-                  ),
-                ],
-              ),
+            child: Icon(
+              isPremium ? Icons.view_in_ar_rounded : Icons.lock_outline_rounded,
+              color: AppPalette.heroOchre,
+              size: 20,
             ),
-            if (!isPremium)
-              GestureDetector(
-                onTap: () => Navigator.push(
-                    context, MaterialPageRoute(builder: (_) => const PremiumHubScreen())),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: AppPalette.rust,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text("UPGRADE",
-                      style: GoogleFonts.outfit(
-                          color: AppTheme.colors.white, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1)),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  isPremium ? "Oracle Explorer" : "Go Premium",
+                  style: GoogleFonts.outfit(
+                      color: AppTheme.colors.white,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 13),
                 ),
+                const SizedBox(height: 2),
+                Text(
+                  isPremium ? "Full AR & AI access granted" : "Unlock AR & AI features",
+                  style: GoogleFonts.inter(color: AppTheme.colors.white.withValues(alpha: 0.6), fontSize: 11),
+                ),
+              ],
+            ),
+          ),
+          if (!isPremium)
+            GestureDetector(
+              onTap: () => Navigator.push(
+                  context, MaterialPageRoute(builder: (_) => const PremiumHubScreen())),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                decoration: BoxDecoration(
+                  color: AppPalette.heroOchre,
+                  borderRadius: BorderRadius.circular(100),
+                ),
+                child: Text("Upgrade",
+                    style: GoogleFonts.inter(
+                        color: AppPalette.ink, fontSize: 11, fontWeight: FontWeight.w700)),
               ),
-          ],
-        ),
+            ),
+        ],
       ),
     );
   }
@@ -622,27 +599,29 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
   // ── Theme Toggle ─────────────────────────────────────────────────────────────
   Widget _buildThemeToggle() {
     final themeMode = ref.watch(themeModeProvider);
-    return _Card(
-      child: Padding(
-        padding: const EdgeInsets.all(4),
-        child: Row(
-          children: [
-            Expanded(
-              child: _themeOption(
-                "☀️  LIGHT",
-                themeMode == ThemeMode.light,
-                () => ref.read(themeModeProvider.notifier).setMode(ThemeMode.light),
-              ),
+    return Container(
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: AppTheme.surfaceMuted(context),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: _themeOption(
+              "☀️  Light",
+              themeMode == ThemeMode.light,
+              () => ref.read(themeModeProvider.notifier).setMode(ThemeMode.light),
             ),
-            Expanded(
-              child: _themeOption(
-                "🌙  DARK",
-                themeMode == ThemeMode.dark,
-                () => ref.read(themeModeProvider.notifier).setMode(ThemeMode.dark),
-              ),
+          ),
+          Expanded(
+            child: _themeOption(
+              "🌙  Dark",
+              themeMode == ThemeMode.dark,
+              () => ref.read(themeModeProvider.notifier).setMode(ThemeMode.dark),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -652,19 +631,21 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
       onTap: onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 250),
-        padding: const EdgeInsets.symmetric(vertical: 13),
+        padding: const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
-          color: isSelected ? AppPalette.rust : AppTheme.colors.transparent,
-          borderRadius: BorderRadius.circular(14),
+          color: isSelected ? Theme.of(context).colorScheme.surface : AppTheme.colors.transparent,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: isSelected
+              ? [BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.12), blurRadius: 10, offset: const Offset(0, 4))]
+              : null,
         ),
         child: Text(
           label,
           textAlign: TextAlign.center,
-          style: GoogleFonts.outfit(
-            fontSize: 11,
-            fontWeight: FontWeight.bold,
-            color: isSelected ? AppTheme.colors.white : AppTheme.textSecondary(context),
-            letterSpacing: 0.5,
+          style: GoogleFonts.inter(
+            fontSize: 12,
+            fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
+            color: isSelected ? AppTheme.textPrimary(context) : AppTheme.textSecondary(context),
           ),
         ),
       ),
@@ -676,32 +657,75 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _sectionLabel("JOURNEY HUB"),
-        const SizedBox(height: 12),
-        _Card(
-          child: Column(
+        _sectionLabel("Journey hub"),
+        const SizedBox(height: 10),
+        _hubCard(
+          Icons.account_balance_wallet_outlined,
+          "AI Budget Concierge",
+          "Smart expense advisor",
+          AppPalette.rust,
+          () => Navigator.push(context, MaterialPageRoute(builder: (_) => const BudgetConciergeScreen())),
+        ),
+        const SizedBox(height: 8),
+        _hubCard(
+          Icons.workspace_premium_outlined,
+          "Heritage Passport",
+          "Verifiable visit collection",
+          AppPalette.heroOchre,
+          () => Navigator.push(context, MaterialPageRoute(builder: (_) => const HeritagePassportScreen())),
+        ),
+        const SizedBox(height: 8),
+        FutureBuilder<int>(
+          future: EthicalTravelService.getScore(),
+          builder: (context, snapshot) {
+            final score = snapshot.data ?? 0;
+            final rank = EthicalTravelService.getRank(score);
+            return _hubCard(Icons.eco_outlined, "Ethical Travel Meter",
+                "Rank: $rank • Score: $score", Theme.of(context).colorScheme.secondary, () => _showEthicalMeterDialog(context, score, rank));
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _hubCard(IconData icon, String title, String subtitle, Color color, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surface,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.05), blurRadius: 16, offset: const Offset(0, 6)),
+          ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+          child: Row(
             children: [
-              _hubItem(Icons.account_balance_wallet_outlined, "AI Budget Concierge",
-                  "Smart expense advisor", AppPalette.rust,
-                  () => Navigator.push(context, MaterialPageRoute(builder: (_) => const BudgetConciergeScreen()))),
-              _hubDivider(),
-              _hubItem(Icons.workspace_premium_outlined, "Heritage Passport",
-                  "Verifiable visit collection", AppTheme.colors.primary,
-                  () => Navigator.push(context, MaterialPageRoute(builder: (_) => const HeritagePassportScreen()))),
-              _hubDivider(),
-              FutureBuilder<int>(
-                future: EthicalTravelService.getScore(),
-                builder: (context, snapshot) {
-                  final score = snapshot.data ?? 0;
-                  final rank = EthicalTravelService.getRank(score);
-                  return _hubItem(Icons.eco_outlined, "Ethical Travel Meter",
-                      "Rank: $rank • Score: $score", AppTheme.colors.primary, () => _showEthicalMeterDialog(context, score, rank));
-                },
+              Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(color: color.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(11)),
+                child: Icon(icon, color: color, size: 18),
               ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(title,
+                        style: GoogleFonts.inter(color: AppTheme.textPrimary(context), fontWeight: FontWeight.w600, fontSize: 12)),
+                    Text(subtitle,
+                        style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 10)),
+                  ],
+                ),
+              ),
+              Icon(Icons.arrow_forward_ios_rounded, color: AppTheme.textSecondary(context).withValues(alpha: 0.5), size: 12),
             ],
           ),
         ),
-      ],
+      ),
     );
   }
 
@@ -891,47 +915,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
     );
   }
 
-  Widget _hubItem(IconData icon, String title, String subtitle, Color color, VoidCallback onTap) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(9),
-              decoration: BoxDecoration(
-                  color: color.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(10)),
-              child: Icon(icon, color: color, size: 20),
-            ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(title,
-                      style: GoogleFonts.inter(
-                          color: AppTheme.textPrimary(context),
-                          fontWeight: FontWeight.bold,
-                          fontSize: 13)),
-                  Text(subtitle,
-                      style: GoogleFonts.inter(
-                          color: AppTheme.textSecondary(context), fontSize: 11)),
-                ],
-              ),
-            ),
-            Icon(Icons.arrow_forward_ios_rounded,
-                color: AppTheme.textSecondary(context).withValues(alpha: 0.35), size: 13),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _hubDivider() => Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 18),
-    child: Divider(height: 1, color: AppTheme.borderColor(context).withValues(alpha: 0.5)),
-  );
 
   // ── Guide Command Hub (Option 1 - Redesigned for High Contrast & Luxury) ────
   Widget _buildGuideCommandHub() {
@@ -1196,6 +1179,17 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
               activeThumbColor: AppPalette.rust,
             )),
 
+        _tile(Icons.fingerprint_rounded, "App Lock (Biometrics)",
+            trailing: Switch(
+              value: profile.isAppLockEnabled,
+              onChanged: (val) async {
+                HapticFeedback.selectionClick();
+                await UserPreferenceService.updateAppLockStatus(val);
+                if (mounted) setState(() => profile = UserPreferenceService.getProfile());
+              },
+              activeThumbColor: AppPalette.rust,
+            )),
+
         _tile(Icons.language_outlined, l10n.language,
             onTap: () => _showLanguagePicker(context)),
 
@@ -1439,34 +1433,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
   Widget _sectionLabel(String label) => Text(
     label,
     style: GoogleFonts.outfit(
-      fontSize: 11,
-      fontWeight: FontWeight.w900,
-      color: AppPalette.rust,
-      letterSpacing: 3,
+      fontSize: 13,
+      fontWeight: FontWeight.w700,
+      color: AppTheme.textPrimary(context),
     ),
   );
-}
-
-// ── Reusable Card ─────────────────────────────────────────────────────────────
-class _Card extends StatelessWidget {
-  final Widget child;
-  const _Card({required this.child});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: AppTheme.borderColor(context)),
-        boxShadow: [
-          BoxShadow(
-              color: AppTheme.colors.black.withValues(alpha: 0.04), blurRadius: 12, offset: const Offset(0, 3))
-        ],
-      ),
-      child: child,
-    );
-  }
 }
 
 // ── Bottom Sheet wrapper ──────────────────────────────────────────────────────

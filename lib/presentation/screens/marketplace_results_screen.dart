@@ -131,11 +131,11 @@ class _MarketplaceResultsScreenState extends ConsumerState<MarketplaceResultsScr
             child: Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: AppTheme.colors.white.withValues(alpha: 0.1),
+                color: AppTheme.surfaceMuted(context),
                 shape: BoxShape.circle,
-                border: Border.all(color: AppTheme.colors.white.withValues(alpha: 0.2)),
+                border: Border.all(color: AppTheme.borderColor(context)),
               ),
-              child: Icon(Icons.arrow_back_ios_new_rounded, color: AppTheme.colors.white, size: 18),
+              child: Icon(Icons.arrow_back_ios_new_rounded, color: AppTheme.textPrimary(context), size: 18),
             ),
           ),
           const SizedBox(width: 16),
@@ -144,20 +144,20 @@ class _MarketplaceResultsScreenState extends ConsumerState<MarketplaceResultsScr
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "ORACLE GUIDES",
-                  style: GoogleFonts.outfit(
+                  "Verified guides",
+                  style: GoogleFonts.inter(
                     fontSize: 12,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: 2.5,
-                    color: AppTheme.colors.amber[400],
+                    fontWeight: FontWeight.w700,
+                    color: Theme.of(context).colorScheme.primary,
                   ),
                 ),
                 Text(
-                  "Verified Local Experts",
+                  "Find your expert",
                   style: GoogleFonts.outfit(
                     fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    color: AppTheme.colors.white,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: -0.5,
+                    color: AppTheme.textPrimary(context),
                   ),
                 ),
               ],
@@ -179,22 +179,25 @@ class _MarketplaceResultsScreenState extends ConsumerState<MarketplaceResultsScr
         itemBuilder: (context, index) {
           final cat = _categories[index];
           final isSelected = (_selectedCategory == null && cat == 'All') || (_selectedCategory == cat);
-          return ChoiceChip(
-            label: Text(
-              cat,
-              style: GoogleFonts.inter(
-                fontSize: 13,
-                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                color: isSelected ? AppTheme.colors.black : AppTheme.colors.white70,
+          final isDark = Theme.of(context).brightness == Brightness.dark;
+          return GestureDetector(
+            onTap: () => _onCategorySelected(cat),
+            child: Container(
+              alignment: Alignment.center,
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              decoration: BoxDecoration(
+                color: isSelected ? (isDark ? AppTheme.colors.black : AppPalette.ink) : AppTheme.surfaceMuted(context),
+                borderRadius: BorderRadius.circular(100),
+              ),
+              child: Text(
+                cat,
+                style: GoogleFonts.inter(
+                  fontSize: 13,
+                  fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                  color: isSelected ? AppTheme.colors.white : AppTheme.textSecondary(context),
+                ),
               ),
             ),
-            selected: isSelected,
-            selectedColor: AppTheme.colors.amber[400],
-            backgroundColor: AppTheme.colors.white.withValues(alpha: 0.08),
-            side: BorderSide(
-              color: isSelected ? AppTheme.colors.amber : AppTheme.colors.white.withValues(alpha: 0.2),
-            ),
-            onSelected: (_) => _onCategorySelected(cat),
           );
         },
       ),
@@ -206,16 +209,16 @@ class _MarketplaceResultsScreenState extends ConsumerState<MarketplaceResultsScr
       future: _defaultListingsFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator(color: AppTheme.colors.amber));
+          return Center(child: CircularProgressIndicator(color: Theme.of(context).colorScheme.primary));
         }
         if (snapshot.hasError) {
           return Center(
-            child: Text("Error loading guides: ${snapshot.error}", style: TextStyle(color: AppTheme.colors.white70)),
+            child: Text("Error loading guides: ${snapshot.error}", style: TextStyle(color: AppTheme.textSecondary(context))),
           );
         }
         final listings = snapshot.data ?? [];
         if (listings.isEmpty) {
-          return _buildEmptyState("No verified guides published yet.");
+          return _buildEmptyState(context, "No verified guides published yet.");
         }
         return _buildListingsGrid(listings, isPaginated: false);
       },
@@ -224,7 +227,7 @@ class _MarketplaceResultsScreenState extends ConsumerState<MarketplaceResultsScr
 
   Widget _buildSearchResults(BuildContext context, MarketplaceSearchState state) {
     if (state.isLoading && state.results.isEmpty) {
-      return Center(child: CircularProgressIndicator(color: AppTheme.colors.amber));
+      return Center(child: CircularProgressIndicator(color: Theme.of(context).colorScheme.primary));
     }
     if (state.error != null && state.results.isEmpty) {
       return Center(
@@ -232,24 +235,24 @@ class _MarketplaceResultsScreenState extends ConsumerState<MarketplaceResultsScr
       );
     }
     if (state.results.isEmpty) {
-      return _buildEmptyState("No guides found matching '${state.normalizedQuery}'");
+      return _buildEmptyState(context, "No guides found matching '${state.normalizedQuery}'");
     }
     return _buildListingsGrid(state.results, isPaginated: true, isLoadingMore: state.isLoading);
   }
 
-  Widget _buildEmptyState(String message) {
+  Widget _buildEmptyState(BuildContext context, String message) {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.person_search_outlined, size: 64, color: AppTheme.colors.white.withValues(alpha: 0.3)),
+            Icon(Icons.person_search_outlined, size: 64, color: AppTheme.textSecondary(context).withValues(alpha: 0.4)),
             const SizedBox(height: 16),
             Text(
               message,
               textAlign: TextAlign.center,
-              style: GoogleFonts.inter(fontSize: 16, color: AppTheme.colors.white70),
+              style: GoogleFonts.inter(fontSize: 16, color: AppTheme.textSecondary(context)),
             ),
           ],
         ),
@@ -269,7 +272,7 @@ class _MarketplaceResultsScreenState extends ConsumerState<MarketplaceResultsScr
           });
         }
       },
-      color: AppTheme.colors.amber,
+      color: Theme.of(context).colorScheme.primary,
       child: ListView.builder(
         controller: _scrollController,
         padding: const EdgeInsets.fromLTRB(20, 10, 20, 40),
@@ -279,7 +282,7 @@ class _MarketplaceResultsScreenState extends ConsumerState<MarketplaceResultsScr
           if (index == listings.length) {
             return Padding(
               padding: EdgeInsets.symmetric(vertical: 20),
-              child: Center(child: CircularProgressIndicator(color: AppTheme.colors.amber)),
+              child: Center(child: CircularProgressIndicator(color: Theme.of(context).colorScheme.primary)),
             );
           }
           final listing = listings[index];
@@ -315,14 +318,13 @@ class _MarketplaceResultsScreenState extends ConsumerState<MarketplaceResultsScr
       child: Container(
         margin: const EdgeInsets.only(bottom: 16),
         decoration: BoxDecoration(
-          color: AppTheme.colors.white.withValues(alpha: 0.08),
-          borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: AppTheme.colors.white.withValues(alpha: 0.15)),
+          color: Theme.of(context).colorScheme.surface,
+          borderRadius: BorderRadius.circular(22),
           boxShadow: [
             BoxShadow(
-              color: AppTheme.colors.black.withValues(alpha: 0.2),
-              blurRadius: 15,
-              offset: const Offset(0, 8),
+              color: AppTheme.colors.black.withValues(alpha: 0.06),
+              blurRadius: 22,
+              offset: const Offset(0, 10),
             ),
           ],
         ),
@@ -331,10 +333,11 @@ class _MarketplaceResultsScreenState extends ConsumerState<MarketplaceResultsScr
           child: Row(
             children: [
               ClipRRect(
-                borderRadius: BorderRadius.circular(20),
-                child: SizedBox(
+                borderRadius: BorderRadius.circular(18),
+                child: Container(
                   width: 80,
                   height: 80,
+                  color: AppTheme.surfaceMuted(context),
                   child: CachedImage(
                     url: photoUrl,
                     fit: BoxFit.cover,
@@ -352,17 +355,15 @@ class _MarketplaceResultsScreenState extends ConsumerState<MarketplaceResultsScr
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                           decoration: BoxDecoration(
-                            color: AppTheme.colors.amber.withValues(alpha: 0.2),
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: AppTheme.colors.amber.withValues(alpha: 0.5)),
+                            color: AppTheme.colors.amber.withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(100),
                           ),
                           child: Text(
-                            listing.guideCategory.toUpperCase(),
-                            style: GoogleFonts.outfit(
-                              fontSize: 10,
-                              fontWeight: FontWeight.bold,
-                              color: AppTheme.colors.amber[300],
-                              letterSpacing: 1,
+                            listing.guideCategory,
+                            style: GoogleFonts.inter(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w700,
+                              color: AppTheme.colors.amber[800],
                             ),
                           ),
                         ),
@@ -375,14 +376,14 @@ class _MarketplaceResultsScreenState extends ConsumerState<MarketplaceResultsScr
                               style: GoogleFonts.outfit(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 14,
-                                color: AppTheme.colors.white,
+                                color: AppTheme.textPrimary(context),
                               ),
                             ),
                             Text(
                               " (${listing.reviewCount})",
                               style: GoogleFonts.inter(
                                 fontSize: 12,
-                                color: AppTheme.colors.white60,
+                                color: AppTheme.textSecondary(context),
                               ),
                             ),
                           ],
@@ -393,9 +394,10 @@ class _MarketplaceResultsScreenState extends ConsumerState<MarketplaceResultsScr
                     Text(
                       listing.displayName,
                       style: GoogleFonts.outfit(
-                        fontSize: 18,
+                        fontSize: 14,
                         fontWeight: FontWeight.bold,
-                        color: AppTheme.colors.white,
+                        letterSpacing: -0.2,
+                        color: AppTheme.textPrimary(context),
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -406,20 +408,20 @@ class _MarketplaceResultsScreenState extends ConsumerState<MarketplaceResultsScr
                       children: [
                         Row(
                           children: [
-                            Icon(Icons.language, color: AppTheme.colors.white60, size: 14),
+                            Icon(Icons.language, color: AppTheme.textSecondary(context), size: 14),
                             const SizedBox(width: 6),
                             Text(
                               listing.languages.take(2).join(", "),
-                              style: GoogleFonts.inter(fontSize: 12, color: AppTheme.colors.white70),
+                              style: GoogleFonts.inter(fontSize: 12, color: AppTheme.textSecondary(context)),
                             ),
                           ],
                         ),
                         Text(
                           "${listing.currency} ${listing.hourlyRate.toStringAsFixed(0)}/hr",
-                          style: GoogleFonts.outfit(
-                            fontSize: 15,
+                          style: GoogleFonts.inter(
+                            fontSize: 11,
                             fontWeight: FontWeight.w800,
-                            color: AppTheme.colors.greenAccent[400],
+                            color: AppTheme.colors.green[700],
                           ),
                         ),
                       ],
@@ -428,7 +430,7 @@ class _MarketplaceResultsScreenState extends ConsumerState<MarketplaceResultsScr
                 ),
               ),
               const SizedBox(width: 8),
-              Icon(Icons.arrow_forward_ios_rounded, color: AppTheme.colors.white.withValues(alpha: 0.4), size: 16),
+              Icon(Icons.arrow_forward_ios_rounded, color: AppTheme.textSecondary(context).withValues(alpha: 0.5), size: 16),
             ],
           ),
         ),

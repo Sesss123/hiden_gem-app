@@ -180,15 +180,21 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     _buildHero(),
-                    const SizedBox(height: 48),
+                    const SizedBox(height: 32),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text("ACTIVE LINKS", style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: 2)),
-                        TextButton.icon(
-                          onPressed: _showCreateLinkSheet,
-                          icon: Icon(Icons.add_rounded, color: AppTheme.colors.primary),
-                          label: Text("NEW", style: GoogleFonts.inter(color: AppTheme.colors.primary, fontWeight: FontWeight.bold)),
+                        Text("Active links", style: GoogleFonts.inter(color: AppTheme.textPrimary(context), fontSize: 14, fontWeight: FontWeight.w700)),
+                        GestureDetector(
+                          onTap: _showCreateLinkSheet,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).colorScheme.primary,
+                              borderRadius: BorderRadius.circular(100),
+                            ),
+                            child: Text("+ New", style: GoogleFonts.inter(color: AppTheme.colors.white, fontWeight: FontWeight.w700, fontSize: 12)),
+                          ),
                         ),
                       ],
                     ),
@@ -210,30 +216,44 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
       floating: true,
       backgroundColor: AppTheme.colors.transparent,
       elevation: 0,
-      title: OracleUI.neonText(
-        "COORDINATION HUB",
-        style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.w900, letterSpacing: 4, color: AppTheme.textPrimary(context)),
+      title: Text(
+        "Family sharing",
+        style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.w800, letterSpacing: -0.5, color: AppTheme.textPrimary(context)),
       ),
     );
   }
 
   Widget _buildHero() {
-    return OracleUI.premiumGlassCard(
-      padding: const EdgeInsets.all(32),
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(28),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(24),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Theme.of(context).colorScheme.primary,
+            AppPalette.rustDim,
+          ],
+        ),
+      ),
       child: Column(
         children: [
-          Icon(Icons.hub_rounded, color: AppTheme.colors.primary, size: 48),
-          const SizedBox(height: 24),
-          Text(
-            "Share your mission status with trusted contacts.",
-            textAlign: TextAlign.center,
-            style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontSize: 18, fontWeight: FontWeight.bold, height: 1.4),
+          Container(
+            width: 48,
+            height: 48,
+            decoration: BoxDecoration(
+              color: AppTheme.colors.white.withValues(alpha: 0.2),
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: const Icon(Icons.hub_rounded, color: Colors.white, size: 24),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 16),
           Text(
-            "Family and friends can track your live location, guide status, and safety signals through a secure link.",
+            "Let family track your trip status securely",
             textAlign: TextAlign.center,
-            style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 13, height: 1.5),
+            style: GoogleFonts.inter(color: AppTheme.colors.white, fontSize: 14, fontWeight: FontWeight.w600, height: 1.5),
           ),
         ],
       ),
@@ -241,15 +261,21 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
   }
 
   Widget _buildEmptyState() {
-    return OracleUI.glassContainer(
-      padding: const EdgeInsets.all(48),
-      borderRadius: BorderRadius.circular(32),
+    return Container(
+      padding: const EdgeInsets.all(40),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.05), blurRadius: 16, offset: const Offset(0, 6)),
+        ],
+      ),
       child: Center(
         child: Column(
           children: [
-            Icon(Icons.link_off_rounded, color: AppTheme.textSecondary(context).withValues(alpha: 0.3), size: 48),
-            const SizedBox(height: 24),
-            Text("No active sharing links found.", style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 14)),
+            Icon(Icons.link_off_rounded, color: AppTheme.textSecondary(context).withValues(alpha: 0.4), size: 40),
+            const SizedBox(height: 20),
+            Text("No active sharing links found", style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 13, fontWeight: FontWeight.w500)),
           ],
         ),
       ),
@@ -263,9 +289,15 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
       padding: const EdgeInsets.only(bottom: 16),
       child: Opacity(
         opacity: isExpired ? 0.5 : 1.0,
-        child: OracleUI.glassContainer(
-          padding: const EdgeInsets.all(24),
-          borderRadius: BorderRadius.circular(24),
+        child: Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surface,
+            borderRadius: BorderRadius.circular(18),
+            boxShadow: [
+              BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.06), blurRadius: 16, offset: const Offset(0, 6)),
+            ],
+          ),
           child: Row(
             children: [
               Expanded(
@@ -278,22 +310,22 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
                         if (isExpired) ...[
                           const SizedBox(width: 8),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                            decoration: BoxDecoration(color: AppTheme.colors.redAccent.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(8), border: Border.all(color: AppTheme.colors.redAccent)),
-                            child: Text("EXPIRED", style: GoogleFonts.inter(color: AppTheme.colors.redAccent, fontSize: 9, fontWeight: FontWeight.bold)),
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                            decoration: BoxDecoration(color: AppTheme.colors.redAccent, borderRadius: BorderRadius.circular(100)),
+                            child: Text("Expired", style: GoogleFonts.inter(color: AppTheme.colors.white, fontSize: 9, fontWeight: FontWeight.w700)),
                           ),
                         ] else if (link.viewCount > 0) ...[
                           const SizedBox(width: 8),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                            decoration: BoxDecoration(color: AppTheme.colors.primary.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(8), border: Border.all(color: AppTheme.colors.primary)),
-                            child: Text("VIEWED ${link.viewCount}X", style: GoogleFonts.inter(color: AppTheme.colors.primary, fontSize: 9, fontWeight: FontWeight.bold)),
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                            decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary, borderRadius: BorderRadius.circular(100)),
+                            child: Text("Viewed ${link.viewCount}x", style: GoogleFonts.inter(color: AppTheme.colors.white, fontSize: 9, fontWeight: FontWeight.w700)),
                           ),
                         ],
                       ],
                     ),
                     const SizedBox(height: 4),
-                    Text(isExpired ? "Status: No longer valid" : "Expires: ${link.expiresAt.hour}:${link.expiresAt.minute.toString().padLeft(2, '0')}", style: GoogleFonts.inter(color: AppTheme.textSecondary(context).withValues(alpha: 0.7), fontSize: 11)),
+                    Text(isExpired ? "No longer valid" : "Expires ${link.expiresAt.hour}:${link.expiresAt.minute.toString().padLeft(2, '0')}", style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 11, fontWeight: FontWeight.w500)),
                   ],
                 ),
               ),
@@ -364,52 +396,56 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
       builder: (context) => StatefulBuilder(
         builder: (context, setSheetState) => Padding(
           padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-          child: OracleUI.glassContainer(
-            padding: const EdgeInsets.all(32),
-            borderRadius: const BorderRadius.only(topLeft: Radius.circular(40), topRight: Radius.circular(40)),
+          child: Container(
+            padding: const EdgeInsets.all(28),
+            decoration: BoxDecoration(
+              color: Theme.of(context).scaffoldBackgroundColor,
+              borderRadius: const BorderRadius.only(topLeft: Radius.circular(32), topRight: Radius.circular(32)),
+            ),
             child: SingleChildScrollView(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  OracleUI.neonText(
-                    "CREATE SHARE LINK",
-                    style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.w900, letterSpacing: 4, color: AppTheme.textPrimary(context)),
+                  Text(
+                    "Create share link",
+                    style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.w800, letterSpacing: -0.5, color: AppTheme.textPrimary(context)),
                   ),
-                  const SizedBox(height: 32),
-                  _buildTextField("RECIPIENT NAME", "E.g. Mom, Dad, Home Office", _nameController),
+                  const SizedBox(height: 28),
+                  _buildTextField("Recipient name", "E.g. Mom, Dad, Home office", _nameController),
                   const SizedBox(height: 24),
-                  Text("EXPIRY", style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 2)),
+                  Text("Expiry", style: GoogleFonts.inter(color: AppTheme.textPrimary(context), fontSize: 12, fontWeight: FontWeight.w700)),
                   const SizedBox(height: 12),
                   Row(
                     children: [
-                      _buildTimeOption("4 HOURS", _selectedHours == 4, () => setSheetState(() => _selectedHours = 4)),
+                      _buildTimeOption("4 hours", _selectedHours == 4, () => setSheetState(() => _selectedHours = 4)),
                       const SizedBox(width: 12),
-                      _buildTimeOption("12 HOURS", _selectedHours == 12, () => setSheetState(() => _selectedHours = 12)),
+                      _buildTimeOption("12 hours", _selectedHours == 12, () => setSheetState(() => _selectedHours = 12)),
                       const SizedBox(width: 12),
-                      _buildTimeOption("24 HOURS", _selectedHours == 24, () => setSheetState(() => _selectedHours = 24)),
+                      _buildTimeOption("24 hours", _selectedHours == 24, () => setSheetState(() => _selectedHours = 24)),
                     ],
                   ),
-                  const SizedBox(height: 32),
-                  _buildPermissionRow("SHARE LIVE STATUS", _permissions['show_status']!, (v) => setSheetState(() => _permissions['show_status'] = v)),
-                  _buildPermissionRow("SHARE GUIDE IDENTITY", _permissions['show_identity']!, (v) => setSheetState(() => _permissions['show_identity'] = v)),
-                  _buildPermissionRow("SHARE MEETING POINT", _permissions['show_meeting_point']!, (v) => setSheetState(() => _permissions['show_meeting_point'] = v)),
-                  _buildPermissionRow("SHARE EMERGENCY ALERTS", _permissions['show_emergency']!, (v) => setSheetState(() => _permissions['show_emergency'] = v)),
-                  const SizedBox(height: 48),
+                  const SizedBox(height: 28),
+                  _buildPermissionRow("Share live status", _permissions['show_status']!, (v) => setSheetState(() => _permissions['show_status'] = v)),
+                  _buildPermissionRow("Share guide identity", _permissions['show_identity']!, (v) => setSheetState(() => _permissions['show_identity'] = v)),
+                  _buildPermissionRow("Share meeting point", _permissions['show_meeting_point']!, (v) => setSheetState(() => _permissions['show_meeting_point'] = v)),
+                  _buildPermissionRow("Share emergency alerts", _permissions['show_emergency']!, (v) => setSheetState(() => _permissions['show_emergency'] = v)),
+                  const SizedBox(height: 36),
                   SizedBox(
                     width: double.infinity,
+                    height: 56,
                     child: ElevatedButton(
                       onPressed: _generateLink,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppTheme.colors.primary,
-                        foregroundColor: AppTheme.colors.black,
-                        padding: const EdgeInsets.symmetric(vertical: 20),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                        backgroundColor: Theme.of(context).colorScheme.primary,
+                        foregroundColor: AppTheme.colors.white,
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
                       ),
-                      child: Text("GENERATE MISSION LINK", style: GoogleFonts.outfit(fontWeight: FontWeight.w900, letterSpacing: 2)),
+                      child: Text("Generate link", style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 14)),
                     ),
                   ),
-                  const SizedBox(height: 40),
+                  const SizedBox(height: 32),
                 ],
               ),
             ),
@@ -423,17 +459,20 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 2)),
-        const SizedBox(height: 12),
-        OracleUI.glassContainer(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-          borderRadius: BorderRadius.circular(16),
+        Text(label, style: GoogleFonts.inter(color: AppTheme.textPrimary(context), fontSize: 12, fontWeight: FontWeight.w700)),
+        const SizedBox(height: 10),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 18),
+          decoration: BoxDecoration(
+            color: AppTheme.surfaceMuted(context),
+            borderRadius: BorderRadius.circular(14),
+          ),
           child: TextField(
             controller: controller,
             style: TextStyle(color: AppTheme.textPrimary(context)),
             decoration: InputDecoration(
               hintText: hint,
-              hintStyle: GoogleFonts.inter(color: AppTheme.textSecondary(context).withValues(alpha: 0.5), fontSize: 13),
+              hintStyle: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 13),
               border: InputBorder.none,
             ),
           ),
@@ -447,14 +486,13 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
       child: GestureDetector(
         onTap: onTap,
         child: Container(
-          height: 50,
+          height: 48,
           alignment: Alignment.center,
           decoration: BoxDecoration(
-            color: isSelected ? AppTheme.colors.primary.withValues(alpha: 0.1) : AppTheme.borderColor(context),
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: isSelected ? AppTheme.colors.primary : AppTheme.borderColor(context)),
+            color: isSelected ? Theme.of(context).colorScheme.primary : AppTheme.surfaceMuted(context),
+            borderRadius: BorderRadius.circular(14),
           ),
-          child: Text(label, style: GoogleFonts.inter(color: isSelected ? AppTheme.textPrimary(context) : AppTheme.textSecondary(context), fontSize: 11, fontWeight: FontWeight.bold)),
+          child: Text(label, style: GoogleFonts.inter(color: isSelected ? AppTheme.colors.white : AppTheme.textSecondary(context), fontSize: 12, fontWeight: FontWeight.w700)),
         ),
       ),
     );
@@ -466,10 +504,10 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: GoogleFonts.inter(color: AppTheme.textPrimary(context), fontSize: 14)),
+          Text(label, style: GoogleFonts.inter(color: AppTheme.textPrimary(context), fontSize: 13, fontWeight: FontWeight.w500)),
           Switch(
             value: value,
-            activeThumbColor: AppTheme.colors.primary,
+            activeThumbColor: Theme.of(context).colorScheme.primary,
             onChanged: onChanged,
           ),
         ],

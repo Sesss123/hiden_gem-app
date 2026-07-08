@@ -97,14 +97,14 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     _buildCurrentStatusSection(activeSubFuture),
-                    const SizedBox(height: 48),
-                    OracleUI.neonText(
-                      "SERVICE TIERS",
-                      style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.w900, letterSpacing: 4, color: AppTheme.colors.white),
+                    const SizedBox(height: 32),
+                    Text(
+                      "Service tiers",
+                      style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w700, color: AppTheme.textPrimary(context)),
                     ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 16),
                     _buildPlanCard(
-                      title: "FREE TIER",
+                      title: "Free tier",
                       price: "0",
                       planId: "free",
                       description: "Essential tour tools for verified guides.",
@@ -112,16 +112,16 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
                       isPopular: false,
                     ),
                     _buildPlanCard(
-                      title: "PRO COMMANDER",
+                      title: "Pro Commander",
                       price: "29",
                       planId: "pro",
                       description: "Elevate your visibility and tools.",
                       features: ["Featured Listings", "Advanced Analytics", "Client Analytics", "Priority SOS"],
                       isPopular: true,
-                      color: AppTheme.colors.primary,
+                      color: Theme.of(context).colorScheme.primary,
                     ),
                     _buildPlanCard(
-                      title: "ELITE AGENCY",
+                      title: "Elite Agency",
                       price: "89",
                       planId: "elite",
                       description: "Full fleet and company management.",
@@ -145,21 +145,21 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
       floating: true,
       backgroundColor: AppTheme.colors.transparent,
       elevation: 0,
-      title: OracleUI.neonText(
-        "FLEET COMMAND",
-        style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.w900, letterSpacing: 4, color: AppTheme.colors.white),
+      title: Text(
+        "Fleet plans",
+        style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.w800, color: AppTheme.textPrimary(context)),
       ),
       actions: [
         IconButton(
-          icon: Icon(Icons.history, color: AppTheme.colors.white70, size: 20),
+          icon: Icon(Icons.history, color: AppTheme.textSecondary(context), size: 20),
           onPressed: () {
             Navigator.push(context, MaterialPageRoute(builder: (_) => const BillingHistoryScreen()));
           },
         ),
         TextButton.icon(
           onPressed: _isProcessing ? null : _restorePurchases,
-          icon: Icon(Icons.restore, color: AppTheme.colors.white70, size: 16),
-          label: Text("RESTORE", style: GoogleFonts.inter(color: AppTheme.colors.white70, fontSize: 12, fontWeight: FontWeight.bold)),
+          icon: Icon(Icons.restore, color: AppTheme.textSecondary(context), size: 16),
+          label: Text("Restore", style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 12, fontWeight: FontWeight.w600)),
         ),
       ],
     );
@@ -170,39 +170,49 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
       future: future,
       builder: (context, snapshot) {
         final sub = snapshot.data;
-        return OracleUI.glassContainer(
-          padding: const EdgeInsets.all(24),
-          borderRadius: BorderRadius.circular(24),
+        return Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: AppTheme.surfaceMuted(context),
+            borderRadius: BorderRadius.circular(18),
+          ),
           child: Row(
             children: [
               Container(
-                width: 48, height: 48,
-                decoration: BoxDecoration(shape: BoxShape.circle, color: AppTheme.colors.primary.withValues(alpha: 0.1)),
-                child: Icon(Icons.verified_user_rounded, color: AppTheme.colors.primary),
+                width: 38, height: 38,
+                decoration: BoxDecoration(shape: BoxShape.circle, color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.12)),
+                child: Icon(Icons.verified_user_rounded, color: Theme.of(context).colorScheme.primary, size: 18),
               ),
-              const SizedBox(width: 20),
+              const SizedBox(width: 14),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("CURRENT PLAN", style: GoogleFonts.inter(color: AppTheme.colors.white24, fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 1.5)),
+                    Text("Current plan", style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 10, fontWeight: FontWeight.w600)),
                     Text(
-                      sub?.planId.toUpperCase() ?? "FREE TIER",
-                      style: GoogleFonts.outfit(color: AppTheme.colors.white, fontSize: 20, fontWeight: FontWeight.w900),
+                      sub?.planId != null ? _sentenceCase(sub!.planId) : "Free tier",
+                      style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontSize: 15, fontWeight: FontWeight.w700),
                     ),
                     if (sub != null)
-                      Text("Expires: ${sub.expiresAt.day}/${sub.expiresAt.month}/${sub.expiresAt.year}", style: GoogleFonts.inter(color: AppTheme.colors.white24, fontSize: 12)),
+                      Text("Expires: ${sub.expiresAt.day}/${sub.expiresAt.month}/${sub.expiresAt.year}", style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 11)),
                   ],
                 ),
               ),
               if (sub == null)
-                TextButton(
-                  onPressed: _isProcessing ? null : () => _subscribe('pro', '29'),
-                  child: Text("UPGRADE", style: GoogleFonts.inter(color: AppTheme.colors.primary, fontWeight: FontWeight.bold)))
+                Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.primary,
+                    borderRadius: BorderRadius.circular(100),
+                  ),
+                  child: TextButton(
+                    onPressed: _isProcessing ? null : () => _subscribe('pro', '29'),
+                    style: TextButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6)),
+                    child: Text("Upgrade", style: GoogleFonts.inter(color: Theme.of(context).colorScheme.onPrimary, fontWeight: FontWeight.w700, fontSize: 12)))
+                )
               else
                 TextButton(
                   onPressed: () => _manageSubscription(context),
-                  child: Text("MANAGE", style: GoogleFonts.inter(color: AppTheme.colors.white70, fontWeight: FontWeight.bold))),
+                  child: Text("Manage", style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontWeight: FontWeight.w600))),
             ],
           ),
         );
@@ -226,6 +236,11 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
     }
   }
 
+  String _sentenceCase(String label) {
+    if (label.isEmpty) return label;
+    return label[0].toUpperCase() + label.substring(1).toLowerCase();
+  }
+
   Widget _buildPlanCard({
     required String title,
     required String price,
@@ -235,63 +250,79 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
     bool isPopular = false,
     Color? color,
   }) {
-    final actualColor = color ?? AppTheme.colors.white38;
+    final primary = Theme.of(context).colorScheme.primary;
+    final actualColor = color ?? AppTheme.textSecondary(context);
+    final titleColor = isPopular ? AppTheme.colors.white : AppTheme.textPrimary(context);
+    final priceColor = isPopular ? AppTheme.colors.white : AppTheme.textPrimary(context);
+    final descColor = isPopular ? AppTheme.colors.white.withValues(alpha: 0.85) : AppTheme.textSecondary(context);
+    final featureColor = isPopular ? AppTheme.colors.white.withValues(alpha: 0.85) : AppTheme.textSecondary(context);
+    final checkColor = isPopular ? AppTheme.colors.white : actualColor;
+
     return Padding(
-      padding: const EdgeInsets.only(bottom: 24),
-      child: OracleUI.premiumGlassCard(
-        padding: const EdgeInsets.all(32),
-        showGlow: isPopular,
+      padding: const EdgeInsets.only(bottom: 16),
+      child: Container(
+        padding: const EdgeInsets.all(22),
+        decoration: BoxDecoration(
+          gradient: isPopular
+              ? LinearGradient(colors: [primary, AppPalette.rustDim], begin: Alignment.topLeft, end: Alignment.bottomRight)
+              : null,
+          color: isPopular ? null : Theme.of(context).colorScheme.surface,
+          borderRadius: BorderRadius.circular(24),
+          boxShadow: isPopular ? null : [
+            BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.05), blurRadius: 16, offset: const Offset(0, 6)),
+          ],
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (isPopular)
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                margin: const EdgeInsets.only(bottom: 16),
-                decoration: BoxDecoration(color: AppTheme.colors.primary, borderRadius: BorderRadius.circular(6)),
-                child: Text("MOST POPULAR", style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.w900, color: AppTheme.colors.black)),
+                margin: const EdgeInsets.only(bottom: 10),
+                decoration: BoxDecoration(color: AppTheme.colors.white.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(100)),
+                child: Text("Most popular", style: GoogleFonts.inter(fontSize: 9, fontWeight: FontWeight.w700, color: AppTheme.colors.white)),
               ),
-            Text(title, style: GoogleFonts.outfit(color: actualColor, fontSize: 24, fontWeight: FontWeight.w900, letterSpacing: 2)),
-            const SizedBox(height: 8),
+            Text(title, style: GoogleFonts.outfit(color: titleColor, fontSize: 14, fontWeight: FontWeight.w700)),
+            const SizedBox(height: 6),
             Row(
               textBaseline: TextBaseline.alphabetic,
               crossAxisAlignment: CrossAxisAlignment.baseline,
               children: [
-                Text("\$$price", style: GoogleFonts.outfit(color: AppTheme.colors.white, fontSize: 40, fontWeight: FontWeight.w900)),
+                Text("\$$price", style: GoogleFonts.outfit(color: priceColor, fontSize: 28, fontWeight: FontWeight.w800)),
                 const SizedBox(width: 4),
-                Text("/MONTH", style: GoogleFonts.inter(color: AppTheme.colors.white24, fontSize: 12, fontWeight: FontWeight.bold)),
+                Text("/month", style: GoogleFonts.inter(color: descColor, fontSize: 11, fontWeight: FontWeight.w600)),
               ],
             ),
-            const SizedBox(height: 16),
-            Text(description, style: GoogleFonts.inter(color: AppTheme.colors.white70, fontSize: 14)),
-            const SizedBox(height: 32),
+            const SizedBox(height: 12),
+            Text(description, style: GoogleFonts.inter(color: descColor, fontSize: 12)),
+            const SizedBox(height: 20),
             ...features.map((f) => Padding(
-              padding: const EdgeInsets.only(bottom: 12),
+              padding: const EdgeInsets.only(bottom: 10),
               child: Row(
                 children: [
-                  Icon(Icons.check_circle_rounded, color: AppTheme.colors.white12, size: 16),
-                  const SizedBox(width: 12),
-                  Text(f, style: GoogleFonts.inter(color: AppTheme.colors.white54, fontSize: 13)),
+                  Icon(Icons.check_circle_rounded, color: checkColor, size: 16),
+                  const SizedBox(width: 10),
+                  Expanded(child: Text(f, style: GoogleFonts.inter(color: featureColor, fontSize: 12))),
                 ],
               ),
             )),
-            const SizedBox(height: 32),
+            const SizedBox(height: 20),
             SizedBox(
               width: double.infinity,
+              height: 48,
               child: ElevatedButton(
                 onPressed: planId == 'free' || _isProcessing ? null : () => _subscribe(planId, price),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: isPopular ? AppTheme.colors.primary : AppTheme.colors.white.withValues(alpha: 0.05),
-                  foregroundColor: isPopular ? AppTheme.colors.black : AppTheme.colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 20),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                  side: isPopular ? null : BorderSide(color: AppTheme.colors.white.withValues(alpha: 0.1)),
+                  backgroundColor: isPopular ? AppTheme.colors.white : AppTheme.surfaceMuted(context),
+                  foregroundColor: isPopular ? primary : AppTheme.textSecondary(context),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
+                  elevation: 0,
                 ),
                 child: _isProcessing
-                    ? SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2, color: AppTheme.colors.white))
+                    ? SizedBox(height: 18, width: 18, child: CircularProgressIndicator(strokeWidth: 2, color: primary))
                     : Text(
-                        planId == 'free' ? "CURRENT (FREE)" : "SELECT MISSION TIER",
-                        style: GoogleFonts.outfit(fontWeight: FontWeight.w900, letterSpacing: 1.5)),
+                        planId == 'free' ? "Current plan" : "Select this plan",
+                        style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 12)),
               ),
             ),
           ],

@@ -56,34 +56,40 @@ class _HeritagePassportScreenState extends State<HeritagePassportScreen> {
 
   Widget _buildTopBar() {
     return Padding(
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           IconButton(
             icon: Icon(Icons.arrow_back_rounded, color: AppTheme.textSecondary(context)),
             onPressed: () => Navigator.pop(context),
           ),
-          Column(
-            children: [
-              Text(
-                "HERITAGE PASSPORT",
-                style: GoogleFonts.outfit(
-                  color: AppTheme.textPrimary(context), fontWeight: FontWeight.w900,
-                  letterSpacing: 4, fontSize: 14,
+          const SizedBox(width: 4),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Passport",
+                  style: GoogleFonts.outfit(
+                    color: AppTheme.textPrimary(context),
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: -0.5,
+                    fontSize: 22,
+                  ),
                 ),
-              ),
-              SizedBox(height: 4),
-              Text(
-                "VERIFIABLE EXPLORER ARCHIVE",
-                style: GoogleFonts.inter(
-                  color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.w900,
-                  fontSize: 10, letterSpacing: 2,
+                const SizedBox(height: 2),
+                Text(
+                  "Your verified visit collection",
+                  style: GoogleFonts.inter(
+                    color: AppTheme.textSecondary(context),
+                    fontWeight: FontWeight.w600,
+                    fontSize: 12,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-          SizedBox(width: 48),
         ],
       ),
     );
@@ -98,20 +104,19 @@ class _HeritagePassportScreenState extends State<HeritagePassportScreen> {
             padding: EdgeInsets.all(32),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(50),
-              border: Border.all(color: AppTheme.secondaryBorder(context)),
-              color: AppTheme.colors.white,
+              color: Theme.of(context).colorScheme.surface,
               boxShadow: [
-                 BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4)),
+                 BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.06), blurRadius: 20, offset: const Offset(0, 8)),
               ],
             ),
-            child: Icon(Icons.auto_awesome_motion_rounded, color: AppPalette.rust.withValues(alpha: 0.5), size: 64)
+            child: Icon(Icons.auto_awesome_motion_rounded, color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.6), size: 64)
                 .animate(onPlay: (c) => c.repeat())
                 .shimmer(duration: 3.seconds),
           ),
           SizedBox(height: 32),
           Text(
-            "Passport Empty",
-            style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontSize: 20, fontWeight: FontWeight.w900, letterSpacing: 1),
+            "Passport is empty",
+            style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontSize: 20, fontWeight: FontWeight.w700, letterSpacing: -0.3),
           ),
           SizedBox(height: 12),
           Text(
@@ -139,65 +144,66 @@ class _HeritagePassportScreenState extends State<HeritagePassportScreen> {
   }
 
   Widget _buildStampCard(HeritageStamp stamp) {
-    Color rarityColor = AppTheme.textSecondary(context);
-    if (stamp.rarity == 'Rare') rarityColor = AppPalette.rust;
-    if (stamp.rarity == 'Mythic') rarityColor = AppTheme.colors.primary;
+    final isRare = stamp.rarity == 'Rare' || stamp.rarity == 'Mythic';
+    Color badgeColor = AppTheme.textSecondary(context);
+    if (stamp.rarity == 'Rare') badgeColor = Theme.of(context).colorScheme.primary;
+    if (stamp.rarity == 'Mythic') badgeColor = Theme.of(context).colorScheme.secondary;
 
     return GestureDetector(
       onTap: () => _showStampDetail(stamp),
       child: Container(
         decoration: BoxDecoration(
-          color: AppTheme.colors.white,
-          borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: rarityColor.withValues(alpha: 0.3)),
+          color: Theme.of(context).colorScheme.surface,
+          borderRadius: BorderRadius.circular(20),
           boxShadow: [
-             BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4)),
+             BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.08), blurRadius: 20, offset: const Offset(0, 10)),
           ],
         ),
+        clipBehavior: Clip.antiAlias,
         child: Column(
           children: [
             Expanded(
-              child: Container(
-                margin: EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16),
-                  image: DecorationImage(image: NetworkImage(stamp.imageUrl), fit: BoxFit.cover),
-                ),
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(16),
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter, end: Alignment.bottomCenter,
-                      colors: [AppTheme.colors.transparent, AppTheme.colors.black.withValues(alpha: 0.6)],
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  Container(
+                    decoration: BoxDecoration(
+                      image: DecorationImage(image: NetworkImage(stamp.imageUrl), fit: BoxFit.cover),
+                    ),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter, end: Alignment.bottomCenter,
+                          colors: [AppTheme.colors.transparent, AppTheme.colors.black.withValues(alpha: 0.5)],
+                        ),
+                      ),
                     ),
                   ),
-                ),
+                  Positioned(
+                    top: 8,
+                    right: 8,
+                    child: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: isRare ? badgeColor : AppTheme.textSecondary(context),
+                        borderRadius: BorderRadius.circular(100),
+                      ),
+                      child: Text(
+                        stamp.rarity,
+                        style: GoogleFonts.inter(color: AppTheme.colors.white, fontSize: 9, fontWeight: FontWeight.w700),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-              child: Column(
-                children: [
-                  Text(
-                    stamp.placeName.toUpperCase(),
-                    style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontSize: 13, fontWeight: FontWeight.w900, letterSpacing: 0.5),
-                    textAlign: TextAlign.center,
-                    maxLines: 1, overflow: TextOverflow.ellipsis,
-                  ),
-                  SizedBox(height: 8),
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: rarityColor.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: rarityColor.withValues(alpha: 0.3)),
-                    ),
-                    child: Text(
-                      stamp.rarity.toUpperCase(), 
-                      style: GoogleFonts.inter(color: rarityColor, fontSize: 8, fontWeight: FontWeight.w900, letterSpacing: 1),
-                    ),
-                  ),
-                ],
+              child: Text(
+                stamp.placeName,
+                style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontSize: 13, fontWeight: FontWeight.w700, letterSpacing: -0.2),
+                textAlign: TextAlign.center,
+                maxLines: 1, overflow: TextOverflow.ellipsis,
               ),
             ),
           ],
@@ -208,8 +214,8 @@ class _HeritagePassportScreenState extends State<HeritagePassportScreen> {
 
   void _showStampDetail(HeritageStamp stamp) {
     Color rarityColor = AppTheme.textSecondary(context);
-    if (stamp.rarity == 'Rare') rarityColor = AppPalette.rust;
-    if (stamp.rarity == 'Mythic') rarityColor = AppTheme.colors.primary; // Gold
+    if (stamp.rarity == 'Rare') rarityColor = Theme.of(context).colorScheme.primary;
+    if (stamp.rarity == 'Mythic') rarityColor = Theme.of(context).colorScheme.secondary;
 
     showModalBottomSheet(
       context: context,
@@ -219,8 +225,10 @@ class _HeritagePassportScreenState extends State<HeritagePassportScreen> {
         padding: const EdgeInsets.fromLTRB(32, 20, 32, 40),
         decoration: BoxDecoration(
           color: Theme.of(context).scaffoldBackgroundColor,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(40)),
-          border: Border.all(color: rarityColor.withValues(alpha: 0.2)),
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+          boxShadow: [
+            BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.15), blurRadius: 30, offset: const Offset(0, -8)),
+          ],
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -233,9 +241,11 @@ class _HeritagePassportScreenState extends State<HeritagePassportScreen> {
             Container(
               width: 160, height: 160,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(80),
-                border: Border.all(color: rarityColor.withValues(alpha: 0.3)),
-                color: AppTheme.colors.white,
+                shape: BoxShape.circle,
+                color: Theme.of(context).colorScheme.surface,
+                boxShadow: [
+                  BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.08), blurRadius: 24, offset: const Offset(0, 10)),
+                ],
               ),
               child: Container(
                 margin: EdgeInsets.all(4),
@@ -246,24 +256,23 @@ class _HeritagePassportScreenState extends State<HeritagePassportScreen> {
               ),
             ).animate(onPlay: (c) => c.repeat()).shimmer(duration: 4.seconds),
             SizedBox(height: 32),
-            Text(stamp.placeName, style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontSize: 26, fontWeight: FontWeight.w900)),
+            Text(stamp.placeName, style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontSize: 24, fontWeight: FontWeight.w700, letterSpacing: -0.5)),
             SizedBox(height: 8),
             Text(
-              "CLAIMED ON ${stamp.claimDate.toString().split(' ')[0]}", 
-              style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 11, fontWeight: FontWeight.w900, letterSpacing: 2)
+              "Claimed on ${stamp.claimDate.toString().split(' ')[0]}",
+              style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 12, fontWeight: FontWeight.w600)
             ),
             Divider(color: AppTheme.secondaryBorder(context), height: 48),
             Text(
-              "VERIFIABLE HASH", 
-              style: GoogleFonts.outfit(color: rarityColor, fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 1.5)
+              "Verifiable hash",
+              style: GoogleFonts.outfit(color: rarityColor, fontSize: 12, fontWeight: FontWeight.w700, letterSpacing: -0.2)
             ),
             SizedBox(height: 12),
             Container(
               padding: EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: AppTheme.colors.white, 
+                color: AppTheme.surfaceMuted(context),
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: AppTheme.secondaryBorder(context)),
               ),
               child: SelectableText(
                 stamp.hash,
@@ -274,25 +283,25 @@ class _HeritagePassportScreenState extends State<HeritagePassportScreen> {
             SizedBox(height: 40),
             SizedBox(
               width: double.infinity,
-              height: 60,
+              height: 56,
               child: ElevatedButton(
                 onPressed: () => Navigator.pop(context),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: rarityColor.withValues(alpha: 0.2),
-                  foregroundColor: rarityColor,
+                  backgroundColor: rarityColor,
+                  foregroundColor: AppTheme.colors.white,
+                  elevation: 0,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                    side: BorderSide(color: rarityColor.withValues(alpha: 0.3)),
+                    borderRadius: BorderRadius.circular(100),
                   ),
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.share_rounded, size: 20),
-                    SizedBox(width: 12),
+                    Icon(Icons.share_rounded, size: 18),
+                    SizedBox(width: 10),
                     Text(
-                      "SHARE COLLECTIBLE", 
-                      style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 13, letterSpacing: 1),
+                      "Share collectible",
+                      style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 14),
                     ),
                   ],
                 ),

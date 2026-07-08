@@ -42,10 +42,10 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
         backgroundColor: AppTheme.colors.transparent,
         elevation: 0,
         title: Text(
-          'BOOKING INBOX',
-          style: GoogleFonts.outfit(fontWeight: FontWeight.bold, letterSpacing: 1.5, fontSize: 16),
+          'Bookings',
+          style: GoogleFonts.outfit(fontWeight: FontWeight.w800, fontSize: 20, color: AppTheme.textPrimary(context)),
         ),
-        centerTitle: true,
+        centerTitle: false,
       ),
       body: OracleUI.auraBackground(
         child: SafeArea(
@@ -112,8 +112,8 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
         itemBuilder: (context, index) {
           final filter = _filters[index];
           final isSelected = _selectedFilter == filter;
-          String label = filter.replaceAll('_', ' ').toUpperCase();
-          if (filter == 'session_ready') label = 'READY FOR TOUR';
+          String label = _sentenceCase(filter.replaceAll('_', ' '));
+          if (filter == 'session_ready') label = 'Ready for tour';
 
           return OracleUI.glassChip(
             context: context,
@@ -127,6 +127,11 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
         },
       ),
     );
+  }
+
+  String _sentenceCase(String label) {
+    if (label.isEmpty) return label;
+    return label[0].toUpperCase() + label.substring(1).toLowerCase();
   }
 
   Widget _buildEmptyState() {
@@ -157,13 +162,15 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: statusColor.withValues(alpha: 0.4), width: 1.5),
-        boxShadow: AppTheme.softShadow,
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(22),
+        border: Border(left: BorderSide(color: statusColor, width: 4)),
+        boxShadow: [
+          BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.06), blurRadius: 20, offset: const Offset(0, 8)),
+        ],
       ),
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(18),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -173,22 +180,22 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
                 Row(
                   children: [
                     Container(
-                      padding: const EdgeInsets.all(10),
+                      padding: const EdgeInsets.all(9),
                       decoration: BoxDecoration(
-                        color: statusColor.withValues(alpha: 0.15),
+                        color: statusColor.withValues(alpha: 0.12),
                         shape: BoxShape.circle,
                       ),
-                      child: Icon(_getStatusIcon(request.status), color: statusColor, size: 20),
+                      child: Icon(_getStatusIcon(request.status), color: statusColor, size: 18),
                     ),
                     const SizedBox(width: 12),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "TOURIST #${request.touristId.length > 6 ? request.touristId.substring(0, 6) : request.touristId}",
-                          style: GoogleFonts.outfit(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
+                          "Tourist #${request.touristId.length > 6 ? request.touristId.substring(0, 6) : request.touristId}",
+                          style: GoogleFonts.inter(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
                             color: AppTheme.textPrimary(context),
                           ),
                         ),
@@ -201,27 +208,23 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
                   ],
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                   decoration: BoxDecoration(
-                    color: statusColor.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: statusColor),
+                    color: statusColor.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(100),
                   ),
                   child: Text(
-                    request.status.replaceAll('_', ' ').toUpperCase(),
-                    style: GoogleFonts.outfit(
-                      fontSize: 11,
-                      fontWeight: FontWeight.bold,
+                    _sentenceCase(request.status.replaceAll('_', ' ')),
+                    style: GoogleFonts.inter(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w700,
                       color: statusColor,
-                      letterSpacing: 1,
                     ),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 16),
-            Divider(color: AppTheme.borderColor(context)),
-            const SizedBox(height: 12),
+            const SizedBox(height: 14),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -257,7 +260,7 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("TOUR NOTES / REQUIREMENTS:", style: GoogleFonts.outfit(fontSize: 10, color: AppTheme.colors.amber[800], fontWeight: FontWeight.bold, letterSpacing: 1)),
+                    Text("Tour notes / requirements", style: GoogleFonts.inter(fontSize: 10, color: AppTheme.colors.amber[800], fontWeight: FontWeight.w700)),
                     const SizedBox(height: 4),
                     Text(request.notes!, style: GoogleFonts.inter(fontSize: 13, color: AppTheme.textPrimary(context))),
                   ],
@@ -273,17 +276,19 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
               Row(
                 children: [
                   Expanded(
-                    child: OutlinedButton(
+                    child: ElevatedButton(
                       onPressed: () => _handleDecline(request),
-                      style: OutlinedButton.styleFrom(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppTheme.surfaceMuted(context),
+                        foregroundColor: AppTheme.colors.redAccent,
                         padding: const EdgeInsets.symmetric(vertical: 14),
-                        side: BorderSide(color: AppTheme.colors.redAccent, width: 1.5),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
+                        elevation: 0,
                       ),
-                      child: Text("DECLINE", style: GoogleFonts.outfit(color: AppTheme.colors.redAccent, fontWeight: FontWeight.bold, letterSpacing: 1)),
+                      child: Text("Decline", style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 12)),
                     ),
                   ),
-                  const SizedBox(width: 16),
+                  const SizedBox(width: 10),
                   Expanded(
                     flex: 2,
                     child: ElevatedButton(
@@ -292,10 +297,10 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
                         backgroundColor: AppTheme.colors.greenAccent[700],
                         foregroundColor: AppTheme.colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                        elevation: 4,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
+                        elevation: 0,
                       ),
-                      child: Text("ACCEPT BOOKING ✓", style: GoogleFonts.outfit(fontWeight: FontWeight.bold, letterSpacing: 1)),
+                      child: Text("Accept", style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 12)),
                     ),
                   ),
                 ],
@@ -318,11 +323,12 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
                     );
                   },
                   icon: Icon(Icons.play_arrow_rounded, color: AppTheme.colors.white),
-                  label: Text("START / LAUNCH TOUR SESSION", style: GoogleFonts.outfit(color: AppTheme.colors.white, fontWeight: FontWeight.bold, letterSpacing: 1)),
+                  label: Text("Start / launch tour session", style: GoogleFonts.inter(color: AppTheme.colors.white, fontWeight: FontWeight.w700, fontSize: 13)),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppTheme.colors.amber[800],
                     padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
+                    elevation: 0,
                   ),
                 ),
               ),

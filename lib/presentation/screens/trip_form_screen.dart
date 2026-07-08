@@ -151,39 +151,61 @@ class _TripFormScreenState extends State<TripFormScreen> {
         backgroundColor: AppTheme.colors.transparent,
         elevation: 0,
         scrolledUnderElevation: 0,
-        shape: Border(bottom: BorderSide(color: AppTheme.secondaryBorder(context))),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new, size: 20, color: AppTheme.textPrimary(context)),
-          onPressed: () {
-            HapticFeedback.lightImpact();
-            _prevStep();
-          },
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 8),
+          child: Container(
+            decoration: BoxDecoration(
+              color: AppTheme.surfaceMuted(context),
+              shape: BoxShape.circle,
+            ),
+            child: IconButton(
+              icon: Icon(Icons.arrow_back_ios_new, size: 16, color: AppTheme.textPrimary(context)),
+              onPressed: () {
+                HapticFeedback.lightImpact();
+                _prevStep();
+              },
+            ),
+          ),
         ),
-        title: _buildProgressBar(),
+        title: null,
+        centerTitle: false,
         actions: [
-          TextButton(
-            onPressed: () {
-              HapticFeedback.lightImpact();
-              Navigator.pop(context);
-            },
-            child: Text(
-              "Exit", 
-              style: TextStyle(color: AppTheme.textSecondary(context), fontWeight: FontWeight.bold),
+          Padding(
+            padding: const EdgeInsets.only(right: 20),
+            child: Center(
+              child: Text(
+                "Step ${_currentStep + 1} of $_totalSteps",
+                style: GoogleFonts.inter(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: AppTheme.textSecondary(context),
+                ),
+              ),
             ),
           ),
         ],
       ),
-      body: PageView(
-        controller: _pageController,
-        physics: const NeverScrollableScrollPhysics(),
-        onPageChanged: (i) {
-          setState(() => _currentStep = i);
-        },
+      body: Column(
         children: [
-          _buildStep1(),
-          _buildStep2(),
-          _buildStep3(),
-          _buildStep4(),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(24, 0, 24, 8),
+            child: _buildProgressBar(),
+          ),
+          Expanded(
+            child: PageView(
+              controller: _pageController,
+              physics: const NeverScrollableScrollPhysics(),
+              onPageChanged: (i) {
+                setState(() => _currentStep = i);
+              },
+              children: [
+                _buildStep1(),
+                _buildStep2(),
+                _buildStep3(),
+                _buildStep4(),
+              ],
+            ),
+          ),
         ],
       ),
       bottomNavigationBar: _buildBottomBar(),
@@ -191,26 +213,20 @@ class _TripFormScreenState extends State<TripFormScreen> {
   }
 
   Widget _buildProgressBar() {
-    return Container(
-      width: 140,
-      height: 6,
-      decoration: BoxDecoration(
-        color: AppTheme.secondaryBorder(context),
-        borderRadius: BorderRadius.circular(3),
-      ),
-      child: Stack(
-        children: [
-          AnimatedContainer(
-            duration: const Duration(milliseconds: 400),
-            curve: Curves.easeOutCubic,
-            width: 140 * ((_currentStep + 1) / _totalSteps),
+    return Row(
+      children: List.generate(_totalSteps, (i) {
+        final active = i <= _currentStep;
+        return Expanded(
+          child: Container(
+            height: 5,
+            margin: EdgeInsets.only(right: i == _totalSteps - 1 ? 0 : 5),
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primary,
+              color: active ? Theme.of(context).colorScheme.primary : AppTheme.surfaceMuted(context),
               borderRadius: BorderRadius.circular(3),
             ),
           ),
-        ],
-      ),
+        );
+      }),
     );
   }
 
@@ -251,12 +267,12 @@ class _TripFormScreenState extends State<TripFormScreen> {
       subtitle: "Budget & Style",
       content: Column(
         children: [
-          _itemHeader("DAILY DURATION"),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Text("How many days?", style: GoogleFonts.inter(fontSize: 14, color: AppTheme.textSecondary(context))),
-              Text("$_days Days", style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.primary)),
+              Text("Trip length", style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: AppTheme.textPrimary(context))),
+              Text("$_days days", style: GoogleFonts.outfit(fontSize: 22, fontWeight: FontWeight.w800, color: Theme.of(context).colorScheme.primary)),
             ],
           ),
           Slider(
@@ -306,18 +322,14 @@ class _TripFormScreenState extends State<TripFormScreen> {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               decoration: BoxDecoration(
-                color: isSelected ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.1) : Theme.of(context).colorScheme.surface,
-                border: Border.all(
-                  color: isSelected ? Theme.of(context).colorScheme.primary : AppTheme.secondaryBorder(context),
-                  width: 1.5,
-                ),
-                borderRadius: BorderRadius.circular(20),
+                color: isSelected ? Theme.of(context).colorScheme.primary : AppTheme.surfaceMuted(context),
+                borderRadius: BorderRadius.circular(100),
               ),
               child: Text(
                 opt,
                 style: GoogleFonts.inter(
-                  color: isSelected ? Theme.of(context).colorScheme.primary : AppTheme.textSecondary(context),
-                  fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
+                  color: isSelected ? Theme.of(context).colorScheme.onPrimary : AppTheme.textSecondary(context),
+                  fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
                   fontSize: 12,
                 ),
               ),
@@ -330,31 +342,31 @@ class _TripFormScreenState extends State<TripFormScreen> {
 
   Widget _stepLayout({required String title, required String subtitle, required Widget content}) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(24, 24, 24, 40),
+      padding: const EdgeInsets.fromLTRB(24, 20, 24, 40),
       physics: const BouncingScrollPhysics(),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            subtitle.toUpperCase(), 
+            subtitle,
             style: GoogleFonts.inter(
-              fontSize: 10, 
-              fontWeight: FontWeight.w800, 
-              color: AppTheme.textSecondary(context), 
-              letterSpacing: 2,
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: Theme.of(context).colorScheme.primary,
             ),
           ).animate().fadeIn(duration: 400.ms).slideX(begin: -0.2),
-          const SizedBox(height: 4),
+          const SizedBox(height: 6),
           Text(
-            title, 
+            title.replaceAll('\n', ' '),
             style: GoogleFonts.outfit(
-              fontSize: 28,
+              fontSize: 26,
               color: AppTheme.textPrimary(context),
-              fontWeight: FontWeight.w900,
-              height: 1.1,
+              fontWeight: FontWeight.w800,
+              letterSpacing: -0.3,
+              height: 1.15,
             ),
           ).animate().fadeIn(duration: 600.ms, delay: 100.ms).slideX(begin: -0.1),
-          const SizedBox(height: 32),
+          const SizedBox(height: 28),
           content.animate().fadeIn(duration: 800.ms, delay: 300.ms).slideY(begin: 0.1),
         ],
       ),
@@ -385,9 +397,8 @@ class _TripFormScreenState extends State<TripFormScreen> {
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           decoration: BoxDecoration(
-            color: Theme.of(context).cardColor,
+            color: AppTheme.surfaceMuted(context),
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: AppTheme.secondaryBorder(context)),
           ),
           child: TextField(
             controller: controller,
@@ -457,37 +468,38 @@ class _TripFormScreenState extends State<TripFormScreen> {
 
   Widget _budgetField() {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppTheme.secondaryBorder(context)),
+        color: AppTheme.surfaceMuted(context),
+        borderRadius: BorderRadius.circular(20),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "ESTIMATED BUDGET", 
+            "Estimated budget",
             style: GoogleFonts.inter(
-              fontSize: 10, 
-              fontWeight: FontWeight.bold, 
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
               color: AppTheme.textSecondary(context),
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 6),
           TextFormField(
             controller: _budgetController,
             autofillHints: const [AutofillHints.transactionAmount],
             style: GoogleFonts.outfit(
-              fontSize: 32, 
-              fontWeight: FontWeight.w900, 
+              fontSize: 28,
+              fontWeight: FontWeight.w800,
               color: AppTheme.textPrimary(context),
             ),
             keyboardType: TextInputType.number,
             decoration: InputDecoration(
-              prefixText: "LKR ", 
+              prefixText: "LKR ",
               prefixStyle: TextStyle(color: AppTheme.textSecondary(context)),
               border: InputBorder.none,
+              isDense: true,
+              contentPadding: EdgeInsets.zero,
             ),
           ),
         ],
@@ -499,32 +511,32 @@ class _TripFormScreenState extends State<TripFormScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _itemHeader(label),
+        Text(
+          label,
+          style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: AppTheme.textPrimary(context)),
+        ),
         const SizedBox(height: 12),
-        Wrap(
-          spacing: 8,
-          runSpacing: 12,
+        Row(
           children: options.map((opt) {
             final isSelected = current == opt;
-            return GestureDetector(
-              onTap: () => onSelect(opt),
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                decoration: BoxDecoration(
-                  color: isSelected ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.1) : Theme.of(context).cardColor,
-                  border: Border.all(
-                    color: isSelected ? Theme.of(context).colorScheme.primary : AppTheme.secondaryBorder(context),
-                    width: 1.5,
+            return Expanded(
+              child: GestureDetector(
+                onTap: () => onSelect(opt),
+                child: Container(
+                  margin: EdgeInsets.only(right: opt == options.last ? 0 : 8),
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: isSelected ? Theme.of(context).colorScheme.primary : AppTheme.surfaceMuted(context),
+                    borderRadius: BorderRadius.circular(14),
                   ),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Text(
-                  opt.toUpperCase(),
-                  style: GoogleFonts.inter(
-                    color: isSelected ? Theme.of(context).colorScheme.primary : AppTheme.textSecondary(context),
-                    fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
-                    fontSize: 11,
-                    letterSpacing: 0.5,
+                  child: Text(
+                    opt[0].toUpperCase() + opt.substring(1),
+                    style: GoogleFonts.inter(
+                      color: isSelected ? Theme.of(context).colorScheme.onPrimary : AppTheme.textSecondary(context),
+                      fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
+                      fontSize: 12,
+                    ),
                   ),
                 ),
               ),
@@ -535,16 +547,6 @@ class _TripFormScreenState extends State<TripFormScreen> {
     );
   }
 
-  Widget _itemHeader(String label) => Text(
-    label.toUpperCase(), 
-    style: GoogleFonts.inter(
-      fontSize: 10, 
-      fontWeight: FontWeight.bold, 
-      color: AppTheme.textSecondary(context), 
-      letterSpacing: 2,
-    ),
-  );
-
   Widget _outlinedTile({required IconData icon, required String label, required String value, required VoidCallback onTap}) {
     return InkWell(
       onTap: onTap,
@@ -552,9 +554,8 @@ class _TripFormScreenState extends State<TripFormScreen> {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Theme.of(context).cardColor,
+          color: AppTheme.surfaceMuted(context),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppTheme.secondaryBorder(context)),
         ),
         child: Row(
           children: [
@@ -578,7 +579,7 @@ class _TripFormScreenState extends State<TripFormScreen> {
         border: Border(top: BorderSide(color: AppTheme.secondaryBorder(context))),
       ),
       child: PrimaryButton(
-        label: _currentStep == _totalSteps - 1 ? "CONSULT ORACLE" : "CONTINUE",
+        label: _currentStep == _totalSteps - 1 ? "Consult the Oracle" : "Continue",
         onPressed: () {
           HapticFeedback.mediumImpact();
           _nextStep();

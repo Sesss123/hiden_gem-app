@@ -84,28 +84,16 @@ class _IncidentCenterScreenState extends ConsumerState<IncidentCenterScreen> {
 
   Widget _buildAppBar() {
     return SliverAppBar(
-      expandedHeight: 120.0,
+      expandedHeight: 80.0,
       backgroundColor: AppTheme.colors.transparent,
       elevation: 0,
       pinned: true,
-      flexibleSpace: FlexibleSpaceBar(
-        titlePadding: const EdgeInsets.only(left: 20, bottom: 16),
-        title: OracleUI.neonText(
-          "SAFETY CONSOLE",
-          style: GoogleFonts.outfit(
-            fontSize: 16,
-            fontWeight: FontWeight.w900,
-            letterSpacing: 2,
-            color: AppTheme.colors.white,
-          ),
-        ),
-        background: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [AppTheme.colors.redAccent.withValues(alpha: 0.1), AppTheme.colors.transparent],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-            ),
+      flexibleSpace: Builder(
+        builder: (context) => FlexibleSpaceBar(
+          titlePadding: const EdgeInsets.only(left: 20, bottom: 16),
+          title: Text(
+            "Safety console",
+            style: GoogleFonts.outfit(fontWeight: FontWeight.w800, letterSpacing: -0.5, fontSize: 20, color: AppTheme.textPrimary(context)),
           ),
         ),
       ),
@@ -113,195 +101,227 @@ class _IncidentCenterScreenState extends ConsumerState<IncidentCenterScreen> {
   }
 
   Widget _buildReportHeader() {
-    return OracleUI.glassContainer(
-      padding: const EdgeInsets.all(24),
-      borderRadius: BorderRadius.circular(24),
-      borderColor: AppTheme.colors.redAccent.withValues(alpha: 0.2),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: AppTheme.colors.redAccent.withValues(alpha: 0.1),
-              shape: BoxShape.circle,
+    return Builder(builder: (context) {
+      return Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: AppTheme.surfaceMuted(context),
+          borderRadius: BorderRadius.circular(18),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: AppTheme.colors.redAccent.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(Icons.shield_rounded, color: AppTheme.colors.redAccent, size: 22),
             ),
-            child: Icon(Icons.shield_rounded, color: AppTheme.colors.redAccent, size: 28),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "SECURE OPERATIONS",
-                  style: GoogleFonts.inter(
-                    color: AppTheme.colors.white,
-                    fontWeight: FontWeight.w900,
-                    fontSize: 12,
-                    letterSpacing: 1,
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Secure operations",
+                    style: GoogleFonts.outfit(
+                      color: AppTheme.textPrimary(context),
+                      fontWeight: FontWeight.w700,
+                      fontSize: 13,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  "All incident reports are logged with immutable audit trails.",
-                  style: GoogleFonts.inter(
-                    color: AppTheme.colors.white60,
-                    fontSize: 10,
-                    fontWeight: FontWeight.w500,
+                  const SizedBox(height: 4),
+                  Text(
+                    "All incidents logged with audit trail",
+                    style: GoogleFonts.inter(
+                      color: AppTheme.textSecondary(context),
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
-      ),
-    );
+          ],
+        ),
+      );
+    });
   }
 
   Widget _buildFilterChips() {
-    return Container(
-      height: 60,
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      child: ListView(
-        scrollDirection: Axis.horizontal,
-        children: ['Active', 'Resolved', 'My Reports'].map((filter) {
-          final isSelected = _selectedFilter == filter;
-          return Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: OracleUI.glassChip(
-              context: context,
-              label: filter,
-              isSelected: isSelected,
-              onTap: () => setState(() => _selectedFilter = filter),
-            ),
-          );
-        }).toList(),
-      ),
-    );
+    return Builder(builder: (context) {
+      return Container(
+        height: 60,
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        child: ListView(
+          scrollDirection: Axis.horizontal,
+          children: ['Active', 'Resolved', 'My Reports'].map((filter) {
+            final isSelected = _selectedFilter == filter;
+            return Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: GestureDetector(
+                onTap: () => setState(() => _selectedFilter = filter),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: isSelected ? AppTheme.textPrimary(context) : AppTheme.surfaceMuted(context),
+                    borderRadius: BorderRadius.circular(100),
+                  ),
+                  child: Text(
+                    filter,
+                    style: GoogleFonts.inter(
+                      color: isSelected ? Theme.of(context).colorScheme.surface : AppTheme.textSecondary(context),
+                      fontWeight: FontWeight.w600,
+                      fontSize: 13,
+                    ),
+                  ),
+                ),
+              ),
+            );
+          }).toList(),
+        ),
+      );
+    });
   }
 
   Widget _buildIncidentCard(IncidentReport incident) {
     final severityColor = incident.severity == 'critical' ? AppTheme.colors.redAccent : AppTheme.colors.orangeAccent;
-    
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      child: OracleUI.glassContainer(
-        padding: const EdgeInsets.all(20),
-        borderRadius: BorderRadius.circular(24),
-        borderColor: severityColor.withValues(alpha: 0.2),
+
+    return Builder(builder: (context) {
+      return Container(
+        margin: const EdgeInsets.only(bottom: 16),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surface,
+          borderRadius: BorderRadius.circular(16),
+          border: Border(left: BorderSide(color: severityColor, width: 4)),
+          boxShadow: [
+            BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.06), blurRadius: 16, offset: const Offset(0, 6)),
+          ],
+        ),
         child: InkWell(
+          borderRadius: BorderRadius.circular(16),
           onTap: () => Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => IncidentDetailScreen(incidentId: incident.incidentId)),
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    incident.incidentNumber,
-                    style: GoogleFonts.outfit(
-                      color: severityColor,
-                      fontWeight: FontWeight.w900,
-                      fontSize: 12,
-                      letterSpacing: 1,
+          child: Padding(
+            padding: const EdgeInsets.all(18),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      incident.incidentNumber,
+                      style: GoogleFonts.outfit(
+                        color: severityColor,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 10,
+                        letterSpacing: 0.5,
+                      ),
                     ),
-                  ),
-                  _buildStatusChip(incident.status),
-                ],
-              ),
-              const SizedBox(height: 12),
-              Text(
-                incident.title,
-                style: GoogleFonts.inter(
-                  color: AppTheme.colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 15,
+                    _buildStatusChip(context, incident.status),
+                  ],
                 ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                incident.description,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: GoogleFonts.inter(
-                  color: AppTheme.colors.white60,
-                  fontSize: 12,
-                ),
-              ),
-              const SizedBox(height: 16),
-              Row(
-                children: [
-                  Icon(Icons.access_time_rounded, color: AppTheme.colors.white24, size: 14),
-                  const SizedBox(width: 4),
-                  Text(
-                    "${incident.createdAt.hour}:${incident.createdAt.minute.toString().padLeft(2, '0')}",
-                    style: GoogleFonts.inter(color: AppTheme.colors.white24, fontSize: 11),
+                const SizedBox(height: 10),
+                Text(
+                  incident.title,
+                  style: GoogleFonts.outfit(
+                    color: AppTheme.textPrimary(context),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 13,
                   ),
-                  const Spacer(),
-                  Text(
-                    "${incident.timelineCount} Updates",
-                    style: GoogleFonts.inter(
-                      color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.7),
-                      fontSize: 11,
-                      fontWeight: FontWeight.bold,
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  incident.description,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: GoogleFonts.inter(
+                    color: AppTheme.textSecondary(context),
+                    fontSize: 12,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    Icon(Icons.access_time_rounded, color: AppTheme.textSecondary(context), size: 14),
+                    const SizedBox(width: 4),
+                    Text(
+                      "${incident.createdAt.hour}:${incident.createdAt.minute.toString().padLeft(2, '0')}",
+                      style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 11),
                     ),
-                  ),
-                ],
-              ),
-            ],
+                    const Spacer(),
+                    Text(
+                      "${incident.timelineCount} updates",
+                      style: GoogleFonts.inter(
+                        color: Theme.of(context).colorScheme.primary,
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
-      ),
-    );
+      );
+    });
   }
 
-  Widget _buildStatusChip(String status) {
+  Widget _buildStatusChip(BuildContext context, String status) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: AppTheme.colors.white.withValues(alpha: 0.05),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: AppTheme.colors.white.withValues(alpha: 0.1)),
+        color: AppTheme.surfaceMuted(context),
+        borderRadius: BorderRadius.circular(100),
       ),
       child: Text(
-        status.toUpperCase(),
+        _sentenceCase(status),
         style: GoogleFonts.inter(
-          color: AppTheme.colors.white30,
-          fontSize: 9,
-          fontWeight: FontWeight.w900,
-          letterSpacing: 1,
+          color: AppTheme.textSecondary(context),
+          fontSize: 10,
+          fontWeight: FontWeight.w700,
         ),
       ),
     );
   }
 
+  String _sentenceCase(String value) {
+    if (value.isEmpty) return value;
+    return value[0].toUpperCase() + value.substring(1).toLowerCase();
+  }
+
   Widget _buildEmptyState() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.check_circle_outline_rounded, size: 64, color: AppTheme.colors.white.withValues(alpha: 0.05)),
-          const SizedBox(height: 16),
-          Text(
-            "NO CRITICAL INCIDENTS",
-            style: GoogleFonts.outfit(
-              color: AppTheme.colors.white12,
-              fontWeight: FontWeight.w900,
-              fontSize: 16,
-              letterSpacing: 2,
+    return Builder(builder: (context) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.check_circle_outline_rounded, size: 56, color: AppTheme.textSecondary(context).withValues(alpha: 0.3)),
+            const SizedBox(height: 16),
+            Text(
+              "No critical incidents",
+              style: GoogleFonts.outfit(
+                color: AppTheme.textPrimary(context),
+                fontWeight: FontWeight.w700,
+                fontSize: 18,
+                letterSpacing: -0.3,
+              ),
             ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            "Session operations are within safety parameters.",
-            style: GoogleFonts.inter(color: AppTheme.colors.white10, fontSize: 12),
-          ),
-        ],
-      ),
-    ).animate().fadeIn();
+            const SizedBox(height: 8),
+            Text(
+              "Session operations are within safety parameters.",
+              style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 13),
+            ),
+          ],
+        ),
+      ).animate().fadeIn();
+    });
   }
 
   Widget _buildReportFAB() {
@@ -310,8 +330,8 @@ class _IncidentCenterScreenState extends ConsumerState<IncidentCenterScreen> {
       backgroundColor: AppTheme.colors.redAccent,
       icon: Icon(Icons.add_alert_rounded, color: AppTheme.colors.white),
       label: Text(
-        "REPORT INCIDENT",
-        style: GoogleFonts.inter(fontWeight: FontWeight.w900, letterSpacing: 1),
+        "Report incident",
+        style: GoogleFonts.inter(fontWeight: FontWeight.w700, color: AppTheme.colors.white),
       ),
     ).animate().scale(delay: 1.seconds);
   }
@@ -325,69 +345,73 @@ class _IncidentCenterScreenState extends ConsumerState<IncidentCenterScreen> {
       builder: (context) => DraggableScrollableSheet(
         initialChildSize: 0.7,
         maxChildSize: 0.9,
-        builder: (_, controller) => Container(
-          decoration: BoxDecoration(
-            color: AppTheme.colors.primary,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
-            border: Border.all(color: AppTheme.colors.white.withValues(alpha: 0.1)),
-          ),
-          child: ListView(
-            controller: controller,
-            padding: const EdgeInsets.all(32),
-            children: [
-              Center(
-                child: Container(
-                  width: 40, height: 4,
-                  decoration: BoxDecoration(color: AppTheme.colors.white10, borderRadius: BorderRadius.circular(2)),
-                ),
-              ),
-              const SizedBox(height: 32),
-              OracleUI.neonText(
-                "FILE INCIDENT",
-                style: GoogleFonts.outfit(fontSize: 24, fontWeight: FontWeight.w900, letterSpacing: 2, color: AppTheme.colors.white),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                "Provide accurate details. Forensic logging active.",
-                style: GoogleFonts.inter(color: AppTheme.colors.white30, fontSize: 12),
-              ),
-              const SizedBox(height: 32),
-              _buildLargeField("Incident Title", Icons.title_rounded),
-              const SizedBox(height: 20),
-              _buildLargeField("Description of event", Icons.description_rounded, maxLines: 4),
-              const SizedBox(height: 32),
-              SizedBox(
-                width: double.infinity,
-                height: 56,
-                child: ElevatedButton(
-                  onPressed: () => Navigator.pop(context),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppTheme.colors.redAccent,
-                    foregroundColor: AppTheme.colors.white,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        builder: (_, controller) => Builder(builder: (context) {
+          return Container(
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surface,
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+            ),
+            child: ListView(
+              controller: controller,
+              padding: const EdgeInsets.all(32),
+              children: [
+                Center(
+                  child: Container(
+                    width: 40, height: 4,
+                    decoration: BoxDecoration(color: AppTheme.surfaceMuted(context), borderRadius: BorderRadius.circular(2)),
                   ),
-                  child: const Text("TRANSMIT REPORT", style: TextStyle(fontWeight: FontWeight.w900)),
                 ),
-              ),
-            ],
-          ),
-        ),
+                const SizedBox(height: 32),
+                Text(
+                  "File an incident",
+                  style: GoogleFonts.outfit(fontSize: 22, fontWeight: FontWeight.w800, letterSpacing: -0.4, color: AppTheme.textPrimary(context)),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  "Provide accurate details, this is logged with an audit trail.",
+                  style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 12),
+                ),
+                const SizedBox(height: 32),
+                _buildLargeField(context, "Incident title", Icons.title_rounded),
+                const SizedBox(height: 20),
+                _buildLargeField(context, "Description of event", Icons.description_rounded, maxLines: 4),
+                const SizedBox(height: 32),
+                SizedBox(
+                  width: double.infinity,
+                  height: 52,
+                  child: ElevatedButton(
+                    onPressed: () => Navigator.pop(context),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppTheme.colors.redAccent,
+                      foregroundColor: AppTheme.colors.white,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
+                      elevation: 0,
+                    ),
+                    child: Text("Transmit report", style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 14)),
+                  ),
+                ),
+              ],
+            ),
+          );
+        }),
       ),
     );
   }
 
-  Widget _buildLargeField(String hint, IconData icon, {int maxLines = 1}) {
-    return OracleUI.glassContainer(
+  Widget _buildLargeField(BuildContext context, String hint, IconData icon, {int maxLines = 1}) {
+    return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16),
-      borderRadius: BorderRadius.circular(16),
-      borderColor: AppTheme.colors.white.withValues(alpha: 0.05),
+      decoration: BoxDecoration(
+        color: AppTheme.surfaceMuted(context),
+        borderRadius: BorderRadius.circular(16),
+      ),
       child: TextField(
         maxLines: maxLines,
-        style: TextStyle(color: AppTheme.colors.white),
+        style: TextStyle(color: AppTheme.textPrimary(context)),
         decoration: InputDecoration(
           hintText: hint,
-          prefixIcon: Icon(icon, color: AppTheme.colors.white24, size: 20),
-          hintStyle: TextStyle(color: AppTheme.colors.white24, fontSize: 13),
+          prefixIcon: Icon(icon, color: AppTheme.textSecondary(context), size: 20),
+          hintStyle: TextStyle(color: AppTheme.textSecondary(context), fontSize: 13),
           border: InputBorder.none,
         ),
       ),

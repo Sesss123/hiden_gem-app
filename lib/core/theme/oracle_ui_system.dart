@@ -138,19 +138,24 @@ class OracleUI {
     });
   }
 
+  /// Renders themed heading text. If [style] already specifies a color
+  /// (e.g. white on a colored hero, black on a light button), that color is
+  /// respected — [glowColor] is only used as a fallback, then the theme's
+  /// primary color. Previously this always overwrote any color set in
+  /// [style], which silently mis-colored text on custom-background call sites.
   static Widget neonText(String text, {
     TextStyle? style,
     Color? glowColor,
     TextAlign? textAlign,
   }) {
     return Builder(builder: (context) {
-      final effectiveColor = glowColor ?? Theme.of(context).primaryColor;
+      final effectiveColor = style?.color ?? glowColor ?? Theme.of(context).primaryColor;
       return Text(
         text,
         textAlign: textAlign,
         style: (style ?? GoogleFonts.outfit(fontWeight: FontWeight.bold)).copyWith(
           color: effectiveColor,
-          letterSpacing: 1.0,
+          letterSpacing: style?.letterSpacing ?? 1.0,
         ),
       );
     });

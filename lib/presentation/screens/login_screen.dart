@@ -7,6 +7,7 @@ import '../../core/theme/oracle_ui_system.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../data/datasources/auth_service.dart';
 import '../../data/datasources/user_preference_service.dart';
+import '../widgets/custom_buttons.dart';
 import 'home_screen.dart';
 import 'terms_screen.dart';
 
@@ -302,277 +303,217 @@ class _LoginScreenState extends State<LoginScreen> {
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       resizeToAvoidBottomInset: true,
       body: SafeArea(
-        child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
-            child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const SizedBox(height: 16),
-                  Hero(
-                    tag: 'app_logo',
-                    child: Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: primaryColor.withValues(alpha: 0.1),
-                        shape: BoxShape.circle,
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                child: IntrinsicHeight(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+              // Centered brand header
+              Padding(
+                padding: const EdgeInsets.fromLTRB(28, 32, 28, 8),
+                child: Column(
+                  children: [
+                    Hero(
+                      tag: 'app_logo',
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(18),
+                        child: Image.asset(
+                          'assets/images/app_icon.png',
+                          width: 64,
+                          height: 64,
+                          fit: BoxFit.cover,
+                        ),
                       ),
-                      child: Icon(
-                        Icons.explore_rounded,
-                        size: 52,
-                        color: primaryColor,
-                      ),
-                    ),
-                  ).animate().scale(duration: 500.ms, curve: Curves.easeOutBack),
-                  
-                  const SizedBox(height: 24),
-                  
-                  RichText(
-                    text: TextSpan(
+                    ).animate().fadeIn(duration: 400.ms).scale(begin: const Offset(0.85, 0.85), end: const Offset(1, 1)),
+                    const SizedBox(height: 18),
+                    Text(
+                      _isLoginMode ? "Welcome to Hidden Gems" : "Create your account",
+                      textAlign: TextAlign.center,
                       style: GoogleFonts.outfit(
-                        fontSize: 34, 
-                        fontWeight: FontWeight.w900, 
-                        letterSpacing: -0.5,
+                        fontSize: 22,
+                        fontWeight: FontWeight.w800,
+                        color: AppTheme.textPrimary(context),
+                        letterSpacing: -0.3,
                       ),
+                    ).animate().fadeIn(duration: 400.ms, delay: 80.ms),
+                    const SizedBox(height: 6),
+                    Text(
+                      _isLoginMode ? "Sri Lanka's AI travel companion" : "Start planning your Sri Lanka trip",
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.inter(
+                        fontSize: 13,
+                        color: AppTheme.textSecondary(context),
+                      ),
+                    ).animate().fadeIn(duration: 400.ms, delay: 120.ms),
+                    const SizedBox(height: 24),
+
+                    // Segmented Sign in / Create account switch
+                    Container(
+                      height: 48,
+                      padding: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        color: AppTheme.surfaceMuted(context),
+                        borderRadius: BorderRadius.circular(100),
+                      ),
+                      child: Row(
+                        children: [
+                          Expanded(child: _buildModeTab(context, label: "Sign in", selected: _isLoginMode)),
+                          Expanded(child: _buildModeTab(context, label: "Create account", selected: !_isLoginMode)),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              Padding(
+                padding: const EdgeInsets.fromLTRB(26, 20, 26, 24),
+                child: AutofillGroup(
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        TextSpan(text: "HiddenGems", style: TextStyle(color: AppTheme.textPrimary(context))),
-                        TextSpan(
-                          text: ".SL", 
-                          style: TextStyle(color: primaryColor),
+                        if (!_isLoginMode) ...[
+                          _buildTextField(
+                            controller: _nameController,
+                            label: "Name",
+                            icon: Icons.person_outline_rounded,
+                            autofillHints: [AutofillHints.name],
+                            validator: (v) => v!.isEmpty ? "Identifier required" : null,
+                          ),
+                          const SizedBox(height: 16),
+                        ],
+                        _buildTextField(
+                          controller: _emailController,
+                          label: "Email",
+                          icon: Icons.alternate_email_rounded,
+                          keyboardType: TextInputType.emailAddress,
+                          autofillHints: [AutofillHints.email],
+                          validator: (v) => !v!.contains("@") ? "Invalid address" : null,
                         ),
-                      ],
-                    ),
-                  ).animate().fadeIn(duration: 500.ms),
-                  
-                  const SizedBox(height: 6),
-                  
-                  Text(
-                    "SECURE ACCESS REQUIRED",
-                    style: GoogleFonts.inter(
-                      fontSize: 10, 
-                      color: AppTheme.textSecondary(context).withValues(alpha: 0.6), 
-                      letterSpacing: 2,
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ).animate().fadeIn(duration: 500.ms, delay: 100.ms),
-                  
-                  const SizedBox(height: 32),
-                  
-                  Container(
-                    padding: const EdgeInsets.all(24),
-                    decoration: BoxDecoration(
-                      color: isDark ? AppTheme.colors.grey[900]!.withValues(alpha: 0.6) : AppTheme.colors.white,
-                      borderRadius: BorderRadius.circular(24),
-                      border: Border.all(
-                        color: AppTheme.secondaryBorder(context),
-                        width: 1,
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppTheme.colors.black.withValues(alpha: 0.04),
-                          blurRadius: 20,
-                          offset: const Offset(0, 8),
+                        const SizedBox(height: 16),
+                        _buildTextField(
+                          controller: _passwordController,
+                          label: "Password",
+                          icon: Icons.lock_outline_rounded,
+                          isPassword: true,
+                          autofillHints: _isLoginMode ? [AutofillHints.password] : [AutofillHints.newPassword],
+                          validator: (v) => v!.length < 6 ? "Insufficient complexity" : null,
                         ),
-                      ],
-                    ),
-                    child: AutofillGroup(
-                      child: Form(
-                        key: _formKey,
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            if (!_isLoginMode) ...[
-                              _buildTextField(
-                                controller: _nameController,
-                                label: "USER IDENTIFIER",
-                                icon: Icons.person_outline_rounded,
-                                autofillHints: [AutofillHints.name],
-                                validator: (v) => v!.isEmpty ? "Identifier required" : null,
+                        if (!_isLoginMode) ...[
+                          const SizedBox(height: 6),
+                          Text(
+                            "At least 6 characters",
+                            style: GoogleFonts.inter(
+                              fontSize: 11,
+                              color: AppTheme.textSecondary(context).withValues(alpha: 0.7),
+                            ),
+                          ),
+                        ],
+                        if (_isLoginMode) ...[
+                          const SizedBox(height: 8),
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: TextButton(
+                              onPressed: _handleForgotPassword,
+                              style: TextButton.styleFrom(
+                                padding: EdgeInsets.zero,
+                                minimumSize: const Size(0, 24),
+                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                               ),
-                              const SizedBox(height: 16),
-                            ],
-                            _buildTextField(
-                              controller: _emailController,
-                              label: "ORACLE ADDRESS (EMAIL)",
-                              icon: Icons.alternate_email_rounded,
-                              keyboardType: TextInputType.emailAddress,
-                              autofillHints: [AutofillHints.email],
-                              validator: (v) => !v!.contains("@") ? "Invalid address" : null,
+                              child: Text(
+                                "Forgot password?",
+                                style: GoogleFonts.inter(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                  color: primaryColor,
+                                ),
+                              ),
                             ),
-                            const SizedBox(height: 16),
-                            _buildTextField(
-                              controller: _passwordController,
-                              label: "ACCESS KEY",
-                              icon: Icons.security_rounded,
-                              isPassword: true,
-                              autofillHints: _isLoginMode ? [AutofillHints.password] : [AutofillHints.newPassword],
-                              validator: (v) => v!.length < 6 ? "Insufficient complexity" : null,
+                          ),
+                        ],
+                        const SizedBox(height: 22),
+
+                        PrimaryButton(
+                          label: _isLoginMode ? "Sign in" : "Create account",
+                          isLoading: _isLoading,
+                          onPressed: _isLoading ? null : _handleSubmit,
+                        ),
+                        const SizedBox(height: 20),
+
+                        Row(
+                          children: [
+                            Expanded(child: Divider(color: AppTheme.secondaryBorder(context))),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 10),
+                              child: Text(
+                                "or continue with",
+                                style: GoogleFonts.inter(
+                                  color: AppTheme.textSecondary(context),
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
                             ),
-                            if (_isLoginMode) ...[
-                              const SizedBox(height: 8),
-                              Align(
-                                alignment: Alignment.centerRight,
-                                child: TextButton(
-                                  onPressed: _handleForgotPassword,
-                                  style: TextButton.styleFrom(
-                                    padding: EdgeInsets.zero,
-                                    minimumSize: const Size(0, 24),
-                                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                  ),
-                                  child: Text(
-                                    "Forgot Access Key?",
+                            Expanded(child: Divider(color: AppTheme.secondaryBorder(context))),
+                          ],
+                        ),
+                        const SizedBox(height: 20),
+
+                        Container(
+                          height: 52,
+                          decoration: BoxDecoration(
+                            color: isDark ? AppTheme.colors.white.withValues(alpha: 0.03) : AppTheme.colors.white,
+                            borderRadius: BorderRadius.circular(100),
+                            border: Border.all(
+                              color: AppTheme.secondaryBorder(context),
+                              width: 1.5,
+                            ),
+                          ),
+                          child: Material(
+                            color: AppTheme.colors.transparent,
+                            child: InkWell(
+                              onTap: _isLoading ? null : _handleGoogleSignIn,
+                              borderRadius: BorderRadius.circular(100),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const SizedBox(width: 20, height: 20, child: _GoogleLogo()),
+                                  const SizedBox(width: 10),
+                                  Text(
+                                    "Google",
                                     style: GoogleFonts.inter(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w600,
-                                      color: primaryColor,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 13,
+                                      color: AppTheme.textPrimary(context),
                                     ),
                                   ),
-                                ),
-                              ),
-                            ],
-                            const SizedBox(height: 24),
-                            
-                            SizedBox(
-                              width: double.infinity,
-                              height: 54,
-                              child: ElevatedButton(
-                                onPressed: _isLoading ? null : _handleSubmit,
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: primaryColor,
-                                  foregroundColor: AppTheme.colors.white,
-                                  elevation: 0,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(16),
-                                  ),
-                                ),
-                                child: _isLoading 
-                                    ? SizedBox(
-                                        width: 22,
-                                        height: 22,
-                                        child: CircularProgressIndicator(
-                                          strokeWidth: 2.5,
-                                          valueColor: AlwaysStoppedAnimation<Color>(AppTheme.colors.white),
-                                        ),
-                                      )
-                                    : Text(
-                                        _isLoginMode ? "INITIATE ACCESS" : "CREATE NEW IDENTITY",
-                                        style: GoogleFonts.inter(
-                                          fontWeight: FontWeight.w800, 
-                                          letterSpacing: 1, 
-                                          fontSize: 13, 
-                                          color: AppTheme.colors.white,
-                                        ),
-                                      ),
+                                ],
                               ),
                             ),
-                            const SizedBox(height: 16),
-                            
-                            TextButton(
-                              onPressed: () {
-                                HapticFeedback.lightImpact();
-                                setState(() => _isLoginMode = !_isLoginMode);
-                              },
-                              style: TextButton.styleFrom(
-                                foregroundColor: AppTheme.textSecondary(context),
-                              ),
-                              child: Text(
-                                _isLoginMode ? "New explorer? Generate identity" : "Existing explorer? Validate access",
-                                style: GoogleFonts.inter(
-                                  fontSize: 12, 
-                                  fontWeight: FontWeight.w600,
-                                  decoration: TextDecoration.underline,
-                                  decorationColor: AppTheme.textSecondary(context).withValues(alpha: 0.3),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ).animate().fadeIn(duration: 500.ms, delay: 150.ms),
-                  
-                  const SizedBox(height: 32),
-                  
-                  Row(
-                    children: [
-                      Expanded(child: Divider(color: AppTheme.secondaryBorder(context))),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: Text(
-                          "THIRD-PARTY AUTH", 
-                          style: GoogleFonts.inter(
-                            color: AppTheme.textSecondary(context).withValues(alpha: 0.4), 
-                            fontSize: 9, 
-                            fontWeight: FontWeight.w800, 
-                            letterSpacing: 1.5,
                           ),
                         ),
-                      ),
-                      Expanded(child: Divider(color: AppTheme.secondaryBorder(context))),
+                      ],
+                    ),
+                  ),
+                ),
+              ).animate().fadeIn(duration: 500.ms, delay: 150.ms),
                     ],
-                  ).animate().fadeIn(duration: 500.ms, delay: 250.ms),
-                  
-                  const SizedBox(height: 20),
-                  
-                  Container(
-                    width: double.infinity,
-                    height: 54,
-                    decoration: BoxDecoration(
-                      color: isDark ? AppTheme.colors.grey[900]!.withValues(alpha: 0.6) : AppTheme.colors.white,
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(
-                        color: AppTheme.secondaryBorder(context),
-                        width: 1,
-                      ),
-                    ),
-                    child: Material(
-                      color: AppTheme.colors.transparent,
-                      child: InkWell(
-                        onTap: _isLoading ? null : _handleGoogleSignIn,
-                        borderRadius: BorderRadius.circular(16),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Container(
-                              width: 22,
-                              height: 22,
-                              decoration: BoxDecoration(
-                                color: isDark ? AppTheme.colors.white.withValues(alpha: 0.1) : AppTheme.colors.black.withValues(alpha: 0.05),
-                                shape: BoxShape.circle,
-                              ),
-                              alignment: Alignment.center,
-                              child: Text(
-                                "G",
-                                style: GoogleFonts.outfit(
-                                  color: AppTheme.textPrimary(context),
-                                  fontWeight: FontWeight.w900,
-                                  fontSize: 14,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Text(
-                              "Continue with Google Account", 
-                              style: GoogleFonts.inter(
-                                fontWeight: FontWeight.bold, 
-                                fontSize: 13,
-                                color: AppTheme.textPrimary(context),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ).animate().fadeIn(duration: 500.ms, delay: 350.ms),
-                  
-                  const SizedBox(height: 24),
-                ],
+                  ),
+                ),
               ),
-            ),
-          ),
+            );
+          },
         ),
-      );
+      ),
+    );
   }
 
   Widget _buildTextField({
@@ -585,51 +526,147 @@ class _LoginScreenState extends State<LoginScreen> {
     String? Function(String?)? validator,
   }) {
     final primaryColor = Theme.of(context).colorScheme.primary;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return TextFormField(
-      controller: controller,
-      obscureText: isPassword,
-      keyboardType: keyboardType,
-      autofillHints: autofillHints,
-      validator: validator,
-      style: GoogleFonts.inter(color: AppTheme.textPrimary(context), fontWeight: FontWeight.w600, fontSize: 14),
-      cursorColor: primaryColor,
-      decoration: InputDecoration(
-        labelText: label,
-        labelStyle: GoogleFonts.inter(
-          color: AppTheme.textSecondary(context).withValues(alpha: 0.6), 
-          fontSize: 11, 
-          fontWeight: FontWeight.w700, 
-          letterSpacing: 0.5,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label.toUpperCase(),
+          style: GoogleFonts.inter(
+            color: AppTheme.textSecondary(context),
+            fontSize: 10,
+            fontWeight: FontWeight.w700,
+            letterSpacing: 1,
+          ),
         ),
-        prefixIcon: Icon(icon, color: primaryColor.withValues(alpha: 0.7), size: 18),
-        floatingLabelBehavior: FloatingLabelBehavior.always,
-        contentPadding: const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: BorderSide(color: AppTheme.secondaryBorder(context)),
+        const SizedBox(height: 8),
+        TextFormField(
+          controller: controller,
+          obscureText: isPassword,
+          keyboardType: keyboardType,
+          autofillHints: autofillHints,
+          validator: validator,
+          style: GoogleFonts.inter(color: AppTheme.textPrimary(context), fontWeight: FontWeight.w600, fontSize: 14),
+          cursorColor: primaryColor,
+          decoration: InputDecoration(
+            hintText: label,
+            hintStyle: GoogleFonts.inter(
+              color: AppTheme.textSecondary(context).withValues(alpha: 0.6),
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+            ),
+            contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 18),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(14),
+              borderSide: BorderSide.none,
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(14),
+              borderSide: BorderSide.none,
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(14),
+              borderSide: BorderSide(color: primaryColor.withValues(alpha: 0.7), width: 1.5),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(14),
+              borderSide: BorderSide(color: AppTheme.colors.redAccent.withValues(alpha: 0.4)),
+            ),
+            focusedErrorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(14),
+              borderSide: BorderSide(color: AppTheme.colors.redAccent.withValues(alpha: 0.6)),
+            ),
+            errorStyle: GoogleFonts.inter(
+              color: AppTheme.colors.redAccent.withValues(alpha: 0.8),
+              fontSize: 10,
+              fontWeight: FontWeight.bold,
+            ),
+            filled: true,
+            fillColor: AppTheme.surfaceMuted(context),
+          ),
         ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: BorderSide(color: primaryColor.withValues(alpha: 0.7), width: 1.5),
+      ],
+    );
+  }
+
+  Widget _buildModeTab(BuildContext context, {required String label, required bool selected}) {
+    final onSelected = Theme.of(context).colorScheme.onSurface;
+    return GestureDetector(
+      onTap: () {
+        if (selected) return;
+        HapticFeedback.lightImpact();
+        setState(() => _isLoginMode = !_isLoginMode);
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        height: 40,
+        decoration: BoxDecoration(
+          color: selected ? Theme.of(context).colorScheme.surface : AppTheme.colors.transparent,
+          borderRadius: BorderRadius.circular(100),
+          boxShadow: selected ? AppTheme.softShadow : null,
         ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: BorderSide(color: AppTheme.colors.redAccent.withValues(alpha: 0.4)),
+        alignment: Alignment.center,
+        child: Text(
+          label,
+          style: GoogleFonts.inter(
+            fontSize: 13,
+            fontWeight: FontWeight.w700,
+            color: selected ? onSelected : AppTheme.textSecondary(context),
+          ),
         ),
-        focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: BorderSide(color: AppTheme.colors.redAccent.withValues(alpha: 0.6)),
-        ),
-        errorStyle: GoogleFonts.inter(
-          color: AppTheme.colors.redAccent.withValues(alpha: 0.8), 
-          fontSize: 10, 
-          fontWeight: FontWeight.bold,
-        ),
-        filled: true,
-        fillColor: isDark ? AppTheme.colors.white.withValues(alpha: 0.02) : AppTheme.colors.black.withValues(alpha: 0.02),
       ),
     );
   }
+}
+
+/// The multi-color Google "G" mark, drawn locally so the login screen
+/// doesn't need a bundled logo asset or an SVG dependency.
+class _GoogleLogo extends StatelessWidget {
+  const _GoogleLogo();
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomPaint(painter: _GoogleLogoPainter());
+  }
+}
+
+class _GoogleLogoPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(size.width / 2, size.height / 2);
+    final strokeWidth = size.width * 0.42;
+    final ringRadius = size.width / 2 - strokeWidth / 2;
+    final rect = Rect.fromCircle(center: center, radius: ringRadius);
+
+    Paint ringPaint(Color color) => Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = strokeWidth;
+
+    const degToRad = 3.14159265358979 / 180;
+    void drawArc(Color color, double startDeg, double sweepDeg) {
+      canvas.drawArc(rect, startDeg * degToRad, sweepDeg * degToRad, false, ringPaint(color));
+    }
+
+    // Four ring quadrants matching the brand mark, small gaps between.
+    drawArc(const Color(0xFF4285F4), -20, 86); // blue: top-right
+    drawArc(const Color(0xFF34A853), 70, 86); // green: bottom-right
+    drawArc(const Color(0xFFFBBC05), 160, 86); // yellow: bottom-left
+    drawArc(const Color(0xFFEA4335), 250, 86); // red: top-left
+
+    // Crossbar of the "G", from center out to the ring's right edge.
+    final barPaint = Paint()..color = const Color(0xFF4285F4);
+    canvas.drawRect(
+      Rect.fromLTWH(
+        center.dx - strokeWidth * 0.1,
+        center.dy - strokeWidth * 0.5,
+        size.width / 2 - center.dx + strokeWidth * 0.6,
+        strokeWidth,
+      ),
+      barPaint,
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant _GoogleLogoPainter oldDelegate) => false;
 }

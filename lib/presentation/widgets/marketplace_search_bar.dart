@@ -170,21 +170,15 @@ class _SearchInputField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 200),
       decoration: BoxDecoration(
-        color: isDark
-            ? AppTheme.colors.white.withValues(alpha: 0.08)
-            : AppTheme.colors.black.withValues(alpha: 0.05),
+        color: AppTheme.surfaceMuted(context),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: isCooldown
-              ? AppTheme.colors.orange.withValues(alpha: 0.6)
-              : theme.colorScheme.outline.withValues(alpha: 0.2),
-          width: isCooldown ? 1.5 : 1.0,
-        ),
+        border: isCooldown
+            ? Border.all(color: AppTheme.colors.orange.withValues(alpha: 0.6), width: 1.5)
+            : null,
       ),
       child: TextField(
         controller: controller,
@@ -226,7 +220,7 @@ class _SearchInputField extends StatelessWidget {
               : null,
           border: InputBorder.none,
           contentPadding:
-              const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         ),
       ),
     );

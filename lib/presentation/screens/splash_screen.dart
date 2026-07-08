@@ -92,7 +92,6 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     final bgColor = isDark ? AppPaletteDark.bg : AppPalette.bg;
     final primaryTextColor = isDark ? AppPaletteDark.text : AppPalette.ink;
     final accentColor = isDark ? AppPaletteDark.gold : AppPalette.rust;
-    final cardColor = isDark ? AppPaletteDark.card : AppPalette.surface;
 
     return Scaffold(
       backgroundColor: bgColor,
@@ -181,24 +180,23 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                           .animate(onPlay: (c) => c.repeat(reverse: true))
                           .scale(begin: const Offset(0.95, 0.95), end: const Offset(1.06, 1.06), duration: 1600.ms, curve: Curves.easeInOut),
 
-                          // Inner Elevated Surface Orb
+                          // Inner Elevated Surface Orb — actual app logo
                           Container(
                             width: 104,
                             height: 104,
                             decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: cardColor,
+                              borderRadius: BorderRadius.circular(28),
                               border: Border.all(
                                 color: accentColor.withValues(alpha: 0.35),
                                 width: 1.5,
                               ),
                               boxShadow: AppTheme.premiumShadow,
                             ),
-                            child: Center(
-                              child: Icon(
-                                Icons.explore_rounded,
-                                size: 48,
-                                color: accentColor,
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(26.5),
+                              child: Image.asset(
+                                'assets/images/app_icon.png',
+                                fit: BoxFit.cover,
                               ),
                             ),
                           ),

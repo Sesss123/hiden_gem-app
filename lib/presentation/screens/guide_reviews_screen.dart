@@ -133,19 +133,23 @@ class _GuideReviewsScreenState extends ConsumerState<GuideReviewsScreen> {
 
   Widget _buildAppBar() {
     return SliverAppBar(
-      expandedHeight: 100.0,
+      expandedHeight: 80.0,
       backgroundColor: AppTheme.colors.transparent,
       elevation: 0,
       pinned: true,
-      leading: IconButton(
-        icon: Icon(Icons.arrow_back_ios_new_rounded, color: AppTheme.colors.white, size: 20),
-        onPressed: () => Navigator.pop(context),
+      leading: Builder(
+        builder: (context) => IconButton(
+          icon: Icon(Icons.arrow_back_ios_new_rounded, color: AppTheme.textPrimary(context), size: 20),
+          onPressed: () => Navigator.pop(context),
+        ),
       ),
-      flexibleSpace: FlexibleSpaceBar(
-        titlePadding: const EdgeInsets.only(left: 56, bottom: 16),
-        title: OracleUI.neonText(
-          "REPUTATION LOG",
-          style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w900, letterSpacing: 2, color: AppTheme.colors.white),
+      flexibleSpace: Builder(
+        builder: (context) => FlexibleSpaceBar(
+          titlePadding: const EdgeInsets.only(left: 56, bottom: 16),
+          title: Text(
+            "Reviews",
+            style: GoogleFonts.outfit(fontWeight: FontWeight.w800, letterSpacing: -0.5, fontSize: 20, color: AppTheme.textPrimary(context)),
+          ),
         ),
       ),
     );
@@ -210,72 +214,84 @@ class _GuideReviewsScreenState extends ConsumerState<GuideReviewsScreen> {
   }
 
   Widget _buildTrustHeader(GuideAnalyticsSnapshot snapshot) {
-    return Padding(
-      padding: const EdgeInsets.all(20),
-      child: OracleUI.glassContainer(
-        padding: const EdgeInsets.all(24),
-        borderRadius: BorderRadius.circular(32),
-        showGlow: true,
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "TRUST SCORE",
-                      style: GoogleFonts.inter(color: AppTheme.colors.white24, fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 2),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      "${snapshot.trustScore.toInt()}%",
-                      style: GoogleFonts.outfit(fontSize: 48, fontWeight: FontWeight.w900, color: Theme.of(context).colorScheme.primary),
-                    ),
-                  ],
-                ),
-                _buildTierBadge(snapshot.trustScore / 100.0),
-              ],
+    return Builder(builder: (context) {
+      final primary = Theme.of(context).colorScheme.primary;
+      final primaryDark = Color.lerp(primary, AppTheme.colors.black, 0.35)!;
+      return Padding(
+        padding: const EdgeInsets.all(20),
+        child: Container(
+          padding: const EdgeInsets.all(22),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [primary, primaryDark],
             ),
-            const SizedBox(height: 24),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                _buildMiniStat(snapshot.completedTours.toString(), "TRIPS"),
-                _buildMiniStat("${snapshot.ratingAverage.toStringAsFixed(1)} ★", "RATING"),
-                _buildMiniStat(snapshot.totalSafetyIncidents.toString(), "INCIDENTS"),
-              ],
-            ),
-          ],
+            borderRadius: BorderRadius.circular(24),
+            boxShadow: [
+              BoxShadow(color: primary.withValues(alpha: 0.25), blurRadius: 20, offset: const Offset(0, 10)),
+            ],
+          ),
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Trust score",
+                        style: GoogleFonts.inter(color: AppTheme.colors.white.withValues(alpha: 0.8), fontSize: 12, fontWeight: FontWeight.w600),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        "${snapshot.trustScore.toInt()}%",
+                        style: GoogleFonts.outfit(fontSize: 30, fontWeight: FontWeight.w800, color: AppTheme.colors.white),
+                      ),
+                    ],
+                  ),
+                  _buildTierBadge(snapshot.trustScore / 100.0),
+                ],
+              ),
+              const SizedBox(height: 22),
+              Divider(color: AppTheme.colors.white.withValues(alpha: 0.15), height: 1),
+              const SizedBox(height: 18),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  _buildMiniStat(snapshot.completedTours.toString(), "Trips"),
+                  _buildMiniStat("${snapshot.ratingAverage.toStringAsFixed(1)} ★", "Rating"),
+                  _buildMiniStat(snapshot.totalSafetyIncidents.toString(), "Incidents"),
+                ],
+              ),
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    });
   }
 
   Widget _buildTierBadge(double score) {
-    String tier = "BRONZE";
-    Color color = AppTheme.colors.brown;
-    if (score >= 0.9) { tier = "DIAMOND"; color = AppTheme.colors.cyanAccent; }
-    else if (score >= 0.7) { tier = "GOLD"; color = AppTheme.colors.amber; }
-    else if (score >= 0.5) { tier = "SILVER"; color = AppTheme.colors.blueGrey; }
+    String tier = "Bronze tier";
+    if (score >= 0.9) {
+      tier = "Diamond tier";
+    } else if (score >= 0.7) {
+      tier = "Gold tier";
+    } else if (score >= 0.5) {
+      tier = "Silver tier";
+    }
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: color.withValues(alpha: 0.3)),
+        color: AppTheme.colors.white.withValues(alpha: 0.15),
+        borderRadius: BorderRadius.circular(14),
       ),
-      child: Column(
-        children: [
-          Icon(Icons.military_tech_rounded, color: color, size: 24),
-          const SizedBox(height: 4),
-          Text(
-            tier,
-            style: GoogleFonts.inter(color: color, fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 1),
-          ),
-        ],
+      child: Text(
+        tier,
+        style: GoogleFonts.inter(color: AppTheme.colors.white, fontSize: 11, fontWeight: FontWeight.w700),
       ),
     );
   }
@@ -284,43 +300,48 @@ class _GuideReviewsScreenState extends ConsumerState<GuideReviewsScreen> {
     return Column(
       children: [
         Text(value, style: GoogleFonts.outfit(color: AppTheme.colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
-        Text(label, style: GoogleFonts.inter(color: AppTheme.colors.white24, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1)),
+        const SizedBox(height: 2),
+        Text(label, style: GoogleFonts.inter(color: AppTheme.colors.white.withValues(alpha: 0.75), fontSize: 11, fontWeight: FontWeight.w600)),
       ],
     );
   }
 
   Widget _buildReviewCard(TourReview review) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      child: OracleUI.glassContainer(
+    return Builder(builder: (context) {
+      return Container(
+        margin: const EdgeInsets.only(bottom: 16),
         padding: const EdgeInsets.all(20),
-        borderRadius: BorderRadius.circular(24),
-        borderColor: AppTheme.colors.white.withValues(alpha: 0.05),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surface,
+          borderRadius: BorderRadius.circular(18),
+          boxShadow: [
+            BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.05), blurRadius: 14, offset: const Offset(0, 5)),
+          ],
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
                 ...List.generate(5, (index) => Icon(
-                  Icons.star_rounded, 
-                  size: 14, 
-                  color: index < review.overallRating ? AppTheme.colors.amber : AppTheme.colors.white12,
+                  Icons.star_rounded,
+                  size: 14,
+                  color: index < review.overallRating ? AppTheme.colors.amber : AppTheme.surfaceMuted(context),
                 )),
                 const Spacer(),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: AppTheme.colors.greenAccent.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: AppTheme.colors.greenAccent.withValues(alpha: 0.2)),
+                    color: AppTheme.colors.greenAccent.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(100),
                   ),
                   child: Row(
                     children: [
                       Icon(Icons.verified_rounded, color: AppTheme.colors.greenAccent, size: 10),
                       const SizedBox(width: 4),
                       Text(
-                        "VERIFIED MISSION",
-                        style: GoogleFonts.inter(color: AppTheme.colors.greenAccent, fontSize: 9, fontWeight: FontWeight.w900, letterSpacing: 0.5),
+                        "Verified trip",
+                        style: GoogleFonts.inter(color: AppTheme.colors.greenAccent, fontSize: 10, fontWeight: FontWeight.w700),
                       ),
                     ],
                   ),
@@ -330,7 +351,7 @@ class _GuideReviewsScreenState extends ConsumerState<GuideReviewsScreen> {
             const SizedBox(height: 16),
             Text(
               review.comment,
-              style: GoogleFonts.inter(color: AppTheme.colors.white70, fontSize: 14, height: 1.5).copyWith(
+              style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 14, height: 1.6).copyWith(
                 fontFamilyFallback: [GoogleFonts.abhayaLibre().fontFamily!, GoogleFonts.hindGuntur().fontFamily!],
               ),
             ),
@@ -339,46 +360,48 @@ class _GuideReviewsScreenState extends ConsumerState<GuideReviewsScreen> {
               children: [
                 Container(
                   width: 24, height: 24,
-                  decoration: BoxDecoration(color: AppTheme.colors.white10, shape: BoxShape.circle),
-                  child: Icon(Icons.person_rounded, color: AppTheme.colors.white30, size: 14),
+                  decoration: BoxDecoration(color: AppTheme.surfaceMuted(context), shape: BoxShape.circle),
+                  child: Icon(Icons.person_rounded, color: AppTheme.textSecondary(context), size: 14),
                 ),
                 const SizedBox(width: 8),
                 Text(
                   "Tourist ${review.touristId.substring(0, 4)}", // Simplified
-                  style: GoogleFonts.inter(color: AppTheme.colors.white30, fontSize: 12, fontWeight: FontWeight.bold),
+                  style: GoogleFonts.inter(color: AppTheme.textPrimary(context), fontSize: 12, fontWeight: FontWeight.w600),
                 ),
                 const Spacer(),
                 Text(
                   "${review.createdAt.day}/${review.createdAt.month}/${review.createdAt.year}",
-                  style: GoogleFonts.inter(color: AppTheme.colors.white12, fontSize: 11),
+                  style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 11),
                 ),
               ],
             ),
           ],
         ),
-      ),
-    );
+      );
+    });
   }
 
   Widget _buildEmptyState() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.rate_review_outlined, size: 64, color: AppTheme.colors.white.withValues(alpha: 0.05)),
-          const SizedBox(height: 16),
-          Text(
-            "NO MISSION LOGS",
-            style: GoogleFonts.outfit(color: AppTheme.colors.white12, fontWeight: FontWeight.w900, fontSize: 16, letterSpacing: 2),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            "Verified participants can leave feedback after session completion.",
-            textAlign: TextAlign.center,
-            style: GoogleFonts.inter(color: AppTheme.colors.white10, fontSize: 12),
-          ),
-        ],
-      ),
-    ).animate().fadeIn();
+    return Builder(builder: (context) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.rate_review_outlined, size: 56, color: AppTheme.textSecondary(context).withValues(alpha: 0.3)),
+            const SizedBox(height: 16),
+            Text(
+              "No reviews yet",
+              style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.w700, fontSize: 18, letterSpacing: -0.3),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              "Verified participants can leave feedback after session completion.",
+              textAlign: TextAlign.center,
+              style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 13),
+            ),
+          ],
+        ),
+      ).animate().fadeIn();
+    });
   }
 }

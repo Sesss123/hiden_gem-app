@@ -79,243 +79,247 @@ class _IncidentDetailScreenState extends ConsumerState<IncidentDetailScreen> {
   }
 
   Widget _buildAppBar(IncidentReport incident) {
-    final severityColor = incident.severity == 'critical' ? AppTheme.colors.redAccent : AppTheme.colors.orangeAccent;
-
     return SliverAppBar(
-      expandedHeight: 200.0,
+      expandedHeight: 60.0,
       backgroundColor: AppTheme.colors.transparent,
       elevation: 0,
       pinned: true,
-      leading: IconButton(
-        icon: Icon(Icons.arrow_back_ios_new_rounded, color: AppTheme.colors.white, size: 20),
-        onPressed: () => Navigator.pop(context),
+      leading: Builder(
+        builder: (context) => IconButton(
+          icon: Icon(Icons.arrow_back_ios_new_rounded, color: AppTheme.textPrimary(context), size: 20),
+          onPressed: () => Navigator.pop(context),
+        ),
       ),
       actions: [
-        IconButton(
-          icon: Icon(Icons.share_rounded, color: AppTheme.colors.white60),
-          onPressed: () {},
+        Builder(
+          builder: (context) => IconButton(
+            icon: Icon(Icons.share_rounded, color: AppTheme.textSecondary(context)),
+            onPressed: () {},
+          ),
         ),
       ],
-      flexibleSpace: FlexibleSpaceBar(
-        centerTitle: true,
-        title: Text(
-          incident.incidentNumber,
-          style: GoogleFonts.outfit(
-            fontSize: 14,
-            fontWeight: FontWeight.w900,
-            letterSpacing: 3,
-            color: severityColor,
-          ),
-        ),
-        background: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [severityColor.withValues(alpha: 0.15), AppTheme.colors.transparent],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-            ),
-          ),
-          child: Center(
-            child: Icon(Icons.shield_rounded, color: severityColor.withValues(alpha: 0.2), size: 80),
-          ),
-        ),
-      ),
     );
   }
 
   Widget _buildMainInfo(IncidentReport incident) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "CURRENT STATUS",
-                  style: GoogleFonts.inter(color: AppTheme.colors.white24, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1),
-                ),
-                const SizedBox(height: 4),
-                OracleUI.neonText(
-                  incident.status.toUpperCase(),
-                  style: GoogleFonts.inter(color: AppTheme.colors.white, fontWeight: FontWeight.w900, fontSize: 14),
-                ),
-              ],
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text(
-                  "SEVERITY",
-                  style: GoogleFonts.inter(color: AppTheme.colors.white24, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1),
-                ),
-                const SizedBox(height: 4),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: incident.severity == 'critical' ? AppTheme.colors.redAccent.withValues(alpha: 0.1) : AppTheme.colors.orangeAccent.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: incident.severity == 'critical' ? AppTheme.colors.redAccent.withValues(alpha: 0.3) : AppTheme.colors.orangeAccent.withValues(alpha: 0.3)),
+    return Builder(builder: (context) {
+      final severityColor = incident.severity == 'critical' ? AppTheme.colors.redAccent : AppTheme.colors.orangeAccent;
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            incident.incidentNumber,
+            style: GoogleFonts.inter(color: AppTheme.colors.orange[700], fontSize: 11, fontWeight: FontWeight.w700, letterSpacing: 1),
+          ),
+          const SizedBox(height: 16),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Status",
+                    style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 11, fontWeight: FontWeight.w600),
                   ),
-                  child: Text(
-                    incident.severity.toUpperCase(),
-                    style: GoogleFonts.inter(
-                      color: incident.severity == 'critical' ? AppTheme.colors.redAccent : AppTheme.colors.orangeAccent,
-                      fontSize: 10,
-                      fontWeight: FontWeight.w900,
+                  const SizedBox(height: 4),
+                  Text(
+                    _sentenceCase(incident.status),
+                    style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.bold, fontSize: 13),
+                  ),
+                ],
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    "Severity",
+                    style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 11, fontWeight: FontWeight.w600),
+                  ),
+                  const SizedBox(height: 4),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: severityColor.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(100),
+                    ),
+                    child: Text(
+                      _sentenceCase(incident.severity),
+                      style: GoogleFonts.inter(
+                        color: severityColor,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                   ),
-                ),
-              ],
-            ),
-          ],
-        ),
-        const SizedBox(height: 32),
-        Text(
-          incident.title,
-          style: GoogleFonts.outfit(color: AppTheme.colors.white, fontSize: 24, fontWeight: FontWeight.w900),
-        ).animate().fadeIn().slideX(begin: 0.1),
-        const SizedBox(height: 12),
-        Text(
-          incident.description,
-          style: GoogleFonts.inter(color: AppTheme.colors.white70, fontSize: 14, height: 1.6),
-        ).animate().fadeIn(delay: 200.ms),
-      ],
-    );
+                ],
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
+          Text(
+            incident.title,
+            style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontSize: 22, fontWeight: FontWeight.w800, letterSpacing: -0.5),
+          ).animate().fadeIn().slideX(begin: 0.1),
+          const SizedBox(height: 12),
+          Text(
+            incident.description,
+            style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 14, height: 1.6),
+          ).animate().fadeIn(delay: 200.ms),
+        ],
+      );
+    });
+  }
+
+  String _sentenceCase(String value) {
+    if (value.isEmpty) return value;
+    return value[0].toUpperCase() + value.substring(1).toLowerCase();
   }
 
   Widget _buildTimelineHeader() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          "INCIDENT TIMELINE",
-          style: GoogleFonts.inter(color: AppTheme.colors.white24, fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: 2),
-        ),
-        Text(
-          "ENCRYPTED LOG",
-          style: GoogleFonts.inter(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3), fontSize: 10, fontWeight: FontWeight.bold),
-        ),
-      ],
-    );
+    return Builder(builder: (context) {
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            "Timeline",
+            style: GoogleFonts.inter(color: AppTheme.textPrimary(context), fontSize: 12, fontWeight: FontWeight.bold),
+          ),
+          Text(
+            "Encrypted log",
+            style: GoogleFonts.inter(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.6), fontSize: 10, fontWeight: FontWeight.bold),
+          ),
+        ],
+      );
+    });
   }
 
   List<Widget> _buildTimeline(IncidentReport incident) {
     if (incident.timelineEvents.isEmpty) {
-      return [Text("No timeline active.", style: TextStyle(color: AppTheme.colors.white12))];
+      return [
+        Builder(builder: (context) => Text("No timeline active.", style: TextStyle(color: AppTheme.textSecondary(context)))),
+      ];
     }
 
     return incident.timelineEvents.map((e) {
       final isLast = incident.timelineEvents.last == e;
-      return IntrinsicHeight(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Column(
-              children: [
-                Container(
-                  width: 12, height: 12,
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primary,
-                    shape: BoxShape.circle,
-                    boxShadow: [BoxShadow(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5), blurRadius: 8)],
-                  ),
-                ),
-                if (!isLast)
-                  Expanded(
-                    child: Container(width: 1, color: AppTheme.colors.white.withValues(alpha: 0.1)),
-                  ),
-              ],
-            ),
-            const SizedBox(width: 20),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: 32),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          (e['type'] as String).toUpperCase().replaceAll('_', ' '),
-                          style: GoogleFonts.inter(color: AppTheme.colors.white, fontWeight: FontWeight.w900, fontSize: 11, letterSpacing: 0.5),
-                        ),
-                        Text(
-                          "2m ago", // In reality, format the timestamp
-                          style: GoogleFonts.inter(color: AppTheme.colors.white10, fontSize: 10),
-                        ),
-                      ],
+      return Builder(builder: (context) {
+        final dotColor = Theme.of(context).colorScheme.primary;
+        return IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Column(
+                children: [
+                  Container(
+                    width: 12, height: 12,
+                    decoration: BoxDecoration(
+                      color: dotColor,
+                      shape: BoxShape.circle,
+                      boxShadow: [BoxShadow(color: dotColor.withValues(alpha: 0.15), blurRadius: 0, spreadRadius: 4)],
                     ),
-                    const SizedBox(height: 6),
-                    Text(
-                      e['description'] as String,
-                      style: GoogleFonts.inter(color: AppTheme.colors.white30, fontSize: 12),
+                  ),
+                  if (!isLast)
+                    Expanded(
+                      child: Container(width: 1, color: AppTheme.borderColor(context)),
                     ),
-                  ],
-                ),
-              ).animate().fadeIn().slideY(begin: 0.2),
-            ),
-          ],
-        ),
-      );
+                ],
+              ),
+              const SizedBox(width: 20),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 32),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            _sentenceCase((e['type'] as String).replaceAll('_', ' ')),
+                            style: GoogleFonts.inter(color: AppTheme.textPrimary(context), fontWeight: FontWeight.bold, fontSize: 12),
+                          ),
+                          Text(
+                            "2m ago", // In reality, format the timestamp
+                            style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 10),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        e['description'] as String,
+                        style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 11),
+                      ),
+                    ],
+                  ),
+                ).animate().fadeIn().slideY(begin: 0.2),
+              ),
+            ],
+          ),
+        );
+      });
     }).toList();
   }
 
   Widget _buildStatusActions(IncidentReport incident) {
-    return OracleUI.glassContainer(
-      padding: const EdgeInsets.all(24),
-      borderRadius: BorderRadius.circular(24),
-      borderColor: AppTheme.colors.white.withValues(alpha: 0.05),
-      child: Column(
-        children: [
-          Row(
-            children: [
-              Icon(Icons.verified_user_rounded, color: AppTheme.colors.cyanAccent, size: 20),
-              const SizedBox(width: 12),
-              Text(
-                "VERIFIED AUDIT LOG",
-                style: GoogleFonts.inter(color: AppTheme.colors.cyanAccent, fontWeight: FontWeight.w900, fontSize: 11, letterSpacing: 1),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Text(
-            "This report is locked for forensic integrity. Only authorized admins can modify status.",
-            style: GoogleFonts.inter(color: AppTheme.colors.white24, fontSize: 11),
-          ),
-          const SizedBox(height: 24),
-          Row(
-            children: [
-              Expanded(
-                child: OutlinedButton(
-                  onPressed: () {},
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: AppTheme.colors.white,
-                    side: BorderSide(color: AppTheme.colors.white.withValues(alpha: 0.1)),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                  ),
-                  child: const Text("ADD EVIDENCE"),
+    return Builder(builder: (context) {
+      return Container(
+        padding: const EdgeInsets.all(22),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surface,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.05), blurRadius: 16, offset: const Offset(0, 6)),
+          ],
+        ),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                Icon(Icons.verified_user_rounded, color: AppTheme.colors.teal, size: 20),
+                const SizedBox(width: 12),
+                Text(
+                  "Verified audit log",
+                  style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.w700, fontSize: 13),
                 ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: () {},
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Theme.of(context).colorScheme.primary,
-                    foregroundColor: AppTheme.colors.black,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Text(
+              "This report is locked for forensic integrity. Only authorized admins can modify status.",
+              style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 12),
+            ),
+            const SizedBox(height: 24),
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: () {},
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: AppTheme.textPrimary(context),
+                      side: BorderSide(color: AppTheme.borderColor(context)),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
+                    ),
+                    child: const Text("Add evidence"),
                   ),
-                  child: const Text("ESCALATE", style: TextStyle(fontWeight: FontWeight.bold)),
                 ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
+                const SizedBox(width: 16),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () {},
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Theme.of(context).colorScheme.primary,
+                      foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
+                    ),
+                    child: const Text("Escalate", style: TextStyle(fontWeight: FontWeight.bold)),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      );
+    });
   }
 }

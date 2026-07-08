@@ -169,6 +169,11 @@ class UserPreferenceService {
     await _flushToDisk();
   }
 
+  static Future<void> updateAppLockStatus(bool enabled) async {
+    _mutate((p) => p.isAppLockEnabled = enabled);
+    await _flushToDisk();
+  }
+
   static Future<void> updateTermsAgreement(bool agreed) async {
     _mutate((p) => p.hasAgreedToTerms = agreed);
     await _flushToDisk(force: true); // Legal — always flush immediately

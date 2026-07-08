@@ -376,11 +376,11 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
                 onPressed: () => Navigator.pop(context),
               ),
               title: Text(
-                "GUIDE COMMAND",
+                "Tour session",
                 style: GoogleFonts.outfit(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 2,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: -0.3,
                   color: AppTheme.textPrimary(context),
                 ),
               ),
@@ -450,8 +450,8 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
         Icon(Icons.tour_outlined, size: 80, color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5)),
         const SizedBox(height: 24),
         Text(
-          "NO ACTIVE TOUR",
-          style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.bold, color: AppTheme.textPrimary(context)),
+          "No active tour",
+          style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.w800, color: AppTheme.textPrimary(context)),
         ),
         const SizedBox(height: 12),
         Text(
@@ -462,20 +462,22 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
         const SizedBox(height: 48),
         SizedBox(
           width: double.infinity,
-          height: 60,
+          height: 56,
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: Theme.of(context).colorScheme.primary,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              foregroundColor: Theme.of(context).colorScheme.onPrimary,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
+              elevation: 0,
             ),
             onPressed: () {
               if (_vehicles.isEmpty) {
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("ADD A VEHICLE IN PROFILE FIRST")));
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Add a vehicle in your profile first")));
                 return;
               }
               _showVehiclePicker();
             },
-            child: Text("GENERATE TOUR QR", style: GoogleFonts.outfit(fontWeight: FontWeight.bold, letterSpacing: 2)),
+            child: Text("Generate tour QR", style: AppTheme.buttonLabelStyle(context)),
           ),
         ),
       ],
@@ -620,12 +622,11 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
         const SizedBox(height: 12),
 
         Container(
-          padding: const EdgeInsets.all(32),
+          width: double.infinity,
+          padding: const EdgeInsets.all(28),
           decoration: BoxDecoration(
-            color: AppTheme.cardColor(context),
+            color: Theme.of(context).brightness == Brightness.dark ? AppTheme.colors.black : AppPalette.ink,
             borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: AppTheme.secondaryBorder(context)),
-            boxShadow: [BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4))],
           ),
           child: Column(
             children: [
@@ -633,48 +634,80 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
                 QrImageView(
                   data: '{"v":1,"t":"join","token":"${session.joinToken}"}',
                   version: QrVersions.auto,
-                  size: 200.0,
-                  eyeStyle: QrEyeStyle(eyeShape: QrEyeShape.square, color: Theme.of(context).colorScheme.primary),
-                  dataModuleStyle: QrDataModuleStyle(dataModuleShape: QrDataModuleShape.square, color: AppTheme.textPrimary(context)),
+                  size: 180.0,
+                  backgroundColor: AppTheme.colors.transparent,
+                  eyeStyle: QrEyeStyle(eyeShape: QrEyeShape.square, color: AppTheme.colors.white),
+                  dataModuleStyle: QrDataModuleStyle(dataModuleShape: QrDataModuleShape.square, color: AppTheme.colors.white),
                 ).animate().scale(duration: 800.ms, curve: Curves.elasticOut)
               else
                 SizedBox(
-                  height: 200,
+                  height: 180,
                   child: Center(
-                    child: Text("JOINING PAUSED", style: GoogleFonts.outfit(color: AppTheme.textSecondary(context), fontWeight: FontWeight.bold)),
+                    child: Text("Joining paused", style: GoogleFonts.outfit(color: AppTheme.colors.white70, fontWeight: FontWeight.w600)),
                   ),
                 ),
               const SizedBox(height: 16),
               TextButton.icon(
-                icon: const Icon(Icons.refresh, size: 14),
-                label: Text("REFRESH CODE", style: GoogleFonts.outfit(fontSize: 10, color: AppTheme.textSecondary(context))),
+                icon: Icon(Icons.refresh, size: 14, color: AppTheme.colors.white70),
+                label: Text("Tap to refresh join code", style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: AppTheme.colors.white70)),
                 onPressed: () => _sessionRepo.generateJoinToken(session.sessionId),
               ),
             ],
           ),
         ).animate().fadeIn(delay: 200.ms),
-        const SizedBox(height: 32),
+        const SizedBox(height: 24),
 
-        // Broadcast Button
-        SizedBox(
-          width: double.infinity,
-          height: 60,
-          child: ElevatedButton.icon(
-            icon: const Icon(Icons.record_voice_over_rounded),
-            label: Text("BROADCAST CENTER", style: GoogleFonts.outfit(fontWeight: FontWeight.bold, letterSpacing: 2)),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppTheme.colors.indigoAccent,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            ),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => GuideBroadcastScreen(sessionId: session.sessionId),
+        // Broadcast + SOS row
+        Row(
+          children: [
+            Expanded(
+              child: SizedBox(
+                height: 52,
+                child: ElevatedButton.icon(
+                  icon: const Icon(Icons.record_voice_over_rounded, size: 18),
+                  label: Text("Broadcast", style: AppTheme.buttonLabelStyle(context)),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                    foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
+                    elevation: 0,
+                  ),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => GuideBroadcastScreen(sessionId: session.sessionId),
+                      ),
+                    );
+                  },
                 ),
-              );
-            },
-          ),
+              ),
+            ),
+            const SizedBox(width: 10),
+            SizedBox(
+              width: 52,
+              height: 52,
+              child: OutlinedButton(
+                style: OutlinedButton.styleFrom(
+                  side: BorderSide(color: AppTheme.colors.redAccent, width: 2),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
+                  padding: EdgeInsets.zero,
+                ),
+                onPressed: () async {
+                  HapticFeedback.heavyImpact();
+                  final sessionId = _activeSession?.sessionId;
+                  if (sessionId == null) return; // Guard against null crash
+                  await _sessionRepo.triggerSos(sessionId, true);
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text("SOS ALERT BROADCASTED!")),
+                    );
+                  }
+                },
+                child: Icon(Icons.priority_high_rounded, color: AppTheme.colors.redAccent, size: 22),
+              ),
+            ),
+          ],
         ).animate().fadeIn(delay: 400.ms),
         const SizedBox(height: 16),
 
@@ -694,9 +727,7 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
               itemCount: session.touristIds.length,
               itemBuilder: (context, index) => _buildTouristTile(session.touristIds[index]),
             ),
-        const SizedBox(height: 32),
-        _buildSosButton(),
-        const SizedBox(height: 16),
+        const SizedBox(height: 24),
         _buildEndTourButton(),
       ],
     );
@@ -711,74 +742,38 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
       {'id': 'returning', 'label': 'RETURNING', 'icon': Icons.keyboard_return_rounded},
     ];
 
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: AppTheme.cardColor(context),
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: AppTheme.secondaryBorder(context)),
-        boxShadow: [BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4))],
-      ),
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Row(
-          children: phases.map((p) {
-            final isSelected = _activeSession?.currentPhase == p['id'];
-            return GestureDetector(
-              onTap: () => _updatePhase(p['id'] as String),
-              child: AnimatedContainer(
-                duration: 300.ms,
-                margin: const EdgeInsets.only(right: 12),
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                decoration: BoxDecoration(
-                  color: isSelected ? Theme.of(context).colorScheme.primary : AppTheme.borderColor(context),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: isSelected ? AppTheme.colors.transparent : AppTheme.borderColor(context)),
-                ),
-                child: Row(
-                  children: [
-                    Icon(p['icon'] as IconData, size: 16, color: isSelected ? Theme.of(context).colorScheme.onPrimary : AppTheme.textSecondary(context)),
-                    const SizedBox(width: 8),
-                    Text(
-                      p['label'] as String,
-                      style: GoogleFonts.outfit(
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
-                        color: isSelected ? Theme.of(context).colorScheme.onPrimary : AppTheme.textSecondary(context),
-                        letterSpacing: 1,
-                      ),
-                    ),
-                  ],
-                ),
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        children: phases.map((p) {
+          final isSelected = _activeSession?.currentPhase == p['id'];
+          return GestureDetector(
+            onTap: () => _updatePhase(p['id'] as String),
+            child: AnimatedContainer(
+              duration: 300.ms,
+              margin: const EdgeInsets.only(right: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              decoration: BoxDecoration(
+                color: isSelected ? Theme.of(context).colorScheme.primary : AppTheme.surfaceMuted(context),
+                borderRadius: BorderRadius.circular(100),
               ),
-            );
-          }).toList(),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSosButton() {
-     return SizedBox(
-      width: double.infinity,
-      height: 60,
-      child: OutlinedButton(
-        style: OutlinedButton.styleFrom(
-          side: BorderSide(color: AppTheme.colors.redAccent, width: 2),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        ),
-        onPressed: () async {
-          HapticFeedback.heavyImpact();
-          final sessionId = _activeSession?.sessionId;
-          if (sessionId == null) return; // Guard against null crash
-          await _sessionRepo.triggerSos(sessionId, true);
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text("SOS ALERT BROADCASTED!")),
-            );
-          }
-        },
-        child: Text("TRIGGER SOS SIGNAL", style: GoogleFonts.outfit(color: AppTheme.colors.redAccent, fontWeight: FontWeight.bold, letterSpacing: 2)),
+              child: Row(
+                children: [
+                  Icon(p['icon'] as IconData, size: 15, color: isSelected ? Theme.of(context).colorScheme.onPrimary : AppTheme.textSecondary(context)),
+                  const SizedBox(width: 6),
+                  Text(
+                    _sentenceCase(p['label'] as String),
+                    style: GoogleFonts.inter(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                      color: isSelected ? Theme.of(context).colorScheme.onPrimary : AppTheme.textSecondary(context),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }).toList(),
       ),
     );
   }
@@ -789,8 +784,8 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
           child: TextButton(
             onPressed: _stopTour,
             child: Text(
-              "STOP TOUR SESSION",
-              style: GoogleFonts.outfit(color: AppTheme.colors.redAccent, fontWeight: FontWeight.bold, letterSpacing: 1),
+              "Stop tour session",
+              style: GoogleFonts.inter(color: AppTheme.colors.redAccent, fontWeight: FontWeight.w700, fontSize: 13),
             ),
           ),
         );
@@ -834,24 +829,25 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
   Widget _buildStatCard(String label, String value, IconData icon) {
     return Expanded(
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 6),
         decoration: BoxDecoration(
-          color: AppTheme.cardColor(context),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: AppTheme.secondaryBorder(context)),
-          boxShadow: [BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4))],
+          color: AppTheme.surfaceMuted(context),
+          borderRadius: BorderRadius.circular(16),
         ),
         child: Column(
           children: [
-            Icon(icon, size: 16, color: AppTheme.textSecondary(context)),
-            const SizedBox(height: 8),
-            Text(value, style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.textPrimary(context))),
-            const SizedBox(height: 4),
-            Text(label, style: GoogleFonts.inter(fontSize: 10, letterSpacing: 1, color: AppTheme.textSecondary(context))),
+            Text(value, style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w800, color: AppTheme.textPrimary(context))),
+            const SizedBox(height: 2),
+            Text(_sentenceCase(label), style: GoogleFonts.inter(fontSize: 9, fontWeight: FontWeight.w600, color: AppTheme.textSecondary(context))),
           ],
         ),
       ),
     );
+  }
+
+  String _sentenceCase(String label) {
+    if (label.isEmpty) return label;
+    return label[0].toUpperCase() + label.substring(1).toLowerCase();
   }
 
   Widget _buildTouristTile(String uid) {

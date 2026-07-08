@@ -102,16 +102,23 @@ class _OracleOrbState extends State<OracleOrb> {
     return GestureDetector(
       onTap: _toggleOracle,
       child: Container(
-        width: 72,
-        height: 72,
+        width: 64,
+        height: 64,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: AppPalette.rust,
+          gradient: LinearGradient(
+            colors: [
+              Theme.of(context).colorScheme.primary,
+              Theme.of(context).colorScheme.secondary,
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
           boxShadow: [
             BoxShadow(
-              color: AppPalette.rust.withValues(alpha: _isListening ? 0.4 : 0.2),
-              blurRadius: _isListening ? 30 : 20,
-              spreadRadius: _isListening ? 10 : 0,
+              color: Theme.of(context).colorScheme.primary.withValues(alpha: _isListening ? 0.45 : 0.28),
+              blurRadius: _isListening ? 30 : 18,
+              spreadRadius: _isListening ? 8 : 0,
               offset: const Offset(0, 8),
             )
           ],

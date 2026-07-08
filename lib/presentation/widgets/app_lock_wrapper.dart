@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:flutter/services.dart';
 import 'package:hidden_gems_sl/core/theme/app_theme.dart';
+import 'package:hidden_gems_sl/data/datasources/user_preference_service.dart';
 
 import 'package:google_fonts/google_fonts.dart';
 
@@ -42,18 +44,31 @@ class _AppLockWrapperState extends State<AppLockWrapper> with WidgetsBindingObse
       }
     } else if (state == AppLifecycleState.resumed) {
       if (!_isAuthenticated && _isSupported) {
-        _authenticate();
+        if (UserPreferenceService.getProfile().isAppLockEnabled) {
+          _authenticate();
+        } else {
+          setState(() {
+            _isAuthenticated = true;
+          });
+        }
       }
     }
   }
   
   Future<void> _checkSupportAndAuthenticate() async {
+    if (kIsWeb) {
+      setState(() {
+        _isAuthenticated = true;
+      });
+      return;
+    }
+    
     _isSupported = await auth.isDeviceSupported();
-    if (_isSupported) {
+    if (_isSupported && UserPreferenceService.getProfile().isAppLockEnabled) {
       _authenticate();
     } else {
       setState(() {
-        _isAuthenticated = true; // Bypass if biometrics are unavailable
+        _isAuthenticated = true; // Bypass if biometrics are unavailable or disabled in settings
       });
     }
   }

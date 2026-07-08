@@ -6,7 +6,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import '../../core/theme/oracle_ui_system.dart';
 import '../../data/datasources/user_preference_service.dart';
 import '../../data/repositories/incident_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -126,67 +125,56 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> {
           backgroundColor: AppTheme.colors.transparent,
           elevation: 0,
           leading: IconButton(
-            icon: Icon(Icons.arrow_back_ios_new_rounded, color: AppTheme.colors.white, size: 20),
+            icon: Icon(Icons.arrow_back_ios_new_rounded, color: AppTheme.textPrimary(context), size: 20),
             onPressed: () => Navigator.pop(context),
           ),
-          title: OracleUI.neonText(
-            "GUARDIAN SYSTEM",
+          title: Text(
+            "Emergency",
             style: GoogleFonts.outfit(
-              fontSize: 16,
-              fontWeight: FontWeight.w900,
-              letterSpacing: 4,
-              color: AppTheme.colors.white,
+              fontSize: 20,
+              fontWeight: FontWeight.w800,
+              letterSpacing: -0.5,
+              color: AppTheme.textPrimary(context),
             ),
           ),
         ),
-        body: OracleUI.auraBackground(
-          child: SingleChildScrollView(
-            padding: EdgeInsets.all(28),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildSOSSection().animate().fadeIn(duration: 800.ms).slideY(begin: 0.1),
-                SizedBox(height: 48),
-                
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    OracleUI.neonText(
-                      "CRITICAL CONTACTS",
-                      style: GoogleFonts.inter(
-                        fontSize: 12, 
-                        fontWeight: FontWeight.w900, 
-                        letterSpacing: 2, 
-                        color: AppTheme.colors.white24
-                      ),
-                    ),
-                    Text(
-                      "DIRECT LINES",
-                      style: GoogleFonts.inter(color: AppTheme.colors.white10, fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 1)
-                    ),
-                  ],
-                ),
-                SizedBox(height: 24),
-                _buildContactGrid(),
-                
-                SizedBox(height: 48),
-                _buildSOSContactManager(),
+        body: SingleChildScrollView(
+          padding: EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildSOSSection().animate().fadeIn(duration: 800.ms).slideY(begin: 0.1),
+              SizedBox(height: 32),
 
-                SizedBox(height: 48),
-                OracleUI.neonText(
-                  "MEDICAL NODES NEARBY",
-                  style: GoogleFonts.inter(
-                    fontSize: 12, 
-                    fontWeight: FontWeight.w900, 
-                    letterSpacing: 2, 
-                    color: AppTheme.colors.white24
-                  ),
+              Text(
+                "Critical contacts",
+                style: GoogleFonts.outfit(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: -0.2,
+                  color: AppTheme.textPrimary(context),
                 ),
-                SizedBox(height: 24),
-                _buildHospitalsList(),
-                SizedBox(height: 40),
-              ],
-            ),
+              ),
+              SizedBox(height: 16),
+              _buildContactGrid(),
+
+              SizedBox(height: 32),
+              _buildSOSContactManager(),
+
+              SizedBox(height: 32),
+              Text(
+                "Medical facilities nearby",
+                style: GoogleFonts.outfit(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: -0.2,
+                  color: AppTheme.textPrimary(context),
+                ),
+              ),
+              SizedBox(height: 16),
+              _buildHospitalsList(),
+              SizedBox(height: 40),
+            ],
           ),
         ),
       ),
@@ -194,10 +182,14 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> {
   }
 
   Widget _buildSOSSection() {
-    return OracleUI.glassContainer(
-      padding: EdgeInsets.all(32),
-      borderRadius: BorderRadius.circular(32),
-      borderColor: AppTheme.colors.redAccent.withValues(alpha: 0.1),
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.all(28),
+      decoration: BoxDecoration(
+        color: isDark ? AppTheme.colors.black : AppPalette.ink,
+        borderRadius: BorderRadius.circular(26),
+      ),
       child: Column(
         children: [
           Stack(
@@ -205,60 +197,42 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> {
             children: [
               // Outer Pulse
               Container(
-                width: 140, height: 140,
+                width: 130, height: 130,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  border: Border.all(color: AppTheme.colors.redAccent.withValues(alpha: 0.2), width: 1),
+                  color: AppTheme.colors.redAccent.withValues(alpha: 0.15),
                 ),
               ).animate(onPlay: (c) => c.repeat()).scale(
-                begin: const Offset(1, 1), end: const Offset(1.5, 1.5), 
+                begin: const Offset(1, 1), end: const Offset(1.35, 1.35),
                 duration: 2000.ms, curve: Curves.easeOut
               ).fadeOut(),
-              
+
               GestureDetector(
                 onTap: _isSendingSOS ? null : _handleSOS,
                 child: Container(
-                  width: 100,
-                  height: 100,
+                  width: 92,
+                  height: 92,
                   decoration: BoxDecoration(
                     color: AppTheme.colors.redAccent,
                     shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppTheme.colors.redAccent.withValues(alpha: 0.5),
-                        blurRadius: 40,
-                        spreadRadius: 5,
-                      )
-                    ],
                   ),
                   child: Center(
-                    child: _isSendingSOS 
+                    child: _isSendingSOS
                       ? CircularProgressIndicator(color: AppTheme.colors.white, strokeWidth: 3)
                       : Text(
                           "SOS",
-                          style: TextStyle(color: AppTheme.colors.white, fontWeight: FontWeight.w900, fontSize: 24, letterSpacing: 2),
+                          style: TextStyle(color: AppTheme.colors.white, fontWeight: FontWeight.w800, fontSize: 16),
                         ),
                   ),
                 ),
               ),
             ],
           ),
-          SizedBox(height: 32),
-          OracleUI.neonText(
-            "DISTRESS BEACON",
-            style: GoogleFonts.inter(
-              fontSize: 13, 
-              fontWeight: FontWeight.w900, 
-              letterSpacing: 1.5, 
-              color: AppTheme.colors.white
-            ),
-            glowColor: AppTheme.colors.redAccent,
-          ),
-          SizedBox(height: 8),
+          SizedBox(height: 20),
           Text(
-            "Sends location-tagged alerts to contacts",
+            "Tap to alert your emergency contacts",
             textAlign: TextAlign.center,
-            style: GoogleFonts.inter(color: AppTheme.colors.white30, fontSize: 11, fontWeight: FontWeight.w600),
+            style: GoogleFonts.inter(color: AppTheme.colors.white.withValues(alpha: 0.7), fontSize: 12, fontWeight: FontWeight.w600),
           ),
         ],
       ),
@@ -295,44 +269,50 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> {
           itemCount: contacts.length,
           itemBuilder: (context, index) {
             final contact = contacts[index];
-            return OracleUI.glassContainer(
-              padding: EdgeInsets.zero,
-              borderRadius: BorderRadius.circular(24),
-              borderColor: (contact['color'] as Color).withValues(alpha: 0.1),
+            return Container(
+              decoration: BoxDecoration(
+                color: AppTheme.surfaceMuted(context),
+                borderRadius: BorderRadius.circular(18),
+              ),
               // BUG-083: Ensure minimum 48px tap target by using ConstrainedBox
               child: ConstrainedBox(
                 constraints: const BoxConstraints(minHeight: 48, minWidth: 48),
                 child: InkWell(
-                  borderRadius: BorderRadius.circular(24),
+                  borderRadius: BorderRadius.circular(18),
                   onTap: () => _launchCaller(contact['phone'] as String),
                   child: Padding(
-                    padding: const EdgeInsets.all(20),
+                    padding: const EdgeInsets.all(16),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(contact['icon'] as IconData, color: contact['color'] as Color, size: 28),
-                        SizedBox(height: 12),
+                        Container(
+                          width: 30, height: 30,
+                          decoration: BoxDecoration(
+                            color: (contact['color'] as Color).withValues(alpha: 0.15),
+                            borderRadius: BorderRadius.circular(9),
+                          ),
+                          child: Icon(contact['icon'] as IconData, color: contact['color'] as Color, size: 16),
+                        ),
+                        SizedBox(height: 10),
                         // BUG-103: Flexible text prevents overflow at max font scale
                         Flexible(
                           child: Text(
-                            (contact['name'] as String).toUpperCase(),
+                            contact['name'] as String,
                             textAlign: TextAlign.center,
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                             style: GoogleFonts.inter(
-                              color: AppTheme.colors.white,
-                              fontWeight: FontWeight.w900,
-                              fontSize: 10,
-                              letterSpacing: 1,
+                              color: AppTheme.textPrimary(context),
+                              fontWeight: FontWeight.w600,
+                              fontSize: 11,
                             ),
                           ),
                         ),
                         SizedBox(height: 4),
                         Flexible(
-                          child: OracleUI.neonText(
+                          child: Text(
                             contact['phone'] as String,
-                            style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.w900, color: AppTheme.colors.white),
-                            glowColor: (contact['color'] as Color).withValues(alpha: 0.5),
+                            style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.w700, color: AppTheme.textPrimary(context)),
                           ),
                         ),
                       ],
@@ -350,10 +330,15 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> {
 
   Widget _buildSOSContactManager() {
     final profile = UserPreferenceService.getProfile();
-    return OracleUI.glassContainer(
-      padding: EdgeInsets.all(24),
-      borderRadius: BorderRadius.circular(24),
-      borderColor: AppTheme.colors.white.withValues(alpha: 0.05),
+    return Container(
+      padding: EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.05), blurRadius: 16, offset: const Offset(0, 6)),
+        ],
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -361,8 +346,8 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                "PRIVATE GUARDIANS", 
-                style: GoogleFonts.inter(color: AppTheme.colors.white30, fontSize: 11, fontWeight: FontWeight.w900, letterSpacing: 2)
+                "Private guardians",
+                style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontSize: 14, fontWeight: FontWeight.w700, letterSpacing: -0.2)
               ),
               IconButton(
                 onPressed: _showAddContactDialog,
@@ -370,24 +355,26 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> {
               ),
             ],
           ),
-          SizedBox(height: 12),
+          SizedBox(height: 8),
           if (profile.sosContacts.isEmpty)
             Text(
-              "No guardians assigned. Signals will default to emergency services.", 
-              style: GoogleFonts.inter(color: AppTheme.colors.white12, fontSize: 11, fontStyle: FontStyle.italic)
+              "No guardians assigned. Signals will default to emergency services.",
+              style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 12)
             )
           else
             Wrap(
               spacing: 8,
               runSpacing: 8,
-              children: profile.sosContacts.map((c) => OracleUI.glassContainer(
+              children: profile.sosContacts.map((c) => Container(
                 padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                borderRadius: BorderRadius.circular(12),
-                borderColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
+                decoration: BoxDecoration(
+                  color: AppTheme.surfaceMuted(context),
+                  borderRadius: BorderRadius.circular(100),
+                ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(c, style: GoogleFonts.outfit(color: AppTheme.colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
+                    Text(c, style: GoogleFonts.inter(color: AppTheme.textPrimary(context), fontSize: 12, fontWeight: FontWeight.w600)),
                     SizedBox(width: 8),
                     GestureDetector(
                       onTap: () async {
@@ -419,47 +406,55 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> {
   }
 
   Widget _hospitalItem(String name, String location, String distance, String phone) {
-    return OracleUI.glassContainer(
-      margin: EdgeInsets.only(bottom: 16),
-      padding: EdgeInsets.all(20),
-      borderRadius: BorderRadius.circular(24),
-      borderColor: AppTheme.colors.white.withValues(alpha: 0.05),
+    return Container(
+      margin: EdgeInsets.only(bottom: 12),
+      padding: EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(18),
+        boxShadow: [
+          BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.05), blurRadius: 14, offset: const Offset(0, 5)),
+        ],
+      ),
       child: Row(
         children: [
-          OracleUI.glassContainer(
-            padding: EdgeInsets.all(12),
-            borderRadius: BorderRadius.circular(12),
-            borderColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
-            child: Icon(Icons.local_hospital, color: Theme.of(context).colorScheme.primary, size: 20),
+          Container(
+            padding: EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(Icons.local_hospital, color: Theme.of(context).colorScheme.primary, size: 18),
           ),
-          SizedBox(width: 20),
+          SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // BUG-103: Overflow guards on hospital name text
                 Text(
-                  name.toUpperCase(),
+                  name,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.inter(color: AppTheme.colors.white, fontWeight: FontWeight.w900, fontSize: 13, letterSpacing: 0.5),
+                  style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.w700, fontSize: 13, letterSpacing: -0.2),
                 ),
+                SizedBox(height: 2),
                 Text(
-                  "$location • $distance",
+                  "$location · $distance",
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.inter(color: AppTheme.colors.white10, fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 1),
+                  style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 11, fontWeight: FontWeight.w500),
                 ),
               ],
             ),
           ),
           // BUG-083: Ensure call button meets 48px tap target minimum
           SizedBox(
-            width: 48,
-            height: 48,
+            width: 44,
+            height: 44,
             child: IconButton(
               padding: EdgeInsets.zero,
-              icon: Icon(Icons.phone_paused_rounded, color: AppTheme.colors.white30, size: 20),
+              icon: Icon(Icons.call_rounded, color: AppTheme.textSecondary(context), size: 18),
               onPressed: () => _launchCaller(phone),
             ),
           ),
@@ -474,36 +469,44 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> {
       context: context,
       builder: (context) => Dialog(
         backgroundColor: AppTheme.colors.transparent,
-        child: OracleUI.glassContainer(
-          padding: EdgeInsets.all(32),
-          borderRadius: BorderRadius.circular(32),
-          borderColor: AppTheme.colors.white.withValues(alpha: 0.1),
+        child: Container(
+          padding: EdgeInsets.all(28),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surface,
+            borderRadius: BorderRadius.circular(28),
+            boxShadow: [
+              BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.15), blurRadius: 30, offset: const Offset(0, 12)),
+            ],
+          ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              OracleUI.neonText(
-                "LINK GUARDIAN", 
-                style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.w900, letterSpacing: 2, color: AppTheme.colors.white)
+              Text(
+                "Add guardian",
+                style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.w700, letterSpacing: -0.3, color: AppTheme.textPrimary(context))
               ),
-              SizedBox(height: 24),
-              OracleUI.glassContainer(
+              SizedBox(height: 20),
+              Container(
                 padding: EdgeInsets.symmetric(horizontal: 16),
-                borderRadius: BorderRadius.circular(16),
-                borderColor: AppTheme.colors.white.withValues(alpha: 0.05),
+                decoration: BoxDecoration(
+                  color: AppTheme.surfaceMuted(context),
+                  borderRadius: BorderRadius.circular(14),
+                ),
                 child: TextField(
-                  style: TextStyle(color: AppTheme.colors.white),
+                  style: TextStyle(color: AppTheme.textPrimary(context)),
                   decoration: InputDecoration(
-                    hintText: "Guardian Phone Number",
-                    hintStyle: TextStyle(color: AppTheme.colors.white24, fontSize: 13),
+                    hintText: "Guardian phone number",
+                    hintStyle: TextStyle(color: AppTheme.textSecondary(context), fontSize: 13),
                     border: InputBorder.none,
                   ),
                   keyboardType: TextInputType.phone,
                   onChanged: (v) => phone = v,
                 ),
               ),
-              SizedBox(height: 32),
+              SizedBox(height: 24),
               SizedBox(
                 width: double.infinity,
+                height: 52,
                 child: ElevatedButton(
                   onPressed: () async {
                     if (phone.isNotEmpty) {
@@ -517,10 +520,11 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> {
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Theme.of(context).colorScheme.primary,
-                    foregroundColor: AppTheme.colors.black,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    foregroundColor: AppTheme.colors.white,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
                   ),
-                  child: Text("ESTABLISH LINK", style: TextStyle(fontWeight: FontWeight.w900)),
+                  child: Text("Add guardian", style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 14)),
                 ),
               ),
             ],

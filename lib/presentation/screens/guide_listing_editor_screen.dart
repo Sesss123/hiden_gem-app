@@ -107,7 +107,7 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
       if (!mounted) return;
       setState(() => _isSaving = true);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Uploading photo to vault...'), backgroundColor: AppTheme.colors.amber),
+        SnackBar(content: Text('Uploading photo to vault...'), backgroundColor: Theme.of(context).colorScheme.primary),
       );
 
       final url = await _storage.uploadGuideDocument(
@@ -239,7 +239,7 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
     if (_isLoading) {
       return Scaffold(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        body: Center(child: CircularProgressIndicator(color: AppTheme.colors.amber)),
+        body: Center(child: CircularProgressIndicator(color: Theme.of(context).colorScheme.primary)),
       );
     }
 
@@ -249,10 +249,10 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
         backgroundColor: AppTheme.colors.transparent,
         elevation: 0,
         title: Text(
-          'MY GUIDE LISTING',
-          style: GoogleFonts.outfit(fontWeight: FontWeight.bold, letterSpacing: 1.5, fontSize: 16),
+          'Your listing',
+          style: GoogleFonts.outfit(fontWeight: FontWeight.w800, letterSpacing: -0.5, fontSize: 20, color: AppTheme.textPrimary(context)),
         ),
-        centerTitle: true,
+        centerTitle: false,
       ),
       body: OracleUI.auraBackground(
         child: SafeArea(
@@ -262,7 +262,7 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
               padding: const EdgeInsets.all(20),
               physics: const BouncingScrollPhysics(),
               children: [
-                _buildSectionTitle('BASIC INFORMATION'),
+                _buildSectionTitle('Basic information'),
                 const SizedBox(height: 12),
                 _buildTextField(
                   controller: _displayNameController,
@@ -282,7 +282,7 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
                 ),
                 const SizedBox(height: 24),
 
-                _buildSectionTitle('CATEGORY & SPECIALTIES'),
+                _buildSectionTitle('Category & specialties'),
                 const SizedBox(height: 12),
                 _buildDropdown(
                   label: 'Primary Category',
@@ -313,7 +313,7 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
                 ),
                 const SizedBox(height: 24),
 
-                _buildSectionTitle('PRICING & VEHICLE'),
+                _buildSectionTitle('Pricing & vehicle'),
                 const SizedBox(height: 12),
                 Row(
                   children: [
@@ -344,15 +344,14 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   decoration: BoxDecoration(
-                    color: Theme.of(context).cardColor,
+                    color: AppTheme.surfaceMuted(context),
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: AppTheme.borderColor(context)),
                   ),
                   child: SwitchListTile(
-                    title: Text('Vehicle Available for Tours', style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.w600)),
+                    title: Text('Vehicle available for tours', style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.w600)),
                     subtitle: Text('Do you provide transportation?', style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 12)),
                     value: _vehicleAvailable,
-                    activeThumbColor: AppTheme.colors.amber,
+                    activeThumbColor: Theme.of(context).colorScheme.primary,
                     contentPadding: EdgeInsets.zero,
                     onChanged: (val) => setState(() => _vehicleAvailable = val),
                   ),
@@ -368,12 +367,12 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
                 ],
                 const SizedBox(height: 24),
 
-                _buildSectionTitle('COVER PHOTOS (${_coverPhotos.length})'),
+                _buildSectionTitle('Cover photos (${_coverPhotos.length})'),
                 const SizedBox(height: 12),
                 _buildCoverPhotosSection(),
                 const SizedBox(height: 24),
 
-                _buildSectionTitle('AVAILABILITY CALENDAR'),
+                _buildSectionTitle('Availability calendar'),
                 const SizedBox(height: 12),
                 _buildAvailabilityButton(context),
                 const SizedBox(height: 36),
@@ -385,12 +384,12 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
                         onPressed: _isSaving ? null : () => _saveListing(status: 'draft'),
                         style: OutlinedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 16),
-                          side: BorderSide(color: AppTheme.colors.amber, width: 1.5),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                          side: BorderSide(color: Theme.of(context).colorScheme.primary, width: 1.5),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
                         ),
                         child: Text(
-                          'SAVE DRAFT',
-                          style: GoogleFonts.outfit(color: AppTheme.colors.amber, fontWeight: FontWeight.bold, letterSpacing: 1),
+                          'Save draft',
+                          style: GoogleFonts.inter(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.w700, fontSize: 14),
                         ),
                       ),
                     ),
@@ -400,17 +399,17 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
                       child: ElevatedButton(
                         onPressed: _isSaving ? null : () => _saveListing(status: 'published'),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: AppTheme.colors.amber,
-                          foregroundColor: AppTheme.colors.black,
+                          backgroundColor: Theme.of(context).colorScheme.primary,
+                          foregroundColor: Theme.of(context).colorScheme.onPrimary,
                           padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                          elevation: 8,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
+                          elevation: 0,
                         ),
                         child: _isSaving
-                            ? SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: AppTheme.colors.black))
+                            ? SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Theme.of(context).colorScheme.onPrimary))
                             : Text(
-                                'PUBLISH LISTING 🚀',
-                                style: GoogleFonts.outfit(fontWeight: FontWeight.bold, letterSpacing: 1, fontSize: 15),
+                                'Publish listing',
+                                style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 14),
                               ),
                       ),
                     ),
@@ -428,11 +427,10 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
   Widget _buildSectionTitle(String title) {
     return Text(
       title,
-      style: GoogleFonts.outfit(
-        color: AppTheme.colors.amber[400],
+      style: GoogleFonts.inter(
+        color: AppTheme.textPrimary(context),
         fontSize: 12,
-        fontWeight: FontWeight.w800,
-        letterSpacing: 2.0,
+        fontWeight: FontWeight.w700,
       ),
     );
   }
@@ -457,12 +455,12 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
         hintText: hint,
         labelStyle: GoogleFonts.outfit(color: AppTheme.textSecondary(context)),
         hintStyle: GoogleFonts.inter(color: AppTheme.textSecondary(context).withValues(alpha: 0.5), fontSize: 13),
-        prefixIcon: Icon(icon, color: AppTheme.colors.amber[600], size: 20),
+        prefixIcon: Icon(icon, color: Theme.of(context).colorScheme.primary, size: 20),
         filled: true,
-        fillColor: Theme.of(context).cardColor,
+        fillColor: AppTheme.surfaceMuted(context),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
-        enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: AppTheme.borderColor(context))),
-        focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: AppTheme.colors.amber, width: 1.5)),
+        enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
+        focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: Theme.of(context).colorScheme.primary, width: 1.5)),
       ),
     );
   }
@@ -476,9 +474,8 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
+        color: AppTheme.surfaceMuted(context),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppTheme.borderColor(context)),
       ),
       child: DropdownButtonFormField<String>(
         initialValue: value,
@@ -513,16 +510,16 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
                     width: 100,
                     height: 100,
                     decoration: BoxDecoration(
-                      color: AppTheme.colors.amber.withValues(alpha: 0.1),
+                      color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: AppTheme.colors.amber, style: BorderStyle.solid, width: 1.5),
+                      border: Border.all(color: Theme.of(context).colorScheme.primary, style: BorderStyle.solid, width: 1.5),
                     ),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.add_a_photo_outlined, color: AppTheme.colors.amber, size: 28),
-                        SizedBox(height: 6),
-                        Text('Add Photo', style: TextStyle(color: AppTheme.colors.amber, fontSize: 11, fontWeight: FontWeight.bold)),
+                        Icon(Icons.add_a_photo_outlined, color: Theme.of(context).colorScheme.primary, size: 28),
+                        const SizedBox(height: 6),
+                        Text('Add photo', style: GoogleFonts.inter(color: Theme.of(context).colorScheme.primary, fontSize: 11, fontWeight: FontWeight.w700)),
                       ],
                     ),
                   ),
@@ -578,19 +575,21 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Theme.of(context).cardColor,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppTheme.colors.amber.withValues(alpha: 0.5)),
+          color: Theme.of(context).colorScheme.surface,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.05), blurRadius: 14, offset: const Offset(0, 5)),
+          ],
         ),
         child: Row(
           children: [
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: AppTheme.colors.amber.withValues(alpha: 0.2),
+                color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.12),
                 shape: BoxShape.circle,
               ),
-              child: Icon(Icons.calendar_month_outlined, color: AppTheme.colors.amber, size: 24),
+              child: Icon(Icons.calendar_month_outlined, color: Theme.of(context).colorScheme.primary, size: 24),
             ),
             const SizedBox(width: 16),
             Expanded(

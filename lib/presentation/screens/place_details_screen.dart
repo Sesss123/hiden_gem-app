@@ -380,39 +380,33 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
                   Text(
                     widget.place.name,
                     style: GoogleFonts.outfit(
-                      fontSize: 32, 
-                      fontWeight: FontWeight.w900, 
-                      color: Theme.of(context).colorScheme.onSurface, 
+                      fontSize: 28,
+                      fontWeight: FontWeight.w800,
+                      color: Theme.of(context).colorScheme.onSurface,
                       height: 1.1,
-                      letterSpacing: -0.5
+                      letterSpacing: -0.4
                     ).copyWith(
                       fontFamilyFallback: [GoogleFonts.abhayaLibre().fontFamily!, GoogleFonts.hindGuntur().fontFamily!],
                     ),
                   ),
-                  SizedBox(height: 12),
+                  SizedBox(height: 10),
                   Row(
                     children: [
-                      Icon(Icons.location_on, size: 16, color: Theme.of(context).colorScheme.primary),
-                      SizedBox(width: 8),
                       Text(
-                        widget.place.district.toUpperCase(), 
+                        widget.place.district,
                         style: GoogleFonts.inter(
-                          fontSize: 12, 
-                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
-                          letterSpacing: 2,
-                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                          color: AppTheme.textSecondary(context),
+                          fontWeight: FontWeight.w600,
                         )
                       ),
                       if (widget.place.distanceKm > 0) ...[
-                        SizedBox(width: 12),
-                        Container(width: 4, height: 4, decoration: BoxDecoration(color: Theme.of(context).dividerColor.withValues(alpha: 0.2), shape: BoxShape.circle)),
-                        SizedBox(width: 12),
                         Text(
-                          "${widget.place.distanceKm.toStringAsFixed(1)} KM", 
-                          style: GoogleFonts.outfit(
-                            fontSize: 12, 
-                            color: Theme.of(context).colorScheme.primary, 
-                            fontWeight: FontWeight.bold
+                          " · ${widget.place.distanceKm.toStringAsFixed(1)} km",
+                          style: GoogleFonts.inter(
+                            fontSize: 12,
+                            color: AppTheme.textSecondary(context),
+                            fontWeight: FontWeight.w600,
                           )
                         ),
                       ]
@@ -422,22 +416,22 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
               ),
             ),
             Container(
-              padding: EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.secondary.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: Theme.of(context).colorScheme.secondary.withValues(alpha: 0.2)),
+                color: Theme.of(context).colorScheme.secondary.withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(100),
               ),
               child: Row(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.star_rounded, color: Theme.of(context).colorScheme.secondary, size: 20),
-                  SizedBox(width: 6),
+                  Icon(Icons.star_rounded, color: Theme.of(context).colorScheme.secondary, size: 15),
+                  SizedBox(width: 4),
                   Text(
-                    widget.place.rating.toString(), 
-                    style: GoogleFonts.outfit(
-                      fontWeight: FontWeight.w900, 
-                      color: Theme.of(context).colorScheme.secondary, 
-                      fontSize: 16
+                    widget.place.rating.toString(),
+                    style: GoogleFonts.inter(
+                      fontWeight: FontWeight.w700,
+                      color: Theme.of(context).colorScheme.secondary,
+                      fontSize: 13
                     )
                   ),
                 ],
@@ -455,11 +449,10 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
     final canTranslate = currentLocale == 'si' && _translatedAiReason == null;
 
     return Container(
-      padding: EdgeInsets.all(24),
+      padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.5),
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1)),
+        color: AppTheme.surfaceMuted(context),
+        borderRadius: BorderRadius.circular(20),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -467,20 +460,14 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                children: [
-                  Icon(Icons.auto_awesome, color: Theme.of(context).colorScheme.primary, size: 18),
-                  SizedBox(width: 10),
-                  Text(
-                    l10n.oracleVision.toUpperCase(), 
-                    style: GoogleFonts.outfit(
-                      fontWeight: FontWeight.w900, 
-                      color: Theme.of(context).colorScheme.primary, 
-                      fontSize: 11, 
-                      letterSpacing: 2
-                    )
-                  ),
-                ],
+              Text(
+                l10n.oracleVision,
+                style: GoogleFonts.inter(
+                  fontWeight: FontWeight.w700,
+                  color: Theme.of(context).colorScheme.primary,
+                  fontSize: 11,
+                  letterSpacing: 0.5
+                )
               ),
               if (canTranslate)
                 GestureDetector(
@@ -576,53 +563,45 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
   }
 
   Widget _buildQuickStats(BuildContext context, AppLocalizations l10n) {
-    return Row(
-      children: [
-        _statBox(context, Icons.access_time_outlined, l10n.moment, widget.place.bestTime),
-        SizedBox(width: 16),
-        _statBox(context, Icons.confirmation_number_outlined, l10n.offering, widget.place.ticketRange),
-        if (widget.place.arSupported) ...[
-          SizedBox(width: 16),
-          _statBox(
-            context,
-            Icons.view_in_ar,
-            l10n.reality,
-            widget.place.arTier == 1 ? "Heritage" : (widget.place.arTier == 2 ? "Explore" : "Story"),
-            color: widget.place.arTier == 1 ? Theme.of(context).colorScheme.secondary : (widget.place.arTier == 2 ? AppTheme.colors.primary : Theme.of(context).colorScheme.primary),
-          ),
-        ],
-      ],
-    );
+    final items = <Widget>[
+      _statBox(context, l10n.moment, widget.place.bestTime),
+      _statBox(context, l10n.offering, widget.place.ticketRange),
+      if (widget.place.arSupported)
+        _statBox(
+          context,
+          l10n.reality,
+          widget.place.arTier == 1 ? "Heritage" : (widget.place.arTier == 2 ? "Explore" : "Story"),
+        ),
+    ];
+
+    final children = <Widget>[];
+    for (var i = 0; i < items.length; i++) {
+      if (i > 0) {
+        children.add(Container(width: 1, height: 32, color: AppTheme.borderColor(context)));
+      }
+      children.add(items[i]);
+    }
+
+    return Row(children: children);
   }
 
-  Widget _statBox(BuildContext context, IconData icon, String title, String value, {Color? color}) {
-    final accentColor = color ?? Theme.of(context).colorScheme.primary;
+  Widget _statBox(BuildContext context, String title, String value) {
     return Expanded(
-      child: Container(
-        padding: EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.3),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: Theme.of(context).dividerColor.withValues(alpha: 0.05)),
-        ),
-        child: Column(
-          children: [
-            Icon(icon, color: accentColor.withValues(alpha: 0.8), size: 22),
-            SizedBox(height: 10),
-            Text(
-              title.toUpperCase(), 
-              style: GoogleFonts.inter(fontSize: 8, fontWeight: FontWeight.w900, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.3), letterSpacing: 1.2)
-            ),
-            SizedBox(height: 4),
-            Text(
-              value.isEmpty ? "N/A" : value, 
-              style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 13, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.9)), 
-              textAlign: TextAlign.center, 
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ],
-        ),
+      child: Column(
+        children: [
+          Text(
+            title,
+            style: GoogleFonts.inter(fontSize: 9, fontWeight: FontWeight.w700, color: AppTheme.textSecondary(context))
+          ),
+          SizedBox(height: 4),
+          Text(
+            value.isEmpty ? "N/A" : value,
+            style: GoogleFonts.outfit(fontWeight: FontWeight.w700, fontSize: 13, color: AppTheme.textPrimary(context)),
+            textAlign: TextAlign.center,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
       ),
     );
   }
@@ -643,12 +622,11 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
             ),
             SizedBox(width: 14),
             Text(
-              title.toUpperCase(), 
+              title,
               style: GoogleFonts.outfit(
-                fontSize: 12, 
-                fontWeight: FontWeight.w900, 
-                color: Theme.of(context).colorScheme.primary, 
-                letterSpacing: 2
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+                color: AppTheme.textPrimary(context),
               )
             ),
           ],
@@ -691,11 +669,21 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
   }
 
   Widget _chip(BuildContext context, String label, Color color) {
-    return OracleUI.glassContainer(
+    final isNeutral = color == Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4) ||
+        color == Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.2);
+    return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      decoration: BoxDecoration(
+        color: isNeutral ? AppTheme.surfaceMuted(context) : color.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(100),
+      ),
       child: Text(
-        label.toUpperCase(), 
-        style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.bold, color: color, letterSpacing: 1)
+        label,
+        style: GoogleFonts.inter(
+          fontSize: 12,
+          fontWeight: FontWeight.w600,
+          color: isNeutral ? AppTheme.textSecondary(context) : color,
+        ),
       ),
     );
   }
@@ -741,26 +729,24 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
             SizedBox(width: 16),
             Expanded(
               child: Container(
-                height: 60,
+                height: 56,
                 decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [Theme.of(context).colorScheme.primary, Theme.of(context).colorScheme.secondary],
-                  ),
-                  borderRadius: BorderRadius.circular(18),
+                  color: Theme.of(context).colorScheme.primary,
+                  borderRadius: BorderRadius.circular(100),
                   boxShadow: [
                     BoxShadow(
-                      color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
+                      color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.35),
                       blurRadius: 20,
-                      offset: const Offset(0, 5),
+                      offset: const Offset(0, 8),
                     )
                   ],
                 ),
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppTheme.colors.transparent,
-                    foregroundColor: Theme.of(context).scaffoldBackgroundColor,
+                    foregroundColor: Theme.of(context).colorScheme.onPrimary,
                     shadowColor: AppTheme.colors.transparent,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
                   ),
                   onPressed: () async {
                     HapticFeedback.mediumImpact();
@@ -782,10 +768,10 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(widget.place.arSupported ? Icons.view_in_ar : Icons.auto_fix_high, size: 20),
-                        SizedBox(width: 12),
+                        SizedBox(width: 10),
                         Text(
                           widget.place.arSupported ? l10n.invokeAr : l10n.addToDestiny,
-                          style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.bold, letterSpacing: 2),
+                          style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w700),
                         ),
                       ],
                     ),

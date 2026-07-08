@@ -119,23 +119,20 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> with Automati
         appBar: AppBar(
           backgroundColor: AppTheme.colors.transparent,
           automaticallyImplyLeading: false,
+          centerTitle: false,
+          titleSpacing: 24,
           actions: [
-            IconButton(
-              onPressed: _showPreferenceDialog,
-              icon: Icon(Icons.tune_rounded, color: AppTheme.textSecondary(context), size: 20),
-            ),
-            IconButton(
-              onPressed: _shareScreen,
-              icon: Icon(Icons.ios_share, color: AppTheme.textSecondary(context), size: 20),
-            ),
-            SizedBox(width: 8),
+            _circleIconButton(Icons.tune_rounded, _showPreferenceDialog),
+            const SizedBox(width: 8),
+            _circleIconButton(Icons.ios_share, _shareScreen),
+            const SizedBox(width: 20),
           ],
-          title: OracleUI.neonText(
-            "TEMPORAL ORACLE",
+          title: Text(
+            "Events",
             style: GoogleFonts.outfit(
-              fontSize: 16,
-              fontWeight: FontWeight.w900,
-              letterSpacing: 4,
+              fontSize: 20,
+              fontWeight: FontWeight.w800,
+              letterSpacing: -0.3,
               color: AppTheme.textPrimary(context),
             ),
           ),
@@ -155,13 +152,12 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> with Automati
                 _buildEventList(),
                 
                 SizedBox(height: 48),
-                OracleUI.neonText(
-                  "CELESTIAL ALIGNMENTS",
-                  style: GoogleFonts.inter(
-                    fontSize: 12, 
-                    fontWeight: FontWeight.w900, 
-                    letterSpacing: 2, 
-                    color: AppTheme.textSecondary(context).withValues(alpha: 0.5)
+                Text(
+                  "Top picks for you",
+                  style: GoogleFonts.outfit(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                    color: AppTheme.textPrimary(context),
                   ),
                 ),
                 SizedBox(height: 24),
@@ -175,11 +171,29 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> with Automati
     );
   }
 
+  Widget _circleIconButton(IconData icon, VoidCallback onTap) {
+    return Container(
+      width: 34,
+      height: 34,
+      decoration: BoxDecoration(
+        color: AppTheme.surfaceMuted(context),
+        shape: BoxShape.circle,
+      ),
+      child: IconButton(
+        padding: EdgeInsets.zero,
+        onPressed: onTap,
+        icon: Icon(icon, color: AppTheme.textSecondary(context), size: 17),
+      ),
+    );
+  }
+
   Widget _buildModernCalendar() {
-    return OracleUI.glassContainer(
-      padding: EdgeInsets.all(16),
-      borderRadius: BorderRadius.circular(32),
-      borderColor: Theme.of(context).dividerColor.withValues(alpha: 0.1),
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppTheme.surfaceMuted(context),
+        borderRadius: BorderRadius.circular(24),
+      ),
       child: TableCalendar(
         firstDay: DateTime.utc(2023, 1, 1),
         lastDay: DateTime.utc(2030, 12, 31),
@@ -197,7 +211,7 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> with Automati
         headerStyle: HeaderStyle(
           formatButtonVisible: false,
           titleCentered: true,
-          titleTextStyle: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.w900, fontSize: 16, letterSpacing: 1),
+          titleTextStyle: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.w700, fontSize: 15),
           leftChevronIcon: Icon(Icons.chevron_left, color: Theme.of(context).colorScheme.primary),
           rightChevronIcon: Icon(Icons.chevron_right, color: Theme.of(context).colorScheme.primary),
         ),
@@ -205,20 +219,13 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> with Automati
           defaultTextStyle: GoogleFonts.inter(color: AppTheme.textPrimary(context).withValues(alpha: 0.6), fontSize: 13),
           weekendTextStyle: GoogleFonts.inter(color: AppTheme.textSecondary(context).withValues(alpha: 0.5), fontSize: 13),
           selectedDecoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.primary, 
-            shape: BoxShape.circle,
-            boxShadow: [
-              BoxShadow(
-                color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.4),
-                blurRadius: 10,
-                spreadRadius: 2,
-              )
-            ],
+            color: Theme.of(context).colorScheme.primary,
+            borderRadius: BorderRadius.circular(10),
           ),
-          selectedTextStyle: TextStyle(color: AppTheme.colors.black, fontWeight: FontWeight.bold),
+          selectedTextStyle: TextStyle(color: Theme.of(context).colorScheme.onPrimary, fontWeight: FontWeight.bold),
           todayDecoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1), 
-            shape: BoxShape.circle,
+            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(10),
             border: Border.all(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3), width: 1),
           ),
           todayTextStyle: TextStyle(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.bold),
@@ -256,8 +263,8 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> with Automati
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 24),
         children: [
-          _filterChip("ALL", null, Icons.auto_awesome_mosaic_rounded),
-          ...EventCategory.values.map((cat) => _filterChip(cat.name.toUpperCase(), cat, _getCategoryIcon(cat))),
+          _filterChip("All", null, Icons.auto_awesome_mosaic_rounded),
+          ...EventCategory.values.map((cat) => _filterChip(_sentenceCase(cat.name), cat, _getCategoryIcon(cat))),
         ],
       ),
     );
@@ -295,6 +302,11 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> with Automati
     );
   }
 
+  String _sentenceCase(String label) {
+    if (label.isEmpty) return label;
+    return label[0].toUpperCase() + label.substring(1).toLowerCase();
+  }
+
   Widget _buildEventList() {
     if (_isLoading) return _buildSkeletonList();
     if (_selectedEvents.isEmpty) return _buildEmptyState();
@@ -302,13 +314,12 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> with Automati
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        OracleUI.neonText(
-          "AVAILABLE EVENTS",
-          style: GoogleFonts.inter(
-            fontSize: 11,
-            fontWeight: FontWeight.w900,
-            letterSpacing: 2,
-            color: AppTheme.textSecondary(context).withValues(alpha: 0.5),
+        Text(
+          "Available events",
+          style: GoogleFonts.outfit(
+            fontSize: 15,
+            fontWeight: FontWeight.w700,
+            color: AppTheme.textPrimary(context),
           ),
         ),
         SizedBox(height: 20),
@@ -333,42 +344,54 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> with Automati
 
     return GestureDetector(
       onTap: () => _showEventDetails(event),
-      child: OracleUI.glassContainer(
-        padding: EdgeInsets.all(20),
-        borderRadius: BorderRadius.circular(24),
-        borderColor: isRecommended 
-            ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.3)
-            : Theme.of(context).dividerColor.withValues(alpha: 0.1),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surface,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.06), blurRadius: 18, offset: const Offset(0, 8)),
+          ],
+        ),
         child: Row(
           children: [
-            OracleUI.glassContainer(
-              padding: EdgeInsets.all(12),
-              borderRadius: BorderRadius.circular(16),
-              borderColor: event.categoryColor.withValues(alpha: 0.2),
+            Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: event.categoryColor.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(14),
+              ),
               child: Icon(event.categoryIcon, color: event.categoryColor, size: 20),
             ),
-            SizedBox(width: 20),
+            const SizedBox(width: 14),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    event.name.toUpperCase(), 
+                    event.name,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: GoogleFonts.inter(color: AppTheme.textPrimary(context), fontWeight: FontWeight.w900, fontSize: 13, letterSpacing: 0.5)
+                    style: GoogleFonts.inter(color: AppTheme.textPrimary(context), fontWeight: FontWeight.w700, fontSize: 13)
                   ),
+                  const SizedBox(height: 2),
                   Text(
-                    "${event.location} • ${event.category.name.toUpperCase()}", 
-                    style: GoogleFonts.inter(color: AppTheme.textSecondary(context).withValues(alpha: 0.7), fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 1)
+                    "${event.location} · ${_sentenceCase(event.category.name)}",
+                    style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 11, fontWeight: FontWeight.w500)
                   ),
                 ],
               ),
             ),
+            if (isRecommended && !isPinned)
+              Padding(
+                padding: const EdgeInsets.only(right: 6),
+                child: Icon(Icons.auto_awesome_rounded, color: Theme.of(context).colorScheme.primary, size: 14),
+              ),
             if (isPinned)
               Icon(Icons.bookmark_rounded, color: Theme.of(context).colorScheme.primary, size: 18)
             else
-              Icon(Icons.chevron_right_rounded, color: AppTheme.textSecondary(context).withValues(alpha: 0.3), size: 20),
+              Icon(Icons.chevron_right_rounded, color: AppTheme.textSecondary(context).withValues(alpha: 0.5), size: 18),
           ],
         ),
       ),
@@ -526,14 +549,14 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> with Automati
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            event.name.toUpperCase(), 
+                            event.name,
                             maxLines: 1, overflow: TextOverflow.ellipsis,
-                            style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontSize: 13, fontWeight: FontWeight.w900)
+                            style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontSize: 13, fontWeight: FontWeight.w700)
                           ),
                           SizedBox(height: 4),
                           Text(
-                            "HIGH PROBABILITY", 
-                            style: GoogleFonts.inter(color: Theme.of(context).colorScheme.primary, fontSize: 9, fontWeight: FontWeight.w900, letterSpacing: 1)
+                            "Recommended for you",
+                            style: GoogleFonts.inter(color: Theme.of(context).colorScheme.primary, fontSize: 10, fontWeight: FontWeight.w600)
                           ),
                         ],
                       ),
@@ -592,8 +615,8 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> with Automati
           Icon(Icons.event_busy, color: AppTheme.textSecondary(context).withValues(alpha: 0.3), size: 40),
           SizedBox(height: 16),
           Text(
-            "NO TEMPORAL ALIGNMENTS", 
-            style: GoogleFonts.inter(color: AppTheme.textSecondary(context).withValues(alpha: 0.3), fontSize: 11, fontWeight: FontWeight.w900, letterSpacing: 2)
+            "No events on this day",
+            style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 12, fontWeight: FontWeight.w600)
           ),
         ],
       ),

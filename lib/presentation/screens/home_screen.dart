@@ -158,12 +158,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             borderRadius: const BorderRadius.all(Radius.circular(12)),
                           ),
                           child: Text(
-                            "ORACLE'S FEATURED",
-                            style: GoogleFonts.outfit(
+                            "Featured",
+                            style: GoogleFonts.inter(
                               color: AppTheme.colors.white,
                               fontSize: 9,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 1.5,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 0.5,
                             ),
                           ),
                         ),
@@ -185,12 +185,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     ),
                     const Spacer(),
                     Text(
-                      name.toUpperCase(),
+                      name,
                       style: GoogleFonts.outfit(
                         color: AppTheme.colors.white,
                         fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 0.5,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: -0.2,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -201,7 +201,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         Icon(Icons.location_on_rounded, color: AppTheme.colors.white70, size: 14),
                         const SizedBox(width: 4),
                         Text(
-                          district.toUpperCase(),
+                          district,
                           style: GoogleFonts.inter(
                             color: AppTheme.colors.white70,
                             fontSize: 11,
@@ -227,17 +227,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             foregroundColor: AppTheme.colors.black,
                             elevation: 0,
                             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                            shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(16))),
+                            shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(100))),
                           ),
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(
-                                "EXPLORE",
-                                style: GoogleFonts.outfit(
-                                  fontWeight: FontWeight.bold,
+                                "Explore",
+                                style: GoogleFonts.inter(
+                                  fontWeight: FontWeight.w700,
                                   fontSize: 11,
-                                  letterSpacing: 1,
                                 ),
                               ),
                               const SizedBox(width: 4),
@@ -308,37 +307,21 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         GestureDetector(
           onTap: onTap,
           child: Container(
-            width: 56,
-            height: 56,
+            width: 52,
+            height: 52,
             decoration: BoxDecoration(
-              color: Theme.of(context).brightness == Brightness.dark
-                  ? AppPaletteDark.card
-                  : AppTheme.colors.white,
-              shape: BoxShape.circle,
-              border: Border.all(
-                color: Theme.of(context).brightness == Brightness.dark
-                    ? AppTheme.colors.white.withValues(alpha: 0.08)
-                    : AppPalette.ink.withValues(alpha: 0.1),
-                width: 1.5,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: color.withValues(alpha: 0.1),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
-                )
-              ],
+              color: color.withValues(alpha: Theme.of(context).brightness == Brightness.dark ? 0.16 : 0.1),
+              borderRadius: BorderRadius.circular(18),
             ),
             child: Icon(icon, color: color, size: 22),
           ),
         ),
         const SizedBox(height: 8),
         Text(
-          label.toUpperCase(),
-          style: GoogleFonts.outfit(
-            fontSize: 9,
-            fontWeight: FontWeight.bold,
-            letterSpacing: 0.5,
+          label,
+          style: GoogleFonts.inter(
+            fontSize: 10,
+            fontWeight: FontWeight.w600,
             color: AppTheme.textPrimary(context),
           ),
         ),
@@ -470,17 +453,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "TODAY IN SRI LANKA 🇱🇰",
-                      style: GoogleFonts.outfit(
+                      "Today in Sri Lanka 🇱🇰",
+                      style: GoogleFonts.inter(
                         color: Theme.of(context).colorScheme.primary,
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w700,
                         fontSize: 11,
-                        letterSpacing: 2,
+                        letterSpacing: 0.3,
                       ),
                     ),
                     const SizedBox(height: 6),
                     Text(
-                      (event.name).toUpperCase(),
+                      event.name,
                       style: GoogleFonts.outfit(
                         color: AppTheme.textPrimary(context),
                         fontWeight: FontWeight.bold,
@@ -561,8 +544,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    AppTheme.colors.orange.shade800,
-                    AppTheme.colors.orange.shade600,
+                    Theme.of(context).colorScheme.primary,
+                    Theme.of(context).colorScheme.secondary,
                     Theme.of(context).scaffoldBackgroundColor,
                   ],
                   stops: const [0.0, 0.4, 1.0],
@@ -584,23 +567,22 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                     const SizedBox(height: 48),
-                    OracleUI.neonText(
-                      "DISCOVER SRI LANKA",
+                    Text(
+                      "Discover Sri Lanka",
                       style: GoogleFonts.outfit(
-                        fontSize: 32,
-                        fontWeight: FontWeight.w900,
+                        fontSize: 28,
+                        fontWeight: FontWeight.w800,
                         color: AppTheme.colors.white,
-                        letterSpacing: 4,
+                        letterSpacing: -0.5,
                       ),
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 8),
                     Text(
-                      "LET THE ORACLE GUIDE YOUR PATH",
+                      "Let the Oracle guide your path",
                       style: GoogleFonts.inter(
-                        fontSize: 10,
-                        fontWeight: FontWeight.w900,
-                        color: AppTheme.colors.white.withValues(alpha: 0.6),
-                        letterSpacing: 3,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                        color: AppTheme.colors.white.withValues(alpha: 0.75),
                       ),
                     ),
                   const SizedBox(height: 24),
@@ -640,13 +622,29 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       ),
       actions: [
         if (user != null)
-          GestureDetector(
-            onTap: () => setState(() => _selectedIndex = 3),
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: CircleAvatar(
-                radius: 18,
-                backgroundImage: NetworkImage(user.photoURL ?? "https://ui-avatars.com/api/?name=${user.displayName}"),
+          Container(
+            margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+            child: OracleUI.glassContainer(
+              padding: EdgeInsets.zero,
+              radius: BorderRadius.circular(12),
+              child: InkWell(
+                borderRadius: BorderRadius.circular(12),
+                onTap: () => setState(() => _selectedIndex = 3),
+                child: SizedBox(
+                  width: 36,
+                  height: 36,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: (user.photoURL != null && user.photoURL!.isNotEmpty)
+                        ? Image.network(
+                            user.photoURL!,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) =>
+                                Icon(Icons.person_rounded, color: AppTheme.textPrimary(context), size: 20),
+                          )
+                        : Icon(Icons.person_rounded, color: AppTheme.textPrimary(context), size: 20),
+                  ),
+                ),
               ),
             ),
           )
@@ -709,12 +707,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   Icon(Icons.auto_awesome, color: Theme.of(context).colorScheme.primary, size: 12),
                   const SizedBox(width: 6),
                   Text(
-                    "AYUBOWAN, $name!",
+                    "Ayubowan, $name!",
                     style: GoogleFonts.outfit(
-                      fontSize: 10,
+                      fontSize: 11,
                       color: Theme.of(context).colorScheme.primary,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: 2,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 0.2,
                     ),
                   ),
                 ],
@@ -724,12 +722,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ),
         const SizedBox(height: 12),
         Text(
-          "Let the Oracle Guide Your Path",
+          "Let the Oracle guide your path",
           style: GoogleFonts.outfit(
             fontSize: 22,
-            fontWeight: FontWeight.w900,
+            fontWeight: FontWeight.w800,
             color: AppTheme.textPrimary(context),
-            letterSpacing: 0.5,
+            letterSpacing: -0.3,
           ),
         ),
       ],
@@ -739,24 +737,24 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Widget _buildSectionHeader(String title) {
     return Padding(
       padding: const EdgeInsets.only(left: 4),
-      child: OracleUI.neonText(
-        title.toUpperCase(),
+      child: Text(
+        title,
         style: GoogleFonts.outfit(
-          fontSize: 12,
-          fontWeight: FontWeight.w900,
-          letterSpacing: 3,
-          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.8),
+          fontSize: 15,
+          fontWeight: FontWeight.w700,
+          color: AppTheme.textPrimary(context),
         ),
       ),
     );
   }
 
   Widget _buildCategoriesGrid() {
-    final List<(String, IconData, String)> categories = [
-      ("Nature", Icons.forest_outlined, "assets/images/sigiriya_sunset_bg.jpg"),
-      ("Beaches", Icons.waves_rounded, "assets/images/galle_fort_bg.jpg"),
-      ("Culture", Icons.temple_hindu_outlined, "assets/images/kandy_lake_bg.jpg"),
-      ("Adventure", Icons.explore_outlined, "assets/images/nuwara_eliya_tea_bg.jpg"),
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final List<(String, IconData, List<Color>)> categories = [
+      ("Nature", Icons.forest_outlined, isDark ? [const Color(0xFF241D15), const Color(0xFF241D15)] : [const Color(0xFF557A4A), const Color(0xFF2C3D24)]),
+      ("Beaches", Icons.waves_rounded, [const Color(0xFF3A7A8A), const Color(0xFF1C3D44)]),
+      ("Culture", Icons.temple_hindu_outlined, [Theme.of(context).colorScheme.primary, isDark ? AppPaletteDark.gemDim : AppPalette.rustDim]),
+      ("Adventure", Icons.explore_outlined, [AppPalette.heroOchre, const Color(0xFFA97A1E)]),
     ];
 
     return Column(
@@ -784,48 +782,29 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   _selectedIndex = 1;
                 });
               },
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(24),
-                child: Stack(
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  gradient: LinearGradient(
+                    colors: cat.$3,
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  border: Theme.of(context).brightness == Brightness.dark
+                      ? Border.all(color: AppTheme.colors.white.withValues(alpha: 0.06))
+                      : null,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    Positioned.fill(
-                      child: Image.asset(
-                        cat.$3,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                    Positioned.fill(
-                      child: Container(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            colors: [
-                              AppTheme.colors.black.withValues(alpha: 0.25),
-                              AppTheme.colors.black.withValues(alpha: 0.65),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Icon(cat.$2, color: AppTheme.colors.white, size: 22),
-                          const SizedBox(height: 6),
-                          Text(
-                            cat.$1.toUpperCase(),
-                            style: GoogleFonts.outfit(
-                              fontSize: 13,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 1,
-                              color: AppTheme.colors.white,
-                            ),
-                          ),
-                        ],
+                    Text(
+                      cat.$1,
+                      style: GoogleFonts.outfit(
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
+                        color: AppTheme.colors.white,
                       ),
                     ),
                   ],
@@ -959,21 +938,34 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       elevation: 0,
       padding: EdgeInsets.zero,
       notchMargin: 10,
-      child: Container(
-        height: dynamicHeight,
-        decoration: BoxDecoration(
-          color: Theme.of(context).scaffoldBackgroundColor.withValues(alpha: 0.95),
-          border: Border(top: BorderSide(color: AppTheme.secondaryBorder(context), width: 1.0)),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            _navItem(l10n.home, Icons.home_rounded, 0),
-            _navItem("Explore", Icons.travel_explore_rounded, 1),
-            const SizedBox(width: 60), 
-            _navItem("Events", Icons.calendar_month_rounded, 2),
-            _navItem(l10n.profile, Icons.person_rounded, 3),
-          ],
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 0, 16, 14),
+        child: Container(
+          height: dynamicHeight,
+          decoration: BoxDecoration(
+            color: Theme.of(context).brightness == Brightness.dark ? AppPaletteDark.card : AppTheme.colors.white,
+            borderRadius: BorderRadius.circular(100),
+            border: Theme.of(context).brightness == Brightness.dark
+                ? Border.all(color: AppTheme.colors.white.withValues(alpha: 0.07))
+                : null,
+            boxShadow: [
+              BoxShadow(
+                color: AppTheme.colors.black.withValues(alpha: 0.14),
+                blurRadius: 24,
+                offset: const Offset(0, 10),
+              ),
+            ],
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _navItem(l10n.home, Icons.home_rounded, 0),
+              _navItem("Explore", Icons.travel_explore_rounded, 1),
+              const SizedBox(width: 60),
+              _navItem("Events", Icons.calendar_month_rounded, 2),
+              _navItem(l10n.profile, Icons.person_rounded, 3),
+            ],
+          ),
         ),
       ),
     );
@@ -994,7 +986,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           children: [
           Icon(
             icon,
-            color: active ? AppPalette.rust : AppPalette.ink.withValues(alpha: 0.4),
+            color: active ? Theme.of(context).colorScheme.primary : AppTheme.textSecondary(context).withValues(alpha: 0.5),
             size: 24,
           ),
           const SizedBox(height: 4),

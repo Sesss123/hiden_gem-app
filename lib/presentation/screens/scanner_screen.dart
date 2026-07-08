@@ -168,11 +168,11 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> with WidgetsBindi
                           onPressed: () => Navigator.pop(context),
                         ),
                         Text(
-                          "ORACLE VISION",
+                          "Landmark scanner",
                           style: GoogleFonts.outfit(
                             color: AppTheme.colors.white,
-                            fontWeight: FontWeight.w900,
-                            letterSpacing: 4,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: -0.3,
                             fontSize: 16,
                           ),
                         ),
@@ -191,10 +191,9 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> with WidgetsBindi
                           onPressed: _isScanning ? null : _startScan,
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Theme.of(context).colorScheme.primary,
-                            foregroundColor: AppTheme.colors.black,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                            elevation: 8,
-                            shadowColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5),
+                            foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
+                            elevation: 0,
                           ),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -202,8 +201,8 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> with WidgetsBindi
                               Icon(_isScanning ? Icons.sync_rounded : Icons.filter_center_focus_rounded),
                               SizedBox(width: 12),
                               Text(
-                                _isScanning ? "IDENTIFYING..." : "ANALYZE LANDMARK",
-                                style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 13, letterSpacing: 1),
+                                _isScanning ? "Identifying…" : "Analyze landmark",
+                                style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 14),
                               ),
                             ],
                           ),
@@ -223,7 +222,7 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> with WidgetsBindi
                   height: 300,
                   margin: EdgeInsets.symmetric(horizontal: 32),
                   decoration: BoxDecoration(
-                    border: Border.all(color: AppPalette.rust.withValues(alpha: 0.5), width: 2),
+                    border: Border.all(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5), width: 2),
                     borderRadius: BorderRadius.circular(24),
                   ),
                   child: _ScanningOverlay(),
@@ -235,49 +234,60 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> with WidgetsBindi
   }
 
   Widget _buildPremiumGate() {
+    final secondary = Theme.of(context).colorScheme.secondary;
     return Container(
-      padding: const EdgeInsets.all(32),
+      padding: const EdgeInsets.all(28),
       decoration: BoxDecoration(
-        color: AppTheme.colors.white,
-        borderRadius: BorderRadius.circular(30),
-        border: Border.all(color: AppTheme.secondaryBorder(context)),
+        color: AppTheme.colors.black.withValues(alpha: 0.93),
+        borderRadius: BorderRadius.circular(28),
         boxShadow: [
           BoxShadow(
-            color: AppTheme.colors.black.withValues(alpha: 0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+            color: AppTheme.colors.black.withValues(alpha: 0.2),
+            blurRadius: 24,
+            offset: const Offset(0, 8),
           ),
         ],
       ),
       child: Column(
         children: [
-          Icon(Icons.lock_person_rounded, color: Theme.of(context).colorScheme.primary, size: 56)
-              .animate(onPlay: (c) => c.repeat())
-              .shimmer(duration: 2.seconds),
-          const SizedBox(height: 24),
-          Text(
-            "VISION RESERVED",
-            style: GoogleFonts.outfit(fontSize: 22, fontWeight: FontWeight.w900, color: AppTheme.textPrimary(context), letterSpacing: 1),
+          Container(
+            width: 52,
+            height: 52,
+            decoration: BoxDecoration(
+              color: secondary.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Icon(Icons.lock_person_rounded, color: secondary, size: 26)
+                .animate(onPlay: (c) => c.repeat())
+                .shimmer(duration: 2.seconds),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 16),
           Text(
-            "Access the Aethereal Database to identify landmarks and reveal hidden history through your lens.",
+            "Unlock landmark scanning",
             textAlign: TextAlign.center,
-            style: GoogleFonts.inter(color: AppTheme.textSecondary(context), height: 1.6, fontSize: 13),
+            style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.w700, color: AppTheme.colors.white, letterSpacing: -0.3),
           ),
-          const SizedBox(height: 32),
+          const SizedBox(height: 10),
+          Text(
+            "Point your camera at any site to reveal its hidden history.",
+            textAlign: TextAlign.center,
+            style: GoogleFonts.inter(color: AppTheme.colors.white.withValues(alpha: 0.7), height: 1.6, fontSize: 13),
+          ),
+          const SizedBox(height: 24),
           SizedBox(
             width: double.infinity,
-            height: 56,
-            child: OutlinedButton(
+            height: 50,
+            child: ElevatedButton(
               onPressed: () => ref.read(premiumProvider.notifier).buyPremium(),
-              style: OutlinedButton.styleFrom(
-                side: BorderSide(color: Theme.of(context).colorScheme.primary),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: secondary,
+                foregroundColor: AppPalette.ink,
+                elevation: 0,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
               ),
               child: Text(
-                "UPGRADE TO LUXURY",
-                style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 12, color: Theme.of(context).colorScheme.primary),
+                "Upgrade to premium",
+                style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 13),
               ),
             ),
           ),
@@ -287,17 +297,17 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> with WidgetsBindi
   }
 
   Widget _buildResultCard() {
+    final primary = Theme.of(context).colorScheme.primary;
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: AppTheme.colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: AppPalette.rust.withValues(alpha: 0.3)),
         boxShadow: [
           BoxShadow(
-            color: AppTheme.colors.black.withValues(alpha: 0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+            color: AppTheme.colors.black.withValues(alpha: 0.15),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
           ),
         ],
       ),
@@ -306,20 +316,19 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> with WidgetsBindi
         children: [
           Row(
             children: [
-              const Icon(Icons.verified_rounded, color: AppPalette.rust, size: 20),
+              Icon(Icons.verified_rounded, color: primary, size: 20),
               const SizedBox(width: 12),
               Text(
-                "ORACLE VERIFIED",
+                "Oracle verified",
                 style: GoogleFonts.outfit(
-                  color: AppPalette.rust,
-                  fontWeight: FontWeight.w900,
-                  fontSize: 12,
-                  letterSpacing: 2,
+                  color: primary,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 13,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 16),
           Text(
             _result!,
             style: GoogleFonts.inter(color: AppTheme.textPrimary(context), height: 1.7, fontSize: 14),

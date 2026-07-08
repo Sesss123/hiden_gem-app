@@ -122,28 +122,20 @@ class _AudioGuideScreenState extends State<AudioGuideScreen> with SingleTickerPr
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          IconButton(
-            icon: Icon(Icons.close, color: Theme.of(context).colorScheme.onSurface, size: 28),
-            onPressed: () => Navigator.pop(context),
-          ),
-          OracleUI.glassContainer(
-            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            borderRadius: BorderRadius.circular(20),
-            borderColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
-            child: OracleUI.neonText(
-              "AUDIO GUIDE",
-              style: GoogleFonts.outfit(
-                color: Theme.of(context).colorScheme.primary, 
-                fontWeight: FontWeight.w900, 
-                letterSpacing: 2, 
-                fontSize: 10
+          GestureDetector(
+            onTap: () => Navigator.pop(context),
+            child: Container(
+              width: 32,
+              height: 32,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: AppTheme.colors.white.withValues(alpha: 0.12),
               ),
-              glowColor: Theme.of(context).colorScheme.primary,
+              child: Icon(Icons.close, color: AppTheme.colors.white, size: 18),
             ),
           ),
-          SizedBox(width: 48), // Placeholder for symmetry
         ],
       ),
     );
@@ -176,36 +168,29 @@ class _AudioGuideScreenState extends State<AudioGuideScreen> with SingleTickerPr
                   image: NetworkImage(widget.place.imageUrl),
                   fit: BoxFit.cover,
                 ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
-                    blurRadius: 40,
-                    spreadRadius: 5,
-                  )
-                ],
+                border: Border.all(color: AppTheme.colors.white.withValues(alpha: 0.2), width: 4),
               ),
             ),
           ],
         ),
         SizedBox(height: 48),
-        OracleUI.neonText(
-          widget.place.name.toUpperCase(),
+        Text(
+          widget.place.name,
           textAlign: TextAlign.center,
           style: GoogleFonts.outfit(
-            fontSize: 26, 
-            fontWeight: FontWeight.w900, 
+            fontSize: 22,
+            fontWeight: FontWeight.w700,
             color: Theme.of(context).colorScheme.onSurface,
-            letterSpacing: 1.5,
+            letterSpacing: -0.5,
           ),
         ),
-        SizedBox(height: 12),
+        SizedBox(height: 8),
         Text(
-          widget.place.district.toUpperCase(),
+          "${widget.place.district} · Audio guide",
           style: GoogleFonts.inter(
-            fontSize: 11, 
-            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6), 
-            letterSpacing: 3,
-            fontWeight: FontWeight.w900,
+            fontSize: 12,
+            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+            fontWeight: FontWeight.w600,
           ),
         ),
       ],
@@ -231,16 +216,18 @@ class _AudioGuideScreenState extends State<AudioGuideScreen> with SingleTickerPr
               SizedBox(width: 40),
               GestureDetector(
                 onTap: _togglePlayback,
-                child: OracleUI.glassContainer(
-                  width: 90,
-                  height: 90,
-                  borderRadius: BorderRadius.circular(45),
-                  borderColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
+                child: Container(
+                  width: 80,
+                  height: 80,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Theme.of(context).colorScheme.secondary,
+                  ),
                   child: Center(
                     child: Icon(
-                      _isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded, 
-                      color: Theme.of(context).colorScheme.primary, 
-                      size: 48
+                      _isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
+                      color: AppPalette.ink,
+                      size: 40,
                     ),
                   ),
                 ),
@@ -260,13 +247,13 @@ class _AudioGuideScreenState extends State<AudioGuideScreen> with SingleTickerPr
   Widget _buildLanguageSelector() {
     return OracleUI.glassContainer(
       padding: EdgeInsets.all(4),
-      borderRadius: BorderRadius.circular(30),
+      borderRadius: BorderRadius.circular(100),
       borderColor: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.1),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           _langTab("සිංහල", "si"),
-          _langTab("ENGLISH", "en"),
+          _langTab("English", "en"),
         ],
       ),
     );
@@ -278,18 +265,17 @@ class _AudioGuideScreenState extends State<AudioGuideScreen> with SingleTickerPr
       onTap: () => _switchLanguage(code),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 300),
-        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         decoration: BoxDecoration(
-          color: active ? Theme.of(context).colorScheme.primary : AppTheme.colors.transparent,
-          borderRadius: BorderRadius.circular(25),
+          color: active ? Theme.of(context).colorScheme.secondary : AppTheme.colors.transparent,
+          borderRadius: BorderRadius.circular(100),
         ),
         child: Text(
           label,
-          style: GoogleFonts.outfit(
-            color: active ? Theme.of(context).colorScheme.onPrimary : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6), 
-            fontWeight: FontWeight.w900, 
-            fontSize: 10,
-            letterSpacing: 1,
+          style: GoogleFonts.inter(
+            color: active ? AppPalette.ink : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+            fontWeight: FontWeight.w700,
+            fontSize: 12,
           ),
         ),
       ),

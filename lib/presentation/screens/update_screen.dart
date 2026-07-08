@@ -74,51 +74,45 @@ class UpdateScreen extends StatelessWidget {
                 children: [
                   // Animated Icon/Logo
                   Container(
-                    width: 120,
-                    height: 120,
+                    width: 88,
+                    height: 88,
                     decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppTheme.modernGreen(context).withValues(alpha: 0.2),
-                          blurRadius: 40,
-                          spreadRadius: 10,
-                        ),
-                      ],
+                      color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(28),
                     ),
                     child: Icon(
                       Icons.system_update_rounded,
-                      size: 60,
-                      color: AppTheme.modernGreen(context),
+                      size: 36,
+                      color: Theme.of(context).colorScheme.primary,
                     ),
                   ),
-                  const SizedBox(height: 48),
-                  
+                  const SizedBox(height: 32),
+
                   // Text Content
                   Text(
-                    "ORACLE UPGRADE",
+                    isForce ? "An update is required" : "A new version is ready",
                     style: GoogleFonts.outfit(
-                      fontSize: 32,
-                      fontWeight: FontWeight.w900,
+                      fontSize: 24,
+                      fontWeight: FontWeight.w800,
                       color: AppTheme.textPrimary(context),
-                      letterSpacing: 4,
+                      letterSpacing: -0.5,
                     ),
                     textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 12),
                   Text(
-                    isForce 
-                        ? "A CRITICAL UPDATE IS REQUIRED TO CONTINUE YOUR JOURNEY."
-                        : "A NEW VERSION OF THE ORACLE IS AVAILABLE WITH ENHANCED VISION.",
+                    isForce
+                        ? "Please update the app to continue your journey."
+                        : "Better maps, faster AI trips, and improved AR are waiting for you.",
                     style: GoogleFonts.inter(
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
                       color: AppTheme.textSecondary(context),
-                      letterSpacing: 2,
+                      height: 1.6,
                     ),
                     textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 48),
+                  const SizedBox(height: 40),
                   
                   const ModernTracerIndicator(),
                   const SizedBox(height: 48),
@@ -128,17 +122,22 @@ class UpdateScreen extends StatelessWidget {
                     children: [
                       _buildButton(
                         context,
-                        label: "UPDATE NOW",
+                        label: "Update now",
                         isPrimary: true,
                         onTap: () => _launchStore(context),
                       ),
                       if (!isForce) ...[
                         const SizedBox(height: 16),
-                        _buildButton(
-                          context,
-                          label: "MAYBE LATER",
-                          isPrimary: false,
-                          onTap: onMaybeLater,
+                        TextButton(
+                          onPressed: onMaybeLater,
+                          child: Text(
+                            "Maybe later",
+                            style: GoogleFonts.inter(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                              color: AppTheme.textSecondary(context),
+                            ),
+                          ),
                         ),
                       ],
                     ],
@@ -154,36 +153,32 @@ class UpdateScreen extends StatelessWidget {
   }
 
   Widget _buildButton(BuildContext context, {required String label, required bool isPrimary, required VoidCallback onTap}) {
+    final primary = Theme.of(context).colorScheme.primary;
+    final onPrimary = Theme.of(context).colorScheme.onPrimary;
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(100),
       child: Container(
         width: double.infinity,
-        padding: const EdgeInsets.symmetric(vertical: 20),
-        decoration: isPrimary 
-            ? BoxDecoration(
-                color: AppTheme.modernGreen(context),
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppTheme.modernGreen(context).withValues(alpha: 0.3),
-                    blurRadius: 20,
-                    offset: const Offset(0, 10),
-                  ),
-                ],
-              )
-            : BoxDecoration(
-                border: Border.all(color: AppTheme.borderColor(context)),
-                borderRadius: BorderRadius.circular(12),
-              ),
+        padding: const EdgeInsets.symmetric(vertical: 18),
+        decoration: BoxDecoration(
+          color: primary,
+          borderRadius: BorderRadius.circular(100),
+          boxShadow: [
+            BoxShadow(
+              color: primary.withValues(alpha: 0.35),
+              blurRadius: 24,
+              offset: const Offset(0, 12),
+            ),
+          ],
+        ),
         child: Center(
           child: Text(
             label,
             style: GoogleFonts.inter(
               fontSize: 14,
-              fontWeight: FontWeight.w900,
-              color: isPrimary ? AppTheme.colors.black : AppTheme.textPrimary(context),
-              letterSpacing: 2,
+              fontWeight: FontWeight.w700,
+              color: onPrimary,
             ),
           ),
         ),

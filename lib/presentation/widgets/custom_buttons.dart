@@ -1,6 +1,9 @@
- import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
 
+/// Refresh pill button: flat brand-primary fill, fully rounded, sentence-case
+/// label. Both buttons below share this shape — the old gradient + ALL CAPS
+/// treatment is gone (see "what changed" notes in the UI refresh mockups).
 class ModernGradientButton extends StatelessWidget {
   final String label;
   final VoidCallback? onPressed;
@@ -17,18 +20,19 @@ class ModernGradientButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final primary = Theme.of(context).colorScheme.primary;
+    final onPrimary = Theme.of(context).colorScheme.onPrimary;
     return Container(
       height: 56,
       width: double.infinity,
       decoration: BoxDecoration(
-        gradient: onPressed != null ? AppTheme.modernGradient(context) : null,
-        color: onPressed == null ? Theme.of(context).disabledColor.withValues(alpha: 0.12) : null,
-        borderRadius: BorderRadius.circular(16),
+        color: onPressed != null ? primary : Theme.of(context).disabledColor.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(100),
         boxShadow: onPressed != null ? [
           BoxShadow(
-            color: AppTheme.modernGreen(context).withValues(alpha: 0.3),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
+            color: primary.withValues(alpha: 0.35),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
           )
         ] : null,
       ),
@@ -36,9 +40,9 @@ class ModernGradientButton extends StatelessWidget {
         onPressed: isLoading ? null : onPressed,
         style: ElevatedButton.styleFrom(
           backgroundColor: AppTheme.colors.transparent,
-          foregroundColor: AppTheme.colors.white,
+          foregroundColor: onPrimary,
           shadowColor: AppTheme.colors.transparent,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
         ),
         child: isLoading
             ? SizedBox(
@@ -46,24 +50,17 @@ class ModernGradientButton extends StatelessWidget {
                 width: 24,
                 child: CircularProgressIndicator(
                   strokeWidth: 3,
-                  valueColor: AlwaysStoppedAnimation<Color>(AppTheme.colors.white),
+                  valueColor: AlwaysStoppedAnimation<Color>(onPrimary),
                 ),
               )
             : Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   if (icon != null) ...[
-                    Icon(icon, size: 20, color: AppTheme.colors.white),
-                    const SizedBox(width: 12),
+                    Icon(icon, size: 20, color: onPrimary),
+                    const SizedBox(width: 10),
                   ],
-                  Text(
-                    label.toUpperCase(),
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 1.2,
-                      color: AppTheme.colors.white,
-                    ),
-                  ),
+                  Text(label, style: AppTheme.buttonLabelStyle(context).copyWith(color: onPrimary)),
                 ],
               ),
       ),
@@ -85,18 +82,19 @@ class PrimaryButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final primary = Theme.of(context).colorScheme.primary;
+    final onPrimary = Theme.of(context).colorScheme.onPrimary;
     return Container(
       height: 56,
       width: double.infinity,
       decoration: BoxDecoration(
-        gradient: onPressed != null ? AppTheme.modernGradient(context) : null,
-        color: onPressed == null ? Theme.of(context).disabledColor.withValues(alpha: 0.12) : null,
-        borderRadius: BorderRadius.circular(16),
+        color: onPressed != null ? primary : Theme.of(context).disabledColor.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(100),
         boxShadow: onPressed != null ? [
           BoxShadow(
-            color: AppTheme.modernBlue(context).withValues(alpha: 0.2),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
+            color: primary.withValues(alpha: 0.35),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
           )
         ] : null,
       ),
@@ -104,9 +102,9 @@ class PrimaryButton extends StatelessWidget {
         onPressed: isLoading ? null : onPressed,
         style: ElevatedButton.styleFrom(
           backgroundColor: AppTheme.colors.transparent,
-          foregroundColor: AppTheme.colors.white,
+          foregroundColor: onPrimary,
           shadowColor: AppTheme.colors.transparent,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
         ),
         child: isLoading
             ? SizedBox(
@@ -114,17 +112,10 @@ class PrimaryButton extends StatelessWidget {
                 width: 24,
                 child: CircularProgressIndicator(
                   strokeWidth: 3,
-                  valueColor: AlwaysStoppedAnimation<Color>(AppTheme.colors.white),
+                  valueColor: AlwaysStoppedAnimation<Color>(onPrimary),
                 ),
               )
-            : Text(
-                label.toUpperCase(),
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1.2,
-                  color: AppTheme.colors.white,
-                ),
-              ),
+            : Text(label, style: AppTheme.buttonLabelStyle(context).copyWith(color: onPrimary)),
       ),
     );
   }
