@@ -20,9 +20,9 @@ class SecureHttpClient {
     // In production, we pin the certificates.
     // NOTE: You must update these hashes with the actual SHA-256 fingerprint of your SSL certificates.
     final List<String> allowedShas = [
-      "PLACEHOLDER_SHA256_FINGERPRINT_FOR_API_HIDDENGEMSSL_COM", // Primary Leaf Certificate
-      "PLACEHOLDER_SHA256_FINGERPRINT_FOR_BACKUP_ROOT_CA", // Backup Root CA Pin (SEC-006)
-      "PLACEHOLDER_SHA256_FINGERPRINT_FOR_AI_HIDDENGEMSSL_COM",
+      const String.fromEnvironment('API_CERT_SHA256', defaultValue: "PLACEHOLDER_SHA256_FINGERPRINT_FOR_API_HIDDENGEMSSL_COM"), // Primary Leaf Certificate
+      const String.fromEnvironment('BACKUP_ROOT_CA_SHA256', defaultValue: "PLACEHOLDER_SHA256_FINGERPRINT_FOR_BACKUP_ROOT_CA"), // Backup Root CA Pin (SEC-006)
+      const String.fromEnvironment('AI_CERT_SHA256', defaultValue: "PLACEHOLDER_SHA256_FINGERPRINT_FOR_AI_HIDDENGEMSSL_COM"),
     ];
 
     final secureClient = SecureHttpClientAdapter(allowedShas);

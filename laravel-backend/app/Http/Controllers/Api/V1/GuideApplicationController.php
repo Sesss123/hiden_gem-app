@@ -54,9 +54,11 @@ class GuideApplicationController extends Controller
     }
 
     /**
-     * Check application status for a specific user ID (Firebase UID).
+     * Check application status for the authenticated user.
+     * The {userId} route segment is not used for lookup — status is always
+     * scoped to the authenticated Sanctum user to prevent IDOR.
      */
-    public function myStatus(Request $request, $userId)
+    public function myStatus(Request $request, string $userId)
     {
         $application = GuideApplication::where('user_id', (string) $request->user()->id)->first();
 

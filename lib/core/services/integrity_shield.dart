@@ -4,6 +4,8 @@ import 'package:safe_device/safe_device.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:hidden_gems_sl/core/services/threat_reporter.dart';
+import 'package:hidden_gems_sl/core/config/app_config.dart';
+import 'package:hidden_gems_sl/core/utils/secure_logger.dart';
 import 'dart:io';
 
 /// [IntegrityShield] — Multi-signal, score-based tamper detection.
@@ -191,9 +193,8 @@ class IntegrityShield {
       }
 
       // Verify Signature (Mock logic — in production use a native plugin for real fingerprint)
-      // This is a placeholder for the concept in Point 4.
-      if (_expectedSignatureHash == 'PLACEHOLDER_SHA256_FINGERPRINT' && !kDebugMode) {
-        debugPrint('[IntegrityShield] 🚨 CRITICAL SECURITY WARNING: Production signature hash is not set in integrity_shield.dart!');
+      if (AppConfig.isPlaceholder(_expectedSignatureHash) && !kDebugMode) {
+        SecureLogger.error("CRITICAL: Running in production without a valid SIGNATURE_HASH!");
         _addSignal('missing_prod_signature_hash', score: 20);
       }
     } catch (e) {

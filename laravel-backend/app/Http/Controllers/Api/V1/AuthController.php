@@ -178,11 +178,14 @@ class AuthController extends Controller
 
         } catch (\Exception $e) {
             \Illuminate\Support\Facades\Log::error("Firebase Login Error: " . $e->getMessage());
-            return response()->json([
+            $response = [
                 'status' => 'error',
                 'message' => 'Invalid or expired Firebase token.',
-                'debug_message' => $e->getMessage()
-            ], 401);
+            ];
+            if (config('app.debug')) {
+                $response['debug_message'] = $e->getMessage();
+            }
+            return response()->json($response, 401);
         }
     }
 }

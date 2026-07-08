@@ -32,9 +32,11 @@ class GuideApplication extends Model
 
     /**
      * Get the user that owns the guide application.
+     * user_id stores the Firebase UID (or local user ID as a string), not the
+     * users.id auto-increment PK, so this joins on the string identifier columns.
      */
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id', 'firebase_uid');
     }
 }

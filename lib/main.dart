@@ -158,11 +158,11 @@ void main() async {
       final config = TalsecConfig(
         androidConfig: AndroidConfig(
           packageName: 'com.hidden.gems.hidden_gems_sl',
-          signingCertHashes: ['PLACEHOLDER_HASH'],
+          signingCertHashes: [const String.fromEnvironment('TALSEC_SIGNING_CERT_HASH', defaultValue: 'PLACEHOLDER_HASH')],
         ),
         iosConfig: IOSConfig(
           bundleIds: ['com.hidden.gems.hiddenGemsSl'],
-          teamId: 'PLACEHOLDER_TEAM_ID',
+          teamId: const String.fromEnvironment('TALSEC_TEAM_ID', defaultValue: 'PLACEHOLDER_TEAM_ID'),
         ),
         watcherMail: 'support@hiddengemssl.com',
         isProd: kReleaseMode,

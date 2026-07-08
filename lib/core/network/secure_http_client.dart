@@ -58,7 +58,8 @@ class SecureHttpClient extends http.BaseClient {
 
     // BUG-QA-001 Fix: Inject Sanctum Auth Token for Laravel APIs
     // Only inject if it exists and the request is going to our API host
-    if (request.url.host.contains('hiddengemssl.com') || request.url.host.contains('10.0.2.2')) {
+    if (request.url.host == Uri.parse(AppConfig.laravelUrl).host ||
+        request.url.host == Uri.parse(AppConfig.pythonUrl).host) {
       final authToken = await _getSanctumToken();
       if (authToken != null && !request.headers.containsKey('Authorization')) {
         request.headers['Authorization'] = 'Bearer $authToken';
