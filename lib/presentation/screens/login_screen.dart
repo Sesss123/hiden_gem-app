@@ -37,9 +37,17 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
+  // Set right before pushReplacement() so the finally block below can skip
+  // its setState() — once we've navigated away, this screen (and its
+  // TextEditingControllers) is being disposed, and calling setState() on it
+  // in the same frame raced with that teardown, throwing "TextEditingController
+  // used after disposed" / stale InheritedElement asserts even though
+  // `mounted` was still (momentarily) true when the finally block ran.
+  bool _navigatedAway = false;
+
   Future<void> _handleSubmit() async {
     if (!_formKey.currentState!.validate()) return;
-    
+
     setState(() => _isLoading = true);
     try {
       if (_isLoginMode) {
@@ -54,15 +62,16 @@ class _LoginScreenState extends State<LoginScreen> {
           _nameController.text.trim(),
         );
       }
-      
+
       if (mounted) {
         final profile = UserPreferenceService.getProfile();
-        
+        _navigatedAway = true;
+
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (_) => profile.hasAgreedToTerms 
-                ? const HomeScreen() 
+            builder: (_) => profile.hasAgreedToTerms
+                ? const HomeScreen()
                 : const TermsScreen(),
           ),
         );
@@ -99,7 +108,7 @@ class _LoginScreenState extends State<LoginScreen> {
         }
       }
     } finally {
-      if (mounted) setState(() => _isLoading = false);
+      if (mounted && !_navigatedAway) setState(() => _isLoading = false);
     }
   }
 

@@ -92,10 +92,8 @@ class _BudgetTrackerScreenState extends State<BudgetTrackerScreen> {
                         category: category,
                         timestamp: DateTime.now(),
                       );
-                      
-                      setState(() {
-                        widget.plan.realizedExpenses.add(newExpense);
-                      });
+
+                      widget.plan.realizedExpenses.add(newExpense);
 
                       if (widget.planId != null) {
                         await TripCacheService.updateSavedPlan(widget.planId!, widget.plan);
@@ -103,7 +101,17 @@ class _BudgetTrackerScreenState extends State<BudgetTrackerScreen> {
                         await TripCacheService.cacheLastPlan(widget.plan, widget.cacheKey!);
                       }
 
-                      if (context.mounted) Navigator.pop(context);
+                      // Close the sheet BEFORE calling setState() on the
+                      // parent screen — the sheet's TextFields own their
+                      // TextEditingControllers internally (no `controller:`
+                      // passed to _buildModernInput), so triggering a parent
+                      // rebuild while the sheet is still mid pop-animation
+                      // raced with the sheet's own element teardown and threw
+                      // "TextEditingController used after disposed" / stale
+                      // InheritedElement asserts.
+                      if (!context.mounted) return;
+                      Navigator.pop(context);
+                      if (mounted) setState(() {});
                     }
                   },
                   style: ElevatedButton.styleFrom(

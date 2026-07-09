@@ -20,6 +20,12 @@ class _AppLockWrapperState extends State<AppLockWrapper> with WidgetsBindingObse
   bool _isAuthenticated = false;
   final LocalAuthentication auth = LocalAuthentication();
   bool _isSupported = true;
+  // Guards against overlapping auth.authenticate() calls — rapid
+  // background/foreground transitions (e.g. pulling down the notification
+  // shade) fire didChangeAppLifecycleState() multiple times in quick
+  // succession, and calling authenticate() while a prior call is still
+  // showing its system prompt throws authInProgress instead of queuing.
+  bool _isAuthenticating = false;
 
   @override
   void initState() {
@@ -74,6 +80,9 @@ class _AppLockWrapperState extends State<AppLockWrapper> with WidgetsBindingObse
   }
 
   Future<void> _authenticate() async {
+    if (_isAuthenticating) return;
+    _isAuthenticating = true;
+
     bool authenticated = false;
     try {
       authenticated = await auth.authenticate(
@@ -83,6 +92,8 @@ class _AppLockWrapperState extends State<AppLockWrapper> with WidgetsBindingObse
       debugPrint("Biometric Error: $e");
       // Fallback
       authenticated = true;
+    } finally {
+      _isAuthenticating = false;
     }
 
     if (mounted) {

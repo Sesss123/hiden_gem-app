@@ -50,7 +50,6 @@ import 'core/services/emergency_control_service.dart';
 import 'core/services/monsoon_broadcast_service.dart';
 import 'core/services/consent_service.dart';
 import 'package:freerasp/freerasp.dart';
-import 'presentation/widgets/app_lock_wrapper.dart';
 
 class InitializationResult {
   final bool hiveSuccess;
@@ -593,7 +592,7 @@ class _HiddenGemsAppState extends ConsumerState<HiddenGemsApp> with WidgetsBindi
         ),
       ),
       builder: (context, child) => GlobalScreenshotWrapper(
-        child: AppLockWrapper(child: child!),
+        child: child!,
       ),
     );
   }

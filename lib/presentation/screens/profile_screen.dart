@@ -33,6 +33,8 @@ import '../widgets/usage_meter_widget.dart';
 import 'qr_scanner_screen.dart';
 import 'heritage_passport_screen.dart';
 import 'budget_concierge_screen.dart';
+import 'budget_tracker_screen.dart';
+import '../../data/datasources/trip_cache_service.dart';
 import 'login_screen.dart';
 import 'guide_listing_editor_screen.dart';
 import 'booking_inbox_screen.dart';
@@ -658,7 +660,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
           "AI Budget Concierge",
           "Smart expense advisor",
           AppPalette.rust,
-          () => Navigator.push(context, MaterialPageRoute(builder: (_) => const BudgetConciergeScreen())),
+          _openBudgetHub,
         ),
         const SizedBox(height: 8),
         _hubCard(
@@ -680,6 +682,23 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
         ),
       ],
     );
+  }
+
+  /// Routes to the trip-linked BudgetTrackerScreen (real budget-vs-spend
+  /// tracking against the user's most recent trip plan) when one exists,
+  /// falling back to the generic, trip-independent BudgetConciergeScreen
+  /// otherwise. TripCacheService.getAllTrips() is sorted newest-first, so
+  /// .first is the user's most recently generated/cached trip.
+  void _openBudgetHub() {
+    final trips = TripCacheService.getAllTrips();
+    if (trips.isNotEmpty) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => BudgetTrackerScreen(plan: trips.first)),
+      );
+    } else {
+      Navigator.push(context, MaterialPageRoute(builder: (_) => const BudgetConciergeScreen()));
+    }
   }
 
   Widget _hubCard(IconData icon, String title, String subtitle, Color color, VoidCallback onTap) {

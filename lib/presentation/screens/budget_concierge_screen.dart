@@ -14,7 +14,8 @@ class BudgetConciergeScreen extends ConsumerStatefulWidget {
   const BudgetConciergeScreen({super.key});
 
   @override
-  ConsumerState<BudgetConciergeScreen> createState() => _BudgetConciergeScreenState();
+  ConsumerState<BudgetConciergeScreen> createState() =>
+      _BudgetConciergeScreenState();
 }
 
 class _BudgetConciergeScreenState extends ConsumerState<BudgetConciergeScreen> {
@@ -45,7 +46,8 @@ class _BudgetConciergeScreenState extends ConsumerState<BudgetConciergeScreen> {
   Future<void> _getAIAdvice() async {
     try {
       if (AppConfig.geminiApiKey.isNotEmpty) {
-        final model = GenerativeModel(model: AppConfig.llmModelName, apiKey: AppConfig.geminiApiKey);
+        final model = GenerativeModel(
+            model: AppConfig.llmModelName, apiKey: AppConfig.geminiApiKey);
         final prompt = """
           You are 'Oracle Budget Concierge' for a traveler in Sri Lanka.
           The user has spent total $_totalSpent LKR so far.
@@ -62,12 +64,14 @@ class _BudgetConciergeScreenState extends ConsumerState<BudgetConciergeScreen> {
         }
       }
     } catch (e) {
-      SecureLogger.warning("External LLM skipped or failed: $e", tag: "BudgetConcierge");
+      SecureLogger.warning("External LLM skipped or failed: $e",
+          tag: "BudgetConcierge");
     }
-    
+
     // 🏛️ Offline / Self-Hosted Rule-Based Cinematic Fallback
     if (mounted) {
-      setState(() => _aiAdvice = "Your spending pace aligns well with island travel standards. We recommend utilizing PickMe or Uber for transparent transport fares, and sampling local eateries to maximize your value.");
+      setState(() => _aiAdvice =
+          "Your spending pace aligns well with island travel standards. We recommend utilizing PickMe or Uber for transparent transport fares, and sampling local eateries to maximize your value.");
     }
   }
 
@@ -80,31 +84,40 @@ class _BudgetConciergeScreenState extends ConsumerState<BudgetConciergeScreen> {
           child: Column(
             children: [
               _buildTopBar(),
-              _isLoading 
-                ? Expanded(child: Center(child: CircularProgressIndicator()))
-                : Expanded(
-                    child: ListView(
-                      padding: EdgeInsets.all(24),
-                      children: [
-                        _buildSummaryCard(),
-                        SizedBox(height: 24),
-                        _buildAIAdviceCard(),
-                        SizedBox(height: 32),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text("Recent transactions", style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.w700, fontSize: 15)),
-                            IconButton(
-                              icon: Icon(Icons.add_circle, color: Theme.of(context).colorScheme.secondary),
-                              onPressed: _showAddExpenseDialog,
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 16),
-                        ..._expenses.reversed.toList().asMap().entries.map((entry) => _buildExpenseTile(entry.value, entry.key)),
-                      ],
+              _isLoading
+                  ? Expanded(child: Center(child: CircularProgressIndicator()))
+                  : Expanded(
+                      child: ListView(
+                        padding: EdgeInsets.all(24),
+                        children: [
+                          _buildSummaryCard(),
+                          SizedBox(height: 24),
+                          _buildAIAdviceCard(),
+                          SizedBox(height: 32),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text("Recent transactions",
+                                  style: GoogleFonts.outfit(
+                                      color: AppTheme.textPrimary(context),
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 15)),
+                              IconButton(
+                                icon: Icon(Icons.add_circle,
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .secondary),
+                                onPressed: _showAddExpenseDialog,
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 16),
+                          ..._expenses.reversed.toList().asMap().entries.map(
+                              (entry) =>
+                                  _buildExpenseTile(entry.value, entry.key)),
+                        ],
+                      ),
                     ),
-                  ),
             ],
           ),
         ),
@@ -119,13 +132,18 @@ class _BudgetConciergeScreenState extends ConsumerState<BudgetConciergeScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           IconButton(
-            icon: Icon(Icons.arrow_back_rounded, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.8)),
+            icon: Icon(Icons.arrow_back_rounded,
+                color: Theme.of(context)
+                    .colorScheme
+                    .onSurface
+                    .withValues(alpha: 0.8)),
             onPressed: () => Navigator.pop(context),
           ),
           Text(
             "Budget concierge",
             style: GoogleFonts.outfit(
-              color: AppTheme.textPrimary(context), fontWeight: FontWeight.w800,
+              color: AppTheme.textPrimary(context),
+              fontWeight: FontWeight.w800,
               fontSize: 18,
             ),
           ),
@@ -144,20 +162,25 @@ class _BudgetConciergeScreenState extends ConsumerState<BudgetConciergeScreen> {
       ),
       child: Column(
         children: [
-          Text(
-            "Total spent so far",
-            style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 12, fontWeight: FontWeight.w600)
-          ),
+          Text("Total spent so far",
+              style: GoogleFonts.inter(
+                  color: AppTheme.textSecondary(context),
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600)),
           SizedBox(height: 8),
           Text(
             "Rs ${_totalSpent.toStringAsFixed(0)}",
-            style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontSize: 28, fontWeight: FontWeight.w800),
+            style: GoogleFonts.outfit(
+                color: AppTheme.textPrimary(context),
+                fontSize: 28,
+                fontWeight: FontWeight.w800),
           ),
           SizedBox(height: 4),
-          Text(
-            "≈ \$${(_totalSpent / 320).toStringAsFixed(2)} USD",
-            style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 12, fontWeight: FontWeight.w500)
-          ),
+          Text("≈ \$${(_totalSpent / 320).toStringAsFixed(2)} USD",
+              style: GoogleFonts.inter(
+                  color: AppTheme.textSecondary(context),
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500)),
         ],
       ),
     ).animate().fadeIn(duration: 600.ms).scale(begin: const Offset(0.95, 0.95));
@@ -177,8 +200,11 @@ class _BudgetConciergeScreenState extends ConsumerState<BudgetConciergeScreen> {
           Container(
             width: 34,
             height: 34,
-            decoration: BoxDecoration(color: AppPalette.heroOchre.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(10)),
-            child: Icon(Icons.psychology_rounded, color: AppPalette.heroOchre, size: 18)
+            decoration: BoxDecoration(
+                color: AppPalette.heroOchre.withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(10)),
+            child: Icon(Icons.psychology_rounded,
+                    color: AppPalette.heroOchre, size: 18)
                 .animate(onPlay: (c) => c.repeat())
                 .shimmer(duration: 3.seconds),
           ),
@@ -189,12 +215,18 @@ class _BudgetConciergeScreenState extends ConsumerState<BudgetConciergeScreen> {
               children: [
                 Text(
                   "Oracle advice",
-                  style: GoogleFonts.inter(color: AppPalette.heroOchre, fontSize: 11, fontWeight: FontWeight.w700),
+                  style: GoogleFonts.inter(
+                      color: AppPalette.heroOchre,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700),
                 ),
                 SizedBox(height: 6),
                 Text(
                   _aiAdvice,
-                  style: GoogleFonts.inter(color: AppTheme.colors.white.withValues(alpha: 0.8), fontSize: 12, height: 1.5),
+                  style: GoogleFonts.inter(
+                      color: AppTheme.colors.white.withValues(alpha: 0.8),
+                      fontSize: 12,
+                      height: 1.5),
                 ),
               ],
             ),
@@ -212,7 +244,10 @@ class _BudgetConciergeScreenState extends ConsumerState<BudgetConciergeScreen> {
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(18),
         boxShadow: [
-          BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.05), blurRadius: 14, offset: const Offset(0, 5)),
+          BoxShadow(
+              color: AppTheme.colors.black.withValues(alpha: 0.05),
+              blurRadius: 14,
+              offset: const Offset(0, 5)),
         ],
       ),
       child: Row(
@@ -223,36 +258,56 @@ class _BudgetConciergeScreenState extends ConsumerState<BudgetConciergeScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  e.description,
-                  style: GoogleFonts.inter(color: AppTheme.textPrimary(context), fontWeight: FontWeight.w700, fontSize: 13)
-                ),
+                Text(e.description,
+                    style: GoogleFonts.inter(
+                        color: AppTheme.textPrimary(context),
+                        fontWeight: FontWeight.w700,
+                        fontSize: 13)),
                 SizedBox(height: 2),
-                Text(
-                  e.date.toString().split(' ')[0],
-                  style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 11, fontWeight: FontWeight.w500)
-                ),
+                Text(e.date.toString().split(' ')[0],
+                    style: GoogleFonts.inter(
+                        color: AppTheme.textSecondary(context),
+                        fontSize: 11,
+                        fontWeight: FontWeight.w500)),
               ],
             ),
           ),
-          Text(
-            "Rs ${e.amount.toInt()}",
-            style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.w700, fontSize: 14)
-          ),
+          Text("Rs ${e.amount.toInt()}",
+              style: GoogleFonts.outfit(
+                  color: AppTheme.textPrimary(context),
+                  fontWeight: FontWeight.w700,
+                  fontSize: 14)),
         ],
       ),
-    ).animate().fadeIn(delay: (400 + (index * 100)).ms).slideX(begin: 0.1, end: 0);
+    )
+        .animate()
+        .fadeIn(delay: (400 + (index * 100)).ms)
+        .slideX(begin: 0.1, end: 0);
   }
 
   Widget _categoryIcon(ExpenseCategory cat) {
     IconData icon = Icons.receipt_long_rounded;
     Color color = AppTheme.textSecondary(context);
-    switch(cat) {
-      case ExpenseCategory.food: icon = Icons.restaurant_rounded; color = AppTheme.colors.orangeAccent; break;
-      case ExpenseCategory.transport: icon = Icons.directions_car_rounded; color = AppTheme.colors.blueAccent; break;
-      case ExpenseCategory.attraction: icon = Icons.temple_buddhist_rounded; color = Theme.of(context).colorScheme.primary; break;
-      case ExpenseCategory.lodging: icon = Icons.hotel_rounded; color = AppTheme.colors.purpleAccent; break;
-      default: icon = Icons.more_horiz_rounded; color = AppTheme.colors.grey;
+    switch (cat) {
+      case ExpenseCategory.food:
+        icon = Icons.restaurant_rounded;
+        color = AppTheme.colors.orangeAccent;
+        break;
+      case ExpenseCategory.transport:
+        icon = Icons.directions_car_rounded;
+        color = AppTheme.colors.blueAccent;
+        break;
+      case ExpenseCategory.attraction:
+        icon = Icons.temple_buddhist_rounded;
+        color = Theme.of(context).colorScheme.primary;
+        break;
+      case ExpenseCategory.lodging:
+        icon = Icons.hotel_rounded;
+        color = AppTheme.colors.purpleAccent;
+        break;
+      default:
+        icon = Icons.more_horiz_rounded;
+        color = AppTheme.colors.grey;
     }
     return Container(
       padding: EdgeInsets.all(10),
@@ -274,83 +329,183 @@ class _BudgetConciergeScreenState extends ConsumerState<BudgetConciergeScreen> {
       isScrollControlled: true,
       backgroundColor: AppTheme.colors.transparent,
       builder: (context) => OracleUI.glassContainer(
-        padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom + 40, top: 24, left: 24, right: 24),
+        padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom + 40,
+            top: 24,
+            left: 24,
+            right: 24),
         borderRadius: const BorderRadius.vertical(top: Radius.circular(40)),
-        borderColor: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.1),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 40, height: 4,
-              decoration: BoxDecoration(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(2)),
-            ),
-            SizedBox(height: 32),
-            Text("Log transaction", style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.w700, fontSize: 17)),
-            SizedBox(height: 40),
-            TextField(
-              controller: descController,
-              style: GoogleFonts.inter(color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.w600),
-              decoration: InputDecoration(
-                hintText: "What was the purpose?",
-                hintStyle: GoogleFonts.inter(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4), fontWeight: FontWeight.w500, fontSize: 12),
-                prefixIcon: Icon(Icons.edit_note_rounded, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5)),
-                filled: true,
-                fillColor: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.03),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.1))),
-                enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.1))),
-                focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.3))),
+        borderColor:
+            Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.1),
+        // SingleChildScrollView — when the keyboard opens for the amount/
+        // description fields, the sheet's fixed-height content (title +
+        // two fields + spacing + button) can exceed the remaining screen
+        // height and overflow rather than resize, since a plain Column
+        // inside a MediaQuery-padded sheet has nowhere to shrink to.
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                    color: Theme.of(context)
+                        .colorScheme
+                        .onSurface
+                        .withValues(alpha: 0.2),
+                    borderRadius: BorderRadius.circular(2)),
               ),
-            ),
-            SizedBox(height: 16),
-            TextField(
-              controller: amountController,
-              keyboardType: TextInputType.number,
-              style: GoogleFonts.outfit(color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.w900, fontSize: 18),
-              decoration: InputDecoration(
-                hintText: "Amount (LKR)",
-                hintStyle: GoogleFonts.inter(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4), fontWeight: FontWeight.w500, fontSize: 12),
-                prefixIcon: Icon(Icons.payments_rounded, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5)),
-                filled: true,
-                fillColor: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.03),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.1))),
-                enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.1))),
-                focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.3))),
-              ),
-            ),
-            SizedBox(height: 32),
-            SizedBox(
-              width: double.infinity,
-              height: 64,
-              child: ElevatedButton(
-                onPressed: () async {
-                  final amount = double.tryParse(amountController.text) ?? 0.0;
-                  if (amount > 0 && descController.text.isNotEmpty) {
-                    final expense = Expense(
-                      id: DateTime.now().millisecondsSinceEpoch.toString(),
-                      description: descController.text,
-                      amount: amount,
-                      category: selectedCat,
-                      date: DateTime.now(),
-                    );
-                    await ExpenseService.addExpense(expense);
-                    if (!context.mounted) return;
-                    Navigator.pop(context);
-                    _loadData();
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).colorScheme.primary,
-                  foregroundColor: Theme.of(context).colorScheme.onPrimary,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
-                  elevation: 0,
+              SizedBox(height: 32),
+              Text("Log transaction",
+                  style: GoogleFonts.outfit(
+                      color: AppTheme.textPrimary(context),
+                      fontWeight: FontWeight.w700,
+                      fontSize: 17)),
+              SizedBox(height: 40),
+              TextField(
+                controller: descController,
+                style: GoogleFonts.inter(
+                    color: Theme.of(context).colorScheme.onSurface,
+                    fontWeight: FontWeight.w600),
+                decoration: InputDecoration(
+                  hintText: "What was the purpose?",
+                  hintStyle: GoogleFonts.inter(
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onSurface
+                          .withValues(alpha: 0.4),
+                      fontWeight: FontWeight.w500,
+                      fontSize: 12),
+                  prefixIcon: Icon(Icons.edit_note_rounded,
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onSurface
+                          .withValues(alpha: 0.5)),
+                  filled: true,
+                  fillColor: Theme.of(context)
+                      .colorScheme
+                      .onSurface
+                      .withValues(alpha: 0.03),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onSurface
+                              .withValues(alpha: 0.1))),
+                  enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onSurface
+                              .withValues(alpha: 0.1))),
+                  focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onSurface
+                              .withValues(alpha: 0.3))),
                 ),
-                child: Text(
-                  "Save expense",
-                  style: AppTheme.buttonLabelStyle(context),
+              ),
+              SizedBox(height: 16),
+              TextField(
+                controller: amountController,
+                keyboardType: TextInputType.number,
+                style: GoogleFonts.outfit(
+                    color: Theme.of(context).colorScheme.onSurface,
+                    fontWeight: FontWeight.w900,
+                    fontSize: 18),
+                decoration: InputDecoration(
+                  hintText: "Amount (LKR)",
+                  hintStyle: GoogleFonts.inter(
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onSurface
+                          .withValues(alpha: 0.4),
+                      fontWeight: FontWeight.w500,
+                      fontSize: 12),
+                  prefixIcon: Icon(Icons.payments_rounded,
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onSurface
+                          .withValues(alpha: 0.5)),
+                  filled: true,
+                  fillColor: Theme.of(context)
+                      .colorScheme
+                      .onSurface
+                      .withValues(alpha: 0.03),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onSurface
+                              .withValues(alpha: 0.1))),
+                  enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onSurface
+                              .withValues(alpha: 0.1))),
+                  focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onSurface
+                              .withValues(alpha: 0.3))),
                 ),
               ),
-            ),
-          ],
+              SizedBox(height: 32),
+              SizedBox(
+                width: double.infinity,
+                height: 64,
+                child: ElevatedButton(
+                  onPressed: () async {
+                    final amount =
+                        double.tryParse(amountController.text) ?? 0.0;
+                    if (amount > 0 && descController.text.isNotEmpty) {
+                      final expense = Expense(
+                        id: DateTime.now().millisecondsSinceEpoch.toString(),
+                        description: descController.text,
+                        amount: amount,
+                        category: selectedCat,
+                        date: DateTime.now(),
+                      );
+                      await ExpenseService.addExpense(expense);
+                      // Refresh the parent screen's list/total BEFORE popping —
+                      // popping triggers the bottom sheet's whenComplete(),
+                      // which disposes descController/amountController
+                      // synchronously. Calling _loadData() (a setState on the
+                      // parent) after that dispose, while the sheet is still
+                      // mid-teardown, raced with the framework's own rebuild
+                      // and threw "TextEditingController used after disposed" /
+                      // RenderFlex overflow / stale InheritedElement asserts.
+                      if (!context.mounted) return;
+                      await _loadData();
+                      if (!context.mounted) return;
+                      Navigator.pop(context);
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                    foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(100)),
+                    elevation: 0,
+                  ),
+                  child: Text(
+                    "Save expense",
+                    style: AppTheme.buttonLabelStyle(context),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     ).whenComplete(() {

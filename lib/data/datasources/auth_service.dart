@@ -136,9 +136,28 @@ class AuthService {
 
   // Sync user data to Firestore
   Future<void> _syncUserData(User user, {String? name}) async {
+    // Force a fresh ID token before the first Firestore call after sign-in.
+    // Without this, signInWithCredential()/signInWith*() can resolve before
+    // the Firestore SDK's underlying gRPC/REST layer has actually picked up
+    // the new auth token — firestore.rules' isSignedIn() (request.auth !=
+    // null) then evaluates against a stale/absent auth context and every
+    // call here fails with permission-denied, even though sign-in itself
+    // succeeded and the rules are otherwise correct.
+    try {
+      await user.getIdToken(true);
+    } catch (e) {
+      SecureLogger.warning("ID token refresh before Firestore sync failed: $e", tag: "Auth");
+    }
+
     final userDoc = _firestore.collection('users').doc(user.uid);
-    
-    final docSnapshot = await userDoc.get();
+
+    // getIdToken(true) refreshes the token Firebase Auth hands out, but the
+    // Firestore SDK's own gRPC/REST channel can still take a beat to pick up
+    // that refreshed token internally — so the very first Firestore call
+    // right after sign-in can still transiently see permission-denied even
+    // though the token is now valid. Retry a few times with backoff rather
+    // than surfacing this as a hard sign-in failure.
+    final docSnapshot = await _withPermissionRetry(() => userDoc.get());
     
     if (!docSnapshot.exists) {
       // Create new user document
@@ -175,6 +194,28 @@ class AuthService {
     
     // BUG-QA-001 Fix: Sync Firebase Auth with Laravel Sanctum
     await _syncWithLaravelSanctum(user);
+  }
+
+  /// Retries [action] up to 3 times (250ms/750ms/1500ms backoff) when it
+  /// throws Firestore permission-denied — used for the first Firestore call
+  /// right after sign-in, where the SDK's auth channel can lag behind a
+  /// just-completed sign-in by a few hundred milliseconds. Any other
+  /// exception, or a permission-denied that persists past the last retry,
+  /// propagates to the caller unchanged.
+  Future<T> _withPermissionRetry<T>(Future<T> Function() action) async {
+    const delays = [Duration(milliseconds: 250), Duration(milliseconds: 750), Duration(milliseconds: 1500)];
+    for (var attempt = 0; ; attempt++) {
+      try {
+        return await action();
+      } on FirebaseException catch (e) {
+        if (e.code != 'permission-denied' || attempt >= delays.length) rethrow;
+        SecureLogger.warning(
+          "Transient permission-denied on attempt ${attempt + 1}, retrying in ${delays[attempt].inMilliseconds}ms",
+          tag: "Auth",
+        );
+        await Future.delayed(delays[attempt]);
+      }
+    }
   }
 
   Future<void> _syncWithLaravelSanctum(User user) async {
