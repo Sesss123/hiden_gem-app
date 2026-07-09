@@ -20,6 +20,7 @@ import 'profile_screen.dart';
 import 'event_calendar_screen.dart';
 import 'place_details_screen.dart';
 import '../../data/datasources/live_events_service.dart';
+import '../../data/datasources/dynamic_content_service.dart';
 import '../../data/models/event_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'savor_lanka_screen.dart';
@@ -46,6 +47,35 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   List<EventModel> _todayEvents = [];
   bool _showEventBanner = true;
   List<DiscoveryPlace> _localGems = [];
+
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = "";
+
+  List<DiscoveryPlace> get _searchResults {
+    if (_searchQuery.trim().isEmpty) return [];
+    final q = _searchQuery.trim().toLowerCase();
+    return _localGems.where((p) => p.name.toLowerCase().contains(q)).take(5).toList();
+  }
+
+  void _openPlace(DiscoveryPlace place) {
+    Haptics.medium();
+    FocusScope.of(context).unfocus();
+    setState(() {
+      _searchController.clear();
+      _searchQuery = "";
+    });
+    Navigator.push(context, MaterialPageRoute(builder: (_) => PlaceDetailsScreen(place: place)));
+  }
+
+  void _onSearchSubmitted(String query) {
+    if (_searchResults.isNotEmpty) {
+      _openPlace(_searchResults.first);
+    } else if (query.trim().isNotEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('No place found matching "$query"')),
+      );
+    }
+  }
 
 
   @override
@@ -81,11 +111,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   void dispose() {
+    _searchController.dispose();
     super.dispose();
   }
 
-  void _checkTodayEvents() {
-    final events = LiveEventsService.getTodayEvents();
+  void _checkTodayEvents() async {
+    final dynamicEvents = await DynamicContentService.fetchEvents();
+    final events = LiveEventsService.getTodayEvents(dynamicEvents: dynamicEvents);
     if (events.isNotEmpty && mounted) {
       setState(() {
         _todayEvents = events;
@@ -586,32 +618,93 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       ),
                     ),
                   const SizedBox(height: 24),
-                  GestureDetector(
-                    onTap: () {
-                      Haptics.medium();
-                      setState(() => _selectedIndex = 1);
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 40),
-                      child: OracleUI.premiumGlassCard(
-                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-                        radius: const BorderRadius.all(Radius.circular(40)),
-                        child: Row(
-                          children: [
-                            Icon(Icons.search_rounded, color: Theme.of(context).colorScheme.primary, size: 20),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Text(
-                                "Search secret locations...",
-                                style: GoogleFonts.inter(
-                                  color: AppTheme.textSecondary(context).withValues(alpha: 0.6),
-                                  fontSize: 13,
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 40),
+                    child: Column(
+                      children: [
+                        OracleUI.premiumGlassCard(
+                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 6),
+                          radius: const BorderRadius.all(Radius.circular(40)),
+                          child: Row(
+                            children: [
+                              Icon(Icons.search_rounded, color: Theme.of(context).colorScheme.primary, size: 20),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: TextField(
+                                  controller: _searchController,
+                                  textInputAction: TextInputAction.search,
+                                  onChanged: (v) => setState(() => _searchQuery = v),
+                                  onSubmitted: _onSearchSubmitted,
+                                  style: GoogleFonts.inter(
+                                    color: AppTheme.textPrimary(context),
+                                    fontSize: 13,
+                                  ),
+                                  decoration: InputDecoration(
+                                    isDense: true,
+                                    border: InputBorder.none,
+                                    hintText: "Search secret locations...",
+                                    hintStyle: GoogleFonts.inter(
+                                      color: AppTheme.textSecondary(context).withValues(alpha: 0.6),
+                                      fontSize: 13,
+                                    ),
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
+                              if (_searchQuery.isNotEmpty)
+                                GestureDetector(
+                                  onTap: () => setState(() {
+                                    _searchController.clear();
+                                    _searchQuery = "";
+                                  }),
+                                  child: Icon(Icons.close_rounded, color: AppTheme.textSecondary(context), size: 18),
+                                ),
+                            ],
+                          ),
                         ),
-                      ),
+                        if (_searchQuery.isNotEmpty)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 8),
+                            child: OracleUI.premiumGlassCard(
+                              padding: const EdgeInsets.symmetric(vertical: 4),
+                              radius: const BorderRadius.all(Radius.circular(20)),
+                              child: _searchResults.isEmpty
+                                  ? Padding(
+                                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                                      child: Text(
+                                        'No place found matching "$_searchQuery"',
+                                        style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 12),
+                                      ),
+                                    )
+                                  : Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: _searchResults.map((place) => InkWell(
+                                        onTap: () => _openPlace(place),
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                                          child: Row(
+                                            children: [
+                                              Icon(Icons.place_rounded, size: 16, color: Theme.of(context).colorScheme.primary),
+                                              const SizedBox(width: 10),
+                                              Expanded(
+                                                child: Text(
+                                                  place.name,
+                                                  style: GoogleFonts.inter(
+                                                    color: AppTheme.textPrimary(context),
+                                                    fontSize: 13,
+                                                    fontWeight: FontWeight.w600,
+                                                  ),
+                                                  maxLines: 1,
+                                                  overflow: TextOverflow.ellipsis,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      )).toList(),
+                                    ),
+                            ),
+                          ),
+                      ],
                     ),
                   ),
                 ],
@@ -797,8 +890,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
+                    Container(
+                      width: 34,
+                      height: 34,
+                      decoration: BoxDecoration(
+                        color: AppTheme.colors.white.withValues(alpha: 0.18),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      alignment: Alignment.center,
+                      child: Icon(cat.$2, color: AppTheme.colors.white, size: 18),
+                    ),
                     Text(
                       cat.$1,
                       style: GoogleFonts.outfit(

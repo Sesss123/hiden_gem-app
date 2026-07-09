@@ -48,6 +48,13 @@ service cloud.firestore {
                           ])) ||
                        isAdmin();
       allow delete: if isAdmin();
+
+      // Server-written security posture (Cloud Functions use Admin SDK, which
+      // bypasses rules — this only needs to allow the owner to READ it).
+      match /security/{docId} {
+        allow read: if isOwner(userId) || isAdmin();
+        allow write: if false; // Admin SDK only
+      }
     }
 
     match /subscriptions/{subId} {
@@ -81,6 +88,8 @@ service cloud.firestore {
     }
 
     // ── Booking Requests (Marketplace Tour Bookings) ─────────────────────────
+    // Pricing/payout fields (quotedPrice, commissionAmount, guideNetAmount,
+    // operatorNetAmount, payoutStatus) are backend-owned — never client-writable.
     match /booking_requests/{bookingId} {
       allow read: if isSignedIn() && (
         resource.data.touristId == request.auth.uid ||
@@ -89,10 +98,11 @@ service cloud.firestore {
       );
       allow create: if isSignedIn() && request.resource.data.touristId == request.auth.uid;
       allow update: if isSignedIn() && (
-        resource.data.touristId == request.auth.uid ||
-        resource.data.guideId == request.auth.uid ||
-        isAdmin()
-      );
+        !request.resource.data.diff(resource.data).affectedKeys()
+          .hasAny(['quotedPrice', 'commissionAmount', 'guideNetAmount', 'operatorNetAmount', 'payoutStatus']) &&
+        (resource.data.touristId == request.auth.uid ||
+         resource.data.guideId == request.auth.uid)
+      ) || isAdmin();
       allow delete: if isAdmin();
     }
 
@@ -140,25 +150,83 @@ service cloud.firestore {
         allow write: if isSignedIn() &&
           (presenceId == request.auth.uid || presenceId.startsWith('vehicle_'));
       }
+
+      // Meeting-point checkpoints — same participants as the parent session.
+      match /checkpoints/{checkpointId} {
+        allow read: if isSignedIn() && (
+          get(/databases/$(database)/documents/tour_sessions/$(sessionId)).data.guideId == request.auth.uid ||
+          request.auth.uid in get(/databases/$(database)/documents/tour_sessions/$(sessionId)).data.touristIds ||
+          isAdmin()
+        );
+        allow create, update: if isSignedIn() && (
+          get(/databases/$(database)/documents/tour_sessions/$(sessionId)).data.guideId == request.auth.uid ||
+          request.auth.uid in get(/databases/$(database)/documents/tour_sessions/$(sessionId)).data.touristIds ||
+          isAdmin()
+        );
+        allow delete: if isAdmin();
+      }
+
+      // Live broadcast messages — same participants as the parent session.
+      match /broadcasts/{messageId} {
+        allow read: if isSignedIn() && (
+          get(/databases/$(database)/documents/tour_sessions/$(sessionId)).data.guideId == request.auth.uid ||
+          request.auth.uid in get(/databases/$(database)/documents/tour_sessions/$(sessionId)).data.touristIds ||
+          isAdmin()
+        );
+        // Only the guide sends broadcasts; tourists may only update to acknowledge.
+        allow create: if isSignedIn() &&
+          get(/databases/$(database)/documents/tour_sessions/$(sessionId)).data.guideId == request.auth.uid;
+        allow update: if isSignedIn() && (
+          get(/databases/$(database)/documents/tour_sessions/$(sessionId)).data.guideId == request.auth.uid ||
+          (request.auth.uid in get(/databases/$(database)/documents/tour_sessions/$(sessionId)).data.touristIds &&
+           request.resource.data.diff(resource.data).affectedKeys().hasOnly(['acknowledgedBy'])) ||
+          isAdmin()
+        );
+        allow delete: if isAdmin();
+      }
     }
 
     // ── Tour Links (QR Connect) ──────────────────────────────────────────────
+    // guideId/touristId are immutable after creation to prevent link hijacking.
     match /tour_links/{linkId} {
       allow read: if isSignedIn() && (resource.data.touristId == request.auth.uid || resource.data.guideId == request.auth.uid || isAdmin());
       allow create: if isSignedIn() && request.resource.data.touristId == request.auth.uid;
-      allow update: if isSignedIn() && (resource.data.touristId == request.auth.uid || resource.data.guideId == request.auth.uid || isAdmin());
+      allow update: if isSignedIn() && (
+        !request.resource.data.diff(resource.data).affectedKeys().hasAny(['guideId', 'touristId']) &&
+        (resource.data.touristId == request.auth.uid || resource.data.guideId == request.auth.uid)
+      ) || isAdmin();
       allow delete: if isAdmin();
     }
 
     // ── Family Share Links (Live Tracking & Safety) ─────────────────────────
+    // Owner (tourist) creates/deletes and can deactivate; the anonymous
+    // recipient viewing an active link may only ever bump viewCount.
     match /family_share_links/{shareId} {
-      allow read, write: if isSignedIn() && (
-        resource == null || resource.data.touristId == request.auth.uid || request.resource.data.touristId == request.auth.uid
-      );
-      allow get: if resource.data.isActive == true && resource.data.expiresAt > request.time;
+      allow get: if (isSignedIn() && resource.data.touristId == request.auth.uid) ||
+        (resource.data.isActive == true && resource.data.expiresAt > request.time);
       allow list: if isSignedIn() && resource.data.touristId == request.auth.uid;
-      allow update: if resource.data.isActive == true && resource.data.expiresAt > request.time &&
-        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['viewCount']);
+      allow create: if isSignedIn() && request.resource.data.touristId == request.auth.uid;
+      allow update: if (isSignedIn() && resource.data.touristId == request.auth.uid &&
+          request.resource.data.touristId == resource.data.touristId) ||
+        (resource.data.isActive == true && resource.data.expiresAt > request.time &&
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['viewCount']));
+      allow delete: if isSignedIn() && resource.data.touristId == request.auth.uid;
+    }
+
+    // ── Operator Accounts (Fleet/Team Management) ────────────────────────────
+    match /operator_accounts/{operatorId} {
+      allow read: if isSignedIn() && (
+        resource.data.ownerUserId == request.auth.uid ||
+        request.auth.uid in resource.data.teamGuideIds ||
+        isAdmin()
+      );
+      allow create: if isSignedIn() && request.resource.data.ownerUserId == request.auth.uid;
+      allow update: if isSignedIn() && (
+        !request.resource.data.diff(resource.data).affectedKeys()
+          .hasAny(['isPremium', 'premiumPlanId', 'premiumExpiresAt', 'autoRenew']) &&
+        resource.data.ownerUserId == request.auth.uid
+      ) || isAdmin();
+      allow delete: if isOwner(resource.data.ownerUserId) || isAdmin();
     }
 
     // ── Vehicles ─────────────────────────────────────────────────────────────
@@ -248,9 +316,26 @@ service cloud.firestore {
       allow read, update, delete: if isAdmin();
     }
 
-    // ── Abuse Reports ───────────────────────────────────────────────────────
+    // ── SOS Alerts (Safety-Critical) ────────────────────────────────────────
+    // Any signed-in tour participant can trigger an SOS; only admins review them.
+    match /sos_alerts/{alertId} {
+      allow create: if isSignedIn() &&
+        request.resource.data.triggeredBy == request.auth.uid;
+      allow read, update, delete: if isAdmin();
+    }
+
+    // ── Abuse Reports / Events ──────────────────────────────────────────────
     match /abuse_reports/{reportId} {
-      allow create: if isSignedIn();
+      allow create: if isSignedIn() &&
+        request.resource.data.reportedBy == request.auth.uid;
+      allow read, update, delete: if isAdmin();
+    }
+
+    // Self-instrumentation: client reports suspicious activity involving its
+    // own account (promo abuse bursts, impossible-movement anomalies).
+    match /abuse_events/{eventId} {
+      allow create: if isSignedIn() &&
+        request.resource.data.userId == request.auth.uid;
       allow read, update, delete: if isAdmin();
     }
 
@@ -297,6 +382,55 @@ service cloud.firestore {
     match /quarantined_sessions/{uid} {
       allow read: if isAdmin();
       allow write: if false; // Admin SDK only
+    }
+
+    // ── Explorer Progress (Level/Badges Gamification) ────────────────────
+    match /user_progress/{userId} {
+      allow read, write: if isOwner(userId) || isAdmin();
+    }
+
+    // ── AR Treasure Hunt Gamification ─────────────────────────────────────
+    match /user_gamification/{userId} {
+      allow read, write: if isOwner(userId) || isAdmin();
+    }
+
+    // ── Community Memory Drops (Geo-tagged public posts) ──────────────────
+    match /community_memories/{memoryId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if isOwner(resource.data.userId) || isAdmin();
+    }
+
+    // ── AR Content Locations (Read-only, admin-managed) ────────────────────
+    match /locations/{locationId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    // ── Subscription Plan Definitions (Read-only, admin-managed) ──────────
+    match /plans/{planId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    // ── Risk Config (Fraud/Abuse Detection Rules — admin-managed) ─────────
+    match /config/{configId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    // ── Guide Analytics Snapshots (Trust Score) ────────────────────────────
+    // Read-your-own is fine; writes must come from a trusted server-side job,
+    // not the guide's own client, to prevent self-inflated trust scores.
+    match /guide_analytics/{snapshotId} {
+      allow read: if isSignedIn() && (resource.data.guideId == request.auth.uid || isAdmin());
+      allow write: if isAdmin();
+    }
+
+    // ── Threat Notifications (Security Telemetry) ──────────────────────────
+    match /threat_notifications/{notiId} {
+      allow create: if true; // May fire before/without auth (dev-tooling/debugger probes)
+      allow read, update, delete: if isAdmin();
     }
   }
 }

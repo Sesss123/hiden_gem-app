@@ -67,10 +67,13 @@ class GuideApplicationRepository {
         final data = json.decode(response.body);
         if (data['data'] != null) {
           final app = GuideApplication.fromJson(data['data']);
-          // Sync approved/rejected status back to Firestore/user profile
+          // Sync approved/rejected status back to Firestore/user profile.
+          // Note: 'role' is NOT set here — firestore.rules blocks clients
+          // from writing that field on their own account (anti-fraud), and
+          // Laravel's admin approval flow already sets it server-side
+          // (laravel-backend/app/Http/Controllers/Admin/GuideController.php).
           if (app.status == GuideStatus.approved) {
             await _firestore.collection('users').doc(user.uid).update({
-              'role': 'guide_approved',
               'guideStatus': GuideStatus.approved.name,
               'isGuideApproved': true,
             }).catchError((_) {});
@@ -93,11 +96,6 @@ class GuideApplicationRepository {
       return GuideApplication.fromJson(doc.data()!);
     }
     return null;
-  }
-
-  Stream<GuideApplication?> watchMyApplication(String uid) {
-    return _firestore.collection('guide_applications').doc(uid).snapshots()
-      .map((doc) => doc.exists ? GuideApplication.fromJson(doc.data()!) : null);
   }
 
   Stream<List<GuideApplication>> getPendingApplications() {

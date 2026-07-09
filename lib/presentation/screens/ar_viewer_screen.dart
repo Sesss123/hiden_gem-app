@@ -23,6 +23,7 @@ import 'ar_upgrade_dialog.dart';
 import 'premium_hub_screen.dart';
 import 'heritage_passport_screen.dart';
 import '../../core/services/gamification_service.dart';
+import '../../core/services/explorer_progress_service.dart';
 import 'package:hidden_gems_sl/core/utils/secure_logger.dart';
 import '../widgets/cached_image.dart';
 import '../../core/services/business_discovery_service.dart';
@@ -144,6 +145,10 @@ class _ARViewerScreenState extends State<ARViewerScreen>
         placeName: widget.placeName,
         tier: widget.arData.arTier,
         mode: 'full');
+    // Reaching this screen already passed the GPS-proximity gate (unless
+    // premium bypass), so it's a reliable "real AR session" signal for
+    // Explorer Level progress — fixes AR progress permanently stuck at 0%.
+    ExplorerProgressService().recordArSession();
 
     // Auto-proceed logic after a minimum delay and when ready
     Future.delayed(const Duration(seconds: 4),

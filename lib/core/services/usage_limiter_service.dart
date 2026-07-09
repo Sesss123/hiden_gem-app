@@ -7,6 +7,15 @@ import '../../data/datasources/user_preference_service.dart';
 class UsageLimiterService {
   static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  // Plan limits (Firestore `plans/{planId}`) change only when an admin
+  // edits a tier — not per-user, not per-action. Caching them in memory
+  // avoids a fresh Firestore read on every AI-trip/AR-session/offline-download
+  // check and every UsageMeterWidget mount, which otherwise re-fetches the
+  // same 3 possible plan docs constantly within a session.
+  static final Map<String, Map<String, dynamic>> _planLimitsCache = {};
+  static final Map<String, DateTime> _planLimitsCachedAt = {};
+  static const Duration _planLimitsCacheWindow = Duration(hours: 1);
+
   // Default Fallback Constraints if Firestore fails
   static const Map<String, Map<String, dynamic>> _defaultLimits = {
     'user': {
@@ -62,22 +71,37 @@ class UsageLimiterService {
   static Future<int> _getLimitForFeature(String featureKey, UserProfile profile) async {
     final bool hasValidPremium = _isPremiumValid(profile);
     final String effectivePlan = hasValidPremium ? (profile.premiumPlan ?? 'premium') : 'user';
-    
-    try {
-      final doc = await _firestore.collection('plans').doc(effectivePlan).get();
-      if (doc.exists && doc.data() != null) {
-        final limits = doc.data()!['limits'] as Map<String, dynamic>?;
-        if (limits != null && limits.containsKey(featureKey)) {
-          return limits[featureKey] as int;
-        }
-      }
-    } catch (e) {
-      debugPrint("UsageLimiterService: Fallback triggered. Error fetching Firestore limits: $e");
+
+    final limits = await _getPlanLimits(effectivePlan);
+    if (limits != null && limits.containsKey(featureKey)) {
+      return limits[featureKey] as int;
     }
 
     // Fallback if remote fetch fails
     final fallbackPlan = _defaultLimits.containsKey(effectivePlan) ? effectivePlan : 'user';
     return _defaultLimits[fallbackPlan]![featureKey];
+  }
+
+  /// Returns `plans/{planId}.limits`, served from an in-memory cache when
+  /// fresh. Falls back to Firestore on a cache miss/expiry.
+  static Future<Map<String, dynamic>?> _getPlanLimits(String planId) async {
+    final cachedAt = _planLimitsCachedAt[planId];
+    if (cachedAt != null && DateTime.now().difference(cachedAt) < _planLimitsCacheWindow) {
+      return _planLimitsCache[planId];
+    }
+
+    try {
+      final doc = await _firestore.collection('plans').doc(planId).get();
+      final limits = doc.exists ? (doc.data()?['limits'] as Map<String, dynamic>?) : null;
+      if (limits != null) {
+        _planLimitsCache[planId] = limits;
+        _planLimitsCachedAt[planId] = DateTime.now();
+      }
+      return limits;
+    } catch (e) {
+      debugPrint("UsageLimiterService: Fallback triggered. Error fetching Firestore limits: $e");
+      return _planLimitsCache[planId]; // Serve stale cache over hitting fallback constants, if we have it
+    }
   }
 
   /// Checks if AI generation is allowed within the user's limit constraints

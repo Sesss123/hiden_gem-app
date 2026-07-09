@@ -33,6 +33,7 @@ import '../widgets/banner_ad_widget.dart';
 import 'heritage_passport_screen.dart';
 import 'audio_guide_screen.dart';
 import 'ancestral_portal_screen.dart';
+import '../../core/services/explorer_progress_service.dart';
 
 class PlaceDetailsScreen extends ConsumerStatefulWidget {
   final DiscoveryPlace place;
@@ -53,6 +54,36 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
     super.initState();
     final profile = UserPreferenceService.getProfile();
     _isBookmarked = profile.bookmarkedPlaces.contains(widget.place.id);
+
+    // Record the visit only once GPS confirms real-world proximity — fixes
+    // "Places" stat and Level progress without letting casual in-app browsing
+    // (opening lots of detail pages from the couch) inflate them.
+    _recordVisitIfNearby();
+  }
+
+  static const double _visitProximityMeters = 500;
+
+  Future<void> _recordVisitIfNearby() async {
+    final placeId = widget.place.id;
+    try {
+      final repository = ref.read(discoveryRepositoryProvider);
+      final userPos = await repository.getCurrentLocation().timeout(const Duration(seconds: 8));
+      if (userPos == null) return;
+
+      final distanceMeters = Geolocator.distanceBetween(
+        userPos.latitude, userPos.longitude, widget.place.lat, widget.place.lng,
+      );
+      if (distanceMeters > _visitProximityMeters) return;
+
+      // Adds to visitedPlaces list (fixes Places: 0 bug)
+      await UserPreferenceService.addVisitedPlace(placeId);
+      // Triggers explorer level calculation (fixes Level stuck at 1 bug)
+      await ExplorerProgressService().recordSiteVisit(placeId);
+    } catch (_) {
+      // No location permission / GPS unavailable — just don't record.
+      // Viewing a place's details shouldn't be blocked or show an error
+      // over this, unlike the AR unlock flow which requires location.
+    }
   }
 
   @override
@@ -93,6 +124,9 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
                             const SizedBox(height: 24),
                             _buildDetailsSection(context, Icons.local_cafe_outlined, l10n.provisions, _buildFacilities(context)).animate().fadeIn(delay: 700.ms, duration: 600.ms),
                             const SizedBox(height: 24),
+                            if (_hasFieldNotes())
+                              _buildDetailsSection(context, Icons.fact_check_outlined, "Field Notes", _buildFieldNotes(context)).animate().fadeIn(delay: 750.ms, duration: 600.ms),
+                            if (_hasFieldNotes()) const SizedBox(height: 24),
                             _buildEtiquetteSection(context, l10n).animate().fadeIn(delay: 800.ms, duration: 600.ms),
                             const SizedBox(height: 24),
                             _buildAncestralPortalCard(context).animate().fadeIn(delay: 900.ms, duration: 600.ms).shimmer(delay: 2.seconds, duration: 1500.ms),
@@ -665,6 +699,67 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
       spacing: 12,
       runSpacing: 12,
       children: widget.place.facilities.map((t) => _chip(context, t, AppTheme.colors.primary)).toList(),
+    );
+  }
+
+  bool _hasFieldNotes() {
+    final p = widget.place;
+    return [
+      p.mobileSignal, p.roadCondition, p.activities, p.touristPopularity,
+      p.familyFriendly, p.budgetCategory, p.toilets, p.foodNearby,
+      p.wheelchairAccess, p.campingAllowed, p.safetyLevel, p.wildlifeHazard,
+      p.guideRequired, p.rainSensitivity, p.monsoonNote, p.surfing,
+    ].any((v) => v.trim().isNotEmpty) ||
+        (double.tryParse(p.heightM) ?? 0) > 0 ||
+        (double.tryParse(p.lengthKm) ?? 0) > 0;
+  }
+
+  Widget _buildFieldNotes(BuildContext context) {
+    final p = widget.place;
+    final entries = <MapEntry<String, String>>[
+      MapEntry("Mobile Signal", p.mobileSignal),
+      MapEntry("Road Condition", p.roadCondition),
+      MapEntry("Activities", p.activities),
+      MapEntry("Popularity", p.touristPopularity),
+      MapEntry("Family Friendly", p.familyFriendly),
+      MapEntry("Budget", p.budgetCategory),
+      MapEntry("Toilets", p.toilets),
+      MapEntry("Food Nearby", p.foodNearby),
+      MapEntry("Wheelchair Access", p.wheelchairAccess),
+      MapEntry("Camping", p.campingAllowed),
+      MapEntry("Safety Level", p.safetyLevel),
+      MapEntry("Wildlife Hazard", p.wildlifeHazard),
+      MapEntry("Guide Required", p.guideRequired),
+      MapEntry("Rain Sensitivity", p.rainSensitivity),
+      MapEntry("Monsoon Note", p.monsoonNote),
+      MapEntry("Surfing", p.surfing),
+      if ((double.tryParse(p.heightM) ?? 0) > 0) MapEntry("Height", "${p.heightM} m"),
+      if ((double.tryParse(p.lengthKm) ?? 0) > 0) MapEntry("Length", "${p.lengthKm} km"),
+    ].where((e) => e.value.trim().isNotEmpty).toList();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: entries.map((e) => Padding(
+        padding: const EdgeInsets.only(bottom: 12),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(
+              width: 130,
+              child: Text(
+                e.key.toUpperCase(),
+                style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.w700, color: AppTheme.textSecondary(context), letterSpacing: 0.3),
+              ),
+            ),
+            Expanded(
+              child: Text(
+                e.value,
+                style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w500, color: AppTheme.textPrimary(context)),
+              ),
+            ),
+          ],
+        ),
+      )).toList(),
     );
   }
 

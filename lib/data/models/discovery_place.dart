@@ -56,6 +56,29 @@ class DiscoveryPlace {
   final String bestTime;
   final List<String> facilities;
   final String openingHours;
+
+  // Curated travel/safety/access field notes (Laravel `places` table columns
+  // that were previously dropped by this model even though the backend
+  // already sends them — see PlaceResource.php).
+  final String mobileSignal;
+  final String roadCondition;
+  final String activities;
+  final String touristPopularity;
+  final String familyFriendly;
+  final String budgetCategory;
+  final String toilets;
+  final String foodNearby;
+  final String wheelchairAccess;
+  final String campingAllowed;
+  final String safetyLevel;
+  final String wildlifeHazard;
+  final String guideRequired;
+  final String rainSensitivity;
+  final String monsoonNote;
+  final String heightM;
+  final String lengthKm;
+  final String surfing;
+
   final String updatedAt;
   final int syncVersion;
   final bool arSupported;
@@ -96,6 +119,24 @@ class DiscoveryPlace {
     required this.bestTime,
     required this.facilities,
     this.openingHours = '',
+    this.mobileSignal = '',
+    this.roadCondition = '',
+    this.activities = '',
+    this.touristPopularity = '',
+    this.familyFriendly = '',
+    this.budgetCategory = '',
+    this.toilets = '',
+    this.foodNearby = '',
+    this.wheelchairAccess = '',
+    this.campingAllowed = '',
+    this.safetyLevel = '',
+    this.wildlifeHazard = '',
+    this.guideRequired = '',
+    this.rainSensitivity = '',
+    this.monsoonNote = '',
+    this.heightM = '',
+    this.lengthKm = '',
+    this.surfing = '',
     this.updatedAt = '',
     this.syncVersion = 0,
     this.arSupported = false,
@@ -168,6 +209,24 @@ class DiscoveryPlace {
       bestTime: json['bestTime'] as String? ?? json['best_time'] as String? ?? '',
       facilities: List<String>.from(json['facilities'] ?? []),
       openingHours: json['openingHours'] as String? ?? json['opening_hours'] as String? ?? '',
+      mobileSignal: json['mobile_signal'] as String? ?? '',
+      roadCondition: json['road_condition'] as String? ?? '',
+      activities: json['activities'] as String? ?? '',
+      touristPopularity: json['tourist_popularity'] as String? ?? '',
+      familyFriendly: json['family_friendly'] as String? ?? '',
+      budgetCategory: json['budget_category'] as String? ?? '',
+      toilets: json['toilets'] as String? ?? '',
+      foodNearby: json['food_nearby'] as String? ?? '',
+      wheelchairAccess: json['wheelchair_access'] as String? ?? '',
+      campingAllowed: json['camping_allowed'] as String? ?? '',
+      safetyLevel: json['safety_level'] as String? ?? '',
+      wildlifeHazard: json['wildlife_hazard'] as String? ?? '',
+      guideRequired: json['guide_required'] as String? ?? '',
+      rainSensitivity: json['rain_sensitivity'] as String? ?? '',
+      monsoonNote: json['monsoon_note'] as String? ?? '',
+      heightM: json['height_m']?.toString() ?? '',
+      lengthKm: json['length_km']?.toString() ?? '',
+      surfing: json['surfing'] as String? ?? '',
       updatedAt: parseUtcTimestamp(json['updatedAt'] ?? json['updated_at']),
       syncVersion: (json['syncVersion'] as num?)?.toInt() ?? (json['sync_version'] as num?)?.toInt() ?? 0,
       arSupported: json['arSupported'] as bool? ?? json['ar_supported'] as bool? ?? false,
@@ -241,6 +300,24 @@ class DiscoveryPlace {
       bestTime: data['bestTime'] ?? data['best_time'] ?? '',
       facilities: List<String>.from(data['facilities'] ?? []),
       openingHours: data['openingHours'] ?? data['opening_hours'] ?? '',
+      mobileSignal: data['mobile_signal'] ?? '',
+      roadCondition: data['road_condition'] ?? '',
+      activities: data['activities'] ?? '',
+      touristPopularity: data['tourist_popularity'] ?? '',
+      familyFriendly: data['family_friendly'] ?? '',
+      budgetCategory: data['budget_category'] ?? '',
+      toilets: data['toilets'] ?? '',
+      foodNearby: data['food_nearby'] ?? '',
+      wheelchairAccess: data['wheelchair_access'] ?? '',
+      campingAllowed: data['camping_allowed'] ?? '',
+      safetyLevel: data['safety_level'] ?? '',
+      wildlifeHazard: data['wildlife_hazard'] ?? '',
+      guideRequired: data['guide_required'] ?? '',
+      rainSensitivity: data['rain_sensitivity'] ?? '',
+      monsoonNote: data['monsoon_note'] ?? '',
+      heightM: data['height_m']?.toString() ?? '',
+      lengthKm: data['length_km']?.toString() ?? '',
+      surfing: data['surfing'] ?? '',
       updatedAt: parseUtcTimestamp(data['updatedAt'] ?? data['updated_at']),
       syncVersion: (data['syncVersion'] as num?)?.toInt() ?? (data['sync_version'] as num?)?.toInt() ?? 0,
       arSupported: data['arSupported'] ?? false,
@@ -292,6 +369,24 @@ class DiscoveryPlace {
       'facilities': facilities,
       'openingHours': openingHours,
       'opening_hours': openingHours,
+      'mobile_signal': mobileSignal,
+      'road_condition': roadCondition,
+      'activities': activities,
+      'tourist_popularity': touristPopularity,
+      'family_friendly': familyFriendly,
+      'budget_category': budgetCategory,
+      'toilets': toilets,
+      'food_nearby': foodNearby,
+      'wheelchair_access': wheelchairAccess,
+      'camping_allowed': campingAllowed,
+      'safety_level': safetyLevel,
+      'wildlife_hazard': wildlifeHazard,
+      'guide_required': guideRequired,
+      'rain_sensitivity': rainSensitivity,
+      'monsoon_note': monsoonNote,
+      'height_m': heightM,
+      'length_km': lengthKm,
+      'surfing': surfing,
       'updatedAt': updatedAt,
       'updated_at': updatedAt,
       'syncVersion': syncVersion,

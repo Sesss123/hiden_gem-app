@@ -49,12 +49,14 @@ class _ExplorerProgressCardState extends State<ExplorerProgressCard>
     _progressAnim = Tween<double>(begin: 0, end: 0).animate(
       CurvedAnimation(parent: _animController, curve: Curves.easeOutCubic),
     );
-    _listenAndAnimate();
 
     // Listen to any progress updates
     widget.service.visitedSites.addListener(_listenAndAnimate);
     widget.service.arSessionCount.addListener(_listenAndAnimate);
     widget.service.badgeCount.addListener(_listenAndAnimate);
+
+    // Sync from Firestore so progress card shows real data on load
+    widget.service.init().then((_) => _listenAndAnimate());
   }
 
   void _listenAndAnimate() {
@@ -294,6 +296,14 @@ class _ExplorerProgressCardState extends State<ExplorerProgressCard>
                     const SizedBox(height: 6),
                     Text(
                       '${widget.service.visitedSites.value} / ${ExplorerProgressService.totalSites} sites explored in Sri Lanka',
+                      style: GoogleFonts.inter(
+                        fontSize: 10.5,
+                        color: AppTheme.textSecondary(context),
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      '🏅 ${widget.service.badgeCount.value} / ${ExplorerProgressService.totalBadges} badges earned',
                       style: GoogleFonts.inter(
                         fontSize: 10.5,
                         color: AppTheme.textSecondary(context),

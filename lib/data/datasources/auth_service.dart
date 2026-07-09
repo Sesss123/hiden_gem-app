@@ -15,6 +15,10 @@ class AuthService {
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  // google_sign_in v7 requires an explicit one-time initialize() before
+  // authenticate() can be called on Android/iOS.
+  static bool _googleSignInInitialized = false;
+
   // Stream of auth state changes
   Stream<User?> get user => _auth.authStateChanges();
 
@@ -36,6 +40,14 @@ class AuthService {
         return userCredential;
       } else {
         // Mobile: google_sign_in v7 flow
+        if (!_googleSignInInitialized) {
+          await GoogleSignIn.instance.initialize(
+            // Web client ID from google-services.json (client_type: 3) —
+            // required so Firebase can verify the Google ID token server-side.
+            serverClientId: '932776629360-8n1phprf43pdq41hsknog1t66peguiog.apps.googleusercontent.com',
+          );
+          _googleSignInInitialized = true;
+        }
         final GoogleSignInAccount googleUser = await GoogleSignIn.instance.authenticate(scopeHint: ['email']);
 
         final GoogleSignInAuthentication googleAuth = googleUser.authentication;

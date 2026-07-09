@@ -131,6 +131,7 @@ class UserPreferenceService {
       }
     });
     await _flushToDisk(force: true);
+    syncToFirestore();
     return isNowBookmarked;
   }
 
@@ -146,6 +147,7 @@ class UserPreferenceService {
       }
     });
     await _flushToDisk(force: true);
+    syncToFirestore();
     return isNowAdded;
   }
 
@@ -257,9 +259,14 @@ class UserPreferenceService {
         key: _profileKey,
         value: json.encode(profile.toJson()),
       );
-      
-      // Sync to Firestore if authenticated (Fix for Bug #13, #14)
-      syncToFirestore();
+
+      // NOTE: syncToFirestore() is NOT called here anymore. It used to fire
+      // on every flush regardless of what mutated — meaning updateLanguage(),
+      // updateTermsAgreement(), updatePremiumStatus() etc. were each
+      // triggering a full users/{uid} write of bookmarkedPlaces/
+      // itineraryPlaceIds even though those fields never changed. It's now
+      // called explicitly only from toggleBookmark()/toggleItinerary(),
+      // the only two mutations that actually touch those synced fields.
 
       _isDirty = false;
       _lastFlush = DateTime.now();

@@ -112,12 +112,31 @@ class NotificationService {
                 data: {'bookingId': data['bookingId'] ?? '', 'type': data['type'] ?? ''},
               ));
             }
+            // Mark as read now that it's been surfaced to the user — without
+            // this, the isRead==false query this listener runs on never
+            // shrinks, so its "unread" result set (and thus read cost) grows
+            // unbounded as notifications accumulate over the app's lifetime.
+            markAsRead(change.doc.id);
           }
         }
       }
     }, onError: (e) {
       SecureLogger.warning("Error watching user notifications: $e", tag: "Notifications");
     });
+  }
+
+  /// Flips isRead on a single notification doc — 1 cheap write, but keeps
+  /// the isRead==false query in startWatchingUserNotifications() bounded
+  /// instead of accumulating every notification a user has ever received.
+  Future<void> markAsRead(String notificationId) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('user_notifications')
+          .doc(notificationId)
+          .update({'isRead': true});
+    } catch (e) {
+      SecureLogger.warning("Failed to mark notification $notificationId as read: $e", tag: "Notifications", isBackground: true);
+    }
   }
 
   void stopWatchingUserNotifications() {

@@ -6,12 +6,13 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'user_preference_service.dart';
 import '../../core/config/app_config.dart';
 import 'package:hidden_gems_sl/core/utils/secure_logger.dart';
-import '../../core/services/delta_sync_service.dart';
 import '../../core/services/secure_entitlements.dart';
 import '../../core/services/premium_unlock_service.dart';
+import '../../core/services/integrity_shield.dart';
 
 part 'premium_service.g.dart';
 
@@ -26,6 +27,9 @@ class PremiumNotifier extends _$PremiumNotifier {
   @override
   bool build() {
     // 🎧 Listen to RevenueCat customer info changes (BUG-F005 & BUG-F006 fix)
+    // This is RevenueCat's own push mechanism — free, real-time, and the
+    // correct source of truth for purchase-driven changes. No Firestore
+    // listener is needed for this path.
     void listener(CustomerInfo customerInfo) {
       _updateStateFromCustomerInfo(customerInfo);
     }
@@ -33,12 +37,11 @@ class PremiumNotifier extends _$PremiumNotifier {
 
     ref.onDispose(() {
       Purchases.removeCustomerInfoUpdateListener(listener);
-      _firestoreSubscription?.cancel();
     });
 
     _initRevenueCat();
-    _setupFirestoreListener();
-    
+    _checkServerOverride();
+
     return false; // Default initial state
   }
 
@@ -85,26 +88,56 @@ class PremiumNotifier extends _$PremiumNotifier {
     }
   }
 
-  StreamSubscription<DocumentSnapshot>? _firestoreSubscription;
+  static const String _lastCheckPrefsKey = 'premium_last_server_check_at';
 
-  void _setupFirestoreListener() {
+  /// Risk-tiered re-check window: trusted devices (low IntegrityShield risk
+  /// score — the vast majority of users) don't need a fresh Firestore read
+  /// on every app open, since server-side overrides (admin revocation,
+  /// webhook-driven changes) are rare. Devices showing tamper/fraud signals
+  /// get checked far more often, since that population is exactly where
+  /// entitlement abuse is most likely to be attempted.
+  Duration _checkWindowForRiskScore(int riskScore) {
+    if (riskScore >= 60) return Duration.zero; // High/Critical: always re-check
+    if (riskScore >= 30) return const Duration(minutes: 15); // Medium
+    return const Duration(hours: 6); // Low risk (default/typical user)
+  }
+
+  /// One-shot check (NOT a live listener) for server-side overrides — e.g. an
+  /// admin manually revoking premium, or a RevenueCat webhook event that
+  /// landed while the app was closed. RevenueCat's own CustomerInfo listener
+  /// (registered in build()) already handles all purchase-driven changes in
+  /// real time at no Firestore cost, so this only needs to run once per app
+  /// session (not stay open) to catch the rarer out-of-band case — and even
+  /// then, only after the risk-tiered window above has elapsed.
+  Future<void> _checkServerOverride() async {
     if (!_isFirebaseReady) {
       _checkPremiumStatus();
       return;
     }
     final user = FirebaseAuth.instance.currentUser;
-    if (user == null) {
-      _firestoreSubscription?.cancel();
-      _firestoreSubscription = null;
-      return;
+    if (user == null) return;
+
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final lastCheckMs = prefs.getInt(_lastCheckPrefsKey);
+      final riskScore = IntegrityShield().riskScore;
+      final window = _checkWindowForRiskScore(riskScore);
+
+      if (lastCheckMs != null && window > Duration.zero) {
+        final elapsed = DateTime.now().difference(DateTime.fromMillisecondsSinceEpoch(lastCheckMs));
+        if (elapsed < window) {
+          _checkPremiumStatus();
+          return;
+        }
+      }
+
+      await prefs.setInt(_lastCheckPrefsKey, DateTime.now().millisecondsSinceEpoch);
+    } catch (e) {
+      SecureLogger.warning("Premium check-window lookup failed, checking anyway: $e", tag: "RevenueCat", isBackground: true);
     }
 
-    _firestoreSubscription?.cancel();
-    _firestoreSubscription = FirebaseFirestore.instance
-        .collection('users')
-        .doc(user.uid)
-        .snapshots()
-        .listen((doc) async {
+    try {
+      final doc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
       if (doc.exists && doc.data() != null) {
         final data = doc.data()!;
         final isPrem = data['isPremium'] == true;
@@ -113,8 +146,7 @@ class PremiumNotifier extends _$PremiumNotifier {
         if (expiry != null) {
           expiryDate = expiry is Timestamp ? expiry.toDate() : DateTime.tryParse(expiry.toString());
         }
-        
-        // BUG-5 Fix: Immediately invalidate client state if expired or revoked
+
         if (!isPrem || (expiryDate != null && expiryDate.isBefore(DateTime.now()))) {
           if (state == true) {
             state = false;
@@ -127,20 +159,17 @@ class PremiumNotifier extends _$PremiumNotifier {
           state = true;
           SecureEntitlements().forceRefresh();
           await UserPreferenceService.updatePremiumStatus(
-            true, 
-            plan: data['premiumPlanId'] ?? data['premiumPlan'] ?? data['subscriptionPlan'], 
+            true,
+            plan: data['premiumPlanId'] ?? data['premiumPlan'] ?? data['subscriptionPlan'],
             source: 'firestore'
           );
         }
       }
-    });
+    } catch (e) {
+      SecureLogger.warning("Server override check failed: $e", tag: "RevenueCat", isBackground: true);
+    }
 
     _checkPremiumStatus();
-  }
-
-  void dispose() {
-    _firestoreSubscription?.cancel();
-    _firestoreSubscription = null;
   }
 
   Future<void> _checkPremiumStatus() async {
@@ -166,40 +195,18 @@ class PremiumNotifier extends _$PremiumNotifier {
       await UserPreferenceService.updatePremiumStatus(
         isPremium,
         plan: activeEntitlement?.productIdentifier,
-        expiry: activeEntitlement?.expirationDate != null 
-            ? DateTime.tryParse(activeEntitlement!.expirationDate!) 
+        expiry: activeEntitlement?.expirationDate != null
+            ? DateTime.tryParse(activeEntitlement!.expirationDate!)
             : null,
         source: 'revenuecat',
       );
 
-      // 🛡️ SYNC TO FIRESTORE: Keep server record updated for other services (Analytics, Rules)
-      if (_isFirebaseReady) {
-        final user = FirebaseAuth.instance.currentUser;
-        if (user != null) {
-          final expDateStr = activeEntitlement?.expirationDate;
-          final expDate = expDateStr != null ? DateTime.tryParse(expDateStr) : null;
-
-          await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
-            'isPremium': isPremium,
-            'premiumExpiresAt': expDate != null ? Timestamp.fromDate(expDate) : null,
-            'premiumPlanId': activeEntitlement?.productIdentifier ?? 'unknown',
-            'premiumPlan': activeEntitlement?.productIdentifier ?? 'unknown',
-            'premiumSource': 'revenuecat',
-            'updatedAt': FieldValue.serverTimestamp(),
-          }).catchError((e) {
-            DeltaSyncService().enqueueOutboxMutation(
-              collection: 'users',
-              documentId: user.uid,
-              data: {
-                'isPremium': isPremium,
-                'premiumPlanId': activeEntitlement?.productIdentifier ?? 'unknown',
-                'premiumSource': 'revenuecat',
-              }
-            );
-            SecureLogger.error("Firestore Sync Support Failed, queued in outbox", e, null, "RevenueCat");
-          });
-        }
-      }
+      // NOTE: users/{uid}.isPremium is a backend-owned field — firestore.rules
+      // blocks the client from writing it on its own document (anti-fraud).
+      // The real sync path is the RevenueCat webhook -> Laravel ->
+      // FirestoreService.updateUserSubscription(), which fires server-side
+      // the moment RevenueCat confirms the purchase. No client write needed
+      // or possible here.
     }
     } catch (e, st) {
       SecureLogger.error("Failed to sync premium state", e, st, "RevenueCat");
@@ -252,18 +259,8 @@ class PremiumNotifier extends _$PremiumNotifier {
       plan: 'premium_mock_dev', 
       source: 'mock_internal'
     );
-    
-    // Sync to Firestore mockly
-    if (_isFirebaseReady) {
-      final user = FirebaseAuth.instance.currentUser;
-      if (user != null) {
-        await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
-          'isPremium': true,
-          'premiumPlanId': 'premium_mock_dev',
-          'premiumPlan': 'premium_mock_dev',
-          'premiumSource': 'mock_internal',
-        });
-      }
-    }
+    // NOTE: no Firestore write here — users/{uid}.isPremium is blocked for
+    // client writes by firestore.rules (see _updateStateFromCustomerInfo).
+    // The mock only needs to flip local/in-memory state for dev testing.
   }
 }

@@ -77,16 +77,18 @@ class LiveEventsService {
     }
   }
 
-  /// Returns today's active events
-  static List<EventModel> getTodayEvents() {
+  /// Returns today's active events.
+  /// Pass [dynamicEvents] (from DynamicContentService.fetchEvents()) to use
+  /// live backend data instead of the static fallback dataset.
+  static List<EventModel> getTodayEvents({List<Map<String, dynamic>>? dynamicEvents}) {
     DateTime today = DateTime.now();
-    return getEventsForTrip(today, 1);
+    return getEventsForTrip(today, 1, dynamicEvents: dynamicEvents);
   }
 
   /// Returns events happening in the coming week (Phase 3: Coming Up Soon)
-  static List<EventModel> getUpcomingEvents({int limit = 5}) {
+  static List<EventModel> getUpcomingEvents({int limit = 5, List<Map<String, dynamic>>? dynamicEvents}) {
     DateTime today = DateTime.now();
-    final allUpcoming = getEventsForTrip(today, 7);
+    final allUpcoming = getEventsForTrip(today, 7, dynamicEvents: dynamicEvents);
     allUpcoming.sort((a, b) {
       if (a.date != null && b.date != null) return a.date!.compareTo(b.date!);
       return 0;
@@ -95,8 +97,8 @@ class LiveEventsService {
   }
 
   /// Returns events personalized for the user (Phase 3: Top Picks)
-  static List<EventModel> getPersonalizedEvents(String userVibe, List<String> userInterests, {int limit = 3}) {
-    final allEvents = SriLankaEvents.events.map((e) => EventModel.fromJson(e)).toList();
+  static List<EventModel> getPersonalizedEvents(String userVibe, List<String> userInterests, {int limit = 3, List<Map<String, dynamic>>? dynamicEvents}) {
+    final allEvents = (dynamicEvents ?? SriLankaEvents.events).map((e) => EventModel.fromJson(e)).toList();
     
     // Simple scoring algorithm
     List<({EventModel event, double score})> scoredEvents = [];

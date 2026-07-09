@@ -1,7 +1,12 @@
+import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:http/http.dart' as http;
 import '../models/guide_listing.dart';
 import '../models/guide_availability.dart';
+import '../../core/config/app_config.dart';
+import '../../core/network/secure_http_client.dart';
+import '../../core/utils/secure_logger.dart';
 
 final marketplaceRepositoryProvider = Provider((ref) => MarketplaceRepository());
 
@@ -9,7 +14,10 @@ final marketplaceRepositoryProvider = Provider((ref) => MarketplaceRepository())
 ///
 /// PERFORMANCE ARCHITECTURE:
 /// - Search & Browse: get() + pagination (limit 20)  → No persistent listeners
-/// - Featured Guides: get() with 5-min TTL cache     → Hot data, read once
+/// - Featured Guides: GET /v1/listings/featured, behind a shared 5-min
+///   Laravel cache → the whole app's traffic within the cache window costs
+///   1 Firestore read instead of 1 per device (still kept behind a short
+///   in-memory cache here too, to avoid a network call on every screen open)
 /// - Admin oversight: snapshots() is OK here         → Low-volume admin tool
 ///
 /// This design ensures that 10,000 concurrent users don't each hold open
@@ -28,8 +36,8 @@ class MarketplaceRepository {
   List<GuideListing>? _featuredCache;
   DateTime? _featuredCacheExpiry;
 
-  /// Fetches featured guides with an in-memory cache.
-  /// Re-fetches from Firestore only after 5 minutes.
+  /// Fetches featured guides via the Laravel backend's shared cache.
+  /// Re-fetches only after the local 5-minute cache expires.
   Future<List<GuideListing>> getFeaturedGuides() async {
     if (_featuredCache != null &&
         _featuredCacheExpiry != null &&
@@ -37,19 +45,30 @@ class MarketplaceRepository {
       return _featuredCache!; // Serve from cache
     }
 
-    final snapshot = await _listingRef
-        .where('isFeatured', isEqualTo: true)
-        .where('status', isEqualTo: 'published')
-        .where('moderationStatus', isEqualTo: 'approved')
-        .orderBy('ratingAverage', descending: true)
-        .limit(10)
-        .get(const GetOptions(source: Source.serverAndCache));
+    try {
+      final client = SecureHttpClient(http.Client());
+      final uri = Uri.parse('${AppConfig.laravelUrl}/listings/featured');
+      final response = await client.get(
+        uri,
+        headers: {
+          'Accept': 'application/json',
+          'X-API-KEY': AppConfig.hiddenGemsApiKey,
+        },
+      ).timeout(const Duration(seconds: 10));
 
-    _featuredCache = snapshot.docs
-        .map((doc) => GuideListing.fromJson(doc.data()))
-        .toList();
-    _featuredCacheExpiry = DateTime.now().add(const Duration(minutes: 5));
-    return _featuredCache!;
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body) as Map<String, dynamic>;
+        _featuredCache = (data['listings'] as List<dynamic>? ?? [])
+            .map((l) => GuideListing.fromJson(l as Map<String, dynamic>))
+            .toList();
+        _featuredCacheExpiry = DateTime.now().add(const Duration(minutes: 5));
+        return _featuredCache!;
+      }
+      SecureLogger.warning("Featured listings fetch returned ${response.statusCode}", tag: "Marketplace");
+    } catch (e) {
+      SecureLogger.warning("Failed to fetch featured listings from backend: $e", tag: "Marketplace");
+    }
+    return _featuredCache ?? [];
   }
 
   void invalidateFeaturedCache() {

@@ -29,32 +29,59 @@ class SecurityOrchestrator {
   final _entitlements = SecureEntitlements();
   final _quarantine = SessionQuarantine();
   final _analytics = BehaviorAnalyticsEngine();
-  
-  // Real-time posture tracking
-  Map<String, dynamic>? _lastServerPosture;
-  StreamSubscription<DocumentSnapshot>? _postureSubscription;
 
-  /// Initializes the real-time Security Posture listener.
-  /// This allows the backend to push instant blocks or security overrides.
+  // Server posture is fetched on-demand (not via a persistent listener) —
+  // it only needs to be fresh at the moment of an actual security-critical
+  // check (verifyPremiumNexus/isKeyValid), not continuously for the whole
+  // app session. A stale-if-recent cache avoids re-fetching on every check.
+  Map<String, dynamic>? _lastServerPosture;
+  DateTime? _lastPostureFetchAt;
+  static const _postureMaxAge = Duration(minutes: 2);
+  String? _uid;
+
+  /// Records the signed-in user for posture checks. No network call here —
+  /// the first real fetch happens lazily on the first Nexus check.
   void init(String uid) {
-    _postureSubscription?.cancel();
-    _postureSubscription = FirebaseFirestore.instance
-        .collection('users')
-        .doc(uid)
-        .collection('security')
-        .doc('posture')
-        .snapshots()
-        .listen((doc) {
+    _uid = uid;
+    _lastServerPosture = null;
+    _lastPostureFetchAt = null;
+  }
+
+  void dispose() {
+    _uid = null;
+    _lastServerPosture = null;
+    _lastPostureFetchAt = null;
+  }
+
+  /// Refreshes server posture via a one-shot read if the cached value is
+  /// missing or older than [_postureMaxAge]. Called from _runParallelChecks()
+  /// so a real check always has posture data no more than 2 minutes stale —
+  /// fresher, in practice, than the old listener ever guaranteed (listeners
+  /// only push on change; a backend block written moments before this
+  /// specific check still lands within this same window).
+  Future<void> _refreshServerPostureIfStale() async {
+    final uid = _uid;
+    if (uid == null) return;
+
+    final isStale = _lastPostureFetchAt == null ||
+        DateTime.now().difference(_lastPostureFetchAt!) > _postureMaxAge;
+    if (!isStale) return;
+
+    try {
+      final doc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .collection('security')
+          .doc('posture')
+          .get();
+      _lastPostureFetchAt = DateTime.now();
       if (doc.exists && doc.data() != null) {
         _lastServerPosture = doc.data() as Map<String, dynamic>;
         _enforceServerDirectives(_lastServerPosture!);
       }
-    });
-  }
-
-  void dispose() {
-    _postureSubscription?.cancel();
-    _postureSubscription = null;
+    } catch (e) {
+      debugPrint('[SecurityOrchestrator] Posture fetch failed: $e');
+    }
   }
 
   void _enforceServerDirectives(Map<String, dynamic> posture) {
@@ -92,12 +119,14 @@ class SecurityOrchestrator {
     final uid = UserPreferenceService.getProfile().uid;
     final profile = UserPreferenceService.getProfile();
 
-    // Key 1 & 2: Local + Server
-    // (Checked in parallel to save latency)
+    // Key 1 & 2: Local + Server. Also refresh server posture (Key 6) here if
+    // stale, so a security-critical check always sees near-fresh posture
+    // without needing a persistent listener held open all session.
     final results = await Future.wait([
       _entitlements.verifyPremium(),
       _shield.runFullScan(),
       _quarantine.evaluate(),
+      _refreshServerPostureIfStale(),
     ]);
 
     final bool serverProof = results[0] as bool;

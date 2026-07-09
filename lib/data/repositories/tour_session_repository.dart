@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../../core/utils/secure_logger.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/tour_session.dart';
@@ -243,8 +244,10 @@ class TourSessionRepository {
 
     // Record the SOS event in a dedicated collection for Admin audit/alerts
     if (isActive) {
+      final uid = FirebaseAuth.instance.currentUser?.uid;
       await _firestore.collection('sos_alerts').add({
         'sessionId': sessionId,
+        'triggeredBy': uid,
         'timestamp': FieldValue.serverTimestamp(),
         'status': 'triggered',
       });

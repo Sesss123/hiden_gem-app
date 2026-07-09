@@ -16,14 +16,24 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Api\PlaceSyncController;
 use App\Http\Controllers\Api\AiProxyController;
+use App\Http\Controllers\Api\RevenueCatWebhookController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\WishlistController;
 use App\Http\Controllers\Api\V1\GuideApplicationController;
+use App\Http\Controllers\Api\V1\ReviewController;
+use App\Http\Controllers\Api\V1\BookingController;
+use App\Http\Controllers\Api\V1\MarketplaceController;
 use App\Http\Middleware\VerifyApiKey;
+use App\Http\Middleware\VerifyRevenueCatWebhook;
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+// RevenueCat Webhook (server-to-server; no Sanctum token — authenticated via
+// its own shared-secret Authorization header instead. See VerifyRevenueCatWebhook.)
+Route::post('/webhooks/revenuecat', [RevenueCatWebhookController::class, 'handle'])
+    ->middleware(VerifyRevenueCatWebhook::class);
 
 // v1 API Endpoints
 Route::prefix('v1')->group(function () {
@@ -61,6 +71,27 @@ Route::prefix('v1')->group(function () {
         Route::get('/', [GuideApplicationController::class, 'index']);
         Route::post('/{id}/approve', [GuideApplicationController::class, 'approve']);
         Route::post('/{id}/reject', [GuideApplicationController::class, 'reject']);
+    });
+
+    // Review Routes (Protected by Sanctum Auth, API Key & Rate Limiting)
+    Route::prefix('reviews')->middleware(['auth:sanctum', VerifyApiKey::class, 'throttle:30,1'])->group(function () {
+        Route::post('/{reviewId}/recalculate', [ReviewController::class, 'recalculate']);
+        Route::get('/guide/{guideId}', [ReviewController::class, 'guideReviews']);
+    });
+
+    // Marketplace Listing Routes (Protected by Sanctum Auth, API Key & Rate Limiting)
+    Route::prefix('listings')->middleware(['auth:sanctum', VerifyApiKey::class, 'throttle:60,1'])->group(function () {
+        Route::get('/featured', [MarketplaceController::class, 'featured']);
+    });
+
+    // AR Video Library Routes (Protected by Sanctum Auth, API Key & Rate Limiting)
+    Route::prefix('ar')->middleware(['auth:sanctum', VerifyApiKey::class, 'throttle:60,1'])->group(function () {
+        Route::get('/enabled-locations', [MarketplaceController::class, 'arEnabledLocations']);
+    });
+
+    // Booking Routes (Protected by Sanctum Auth, API Key & Rate Limiting)
+    Route::prefix('bookings')->middleware(['auth:sanctum', VerifyApiKey::class, 'throttle:30,1'])->group(function () {
+        Route::post('/{bookingId}/notify-guide', [BookingController::class, 'notifyGuide']);
     });
 
     // AI Subsystem Proxy Routes (Protected by Sanctum Auth, API Key, and Throttling)

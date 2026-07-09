@@ -93,9 +93,32 @@ class FirestoreService
     }
 
     /**
+     * Decode a single Firestore REST API field value back to a PHP primitive/array.
+     */
+    private function decodeValue(array $field)
+    {
+        if (array_key_exists('stringValue', $field)) return $field['stringValue'];
+        if (array_key_exists('integerValue', $field)) return (int) $field['integerValue'];
+        if (array_key_exists('doubleValue', $field)) return (float) $field['doubleValue'];
+        if (array_key_exists('booleanValue', $field)) return $field['booleanValue'];
+        if (array_key_exists('nullValue', $field)) return null;
+        if (array_key_exists('mapValue', $field)) {
+            $out = [];
+            foreach (($field['mapValue']['fields'] ?? []) as $k => $v) {
+                $out[$k] = $this->decodeValue($v);
+            }
+            return $out;
+        }
+        if (array_key_exists('arrayValue', $field)) {
+            return array_map(fn ($v) => $this->decodeValue($v), $field['arrayValue']['values'] ?? []);
+        }
+        return null;
+    }
+
+    /**
      * Patch/merge fields into a Firestore document via REST API.
      */
-    private function patchDocument(string $collection, string $documentId, array $data): bool
+    public function patchDocument(string $collection, string $documentId, array $data): bool
     {
         try {
             $token = $this->getToken();
@@ -137,5 +160,130 @@ class FirestoreService
     public function updateGuideUser($userId, array $data)
     {
         return $this->patchDocument('users', $userId, $data);
+    }
+
+    /**
+     * Update or merge subscription/premium status into a user profile document.
+     * Used by RevenueCatWebhookController — this is the only trusted path allowed
+     * to elevate 'isPremium' and related fields (blocked for clients by firestore.rules).
+     */
+    public function updateUserSubscription($userId, array $data)
+    {
+        return $this->patchDocument('users', $userId, $data);
+    }
+
+    /**
+     * Update or merge data into a subscription record document in Firestore.
+     */
+    public function updateSubscriptionRecord($subscriptionId, array $data)
+    {
+        return $this->patchDocument('subscriptions', $subscriptionId, $data);
+    }
+
+    /**
+     * Check whether a document exists at collection/documentId.
+     */
+    public function documentExists(string $collection, string $documentId): bool
+    {
+        try {
+            $token = $this->getToken();
+            $url = "https://firestore.googleapis.com/v1/projects/{$this->projectId}/databases/(default)/documents/{$collection}/{$documentId}";
+            $response = Http::withToken($token)->get($url);
+            return $response->successful();
+        } catch (\Exception $e) {
+            Log::error("Firestore REST exception checking existence of {$collection}/{$documentId}: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Runs a simple structured query (single equality filter) against a
+     * collection and returns decoded documents (each with an 'id' key).
+     */
+    public function queryDocuments(string $collection, string $field, string $op, $value, ?int $limit = null): array
+    {
+        try {
+            $token = $this->getToken();
+            $url = "https://firestore.googleapis.com/v1/projects/{$this->projectId}/databases/(default)/documents:runQuery";
+
+            $structuredQuery = [
+                'from' => [['collectionId' => $collection]],
+                'where' => [
+                    'fieldFilter' => [
+                        'field' => ['fieldPath' => $field],
+                        'op' => $op,
+                        'value' => $this->encodeValue($value),
+                    ],
+                ],
+            ];
+            if ($limit !== null) {
+                $structuredQuery['limit'] = $limit;
+            }
+
+            $response = Http::withToken($token)->post($url, ['structuredQuery' => $structuredQuery]);
+            if (!$response->successful()) {
+                Log::error("Firestore REST query error ({$response->status()}): " . $response->body());
+                return [];
+            }
+
+            $results = [];
+            foreach ($response->json() as $result) {
+                if (!isset($result['document'])) continue;
+                $doc = $result['document'];
+                $id = basename($doc['name']);
+                $fields = [];
+                foreach (($doc['fields'] ?? []) as $k => $v) {
+                    $fields[$k] = $this->decodeValue($v);
+                }
+                $results[] = array_merge(['id' => $id], $fields);
+            }
+            return $results;
+        } catch (\Exception $e) {
+            Log::error("Firestore REST exception querying {$collection} where {$field} {$op} " . json_encode($value) . ": " . $e->getMessage());
+            return [];
+        }
+    }
+
+    /**
+     * Finds the first subscriptions/{id} document whose accountId field matches
+     * the given value. Returns ['id' => ..., ...decoded fields] or null.
+     */
+    public function findSubscriptionByAccountId(string $accountId): ?array
+    {
+        $results = $this->queryDocuments('subscriptions', 'accountId', 'EQUAL', $accountId, 1);
+        return $results[0] ?? null;
+    }
+
+    /**
+     * Lists every document in a collection (no filter). Used for small,
+     * rarely-changing reference collections where a single-field equality
+     * filter isn't expressive enough (e.g. a non-empty-string check).
+     */
+    public function listDocuments(string $collection): array
+    {
+        try {
+            $token = $this->getToken();
+            $url = "https://firestore.googleapis.com/v1/projects/{$this->projectId}/databases/(default)/documents/{$collection}";
+
+            $response = Http::withToken($token)->get($url);
+            if (!$response->successful()) {
+                Log::error("Firestore REST list error ({$response->status()}): " . $response->body());
+                return [];
+            }
+
+            $results = [];
+            foreach (($response->json()['documents'] ?? []) as $doc) {
+                $id = basename($doc['name']);
+                $fields = [];
+                foreach (($doc['fields'] ?? []) as $k => $v) {
+                    $fields[$k] = $this->decodeValue($v);
+                }
+                $results[] = array_merge(['id' => $id], $fields);
+            }
+            return $results;
+        } catch (\Exception $e) {
+            Log::error("Firestore REST exception listing {$collection}: " . $e->getMessage());
+            return [];
+        }
     }
 }

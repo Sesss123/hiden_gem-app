@@ -19,12 +19,16 @@ class VehicleRepository {
     await _firestore.collection('vehicles').doc(vehicleId).delete();
   }
 
-  Stream<List<Vehicle>> getGuideVehicles(String guideId) {
-    return _firestore
+  /// One-shot read (not a live listener) — a guide's vehicle list changes
+  /// only on an occasional add/edit/delete action, not while this screen
+  /// happens to be open. Callers should re-call this after their own
+  /// add/update/delete rather than relying on a listener to reflect it.
+  Future<List<Vehicle>> getGuideVehicles(String guideId) async {
+    final snapshot = await _firestore
         .collection('vehicles')
         .where('guideId', isEqualTo: guideId)
-        .snapshots()
-        .map((snapshot) => snapshot.docs.map((doc) => Vehicle.fromJson(doc.data())).toList());
+        .get();
+    return snapshot.docs.map((doc) => Vehicle.fromJson(doc.data())).toList();
   }
 
   Future<Vehicle?> getVehicle(String vehicleId) async {

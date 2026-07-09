@@ -7,6 +7,7 @@ import '../../core/theme/theme_provider.dart';
 import '../../core/providers/screenshot_provider.dart';
 import 'package:flutter/services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:hidden_gems_sl/data/models/user_profile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -57,89 +58,99 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
   @override
   bool get wantKeepAlive => true;
   late var profile = UserPreferenceService.getProfile();
-  StreamSubscription? _userSub;
-  StreamSubscription? _appSub;
 
   @override
   void initState() {
     super.initState();
-    _startWatchingRole();
+    _refreshRoleOnce();
   }
 
-  void _startWatchingRole() {
+  static const String _lastRoleCheckPrefsKey = 'profile_last_role_check_at';
+  static const Duration _roleCheckWindow = Duration(hours: 2);
+
+  /// Role/guideStatus sync, run once when the profile tab first mounts.
+  /// Previously this ran as two persistent Firestore listeners (users/{uid}
+  /// + guide_applications/{uid}) held open for the entire app session via
+  /// AutomaticKeepAliveClientMixin — but role/guideStatus only ever change
+  /// on a rare admin/approval action, so a live listener wasn't buying any
+  /// real freshness, just cost. That was already fixed to a one-shot .get(),
+  /// but since this tab re-mounts once per session, that's still 1 Firestore
+  /// read per session. Round 3: the users/{uid} .get() is now also gated
+  /// behind a time window (not risk-tiered like the premium check — there's
+  /// no fraud-race-condition rationale here, this is a display-only sync,
+  /// not a security gate; actual privilege checks happen fresh via Firestore
+  /// rules and SecurityOrchestrator regardless of what this screen shows).
+  Future<void> _refreshRoleOnce() async {
     try {
       final user = FirebaseAuth.instance.currentUser;
-      if (user != null) {
-        NotificationService().startWatchingUserNotifications(user.uid);
-        GuideApplicationRepository().getMyApplication().catchError((_) => null);
-        _userSub = FirebaseFirestore.instance.collection('users').doc(user.uid).snapshots().listen((doc) async {
-          if (doc.exists && doc.data() != null && mounted) {
-            final data = doc.data()!;
-            bool changed = false;
-            if (data['role'] != null && profile.role != data['role']) {
-              profile.role = data['role'];
-              if (profile.role == 'guide_approved') {
-                profile.guideStatus = GuideStatus.approved;
-                profile.isGuideApproved = true;
-              }
+      if (user == null) return;
+
+      NotificationService().startWatchingUserNotifications(user.uid);
+
+      // Laravel/MySQL-backed — zero Firestore cost. Already syncs
+      // guideStatus/isGuideApproved on approval/rejection server-side.
+      // Always runs (free) — only the Firestore .get() below is time-gated.
+      final app = await GuideApplicationRepository().getMyApplication().catchError((_) => null);
+      if (app != null && mounted) {
+        bool changed = false;
+        if (app.status == GuideStatus.approved && profile.guideStatus != GuideStatus.approved) {
+          profile.guideStatus = GuideStatus.approved;
+          profile.role = 'guide_approved';
+          profile.isGuideApproved = true;
+          changed = true;
+        } else if (app.status == GuideStatus.rejected && profile.guideStatus != GuideStatus.rejected) {
+          profile.guideStatus = GuideStatus.rejected;
+          changed = true;
+        } else if (app.status == GuideStatus.pending && profile.guideStatus != GuideStatus.pending) {
+          profile.guideStatus = GuideStatus.pending;
+          changed = true;
+        }
+        if (changed) {
+          await UserPreferenceService.saveProfile(profile);
+          if (mounted) setState(() {});
+        }
+      }
+
+      final prefs = await SharedPreferences.getInstance();
+      final lastCheckMs = prefs.getInt(_lastRoleCheckPrefsKey);
+      if (lastCheckMs != null) {
+        final elapsed = DateTime.now().difference(DateTime.fromMillisecondsSinceEpoch(lastCheckMs));
+        if (elapsed < _roleCheckWindow) return; // Still fresh — skip the Firestore read.
+      }
+      await prefs.setInt(_lastRoleCheckPrefsKey, DateTime.now().millisecondsSinceEpoch);
+
+      // One-shot read (not a listener) — also catches role changes outside
+      // the guide-application flow (e.g. admin ban/promotion).
+      final doc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+      if (doc.exists && doc.data() != null && mounted) {
+        final data = doc.data()!;
+        bool changed = false;
+        if (data['role'] != null && profile.role != data['role']) {
+          profile.role = data['role'];
+          if (profile.role == 'guide_approved') {
+            profile.guideStatus = GuideStatus.approved;
+            profile.isGuideApproved = true;
+          }
+          changed = true;
+        }
+        if (data['guideStatus'] != null) {
+          final statusStr = data['guideStatus'] as String;
+          try {
+            final newStatus = GuideStatus.values.byName(statusStr);
+            if (profile.guideStatus != newStatus) {
+              profile.guideStatus = newStatus;
               changed = true;
             }
-            if (data['guideStatus'] != null) {
-              final statusStr = data['guideStatus'] as String;
-              try {
-                final newStatus = GuideStatus.values.byName(statusStr);
-                if (profile.guideStatus != newStatus) {
-                  profile.guideStatus = newStatus;
-                  changed = true;
-                }
-              } catch (e, st) { SecureLogger.error("Exception caught: $e\n$st"); }
-            }
-            if (changed) {
-              await UserPreferenceService.saveProfile(profile);
-              if (mounted) setState(() {});
-            }
-          }
-        });
-
-        _appSub = FirebaseFirestore.instance.collection('guide_applications').doc(user.uid).snapshots().listen((doc) async {
-          if (doc.exists && doc.data() != null && mounted) {
-            final data = doc.data()!;
-            final statusStr = data['status'] as String?;
-            if (statusStr != null) {
-              try {
-                final newStatus = GuideStatus.values.byName(statusStr);
-                bool changed = false;
-                if (newStatus == GuideStatus.approved && profile.guideStatus != GuideStatus.approved) {
-                  profile.guideStatus = GuideStatus.approved;
-                  profile.role = 'guide_approved';
-                  profile.isGuideApproved = true;
-                  changed = true;
-                } else if (newStatus == GuideStatus.rejected && profile.guideStatus != GuideStatus.rejected) {
-                  profile.guideStatus = GuideStatus.rejected;
-                  changed = true;
-                } else if (newStatus == GuideStatus.pending && profile.guideStatus != GuideStatus.pending) {
-                  profile.guideStatus = GuideStatus.pending;
-                  changed = true;
-                }
-                if (changed) {
-                  await UserPreferenceService.saveProfile(profile);
-                  if (mounted) setState(() {});
-                }
-              } catch (e, st) { SecureLogger.error("Exception caught: $e\n$st"); }
-            }
-          }
-        });
+          } catch (e, st) { SecureLogger.error("Exception caught: $e\n$st"); }
+        }
+        if (changed) {
+          await UserPreferenceService.saveProfile(profile);
+          if (mounted) setState(() {});
+        }
       }
     } catch (e, st) {
       SecureLogger.error("Error syncing role", e, st, "ProfileScreen");
     }
-  }
-
-  @override
-  void dispose() {
-    _userSub?.cancel();
-    _appSub?.cancel();
-    super.dispose();
   }
 
   // ── Language Picker ─────────────────────────────────────────────────────────
@@ -330,10 +341,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
                         const SizedBox(height: 24),
                       ],
 
-                      // Stats Row
-                      _buildStatsCard(),
-                      const SizedBox(height: 20),
-
                       // Explorer Progress
                       ExplorerProgressCard(
                         service: ExplorerProgressService(),
@@ -389,9 +396,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
   Widget _buildHeroAppBar(bool isPremium, AppLocalizations l10n, bool isDark) {
     final primary = Theme.of(context).colorScheme.primary;
     final secondary = Theme.of(context).colorScheme.secondary;
+    final levelNumber = ExplorerProgressService().currentLevel.index + 1;
 
     return SliverAppBar(
-      expandedHeight: 148,
+      expandedHeight: 300,
       pinned: true,
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       elevation: 0,
@@ -411,19 +419,20 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
           ),
           child: SafeArea(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(22, 8, 22, 22),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
+              padding: const EdgeInsets.fromLTRB(22, 12, 22, 16),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  // Avatar
+                  // Avatar, centered
                   GestureDetector(
                     onTap: () => _pickImage(l10n),
                     child: Stack(
                       clipBehavior: Clip.none,
                       children: [
                         Container(
-                          width: 72,
-                          height: 72,
+                          width: 88,
+                          height: 88,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             border: Border.all(color: AppTheme.colors.white.withValues(alpha: 0.55), width: 2.5),
@@ -434,7 +443,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
                           right: -2,
                           bottom: -2,
                           child: Container(
-                            padding: const EdgeInsets.all(5),
+                            padding: const EdgeInsets.all(6),
                             decoration: BoxDecoration(
                               color: AppPalette.heroOchre,
                               shape: BoxShape.circle,
@@ -443,7 +452,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
                             child: Icon(
                               isPremium ? Icons.verified_rounded : Icons.camera_alt_rounded,
                               color: AppPalette.ink,
-                              size: 12,
+                              size: 14,
                             ),
                           ),
                         ),
@@ -451,40 +460,45 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
                     ).animate(onPlay: (c) => c.repeat()).shimmer(
                         duration: 3.seconds, delay: 2.seconds, color: AppTheme.colors.white.withValues(alpha: 0.3)),
                   ),
-                  const SizedBox(width: 16),
-                  // Name / title
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          isPremium ? "Premium Traveler" : "Oracle Traveler",
-                          style: GoogleFonts.outfit(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w800,
-                            color: AppTheme.colors.white,
-                          ),
-                        ),
-                        const SizedBox(height: 6),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: AppTheme.colors.white.withValues(alpha: 0.15),
-                            borderRadius: BorderRadius.circular(100),
-                          ),
-                          child: Text(
-                            "${ExplorerProgressService().currentLevel.title} · Level 1",
-                            style: GoogleFonts.inter(
-                              fontSize: 10,
-                              color: AppTheme.colors.white,
-                              fontWeight: FontWeight.w700,
-                              letterSpacing: 0.3,
-                            ),
-                          ),
-                        ),
-                      ],
+                  const SizedBox(height: 14),
+                  Text(
+                    isPremium ? "Premium Traveler" : "Oracle Traveler",
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.outfit(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w800,
+                      color: AppTheme.colors.white,
                     ),
+                  ),
+                  const SizedBox(height: 8),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: AppTheme.colors.white.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(100),
+                    ),
+                    child: Text(
+                      "${ExplorerProgressService().currentLevel.title} · Level $levelNumber",
+                      style: GoogleFonts.inter(
+                        fontSize: 10,
+                        color: AppTheme.colors.white,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 0.3,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+                  Container(height: 1, color: AppTheme.colors.white.withValues(alpha: 0.15)),
+                  const SizedBox(height: 12),
+                  // Stats, embedded directly in the hero card
+                  Row(
+                    children: [
+                      Expanded(child: _heroStatTile(profile.totalTripsGenerated.toString(), "Trips")),
+                      Container(width: 1, height: 32, color: AppTheme.colors.white.withValues(alpha: 0.15)),
+                      Expanded(child: _heroStatTile(profile.visitedPlaces.length.toString(), "Places")),
+                      Container(width: 1, height: 32, color: AppTheme.colors.white.withValues(alpha: 0.15)),
+                      Expanded(child: _heroStatTile(levelNumber.toString(), "Level")),
+                    ],
                   ),
                 ],
               ),
@@ -495,39 +509,19 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
     );
   }
 
-  // ── Stats Card ───────────────────────────────────────────────────────────────
-  Widget _buildStatsCard() {
-    return Row(
+  Widget _heroStatTile(String value, String label) {
+    return Column(
       children: [
-        Expanded(child: _statTile(profile.totalTripsGenerated.toString(), "Trips")),
-        const SizedBox(width: 10),
-        Expanded(child: _statTile(profile.visitedPlaces.length.toString(), "Places")),
-        const SizedBox(width: 10),
-        Expanded(child: _statTile("1", "Level")),
+        Text(
+          value,
+          style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.w800, color: AppTheme.colors.white),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          label,
+          style: GoogleFonts.inter(fontSize: 10, color: AppTheme.colors.white.withValues(alpha: 0.75), fontWeight: FontWeight.w600),
+        ),
       ],
-    );
-  }
-
-  Widget _statTile(String value, String label) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 16),
-      decoration: BoxDecoration(
-        color: AppTheme.surfaceMuted(context),
-        borderRadius: BorderRadius.circular(18),
-      ),
-      child: Column(
-        children: [
-          Text(value,
-              style: GoogleFonts.outfit(
-                  fontSize: 20, fontWeight: FontWeight.w800, color: AppTheme.textPrimary(context))),
-          const SizedBox(height: 2),
-          Text(label,
-              style: GoogleFonts.inter(
-                  fontSize: 10,
-                  color: AppTheme.textSecondary(context),
-                  fontWeight: FontWeight.w600)),
-        ],
-      ),
     );
   }
 

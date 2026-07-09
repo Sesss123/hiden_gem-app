@@ -19,7 +19,7 @@ import '../../core/utils/image_utils.dart';
 import '../../core/localization/l10n_utils.dart';
 import 'place_details_screen.dart';
 import 'package:shimmer/shimmer.dart';
-import 'event_calendar_screen.dart';
+
 class DiscoveryScreen extends ConsumerStatefulWidget {
   const DiscoveryScreen({super.key});
 
@@ -506,6 +506,98 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
     Navigator.push(context, MaterialPageRoute(builder: (_) => PlaceDetailsScreen(place: place)));
   }
 
+  void _openVillageExperience(VillageExperience exp) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: AppTheme.colors.transparent,
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.6,
+        minChildSize: 0.4,
+        maxChildSize: 0.9,
+        expand: false,
+        builder: (context, scrollController) => Container(
+          decoration: BoxDecoration(
+            color: Theme.of(context).scaffoldBackgroundColor,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+          ),
+          child: ListView(
+            controller: scrollController,
+            padding: EdgeInsets.zero,
+            children: [
+              ClipRRect(
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+                child: CachedNetworkImage(
+                  imageUrl: exp.imageUrl,
+                  height: 200,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                  errorWidget: (context, url, error) => Container(
+                    height: 200,
+                    color: AppTheme.surfaceMuted(context),
+                    child: Icon(Icons.home_work_outlined, color: AppTheme.textSecondary(context), size: 40),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      exp.name,
+                      style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.w800, color: AppTheme.textPrimary(context)),
+                    ),
+                    const SizedBox(height: 6),
+                    Row(
+                      children: [
+                        Icon(Icons.place_rounded, size: 14, color: Theme.of(context).colorScheme.primary),
+                        const SizedBox(width: 4),
+                        Text(
+                          exp.district,
+                          style: GoogleFonts.inter(fontSize: 12, color: AppTheme.textSecondary(context), fontWeight: FontWeight.w600),
+                        ),
+                        const SizedBox(width: 12),
+                        Icon(Icons.person_pin_rounded, size: 14, color: Theme.of(context).colorScheme.secondary),
+                        const SizedBox(width: 4),
+                        Text(
+                          "Hosted by ${exp.hostName}",
+                          style: GoogleFonts.inter(fontSize: 12, color: AppTheme.textSecondary(context), fontWeight: FontWeight.w600),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: AppTheme.surfaceMuted(context),
+                        borderRadius: BorderRadius.circular(100),
+                      ),
+                      child: Text(
+                        exp.experienceType,
+                        style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w700, color: AppTheme.textPrimary(context)),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Text(
+                      exp.description,
+                      style: GoogleFonts.inter(fontSize: 14, color: AppTheme.textSecondary(context), height: 1.6),
+                    ),
+                    const SizedBox(height: 24),
+                    Text(
+                      "LKR ${exp.price.toStringAsFixed(0)}",
+                      style: GoogleFonts.outfit(fontSize: 22, fontWeight: FontWeight.w800, color: Theme.of(context).colorScheme.primary),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -783,10 +875,7 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
               child: GestureDetector(
                 onTap: () {
                   HapticFeedback.lightImpact();
-                  // Navigate to Event Calendar — best match for Soulscape experiences
-                  Navigator.push(context, MaterialPageRoute(
-                    builder: (_) => const EventCalendarScreen(),
-                  ));
+                  _openVillageExperience(exp);
                 },
                 child: Container(
                   width: 220,

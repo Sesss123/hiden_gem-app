@@ -31,8 +31,8 @@ class ARVideoLibraryScreen extends StatelessWidget {
       ),
       body: BatikBackground(
         child: SafeArea(
-          child: StreamBuilder<List<ARVideoContent>>(
-            stream: repository.streamAllEnabled(),
+          child: FutureBuilder<List<ARVideoContent>>(
+            future: repository.getAllEnabled(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return Center(child: CircularProgressIndicator(color: AppTheme.sigiriyaOchre(context)));

@@ -15,11 +15,13 @@ import '../../core/theme/oracle_ui_system.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/services/monsoon_broadcast_service.dart';
 import '../../data/datasources/live_events_service.dart';
+import '../../data/datasources/dynamic_content_service.dart';
 import '../../data/datasources/user_preference_service.dart';
 import '../../data/datasources/trip_cache_service.dart';
 import '../../data/models/event_model.dart';
 import '../widgets/cached_image.dart';
 import '../widgets/skeleton_loaders.dart';
+import '../widgets/custom_buttons.dart';
 
 class EventCalendarScreen extends StatefulWidget {
   const EventCalendarScreen({super.key});
@@ -37,6 +39,7 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> with Automati
   List<EventModel> _topPicks = [];
   EventCategory? _selectedCategory;
   bool _isLoading = true;
+  List<Map<String, dynamic>>? _dynamicEvents;
   final CalendarFormat _calendarFormat = CalendarFormat.month;
   final _userProfile = UserPreferenceService.getProfile();
   final ScreenshotController _screenshotController = ScreenshotController();
@@ -73,16 +76,18 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> with Automati
 
   Future<void> _loadData() async {
     setState(() => _isLoading = true);
+    _dynamicEvents = await DynamicContentService.fetchEvents();
     _updateEvents();
     _topPicks = LiveEventsService.getPersonalizedEvents(
-      _userProfile.vibe, 
+      _userProfile.vibe,
       [..._userProfile.preferredStyles, ..._selectedMusicPreferences],
+      dynamicEvents: _dynamicEvents,
     );
     setState(() => _isLoading = false);
   }
 
   void _updateEvents() {
-    final allEvents = LiveEventsService.getEventsForTrip(_selectedDay!, 1);
+    final allEvents = LiveEventsService.getEventsForTrip(_selectedDay!, 1, dynamicEvents: _dynamicEvents);
     setState(() {
       if (_selectedCategory == null) {
         _selectedEvents = allEvents;
@@ -636,7 +641,6 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> with Automati
             borderRadius: const BorderRadius.vertical(top: Radius.circular(40)),
             borderColor: Theme.of(context).dividerColor.withValues(alpha: 0.2),
             padding: EdgeInsets.all(32),
-            opacity: 0.15, 
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -648,14 +652,14 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> with Automati
                   ),
                 ),
                 SizedBox(height: 24),
-                OracleUI.neonText(
-                  "PERSONAL VIBE HUD", 
-                  style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.w900, color: AppTheme.textPrimary(context))
+                Text(
+                  "Music preferences",
+                  style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.w800, color: AppTheme.textPrimary(context), letterSpacing: -0.3),
                 ),
-                SizedBox(height: 12),
+                SizedBox(height: 6),
                 Text(
                   "Fine-tune the temporal oracle with your stylistic preferences.",
-                  style: GoogleFonts.inter(fontSize: 13, color: AppTheme.textSecondary(context).withValues(alpha: 0.7)),
+                  style: GoogleFonts.inter(fontSize: 13, color: AppTheme.textSecondary(context)),
                 ),
                 SizedBox(height: 24),
                 Wrap(
@@ -680,29 +684,9 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> with Automati
                   }).toList(),
                 ).animate().fadeIn(duration: 400.ms).slideY(begin: 0.1),
                 SizedBox(height: 32),
-                Container(
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
-                        blurRadius: 15,
-                        spreadRadius: 2,
-                      )
-                    ],
-                  ),
-                  child: ElevatedButton(
-                    onPressed: () { _loadData(); Navigator.pop(context); },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(context).colorScheme.primary,
-                      foregroundColor: AppTheme.colors.black,
-                      padding: EdgeInsets.symmetric(vertical: 20),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                      elevation: 0,
-                    ),
-                    child: Text("SYNC PREFERENCES", style: GoogleFonts.outfit(fontWeight: FontWeight.w900, letterSpacing: 1)),
-                  ),
+                PrimaryButton(
+                  label: "Sync preferences",
+                  onPressed: () { _loadData(); Navigator.pop(context); },
                 ),
                 SizedBox(height: 16),
               ],

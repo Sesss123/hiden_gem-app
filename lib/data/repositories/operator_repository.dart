@@ -42,12 +42,6 @@ class OperatorRepository {
     });
   }
 
-  /// Stream of an operator's team profile.
-  Stream<OperatorAccount?> streamOperator(String operatorId) {
-    return _operatorRef.doc(operatorId).snapshots().map((doc) =>
-        doc.exists ? OperatorAccount.fromJson(doc.data()!) : null);
-  }
-
   /// Updates an operator's company branding info.
   Future<void> updateBranding(String operatorId, Map<String, String> branding) async {
     await _operatorRef.doc(operatorId).update({

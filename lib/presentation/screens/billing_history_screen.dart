@@ -16,7 +16,7 @@ class BillingHistoryScreen extends ConsumerWidget {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return const Scaffold(body: Center(child: Text("Access Denied")));
 
-    final billingStream = ref.watch(subscriptionServiceProvider).getBillingHistory(user.uid);
+    final billingFuture = ref.watch(subscriptionServiceProvider).getBillingHistory(user.uid);
 
     return Scaffold(
       backgroundColor: AppTheme.colors.transparent,
@@ -39,8 +39,8 @@ class BillingHistoryScreen extends ConsumerWidget {
             ),
             SliverPadding(
               padding: const EdgeInsets.all(24),
-              sliver: StreamBuilder<List<SubscriptionRecord>>(
-                stream: billingStream,
+              sliver: FutureBuilder<List<SubscriptionRecord>>(
+                future: billingFuture,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return SliverFillRemaining(child: Center(child: CircularProgressIndicator(color: AppTheme.colors.cyanAccent)));

@@ -38,7 +38,6 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
   List<Vehicle> _vehicles = [];
   bool _isLoading = true;
   Timer? _locationTimer;
-  StreamSubscription? _vehicleSub;
   StreamSubscription<Map<String, dynamic>>? _monsoonSub;
   Map<String, dynamic>? _activeMonsoonAlert;
   int _currentTabIndex = 0;
@@ -57,7 +56,6 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
   @override
   void dispose() {
     _locationTimer?.cancel();
-    _vehicleSub?.cancel();
     _monsoonSub?.cancel();
     super.dispose();
   }
@@ -152,10 +150,8 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
   Future<void> _loadVehicles() async {
     final uid = AuthService().currentUser?.uid;
     if (uid != null) {
-      final stream = _vehicleRepo.getGuideVehicles(uid);
-      _vehicleSub = stream.listen((v) {
-        if (mounted) setState(() => _vehicles = v);
-      });
+      final v = await _vehicleRepo.getGuideVehicles(uid);
+      if (mounted) setState(() => _vehicles = v);
     }
   }
 
@@ -555,9 +551,13 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
           children: [
             _buildStatCard("TRAVELERS", "${session.touristIds.length}", Icons.people_outline),
             const SizedBox(width: 12),
-            _buildStatCard("RATING", "4.9", Icons.star_border_rounded),
+            _buildStatCard(
+              "RATING",
+              (UserPreferenceService.getProfile().guideProfile?.ratingAverage ?? 5.0).toStringAsFixed(1),
+              Icons.star_border_rounded,
+            ),
             const SizedBox(width: 12),
-            _buildStatCard("HOURS", "128h", Icons.timer_outlined),
+            _buildStatCard("SERVED", "${UserPreferenceService.getProfile().guideProfile?.travelersServed ?? 0}", Icons.groups_outlined),
           ],
         ).animate().fadeIn(duration: 600.ms).slideY(begin: -0.2),
         const SizedBox(height: 24),

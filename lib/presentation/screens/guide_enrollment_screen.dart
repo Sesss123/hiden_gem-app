@@ -40,7 +40,7 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
   String _selectedCategory = 'National';
   String? _rejectionReason;
   GuideStatus _currentStatus = GuideStatus.none;
-  StreamSubscription? _appSub;
+  Timer? _pollTimer;
 
   @override
   void initState() {
@@ -48,6 +48,11 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
     _startWatchingApplication();
   }
 
+  /// Polls the Laravel backend (MySQL-backed, zero Firestore cost) for
+  /// application status instead of holding an open Firestore listener.
+  /// This screen only matters while the user is actively waiting for
+  /// approval, so a 20s poll interval is responsive enough without paying
+  /// for a persistent connection the whole time the screen is mounted.
   void _startWatchingApplication() {
     final profile = UserPreferenceService.getProfile();
     setState(() {
@@ -56,40 +61,45 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid == null) return;
 
-    _repo.getMyApplication().catchError((_) => null);
+    _pollStatus();
+    _pollTimer = Timer.periodic(const Duration(seconds: 20), (_) => _pollStatus());
+  }
 
-    _appSub = _repo.watchMyApplication(uid).listen((app) {
-      if (app != null && mounted) {
-        setState(() {
-          _currentStatus = app.status;
-          if (app.status == GuideStatus.rejected) {
-            _rejectionReason = app.adminComment ?? "Please ensure your license documents and photos are clear and valid.";
-          }
-        });
-        final currentProfile = UserPreferenceService.getProfile();
-        bool changed = false;
-        if (app.status == GuideStatus.approved && currentProfile.guideStatus != GuideStatus.approved) {
-          currentProfile.guideStatus = GuideStatus.approved;
-          currentProfile.role = 'guide_approved';
-          currentProfile.isGuideApproved = true;
-          changed = true;
-        } else if (app.status == GuideStatus.rejected && currentProfile.guideStatus != GuideStatus.rejected) {
-          currentProfile.guideStatus = GuideStatus.rejected;
-          changed = true;
-        } else if (app.status == GuideStatus.pending && currentProfile.guideStatus != GuideStatus.pending) {
-          currentProfile.guideStatus = GuideStatus.pending;
-          changed = true;
+  Future<void> _pollStatus() async {
+    final app = await _repo.getMyApplication().catchError((_) => null);
+    if (app != null && mounted) {
+      setState(() {
+        _currentStatus = app.status;
+        if (app.status == GuideStatus.rejected) {
+          _rejectionReason = app.adminComment ?? "Please ensure your license documents and photos are clear and valid.";
         }
-        if (changed) {
-          UserPreferenceService.saveProfile(currentProfile);
-        }
+      });
+      final currentProfile = UserPreferenceService.getProfile();
+      bool changed = false;
+      if (app.status == GuideStatus.approved && currentProfile.guideStatus != GuideStatus.approved) {
+        currentProfile.guideStatus = GuideStatus.approved;
+        currentProfile.role = 'guide_approved';
+        currentProfile.isGuideApproved = true;
+        changed = true;
+      } else if (app.status == GuideStatus.rejected && currentProfile.guideStatus != GuideStatus.rejected) {
+        currentProfile.guideStatus = GuideStatus.rejected;
+        changed = true;
+      } else if (app.status == GuideStatus.pending && currentProfile.guideStatus != GuideStatus.pending) {
+        currentProfile.guideStatus = GuideStatus.pending;
+        changed = true;
       }
-    });
+      if (changed) {
+        UserPreferenceService.saveProfile(currentProfile);
+      }
+      if (app.status == GuideStatus.approved || app.status == GuideStatus.rejected) {
+        _pollTimer?.cancel();
+      }
+    }
   }
 
   @override
   void dispose() {
-    _appSub?.cancel();
+    _pollTimer?.cancel();
     _licenseController.dispose();
     _bioController.dispose();
     super.dispose();

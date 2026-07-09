@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -iE \"google-services\\\\.json|\\\\.env$|serviceAccountKey|firebase-credentials|key\\\\.properties|\\\\.jks$|\\\\.keystore$\")"
+    ]
+  }
+}

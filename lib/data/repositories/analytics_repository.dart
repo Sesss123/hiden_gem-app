@@ -21,6 +21,13 @@ class AnalyticsRepository {
   }
 
   /// Generates an explainable trust score and snapshot for a guide.
+  ///
+  /// NOT CURRENTLY CALLED FROM ANY SCREEN. firestore.rules blocks client
+  /// writes to guide_analytics (a self-computed trust score must never be
+  /// client-writable — a modified client could inflate its own ranking).
+  /// If this is wired up in the future, move the write to a Laravel/backend
+  /// endpoint (same pattern as ReviewController::recalculate) rather than
+  /// relaxing the rule.
   Future<GuideAnalyticsSnapshot> generateGuideSnapshot(String guideId) async {
     final userDoc = await _firestore.collection('users').doc(guideId).get();
     if (!userDoc.exists) throw Exception("GUIDE_NOT_FOUND");
@@ -106,32 +113,4 @@ class AnalyticsRepository {
     return snapshot;
   }
 
-  Stream<List<GuideAnalyticsSnapshot>> getGuideHistory(String guideId) {
-    return _firestore.collection('guide_analytics')
-        .where('guideId', isEqualTo: guideId)
-        .orderBy('periodEnd', descending: true)
-        .limit(12)
-        .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => GuideAnalyticsSnapshot.fromJson(doc.data()))
-            .toList());
-  }
-
-  /// Admin level leaderboard metrics
-  Stream<List<Map<String, dynamic>>> getGuideLeaderboard() {
-    return _firestore.collection('users')
-        .where('role', isEqualTo: 'guide_approved')
-        .orderBy('ratingAverage', descending: true)
-        .limit(10)
-        .snapshots()
-        .map((snapshot) => snapshot.docs.map((doc) {
-          final data = doc.data();
-          return {
-            'uid': doc.id,
-            'name': data['vibe'] ?? 'Guide',
-            'rating': data['ratingAverage'] ?? 0.0,
-            'served': data['totalTouristsServed'] ?? 0,
-          };
-        }).toList());
-  }
 }

@@ -127,30 +127,25 @@ class SubscriptionService {
     }
   }
 
-  /// Upgrades or starts a new subscription.
+  /// Records a purchase attempt. Note: this does NOT grant premium — 'isPremium'
+  /// and related privileged fields on the user's account can only be set by the
+  /// RevenueCat webhook (Laravel backend), since firestore.rules blocks clients
+  /// from writing those fields to their own account document. This record exists
+  /// so the UI has something to show immediately; the webhook is the source of truth.
   Future<void> startSubscription(SubscriptionRecord record) async {
     await _subscriptionRef.doc(record.subscriptionId).set(record.toJson());
-    
-    // Update the account's subscription info with standardized fields
-    final collection = record.accountType == 'guide' ? 'users' : 'operator_accounts';
-    await _firestore.collection(collection).doc(record.accountId).update({
-      'isPremium': record.status == 'active',
-      'premiumPlanId': record.planId,
-      'premiumExpiresAt': Timestamp.fromDate(record.expiresAt),
-      'autoRenew': true,
-      // Keep legacy aliases for backwards compatibility
-      'subscriptionPlan': record.planId,
-      'subExpiresAt': record.expiresAt.toIso8601String(),
-    });
   }
 
-  /// Retrieves billing history for an account.
-  Stream<List<SubscriptionRecord>> getBillingHistory(String accountId) {
-    return _subscriptionRef
+  /// Retrieves billing history for an account. One-shot read (not a live
+  /// listener) — a billing history screen is a historical record the user
+  /// checks occasionally, not something that needs sub-second live updates
+  /// while open.
+  Future<List<SubscriptionRecord>> getBillingHistory(String accountId) async {
+    final snapshot = await _subscriptionRef
         .where('accountId', isEqualTo: accountId)
         .orderBy('startedAt', descending: true)
-        .snapshots()
-        .map((snapshot) => snapshot.docs.map((doc) => SubscriptionRecord.fromJson(doc.data())).toList());
+        .get();
+    return snapshot.docs.map((doc) => SubscriptionRecord.fromJson(doc.data())).toList();
   }
 
   /// Cancels an active subscription.

@@ -212,8 +212,10 @@ class _MarketplaceResultsScreenState extends ConsumerState<MarketplaceResultsScr
           return Center(child: CircularProgressIndicator(color: Theme.of(context).colorScheme.primary));
         }
         if (snapshot.hasError) {
-          return Center(
-            child: Text("Error loading guides: ${snapshot.error}", style: TextStyle(color: AppTheme.textSecondary(context))),
+          return _buildErrorState(
+            context,
+            snapshot.error.toString(),
+            onRetry: () => setState(() => _defaultListingsFuture = _loadDefaultListings()),
           );
         }
         final listings = snapshot.data ?? [];
@@ -230,8 +232,14 @@ class _MarketplaceResultsScreenState extends ConsumerState<MarketplaceResultsScr
       return Center(child: CircularProgressIndicator(color: Theme.of(context).colorScheme.primary));
     }
     if (state.error != null && state.results.isEmpty) {
-      return Center(
-        child: Text(state.error!, style: TextStyle(color: AppTheme.colors.redAccent)),
+      return _buildErrorState(
+        context,
+        state.error!,
+        onRetry: () {
+          final controller = ref.read(marketplaceSearchControllerProvider.notifier);
+          final query = ref.read(marketplaceSearchControllerProvider).normalizedQuery;
+          controller.search(query.isEmpty ? 'a' : query, category: _selectedCategory);
+        },
       );
     }
     if (state.results.isEmpty) {
@@ -253,6 +261,47 @@ class _MarketplaceResultsScreenState extends ConsumerState<MarketplaceResultsScr
               message,
               textAlign: TextAlign.center,
               style: GoogleFonts.inter(fontSize: 16, color: AppTheme.textSecondary(context)),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildErrorState(BuildContext context, String rawError, {required VoidCallback onRetry}) {
+    final isPermissionError = rawError.contains('permission-denied');
+    final message = isPermissionError
+        ? "Sign in to browse verified guides."
+        : "Something went wrong loading guides. Please try again.";
+
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              isPermissionError ? Icons.lock_outline_rounded : Icons.error_outline_rounded,
+              size: 64,
+              color: AppTheme.textSecondary(context).withValues(alpha: 0.4),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w600, color: AppTheme.textPrimary(context)),
+            ),
+            const SizedBox(height: 20),
+            TextButton(
+              onPressed: onRetry,
+              child: Text(
+                "Try again",
+                style: GoogleFonts.inter(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+              ),
             ),
           ],
         ),
