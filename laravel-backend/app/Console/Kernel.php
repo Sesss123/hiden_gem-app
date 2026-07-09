@@ -19,6 +19,14 @@ class Kernel extends ConsoleKernel
         $schedule->command('places:repair-sync')
                  ->everyMinute()
                  ->withoutOverlapping();
+
+        // Refreshes the featured-listings / AR-enabled-locations caches and
+        // pushes a Reverb broadcast when either actually changed — see
+        // BroadcastMarketplaceUpdates for why this exists instead of relying
+        // on the lazy Cache::remember() in MarketplaceController.
+        $schedule->command('marketplace:broadcast-updates')
+                 ->everyFiveMinutes()
+                 ->withoutOverlapping();
     }
 
     /**

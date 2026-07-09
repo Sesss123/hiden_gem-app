@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -6,6 +7,7 @@ import '../models/guide_listing.dart';
 import '../models/guide_availability.dart';
 import '../../core/config/app_config.dart';
 import '../../core/network/secure_http_client.dart';
+import '../../core/services/reverb_channel_service.dart';
 import '../../core/utils/secure_logger.dart';
 
 final marketplaceRepositoryProvider = Provider((ref) => MarketplaceRepository());
@@ -17,7 +19,12 @@ final marketplaceRepositoryProvider = Provider((ref) => MarketplaceRepository())
 /// - Featured Guides: GET /v1/listings/featured, behind a shared 5-min
 ///   Laravel cache → the whole app's traffic within the cache window costs
 ///   1 Firestore read instead of 1 per device (still kept behind a short
-///   in-memory cache here too, to avoid a network call on every screen open)
+///   in-memory cache here too, to avoid a network call on every screen open).
+///   A Reverb WebSocket push (see `_reverb`) additionally refreshes this
+///   in-memory cache the moment the backend's marketplace:broadcast-updates
+///   command detects a real change, without needing a new HTTP round-trip —
+///   the HTTP path above remains the initial-load + offline/socket-down
+///   fallback, so nothing regresses if the socket never connects.
 /// - Admin oversight: snapshots() is OK here         → Low-volume admin tool
 ///
 /// This design ensures that 10,000 concurrent users don't each hold open
@@ -36,9 +43,14 @@ class MarketplaceRepository {
   List<GuideListing>? _featuredCache;
   DateTime? _featuredCacheExpiry;
 
+  ReverbChannelService? _reverb;
+  StreamSubscription<ReverbEvent>? _reverbSub;
+
   /// Fetches featured guides via the Laravel backend's shared cache.
   /// Re-fetches only after the local 5-minute cache expires.
   Future<List<GuideListing>> getFeaturedGuides() async {
+    _ensureLiveUpdatesConnected();
+
     if (_featuredCache != null &&
         _featuredCacheExpiry != null &&
         DateTime.now().isBefore(_featuredCacheExpiry!)) {
@@ -71,9 +83,41 @@ class MarketplaceRepository {
     return _featuredCache ?? [];
   }
 
+  /// Connects (once) to the `featured-listings` Reverb channel so a push
+  /// from the backend can refresh `_featuredCache` ahead of its 5-min TTL.
+  /// Lazily started on first `getFeaturedGuides()` call rather than at
+  /// repository construction, since this is a Riverpod `Provider` singleton
+  /// and shouldn't open a socket before anything actually needs this data.
+  void _ensureLiveUpdatesConnected() {
+    if (_reverb != null) return;
+
+    _reverb = ReverbChannelService(channelName: 'featured-listings');
+    _reverbSub = _reverb!.events.listen((event) {
+      if (event.name != 'FeaturedListingsUpdated') return;
+      try {
+        final payload = event.data as Map<String, dynamic>;
+        _featuredCache = (payload['listings'] as List<dynamic>? ?? [])
+            .map((l) => GuideListing.fromJson(l as Map<String, dynamic>))
+            .toList();
+        _featuredCacheExpiry = DateTime.now().add(const Duration(minutes: 5));
+        SecureLogger.info("Featured listings updated via Reverb push.", tag: "Marketplace");
+      } catch (e) {
+        SecureLogger.warning("Failed to apply Reverb featured-listings push: $e", tag: "Marketplace");
+      }
+    });
+    _reverb!.connect();
+  }
+
   void invalidateFeaturedCache() {
     _featuredCache = null;
     _featuredCacheExpiry = null;
+  }
+
+  void disposeLiveUpdates() {
+    _reverbSub?.cancel();
+    _reverb?.dispose();
+    _reverb = null;
+    _reverbSub = null;
   }
 
   // --- Search (Paginated, On-Demand) ---

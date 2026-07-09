@@ -17,6 +17,13 @@ class MarketplaceController extends Controller
      * screen open (mitigated only by a 5-min client-local cache per device)
      * — this adds a shared server-side cache so the whole app's traffic
      * within the cache window costs 1 Firestore read instead of 1 per device.
+     *
+     * The 'listings_featured' cache key is also kept warm by the
+     * marketplace:broadcast-updates scheduled command (App\Console\Commands\
+     * BroadcastMarketplaceUpdates), which additionally fires a Reverb
+     * broadcast on the `featured-listings` channel when the data changes —
+     * this endpoint's Cache::remember() below only runs its callback on a
+     * cold/expired cache, so it does not add extra Firestore reads on top.
      */
     public function featured(FirestoreService $firestore)
     {
@@ -42,6 +49,11 @@ class MarketplaceController extends Controller
      * shared cache. AR-enabled locations only change when an admin adds new
      * AR content, so a 10-min server cache turns every view within the
      * window into 1 shared Firestore read instead of 1-per-device.
+     *
+     * The 'ar_enabled_locations' cache key is also kept warm by the
+     * marketplace:broadcast-updates scheduled command, which additionally
+     * fires a Reverb broadcast on the `ar-enabled-locations` channel when
+     * the data changes — see the note on featured() above.
      */
     public function arEnabledLocations(FirestoreService $firestore)
     {
