@@ -1,8 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
+import 'package:image_picker/image_picker.dart';
 import '../models/guide_listing.dart';
 import '../models/guide_availability.dart';
 import '../../core/config/app_config.dart';
@@ -199,9 +201,16 @@ class MarketplaceRepository {
   }
 
   Future<void> trackProfileView(String listingId) async {
-    await _listingRef.doc(listingId).update({
-      'profileViews': FieldValue.increment(1),
-    });
+    // Firestore rules block clients from writing profileViews directly
+    // (a view counter can't be trusted from whoever is viewing it), so
+    // this goes through an admin-privileged Cloud Function instead.
+    try {
+      await FirebaseFunctions.instance
+          .httpsCallable('track_profile_view')
+          .call({'listingId': listingId});
+    } catch (e) {
+      SecureLogger.warning("Failed to track profile view: $e", tag: "Marketplace", isBackground: true);
+    }
   }
 
   // --- Guide Packages ---
@@ -230,6 +239,35 @@ class MarketplaceRepository {
         .set({'availability': availability.toJson()}, SetOptions(merge: true));
   }
 
+  /// Uploads a listing photo (cover photo or vehicle photo) to the Laravel
+  /// backend's local disk storage — same self-hosted path used for guide
+  /// enrollment documents, since Firebase Storage's upload session kept
+  /// failing in local dev. Returns the absolute URL, or null on failure.
+  Future<String?> uploadListingPhoto({required XFile file, required String photoType}) async {
+    try {
+      final client = SecureHttpClient(http.Client());
+      final uri = Uri.parse('${AppConfig.laravelUrl}/marketplace/photos');
+      final request = http.MultipartRequest('POST', uri)
+        ..headers['Accept'] = 'application/json'
+        ..headers['X-API-KEY'] = AppConfig.hiddenGemsApiKey
+        ..headers['X-HiddenGems-Key'] = AppConfig.hiddenGemsApiKey
+        ..fields['photo_type'] = photoType
+        ..files.add(await http.MultipartFile.fromPath('file', file.path));
+
+      final streamedResponse = await client.send(request).timeout(const Duration(seconds: 30));
+      final response = await http.Response.fromStream(streamedResponse);
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        return data['data']['full_url'] as String?;
+      }
+      SecureLogger.error("Listing photo upload returned status ${response.statusCode}: ${response.body}");
+    } catch (e) {
+      SecureLogger.error("Failed to upload listing photo to Laravel Backend: $e");
+    }
+    return null;
+  }
+
   // --- ADMIN METHODS (Stream OK — admin is low-volume) ---
 
   Stream<List<GuideListing>> getAllListingsAdmin() {
@@ -249,8 +287,11 @@ class MarketplaceRepository {
     });
   }
 
-  Future<void> toggleFeatured(String listingId, bool isFeatured) async {
-    await _listingRef.doc(listingId).update({'isFeatured': isFeatured});
+  Future<void> toggleFeatured(String listingId, bool isFeatured, {DateTime? featuredUntil}) async {
+    await _listingRef.doc(listingId).update({
+      'isFeatured': isFeatured,
+      'featuredUntil': isFeatured ? featuredUntil?.toIso8601String() : null,
+    });
   }
 }
 

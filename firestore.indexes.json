@@ -1,0 +1,31 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "guide_listings",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "status", "order": "ASCENDING" },
+        { "fieldPath": "moderationStatus", "order": "ASCENDING" },
+        { "fieldPath": "ratingAverage", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "booking_requests",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "guideId", "order": "ASCENDING" },
+        { "fieldPath": "createdAt", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "user_notifications",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "recipientId", "order": "ASCENDING" },
+        { "fieldPath": "type", "order": "ASCENDING" },
+        { "fieldPath": "isRead", "order": "ASCENDING" }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}

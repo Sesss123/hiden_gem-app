@@ -299,6 +299,28 @@ export const daily_subscription_safety_net = functions.pubsub.schedule('0 0 * * 
 });
 
 /**
+ * 👁️ track_profile_view
+ * Increments a guide listing's profileViews counter server-side.
+ * Firestore rules deliberately block client writes to this field (it must
+ * not be trustable/inflatable by whoever is viewing the profile), so the
+ * increment has to happen here with admin privileges instead.
+ */
+export const track_profile_view = functions.https.onCall(async (data: any, context: functions.https.CallableContext) => {
+    if (!context.auth) throw new functions.https.HttpsError('unauthenticated', 'Login required.');
+
+    const listingId = data?.listingId;
+    if (!listingId || typeof listingId !== 'string') {
+        throw new functions.https.HttpsError('invalid-argument', 'listingId is required.');
+    }
+
+    await admin.firestore().collection('guide_listings').doc(listingId).update({
+        profileViews: admin.firestore.FieldValue.increment(1),
+    });
+
+    return { ok: true };
+});
+
+/**
  * 📍 detectLocationSpoof
  * Records a location spoofing incident and flags the user if threshold is reached.
  */

@@ -214,14 +214,32 @@ class _IncidentCenterScreenState extends ConsumerState<IncidentCenterScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      incident.incidentNumber,
-                      style: GoogleFonts.outfit(
-                        color: severityColor,
-                        fontWeight: FontWeight.w700,
-                        fontSize: 10,
-                        letterSpacing: 0.5,
-                      ),
+                    Row(
+                      children: [
+                        Text(
+                          incident.incidentNumber,
+                          style: GoogleFonts.outfit(
+                            color: severityColor,
+                            fontWeight: FontWeight.w700,
+                            fontSize: 10,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                        if (incident.priorityTier > 0) ...[
+                          const SizedBox(width: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: AppPalette.heroOchre.withValues(alpha: 0.15),
+                              borderRadius: BorderRadius.circular(100),
+                            ),
+                            child: Text(
+                              'PRIORITY',
+                              style: GoogleFonts.outfit(color: AppPalette.heroOchre, fontWeight: FontWeight.w800, fontSize: 9, letterSpacing: 0.5),
+                            ),
+                          ),
+                        ],
+                      ],
                     ),
                     _buildStatusChip(context, incident.status),
                   ],

@@ -181,6 +181,32 @@ class FirestoreService
     }
 
     /**
+     * Fetch a single document's decoded fields, or null if it doesn't exist.
+     */
+    public function getDocument(string $collection, string $documentId): ?array
+    {
+        try {
+            $token = $this->getToken();
+            $url = "https://firestore.googleapis.com/v1/projects/{$this->projectId}/databases/(default)/documents/{$collection}/{$documentId}";
+            $response = Http::withToken($token)->get($url);
+
+            if (!$response->successful()) {
+                return null;
+            }
+
+            $doc = $response->json();
+            $fields = [];
+            foreach (($doc['fields'] ?? []) as $k => $v) {
+                $fields[$k] = $this->decodeValue($v);
+            }
+            return array_merge(['id' => $documentId], $fields);
+        } catch (\Exception $e) {
+            Log::error("Firestore REST exception fetching {$collection}/{$documentId}: " . $e->getMessage());
+            return null;
+        }
+    }
+
+    /**
      * Check whether a document exists at collection/documentId.
      */
     public function documentExists(string $collection, string $documentId): bool
@@ -241,6 +267,61 @@ class FirestoreService
         } catch (\Exception $e) {
             Log::error("Firestore REST exception querying {$collection} where {$field} {$op} " . json_encode($value) . ": " . $e->getMessage());
             return [];
+        }
+    }
+
+    /**
+     * Counts booking_requests docs for a guide created on/after a given
+     * ISO8601 timestamp. Runs server-side with admin credentials because
+     * firestore.rules can't let a tourist client query another guide's full
+     * booking list (the rule can only be proven safe for the guide
+     * themselves, or a single doc the tourist already owns).
+     */
+    public function countBookingsForGuideSince(string $guideId, string $sinceIso8601): int
+    {
+        try {
+            $token = $this->getToken();
+            $url = "https://firestore.googleapis.com/v1/projects/{$this->projectId}/databases/(default)/documents:runQuery";
+
+            $structuredQuery = [
+                'from' => [['collectionId' => 'booking_requests']],
+                'where' => [
+                    'compositeFilter' => [
+                        'op' => 'AND',
+                        'filters' => [
+                            [
+                                'fieldFilter' => [
+                                    'field' => ['fieldPath' => 'guideId'],
+                                    'op' => 'EQUAL',
+                                    'value' => $this->encodeValue($guideId),
+                                ],
+                            ],
+                            [
+                                'fieldFilter' => [
+                                    'field' => ['fieldPath' => 'createdAt'],
+                                    'op' => 'GREATER_THAN_OR_EQUAL',
+                                    'value' => $this->encodeValue($sinceIso8601),
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ];
+
+            $response = Http::withToken($token)->post($url, ['structuredQuery' => $structuredQuery]);
+            if (!$response->successful()) {
+                Log::error("Firestore REST query error ({$response->status()}): " . $response->body());
+                return 0;
+            }
+
+            $count = 0;
+            foreach ($response->json() as $result) {
+                if (isset($result['document'])) $count++;
+            }
+            return $count;
+        } catch (\Exception $e) {
+            Log::error("Firestore REST exception counting bookings for guide {$guideId}: " . $e->getMessage());
+            throw $e;
         }
     }
 

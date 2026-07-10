@@ -6,6 +6,7 @@ import '../models/booking_request.dart';
 import '../../core/utils/secure_logger.dart';
 import '../../core/config/app_config.dart';
 import '../../core/network/secure_http_client.dart';
+import '../services/subscription_service.dart';
 
 final bookingRepositoryProvider = Provider((ref) => BookingRepository());
 
@@ -25,6 +26,24 @@ class BookingRepository {
   Future<String> submitRequest(BookingRequest request) async {
     final doc = _bookingRef.doc();
 
+    // Priority Leads: a Pro/Elite guide's incoming bookings are flagged so
+    // their own inbox can surface them first — see SubscriptionService.
+    //
+    // This check reads the GUIDE's own subscriptions doc, but submitRequest()
+    // is called by the TOURIST — firestore.rules only allows an account to
+    // read its own subscription (accountId == request.auth.uid), so this
+    // query is always denied for the tourist's client. Never let that abort
+    // the booking itself; the priority flag is a nice-to-have, not a
+    // precondition for the booking existing.
+    bool isPriority = false;
+    if (request.guideId != null) {
+      try {
+        isPriority = await SubscriptionService().hasEntitlement(request.guideId!, 'priorityLeads');
+      } catch (e) {
+        SecureLogger.warning("Priority-lead check failed (expected for tourist callers): $e", tag: "Booking");
+      }
+    }
+
     final newRequest = BookingRequest(
       bookingId: doc.id,
       touristId: request.touristId,
@@ -39,6 +58,7 @@ class BookingRepository {
       includedItemsSnapshot: request.includedItemsSnapshot,
       status: 'pending',
       createdAt: DateTime.now(),
+      isPriority: isPriority,
     );
 
     await doc.set(newRequest.toJson());
@@ -56,6 +76,7 @@ class BookingRepository {
           'bookingId': doc.id,
           'createdAt': FieldValue.serverTimestamp(),
           'isRead': false,
+          'isPriority': isPriority,
         });
         SecureLogger.info("Dispatched new_booking notification to guide: ${request.guideId}", tag: "Booking");
       } catch (e) {
@@ -86,17 +107,41 @@ class BookingRepository {
     }
   }
 
-  /// Responds to a booking request (Accept/Decline).
+  /// Responds to a booking request (Accept/Decline). Also notifies the
+  /// tourist — previously this only updated Firestore silently, so a
+  /// tourist had no way to learn their request was accepted/declined short
+  /// of manually reopening the app and re-checking (there wasn't even a
+  /// screen for that until MyBookingsScreen).
   Future<void> respondToRequest({
     required String bookingId,
     required String status,
     String? note,
+    String? touristId,
   }) async {
     await _bookingRef.doc(bookingId).update({
       'status': status,
       'respondedAt': DateTime.now().toIso8601String(),
       'responseNote': note,
     });
+
+    if (touristId != null) {
+      try {
+        final isAccepted = status == 'accepted' || status == 'session_ready';
+        await _firestore.collection('user_notifications').add({
+          'recipientId': touristId,
+          'title': isAccepted ? '✅ Booking accepted!' : '📋 Booking update',
+          'body': isAccepted
+              ? 'Your guide accepted your booking request.'
+              : (note ?? 'Your booking request was declined.'),
+          'type': 'booking_response',
+          'bookingId': bookingId,
+          'createdAt': FieldValue.serverTimestamp(),
+          'isRead': false,
+        });
+      } catch (e) {
+        SecureLogger.warning("Failed to notify tourist of booking response: $e", tag: "Booking");
+      }
+    }
   }
 
   /// Links a created tour session to a booking request.
@@ -134,16 +179,52 @@ class BookingRepository {
   }
 
   /// Gets the number of booking requests received by a guide in the current month.
+  ///
+  /// Note: this is only ever safe to call as the guide themselves — a
+  /// tourist's client can't run this query (firestore.rules can't prove a
+  /// query filtered only by guideId is safe for a non-owner, non-guide
+  /// caller). Tourists checking a guide's quota before booking must use
+  /// [checkMonthlyQuota] instead, which goes through the Laravel backend.
   Future<int> getMonthlyBookingCount(String guideId) async {
     final now = DateTime.now();
     final startOfMonth = DateTime(now.year, now.month, 1);
-    
+
     final query = await _bookingRef
         .where('guideId', isEqualTo: guideId)
         .where('createdAt', isGreaterThanOrEqualTo: startOfMonth)
         .count()
         .get();
-        
+
     return query.count ?? 0;
+  }
+
+  /// Checks whether [guideId] has hit their monthly booking quota, via the
+  /// Laravel backend (server-side, admin Firestore access) rather than a
+  /// direct client query — a tourist can never legitimately read another
+  /// guide's full booking_requests list under firestore.rules, so this must
+  /// be resolved server-side before a tourist can submit a booking.
+  Future<bool> checkMonthlyQuota(String guideId) async {
+    try {
+      final client = SecureHttpClient(http.Client());
+      final uri = Uri.parse('${AppConfig.laravelUrl}/bookings/quota-check?guideId=$guideId');
+      final response = await client.get(
+        uri,
+        headers: {
+          'Accept': 'application/json',
+          'X-API-KEY': AppConfig.hiddenGemsApiKey,
+        },
+      ).timeout(const Duration(seconds: 10));
+
+      if (response.statusCode != 200) {
+        SecureLogger.warning("Quota check failed (${response.statusCode}), allowing booking to proceed", tag: "Booking");
+        return false;
+      }
+
+      final data = json.decode(response.body) as Map<String, dynamic>;
+      return data['quotaExceeded'] as bool? ?? false;
+    } catch (e) {
+      SecureLogger.warning("Quota check failed: $e, allowing booking to proceed", tag: "Booking");
+      return false;
+    }
   }
 }

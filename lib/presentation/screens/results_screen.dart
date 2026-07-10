@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -33,6 +34,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import '../../core/services/geo_aware_guide_service.dart';
 import '../../core/services/dynamic_itinerary_service.dart';
 import '../../core/services/voice_assistant_service.dart';
+import '../../core/services/usage_limiter_service.dart';
 
 class ResultsScreen extends ConsumerStatefulWidget {
   final TripPlan plan;
@@ -102,9 +104,25 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
     VoiceAssistantService.state.addListener(_onOracleStateChanged);
 
     // Start autonomous Geo-Aware guiding
-    GeoAwareGuideService.startMonitoring(
-      _activePlan.itinerary.expand((day) => day.items).toList(),
-    );
+    // BUG-5 FIX: Check location permission before starting GPS stream to
+    // avoid a PermissionDeniedException and orphaned AppLifecycleListener.
+    _startGeoGuideIfAllowed();
+  }
+
+  Future<void> _startGeoGuideIfAllowed() async {
+    try {
+      final permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.always ||
+          permission == LocationPermission.whileInUse) {
+        GeoAwareGuideService.startMonitoring(
+          _activePlan.itinerary.expand((day) => day.items).toList(),
+        );
+      } else {
+        SecureLogger.info('[ResultsScreen] Location permission not granted — skipping Geo-Aware guiding.');
+      }
+    } catch (e) {
+      SecureLogger.warning('[ResultsScreen] Permission check failed: $e');
+    }
   }
 
   void _onPlanMutated() {
@@ -133,10 +151,16 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
         verifiedScore: _activePlan.verifiedScore,
       );
 
-      // 2. Increment Trip Count for User DNA
+      // 2. Increment Trip Count for User DNA (display stat)
       await UserPreferenceService.addTrip();
 
-      // 3. Check for Rating Prompt (Milestone trigger)
+      // 3. BUG-3 FIX: Increment monthly AI quota so free-tier limits are enforced.
+      //    Previously addTrip() was called but incrementAiTrip() was never called,
+      //    meaning aiTripsUsedThisMonth never grew and canGenerateAiTrip() always
+      //    returned true — giving free users unlimited trip generation.
+      await UsageLimiterService.incrementAiTrip();
+
+      // 4. Check for Rating Prompt (Milestone trigger)
       await RatingService().checkAndRequestReview();
     } catch (e, st) {
       SecureLogger.error("Post Generation Event Error", e, st, "ResultsScreen");

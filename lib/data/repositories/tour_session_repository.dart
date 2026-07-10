@@ -26,8 +26,14 @@ class TourSessionRepository {
     });
 
     try {
+      final guideId = FirebaseAuth.instance.currentUser?.uid;
+      if (guideId == null) return;
+      // Scoped by guideId: an unscoped linkedSessionId-only query can't be
+      // proven safe by firestore.rules (it could match another guide's
+      // booking), so Firestore rejects it with permission-denied.
       final bookingQuery = await _firestore
           .collection('booking_requests')
+          .where('guideId', isEqualTo: guideId)
           .where('linkedSessionId', isEqualTo: sessionId)
           .get();
       for (final bookingDoc in bookingQuery.docs) {
@@ -63,8 +69,11 @@ class TourSessionRepository {
 
     // Update linked booking requests (Phase 2 Financial & Completion Linkage)
     try {
+      final guideId = FirebaseAuth.instance.currentUser?.uid;
+      if (guideId == null) return;
       final bookingQuery = await _firestore
           .collection('booking_requests')
+          .where('guideId', isEqualTo: guideId)
           .where('linkedSessionId', isEqualTo: sessionId)
           .get();
       for (final bookingDoc in bookingQuery.docs) {

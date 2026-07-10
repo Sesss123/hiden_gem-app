@@ -49,6 +49,7 @@ import 'core/services/zenith_security_facade.dart';
 import 'core/services/emergency_control_service.dart';
 import 'core/services/monsoon_broadcast_service.dart';
 import 'core/services/consent_service.dart';
+import 'core/services/explorer_progress_service.dart';
 import 'package:freerasp/freerasp.dart';
 
 class InitializationResult {
@@ -454,6 +455,16 @@ Future<void> initializeOtherServices() async {
     await VoiceService().init();
   } catch (e) {
     debugPrint("Voice Init Error: $e");
+  }
+
+  // BUG-4 FIX: Sync ExplorerProgressService from Firestore at startup so that
+  // Level/Sites data is ready before ProfileScreen or any widget reads it.
+  // Without this, currentLevel.index always returns 0 (Level 1) on first open
+  // because the ValueNotifiers default to 0 until syncFromCloud() runs.
+  try {
+    await ExplorerProgressService().init();
+  } catch (e) {
+    debugPrint("ExplorerProgress Init Error: $e");
   }
 }
 

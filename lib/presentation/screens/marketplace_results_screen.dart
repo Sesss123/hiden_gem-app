@@ -453,18 +453,24 @@ class _MarketplaceResultsScreenState extends ConsumerState<MarketplaceResultsScr
                     ),
                     const SizedBox(height: 6),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Row(
-                          children: [
-                            Icon(Icons.language, color: AppTheme.textSecondary(context), size: 14),
-                            const SizedBox(width: 6),
-                            Text(
-                              listing.languages.take(2).join(", "),
-                              style: GoogleFonts.inter(fontSize: 12, color: AppTheme.textSecondary(context)),
-                            ),
-                          ],
+                        Expanded(
+                          child: Row(
+                            children: [
+                              Icon(Icons.language, color: AppTheme.textSecondary(context), size: 14),
+                              const SizedBox(width: 6),
+                              Flexible(
+                                child: Text(
+                                  listing.languages.take(2).join(", "),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: GoogleFonts.inter(fontSize: 12, color: AppTheme.textSecondary(context)),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
+                        const SizedBox(width: 8),
                         Text(
                           "${listing.currency} ${listing.hourlyRate.toStringAsFixed(0)}/hr",
                           style: GoogleFonts.inter(

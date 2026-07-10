@@ -235,6 +235,17 @@ service cloud.firestore {
       allow delete: if isOwner(resource.data.ownerUserId) || isAdmin();
     }
 
+    // ── Guide Client Notes (CRM) ─────────────────────────────────────────────
+    // Private guide-authored notes about a tourist they've booked. Doc ID is
+    // {guideId}_{touristId} — only the authoring guide (or admin) may
+    // read/write. Create is checked against the incoming doc (no existing
+    // resource yet); read/update/delete against the existing doc.
+    match /guide_client_notes/{noteId} {
+      allow read, update, delete: if isSignedIn() &&
+        (resource.data.guideId == request.auth.uid || isAdmin());
+      allow create: if isSignedIn() && request.resource.data.guideId == request.auth.uid;
+    }
+
     // ── Vehicles ─────────────────────────────────────────────────────────────
     match /vehicles/{vehicleId} {
       allow read: if isSignedIn();

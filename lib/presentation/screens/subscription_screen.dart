@@ -35,7 +35,7 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text("✅ Subscribed to \"${planId.toUpperCase()}\" plan!"),
-          backgroundColor: AppTheme.colors.primary.withValues(alpha: 0.2),
+          backgroundColor: AppPalette.rust,
           behavior: SnackBarBehavior.floating,
         ));
       }
@@ -43,7 +43,7 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text("Subscription failed: $e"),
-          backgroundColor: AppTheme.colors.redAccent.withValues(alpha: 0.2),
+          backgroundColor: AppPalette.error.withValues(alpha: 0.9),
           behavior: SnackBarBehavior.floating,
         ));
       }
@@ -59,7 +59,7 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: const Text("✅ Purchases restored successfully."),
-          backgroundColor: AppTheme.colors.primary.withValues(alpha: 0.2),
+          backgroundColor: AppPalette.rust,
           behavior: SnackBarBehavior.floating,
         ));
       }
@@ -67,7 +67,7 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
        if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text("Restore failed: $e"),
-          backgroundColor: AppTheme.colors.redAccent.withValues(alpha: 0.2),
+          backgroundColor: AppPalette.error.withValues(alpha: 0.9),
           behavior: SnackBarBehavior.floating,
         ));
       }
@@ -125,9 +125,9 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
                       price: "89",
                       planId: "elite",
                       description: "Full fleet and company management.",
-                      features: ["Team Management", "Operator Dashboard", "White-label Branding", "Family Share Pro"],
+                      features: ["Team Management", "Operator Dashboard", "White-label Branding"],
                       isPopular: false,
-                      color: AppTheme.colors.amberAccent,
+                      color: AppPalette.earth,
                     ),
                     const SizedBox(height: 100),
                   ],

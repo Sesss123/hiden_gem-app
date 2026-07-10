@@ -6,6 +6,8 @@ class GuideListing {
   final String displayName;
   final String? bio;
   final String? profilePhotoUrl;
+  final String? licenseNumber;
+  final bool isInsured; // Platform-backed verified & insured trust badge (Pro/Elite)
   final List<String> coverPhotos;
   
   // Categorization
@@ -23,6 +25,7 @@ class GuideListing {
   // Service Attributes
   final bool vehicleAvailable;
   final String? vehicleType;
+  final String? vehicleImageUrl;
   final double hourlyRate;
   final String currency;
   
@@ -49,6 +52,8 @@ class GuideListing {
     required this.displayName,
     this.bio,
     this.profilePhotoUrl,
+    this.licenseNumber,
+    this.isInsured = false,
     this.coverPhotos = const [],
     required this.guideCategory,
     this.languages = const ['English'],
@@ -60,6 +65,7 @@ class GuideListing {
     this.yearsExperience = 1,
     this.vehicleAvailable = false,
     this.vehicleType,
+    this.vehicleImageUrl,
     this.hourlyRate = 0.0,
     this.currency = 'USD',
     this.status = 'draft',
@@ -81,6 +87,8 @@ class GuideListing {
     'displayName': displayName,
     'bio': bio,
     'profilePhotoUrl': profilePhotoUrl,
+    'licenseNumber': licenseNumber,
+    'isInsured': isInsured,
     'coverPhotos': coverPhotos,
     'guideCategory': guideCategory,
     'languages': languages,
@@ -92,6 +100,7 @@ class GuideListing {
     'yearsExperience': yearsExperience,
     'vehicleAvailable': vehicleAvailable,
     'vehicleType': vehicleType,
+    'vehicleImageUrl': vehicleImageUrl,
     'hourlyRate': hourlyRate,
     'currency': currency,
     'status': status,
@@ -113,6 +122,8 @@ class GuideListing {
     displayName: json['displayName'],
     bio: json['bio'],
     profilePhotoUrl: json['profilePhotoUrl'],
+    licenseNumber: json['licenseNumber'],
+    isInsured: json['isInsured'] ?? false,
     coverPhotos: List<String>.from(json['coverPhotos'] ?? []),
     guideCategory: json['guideCategory'],
     languages: List<String>.from(json['languages'] ?? []),
@@ -124,6 +135,7 @@ class GuideListing {
     yearsExperience: json['yearsExperience'] ?? 1,
     vehicleAvailable: json['vehicleAvailable'] ?? false,
     vehicleType: json['vehicleType'],
+    vehicleImageUrl: json['vehicleImageUrl'],
     hourlyRate: (json['hourlyRate'] ?? 0.0).toDouble(),
     currency: json['currency'] ?? 'USD',
     status: json['status'] ?? 'draft',

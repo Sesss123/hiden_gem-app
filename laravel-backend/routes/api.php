@@ -24,6 +24,7 @@ use App\Http\Controllers\Api\V1\GuideDocumentUploadController;
 use App\Http\Controllers\Api\V1\ReviewController;
 use App\Http\Controllers\Api\V1\BookingController;
 use App\Http\Controllers\Api\V1\MarketplaceController;
+use App\Http\Controllers\Api\V1\MarketplacePhotoUploadController;
 use App\Http\Middleware\VerifyApiKey;
 use App\Http\Middleware\VerifyRevenueCatWebhook;
 
@@ -86,6 +87,11 @@ Route::prefix('v1')->group(function () {
         Route::get('/featured', [MarketplaceController::class, 'featured']);
     });
 
+    // Marketplace Photo Uploads (cover/vehicle photos — Protected by Sanctum Auth, API Key & Rate Limiting)
+    Route::prefix('marketplace')->middleware(['auth:sanctum', VerifyApiKey::class, 'throttle:30,1'])->group(function () {
+        Route::post('/photos', [MarketplacePhotoUploadController::class, 'upload']);
+    });
+
     // AR Video Library Routes (Protected by Sanctum Auth, API Key & Rate Limiting)
     Route::prefix('ar')->middleware(['auth:sanctum', VerifyApiKey::class, 'throttle:60,1'])->group(function () {
         Route::get('/enabled-locations', [MarketplaceController::class, 'arEnabledLocations']);
@@ -93,6 +99,7 @@ Route::prefix('v1')->group(function () {
 
     // Booking Routes (Protected by Sanctum Auth, API Key & Rate Limiting)
     Route::prefix('bookings')->middleware(['auth:sanctum', VerifyApiKey::class, 'throttle:30,1'])->group(function () {
+        Route::get('/quota-check', [BookingController::class, 'quotaCheck']);
         Route::post('/{bookingId}/notify-guide', [BookingController::class, 'notifyGuide']);
     });
 

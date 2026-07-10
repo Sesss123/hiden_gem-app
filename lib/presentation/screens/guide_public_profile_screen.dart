@@ -7,16 +7,25 @@ import '../../core/theme/oracle_ui_system.dart';
 import '../../data/repositories/marketplace_repository.dart';
 import '../../data/models/guide_listing.dart';
 import 'booking_request_screen.dart';
+import 'package:flutter/services.dart';
+import '../widgets/cached_image.dart';
 
-class GuidePublicProfileScreen extends ConsumerWidget {
+class GuidePublicProfileScreen extends ConsumerStatefulWidget {
   final String guideId;
   const GuidePublicProfileScreen({super.key, required this.guideId});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<GuidePublicProfileScreen> createState() => _GuidePublicProfileScreenState();
+}
+
+class _GuidePublicProfileScreenState extends ConsumerState<GuidePublicProfileScreen> {
+  bool _viewTracked = false;
+
+  @override
+  Widget build(BuildContext context) {
     final marketplaceRepo = ref.watch(marketplaceRepositoryProvider);
-    final listingFuture = marketplaceRepo.getListing(guideId);
-    final packageFuture = marketplaceRepo.getGuidePackages(guideId);
+    final listingFuture = marketplaceRepo.getListing(widget.guideId);
+    final packageFuture = marketplaceRepo.getGuidePackages(widget.guideId);
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -31,9 +40,11 @@ class GuidePublicProfileScreen extends ConsumerWidget {
             if (guide == null) {
               return Center(child: Text("Guide profile not found", style: TextStyle(color: AppTheme.textSecondary(context))));
             }
-            
-            // Track view on load
-            marketplaceRepo.trackProfileView(guide.listingId);
+
+            if (!_viewTracked) {
+              _viewTracked = true;
+              marketplaceRepo.trackProfileView(guide.listingId);
+            }
 
             return Stack(
               children: [
@@ -94,8 +105,12 @@ class GuidePublicProfileScreen extends ConsumerWidget {
                 _buildTrustCard(context, guide),
                 const SizedBox(height: 32),
                 _buildBio(context, guide),
+                if (guide.vehicleAvailable) ...[
+                  const SizedBox(height: 32),
+                  _buildVehicleSection(context, guide),
+                ],
                 const SizedBox(height: 32),
-                _buildPackageList(context, packageFuture),
+                _buildPackageList(context, guide, packageFuture),
                 const SizedBox(height: 120),
               ],
             ),
@@ -168,6 +183,32 @@ class GuidePublicProfileScreen extends ConsumerWidget {
             ),
           ],
         ),
+        if (guide.licenseNumber != null && guide.licenseNumber!.isNotEmpty) ...[
+          const SizedBox(height: 6),
+          Row(
+            children: [
+              Icon(Icons.verified_rounded, color: AppTheme.colors.greenAccent, size: 15),
+              const SizedBox(width: 6),
+              Text(
+                "Licensed guide • ${guide.licenseNumber}",
+                style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 12, fontWeight: FontWeight.w600),
+              ),
+            ],
+          ),
+        ],
+        if (guide.isInsured) ...[
+          const SizedBox(height: 6),
+          Row(
+            children: [
+              Icon(Icons.shield_rounded, color: AppTheme.colors.greenAccent, size: 15),
+              const SizedBox(width: 6),
+              Text(
+                "Platform verified & insured",
+                style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 12, fontWeight: FontWeight.w600),
+              ),
+            ],
+          ),
+        ],
       ],
     );
   }
@@ -231,12 +272,68 @@ class GuidePublicProfileScreen extends ConsumerWidget {
     ).animate().fadeIn(delay: 400.ms);
   }
 
-  Widget _buildPackageList(BuildContext context, Future<List<Map<String, dynamic>>> future) {
+  Widget _buildVehicleSection(BuildContext context, GuideListing guide) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          "Vehicle",
+          style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontSize: 16, fontWeight: FontWeight.w700, letterSpacing: -0.2),
+        ),
+        const SizedBox(height: 12),
+        Container(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surface,
+            borderRadius: BorderRadius.circular(18),
+            boxShadow: [
+              BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.05), blurRadius: 14, offset: const Offset(0, 5)),
+            ],
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(14),
+                child: Container(
+                  width: 72,
+                  height: 72,
+                  color: AppTheme.surfaceMuted(context),
+                  child: guide.vehicleImageUrl != null && guide.vehicleImageUrl!.isNotEmpty
+                      ? CachedImage(url: guide.vehicleImageUrl!, fit: BoxFit.cover)
+                      : Icon(Icons.directions_car_rounded, color: AppTheme.textSecondary(context), size: 28),
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      guide.vehicleType?.isNotEmpty == true ? guide.vehicleType! : "Vehicle details not provided",
+                      style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontSize: 14, fontWeight: FontWeight.w700),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      "Provided by the guide for tours",
+                      style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 12),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    ).animate().fadeIn(delay: 300.ms);
+  }
+
+  Widget _buildPackageList(BuildContext context, GuideListing guide, Future<List<Map<String, dynamic>>> future) {
     return FutureBuilder<List<Map<String, dynamic>>>(
       future: future,
       builder: (context, snapshot) {
         if (!snapshot.hasData || snapshot.data!.isEmpty) return const SizedBox.shrink();
-        
+
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -244,16 +341,31 @@ class GuidePublicProfileScreen extends ConsumerWidget {
               "Packages",
               style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontSize: 16, fontWeight: FontWeight.w700, letterSpacing: -0.2),
             ),
+            const SizedBox(height: 4),
+            Text(
+              "Tap a package to book it directly",
+              style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 11),
+            ),
             const SizedBox(height: 16),
-            ...snapshot.data!.map((p) => _buildPackageCard(context, p)),
+            ...snapshot.data!.map((p) => _buildPackageCard(context, guide, p)),
           ],
         );
       },
     );
   }
 
-  Widget _buildPackageCard(BuildContext context, Map<String, dynamic> data) {
-    return Container(
+  Widget _buildPackageCard(BuildContext context, GuideListing guide, Map<String, dynamic> data) {
+    return GestureDetector(
+      onTap: () {
+        HapticFeedback.lightImpact();
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => BookingRequestScreen(guideId: guide.guideId, packageId: data['packageId'] as String?),
+          ),
+        );
+      },
+      child: Container(
       margin: const EdgeInsets.only(bottom: 14),
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
@@ -306,6 +418,7 @@ class GuidePublicProfileScreen extends ConsumerWidget {
             ],
           ),
         ],
+      ),
       ),
     );
   }

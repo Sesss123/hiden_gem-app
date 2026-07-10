@@ -48,7 +48,14 @@ class GuideController extends Controller
     public function show($id)
     {
         $application = GuideApplication::with('user')->findOrFail($id);
-        return view('admin.guides.show', compact('application'));
+
+        $listing = null;
+        $firebaseUid = $application->user->firebase_uid ?? null;
+        if ($firebaseUid) {
+            $listing = $this->firestoreService->getDocument('guide_listings', $firebaseUid);
+        }
+
+        return view('admin.guides.show', compact('application', 'listing'));
     }
 
     /**

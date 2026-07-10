@@ -2,11 +2,9 @@ import 'package:hidden_gems_sl/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:flutter_animate/flutter_animate.dart';
-import '../../core/theme/oracle_ui_system.dart';
 import '../../data/repositories/booking_repository.dart';
 import '../../data/models/booking_request.dart';
-import '../../data/services/subscription_service.dart';
+import '../../data/repositories/package_repository.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class BookingRequestScreen extends ConsumerStatefulWidget {
@@ -33,156 +31,137 @@ class _BookingRequestScreenState extends ConsumerState<BookingRequestScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.colors.transparent,
-      body: OracleUI.auraBackground(
-        child: CustomScrollView(
-          slivers: [
-            _buildAppBar(),
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildStepHeader("01", "MISSION DATE"),
-                    const SizedBox(height: 16),
-                    _buildDatePicker(),
-                    const SizedBox(height: 32),
-                    _buildStepHeader("02", "GUEST COUNT"),
-                    const SizedBox(height: 16),
-                    _buildGuestSelector(),
-                    const SizedBox(height: 32),
-                    _buildStepHeader("03", "SPECIAL INSTRUCTIONS"),
-                    const SizedBox(height: 16),
-                    _buildNotesField(),
-                    const SizedBox(height: 48),
-                    _buildSubmitButton(),
-                  ],
-                ),
-              ),
-            ),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      appBar: AppBar(
+        backgroundColor: AppTheme.colors.transparent,
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_ios_new, size: 20, color: AppTheme.textPrimary(context)),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: Text(
+          'Request booking',
+          style: GoogleFonts.outfit(fontWeight: FontWeight.w800, fontSize: 18, color: AppTheme.textPrimary(context)),
+        ),
+      ),
+      body: SafeArea(
+        child: ListView(
+          padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
+          physics: const BouncingScrollPhysics(),
+          children: [
+            _buildSectionLabel(context, 'Date'),
+            const SizedBox(height: 10),
+            _buildDatePicker(context),
+            const SizedBox(height: 24),
+            _buildSectionLabel(context, 'Guests'),
+            const SizedBox(height: 10),
+            _buildGuestSelector(context),
+            const SizedBox(height: 24),
+            _buildSectionLabel(context, 'Special instructions'),
+            const SizedBox(height: 10),
+            _buildNotesField(context),
+            const SizedBox(height: 32),
+            _buildSubmitButton(context),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildAppBar() {
-    return SliverAppBar(
-      floating: true,
-      backgroundColor: AppTheme.colors.transparent,
-      elevation: 0,
-      leading: IconButton(
-        icon: Icon(Icons.close_rounded, color: AppTheme.colors.white, size: 24),
-        onPressed: () => Navigator.pop(context),
-      ),
-      title: OracleUI.neonText(
-        "BOOK MISSION",
-        style: GoogleFonts.outfit(
-          fontSize: 16,
-          fontWeight: FontWeight.w900,
-          letterSpacing: 4,
-          color: AppTheme.colors.white,
-        ),
-      ),
+  Widget _buildSectionLabel(BuildContext context, String label) {
+    return Text(
+      label,
+      style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontSize: 15, fontWeight: FontWeight.w700, letterSpacing: -0.2),
     );
   }
 
-  Widget _buildStepHeader(String number, String label) {
-    return Row(
-      children: [
-        Container(
-          width: 32, height: 32,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            border: Border.all(color: AppTheme.colors.primary, width: 1),
+  Widget _buildDatePicker(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(18),
+        boxShadow: [BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.05), blurRadius: 14, offset: const Offset(0, 5))],
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      child: Theme(
+        data: Theme.of(context).copyWith(
+          colorScheme: Theme.of(context).colorScheme.copyWith(
+            primary: AppPalette.rust,
+            onPrimary: AppTheme.colors.white,
+            onSurface: AppTheme.textPrimary(context),
           ),
-          child: Text(number, style: GoogleFonts.outfit(color: AppTheme.colors.primary, fontSize: 12, fontWeight: FontWeight.w900)),
         ),
-        const SizedBox(width: 16),
-        Text(
-          label,
-          style: GoogleFonts.inter(color: AppTheme.colors.white, fontSize: 13, fontWeight: FontWeight.w900, letterSpacing: 2),
+        child: CalendarDatePicker(
+          initialDate: _selectedDate,
+          firstDate: DateTime.now(),
+          lastDate: DateTime.now().add(const Duration(days: 365)),
+          onDateChanged: (date) => setState(() => _selectedDate = date),
         ),
-      ],
+      ),
     );
   }
 
-  Widget _buildDatePicker() {
-    return OracleUI.glassContainer(
-      padding: const EdgeInsets.all(20),
-      borderRadius: BorderRadius.circular(24),
-      child: CalendarDatePicker(
-        initialDate: _selectedDate,
-        firstDate: DateTime.now(),
-        lastDate: DateTime.now().add(const Duration(days: 365)),
-        onDateChanged: (date) => setState(() => _selectedDate = date),
-      ),
-    ).animate().fadeIn().slideY(begin: 0.1);
-  }
-
-  Widget _buildGuestSelector() {
-    return OracleUI.glassContainer(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-      borderRadius: BorderRadius.circular(20),
+  Widget _buildGuestSelector(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      decoration: BoxDecoration(color: AppTheme.surfaceMuted(context), borderRadius: BorderRadius.circular(16)),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          IconButton(
-            icon: Icon(Icons.remove_rounded, color: AppTheme.colors.white),
-            onPressed: _guestCount > 1 ? () => setState(() => _guestCount--) : null,
-          ),
-          Text(
-            "$_guestCount GUESTS",
-            style: GoogleFonts.outfit(color: AppTheme.colors.white, fontSize: 18, fontWeight: FontWeight.w900),
-          ),
-          IconButton(
-            icon: Icon(Icons.add_rounded, color: AppTheme.colors.white),
-            onPressed: () => setState(() => _guestCount++),
+          Text('Number of guests', style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.w600)),
+          Row(
+            children: [
+              IconButton(
+                icon: Icon(Icons.remove_circle_outline_rounded, color: AppTheme.textPrimary(context)),
+                onPressed: _guestCount > 1 ? () => setState(() => _guestCount--) : null,
+              ),
+              Text(
+                '$_guestCount',
+                style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontSize: 16, fontWeight: FontWeight.w800),
+              ),
+              IconButton(
+                icon: Icon(Icons.add_circle_outline_rounded, color: Theme.of(context).colorScheme.primary),
+                onPressed: () => setState(() => _guestCount++),
+              ),
+            ],
           ),
         ],
       ),
     );
   }
 
-  Widget _buildNotesField() {
-    return OracleUI.glassContainer(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      borderRadius: BorderRadius.circular(20),
-      child: TextField(
-        controller: _notesController,
-        style: TextStyle(color: AppTheme.colors.white70),
-        maxLines: 4,
-        decoration: InputDecoration(
-          hintText: "E.g. We are traveling with seniors, need low-walking route...",
-          hintStyle: GoogleFonts.inter(color: AppTheme.colors.white10, fontSize: 13),
-          border: InputBorder.none,
-        ),
+  Widget _buildNotesField(BuildContext context) {
+    return TextField(
+      controller: _notesController,
+      maxLines: 4,
+      style: GoogleFonts.inter(color: AppTheme.textPrimary(context)),
+      decoration: InputDecoration(
+        hintText: 'E.g. We are traveling with seniors, need a low-walking route...',
+        hintStyle: GoogleFonts.inter(color: AppTheme.textSecondary(context).withValues(alpha: 0.6)),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
+        filled: true,
+        fillColor: AppTheme.surfaceMuted(context),
       ),
     );
   }
 
-  Widget _buildSubmitButton() {
+  Widget _buildSubmitButton(BuildContext context) {
     return SizedBox(
       width: double.infinity,
+      height: 52,
       child: ElevatedButton(
         onPressed: _isSubmitting ? null : _submitBooking,
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppTheme.colors.primary,
-          foregroundColor: AppTheme.colors.black,
-          padding: const EdgeInsets.symmetric(vertical: 20),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          backgroundColor: Theme.of(context).colorScheme.primary,
+          foregroundColor: Theme.of(context).colorScheme.onPrimary,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
           elevation: 0,
         ),
-        child: _isSubmitting 
-          ? CircularProgressIndicator(color: AppTheme.colors.black)
-          : Text(
-              "TRANSMIT REQUEST",
-              style: GoogleFonts.outfit(fontWeight: FontWeight.w900, letterSpacing: 2),
-            ),
+        child: _isSubmitting
+            ? SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Theme.of(context).colorScheme.onPrimary))
+            : Text('Send request', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 14)),
       ),
-    ).animate().fadeIn(delay: 400.ms).scale(begin: const Offset(0.95, 0.95));
+    );
   }
 
   Future<void> _submitBooking() async {
@@ -192,20 +171,27 @@ class _BookingRequestScreenState extends ConsumerState<BookingRequestScreen> {
       if (user == null) throw Exception("User not authenticated");
 
       if (widget.guideId.isNotEmpty) {
-        final currentCount = await ref.read(bookingRepositoryProvider).getMonthlyBookingCount(widget.guideId);
+        final quotaExceeded = await ref.read(bookingRepositoryProvider).checkMonthlyQuota(widget.guideId);
         if (!mounted) return;
-        final maxQuota = await ref.read(subscriptionServiceProvider).getLimit(widget.guideId, 'monthlyBookingQuota');
-        if (!mounted) return;
-        if (currentCount >= maxQuota) {
+        if (quotaExceeded) {
            throw Exception("This guide has reached their maximum booking quota for the month. Please try again next month or select another guide.");
         }
+      }
+
+      Map<String, dynamic>? packageSnapshot;
+      if (widget.packageId != null && widget.packageId!.isNotEmpty) {
+        final package = await ref.read(packageRepositoryProvider).getPackage(widget.packageId!);
+        if (!mounted) return;
+        packageSnapshot = package?.toJson();
       }
 
       final request = BookingRequest(
         bookingId: "", // Will be set by repo
         touristId: user.uid,
+        touristDisplayName: user.displayName,
         guideId: widget.guideId,
         packageId: widget.packageId,
+        packageSnapshot: packageSnapshot,
         requestedDate: _selectedDate,
         guestCount: _guestCount,
         notes: _notesController.text,
@@ -215,58 +201,70 @@ class _BookingRequestScreenState extends ConsumerState<BookingRequestScreen> {
       await ref.read(bookingRepositoryProvider).submitRequest(request);
 
       if (mounted) {
-        _showSuccessDialog();
+        _showSuccessDialog(context);
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error: $e")));
+        // BUG-8 FIX: Strip the raw "Exception: " prefix so users see a
+        // clean message instead of Dart's internal exception format.
+        final msg = e.toString().replaceFirst('Exception: ', '');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(msg), backgroundColor: AppPalette.error),
+        );
       }
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
     }
   }
 
-  void _showSuccessDialog() {
+  void _showSuccessDialog(BuildContext context) {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => OracleUI.glassContainer(
-        margin: const EdgeInsets.all(40),
-        padding: const EdgeInsets.all(32),
-        borderRadius: BorderRadius.circular(32),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.check_circle_rounded, color: AppTheme.colors.primary, size: 64),
-            const SizedBox(height: 24),
-            OracleUI.neonText(
-              "REQUEST SENT",
-              style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.w900, letterSpacing: 2, color: AppTheme.colors.white),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              "Your mission request has been transmitted to the guide. You will receive a notification once they respond.",
-              textAlign: TextAlign.center,
-              style: GoogleFonts.inter(color: AppTheme.colors.white70, fontSize: 13, height: 1.5),
-            ),
-            const SizedBox(height: 32),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context); // Dialog
-                  Navigator.pop(context); // Booking Screen
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppTheme.colors.white.withValues(alpha: 0.1),
-                  foregroundColor: AppTheme.colors.white,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                ),
-                child: const Text("CLOSE", style: TextStyle(fontWeight: FontWeight.bold)),
+      builder: (dialogContext) => Dialog(
+        backgroundColor: Theme.of(dialogContext).colorScheme.surface,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+        child: Padding(
+          padding: const EdgeInsets.all(28),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 64, height: 64,
+                decoration: BoxDecoration(color: AppPalette.rust.withValues(alpha: 0.12), shape: BoxShape.circle),
+                child: Icon(Icons.check_rounded, color: AppPalette.rust, size: 32),
               ),
-            ),
-          ],
+              const SizedBox(height: 20),
+              Text(
+                "Request sent",
+                style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.w800, color: AppTheme.textPrimary(dialogContext)),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                "Your booking request has been sent to the guide. You'll get a notification once they respond.",
+                textAlign: TextAlign.center,
+                style: GoogleFonts.inter(color: AppTheme.textSecondary(dialogContext), fontSize: 13, height: 1.5),
+              ),
+              const SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                height: 48,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(dialogContext); // Dialog
+                    Navigator.pop(dialogContext); // Booking Screen
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(dialogContext).colorScheme.primary,
+                    foregroundColor: Theme.of(dialogContext).colorScheme.onPrimary,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
+                    elevation: 0,
+                  ),
+                  child: const Text("Close", style: TextStyle(fontWeight: FontWeight.w700)),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

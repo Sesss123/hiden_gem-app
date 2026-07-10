@@ -7,6 +7,8 @@ import '../../core/theme/app_theme.dart';
 import '../../core/theme/oracle_ui_system.dart';
 import '../../data/models/booking_request.dart';
 import '../../data/repositories/booking_repository.dart';
+import '../../data/services/subscription_service.dart';
+import 'subscription_screen.dart';
 import '../../core/utils/secure_logger.dart';
 
 class GuideEarningsScreen extends ConsumerStatefulWidget {
@@ -94,6 +96,8 @@ class _GuideEarningsScreenState extends ConsumerState<GuideEarningsScreen> {
                   _buildSummarySection(totalNet, pendingPayout, completedPayout, totalCommission),
                   const SizedBox(height: 16),
                   _buildActionButtons(context, pendingPayout),
+                  const SizedBox(height: 16),
+                  _buildAnalyticsSection(uid, validRequests),
                   const SizedBox(height: 16),
                   _buildFilterChips(),
                   const SizedBox(height: 8),
@@ -219,6 +223,114 @@ class _GuideEarningsScreenState extends ConsumerState<GuideEarningsScreen> {
               icon: const Icon(Icons.settings_outlined, size: 18),
               label: Text("Bank", style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 13)),
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAnalyticsSection(String uid, List<BookingRequest> validRequests) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: FutureBuilder<bool>(
+        future: SubscriptionService().hasEntitlement(uid, 'advancedAnalytics'),
+        builder: (context, snapshot) {
+          final unlocked = snapshot.data ?? false;
+          if (!snapshot.hasData) return const SizedBox.shrink();
+          return unlocked
+              ? _buildAnalyticsCard(validRequests)
+              : _buildAnalyticsLockedCard(context);
+        },
+      ),
+    );
+  }
+
+  Widget _buildAnalyticsCard(List<BookingRequest> validRequests) {
+    final completed = validRequests.where((r) => r.status == 'completed').length;
+    final clientIds = validRequests.map((r) => r.touristId).toList();
+    final uniqueClients = clientIds.toSet().length;
+    final repeatClients = clientIds.length - uniqueClients;
+    final repeatRate = uniqueClients == 0 ? 0.0 : (repeatClients / uniqueClients) * 100;
+    final avgBookingValue = validRequests.isEmpty
+        ? 0.0
+        : validRequests.map((r) => r.quotedPrice ?? 0.0).reduce((a, b) => a + b) / validRequests.length;
+
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.05), blurRadius: 14, offset: const Offset(0, 5)),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.insights_rounded, size: 16, color: Theme.of(context).colorScheme.primary),
+              const SizedBox(width: 8),
+              Text("Client analytics", style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.w700, color: AppTheme.textPrimary(context))),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(child: _buildAnalyticsStat("Completed tours", "$completed")),
+              Expanded(child: _buildAnalyticsStat("Unique clients", "$uniqueClients")),
+              Expanded(child: _buildAnalyticsStat("Repeat rate", "${repeatRate.toStringAsFixed(0)}%")),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Text("Avg. booking value", style: GoogleFonts.inter(fontSize: 11, color: AppTheme.textSecondary(context))),
+          Text("LKR ${avgBookingValue.toStringAsFixed(0)}", style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w700, color: AppTheme.textPrimary(context))),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAnalyticsStat(String label, String value) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(value, style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.w800, color: AppTheme.textPrimary(context))),
+        Text(label, style: GoogleFonts.inter(fontSize: 10, color: AppTheme.textSecondary(context))),
+      ],
+    );
+  }
+
+  Widget _buildAnalyticsLockedCard(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: AppTheme.surfaceMuted(context),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppTheme.borderColor(context)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(Icons.lock_outline_rounded, color: Theme.of(context).colorScheme.primary, size: 18),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text("Client analytics", style: GoogleFonts.outfit(fontSize: 13, fontWeight: FontWeight.w700, color: AppTheme.textPrimary(context))),
+                Text("Repeat rate, unique clients & more — Pro tier", style: GoogleFonts.inter(fontSize: 11, color: AppTheme.textSecondary(context))),
+              ],
+            ),
+          ),
+          TextButton(
+            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SubscriptionScreen())),
+            child: Text("Upgrade", style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 12, color: Theme.of(context).colorScheme.primary)),
           ),
         ],
       ),

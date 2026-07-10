@@ -25,6 +25,10 @@ import '../../data/models/incident_report.dart';
 import '../../data/repositories/incident_repository.dart';
 import 'subscription_screen.dart';
 import 'guide_reviews_screen.dart';
+import 'guide_listing_editor_screen.dart';
+import '../../data/repositories/marketplace_repository.dart';
+import '../../data/repositories/broadcast_repository.dart';
+import '../../data/models/broadcast_message.dart';
 
 class GuideDashboardScreen extends StatefulWidget {
   const GuideDashboardScreen({super.key});
@@ -46,6 +50,8 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
   final _vehicleRepo = VehicleRepository();
   final _presenceRepo = PresenceRepository();
   final _meetingRepo = MeetingPointRepository();
+  final _marketplaceRepo = MarketplaceRepository();
+  final _broadcastRepo = BroadcastRepository();
 
   @override
   void initState() {
@@ -149,10 +155,36 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
 
   Future<void> _loadVehicles() async {
     final uid = AuthService().currentUser?.uid;
-    if (uid != null) {
-      final v = await _vehicleRepo.getGuideVehicles(uid);
-      if (mounted) setState(() => _vehicles = v);
+    if (uid == null) return;
+
+    var v = await _vehicleRepo.getGuideVehicles(uid);
+
+    // Fall back to the vehicle info captured on the guide's own marketplace
+    // listing — most guides only ever set this via "My Listing" and never
+    // use the separate (legacy) vehicle-add flow that populates `vehicles`.
+    if (v.isEmpty) {
+      try {
+        final listing = await _marketplaceRepo.getListing(uid);
+        if (listing != null && listing.vehicleAvailable && (listing.vehicleType?.isNotEmpty ?? false)) {
+          v = [
+            Vehicle(
+              id: 'listing_$uid',
+              guideId: uid,
+              vehicleNumber: listing.displayName,
+              type: listing.vehicleType!,
+              seatCapacity: 4,
+              driverName: listing.displayName,
+              imageUrl: listing.vehicleImageUrl,
+              createdAt: listing.updatedAt,
+            ),
+          ];
+        }
+      } catch (_) {
+        // Listing fetch failure just leaves _vehicles empty — handled by the empty-state UI.
+      }
     }
+
+    if (mounted) setState(() => _vehicles = v);
   }
 
   Future<void> _startNewTour(Vehicle vehicle) async {
@@ -266,7 +298,19 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
       );
 
       await _meetingRepo.updateMeetingPoint(checkpoint);
-      
+
+      // Notify connected travelers so they don't have to notice the map pin move themselves.
+      await _broadcastRepo.sendBroadcast(BroadcastMessage(
+        messageId: const Uuid().v4(),
+        sessionId: _activeSession!.sessionId,
+        guideId: AuthService().currentUser?.uid ?? "unknown",
+        type: BroadcastType.meetingPoint,
+        title: "Meeting point updated",
+        body: "New meeting point: $name",
+        priority: BroadcastPriority.high,
+        createdAt: DateTime.now(),
+      ));
+
       // Update local state for immediate UI feedback
       if (!mounted) return;
       setState(() {
@@ -300,7 +344,7 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
       await _presenceRepo.updateVehiclePresence(_activeSession!.sessionId, pos.latitude, pos.longitude);
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("VEHICLE POSITION MARKED"), backgroundColor: AppTheme.colors.orangeAccent),
+        SnackBar(content: Text("Vehicle position marked"), backgroundColor: AppPalette.earth),
       );
     } catch (e) {
       if (mounted) {
@@ -360,19 +404,22 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
         return GuideReviewsScreen(guideId: AuthService().currentUser?.uid ?? "guest_guide");
       case 3:
         return IncidentCenterScreen(sessionId: _activeSession?.sessionId);
+      case 4:
+        return const GuideListingEditorScreen(embedded: true);
       case 0:
       default:
         return CustomScrollView(
+          physics: const BouncingScrollPhysics(),
           slivers: [
             SliverAppBar(
-              backgroundColor: AppTheme.colors.transparent,
+              backgroundColor: Theme.of(context).scaffoldBackgroundColor,
               elevation: 0,
               leading: IconButton(
                 icon: Icon(Icons.arrow_back_ios_new, size: 20, color: AppTheme.textPrimary(context)),
                 onPressed: () => Navigator.pop(context),
               ),
               title: Text(
-                "Tour session",
+                "Tour dashboard",
                 style: GoogleFonts.outfit(
                   fontSize: 18,
                   fontWeight: FontWeight.w800,
@@ -383,10 +430,10 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
             ),
             SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.all(24.0),
-                child: _isLoading 
-                  ? const Center(child: CircularProgressIndicator())
-                  : _activeSession == null 
+                padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
+                child: _isLoading
+                  ? const Padding(padding: EdgeInsets.only(top: 100), child: Center(child: CircularProgressIndicator()))
+                  : _activeSession == null
                     ? _buildEmptyState()
                     : _buildActiveSessionState(),
               ),
@@ -397,43 +444,67 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
   }
 
   Widget _buildBottomNav() {
+    final items = [
+      (Icons.explore_outlined, Icons.explore_rounded, 'Tour'),
+      (Icons.card_membership_outlined, Icons.card_membership_rounded, 'Plan'),
+      (Icons.star_border_rounded, Icons.star_rounded, 'Reviews'),
+      (Icons.shield_outlined, Icons.shield_rounded, 'Safety'),
+      (Icons.edit_document, Icons.edit_document, 'Listing'),
+    ];
+    final primary = Theme.of(context).colorScheme.primary;
+
     return Container(
+      padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
       decoration: BoxDecoration(
-        color: Theme.of(context).scaffoldBackgroundColor.withValues(alpha: 0.95),
-        border: Border(top: BorderSide(color: AppTheme.secondaryBorder(context), width: 0.5)),
-      ),
-      child: NavigationBar(
-        selectedIndex: _currentTabIndex,
-        onDestinationSelected: (index) {
-          HapticFeedback.lightImpact();
-          setState(() => _currentTabIndex = index);
-        },
-        backgroundColor: AppTheme.colors.transparent,
-        elevation: 0,
-        indicatorColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
-        labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-        destinations: [
-          NavigationDestination(
-            icon: Icon(Icons.explore_outlined),
-            selectedIcon: Icon(Icons.explore, color: AppTheme.colors.amber),
-            label: 'Tour Session',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.card_membership_outlined),
-            selectedIcon: Icon(Icons.card_membership, color: AppTheme.colors.amber),
-            label: 'Subscription',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.star_border_rounded),
-            selectedIcon: Icon(Icons.star_rounded, color: AppTheme.colors.amber),
-            label: 'Reviews',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.shield_outlined),
-            selectedIcon: Icon(Icons.shield, color: AppTheme.colors.amber),
-            label: 'Safety',
-          ),
+        color: AppTheme.cardColor(context),
+        border: Border(top: BorderSide(color: AppTheme.secondaryBorder(context), width: 1)),
+        boxShadow: [
+          BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.05), blurRadius: 16, offset: const Offset(0, -4)),
         ],
+      ),
+      child: SafeArea(
+        top: false,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: List.generate(items.length, (index) {
+            final isSelected = _currentTabIndex == index;
+            final (outlineIcon, filledIcon, label) = items[index];
+            return Expanded(
+              child: GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () {
+                  HapticFeedback.lightImpact();
+                  setState(() => _currentTabIndex = index);
+                },
+                child: AnimatedContainer(
+                  duration: 250.ms,
+                  curve: Curves.easeOut,
+                  margin: const EdgeInsets.symmetric(horizontal: 3),
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  decoration: BoxDecoration(
+                    color: isSelected ? primary.withValues(alpha: 0.12) : AppTheme.colors.transparent,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(isSelected ? filledIcon : outlineIcon, size: 22, color: isSelected ? primary : AppTheme.textSecondary(context)),
+                      const SizedBox(height: 4),
+                      Text(
+                        label,
+                        style: GoogleFonts.inter(
+                          fontSize: 10,
+                          fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                          color: isSelected ? primary : AppTheme.textSecondary(context),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          }),
+        ),
       ),
     );
   }
@@ -442,40 +513,67 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
   Widget _buildEmptyState() {
     return Column(
       children: [
-        const SizedBox(height: 100),
-        Icon(Icons.tour_outlined, size: 80, color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5)),
-        const SizedBox(height: 24),
-        Text(
-          "No active tour",
-          style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.w800, color: AppTheme.textPrimary(context)),
-        ),
-        const SizedBox(height: 12),
-        Text(
-          "Start a new tour and generate a QR for your travelers to connect.",
-          textAlign: TextAlign.center,
-          style: GoogleFonts.inter(color: AppTheme.textSecondary(context)),
-        ),
-        const SizedBox(height: 48),
-        SizedBox(
+        const SizedBox(height: 40),
+        Container(
           width: double.infinity,
-          height: 56,
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Theme.of(context).colorScheme.primary,
-              foregroundColor: Theme.of(context).colorScheme.onPrimary,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
-              elevation: 0,
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(24),
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [Theme.of(context).colorScheme.primary, AppPalette.rustDim],
             ),
-            onPressed: () {
-              if (_vehicles.isEmpty) {
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Add a vehicle in your profile first")));
-                return;
-              }
-              _showVehiclePicker();
-            },
-            child: Text("Generate tour QR", style: AppTheme.buttonLabelStyle(context)),
           ),
-        ),
+          child: Column(
+            children: [
+              Container(
+                width: 64,
+                height: 64,
+                decoration: BoxDecoration(
+                  color: AppTheme.colors.white.withValues(alpha: 0.16),
+                  borderRadius: BorderRadius.circular(18),
+                ),
+                child: const Icon(Icons.qr_code_2_rounded, size: 32, color: Colors.white),
+              ),
+              const SizedBox(height: 20),
+              Text(
+                "No active tour",
+                style: GoogleFonts.outfit(fontSize: 19, fontWeight: FontWeight.w800, color: AppTheme.colors.white),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                "Start a new tour and generate a QR for your travelers to connect.",
+                textAlign: TextAlign.center,
+                style: GoogleFonts.inter(fontSize: 12.5, color: AppTheme.colors.white.withValues(alpha: 0.85)),
+              ),
+              const SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                height: 52,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppTheme.colors.white,
+                    foregroundColor: Theme.of(context).colorScheme.primary,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
+                    elevation: 0,
+                  ),
+                  onPressed: () {
+                    if (_vehicles.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text("Add your vehicle in the \"My Listing\" tab first")),
+                      );
+                      setState(() => _currentTabIndex = 4);
+                      return;
+                    }
+                    _showVehiclePicker();
+                  },
+                  child: Text("Generate tour QR", style: GoogleFonts.outfit(fontWeight: FontWeight.w700, fontSize: 14)),
+                ),
+              ),
+            ],
+          ),
+        ).animate().fadeIn(duration: 500.ms).slideY(begin: 0.08, end: 0),
       ],
     );
   }
@@ -502,29 +600,30 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
             margin: const EdgeInsets.only(bottom: 24),
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: AppTheme.colors.amber.withValues(alpha: 0.15),
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: AppTheme.colors.amber, width: 1.5),
+              color: AppPalette.heroOchre.withValues(alpha: 0.15),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: AppPalette.heroOchre, width: 1.5),
             ),
             child: Column(
               children: [
-                Text("UPCOMING TOUR SESSION READY", style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 16, color: AppTheme.colors.amber)),
+                Text("Upcoming tour session ready", style: GoogleFonts.outfit(fontWeight: FontWeight.w800, fontSize: 15, color: AppTheme.textPrimary(context))),
                 const SizedBox(height: 8),
                 Text("Travelers and meeting point confirmed. Tap below when you and the travelers arrive at the meeting point to officially start the timer and tracking.",
                   textAlign: TextAlign.center,
-                  style: GoogleFonts.inter(fontSize: 13, color: AppTheme.textPrimary(context))),
+                  style: GoogleFonts.inter(fontSize: 12.5, color: AppTheme.textSecondary(context))),
                 const SizedBox(height: 16),
                 SizedBox(
                   width: double.infinity,
                   height: 50,
                   child: ElevatedButton.icon(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppTheme.colors.amber,
-                      foregroundColor: AppTheme.colors.black,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      backgroundColor: Theme.of(context).colorScheme.primary,
+                      foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
+                      elevation: 0,
                     ),
-                    icon: const Icon(Icons.play_arrow_rounded, size: 24),
-                    label: Text("START TOUR SESSION", style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 15)),
+                    icon: const Icon(Icons.play_arrow_rounded, size: 22),
+                    label: Text("Start tour session", style: GoogleFonts.outfit(fontWeight: FontWeight.w700, fontSize: 14)),
                     onPressed: () async {
                       HapticFeedback.mediumImpact();
                       setState(() => _isLoading = true);
@@ -572,12 +671,13 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
             Expanded(
               child: OutlinedButton.icon(
                 icon: const Icon(Icons.add_location_alt_outlined, size: 18),
-                label: Text(session.meetingPointName.isNotEmpty ? "UPDATE POINT" : "SET POINT"),
+                label: Text(session.meetingPointName.isNotEmpty ? "Update point" : "Set point"),
                 style: OutlinedButton.styleFrom(
-                  foregroundColor: AppTheme.colors.greenAccent,
-                  side: BorderSide(color: AppTheme.colors.greenAccent, width: 1),
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  foregroundColor: Theme.of(context).colorScheme.primary,
+                  side: BorderSide(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.4), width: 1.2),
+                  padding: const EdgeInsets.symmetric(vertical: 15),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
+                  textStyle: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 12.5),
                 ),
                 onPressed: _setMeetingPoint,
               ),
@@ -586,12 +686,13 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
             Expanded(
               child: OutlinedButton.icon(
                 icon: const Icon(Icons.garage_outlined, size: 18),
-                label: const Text("MARK VEHICLE"),
+                label: const Text("Mark vehicle"),
                 style: OutlinedButton.styleFrom(
-                  foregroundColor: AppTheme.colors.orangeAccent,
-                  side: BorderSide(color: AppTheme.colors.orangeAccent, width: 1),
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  foregroundColor: AppPalette.earth,
+                  side: BorderSide(color: AppPalette.earth.withValues(alpha: 0.4), width: 1.2),
+                  padding: const EdgeInsets.symmetric(vertical: 15),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
+                  textStyle: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 12.5),
                 ),
                 onPressed: _updateVehicleLocation,
               ),
@@ -601,43 +702,57 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
         const SizedBox(height: 24),
 
         // Join Management
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text("JOIN STATUS", style: GoogleFonts.outfit(fontSize: 12, fontWeight: FontWeight.bold, color: AppTheme.textPrimary(context))),
-                Text(session.isJoinOpen ? "OPEN TO SCANS" : "LOCKED",
-                  style: GoogleFonts.inter(fontSize: 10, color: session.isJoinOpen ? AppTheme.colors.greenAccent : AppTheme.colors.redAccent)),
-              ],
-            ),
-            Switch(
-              value: session.isJoinOpen,
-              activeThumbColor: AppTheme.colors.greenAccent,
-              onChanged: (val) => _sessionRepo.toggleJoinStatus(session.sessionId, val),
-            ),
-          ],
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+          decoration: BoxDecoration(
+            color: AppTheme.surfaceMuted(context),
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text("Join status", style: GoogleFonts.outfit(fontSize: 13, fontWeight: FontWeight.w700, color: AppTheme.textPrimary(context))),
+                  Text(session.isJoinOpen ? "Open to scans" : "Locked",
+                    style: GoogleFonts.inter(fontSize: 11, color: session.isJoinOpen ? AppPalette.success : AppPalette.error)),
+                ],
+              ),
+              Switch(
+                value: session.isJoinOpen,
+                activeThumbColor: Theme.of(context).colorScheme.primary,
+                onChanged: (val) => _sessionRepo.toggleJoinStatus(session.sessionId, val),
+              ),
+            ],
+          ),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 16),
 
         Container(
           width: double.infinity,
           padding: const EdgeInsets.all(28),
           decoration: BoxDecoration(
-            color: Theme.of(context).brightness == Brightness.dark ? AppTheme.colors.black : AppPalette.ink,
+            color: AppPalette.ink,
             borderRadius: BorderRadius.circular(24),
           ),
           child: Column(
             children: [
               if (session.joinToken != null && session.isJoinOpen)
-                QrImageView(
-                  data: '{"v":1,"t":"join","token":"${session.joinToken}"}',
-                  version: QrVersions.auto,
-                  size: 180.0,
-                  backgroundColor: AppTheme.colors.transparent,
-                  eyeStyle: QrEyeStyle(eyeShape: QrEyeShape.square, color: AppTheme.colors.white),
-                  dataModuleStyle: QrDataModuleStyle(dataModuleShape: QrDataModuleShape.square, color: AppTheme.colors.white),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: AppTheme.colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: QrImageView(
+                    data: '{"v":1,"t":"join","token":"${session.joinToken}"}',
+                    version: QrVersions.auto,
+                    size: 180.0,
+                    backgroundColor: AppTheme.colors.transparent,
+                    eyeStyle: QrEyeStyle(eyeShape: QrEyeShape.square, color: AppPalette.ink),
+                    dataModuleStyle: QrDataModuleStyle(dataModuleShape: QrDataModuleShape.square, color: AppPalette.ink),
+                  ),
                 ).animate().scale(duration: 800.ms, curve: Curves.elasticOut)
               else
                 SizedBox(
@@ -648,8 +763,8 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
                 ),
               const SizedBox(height: 16),
               TextButton.icon(
-                icon: Icon(Icons.refresh, size: 14, color: AppTheme.colors.white70),
-                label: Text("Tap to refresh join code", style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: AppTheme.colors.white70)),
+                icon: Icon(Icons.refresh, size: 14, color: AppPalette.heroOchre),
+                label: Text("Tap to refresh join code", style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: AppPalette.heroOchre)),
                 onPressed: () => _sessionRepo.generateJoinToken(session.sessionId),
               ),
             ],
@@ -689,7 +804,7 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
               height: 52,
               child: OutlinedButton(
                 style: OutlinedButton.styleFrom(
-                  side: BorderSide(color: AppTheme.colors.redAccent, width: 2),
+                  side: BorderSide(color: AppPalette.error, width: 2),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
                   padding: EdgeInsets.zero,
                 ),
@@ -704,7 +819,7 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
                     );
                   }
                 },
-                child: Icon(Icons.priority_high_rounded, color: AppTheme.colors.redAccent, size: 22),
+                child: Icon(Icons.priority_high_rounded, color: AppPalette.error, size: 22),
               ),
             ),
           ],
@@ -714,8 +829,8 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text("CONNECTED TRAVELERS", style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.bold, color: AppTheme.textPrimary(context))),
-            Text("${session.touristIds.length} ACTIVE", style: GoogleFonts.inter(fontSize: 12, color: AppTheme.colors.greenAccent)),
+            Text("Connected travelers", style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.w700, color: AppTheme.textPrimary(context))),
+            Text("${session.touristIds.length} active", style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: AppPalette.success)),
           ],
         ),
         const SizedBox(height: 16),
@@ -744,8 +859,10 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
 
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
+      physics: const BouncingScrollPhysics(),
       child: Row(
-        children: phases.map((p) {
+        children: [
+          ...phases.map((p) {
           final isSelected = _activeSession?.currentPhase == p['id'];
           return GestureDetector(
             onTap: () => _updatePhase(p['id'] as String),
@@ -773,7 +890,9 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
               ),
             ),
           );
-        }).toList(),
+          }),
+          const SizedBox(width: 12),
+        ],
       ),
     );
   }
@@ -785,7 +904,7 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
             onPressed: _stopTour,
             child: Text(
               "Stop tour session",
-              style: GoogleFonts.inter(color: AppTheme.colors.redAccent, fontWeight: FontWeight.w700, fontSize: 13),
+              style: GoogleFonts.inter(color: AppPalette.error, fontWeight: FontWeight.w700, fontSize: 13),
             ),
           ),
         );
@@ -807,11 +926,11 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text("SELECT VEHICLE", style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.textPrimary(context))),
-              const SizedBox(height: 24),
+              Text("Select vehicle", style: GoogleFonts.outfit(fontSize: 17, fontWeight: FontWeight.w800, color: AppTheme.textPrimary(context))),
+              const SizedBox(height: 20),
                 ..._vehicles.map((v) => ListTile(
-                  leading: Icon(Icons.garage_rounded, color: AppTheme.colors.orangeAccent),
-                  title: Text(v.type, style: GoogleFonts.outfit(color: AppTheme.textPrimary(context))),
+                  leading: Icon(Icons.garage_rounded, color: Theme.of(context).colorScheme.primary),
+                  title: Text(v.type, style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.w600)),
                   subtitle: Text(v.vehicleNumber, style: GoogleFonts.inter(color: AppTheme.textSecondary(context))),
                   onTap: () => Navigator.pop(context, v),
                 )),
@@ -866,7 +985,7 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
             const SizedBox(width: 16),
             Text("Traveler ${uid.substring(0, 6)}", style: GoogleFonts.inter(color: AppTheme.textPrimary(context))),
             const Spacer(),
-            Icon(Icons.location_on, size: 16, color: AppTheme.colors.greenAccent),
+            Icon(Icons.location_on, size: 16, color: AppPalette.success),
           ],
         ),
       );
@@ -891,11 +1010,11 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
       margin: const EdgeInsets.only(bottom: 20),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppTheme.colors.redAccent.withValues(alpha: 0.15),
+        color: AppPalette.error.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppTheme.colors.redAccent, width: 2),
+        border: Border.all(color: AppPalette.error, width: 2),
         boxShadow: [
-          BoxShadow(color: AppTheme.colors.redAccent.withValues(alpha: 0.2), blurRadius: 15, spreadRadius: 2),
+          BoxShadow(color: AppPalette.error.withValues(alpha: 0.2), blurRadius: 15, spreadRadius: 2),
         ],
       ),
       child: Column(
@@ -903,17 +1022,17 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
         children: [
           Row(
             children: [
-              Icon(Icons.warning_amber_rounded, color: AppTheme.colors.redAccent, size: 28),
+              Icon(Icons.warning_amber_rounded, color: AppPalette.error, size: 28),
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
                   title.toUpperCase(),
-                  style: GoogleFonts.outfit(color: AppTheme.colors.redAccent, fontWeight: FontWeight.bold, fontSize: 14, letterSpacing: 1.2),
+                  style: GoogleFonts.outfit(color: AppPalette.error, fontWeight: FontWeight.bold, fontSize: 14, letterSpacing: 1.2),
                 ),
               ),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                decoration: BoxDecoration(color: AppTheme.colors.redAccent, borderRadius: BorderRadius.circular(8)),
+                decoration: BoxDecoration(color: AppPalette.error, borderRadius: BorderRadius.circular(8)),
                 child: Text(severity.toUpperCase(), style: GoogleFonts.outfit(color: AppTheme.colors.white, fontWeight: FontWeight.bold, fontSize: 10)),
               ),
             ],
@@ -927,7 +1046,7 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
                 child: ElevatedButton.icon(
                   onPressed: () => _logMonsoonIncident(title, msg, severity),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppTheme.colors.redAccent,
+                    backgroundColor: AppPalette.error,
                     foregroundColor: AppTheme.colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 10),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),

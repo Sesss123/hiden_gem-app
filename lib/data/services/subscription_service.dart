@@ -1,9 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/subscription_record.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:uuid/uuid.dart';
 import 'package:flutter/services.dart';
+import '../../core/config/app_config.dart';
 
 final subscriptionServiceProvider = Provider((ref) => SubscriptionService());
 
@@ -30,16 +32,22 @@ class SubscriptionService {
     return record;
   }
 
-  /// Checks if an account has a specific entitlement or remains within limits.
+  // Capabilities each paid plan unlocks. 'pro' capabilities are a subset of
+  // 'elite' so an elite guide gets everything pro does, plus elite-only ones.
+  static const Map<String, Set<String>> _planCapabilities = {
+    'pro': {'featuredListings', 'prioritySos', 'advancedAnalytics', 'priorityLeads', 'verifiedInsured', 'customPackages'},
+    'elite': {
+      'featuredListings', 'prioritySos', 'advancedAnalytics', 'priorityLeads', 'verifiedInsured', 'customPackages',
+      'teamManagement', 'operatorDashboard', 'whiteLabelBranding',
+    },
+  };
+
+  /// Checks if an account's active plan includes a given capability key.
+  /// Free tier / no active subscription never has any entitlement.
   Future<bool> hasEntitlement(String accountId, String key) async {
     final sub = await getActiveSubscription(accountId);
-    if (sub == null) return _getDefaultEntitlement(key);
-    
-    final entitlement = sub.entitlements[key];
-    if (entitlement is bool) return entitlement;
-    if (entitlement is num) return entitlement > 0;
-    
-    return _getDefaultEntitlement(key);
+    if (sub == null) return false;
+    return _planCapabilities[sub.planId]?.contains(key) ?? false;
   }
 
   /// Returns the limit for a specific metric (e.g., maxTeamSize) based on plan.
@@ -48,16 +56,6 @@ class SubscriptionService {
     final planId = sub?.planId ?? 'free';
     
     return _getPlanLimit(planId, key);
-  }
-
-  bool _getDefaultEntitlement(String key) {
-    // Default values for Free/No subscription
-    final defaults = {
-      'featuredAllowed': false,
-      'analyticsAccess': false,
-      'teamManagement': false,
-    };
-    return defaults[key] ?? false;
   }
 
   int _getPlanLimit(String planId, String key) {
@@ -73,8 +71,34 @@ class SubscriptionService {
     return limits[planId]?[key] ?? 0;
   }
 
+  bool get _revenueCatUnconfigured {
+    final key = AppConfig.revenueCatApiKeyAndroid;
+    return key.isEmpty || key == 'goog_example_key' || key == 'appl_example_key' || key.contains('example_key') || key == 'dev-key-local';
+  }
+
   /// Initiates a real payment via RevenueCat.
   Future<void> purchasePlan(String planId, String accountId, String accountType) async {
+    // Dev-mode bypass: RevenueCat's SDK is never configured when only dummy
+    // API keys are present (see premium_service.dart's identical check), so
+    // any real Purchases.* call throws "no singleton instance" before it can
+    // even try. Rather than leaving the Fleet Plan screen entirely untestable
+    // through its own UI, skip straight to writing the subscription record —
+    // gated by kDebugMode so this can never fire against a real deployment.
+    if (kDebugMode && _revenueCatUnconfigured) {
+      final record = SubscriptionRecord(
+        subscriptionId: const Uuid().v4(),
+        accountId: accountId,
+        accountType: accountType,
+        planId: planId,
+        status: 'active',
+        startedAt: DateTime.now(),
+        expiresAt: DateTime.now().add(const Duration(days: 30)),
+        entitlements: {},
+      );
+      await startSubscription(record);
+      return;
+    }
+
     // Map internal plan IDs to RevenueCat product identifiers
     final revenueCatProductId = planId == 'pro' ? 'guide_pro_monthly' : 'guide_elite_monthly';
 

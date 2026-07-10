@@ -1,6 +1,7 @@
 class BookingRequest {
   final String bookingId;
   final String touristId;
+  final String? touristDisplayName; // Snapshot at booking time — guides can't read tourist user docs
   final String? guideId;
   final String? operatorId;
   final String? packageId;
@@ -33,9 +34,13 @@ class BookingRequest {
   final String? linkedSessionId;
   final String? deviceHash;
 
+  // Priority Leads (Pro/Elite guide subscription benefit)
+  final bool isPriority;
+
   BookingRequest({
     required this.bookingId,
     required this.touristId,
+    this.touristDisplayName,
     this.guideId,
     this.operatorId,
     this.packageId,
@@ -56,11 +61,13 @@ class BookingRequest {
     this.responseNote,
     this.linkedSessionId,
     this.deviceHash,
+    this.isPriority = false,
   });
 
   Map<String, dynamic> toJson() => {
     'bookingId': bookingId,
     'touristId': touristId,
+    'touristDisplayName': touristDisplayName,
     'guideId': guideId,
     'operatorId': operatorId,
     'packageId': packageId,
@@ -81,11 +88,13 @@ class BookingRequest {
     'responseNote': responseNote,
     'linkedSessionId': linkedSessionId,
     'deviceHash': deviceHash,
+    'isPriority': isPriority,
   };
 
   factory BookingRequest.fromJson(Map<String, dynamic> json) => BookingRequest(
     bookingId: json['bookingId'],
     touristId: json['touristId'],
+    touristDisplayName: json['touristDisplayName'],
     guideId: json['guideId'],
     operatorId: json['operatorId'],
     packageId: json['packageId'],
@@ -106,5 +115,6 @@ class BookingRequest {
     responseNote: json['responseNote'],
     linkedSessionId: json['linkedSessionId'],
     deviceHash: json['deviceHash'],
+    isPriority: json['isPriority'] ?? false,
   );
 }

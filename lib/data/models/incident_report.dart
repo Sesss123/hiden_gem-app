@@ -23,6 +23,7 @@ class IncidentReport {
   final String? assignedAdminId;
   final int timelineCount;
   final List<Map<String, dynamic>> timelineEvents; // {type, description, timestamp, userId, role}
+  final int priorityTier; // 0 = normal, 1 = priority (Pro/Elite reporting guide)
 
   IncidentReport({
     required this.incidentId,
@@ -49,6 +50,7 @@ class IncidentReport {
     this.assignedAdminId,
     this.timelineCount = 0,
     this.timelineEvents = const [],
+    this.priorityTier = 0,
   });
 
   Map<String, dynamic> toJson() => {
@@ -76,6 +78,7 @@ class IncidentReport {
     'assignedAdminId': assignedAdminId,
     'timelineCount': timelineCount,
     'timelineEvents': timelineEvents,
+    'priorityTier': priorityTier,
   };
 
   factory IncidentReport.fromJson(Map<String, dynamic> json) => IncidentReport(
@@ -103,5 +106,6 @@ class IncidentReport {
     assignedAdminId: json['assignedAdminId'],
     timelineCount: json['timelineCount'] ?? 0,
     timelineEvents: List<Map<String, dynamic>>.from(json['timelineEvents'] ?? []),
+    priorityTier: json['priorityTier'] ?? 0,
   );
 }

@@ -9,13 +9,16 @@ import '../../core/theme/oracle_ui_system.dart';
 import '../../data/models/guide_listing.dart';
 import '../../data/models/guide_availability.dart';
 import '../../data/repositories/marketplace_repository.dart';
-import '../../data/datasources/firebase_storage_service.dart';
+import '../../data/repositories/guide_application_repository.dart';
+import '../../data/services/subscription_service.dart';
+import 'subscription_screen.dart';
 import '../widgets/cached_image.dart';
 import 'guide_availability_screen.dart';
 import 'package:hidden_gems_sl/core/utils/secure_logger.dart';
 
 class GuideListingEditorScreen extends ConsumerStatefulWidget {
-  const GuideListingEditorScreen({super.key});
+  final bool embedded;
+  const GuideListingEditorScreen({super.key, this.embedded = false});
 
   @override
   ConsumerState<GuideListingEditorScreen> createState() => _GuideListingEditorScreenState();
@@ -34,12 +37,16 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
   String _guideCategory = 'Chauffeur';
   String _currency = 'USD';
   bool _vehicleAvailable = false;
+  String? _vehicleImageUrl;
+  String? _licenseNumber;
   List<String> _coverPhotos = [];
   bool _isLoading = true;
   bool _isSaving = false;
   GuideListing? _existingListing;
+  bool _isFeatured = false;
+  bool _canFeature = false;
+  bool _isInsured = false;
 
-  final _storage = FirebaseStorageService();
   final _picker = ImagePicker();
 
   final List<String> _categories = [
@@ -78,6 +85,9 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
         _hourlyRateController.text = listing.hourlyRate.toStringAsFixed(0);
         _vehicleAvailable = listing.vehicleAvailable;
         _vehicleTypeController.text = listing.vehicleType ?? '';
+        _vehicleImageUrl = listing.vehicleImageUrl;
+        _licenseNumber = listing.licenseNumber;
+        _isFeatured = listing.isFeatured;
         _coverPhotos = List.from(listing.coverPhotos);
         _languagesController.text = listing.languages.join(', ');
         _specializationsController.text = listing.specializations.join(', ');
@@ -91,6 +101,25 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
         _languagesController.text = 'English, Sinhala';
         _regionsController.text = 'Central, Southern, Western';
         _hourlyRateController.text = '25';
+      }
+
+      // The license number is a verified credential set at enrollment time
+      // (GuideApplicationController::approve gate) — always source it from
+      // the application record rather than letting the listing drift out of
+      // sync, and backfill it onto the listing the first time this screen
+      // runs for a guide who was approved before this field existed.
+      if (_licenseNumber == null || _licenseNumber!.isEmpty) {
+        final application = await GuideApplicationRepository().getMyApplication().catchError((_) => null);
+        if (application != null && mounted) {
+          _licenseNumber = application.licenseNumber;
+        }
+      }
+
+      final canFeature = await SubscriptionService().hasEntitlement(uid, 'featuredListings');
+      final canInsure = await SubscriptionService().hasEntitlement(uid, 'verifiedInsured');
+      if (mounted) {
+        _canFeature = canFeature;
+        _isInsured = canInsure;
       }
     } catch (e, st) {
       SecureLogger.error("Error loading listing", e, st, "GuideListingEditor");
@@ -107,12 +136,13 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
       if (!mounted) return;
       setState(() => _isSaving = true);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Uploading photo to vault...'), backgroundColor: Theme.of(context).colorScheme.primary),
+        SnackBar(content: Text('Uploading photo...'), backgroundColor: Theme.of(context).colorScheme.primary),
       );
 
-      final url = await _storage.uploadGuideDocument(
+      final repo = ref.read(marketplaceRepositoryProvider);
+      final url = await repo.uploadListingPhoto(
         file: image,
-        docType: 'cover_${DateTime.now().millisecondsSinceEpoch}',
+        photoType: 'cover_${DateTime.now().millisecondsSinceEpoch}',
       );
 
       if (url != null && mounted) {
@@ -121,6 +151,41 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
         });
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Photo uploaded successfully!'), backgroundColor: AppTheme.colors.green),
+        );
+      } else if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to upload photo.'), backgroundColor: AppTheme.colors.redAccent),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e'), backgroundColor: AppTheme.colors.redAccent),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isSaving = false);
+    }
+  }
+
+  Future<void> _pickAndUploadVehiclePhoto() async {
+    try {
+      final XFile? image = await _picker.pickImage(source: ImageSource.gallery, imageQuality: 75);
+      if (image == null) return;
+
+      if (!mounted) return;
+      setState(() => _isSaving = true);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Uploading vehicle photo...'), backgroundColor: Theme.of(context).colorScheme.primary),
+      );
+
+      final repo = ref.read(marketplaceRepositoryProvider);
+      final url = await repo.uploadListingPhoto(file: image, photoType: 'vehicle');
+
+      if (url != null && mounted) {
+        setState(() => _vehicleImageUrl = url);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Vehicle photo uploaded!'), backgroundColor: AppTheme.colors.green),
         );
       } else if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -172,6 +237,8 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
         displayName: _displayNameController.text.trim(),
         bio: _bioController.text.trim(),
         profilePhotoUrl: _existingListing?.profilePhotoUrl ?? FirebaseAuth.instance.currentUser?.photoURL,
+        licenseNumber: _licenseNumber,
+        isInsured: _isInsured,
         coverPhotos: _coverPhotos,
         guideCategory: _guideCategory,
         languages: languages.isEmpty ? ['English'] : languages,
@@ -183,13 +250,16 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
         yearsExperience: _existingListing?.yearsExperience ?? 2,
         vehicleAvailable: _vehicleAvailable,
         vehicleType: _vehicleAvailable ? _vehicleTypeController.text.trim() : null,
+        vehicleImageUrl: _vehicleAvailable ? _vehicleImageUrl : null,
         hourlyRate: hourlyRate,
         currency: _currency,
         status: status, // 'published' or 'draft'
         moderationStatus: _existingListing?.moderationStatus ?? 'approved',
         availability: _existingListing?.availability ?? GuideAvailability(listingId: uid),
-        isFeatured: _existingListing?.isFeatured ?? false,
-        featuredUntil: _existingListing?.featuredUntil,
+        isFeatured: _canFeature && _isFeatured,
+        featuredUntil: _canFeature && _isFeatured
+            ? (_existingListing?.isFeatured == true ? _existingListing?.featuredUntil : now.add(const Duration(days: 30)))
+            : null,
         profileViews: _existingListing?.profileViews ?? 0,
         bookingRequestsCount: _existingListing?.bookingRequestsCount ?? 0,
         createdAt: _existingListing?.createdAt ?? now,
@@ -207,7 +277,7 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
             backgroundColor: status == 'published' ? AppTheme.colors.green : AppTheme.colors.blueAccent,
           ),
         );
-        if (status == 'published') {
+        if (status == 'published' && !widget.embedded && Navigator.canPop(context)) {
           Navigator.pop(context);
         }
       }
@@ -264,6 +334,10 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
               children: [
                 _buildSectionTitle('Basic information'),
                 const SizedBox(height: 12),
+                if (_licenseNumber != null && _licenseNumber!.isNotEmpty) ...[
+                  _buildVerifiedLicenseTile(),
+                  const SizedBox(height: 16),
+                ],
                 _buildTextField(
                   controller: _displayNameController,
                   label: 'Display Name',
@@ -364,6 +438,8 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
                     hint: 'e.g. Toyota Prius Hybrid / Luxury Van',
                     icon: Icons.directions_car_outlined,
                   ),
+                  const SizedBox(height: 16),
+                  _buildVehiclePhotoPicker(),
                 ],
                 const SizedBox(height: 24),
 
@@ -375,6 +451,11 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
                 _buildSectionTitle('Availability calendar'),
                 const SizedBox(height: 12),
                 _buildAvailabilityButton(context),
+                const SizedBox(height: 24),
+
+                _buildSectionTitle('Visibility boost'),
+                const SizedBox(height: 12),
+                _buildFeaturedToggle(),
                 const SizedBox(height: 36),
 
                 Row(
@@ -561,6 +642,77 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
     );
   }
 
+  Widget _buildVerifiedLicenseTile() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      decoration: BoxDecoration(
+        color: AppTheme.colors.greenAccent.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppTheme.colors.greenAccent.withValues(alpha: 0.3)),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.verified_rounded, color: AppTheme.colors.greenAccent, size: 22),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Verified license', style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 11, fontWeight: FontWeight.w600)),
+                const SizedBox(height: 2),
+                Text(_licenseNumber!, style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.w700, fontSize: 14)),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildVehiclePhotoPicker() {
+    return GestureDetector(
+      onTap: _isSaving ? null : _pickAndUploadVehiclePhoto,
+      child: Container(
+        width: double.infinity,
+        height: 140,
+        clipBehavior: Clip.antiAlias,
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Theme.of(context).colorScheme.primary, width: 1.5),
+        ),
+        child: _vehicleImageUrl == null
+            ? Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.add_a_photo_outlined, color: Theme.of(context).colorScheme.primary, size: 28),
+                  const SizedBox(height: 8),
+                  Text('Add vehicle photo', style: GoogleFonts.inter(color: Theme.of(context).colorScheme.primary, fontSize: 12, fontWeight: FontWeight.w700)),
+                ],
+              )
+            : Stack(
+                fit: StackFit.expand,
+                children: [
+                  CachedImage(url: _vehicleImageUrl!, fit: BoxFit.cover),
+                  Positioned(
+                    top: 8,
+                    right: 8,
+                    child: GestureDetector(
+                      onTap: () => setState(() => _vehicleImageUrl = null),
+                      child: Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: BoxDecoration(color: AppTheme.colors.black87, shape: BoxShape.circle),
+                        child: Icon(Icons.close, color: AppTheme.colors.white, size: 16),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+      ),
+    );
+  }
+
   Widget _buildAvailabilityButton(BuildContext context) {
     return GestureDetector(
       onTap: () {
@@ -606,6 +758,36 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildFeaturedToggle() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      decoration: BoxDecoration(
+        color: _canFeature ? AppTheme.surfaceMuted(context) : AppTheme.surfaceMuted(context).withValues(alpha: 0.5),
+        borderRadius: BorderRadius.circular(16),
+        border: _canFeature ? null : Border.all(color: AppTheme.borderColor(context)),
+      ),
+      child: _canFeature
+          ? SwitchListTile(
+              title: Text('Feature this listing', style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.w600)),
+              subtitle: Text('Show up in the marketplace\'s featured guides for 30 days', style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 12)),
+              value: _isFeatured,
+              activeThumbColor: Theme.of(context).colorScheme.primary,
+              contentPadding: EdgeInsets.zero,
+              onChanged: (val) => setState(() => _isFeatured = val),
+            )
+          : ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: Icon(Icons.lock_outline_rounded, color: Theme.of(context).colorScheme.primary, size: 20),
+              title: Text('Feature this listing', style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.w600)),
+              subtitle: Text('Upgrade to Pro to boost your visibility in the marketplace', style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 12)),
+              trailing: TextButton(
+                onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SubscriptionScreen())),
+                child: Text('Upgrade', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 12, color: Theme.of(context).colorScheme.primary)),
+              ),
+            ),
     );
   }
 }

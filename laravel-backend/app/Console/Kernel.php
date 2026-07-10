@@ -27,6 +27,12 @@ class Kernel extends ConsoleKernel
         $schedule->command('marketplace:broadcast-updates')
                  ->everyFiveMinutes()
                  ->withoutOverlapping();
+
+        // Unfeature listings whose 30-day featured window has passed —
+        // see ExpireFeaturedListings for why this exists.
+        $schedule->command('marketplace:expire-featured-listings')
+                 ->daily()
+                 ->withoutOverlapping();
     }
 
     /**

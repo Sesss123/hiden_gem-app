@@ -108,14 +108,18 @@ class UserPreferenceService {
 
   static Future<void> addTrip() async {
     _mutate((p) => p.totalTripsGenerated++);
-    await _flushToDisk();
+    // BUG-7 FIX: Force flush — trip count is user progress data that must
+    // survive an app crash. The default 2-second cooldown could lose this.
+    await _flushToDisk(force: true);
   }
 
   static Future<void> addVisitedPlace(String place) async {
     final profile = getProfile();
     if (!profile.visitedPlaces.contains(place)) {
       _mutate((p) => p.visitedPlaces.add(place));
-      await _flushToDisk();
+      // BUG-7 FIX: Force flush — visited places are user progress data that
+      // must survive an app crash within the default 2-second cooldown window.
+      await _flushToDisk(force: true);
     }
   }
 

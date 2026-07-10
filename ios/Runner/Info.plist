@@ -59,6 +59,10 @@
 		<string>TripMe needs access to your photos to let you upload review images and personalize your profile.</string>
 		<key>NSUserTrackingUsageDescription</key>
 		<string>This identifier will be used to deliver personalized ads to you, helping us keep the heritage discovery free for everyone.</string>
+		<key>NSCalendarsUsageDescription</key>
+		<string>Guides can sync their tour bookings to their device calendar.</string>
+		<key>NSCalendarsFullAccessUsageDescription</key>
+		<string>Guides can sync their tour bookings to their device calendar.</string>
 		<key>UIStatusBarHidden</key>
 		<false/>
 	</dict>

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/incident_report.dart';
+import '../services/subscription_service.dart';
 
 final incidentRepositoryProvider = Provider((ref) => IncidentRepository());
 
@@ -35,6 +36,7 @@ class IncidentRepository {
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
       timelineCount: 1,
+      priorityTier: incident.priorityTier,
       timelineEvents: [
         {
           'type': 'incident_created',
@@ -118,6 +120,12 @@ class IncidentRepository {
   }) async {
     // Only Auto-Incident for Critical or Repeated SOS (logic here)
     if (severity == 'critical') {
+      // Priority SOS is a guide-subscription benefit: a guide-reported SOS
+      // from a Pro/Elite guide jumps the admin queue via priorityTier.
+      final priorityTier = role == 'guide' && await SubscriptionService().hasEntitlement(userId, 'prioritySos')
+          ? 1
+          : 0;
+
       final incident = IncidentReport(
         incidentId: '', // Generated in createIncident
         incidentNumber: 'INC-AUTO',
@@ -136,8 +144,9 @@ class IncidentRepository {
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
         linkedSosAlertId: sosAlertId,
+        priorityTier: priorityTier,
       );
-      
+
       await createIncident(incident);
     }
   }
@@ -154,6 +163,8 @@ class IncidentRepository {
   Stream<List<IncidentReport>> getActiveIncidents() {
     return _incidentRef
         .where('status', whereIn: ['open', 'under_review', 'escalated'])
+        .orderBy('priorityTier', descending: true)
+        .orderBy('createdAt')
         .snapshots()
         .map((snapshot) => snapshot.docs
             .map((doc) => IncidentReport.fromJson(doc.data()))

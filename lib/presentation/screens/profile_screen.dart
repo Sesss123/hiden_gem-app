@@ -36,9 +36,14 @@ import 'budget_concierge_screen.dart';
 import 'budget_tracker_screen.dart';
 import '../../data/datasources/trip_cache_service.dart';
 import 'login_screen.dart';
-import 'guide_listing_editor_screen.dart';
 import 'booking_inbox_screen.dart';
 import 'guide_earnings_screen.dart';
+import 'operator_dashboard_screen.dart';
+import 'guide_clients_screen.dart';
+import 'guide_packages_screen.dart';
+import 'my_bookings_screen.dart';
+import 'subscription_screen.dart';
+import '../../data/services/subscription_service.dart';
 import '../../core/services/ethical_travel_service.dart';
 import '../../core/rating/rating_service.dart';
 import '../../core/notifications/notification_service.dart';
@@ -1052,32 +1057,18 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
             ],
           ),
           const SizedBox(height: 18),
-          Row(
-            children: [
-              Expanded(
-                child: _buildGuideHubButton(
-                  Icons.explore_outlined,
-                  "Tour Dashboard",
-                  "Active tour & QR",
-                  isDark ? AppTheme.colors.amber[700]! : AppTheme.colors.primary,
-                  () => Navigator.push(context, MaterialPageRoute(builder: (_) => const GuideDashboardScreen())),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _buildGuideHubButton(
-                  Icons.inbox_rounded,
-                  "Bookings",
-                  "Tour requests",
-                  isDark ? AppTheme.colors.blueAccent : AppTheme.colors.primary,
-                  () => Navigator.push(context, MaterialPageRoute(builder: (_) => const BookingInboxScreen())),
-                ),
-              ),
-            ],
+          _buildGuideHubButton(
+            Icons.explore_outlined,
+            "Tour Dashboard",
+            "Active tour, QR, listing & safety",
+            isDark ? AppTheme.colors.amber[700]! : AppTheme.colors.primary,
+            () => Navigator.push(context, MaterialPageRoute(builder: (_) => const GuideDashboardScreen())),
           ),
           const SizedBox(height: 12),
           Row(
             children: [
+              Expanded(child: _buildBookingsEntry(isDark)),
+              const SizedBox(width: 12),
               Expanded(
                 child: _buildGuideHubButton(
                   Icons.account_balance_wallet_outlined,
@@ -1087,21 +1078,130 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
                   () => Navigator.push(context, MaterialPageRoute(builder: (_) => const GuideEarningsScreen())),
                 ),
               ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _buildGuideHubButton(
-                  Icons.edit_document,
-                  "My Listing",
-                  "Profile & vehicle",
-                  isDark ? AppTheme.colors.orangeAccent : AppTheme.colors.primary,
-                  () => Navigator.push(context, MaterialPageRoute(builder: (_) => const GuideListingEditorScreen())),
-                ),
-              ),
             ],
           ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: _buildGuideHubButton(
+                  Icons.people_outline_rounded,
+                  "Clients",
+                  "History & notes",
+                  isDark ? AppTheme.colors.purpleAccent : AppTheme.colors.primary,
+                  () => Navigator.push(context, MaterialPageRoute(builder: (_) => const GuideClientsScreen())),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(child: _buildPackagesEntry(isDark)),
+            ],
+          ),
+          _buildOperatorDashboardEntry(isDark),
         ],
       ),
     ).animate().fadeIn(duration: 400.ms).slideY(begin: -0.1, curve: Curves.easeOutQuad);
+  }
+
+  Widget _buildBookingsEntry(bool isDark) {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) {
+      return _buildGuideHubButton(
+        Icons.inbox_rounded,
+        "Bookings",
+        "Tour requests",
+        isDark ? AppTheme.colors.blueAccent : AppTheme.colors.primary,
+        () => Navigator.push(context, MaterialPageRoute(builder: (_) => const BookingInboxScreen())),
+      );
+    }
+
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('user_notifications')
+          .where('recipientId', isEqualTo: uid)
+          .where('type', isEqualTo: 'new_booking')
+          .where('isRead', isEqualTo: false)
+          .snapshots(),
+      builder: (context, snapshot) {
+        final unreadCount = snapshot.data?.docs.length ?? 0;
+        return Stack(
+          clipBehavior: Clip.none,
+          children: [
+            _buildGuideHubButton(
+              Icons.inbox_rounded,
+              "Bookings",
+              unreadCount > 0 ? "$unreadCount new request${unreadCount == 1 ? '' : 's'}" : "Tour requests",
+              isDark ? AppTheme.colors.blueAccent : AppTheme.colors.primary,
+              () => Navigator.push(context, MaterialPageRoute(builder: (_) => const BookingInboxScreen())),
+            ),
+            if (unreadCount > 0)
+              Positioned(
+                top: -6, right: -6,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: AppPalette.rust,
+                    borderRadius: BorderRadius.circular(100),
+                    border: Border.all(color: Theme.of(context).scaffoldBackgroundColor, width: 2),
+                  ),
+                  child: Text(
+                    unreadCount > 9 ? '9+' : '$unreadCount',
+                    style: GoogleFonts.outfit(color: AppTheme.colors.white, fontSize: 11, fontWeight: FontWeight.w800),
+                  ),
+                ),
+              ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildPackagesEntry(bool isDark) {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) return const SizedBox.shrink();
+
+    return FutureBuilder<bool>(
+      future: SubscriptionService().hasEntitlement(uid, 'customPackages'),
+      builder: (context, snapshot) {
+        final unlocked = snapshot.data ?? false;
+        return _buildGuideHubButton(
+          unlocked ? Icons.local_offer_outlined : Icons.lock_outline_rounded,
+          "Packages",
+          unlocked ? "Custom tour pricing" : "Upgrade to Pro",
+          isDark ? AppTheme.colors.orangeAccent : AppTheme.colors.primary,
+          () {
+            if (unlocked) {
+              Navigator.push(context, MaterialPageRoute(builder: (_) => const GuidePackagesScreen()));
+            } else {
+              Navigator.push(context, MaterialPageRoute(builder: (_) => const SubscriptionScreen()));
+            }
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildOperatorDashboardEntry(bool isDark) {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) return const SizedBox.shrink();
+
+    return FutureBuilder<bool>(
+      future: SubscriptionService().hasEntitlement(uid, 'operatorDashboard'),
+      builder: (context, snapshot) {
+        if (snapshot.data != true) return const SizedBox.shrink();
+        return Column(
+          children: [
+            const SizedBox(height: 12),
+            _buildGuideHubButton(
+              Icons.groups_2_outlined,
+              "Manage team",
+              "Team, roles & branding",
+              isDark ? AppTheme.colors.amber[700]! : AppTheme.colors.primary,
+              () => Navigator.push(context, MaterialPageRoute(builder: (_) => const OperatorDashboardScreen())),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Widget _buildGuideHubButton(IconData icon, String title, String subtitle, Color color, VoidCallback onTap) {
@@ -1188,6 +1288,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
               onTap: () => Navigator.push(
                   context, MaterialPageRoute(builder: (_) => const GuideEnrollmentScreen()))),
         ],
+
+        _tile(Icons.event_note_outlined, "My Bookings",
+            iconColor: AppPalette.rust,
+            onTap: () => Navigator.push(
+                context, MaterialPageRoute(builder: (_) => const MyBookingsScreen()))),
 
         _tile(Icons.family_restroom_outlined, "Family Sharing",
             iconColor: AppTheme.colors.blue[400],

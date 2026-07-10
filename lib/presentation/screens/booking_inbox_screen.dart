@@ -11,6 +11,7 @@ import '../../data/models/tour_session.dart';
 import '../../data/repositories/booking_repository.dart';
 import '../../data/repositories/tour_session_repository.dart';
 import '../../data/datasources/user_preference_service.dart';
+import '../../core/services/calendar_sync_service.dart';
 import 'tourist_companion_hub.dart';
 
 class BookingInboxScreen extends ConsumerStatefulWidget {
@@ -23,6 +24,44 @@ class BookingInboxScreen extends ConsumerStatefulWidget {
 class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
   String _selectedFilter = 'pending';
   final List<String> _filters = ['pending', 'accepted', 'session_ready', 'completed', 'declined', 'cancelled', 'all'];
+  List<BookingRequest> _latestBookings = [];
+  bool _isSyncingCalendar = false;
+
+  Future<void> _syncToCalendar() async {
+    final upcoming = _latestBookings.where((b) => b.status == 'accepted' || b.status == 'session_ready').toList();
+    if (upcoming.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No accepted bookings to sync yet.')),
+      );
+      return;
+    }
+
+    setState(() => _isSyncingCalendar = true);
+    try {
+      final entries = upcoming.map((b) => CalendarSyncEntry(
+        bookingId: b.bookingId,
+        title: 'Tour: ${b.touristDisplayName ?? "Traveler"} (${b.guestCount} guests)',
+        description: b.notes ?? '',
+        start: b.requestedDate,
+        end: b.requestedDate.add(const Duration(hours: 4)),
+      )).toList();
+
+      final synced = await CalendarSyncService().syncBookings(entries);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Synced $synced booking(s) to your calendar.'), backgroundColor: AppTheme.colors.green),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Calendar sync failed: $e'), backgroundColor: Theme.of(context).colorScheme.error),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isSyncingCalendar = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,6 +85,15 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
           style: GoogleFonts.outfit(fontWeight: FontWeight.w800, fontSize: 20, color: AppTheme.textPrimary(context)),
         ),
         centerTitle: false,
+        actions: [
+          IconButton(
+            icon: _isSyncingCalendar
+                ? SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: AppTheme.textPrimary(context)))
+                : Icon(Icons.calendar_month_outlined, color: AppTheme.textPrimary(context)),
+            tooltip: 'Sync to calendar',
+            onPressed: _isSyncingCalendar ? null : _syncToCalendar,
+          ),
+        ],
       ),
       body: OracleUI.auraBackground(
         child: SafeArea(
@@ -67,8 +115,9 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
                     }
 
                     final allRequests = snapshot.data ?? [];
+                    _latestBookings = allRequests;
                     final filteredRequests = _selectedFilter == 'all'
-                        ? allRequests
+                        ? List<BookingRequest>.from(allRequests)
                         : allRequests.where((req) {
                             if (_selectedFilter == 'cancelled') {
                               return req.status.contains('cancelled');
@@ -78,6 +127,16 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
                             }
                             return req.status == _selectedFilter;
                           }).toList();
+
+                    // Priority Leads: Pro/Elite guides' flagged bookings surface
+                    // first, newest-first within each priority tier (stable sort
+                    // preserves the getInbox() createdAt-desc order as tiebreaker).
+                    filteredRequests.sort((a, b) {
+                      if (a.isPriority != b.isPriority) {
+                        return a.isPriority ? -1 : 1;
+                      }
+                      return 0;
+                    });
 
                     if (filteredRequests.isEmpty) {
                       return _buildEmptyState();
@@ -166,7 +225,13 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
         borderRadius: BorderRadius.circular(22),
         border: Border(left: BorderSide(color: statusColor, width: 4)),
         boxShadow: [
-          BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.06), blurRadius: 20, offset: const Offset(0, 8)),
+          BoxShadow(
+            color: request.isPriority
+                ? AppPalette.heroOchre.withValues(alpha: 0.18)
+                : AppTheme.colors.black.withValues(alpha: 0.06),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+          ),
         ],
       ),
       child: Padding(
@@ -207,20 +272,39 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
                     ),
                   ],
                 ),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                  decoration: BoxDecoration(
-                    color: statusColor.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(100),
-                  ),
-                  child: Text(
-                    _sentenceCase(request.status.replaceAll('_', ' ')),
-                    style: GoogleFonts.inter(
-                      fontSize: 10,
-                      fontWeight: FontWeight.w700,
-                      color: statusColor,
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    if (request.isPriority) ...[
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                        decoration: BoxDecoration(
+                          color: AppPalette.heroOchre.withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(100),
+                        ),
+                        child: Text(
+                          'PRIORITY',
+                          style: GoogleFonts.outfit(color: AppPalette.heroOchre, fontWeight: FontWeight.w800, fontSize: 9, letterSpacing: 0.5),
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                    ],
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      decoration: BoxDecoration(
+                        color: statusColor.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(100),
+                      ),
+                      child: Text(
+                        _sentenceCase(request.status.replaceAll('_', ' ')),
+                        style: GoogleFonts.inter(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w700,
+                          color: statusColor,
+                        ),
+                      ),
                     ),
-                  ),
+                  ],
                 ),
               ],
             ),
@@ -409,7 +493,7 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
       );
 
       await sessionRepo.createSession(session);
-      await bookingRepo.respondToRequest(bookingId: request.bookingId, status: 'session_ready', note: 'Booking Accepted! Session ready.');
+      await bookingRepo.respondToRequest(bookingId: request.bookingId, status: 'session_ready', note: 'Booking Accepted! Session ready.', touristId: request.touristId);
       await bookingRepo.updateLinkedSessionId(request.bookingId, sessionId);
 
       final profile = UserPreferenceService.getProfile();
@@ -479,6 +563,7 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
           bookingId: request.bookingId,
           status: 'declined',
           note: noteController.text.trim().isNotEmpty ? noteController.text.trim() : 'Declined by guide.',
+          touristId: request.touristId,
         );
 
         if (mounted) {

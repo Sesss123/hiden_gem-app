@@ -113,6 +113,72 @@
                     </div>
                 </div>
 
+                <!-- Marketplace Listing -->
+                <div class="space-y-4 border-t border-slate-800/60 pt-6">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-sm font-bold uppercase tracking-wider text-emerald-400">Marketplace Listing</h3>
+                        @if($listing)
+                            <span class="text-xs px-3 py-1 rounded-full font-bold uppercase tracking-wide
+                                @if(($listing['status'] ?? '') === 'published') bg-emerald-500/10 text-emerald-400 border border-emerald-500/20
+                                @else bg-slate-800 text-slate-400 border border-slate-700 @endif">
+                                {{ $listing['status'] ?? 'draft' }}
+                            </span>
+                        @endif
+                    </div>
+
+                    @if(!$listing)
+                        <div class="text-sm text-slate-500 bg-slate-900 p-4 rounded-xl border border-slate-800/50">
+                            This guide hasn't created a marketplace listing yet.
+                        </div>
+                    @else
+                        <div class="grid grid-cols-2 gap-4 text-sm">
+                            <div class="bg-slate-900/50 p-3 rounded-xl border border-slate-800/40">
+                                <div class="text-xs text-slate-500">Display Name</div>
+                                <div class="font-bold text-white mt-1">{{ $listing['displayName'] ?? '—' }}</div>
+                            </div>
+                            <div class="bg-slate-900/50 p-3 rounded-xl border border-slate-800/40">
+                                <div class="text-xs text-slate-500">Hourly Rate</div>
+                                <div class="font-bold text-white mt-1">{{ $listing['currency'] ?? 'USD' }} {{ $listing['hourlyRate'] ?? 0 }}</div>
+                            </div>
+                            <div class="bg-slate-900/50 p-3 rounded-xl border border-slate-800/40">
+                                <div class="text-xs text-slate-500">Vehicle</div>
+                                <div class="font-bold text-white mt-1">
+                                    {{ ($listing['vehicleAvailable'] ?? false) ? ($listing['vehicleType'] ?? 'Yes') : 'Not available' }}
+                                </div>
+                            </div>
+                            <div class="bg-slate-900/50 p-3 rounded-xl border border-slate-800/40">
+                                <div class="text-xs text-slate-500">Moderation Status</div>
+                                <div class="font-bold text-white mt-1">{{ $listing['moderationStatus'] ?? 'pending' }}</div>
+                            </div>
+                        </div>
+
+                        @if(!empty($listing['bio']))
+                            <div class="text-slate-300 bg-slate-900 p-4 rounded-xl border border-slate-800/50 text-sm leading-relaxed whitespace-pre-line">
+                                {{ $listing['bio'] }}
+                            </div>
+                        @endif
+
+                        @if(!empty($listing['coverPhotos']) || !empty($listing['vehicleImageUrl']))
+                            <div class="space-y-2">
+                                <div class="text-xs text-slate-500">Photos</div>
+                                <div class="flex flex-wrap gap-3">
+                                    @foreach(($listing['coverPhotos'] ?? []) as $photo)
+                                        <a href="{{ $photo }}" target="_blank" class="block w-24 h-24 rounded-xl overflow-hidden border border-slate-800 bg-slate-900">
+                                            <img src="{{ $photo }}" alt="Cover photo" class="w-full h-full object-cover">
+                                        </a>
+                                    @endforeach
+                                    @if(!empty($listing['vehicleImageUrl']))
+                                        <a href="{{ $listing['vehicleImageUrl'] }}" target="_blank" class="block w-24 h-24 rounded-xl overflow-hidden border border-slate-800 bg-slate-900 relative">
+                                            <img src="{{ $listing['vehicleImageUrl'] }}" alt="Vehicle photo" class="w-full h-full object-cover">
+                                            <span class="absolute bottom-0 left-0 right-0 bg-black/60 text-[10px] text-center text-white py-0.5">Vehicle</span>
+                                        </a>
+                                    @endif
+                                </div>
+                            </div>
+                        @endif
+                    @endif
+                </div>
+
                 <!-- Verification Decisions -->
                 <div class="space-y-4 border-t border-slate-800/60 pt-6">
                     <h3 class="text-sm font-bold uppercase tracking-wider text-emerald-400">Administrative Actions</h3>
