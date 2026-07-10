@@ -36,8 +36,19 @@ A next-generation, premium mobile application designed for discovering, planning
 - **Ancestral Portal:** Exploration tool facilitating lineage records retrieval and heritage searches.
 
 ### 🤝 Registered Guide Marketplace
-- **Smart Match Engine:** Intelligent recommendation system connecting tourists with certified regional tour guides using specific filters.
-- **Guide Dashboard:** Administrative panels for local guides to handle live bookings, broadcast statuses, and publish localized reviews.
+- **Smart Match Engine:** Intelligent recommendation system connecting tourists with certified regional tour guides using specific filters (category, language, region, vehicle availability).
+- **Guide Dashboard:** Tour session control (QR check-in, live phase tracking, meeting-point broadcasts), listing management, vehicle details, and safety tools, all in one tabbed dashboard.
+- **Booking Flow:** Tourists send a booking request from a guide's public profile (optionally against a custom tour package); guides accept/decline from their inbox, with both sides notified through Firestore-backed in-app notifications and a **My Bookings** status screen for tourists.
+- **Subscription Tiers (Free / Pro / Elite):** Real entitlement-gated features for guides — Featured Listings, Priority SOS routing, Advanced Analytics, Priority Leads, a Verified & Insured badge, Custom Tour Packages (Pro+), and Team Management / Operator Dashboard / White-label Branding (Elite). Free-tier guides also get a lightweight Client CRM and native device Calendar Sync.
+
+---
+
+## 🧩 Backend Services
+
+The app is backed by two services, split by what each is good at:
+
+- **Firebase / Firestore:** Primary data store and realtime layer — guide listings, bookings, subscriptions, chat/notifications, and Firestore Security Rules for access control. A small set of Cloud Functions (`functions/`) handle privileged operations (entitlement verification, RevenueCat webhooks, forensic signal scoring) that can't be trusted to the client.
+- **Laravel Backend (`laravel-backend/`):** Admin panel (guide application review, marketplace listing oversight) and server-side operations that Firestore Security Rules can't safely allow a client to perform directly — e.g. incrementing a guide's booking/profile-view counters, or checking another guide's monthly booking quota before a tourist submits a request. Talks to Firestore via a service-account-backed REST wrapper (`FirestoreService`), independent of the Cloud Functions runtime.
 
 ---
 
@@ -74,6 +85,11 @@ lib/
 │
 ├── firebase_options.dart         # Generated Firebase configuration configurations
 └── main.dart                     # App setup, provider initialization, and splash loading entry
+
+functions/                        # Firebase Cloud Functions (privileged operations)
+laravel-backend/                  # Admin panel + server-side Firestore operations (PHP/Laravel)
+firestore.rules                   # Firestore Security Rules
+firestore.indexes.json            # Firestore composite index definitions
 ```
 
 ---
@@ -114,6 +130,21 @@ lib/
    ```bash
    flutter run
    ```
+
+### Laravel Backend Setup
+
+Guide-side features (admin panel, booking quota checks, marketplace counters) require the Laravel backend running alongside the app:
+
+```bash
+cd laravel-backend
+composer install
+cp .env.example .env
+php artisan key:generate
+php artisan migrate
+php artisan serve
+```
+
+Point the Flutter app at it via `--dart-define=LARAVEL_BACKEND_URL=http://localhost:8000/api/v1` (adjust host/port to match your `artisan serve` or Herd setup).
 
 ---
 
