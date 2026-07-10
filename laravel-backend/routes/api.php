@@ -20,6 +20,7 @@ use App\Http\Controllers\Api\RevenueCatWebhookController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\WishlistController;
 use App\Http\Controllers\Api\V1\GuideApplicationController;
+use App\Http\Controllers\Api\V1\GuideDocumentUploadController;
 use App\Http\Controllers\Api\V1\ReviewController;
 use App\Http\Controllers\Api\V1\BookingController;
 use App\Http\Controllers\Api\V1\MarketplaceController;
@@ -64,6 +65,7 @@ Route::prefix('v1')->group(function () {
     Route::prefix('guide-applications')->middleware(['auth:sanctum', VerifyApiKey::class, 'throttle:30,1'])->group(function () {
         Route::post('/', [GuideApplicationController::class, 'submit']);
         Route::get('/status/{userId}', [GuideApplicationController::class, 'myStatus']);
+        Route::post('/documents', [GuideDocumentUploadController::class, 'upload']);
     });
 
     // Admin Guide Applications Routes (Protected by Sanctum Auth, Admin Role, API Key & Rate Limiting)

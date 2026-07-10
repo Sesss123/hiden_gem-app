@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:image_picker/image_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../models/guide_application.dart';
@@ -12,6 +13,35 @@ import '../../core/utils/secure_logger.dart';
 class GuideApplicationRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  /// Uploads a guide enrollment document (license/NIC/selfie) to the Laravel
+  /// backend's local disk storage — the self-hosted replacement for Firebase
+  /// Storage, so it moves to a VPS unchanged when one is provisioned.
+  /// Returns the absolute URL to the stored file, or null on failure.
+  Future<String?> uploadDocument({required XFile file, required String docType}) async {
+    try {
+      final client = SecureHttpClient(http.Client());
+      final uri = Uri.parse('${AppConfig.laravelUrl}/guide-applications/documents');
+      final request = http.MultipartRequest('POST', uri)
+        ..headers['Accept'] = 'application/json'
+        ..headers['X-API-KEY'] = AppConfig.hiddenGemsApiKey
+        ..headers['X-HiddenGems-Key'] = AppConfig.hiddenGemsApiKey
+        ..fields['doc_type'] = docType
+        ..files.add(await http.MultipartFile.fromPath('file', file.path));
+
+      final streamedResponse = await client.send(request).timeout(const Duration(seconds: 30));
+      final response = await http.Response.fromStream(streamedResponse);
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        return data['data']['full_url'] as String?;
+      }
+      SecureLogger.error("Document upload returned status ${response.statusCode}: ${response.body}");
+    } catch (e) {
+      SecureLogger.error("Failed to upload guide document to Laravel Backend: $e");
+    }
+    return null;
+  }
 
   Future<void> submitApplication(GuideApplication application) async {
     // 1. Submit to Laravel Backend API

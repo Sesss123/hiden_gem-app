@@ -61,10 +61,18 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
   bool get wantKeepAlive => true;
   late var profile = UserPreferenceService.getProfile();
 
+  Timer? _pendingGuideStatusPoll;
+
   @override
   void initState() {
     super.initState();
     _refreshRoleOnce();
+  }
+
+  @override
+  void dispose() {
+    _pendingGuideStatusPoll?.cancel();
+    super.dispose();
   }
 
   static const String _lastRoleCheckPrefsKey = 'profile_last_role_check_at';
@@ -110,6 +118,22 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
         if (changed) {
           await UserPreferenceService.saveProfile(profile);
           if (mounted) setState(() {});
+        }
+
+        // The Profile tab is kept alive (AutomaticKeepAliveClientMixin), so
+        // initState only runs once per app session — without this, a guide
+        // whose application gets approved/rejected while they're browsing
+        // elsewhere in the app would never see the update short of a full
+        // restart. Poll only while pending, since that's the only state a
+        // change is actually expected in.
+        if (app.status == GuideStatus.pending) {
+          _pendingGuideStatusPoll ??= Timer.periodic(
+            const Duration(seconds: 30),
+            (_) => _refreshRoleOnce(),
+          );
+        } else {
+          _pendingGuideStatusPoll?.cancel();
+          _pendingGuideStatusPoll = null;
         }
       }
 

@@ -67,8 +67,14 @@ service cloud.firestore {
     // •  Anyone authenticated can read published & approved listings.
     // •  Only the guide owning the listing or admins can write.
     match /guide_listings/{listingId} {
+      // A guide's own listing doc is keyed by their uid and won't exist yet
+      // before they've ever saved one — the editor screen probes for it via
+      // getListing(uid) on first open. Firestore rules can't reference a
+      // nonexistent doc's fields, so !exists() must be checked first (allow
+      // signed-in read of "nothing's there" — no data is exposed either way).
       allow read: if isSignedIn() &&
-        (resource.data.status == 'published' && resource.data.moderationStatus == 'approved'
+        (!exists(/databases/$(database)/documents/guide_listings/$(listingId))
+         || resource.data.status == 'published' && resource.data.moderationStatus == 'approved'
          || isOwner(resource.data.guideId) || isAdmin());
       allow create: if isVerifiedGuide() &&
         request.resource.data.guideId == request.auth.uid;

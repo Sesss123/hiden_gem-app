@@ -6,7 +6,6 @@ import '../../core/services/oracle_guardian.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/theme/oracle_ui_system.dart';
 import '../../data/datasources/user_preference_service.dart';
-import '../../data/datasources/firebase_storage_service.dart';
 import '../../data/repositories/guide_application_repository.dart';
 import '../../data/models/guide_application.dart';
 import '../../data/models/guide_status.dart';
@@ -25,7 +24,6 @@ class GuideEnrollmentScreen extends StatefulWidget {
 
 class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
   final _repo = GuideApplicationRepository();
-  final _storage = FirebaseStorageService();
   final _picker = ImagePicker();
 
   XFile? _licenseFile;
@@ -229,9 +227,9 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
       // 1. Upload Documents
       _showNotification("Uploading documents...");
       
-      final licenseUrl = await _storage.uploadGuideDocument(file: _licenseFile!, docType: 'license');
-      final nicUrl = await _storage.uploadGuideDocument(file: _nicFile!, docType: 'nic');
-      final selfieUrl = await _storage.uploadGuideDocument(file: _selfieFile!, docType: 'selfie');
+      final licenseUrl = await _repo.uploadDocument(file: _licenseFile!, docType: 'license');
+      final nicUrl = await _repo.uploadDocument(file: _nicFile!, docType: 'nic');
+      final selfieUrl = await _repo.uploadDocument(file: _selfieFile!, docType: 'selfie');
 
       if (licenseUrl == null || nicUrl == null || selfieUrl == null) {
         throw OracleException("Guide documents could not be transmitted to the Oracle vault. Please verify your connection.", code: "UPLOAD_FAILURE");
@@ -342,54 +340,102 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
       context: context,
       barrierDismissible: false,
       builder: (context) => BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
         child: Center(
           child: Container(
-            width: 300,
-            padding: const EdgeInsets.all(32),
+            width: 320,
+            padding: const EdgeInsets.fromLTRB(32, 40, 32, 32),
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.surface,
-              borderRadius: BorderRadius.circular(24),
-              boxShadow: [BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.12), blurRadius: 24, offset: const Offset(0, 10))],
+              borderRadius: BorderRadius.circular(28),
+              boxShadow: [BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.14), blurRadius: 32, offset: const Offset(0, 14))],
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.check_circle_outline, color: AppTheme.colors.greenAccent, size: 64)
-                    .animate()
-                    .scale(duration: 600.ms, curve: Curves.elasticOut),
-                const SizedBox(height: 24),
-                Text(
-                  "Submitted",
-                  style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.w700, letterSpacing: -0.3, color: AppTheme.textPrimary(context)),
+                Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Container(
+                      width: 88,
+                      height: 88,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            Theme.of(context).colorScheme.primary,
+                            AppPalette.rustDim,
+                          ],
+                        ),
+                      ),
+                    ).animate(onPlay: (c) => c.repeat(reverse: true))
+                     .scale(begin: const Offset(1, 1), end: const Offset(1.12, 1.12), duration: 1.8.seconds)
+                     .fadeOut(begin: 0.4, duration: 1.8.seconds),
+                    Container(
+                      width: 72,
+                      height: 72,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            Theme.of(context).colorScheme.primary,
+                            AppPalette.rustDim,
+                          ],
+                        ),
+                      ),
+                      child: const Icon(Icons.check_rounded, color: Colors.white, size: 38),
+                    ).animate().scale(duration: 500.ms, curve: Curves.elasticOut),
+                  ],
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 28),
                 Text(
-                  "Our team will review your application soon.",
+                  "Application submitted",
                   textAlign: TextAlign.center,
-                  style: GoogleFonts.inter(color: AppTheme.textSecondary(context)),
+                  style: GoogleFonts.outfit(
+                    fontSize: 19,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: -0.3,
+                    color: AppTheme.textPrimary(context),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  "Our team will review your documents and let you know once a decision is made.",
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.inter(
+                    fontSize: 13,
+                    height: 1.5,
+                    color: AppTheme.textSecondary(context),
+                  ),
                 ),
                 const SizedBox(height: 32),
                 SizedBox(
                   width: double.infinity,
+                  height: 52,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Theme.of(context).colorScheme.primary,
                       foregroundColor: AppTheme.colors.white,
                       elevation: 0,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
                     ),
                     onPressed: () {
                       Navigator.pop(context); // Close dialog
                       Navigator.pop(context); // Close screen
                     },
-                    child: Text("Return", style: GoogleFonts.inter(fontWeight: FontWeight.w700)),
+                    child: Text(
+                      "Return to profile",
+                      style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 14),
+                    ),
                   ),
                 ),
               ],
             ),
-          ),
+          ).animate().fadeIn(duration: 300.ms).scale(begin: const Offset(0.9, 0.9), curve: Curves.easeOutBack),
         ),
       ),
     );

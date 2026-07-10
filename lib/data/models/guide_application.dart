@@ -28,30 +28,32 @@ class GuideApplication {
   });
 
   Map<String, dynamic> toJson() => {
-    'userId': userId,
-    'licenseNumber': licenseNumber,
+    'user_id': userId,
+    'license_number': licenseNumber,
     'bio': bio,
     'category': category,
-    'licenseDocUrl': licenseDocUrl,
-    'nicDocUrl': nicDocUrl,
-    'selfieDocUrl': selfieDocUrl,
+    'license_doc_url': licenseDocUrl,
+    'nic_doc_url': nicDocUrl,
+    'selfie_doc_url': selfieDocUrl,
     'status': status.name,
-    'adminComment': adminComment,
-    'appliedAt': appliedAt.toIso8601String(),
-    'reviewedAt': reviewedAt?.toIso8601String(),
+    'admin_comment': adminComment,
+    'applied_at': appliedAt.toIso8601String(),
+    'reviewed_at': reviewedAt?.toIso8601String(),
   };
 
   factory GuideApplication.fromJson(Map<String, dynamic> json) => GuideApplication(
-    userId: json['userId'],
-    licenseNumber: json['licenseNumber'],
+    userId: json['user_id'] ?? json['userId'],
+    licenseNumber: json['license_number'] ?? json['licenseNumber'],
     bio: json['bio'],
     category: json['category'],
-    licenseDocUrl: json['licenseDocUrl'],
-    nicDocUrl: json['nicDocUrl'],
-    selfieDocUrl: json['selfieDocUrl'],
+    licenseDocUrl: json['license_doc_url'] ?? json['licenseDocUrl'],
+    nicDocUrl: json['nic_doc_url'] ?? json['nicDocUrl'],
+    selfieDocUrl: json['selfie_doc_url'] ?? json['selfieDocUrl'],
     status: GuideStatus.values.byName(json['status'] ?? 'pending'),
-    adminComment: json['adminComment'],
-    appliedAt: DateTime.parse(json['appliedAt'] ?? DateTime.now().toIso8601String()),
-    reviewedAt: json['reviewedAt'] != null ? DateTime.parse(json['reviewedAt']) : null,
+    adminComment: json['admin_comment'] ?? json['adminComment'],
+    appliedAt: DateTime.parse(json['applied_at'] ?? json['appliedAt'] ?? DateTime.now().toIso8601String()),
+    reviewedAt: (json['reviewed_at'] ?? json['reviewedAt']) != null
+        ? DateTime.parse(json['reviewed_at'] ?? json['reviewedAt'])
+        : null,
   );
 }

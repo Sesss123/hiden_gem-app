@@ -3,6 +3,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import '../../core/config/app_config.dart';
 import '../../core/services/brute_force_service.dart';
 import '../../core/utils/secure_logger.dart';
 import 'user_preference_service.dart';
@@ -224,7 +225,7 @@ class AuthService {
       if (idToken == null) return;
       
       final response = await http.post(
-        Uri.parse('https://api.hiddengemssl.com/api/v1/auth/firebase-login'),
+        Uri.parse('${AppConfig.laravelUrl}/auth/firebase-login'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'firebase_token': idToken}),
       );

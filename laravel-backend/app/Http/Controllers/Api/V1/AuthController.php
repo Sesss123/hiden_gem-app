@@ -65,7 +65,7 @@ class AuthController extends Controller
         }
 
         // Limit token bloat: Keep only the most recent 4 tokens (so this new one makes 5)
-        $excessTokens = $user->tokens()->orderBy('created_at', 'desc')->skip(4)->pluck('id');
+        $excessTokens = $user->tokens()->orderBy('created_at', 'desc')->skip(4)->take(PHP_INT_MAX)->pluck('id');
         if ($excessTokens->isNotEmpty()) {
             $user->tokens()->whereIn('id', $excessTokens)->delete();
         }
@@ -146,20 +146,30 @@ class AuthController extends Controller
             $email = $verifiedIdToken->claims()->get('email');
             $name = $verifiedIdToken->claims()->get('name') ?? 'Firebase User';
 
-            // Find or create the user
-            $user = User::firstOrCreate(
-                ['firebase_uid' => $uid],
-                [
+            // Find by firebase_uid first; fall back to matching by email so a
+            // Firebase account that was deleted and re-created (new uid, same
+            // email) re-links to its existing Laravel row instead of hitting
+            // the email unique constraint on insert.
+            $user = User::where('firebase_uid', $uid)->first();
+            if (!$user && $email) {
+                $user = User::where('email', $email)->first();
+                if ($user && !$user->firebase_uid) {
+                    $user->update(['firebase_uid' => $uid]);
+                }
+            }
+            if (!$user) {
+                $user = User::create([
+                    'firebase_uid' => $uid,
                     'email' => $email,
                     'name' => $name,
                     'password' => Hash::make(\Illuminate\Support\Str::random(32)),
                     'role' => 'tourist',
                     'subscription_tier' => 'Free',
-                ]
-            );
+                ]);
+            }
 
             // Limit token bloat
-            $excessTokens = $user->tokens()->orderBy('created_at', 'desc')->skip(4)->pluck('id');
+            $excessTokens = $user->tokens()->orderBy('created_at', 'desc')->skip(4)->take(PHP_INT_MAX)->pluck('id');
             if ($excessTokens->isNotEmpty()) {
                 $user->tokens()->whereIn('id', $excessTokens)->delete();
             }

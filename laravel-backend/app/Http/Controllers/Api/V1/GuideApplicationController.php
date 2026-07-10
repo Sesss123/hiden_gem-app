@@ -24,9 +24,9 @@ class GuideApplicationController extends Controller
             'license_number' => 'required|string|max:255',
             'bio' => 'nullable|string',
             'category' => 'required|string|max:100',
-            'license_doc_url' => ['nullable', 'string', 'max:500', 'url', 'regex:/^https:\/\/(firebasestorage\.googleapis\.com\/v0\/b\/tripme-89742\.(firebasestorage\.app|appspot\.com)|cdn\.hiddengemssl\.com)\//'],
-            'nic_doc_url' => ['nullable', 'string', 'max:500', 'url', 'regex:/^https:\/\/(firebasestorage\.googleapis\.com\/v0\/b\/tripme-89742\.(firebasestorage\.app|appspot\.com)|cdn\.hiddengemssl\.com)\//'],
-            'selfie_doc_url' => ['nullable', 'string', 'max:500', 'url', 'regex:/^https:\/\/(firebasestorage\.googleapis\.com\/v0\/b\/tripme-89742\.(firebasestorage\.app|appspot\.com)|cdn\.hiddengemssl\.com)\//'],
+            'license_doc_url' => ['nullable', 'string', 'max:500', 'url', 'regex:/^https?:\/\/(firebasestorage\.googleapis\.com\/v0\/b\/tripme-89742\.(firebasestorage\.app|appspot\.com)|cdn\.hiddengemssl\.com|[^\/]+\/storage\/guide_documents\/)/'],
+            'nic_doc_url' => ['nullable', 'string', 'max:500', 'url', 'regex:/^https?:\/\/(firebasestorage\.googleapis\.com\/v0\/b\/tripme-89742\.(firebasestorage\.app|appspot\.com)|cdn\.hiddengemssl\.com|[^\/]+\/storage\/guide_documents\/)/'],
+            'selfie_doc_url' => ['nullable', 'string', 'max:500', 'url', 'regex:/^https?:\/\/(firebasestorage\.googleapis\.com\/v0\/b\/tripme-89742\.(firebasestorage\.app|appspot\.com)|cdn\.hiddengemssl\.com|[^\/]+\/storage\/guide_documents\/)/'],
         ]);
 
         if ($validator->fails()) {
@@ -42,7 +42,7 @@ class GuideApplicationController extends Controller
         $validated['applied_at'] = now();
 
         $application = GuideApplication::updateOrCreate(
-            ['user_id' => (string) $request->user()->id],
+            ['user_id' => (string) $request->user()->firebase_uid],
             $validated
         );
 
@@ -60,7 +60,7 @@ class GuideApplicationController extends Controller
      */
     public function myStatus(Request $request, string $userId)
     {
-        $application = GuideApplication::where('user_id', (string) $request->user()->id)->first();
+        $application = GuideApplication::where('user_id', (string) $request->user()->firebase_uid)->first();
 
         if (!$application) {
             return response()->json([

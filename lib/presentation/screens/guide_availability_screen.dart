@@ -3,9 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:intl/intl.dart';
 import '../../core/theme/app_theme.dart';
-import '../../core/theme/oracle_ui_system.dart';
 import '../../data/models/guide_availability.dart';
 import '../../data/models/guide_listing.dart';
 import '../../data/repositories/marketplace_repository.dart';
@@ -178,14 +178,24 @@ class _GuideAvailabilityScreenState extends ConsumerState<GuideAvailabilityScree
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('🎉 Availability & Schedule Updated!'), backgroundColor: AppTheme.colors.green),
+          SnackBar(
+            content: Text('Availability & schedule updated', style: GoogleFonts.inter(fontWeight: FontWeight.w600)),
+            backgroundColor: AppTheme.colors.greenAccent,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+          ),
         );
         Navigator.pop(context);
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error saving availability: $e'), backgroundColor: AppTheme.colors.redAccent),
+          SnackBar(
+            content: Text('Error saving availability: $e', style: GoogleFonts.inter(fontWeight: FontWeight.w600)),
+            backgroundColor: AppTheme.colors.redAccent,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+          ),
         );
       }
     } finally {
@@ -198,7 +208,7 @@ class _GuideAvailabilityScreenState extends ConsumerState<GuideAvailabilityScree
     if (_isLoading) {
       return Scaffold(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        body: Center(child: CircularProgressIndicator(color: AppTheme.colors.amber)),
+        body: Center(child: CircularProgressIndicator(color: Theme.of(context).colorScheme.primary)),
       );
     }
 
@@ -206,229 +216,294 @@ class _GuideAvailabilityScreenState extends ConsumerState<GuideAvailabilityScree
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      appBar: AppBar(
-        backgroundColor: AppTheme.colors.transparent,
-        elevation: 0,
-        title: Text(
-          'AVAILABILITY & SCHEDULE',
-          style: GoogleFonts.outfit(fontWeight: FontWeight.bold, letterSpacing: 1.5, fontSize: 16, color: AppTheme.textPrimary(context)),
-        ),
-        centerTitle: true,
-      ),
-      body: OracleUI.auraBackground(
-        child: SafeArea(
-          child: ListView(
-            padding: const EdgeInsets.all(20),
-            physics: const BouncingScrollPhysics(),
-            children: [
-              _buildSectionTitle('INSTANT BOOK & NOTICE'),
-              const SizedBox(height: 12),
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).cardColor,
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: AppTheme.borderColor(context)),
-                  boxShadow: AppTheme.softShadow,
-                ),
-                child: Column(
-                  children: [
-                    SwitchListTile(
-                      title: Text('Instant Book Enabled', style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.bold)),
-                      subtitle: Text('Allow tourists to book immediately without manual approval', style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 12)),
-                      value: _instantBookEnabled,
-                      activeThumbColor: AppTheme.colors.amber,
-                      contentPadding: EdgeInsets.zero,
-                      onChanged: (val) => setState(() => _instantBookEnabled = val),
+      body: CustomScrollView(
+        physics: const BouncingScrollPhysics(),
+        slivers: [
+          SliverAppBar(
+            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+            elevation: 0,
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back_ios_new, size: 20, color: AppTheme.textPrimary(context)),
+              onPressed: () => Navigator.pop(context),
+            ),
+            title: Text(
+              "Availability & schedule",
+              style: GoogleFonts.outfit(
+                fontSize: 18,
+                fontWeight: FontWeight.w800,
+                letterSpacing: -0.4,
+                color: AppTheme.textPrimary(context),
+              ),
+            ),
+          ),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 4, 20, 40),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [Theme.of(context).colorScheme.primary, AppPalette.rustDim],
+                      ),
                     ),
-                    Divider(color: AppTheme.borderColor(context)),
-                    const SizedBox(height: 8),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    child: Row(
                       children: [
+                        Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            color: AppTheme.colors.white.withValues(alpha: 0.2),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Icon(Icons.calendar_today_rounded, size: 20, color: Colors.white),
+                        ),
+                        const SizedBox(width: 14),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Advance Notice Required', style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.w600)),
-                              Text('Minimum lead time before tour starts', style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 12)),
+                              Text(
+                                "When you're free to guide",
+                                style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.w700, color: AppTheme.colors.white),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                "Tourists only see slots you mark open.",
+                                style: GoogleFonts.inter(fontSize: 11, color: AppTheme.colors.white.withValues(alpha: 0.85)),
+                              ),
                             ],
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).cardColor,
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: AppTheme.colors.amber.withValues(alpha: 0.5)),
-                          ),
-                          child: DropdownButton<String>(
-                            value: _advanceNoticeHours,
-                            dropdownColor: Theme.of(context).cardColor,
-                            underline: const SizedBox(),
-                            icon: Icon(Icons.arrow_drop_down, color: AppTheme.colors.amber),
-                            items: _noticeOptions.map((e) => DropdownMenuItem(value: e, child: Text('$e hrs', style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.bold)))).toList(),
-                            onChanged: (val) => setState(() => _advanceNoticeHours = val!),
                           ),
                         ),
                       ],
                     ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 28),
+                  ).animate().fadeIn(duration: 500.ms).slideY(begin: 0.08, end: 0),
+                  const SizedBox(height: 28),
 
-              _buildSectionTitle('RECURRING WEEKLY SCHEDULE'),
-              const SizedBox(height: 4),
-              Text('Toggle working days and customize working hours', style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 12)),
-              const SizedBox(height: 12),
-              ...List.generate(7, (index) {
-                final dayIndex = index + 1;
-                final dayName = _daysOfWeek[index];
-                final slot = _weeklySlots[dayIndex];
-                final isWorking = slot != null;
-
-                return Container(
-                  margin: const EdgeInsets.only(bottom: 12),
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).cardColor.withValues(alpha: isWorking ? 1.0 : 0.5),
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: isWorking ? AppTheme.colors.amber.withValues(alpha: 0.4) : AppTheme.borderColor(context)),
-                  ),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          dayName,
-                          style: GoogleFonts.outfit(
-                            color: isWorking ? AppTheme.textPrimary(context) : AppTheme.textSecondary(context),
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
-                          ),
-                        ),
-                      ),
-                      Switch(
-                        value: isWorking,
-                        activeThumbColor: AppTheme.colors.amber,
-                        onChanged: (val) {
-                          setState(() {
-                            if (val) {
-                              _weeklySlots[dayIndex] = RecurringSlot(dayOfWeek: dayIndex, startTime: '08:00', endTime: '17:00');
-                            } else {
-                              _weeklySlots[dayIndex] = null;
-                            }
-                          });
-                        },
-                      ),
-                      if (isWorking) ...[
-                        const SizedBox(width: 4),
-                        GestureDetector(
-                          onTap: () => _pickTime(dayIndex, true),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-                            decoration: BoxDecoration(color: Theme.of(context).cardColor, borderRadius: BorderRadius.circular(8), border: Border.all(color: AppTheme.borderColor(context))),
-                            child: Text(slot.startTime, style: GoogleFonts.outfit(color: AppTheme.colors.amber[400], fontWeight: FontWeight.bold, fontSize: 12)),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 4),
-                          child: Text('-', style: TextStyle(color: AppTheme.textSecondary(context))),
-                        ),
-                        GestureDetector(
-                          onTap: () => _pickTime(dayIndex, false),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-                            decoration: BoxDecoration(color: Theme.of(context).cardColor, borderRadius: BorderRadius.circular(8), border: Border.all(color: AppTheme.borderColor(context))),
-                            child: Text(slot.endTime, style: GoogleFonts.outfit(color: AppTheme.colors.amber[400], fontWeight: FontWeight.bold, fontSize: 12)),
-                          ),
-                        ),
-                      ] else ...[
-                        const SizedBox(width: 8),
-                        Text('OFF', style: GoogleFonts.inter(color: AppTheme.textSecondary(context).withValues(alpha: 0.5), fontSize: 12, fontWeight: FontWeight.w600)),
+                  _buildSectionTitle(context, 'Instant book & notice'),
+                  const SizedBox(height: 12),
+                  Container(
+                    padding: const EdgeInsets.all(18),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.surface,
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.05), blurRadius: 16, offset: const Offset(0, 6)),
                       ],
+                    ),
+                    child: Column(
+                      children: [
+                        SwitchListTile(
+                          title: Text('Instant book', style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.w700, fontSize: 14)),
+                          subtitle: Text('Let tourists book you immediately, no manual approval', style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 12)),
+                          value: _instantBookEnabled,
+                          activeThumbColor: Theme.of(context).colorScheme.primary,
+                          contentPadding: EdgeInsets.zero,
+                          onChanged: (val) => setState(() => _instantBookEnabled = val),
+                        ),
+                        Divider(color: AppTheme.borderColor(context), height: 24),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('Advance notice', style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.w700, fontSize: 13)),
+                                  const SizedBox(height: 2),
+                                  Text('Minimum lead time before a tour starts', style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 11)),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                              decoration: BoxDecoration(
+                                color: AppTheme.surfaceMuted(context),
+                                borderRadius: BorderRadius.circular(100),
+                              ),
+                              child: DropdownButton<String>(
+                                value: _advanceNoticeHours,
+                                dropdownColor: Theme.of(context).colorScheme.surface,
+                                underline: const SizedBox(),
+                                icon: Icon(Icons.expand_more_rounded, color: Theme.of(context).colorScheme.primary, size: 20),
+                                items: _noticeOptions.map((e) => DropdownMenuItem(value: e, child: Text('$e hrs', style: GoogleFonts.inter(color: AppTheme.textPrimary(context), fontWeight: FontWeight.w700, fontSize: 13)))).toList(),
+                                onChanged: (val) => setState(() => _advanceNoticeHours = val!),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 28),
+
+                  _buildSectionTitle(context, 'Weekly schedule'),
+                  const SizedBox(height: 4),
+                  Text('Toggle the days you work and set your hours', style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 12)),
+                  const SizedBox(height: 14),
+                  ...List.generate(7, (index) {
+                    final dayIndex = index + 1;
+                    final dayName = _daysOfWeek[index];
+                    final slot = _weeklySlots[dayIndex];
+                    final isWorking = slot != null;
+                    final primary = Theme.of(context).colorScheme.primary;
+
+                    return Container(
+                      margin: const EdgeInsets.only(bottom: 10),
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      decoration: BoxDecoration(
+                        color: isWorking ? Theme.of(context).colorScheme.surface : AppTheme.surfaceMuted(context),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: isWorking ? primary.withValues(alpha: 0.3) : AppTheme.borderColor(context)),
+                        boxShadow: isWorking
+                            ? [BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.04), blurRadius: 10, offset: const Offset(0, 4))]
+                            : null,
+                      ),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              dayName,
+                              style: GoogleFonts.outfit(
+                                color: isWorking ? AppTheme.textPrimary(context) : AppTheme.textSecondary(context),
+                                fontWeight: FontWeight.w700,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ),
+                          Switch(
+                            value: isWorking,
+                            activeThumbColor: primary,
+                            onChanged: (val) {
+                              setState(() {
+                                if (val) {
+                                  _weeklySlots[dayIndex] = RecurringSlot(dayOfWeek: dayIndex, startTime: '08:00', endTime: '17:00');
+                                } else {
+                                  _weeklySlots[dayIndex] = null;
+                                }
+                              });
+                            },
+                          ),
+                          if (isWorking) ...[
+                            const SizedBox(width: 4),
+                            GestureDetector(
+                              onTap: () => _pickTime(dayIndex, true),
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                decoration: BoxDecoration(color: AppTheme.surfaceMuted(context), borderRadius: BorderRadius.circular(100)),
+                                child: Text(slot.startTime, style: GoogleFonts.inter(color: primary, fontWeight: FontWeight.w700, fontSize: 12)),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 6),
+                              child: Text('–', style: TextStyle(color: AppTheme.textSecondary(context))),
+                            ),
+                            GestureDetector(
+                              onTap: () => _pickTime(dayIndex, false),
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                decoration: BoxDecoration(color: AppTheme.surfaceMuted(context), borderRadius: BorderRadius.circular(100)),
+                                child: Text(slot.endTime, style: GoogleFonts.inter(color: primary, fontWeight: FontWeight.w700, fontSize: 12)),
+                              ),
+                            ),
+                          ] else ...[
+                            const SizedBox(width: 8),
+                            Text('Off', style: GoogleFonts.inter(color: AppTheme.textSecondary(context).withValues(alpha: 0.6), fontSize: 12, fontWeight: FontWeight.w600)),
+                          ],
+                        ],
+                      ),
+                    );
+                  }),
+                  const SizedBox(height: 28),
+
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      _buildSectionTitle(context, 'Blackout dates${_blackoutDates.isNotEmpty ? ' (${_blackoutDates.length})' : ''}'),
+                      TextButton.icon(
+                        onPressed: _pickBlackoutDate,
+                        icon: Icon(Icons.add_circle_outline_rounded, color: Theme.of(context).colorScheme.primary, size: 18),
+                        label: Text('Add date', style: GoogleFonts.inter(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.w700, fontSize: 12)),
+                      ),
                     ],
                   ),
-                );
-              }),
-              const SizedBox(height: 28),
+                  const SizedBox(height: 8),
+                  if (_blackoutDates.isEmpty)
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(24),
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: AppTheme.surfaceMuted(context),
+                        borderRadius: BorderRadius.circular(18),
+                      ),
+                      child: Text(
+                        'No blackout dates yet — you\'re available according to your weekly schedule.',
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 12),
+                      ),
+                    )
+                  else
+                    Wrap(
+                      spacing: 10,
+                      runSpacing: 10,
+                      children: _blackoutDates.map((date) {
+                        return Chip(
+                          backgroundColor: AppTheme.colors.redAccent.withValues(alpha: 0.1),
+                          side: BorderSide(color: AppTheme.colors.redAccent.withValues(alpha: 0.35)),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
+                          label: Text(dateFormat.format(date), style: GoogleFonts.inter(color: AppTheme.textPrimary(context), fontWeight: FontWeight.w600, fontSize: 12)),
+                          deleteIcon: Icon(Icons.close_rounded, size: 16, color: AppTheme.colors.redAccent),
+                          onDeleted: () {
+                            setState(() {
+                              _blackoutDates.remove(date);
+                            });
+                          },
+                        );
+                      }).toList(),
+                    ),
+                  const SizedBox(height: 36),
 
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  _buildSectionTitle('BLACKOUT DATES (${_blackoutDates.length})'),
-                  TextButton.icon(
-                    onPressed: _pickBlackoutDate,
-                    icon: Icon(Icons.add_circle_outline, color: AppTheme.colors.amber, size: 18),
-                    label: Text('ADD DATE', style: GoogleFonts.outfit(color: AppTheme.colors.amber, fontWeight: FontWeight.bold, fontSize: 12)),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 56,
+                    child: ElevatedButton(
+                      onPressed: _isSaving ? null : _saveAvailability,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Theme.of(context).colorScheme.primary,
+                        foregroundColor: AppTheme.colors.white,
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
+                      ),
+                      child: _isSaving
+                          ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                          : Text('Save availability', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 14)),
+                    ),
                   ),
                 ],
               ),
-              const SizedBox(height: 8),
-              if (_blackoutDates.isEmpty)
-                Container(
-                  padding: const EdgeInsets.all(20),
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).cardColor,
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: AppTheme.borderColor(context)),
-                  ),
-                  child: Text('No blackout dates added. You are available according to your schedule.', textAlign: TextAlign.center, style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 13)),
-                )
-              else
-                Wrap(
-                  spacing: 10,
-                  runSpacing: 10,
-                  children: _blackoutDates.map((date) {
-                    return Chip(
-                      backgroundColor: AppTheme.colors.redAccent.withValues(alpha: 0.2),
-                      side: BorderSide(color: AppTheme.colors.redAccent.withValues(alpha: 0.5)),
-                      label: Text(dateFormat.format(date), style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.w600)),
-                      deleteIcon: Icon(Icons.close, size: 16, color: AppTheme.colors.white70),
-                      onDeleted: () {
-                        setState(() {
-                          _blackoutDates.remove(date);
-                        });
-                      },
-                    );
-                  }).toList(),
-                ),
-              const SizedBox(height: 40),
-
-              SizedBox(
-                width: double.infinity,
-                height: 56,
-                child: ElevatedButton(
-                  onPressed: _isSaving ? null : _saveAvailability,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppTheme.colors.amber,
-                    foregroundColor: AppTheme.colors.black,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-                    elevation: 8,
-                  ),
-                  child: _isSaving
-                      ? SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2, color: AppTheme.colors.black))
-                      : Text('SAVE AVAILABILITY & SCHEDULE 📅', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, letterSpacing: 1, fontSize: 15)),
-                ),
-              ),
-              const SizedBox(height: 40),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
 
-  Widget _buildSectionTitle(String title) {
+  Widget _buildSectionTitle(BuildContext context, String title) {
     return Text(
       title,
       style: GoogleFonts.outfit(
-        color: AppTheme.colors.amber[400],
-        fontSize: 12,
-        fontWeight: FontWeight.w800,
-        letterSpacing: 2.0,
+        color: AppTheme.textPrimary(context),
+        fontSize: 14,
+        fontWeight: FontWeight.w700,
+        letterSpacing: -0.2,
       ),
     );
   }
