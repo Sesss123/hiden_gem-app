@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -16,6 +17,19 @@ class NotificationService {
 
   /// Stream of foreground push notifications for UI banners/toasts
   Stream<RemoteMessage> get onForegroundMessage => _foregroundMessageController.stream;
+
+  /// In-memory count of unread 'new_booking' notifications, updated by the
+  /// single listener in startWatchingUserNotifications() below. Firestore
+  /// cost fix: profile_screen.dart previously ran its OWN second, separate
+  /// `user_notifications` listener (isRead==false && type==new_booking) just
+  /// to show this badge — a raw duplicate of the query this class already
+  /// runs. Worse, since this class's listener marks every notification read
+  /// immediately after surfacing it (see markAsRead call below), a second
+  /// listener querying isRead==false would see the count self-clear almost
+  /// instantly — the two listeners were racing each other. Tracking the
+  /// count here (incremented BEFORE marking read) fixes both the duplicate
+  /// read cost and that race in one place.
+  final ValueNotifier<int> unreadBookingCount = ValueNotifier<int>(0);
 
   Future<void> init() async {
     // Request permissions for iOS/Android 13+
@@ -91,6 +105,7 @@ class NotificationService {
 
   void startWatchingUserNotifications(String uid) {
     _notifSub?.cancel();
+    unreadBookingCount.value = 0;
     _notifSub = FirebaseFirestore.instance
         .collection('user_notifications')
         .where('recipientId', isEqualTo: uid)
@@ -102,6 +117,12 @@ class NotificationService {
           final data = change.doc.data();
           if (data != null && !_seenNotifIds.contains(change.doc.id)) {
             _seenNotifIds.add(change.doc.id);
+            // Track the badge count (profile_screen.dart's Bookings tile)
+            // BEFORE marking read below, otherwise it would never observe a
+            // non-zero value — see unreadBookingCount's doc comment.
+            if (data['type'] == 'new_booking') {
+              unreadBookingCount.value++;
+            }
             final createdAt = (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now();
             // Only trigger alert for notifications created within the last 15 minutes
             if (DateTime.now().difference(createdAt).inMinutes < 15) {
@@ -125,6 +146,12 @@ class NotificationService {
     });
   }
 
+  /// Resets the Bookings-tab unread badge — call when the guide actually
+  /// opens their booking inbox (they've now "seen" the new requests).
+  void clearUnreadBookingCount() {
+    unreadBookingCount.value = 0;
+  }
+
   /// Flips isRead on a single notification doc — 1 cheap write, but keeps
   /// the isRead==false query in startWatchingUserNotifications() bounded
   /// instead of accumulating every notification a user has ever received.
@@ -139,10 +166,17 @@ class NotificationService {
     }
   }
 
-  void stopWatchingUserNotifications() {
+  /// Stops the Firestore listener and unsubscribes the device from this
+  /// user's FCM topic — without this, the device keeps receiving pushes
+  /// meant for the account that just logged out, since topic subscriptions
+  /// are device-level and outlive the in-app listener teardown.
+  Future<void> stopWatchingUserNotifications(String? uid) async {
     _notifSub?.cancel();
     _notifSub = null;
     _seenNotifIds.clear();
+    if (uid != null) {
+      await unsubscribeFromTopic('guide_$uid');
+    }
   }
 
   static Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -152,6 +186,15 @@ class NotificationService {
   Future<void> subscribeToTopic(String topic) async {
     await _fcm.subscribeToTopic(topic);
     SecureLogger.info("Subscribed to topic: $topic", tag: "Notifications");
+  }
+
+  Future<void> unsubscribeFromTopic(String topic) async {
+    try {
+      await _fcm.unsubscribeFromTopic(topic);
+      SecureLogger.info("Unsubscribed from topic: $topic", tag: "Notifications");
+    } catch (e) {
+      SecureLogger.warning("Failed to unsubscribe from topic $topic: $e", tag: "Notifications");
+    }
   }
 
   void dispose() {

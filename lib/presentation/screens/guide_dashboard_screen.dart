@@ -192,16 +192,38 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
     final profile = UserPreferenceService.getProfile();
     final sessionId = const Uuid().v4();
     final uid = AuthService().currentUser?.uid ?? "unknown";
-    
-    final pos = await Geolocator.getCurrentPosition(locationSettings: const LocationSettings(accuracy: LocationAccuracy.high));
-    
+
+    // BUG-4 FIX: Wrap GPS call in try/catch so a denied permission or
+    // location timeout shows a friendly message instead of crashing the app.
+    double lat = 6.9271; // Default: Colombo (fallback only)
+    double lng = 79.8612;
+    try {
+      final pos = await Geolocator.getCurrentPosition(
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.high,
+          timeLimit: Duration(seconds: 10),
+        ),
+      );
+      lat = pos.latitude;
+      lng = pos.longitude;
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Could not get your location. Using default coordinates. ($e)"),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
+    }
+
     final newSession = TourSession(
       sessionId: sessionId,
       guideId: uid,
       vehicleId: vehicle.id,
       meetingPointName: 'Initial Meeting Point',
-      meetingPointLat: pos.latitude,
-      meetingPointLng: pos.longitude,
+      meetingPointLat: lat,
+      meetingPointLng: lng,
       touristIds: const [],
       status: 'active',
       startedAt: DateTime.now(),
@@ -365,16 +387,26 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
   Future<void> _stopTour() async {
     if (_activeSession == null) return;
     setState(() => _isLoading = true);
+
+    // BUG-3 FIX: Cancel the GPS location timer and monsoon WebSocket
+    // subscription when the tour ends. Previously these kept running after
+    // _stopTour(), causing unnecessary battery drain and Firestore writes.
+    _locationTimer?.cancel();
+    _locationTimer = null;
+    _monsoonSub?.cancel();
+    _monsoonSub = null;
+
     final profile = UserPreferenceService.getProfile();
-    
+
     await _sessionRepo.endSession(_activeSession!.sessionId);
-    
+
     profile.currentBatchId = null;
     await UserPreferenceService.saveProfile(profile);
 
     if (!mounted) return;
     setState(() {
       _activeSession = null;
+      _activeMonsoonAlert = null;
       _isLoading = false;
     });
   }

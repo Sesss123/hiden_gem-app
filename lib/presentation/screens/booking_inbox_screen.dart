@@ -3,7 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
+import 'package:uuid/uuid.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/theme/oracle_ui_system.dart';
 import '../../data/models/booking_request.dart';
@@ -12,6 +14,7 @@ import '../../data/repositories/booking_repository.dart';
 import '../../data/repositories/tour_session_repository.dart';
 import '../../data/datasources/user_preference_service.dart';
 import '../../core/services/calendar_sync_service.dart';
+import '../../core/notifications/notification_service.dart';
 import 'tourist_companion_hub.dart';
 
 class BookingInboxScreen extends ConsumerStatefulWidget {
@@ -26,6 +29,14 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
   final List<String> _filters = ['pending', 'accepted', 'session_ready', 'completed', 'declined', 'cancelled', 'all'];
   List<BookingRequest> _latestBookings = [];
   bool _isSyncingCalendar = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // The guide has now seen the inbox — reset the "N new requests" badge
+    // on the Profile tab's Bookings tile.
+    NotificationService().clearUnreadBookingCount();
+  }
 
   Future<void> _syncToCalendar() async {
     final upcoming = _latestBookings.where((b) => b.status == 'accepted' || b.status == 'session_ready').toList();
@@ -115,7 +126,16 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
                     }
 
                     final allRequests = snapshot.data ?? [];
-                    _latestBookings = allRequests;
+                    // BUG-2 FIX: Don't mutate _latestBookings inside the
+                    // StreamBuilder builder — builders are pure functions that
+                    // Flutter can call multiple times per frame. Side-effecting
+                    // them produces stale data in calendar sync and breaks the
+                    // reactive model. Schedule the update for after the frame.
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      if (mounted) {
+                        setState(() => _latestBookings = allRequests);
+                      }
+                    });
                     final filteredRequests = _selectedFilter == 'all'
                         ? List<BookingRequest>.from(allRequests)
                         : allRequests.where((req) {
@@ -476,14 +496,39 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
       final bookingRepo = ref.read(bookingRepositoryProvider);
       final sessionRepo = ref.read(tourSessionRepositoryProvider);
 
-      final sessionId = 'TS_${DateTime.now().millisecondsSinceEpoch}';
+      // Security: not a predictable timestamp — an attacker who could guess
+      // recent millisecond timestamps could brute-force session IDs. UUID
+      // v4 keeps the 'TS_' prefix for readability but is unguessable.
+      final sessionId = 'TS_${const Uuid().v4()}';
+
+      // BUG-5 FIX: Fetch the guide's actual GPS location instead of
+      // hardcoding Colombo (6.9271, 79.8612). The hardcoded coordinates
+      // caused every accepted booking's session to pin its meeting point
+      // to Colombo on the Tourist Companion Hub map regardless of where
+      // the guide actually is.
+      double sessionLat = 6.9271; // Fallback: Colombo
+      double sessionLng = 79.8612;
+      try {
+        final pos = await Geolocator.getCurrentPosition(
+          locationSettings: const LocationSettings(
+            accuracy: LocationAccuracy.medium,
+            timeLimit: Duration(seconds: 8),
+          ),
+        );
+        sessionLat = pos.latitude;
+        sessionLng = pos.longitude;
+      } catch (_) {
+        // GPS unavailable — use Colombo as fallback. The guide can update
+        // the meeting point manually from the Tour Dashboard later.
+      }
+
       final session = TourSession(
         sessionId: sessionId,
         guideId: uid,
         touristIds: [request.touristId],
         meetingPointName: 'To be confirmed in chat',
-        meetingPointLat: 6.9271,
-        meetingPointLng: 79.8612,
+        meetingPointLat: sessionLat,
+        meetingPointLng: sessionLng,
         status: 'initial',
         currentPhase: 'assembling',
         sessionCode: (100000 + (DateTime.now().millisecondsSinceEpoch % 900000)).toString(),

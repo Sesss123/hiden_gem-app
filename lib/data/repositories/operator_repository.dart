@@ -45,14 +45,38 @@ class OperatorRepository {
     return account;
   }
 
-  /// Invites a guide to join an operator's team.
+  /// Invites a guide to join an operator's team. This only stages the
+  /// invite (pendingTeamGuideIds) — the guide must call acceptTeamInvite()
+  /// themselves before they actually appear in teamGuideIds. Previously
+  /// this wrote directly to teamGuideIds with no consent step at all, so
+  /// any operator could unilaterally claim any guide's uid as "their" team
+  /// member.
   Future<void> inviteGuideToTeam(String operatorId, String guideId) async {
     await _operatorRef.doc(operatorId).update({
+      'pendingTeamGuideIds': FieldValue.arrayUnion([guideId]),
+    });
+  }
+
+  /// Called by the invited GUIDE (not the operator) to accept a pending
+  /// team invite — moves their own uid from pendingTeamGuideIds into
+  /// teamGuideIds. firestore.rules enforces that only the guide named in
+  /// the arrays can make this specific move.
+  Future<void> acceptTeamInvite(String operatorId, String guideId) async {
+    await _operatorRef.doc(operatorId).update({
+      'pendingTeamGuideIds': FieldValue.arrayRemove([guideId]),
       'teamGuideIds': FieldValue.arrayUnion([guideId]),
     });
   }
 
-  /// Removes a guide from an operator's team.
+  /// Called by the invited GUIDE to decline a pending team invite.
+  Future<void> declineTeamInvite(String operatorId, String guideId) async {
+    await _operatorRef.doc(operatorId).update({
+      'pendingTeamGuideIds': FieldValue.arrayRemove([guideId]),
+    });
+  }
+
+  /// Removes a guide from an operator's team. Callable by either party —
+  /// the operator (to dismiss a guide) or the guide themselves (to leave).
   Future<void> removeGuideFromTeam(String operatorId, String guideId) async {
     await _operatorRef.doc(operatorId).update({
       'teamGuideIds': FieldValue.arrayRemove([guideId]),

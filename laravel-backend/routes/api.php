@@ -25,6 +25,7 @@ use App\Http\Controllers\Api\V1\ReviewController;
 use App\Http\Controllers\Api\V1\BookingController;
 use App\Http\Controllers\Api\V1\MarketplaceController;
 use App\Http\Controllers\Api\V1\MarketplacePhotoUploadController;
+use App\Http\Controllers\Api\V1\SecurityController;
 use App\Http\Middleware\VerifyApiKey;
 use App\Http\Middleware\VerifyRevenueCatWebhook;
 
@@ -101,6 +102,11 @@ Route::prefix('v1')->group(function () {
     Route::prefix('bookings')->middleware(['auth:sanctum', VerifyApiKey::class, 'throttle:30,1'])->group(function () {
         Route::get('/quota-check', [BookingController::class, 'quotaCheck']);
         Route::post('/{bookingId}/notify-guide', [BookingController::class, 'notifyGuide']);
+    });
+
+    // Security Routes (Protected by Sanctum Auth, API Key & Rate Limiting)
+    Route::prefix('security')->middleware(['auth:sanctum', VerifyApiKey::class, 'throttle:30,1'])->group(function () {
+        Route::get('/device-account-count', [SecurityController::class, 'deviceAccountCount']);
     });
 
     // AI Subsystem Proxy Routes (Protected by Sanctum Auth, API Key, and Throttling)

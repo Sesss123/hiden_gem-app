@@ -10,6 +10,34 @@ import '../config/app_config.dart';
 ///
 /// Every expiry date saved in the profile is paired with an HMAC-SHA256 signature
 /// generated with a secret and the user's UID.
+///
+/// KNOWN LIMITATION (security audit, not fixed here — needs a deployment
+/// decision, not a code change): the signature this class verifies must
+/// have been generated SERVER-SIDE by functions/index.ts's
+/// verify_entitlements Cloud Function (using its own HMAC_SECRET env var) —
+/// generateSignature() below exists only so verify() can recompute and
+/// compare, it must never be called to *produce* a signature that gets
+/// trusted as if server-issued. Two consequences:
+/// 1. AppConfig.hmacExpirySecret (HMAC_EXPIRY_SECRET dart-define, compiled
+///    into the app binary) and the Cloud Function's HMAC_SECRET are
+///    DIFFERENT env vars that must be set to the SAME real secret value for
+///    this to ever validate a real server signature. As shipped, neither
+///    has a real value configured anywhere in this repo (both fall back to
+///    their respective placeholder defaults) — meaning verify() currently
+///    fails for every real premium user, silently (secure_entitlements.dart
+///    logs the mismatch but doesn't hard-block on it, since verifyPremium()
+///    also independently checks the server's isPremium claim). Fix: set
+///    both to the same real secret in their respective deployment configs.
+/// 2. Because the secret is compiled into the app binary, it's extractable
+///    via decompilation — an attacker who has it can compute a signature
+///    that passes THIS client-side check on its own. This does not bypass
+///    SecureEntitlements.verifyPremium() as a whole (it independently
+///    re-checks the server's isPremium claim on every call), but it does
+///    defeat this specific local-only defense-in-depth layer used by
+///    SecurityOrchestrator's offline/cached checks. Closing this fully
+///    would require never trusting a client-recomputed signature at all —
+///    i.e. always hitting verify_entitlements fresh — which is a larger
+///    architecture change than this audit pass, not a drop-in patch.
 class HmacExpiryVerifier {
   static String get _defaultSecret => AppConfig.hmacExpirySecret;
 

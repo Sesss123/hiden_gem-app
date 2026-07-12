@@ -65,6 +65,14 @@ class BookingController extends Controller
             return response()->json(['error' => 'guideId is required'], 422);
         }
 
+        // Security: verify bookingId is a real booking the caller actually
+        // made for this guide, so an arbitrary authenticated user can't spam
+        // POST here with any guideId to inflate a competitor's counter.
+        $booking = $firestore->getDocument('booking_requests', $bookingId);
+        if (!$booking || ($booking['touristId'] ?? null) !== (string) $request->user()->firebase_uid || ($booking['guideId'] ?? null) !== $guideId) {
+            return response()->json(['error' => 'Booking not found or does not belong to you.'], 403);
+        }
+
         try {
             $listings = $firestore->queryDocuments('guide_listings', 'guideId', 'EQUAL', $guideId, 1);
             if (empty($listings)) {

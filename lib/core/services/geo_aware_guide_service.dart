@@ -12,6 +12,8 @@ class GeoAwareGuideService {
   static double _currentFilter = 10.0; // Added missing variable check
   static LocationAccuracy _currentAccuracy = LocationAccuracy.high;
   static AppLifecycleListener? _lifecycleListener;
+  static DateTime? _lastStrategyRearm;
+  static const Duration _minRearmInterval = Duration(seconds: 20);
 
   static void startMonitoring(List<ItineraryItem> plannedItems) {
     // BUG-077: Add AppLifecycleListener to release GPS sensor when app is closed or paused
@@ -85,6 +87,17 @@ class GeoAwareGuideService {
     }
 
     if (targetFilter != _currentFilter || targetAccuracy != _currentAccuracy) {
+      // BUG-20: If speed/accuracy readings oscillate right around a
+      // threshold (e.g. speed hovering near 0.5 m/s), this branch can fire
+      // on almost every position update, tearing down and recreating the
+      // GPS stream in a tight loop. A minimum re-arm interval debounces
+      // that churn without blocking a genuine, sustained strategy change.
+      final now = DateTime.now();
+      if (_lastStrategyRearm != null && now.difference(_lastStrategyRearm!) < _minRearmInterval) {
+        return;
+      }
+      _lastStrategyRearm = now;
+
       SecureLogger.info(
         'Adaptive GPS: filter=${targetFilter}m accuracy=$targetAccuracy '
         '(speed=${pos.speed.toStringAsFixed(1)} m/s, dist=${minDistance.toStringAsFixed(0)}m).',

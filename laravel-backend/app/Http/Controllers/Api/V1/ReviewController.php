@@ -69,6 +69,16 @@ class ReviewController extends Controller
             return response()->json(['error' => 'guideId is required'], 422);
         }
 
+        // Security: verify reviewId is a real review the caller actually
+        // submitted for this guide. Without this, any authenticated user
+        // could trigger this endpoint repeatedly with any guideId + a
+        // throwaway reviewId — a free-form Firestore read/write amplification
+        // vector against an arbitrary guide's review collection.
+        $review = $firestore->getDocument('tour_reviews', $reviewId);
+        if (!$review || ($review['touristId'] ?? null) !== (string) $request->user()->firebase_uid || ($review['guideId'] ?? null) !== $guideId) {
+            return response()->json(['error' => 'Review not found or does not belong to you.'], 403);
+        }
+
         // Pull ALL active reviews for this guide (unbounded — needed for an
         // accurate count/average) and refresh the guideReviews() display
         // cache (capped at 50) from this same read (write-through).

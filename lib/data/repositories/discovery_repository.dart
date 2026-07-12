@@ -68,7 +68,19 @@ class DiscoveryRepository {
         await deltaService.performDeltaSync(forceFullResync: forceRefresh);
         places = await sqliteService.getActivePlaces();
       } else {
-        unawaited(deltaService.performDeltaSync().catchError((e) {
+        // Background sync may pull in places added/changed on the server
+        // after this session's RAM cache was already warmed. Once it
+        // completes with real progress, invalidate the L0 memory cache so
+        // the next getDiscoveryPlaces() call re-reads the updated SQLite
+        // data instead of silently serving the pre-sync snapshot forever.
+        final versionBeforeSync = await sqliteService.getLocalSyncVersion();
+        unawaited(deltaService.performDeltaSync().then((newVersion) {
+          if (newVersion != versionBeforeSync) {
+            _localDataSource.invalidateCache();
+            SecureLogger.info("Background delta sync brought new data (v$versionBeforeSync -> v$newVersion). Memory cache invalidated.");
+          }
+          return newVersion;
+        }).catchError((e) {
           SecureLogger.warning("Background delta sync failed: $e");
           return 0;
         }));

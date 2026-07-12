@@ -13,6 +13,7 @@ import 'package:hidden_gems_sl/core/utils/secure_logger.dart';
 import '../../core/services/secure_entitlements.dart';
 import '../../core/services/premium_unlock_service.dart';
 import '../../core/services/integrity_shield.dart';
+import '../../core/services/usage_limiter_service.dart';
 
 part 'premium_service.g.dart';
 
@@ -152,12 +153,14 @@ class PremiumNotifier extends _$PremiumNotifier {
             state = false;
             SecureEntitlements().forceRefresh();
             PremiumUnlockService.invalidateAllUnlocks();
+            UsageLimiterService.invalidatePlanLimitsCache();
             await UserPreferenceService.updatePremiumStatus(false, source: 'expired');
             SecureLogger.info("Premium status revoked or expired via server sync.", tag: "RevenueCat");
           }
         } else if (isPrem && state == false) {
           state = true;
           SecureEntitlements().forceRefresh();
+          UsageLimiterService.invalidatePlanLimitsCache();
           await UserPreferenceService.updatePremiumStatus(
             true,
             plan: data['premiumPlanId'] ?? data['premiumPlan'] ?? data['subscriptionPlan'],
@@ -188,7 +191,11 @@ class PremiumNotifier extends _$PremiumNotifier {
     
     if (state != isPremium) {
       state = isPremium;
-      
+      // A mid-session plan change (e.g. a purchase completing) must not
+      // keep serving usage limits cached under the old plan for up to
+      // the 1-hour cache window in UsageLimiterService.
+      UsageLimiterService.invalidatePlanLimitsCache();
+
       final activeEntitlement = customerInfo.entitlements.active[entitlementId];
       
       // Sync locally for offline access
@@ -255,12 +262,20 @@ class PremiumNotifier extends _$PremiumNotifier {
   Future<void> simulateMockPurchase() async {
     state = true;
     await UserPreferenceService.updatePremiumStatus(
-      true, 
-      plan: 'premium_mock_dev', 
+      true,
+      plan: 'premium_mock_dev',
       source: 'mock_internal'
     );
     // NOTE: no Firestore write here — users/{uid}.isPremium is blocked for
     // client writes by firestore.rules (see _updateStateFromCustomerInfo).
     // The mock only needs to flip local/in-memory state for dev testing.
+  }
+
+  // 🛠️ MOCK UTILITY: Only for Dev/Internal testing — undoes
+  // simulateMockPurchase() so the pricing tiers (and the mock-buy button
+  // itself) are reachable again without reinstalling the app.
+  Future<void> simulateMockCancel() async {
+    state = false;
+    await UserPreferenceService.updatePremiumStatus(false, source: 'mock_internal');
   }
 }

@@ -135,7 +135,7 @@ class DeltaSyncService {
           if (attempt == maxRetries) return response;
           final jitter = Duration(milliseconds: random.nextInt(500));
           SecureLogger.warning("Delta sync HTTP ${response.statusCode} on attempt ${attempt + 1}. Backing off for ${delay + jitter}...");
-          // await Future.delayed(delay + jitter);
+          await Future.delayed(delay + jitter);
           delay *= 2;
           continue;
         }
@@ -144,13 +144,13 @@ class DeltaSyncService {
         if (attempt == maxRetries) rethrow;
         final jitter = Duration(milliseconds: random.nextInt(500));
         SecureLogger.warning("Delta sync timeout on attempt ${attempt + 1}. Retrying in ${delay + jitter}...");
-        // await Future.delayed(delay + jitter);
+        await Future.delayed(delay + jitter);
         delay *= 2;
       } catch (e) {
         if (attempt == maxRetries) rethrow;
         final jitter = Duration(milliseconds: random.nextInt(500));
         SecureLogger.warning("Delta sync error on attempt ${attempt + 1} ($e). Retrying in ${delay + jitter}...");
-        // await Future.delayed(delay + jitter);
+        await Future.delayed(delay + jitter);
         delay *= 2;
       }
     }

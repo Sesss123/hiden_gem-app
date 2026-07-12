@@ -128,10 +128,13 @@ class GuideApplicationRepository {
     return null;
   }
 
+  // Admin-only dashboard (low traffic), capped as defense-in-depth against
+  // an unbounded pending-applications backlog re-delivering on every change.
   Stream<List<GuideApplication>> getPendingApplications() {
     return _firestore
         .collection('guide_applications')
         .where('status', isEqualTo: GuideStatus.pending.name)
+        .limit(200)
         .snapshots()
         .map((snapshot) => snapshot.docs.map((doc) => GuideApplication.fromJson(doc.data())).toList());
   }

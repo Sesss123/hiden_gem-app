@@ -10,10 +10,13 @@ import '../../core/theme/app_theme.dart';
 import '../../core/theme/oracle_ui_system.dart';
 import 'package:flutter/services.dart';
 import '../../data/models/family_share_link.dart';
+import '../../data/repositories/tour_session_repository.dart';
+import '../../core/config/app_config.dart';
 import 'package:hidden_gems_sl/core/utils/secure_logger.dart';
 
 class FamilyShareScreen extends ConsumerStatefulWidget {
-  const FamilyShareScreen({super.key});
+  final String? sessionId;
+  const FamilyShareScreen({super.key, this.sessionId});
 
   @override
   ConsumerState<FamilyShareScreen> createState() => _FamilyShareScreenState();
@@ -32,12 +35,36 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
 
   Timer? _expiryTimer;
   StreamSubscription? _linksSubscription;
+  String? _resolvedSessionId;
+  bool _resolvingSession = false;
 
   @override
   void initState() {
     super.initState();
+    _resolvedSessionId = widget.sessionId;
+    if (_resolvedSessionId == null) {
+      _resolveActiveSession();
+    }
     _startWatchingLinks();
     _expiryTimer = Timer.periodic(const Duration(seconds: 60), (_) => _checkAndCleanExpiredLinks());
+  }
+
+  Future<void> _resolveActiveSession() async {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) return;
+    setState(() => _resolvingSession = true);
+    try {
+      final session = await TourSessionRepository().getActiveSessionForTourist(uid);
+      if (mounted) {
+        setState(() {
+          _resolvedSessionId = session?.sessionId;
+          _resolvingSession = false;
+        });
+      }
+    } catch (e, st) {
+      SecureLogger.error("Failed to resolve active session", e, st, "FamilyShare");
+      if (mounted) setState(() => _resolvingSession = false);
+    }
   }
 
   @override
@@ -50,9 +77,14 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
 
   void _startWatchingLinks() {
     final uid = FirebaseAuth.instance.currentUser?.uid ?? 'current_user';
+    // Firestore cost fix: capped — a tourist realistically has a handful of
+    // active share links at once (also enforced client-side by
+    // _maxActiveLinks), not an unbounded history; this listener doesn't
+    // need to re-deliver every link ever created.
     _linksSubscription = FirebaseFirestore.instance
         .collection('family_share_links')
         .where('touristId', isEqualTo: uid)
+        .limit(50)
         .snapshots()
         .listen((snapshot) {
       final links = snapshot.docs
@@ -114,11 +146,33 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
     return List.generate(8, (index) => chars[random.nextInt(chars.length)]).join();
   }
 
+  // Prevents unbounded link spam (each link is a public, anonymously
+  // readable tracking token while active — see firestore.rules) — a normal
+  // tourist sharing with a few family members never needs more than this
+  // many simultaneously active links.
+  static const int _maxActiveLinks = 10;
+
   void _generateLink() {
     final name = _nameController.text.trim();
+    if (_activeLinks.where((l) => !l.isExpired).length >= _maxActiveLinks) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text("⚠️ You've reached the limit of $_maxActiveLinks active share links. Remove one to create another."),
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: AppTheme.colors.redAccent,
+      ));
+      return;
+    }
     if (name.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text("⚠️ Please enter a recipient name."),
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: AppTheme.colors.redAccent,
+      ));
+      return;
+    }
+    if (_resolvedSessionId == null || _resolvedSessionId!.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: const Text("⚠️ Start an active tour session first — there's nothing to share yet."),
         behavior: SnackBarBehavior.floating,
         backgroundColor: AppTheme.colors.redAccent,
       ));
@@ -133,7 +187,7 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
     final newLink = FamilyShareLink(
       shareId: shareId,
       touristId: uid,
-      sessionId: 'session_active',
+      sessionId: _resolvedSessionId ?? '',
       recipientName: name,
       shareToken: token,
       expiresAt: now.add(Duration(hours: _selectedHours)),
@@ -180,6 +234,10 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     _buildHero(),
+                    if (!_resolvingSession && _resolvedSessionId == null) ...[
+                      const SizedBox(height: 16),
+                      _buildNoActiveSessionNotice(),
+                    ],
                     const SizedBox(height: 32),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -260,6 +318,29 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
     );
   }
 
+  Widget _buildNoActiveSessionNotice() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: AppTheme.colors.amberAccent.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppTheme.colors.amberAccent.withValues(alpha: 0.3)),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.info_outline_rounded, color: AppTheme.colors.amberAccent, size: 18),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              "No active tour right now — start or join a tour to generate a live share link.",
+              style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 12, fontWeight: FontWeight.w500),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildEmptyState() {
     return Container(
       padding: const EdgeInsets.all(40),
@@ -333,7 +414,7 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
                 icon: Icon(Icons.copy_rounded, color: isExpired ? AppTheme.textSecondary(context).withValues(alpha: 0.3) : AppTheme.textSecondary(context)),
                 onPressed: isExpired ? null : () {
                   Clipboard.setData(ClipboardData(
-                    text: 'Family Share Code: ${link.shareToken}\nJoin link: https://hiddengems.lk/join/${link.shareToken}',
+                    text: 'Track my trip live: ${AppConfig.webBaseUrl}/join/${link.shareToken}',
                   ));
                   ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                     content: Text("📋 Invite code copied to clipboard!"),

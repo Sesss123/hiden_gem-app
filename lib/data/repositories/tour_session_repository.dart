@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../core/utils/secure_logger.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -119,6 +120,22 @@ class TourSessionRepository {
     return null;
   }
 
+  /// Finds the tourist's current active (or assembling) session, if any.
+  /// Safe under firestore.rules: querying by `touristIds array-contains uid`
+  /// can only ever return sessions the caller is already a participant of.
+  Future<TourSession?> getActiveSessionForTourist(String touristId) async {
+    final activeQuery = await _firestore
+        .collection('tour_sessions')
+        .where('touristIds', arrayContains: touristId)
+        .where('status', whereIn: ['active', 'initial'])
+        .limit(1)
+        .get();
+    if (activeQuery.docs.isNotEmpty) {
+      return TourSession.fromJson(activeQuery.docs.first.data());
+    }
+    return null;
+  }
+
   Future<void> updateSessionPhase(String sessionId, String phase) async {
     await _firestore.collection('tour_sessions').doc(sessionId).update({
       'currentPhase': phase,
@@ -179,20 +196,34 @@ class TourSessionRepository {
     required String touristId,
     required bool consent,
   }) async {
-    // 1. Find session with this active token
-    final query = await _firestore
-        .collection('tour_sessions')
-        .where('joinToken', isEqualTo: token)
-        .where('isJoinOpen', isEqualTo: true)
-        .limit(1)
-        .get();
+    // 1. Find session with this active token — routed through a rate-limited
+    // Cloud Function (validateJoinToken) rather than a bare client-side
+    // query. The 6-char token has ~30 bits of entropy (not brute-forceable
+    // by hand, but a scripted client with no rate limit could enumerate
+    // guesses); the function caps attempts to 5 per 10 minutes per user
+    // before revealing whether any guess matched.
+    final Map<String, dynamic> result;
+    try {
+      final callable = FirebaseFunctions.instance.httpsCallable('validateJoinToken');
+      final response = await callable.call({'token': token});
+      result = Map<String, dynamic>.from(response.data as Map);
+    } on FirebaseFunctionsException catch (e) {
+      if (e.code == 'resource-exhausted') {
+        throw Exception("TOO_MANY_ATTEMPTS: ${e.message ?? 'Please wait a few minutes and try again.'}");
+      }
+      rethrow;
+    }
 
-    if (query.docs.isEmpty) {
+    if (result['found'] != true) {
       throw Exception("INVALID_TOKEN: No active session found for this code.");
     }
 
-    final doc = query.docs.first;
-    final session = TourSession.fromJson(doc.data());
+    final sessionId = result['sessionId'] as String;
+    final doc = await _firestore.collection('tour_sessions').doc(sessionId).get();
+    if (!doc.exists) {
+      throw Exception("INVALID_TOKEN: No active session found for this code.");
+    }
+    final session = TourSession.fromJson(doc.data()!);
 
     // 2. Check Expiry
     if (session.tokenExpiresAt != null && session.tokenExpiresAt!.isBefore(DateTime.now())) {

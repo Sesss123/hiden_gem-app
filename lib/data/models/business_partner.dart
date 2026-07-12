@@ -11,7 +11,13 @@ class BusinessPartner {
   final double lng;
   final String bookingUrl; // Direct link or WhatsApp link
   final bool isVerified;
-  
+
+  // Curator Deals — premium-only discounts at partner boutique stays/cafes.
+  final bool isPremiumDeal;
+  final int discountPercent; // 0 when isPremiumDeal is false
+  final String dealDescription;
+  final DateTime? dealValidUntil;
+
   double distanceKm;
 
   BusinessPartner({
@@ -26,8 +32,15 @@ class BusinessPartner {
     required this.lng,
     required this.bookingUrl,
     this.isVerified = false,
+    this.isPremiumDeal = false,
+    this.discountPercent = 0,
+    this.dealDescription = '',
+    this.dealValidUntil,
     this.distanceKm = 0.0,
   });
+
+  bool get hasActiveDeal =>
+      isPremiumDeal && (dealValidUntil == null || dealValidUntil!.isAfter(DateTime.now()));
 
   factory BusinessPartner.fromJson(Map<String, dynamic> json) {
     return BusinessPartner(
@@ -42,6 +55,30 @@ class BusinessPartner {
       lng: (json['lng'] as num?)?.toDouble() ?? 0.0,
       bookingUrl: json['bookingUrl'] as String? ?? '',
       isVerified: json['isVerified'] as bool? ?? false,
+      isPremiumDeal: json['isPremiumDeal'] as bool? ?? false,
+      discountPercent: (json['discountPercent'] as num?)?.toInt() ?? 0,
+      dealDescription: json['dealDescription'] as String? ?? '',
+      dealValidUntil: json['dealValidUntil'] != null
+          ? DateTime.tryParse(json['dealValidUntil'].toString())
+          : null,
     );
   }
+
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'name': name,
+    'category': category,
+    'description': description,
+    'imageUrl': imageUrl,
+    'rating': rating,
+    'priceRange': priceRange,
+    'lat': lat,
+    'lng': lng,
+    'bookingUrl': bookingUrl,
+    'isVerified': isVerified,
+    'isPremiumDeal': isPremiumDeal,
+    'discountPercent': discountPercent,
+    'dealDescription': dealDescription,
+    'dealValidUntil': dealValidUntil?.toIso8601String(),
+  };
 }

@@ -34,6 +34,27 @@ service cloud.firestore {
     // •  Admins can read all profiles.
     // •  Users CANNOT change role, isPremium, isBanned, or any premium/flag fields.
     //    Only admins or backend service accounts elevate these fields.
+    // •  isGuideApproved/guideStatus are a narrower case: the client (see
+    //    GuideApplicationRepository.getMyApplication()) legitimately mirrors
+    //    an already-approved/rejected status from guide_applications/{userId}
+    //    (admin-owned) onto the user's own profile after confirming it via
+    //    Laravel. Rather than block the fields outright and break that sync,
+    //    the write is only allowed when it matches the real, current status
+    //    on guide_applications/{userId} — a client can't fabricate approval
+    //    without an admin having actually set it there first.
+    function guideStatusWriteMatchesApplication(userId) {
+      let diffKeys = request.resource.data.diff(resource.data).affectedKeys();
+      let guideFields = ['isGuideApproved', 'guideStatus', 'guideRejectionReason'];
+      let touchesGuideFields = diffKeys.hasAny(guideFields);
+      let onlyTouchesGuideFields = diffKeys.hasOnly(guideFields);
+      let appStatus = get(/databases/$(database)/documents/guide_applications/$(userId)).data.status;
+      return !touchesGuideFields || (
+        onlyTouchesGuideFields &&
+        (!('guideStatus' in request.resource.data) || request.resource.data.guideStatus == appStatus) &&
+        (!('isGuideApproved' in request.resource.data) || request.resource.data.isGuideApproved == (appStatus == 'approved'))
+      );
+    }
+
     match /users/{userId} {
       allow read: if isOwner(userId) || isAdmin();
       allow create: if isOwner(userId);
@@ -45,7 +66,8 @@ service cloud.firestore {
                             'premiumRevokedAt', 'premiumRevokedReason',
                             'reviewCount', 'ratingAverage', 'ratingRecalcNeededAt',
                             'tier', 'dailyAiScans', 'scanQuotaResetAt', 'tokensUsed', 'aiQuotaLimit'
-                          ])) ||
+                          ]) &&
+                        guideStatusWriteMatchesApplication(userId)) ||
                        isAdmin();
       allow delete: if isAdmin();
 
@@ -86,28 +108,64 @@ service cloud.firestore {
     }
 
     // ── Guide Applications (Enrollment & Approval) ───────────────────────────
+    // A rejected applicant may resubmit (edit their own answers/documents),
+    // but must never be able to set `status` themselves — only an admin
+    // review can move status to 'approved'/'rejected'. Without this,
+    // guideStatusWriteMatchesApplication() on users/{userId} would let a
+    // rejected applicant forge their own "approved" guide badge.
     match /guide_applications/{userId} {
       allow read: if isOwner(userId) || isAdmin();
-      allow create: if isOwner(userId);
-      allow update: if isAdmin() || (isOwner(userId) && resource.data.status == 'rejected');
+      allow create: if isOwner(userId) && request.resource.data.status == 'pending';
+      allow update: if isAdmin() || (
+        isOwner(userId) && resource.data.status == 'rejected' &&
+        request.resource.data.status == 'pending'
+      );
       allow delete: if isAdmin();
     }
 
     // ── Booking Requests (Marketplace Tour Bookings) ─────────────────────────
     // Pricing/payout fields (quotedPrice, commissionAmount, guideNetAmount,
     // operatorNetAmount, payoutStatus) are backend-owned — never client-writable.
+    // guideId/touristId are immutable after creation (same rationale as
+    // tour_links — prevents hijacking a booking to point at a different
+    // account). status transitions (pending -> accepted/declined/
+    // session_ready/completed) are only ever driven guide-side in the app
+    // (BookingInboxScreen.respondToRequest — there is no tourist-facing
+    // status writer), so only the guide may change status; the tourist
+    // retains write access for non-status fields (e.g. notes) on their own
+    // booking.
     match /booking_requests/{bookingId} {
       allow read: if isSignedIn() && (
         resource.data.touristId == request.auth.uid ||
         resource.data.guideId == request.auth.uid ||
         isAdmin()
       );
-      allow create: if isSignedIn() && request.resource.data.touristId == request.auth.uid;
+      // Security: BookingRepository.submitRequest() never sets a price/payout
+      // on creation — those fields stay null until a real guide-side/backend
+      // quoting step runs — so a legitimate create() always writes null
+      // money fields, status:'pending', payoutStatus:'pending'. Enforcing
+      // that shape here closes a gap where the UPDATE rule protected these
+      // fields but CREATE didn't: a raw client could otherwise fabricate a
+      // brand-new booking already marked quotedPrice/guideNetAmount/
+      // payoutStatus:'paid'/status:'completed', which would then flow
+      // straight into the guide's own earnings dashboard and
+      // TourSessionRepository.endSession()'s commission math as if real.
+      allow create: if isSignedIn() && request.resource.data.touristId == request.auth.uid &&
+        request.resource.data.status == 'pending' &&
+        (!('payoutStatus' in request.resource.data) || request.resource.data.payoutStatus == 'pending') &&
+        (!('quotedPrice' in request.resource.data) || request.resource.data.quotedPrice == null) &&
+        (!('commissionAmount' in request.resource.data) || request.resource.data.commissionAmount == null) &&
+        (!('guideNetAmount' in request.resource.data) || request.resource.data.guideNetAmount == null) &&
+        (!('operatorNetAmount' in request.resource.data) || request.resource.data.operatorNetAmount == null);
       allow update: if isSignedIn() && (
         !request.resource.data.diff(resource.data).affectedKeys()
-          .hasAny(['quotedPrice', 'commissionAmount', 'guideNetAmount', 'operatorNetAmount', 'payoutStatus']) &&
-        (resource.data.touristId == request.auth.uid ||
-         resource.data.guideId == request.auth.uid)
+          .hasAny(['quotedPrice', 'commissionAmount', 'guideNetAmount', 'operatorNetAmount', 'payoutStatus',
+                   'guideId', 'touristId']) &&
+        (
+          resource.data.guideId == request.auth.uid ||
+          (resource.data.touristId == request.auth.uid &&
+           !request.resource.data.diff(resource.data).affectedKeys().hasAny(['status']))
+        )
       ) || isAdmin();
       allow delete: if isAdmin();
     }
@@ -122,12 +180,48 @@ service cloud.firestore {
 
     // ── Tour Reviews ─────────────────────────────────────────────────────────
     // •  Reviews are public (any authenticated user can read active reviews).
-    // •  Creating a review requires auth. Server-side logic verifies eligibility.
+    // •  Creating a review requires auth AND is now verified against the real
+    //    session doc directly in rules (see reviewEligibleForSession below) —
+    //    ReviewRepository.submitReview()'s eligibility/window/duplicate
+    //    checks are real, but were previously client-side only, so a raw
+    //    Firestore write could fabricate a review for a session that never
+    //    happened, or wasn't completed, or wasn't eligible for review yet.
     // •  Moderation fields (status, flag, hidden) can only be changed by admins.
+    function reviewEligibleForSession(reviewData) {
+      let session = get(/databases/$(database)/documents/tour_sessions/$(reviewData.sessionId)).data;
+      // Note: the review-window expiry (reviewWindowEndsAt) is intentionally
+      // NOT re-checked here. It's stored as a Dart .toIso8601String() in
+      // local (non-UTC) time, which can't be safely compared against
+      // request.time (rules has no string-to-timestamp cast, and a plain
+      // string compare across mismatched timezone/precision formats risks
+      // wrongly rejecting or accepting reviews near the boundary). It stays
+      // a client-side check (ReviewRepository.submitReview) — a review
+      // submitted slightly outside the window is a soft business-rule
+      // nuisance, not a trust/money exploit, given every field that matters
+      // (real completed session, real eligible participant, real guideId)
+      // is enforced below.
+      return session.status == 'completed' &&
+        reviewData.guideId == session.guideId &&
+        request.auth.uid in session.reviewEligibleTouristIds;
+    }
     match /tour_reviews/{reviewId} {
       allow read: if isSignedIn() && resource.data.moderationStatus == 'active';
+      // Duplicate-review prevention: ReviewRepository.submitReview() now
+      // keys the doc ID as "{sessionId}_{touristId}" and writes via
+      // .create() (fails if the doc already exists) instead of a
+      // check-then-write query — this closes a real race where N parallel
+      // submissions could each see "no existing review" and all succeed.
+      // Enforcing the ID shape here too means even a raw client that skips
+      // the repository entirely still can't create a second review for the
+      // same session+tourist pair — Firestore's own create-if-absent
+      // semantics on a fixed path is the actual atomicity guarantee, not
+      // application code.
       allow create: if isSignedIn() &&
-        request.resource.data.touristId == request.auth.uid;
+        request.resource.data.touristId == request.auth.uid &&
+        reviewId == request.resource.data.sessionId + '_' + request.auth.uid &&
+        request.resource.data.overallRating is number &&
+        request.resource.data.overallRating >= 1 && request.resource.data.overallRating <= 5 &&
+        reviewEligibleForSession(request.resource.data);
       allow update: if (isOwner(resource.data.touristId) &&
         !request.resource.data.diff(resource.data).affectedKeys()
           .hasAny(['moderationStatus', 'isFlagged', 'flagReason', 'hiddenByAdmin', 'hiddenReason',
@@ -138,7 +232,20 @@ service cloud.firestore {
 
     // ── Tour Sessions ────────────────────────────────────────────────────────
     match /tour_sessions/{sessionId} {
-      allow read: if isSignedIn() || resource.data.trackingEnabled == true || resource.data.isJoinOpen == true;
+      // Only actual participants (guide/tourist) or admins may read a
+      // session once it's live (trackingEnabled == true exposes live GPS +
+      // the join/session code for the whole tour duration — this must never
+      // be public, signed-in or not). The one legitimate public case is
+      // isJoinOpen == true: the pre-tour "assembling" phase, where a
+      // tourist who isn't a participant yet needs to preview the session to
+      // join it via code — that window ends (isJoinOpen is cleared) once
+      // the tour actually starts, well before trackingEnabled ever turns on.
+      allow read: if resource.data.isJoinOpen == true ||
+        (isSignedIn() && (
+          resource.data.guideId == request.auth.uid ||
+          request.auth.uid in resource.data.touristIds ||
+          isAdmin()
+        ));
       allow create: if isVerifiedGuide() &&
         request.resource.data.guideId == request.auth.uid;
       allow update: if isSignedIn() && (
@@ -154,7 +261,7 @@ service cloud.firestore {
       match /presence/{presenceId} {
         allow read: if isSignedIn();
         allow write: if isSignedIn() &&
-          (presenceId == request.auth.uid || presenceId.startsWith('vehicle_'));
+          (presenceId == request.auth.uid || presenceId.matches('^vehicle_.*'));
       }
 
       // Meeting-point checkpoints — same participants as the parent session.
@@ -211,6 +318,17 @@ service cloud.firestore {
       allow get: if (isSignedIn() && resource.data.touristId == request.auth.uid) ||
         (resource.data.isActive == true && resource.data.expiresAt > request.time);
       allow list: if isSignedIn() && resource.data.touristId == request.auth.uid;
+      // Note: expiresAt is stored as a Dart .toIso8601String() (local,
+      // non-UTC time — see FamilyShareLink.toJson()), not a Firestore
+      // Timestamp, so it can't be safely compared against request.time here
+      // (same class of issue found and avoided in tour_reviews' review
+      // window check earlier this audit — see that rule's comment for why).
+      // A create-time expiry cap and a per-tourist link-count cap both stay
+      // out of rules for now rather than risk a broken/inconsistent check;
+      // flagging as a follow-up: migrate expiresAt to a real Timestamp field
+      // so both an expiry ceiling and correct anonymous-read gating (the
+      // existing `get`/`update` rules below have the same string-vs-timestamp
+      // mismatch) can be enforced correctly.
       allow create: if isSignedIn() && request.resource.data.touristId == request.auth.uid;
       allow update: if (isSignedIn() && resource.data.touristId == request.auth.uid &&
           request.resource.data.touristId == resource.data.touristId) ||
@@ -220,17 +338,48 @@ service cloud.firestore {
     }
 
     // ── Operator Accounts (Fleet/Team Management) ────────────────────────────
+    // teamGuideIds requires the named guide's own consent to join — the
+    // owner can only stage an invite into pendingTeamGuideIds (which the
+    // OperatorRepository.inviteGuideToTeam() client already does), never
+    // write teamGuideIds directly. Previously the owner could arrayUnion
+    // any uid straight into teamGuideIds with no acknowledgement from that
+    // guide at all — this let any operator silently brand an unrelated
+    // guide as "their" team member.
+    function operatorTeamChangeIsConsented() {
+      let diffKeys = request.resource.data.diff(resource.data).affectedKeys();
+      // Owner removing a guide from teamGuideIds (dismissal) — always allowed.
+      let ownerRemoval = diffKeys.hasOnly(['teamGuideIds']) &&
+        resource.data.teamGuideIds.hasAll(request.resource.data.teamGuideIds) &&
+        resource.data.ownerUserId == request.auth.uid;
+      // The invited guide accepting: they must be the one calling this,
+      // moving exactly their own uid from pending -> team.
+      let guideAccepts = diffKeys.hasOnly(['pendingTeamGuideIds', 'teamGuideIds']) &&
+        request.auth.uid in resource.data.pendingTeamGuideIds &&
+        !(request.auth.uid in resource.data.teamGuideIds) &&
+        request.resource.data.teamGuideIds.hasAll(resource.data.teamGuideIds) &&
+        request.resource.data.teamGuideIds.hasAll([request.auth.uid]) &&
+        !(request.auth.uid in request.resource.data.pendingTeamGuideIds);
+      // The guide leaving on their own (removing themselves).
+      let guideLeaves = diffKeys.hasOnly(['teamGuideIds']) &&
+        request.auth.uid in resource.data.teamGuideIds &&
+        !(request.auth.uid in request.resource.data.teamGuideIds) &&
+        resource.data.teamGuideIds.hasAll(request.resource.data.teamGuideIds);
+      return !diffKeys.hasAny(['teamGuideIds']) || ownerRemoval || guideAccepts || guideLeaves;
+    }
     match /operator_accounts/{operatorId} {
       allow read: if isSignedIn() && (
         resource.data.ownerUserId == request.auth.uid ||
         request.auth.uid in resource.data.teamGuideIds ||
+        request.auth.uid in resource.data.pendingTeamGuideIds ||
         isAdmin()
       );
-      allow create: if isSignedIn() && request.resource.data.ownerUserId == request.auth.uid;
+      allow create: if isSignedIn() && request.resource.data.ownerUserId == request.auth.uid &&
+        (!('teamGuideIds' in request.resource.data) || request.resource.data.teamGuideIds == [request.auth.uid]);
       allow update: if isSignedIn() && (
         !request.resource.data.diff(resource.data).affectedKeys()
           .hasAny(['isPremium', 'premiumPlanId', 'premiumExpiresAt', 'autoRenew']) &&
-        resource.data.ownerUserId == request.auth.uid
+        (resource.data.ownerUserId == request.auth.uid || request.auth.uid in resource.data.teamGuideIds || request.auth.uid in resource.data.pendingTeamGuideIds) &&
+        operatorTeamChangeIsConsented()
       ) || isAdmin();
       allow delete: if isOwner(resource.data.ownerUserId) || isAdmin();
     }
@@ -247,15 +396,22 @@ service cloud.firestore {
     }
 
     // ── Vehicles ─────────────────────────────────────────────────────────────
+    // guideId/operatorId are immutable after creation (same rationale as
+    // tour_links/booking_requests) — previously an operator or guide owner
+    // could rewrite either field on update with no restriction, letting an
+    // operator silently reassign a vehicle away from the guide actually
+    // using it (or claim it for themselves) with no consent from the other
+    // party.
     match /vehicles/{vehicleId} {
       allow read: if isSignedIn();
       allow create: if isSignedIn() && (
         request.resource.data.guideId == request.auth.uid ||
         request.resource.data.operatorId == request.auth.uid
       );
-      allow update, delete: if isOwner(resource.data.guideId) ||
-        isOwner(resource.data.operatorId) || isAdmin();
-      allow delete: if isAdmin();
+      allow update: if ((isOwner(resource.data.guideId) || isOwner(resource.data.operatorId)) &&
+        !request.resource.data.diff(resource.data).affectedKeys().hasAny(['guideId', 'operatorId'])) ||
+        isAdmin();
+      allow delete: if isOwner(resource.data.guideId) || isOwner(resource.data.operatorId) || isAdmin();
     }
 
 
@@ -368,23 +524,51 @@ service cloud.firestore {
     }
 
     // ── Security Alerts (Point 13: Incident Response) ────────────────────
+    // SecurityAlertService.triggerAlert() always sets `userId` to either the
+    // reporting device's own uid or null (a device-level anomaly with no
+    // specific user) — never an arbitrary other uid. Previously any signed-in
+    // user could forge a high-severity alert naming a victim uid with no
+    // constraint at all, to get a trusting admin to manually act on it.
     match /security_alerts/{alertId} {
-      allow create: if isSignedIn();
+      allow create: if isSignedIn() &&
+        (!('userId' in request.resource.data) || request.resource.data.userId == null ||
+         request.resource.data.userId == request.auth.uid) &&
+        request.resource.data.severity in ['low', 'medium', 'high', 'critical'];
       allow read: if isAdmin();
       allow update, delete: if false;
     }
 
     // ── Pending Notifications (Point 13: FCM Escalation) ─────────────────
+    // Always machine-generated by SecurityAlertService._sendPushNotification
+    // right after writing security_alerts above — constrain to that same
+    // known shape (topic/status) so a signed-in user can't queue an
+    // arbitrary FCM push to admins.
     match /pending_notifications/{notiId} {
-      allow create: if isSignedIn();
+      allow create: if isSignedIn() &&
+        request.resource.data.topic is string &&
+        request.resource.data.status == 'queued';
       allow read: if isAdmin();
       allow update, delete: if false;
     }
 
     // ── User Notifications (In-App Push & Alerts) ────────────────────────
+    // Legitimate writers (BookingRepository, functions/index.ts) always
+    // target ANOTHER user's recipientId by design (a guide notifying their
+    // tourist and vice versa), so this can't require
+    // recipientId == request.auth.uid the way most other collections do.
+    // Instead constrain the write to the known real shape/type-allowlist —
+    // previously `allow create: if isSignedIn()` had no constraint at all,
+    // letting any signed-in user forge a trusted-looking notification
+    // ("✅ Booking accepted!") to any victim's recipientId with arbitrary
+    // title/body content (a social-engineering/spam vector surfaced
+    // directly by NotificationService as an in-app toast/snackbar).
     match /user_notifications/{notiId} {
       allow read, update, delete: if isSignedIn() && resource.data.recipientId == request.auth.uid;
-      allow create: if isSignedIn();
+      allow create: if isSignedIn() &&
+        request.resource.data.recipientId is string &&
+        request.resource.data.type in ['new_booking', 'booking_response', 'subscription_expired', 'subscription_reminder'] &&
+        request.resource.data.title is string && request.resource.data.title.size() <= 200 &&
+        request.resource.data.body is string && request.resource.data.body.size() <= 1000;
     }
 
     // ── Device Trust Graph (Phase 3: Account-Device Bindings) ────────────
@@ -401,14 +585,40 @@ service cloud.firestore {
       allow write: if false; // Admin SDK only
     }
 
+    // ── Join Attempts (rate-limit state for validateJoinToken) ───────────
+    // Written exclusively by the validateJoinToken Cloud Function (Admin
+    // SDK, bypasses rules) — clients must never read or write their own
+    // attempt counter directly, or they could reset it themselves and
+    // defeat the rate limit it exists to enforce.
+    match /join_attempts/{uid} {
+      allow read, write: if false; // Admin SDK only
+    }
+
     // ── Explorer Progress (Level/Badges Gamification) ────────────────────
     match /user_progress/{userId} {
       allow read, write: if isOwner(userId) || isAdmin();
     }
 
     // ── AR Treasure Hunt Gamification ─────────────────────────────────────
+    // points/found_artifacts are unbounded client-set values by design (no
+    // money/trust impact — a vanity leaderboard stat), but a raw write could
+    // still fabricate an arbitrarily large score with zero real artifacts
+    // found. Require points to only ever increase, by a sane per-write
+    // ceiling (well above any single real artifact's value — see
+    // ARArtifact.points, defaulting to 100), and found_artifacts to only
+    // grow, never shrink/replace (can't "unfind" something to game a rank).
     match /user_gamification/{userId} {
-      allow read, write: if isOwner(userId) || isAdmin();
+      allow read: if isOwner(userId) || isAdmin();
+      allow create: if isOwner(userId) &&
+        request.resource.data.points is int && request.resource.data.points >= 0 &&
+        request.resource.data.points <= 10000;
+      allow update: if isOwner(userId) &&
+        request.resource.data.points is int &&
+        request.resource.data.points >= resource.data.points &&
+        request.resource.data.points <= resource.data.points + 10000 &&
+        (!('found_artifacts' in resource.data) || !('found_artifacts' in request.resource.data) ||
+         request.resource.data.found_artifacts.hasAll(resource.data.found_artifacts));
+      allow write: if isAdmin();
     }
 
     // ── Community Memory Drops (Geo-tagged public posts) ──────────────────
@@ -445,8 +655,22 @@ service cloud.firestore {
     }
 
     // ── Threat Notifications (Security Telemetry) ──────────────────────────
+    // Must stay anonymous-writable by design (ThreatReporter.reportSpectreBreach
+    // fires on pre-login debugger/tamper probes, before request.auth exists —
+    // requiring isSignedIn() here would blind the app to exactly the
+    // adversarial-probe case this collection exists to catch). What was
+    // missing was any shape constraint: previously `allow create: if true`
+    // accepted arbitrary fields/values, letting anyone forge a fabricated
+    // high-severity report naming an arbitrary victim uid to get a human
+    // admin to act on it. Constrain to the real shape ThreatReporter sends,
+    // and require category/severity to be one of its actual known values.
     match /threat_notifications/{notiId} {
-      allow create: if true; // May fire before/without auth (dev-tooling/debugger probes)
+      allow create: if request.resource.data.keys().hasOnly(
+          ['category', 'severity', 'uid', 'signals', 'timestamp', 'appVersion', 'buildNumber', 'status', 'details']) &&
+        request.resource.data.category is string &&
+        request.resource.data.severity in ['low', 'medium', 'high', 'critical'] &&
+        request.resource.data.uid is string &&
+        (!isSignedIn() || request.resource.data.uid == request.auth.uid || request.resource.data.uid == 'UNAUTHENTICATED_PROBE');
       allow read, update, delete: if isAdmin();
     }
   }

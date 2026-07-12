@@ -16,6 +16,18 @@ class BookingRepository {
   CollectionReference<Map<String, dynamic>> get _bookingRef =>
       _firestore.collection('booking_requests');
 
+  // Firestore cost fix: getInbox() used to open a brand-new .snapshots()
+  // listener on every call. BookingInboxScreen, GuideEarningsScreen, and
+  // GuideClientsScreen all call it independently, so simply navigating
+  // between those 3 screens in one session opened 3 concurrent, unbounded,
+  // duplicate live listeners against the exact same guide's full booking
+  // history — every field change on any booking re-billed all 3. This
+  // repository is a Riverpod singleton (bookingRepositoryProvider is a
+  // plain Provider, one instance app-wide), so a per-ownerId broadcast
+  // stream cache here means all 3 screens now share ONE real Firestore
+  // listener; StreamBuilder's shape in all 3 callers is unchanged.
+  final Map<String, Stream<List<BookingRequest>>> _inboxStreamCache = {};
+
   /// Submits a new booking request from a tourist.
   ///
   /// Note: quotedPrice/commissionAmount/guideNetAmount/payoutStatus are NOT
@@ -152,19 +164,38 @@ class BookingRepository {
   }
 
   /// Retrieves booking requests for a specific guide or operator inbox.
+  /// Returns a SHARED broadcast stream per (ownerId, isOperator) pair — see
+  /// _inboxStreamCache above. Capped at the 300 most recent bookings
+  /// (createdAt desc); a guide's actionable inbox/earnings/clients views
+  /// only ever need recent history, not an unbounded years-long feed.
   Stream<List<BookingRequest>> getInbox(String ownerId, {bool isOperator = false}) {
+    final cacheKey = '${isOperator ? 'op' : 'guide'}_$ownerId';
+    final cached = _inboxStreamCache[cacheKey];
+    if (cached != null) return cached;
+
     Query query = _bookingRef;
     if (isOperator) {
       query = query.where('operatorId', isEqualTo: ownerId);
     } else {
       query = query.where('guideId', isEqualTo: ownerId);
     }
+    query = query.orderBy('createdAt', descending: true).limit(300);
 
-    return query.snapshots().map((snapshot) {
-      final docs = snapshot.docs.map((doc) => BookingRequest.fromJson(doc.data() as Map<String, dynamic>)).toList();
-      docs.sort((a, b) => b.createdAt.compareTo(a.createdAt));
-      return docs;
-    });
+    final stream = query.snapshots().map((snapshot) {
+      return snapshot.docs.map((doc) => BookingRequest.fromJson(doc.data() as Map<String, dynamic>)).toList();
+    }).asBroadcastStream();
+
+    _inboxStreamCache[cacheKey] = stream;
+    return stream;
+  }
+
+  /// Drops the cached shared inbox stream for an owner, forcing the next
+  /// getInbox() call to open a fresh listener. Not normally needed (the
+  /// live listener already reflects writes in real time) — provided for
+  /// completeness/testing and in case a caller ever needs to force a full
+  /// resubscribe (e.g. after a long background period).
+  void invalidateInboxCache(String ownerId, {bool isOperator = false}) {
+    _inboxStreamCache.remove('${isOperator ? 'op' : 'guide'}_$ownerId');
   }
 
   /// Retrieves a tourist's own booking history. One-shot read (not a live

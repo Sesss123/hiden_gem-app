@@ -170,7 +170,11 @@ void main() async {
       final callback = ThreatCallback(
         onAppIntegrity: () => SystemNavigator.pop(),
         onObfuscationIssues: () => SystemNavigator.pop(),
-        onDebug: () => SystemNavigator.pop(),
+        // BUG-10 FIX: Only close the app in release mode when debug mode is
+        // detected. Previously this fired in debug builds too, causing
+        // `flutter run` sessions to immediately close the app because freeRASP
+        // correctly identifies the debug runtime as a threat.
+        onDebug: () { if (kReleaseMode) SystemNavigator.pop(); },
         onDeviceBinding: () => SystemNavigator.pop(),
         onDeviceID: () => SystemNavigator.pop(),
         onHooks: () => SystemNavigator.pop(),

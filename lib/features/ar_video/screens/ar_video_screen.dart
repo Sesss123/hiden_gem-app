@@ -58,6 +58,8 @@ class _ARVideoScreenState extends State<ARVideoScreen>
   late AnimationController _pulseController;
   late Animation<double> _pulse;
 
+  Timer? _surfaceDetectTimer;
+
   @override
   void initState() {
     super.initState();
@@ -124,9 +126,13 @@ class _ARVideoScreenState extends State<ARVideoScreen>
   void _onArCoreViewCreated(ArCoreController controller) {
     _arController = controller;
     _arController!.onPlaneTap = _handlePlaneTap;
-    
-    // Simulate initial environment scanning feedback before showing tap action hint
-    Timer(const Duration(seconds: 4), () {
+
+    // Simulate initial environment scanning feedback before showing tap
+    // action hint. Cancel any prior timer first — if this callback ever
+    // re-fires (platform view recreation), a stray timer must not stack
+    // on top of it and fire setState() after this instance is disposed.
+    _surfaceDetectTimer?.cancel();
+    _surfaceDetectTimer = Timer(const Duration(seconds: 4), () {
       if (mounted && !_videoPlaced) {
         setState(() => _surfaceDetected = true);
       }
@@ -172,6 +178,7 @@ class _ARVideoScreenState extends State<ARVideoScreen>
   @override
   void dispose() {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+    _surfaceDetectTimer?.cancel();
     _videoService.controller?.removeListener(_onVideoTick);
     _syncService?.dispose();
     _videoService.dispose();

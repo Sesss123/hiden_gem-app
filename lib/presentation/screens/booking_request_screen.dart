@@ -119,9 +119,13 @@ class _BookingRequestScreenState extends ConsumerState<BookingRequestScreen> {
                 '$_guestCount',
                 style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontSize: 16, fontWeight: FontWeight.w800),
               ),
+              // BUG-9 FIX: Cap guest count at 20 to prevent unrealistic bookings.
               IconButton(
-                icon: Icon(Icons.add_circle_outline_rounded, color: Theme.of(context).colorScheme.primary),
-                onPressed: () => setState(() => _guestCount++),
+                icon: Icon(Icons.add_circle_outline_rounded,
+                    color: _guestCount >= 20
+                        ? AppTheme.textSecondary(context).withValues(alpha: 0.3)
+                        : Theme.of(context).colorScheme.primary),
+                onPressed: _guestCount < 20 ? () => setState(() => _guestCount++) : null,
               ),
             ],
           ),
@@ -251,8 +255,13 @@ class _BookingRequestScreenState extends ConsumerState<BookingRequestScreen> {
                 height: 48,
                 child: ElevatedButton(
                   onPressed: () {
-                    Navigator.pop(dialogContext); // Dialog
-                    Navigator.pop(dialogContext); // Booking Screen
+                    // BUG-1 FIX: Use dialogContext to close the dialog, then
+                    // use the outer `context` (captured before showDialog) to
+                    // pop BookingRequestScreen. Using dialogContext for both
+                    // previously left the booking screen stuck open because
+                    // dialogContext is already invalid after the first pop.
+                    Navigator.pop(dialogContext); // Close dialog
+                    Navigator.pop(context);       // Close BookingRequestScreen
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Theme.of(dialogContext).colorScheme.primary,

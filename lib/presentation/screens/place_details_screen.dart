@@ -18,6 +18,8 @@ import '../../data/models/discovery_place.dart';
 import '../../data/datasources/user_preference_service.dart';
 import '../../data/datasources/portal_service.dart';
 import '../../core/services/usage_limiter_service.dart';
+import '../../core/services/secure_entitlements.dart';
+import '../../core/services/integrity_shield.dart';
 import '../../core/services/translation_service.dart';
 import '../../core/localization/l10n_utils.dart';
 import '../../l10n/app_localizations.dart';
@@ -66,6 +68,16 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
   Future<void> _recordVisitIfNearby() async {
     final placeId = widget.place.id;
     try {
+      // Security: a GPS proximity check alone is spoofable by any
+      // mock-location app — this can't be made server-verified without new
+      // attestation infrastructure, but IntegrityShield's existing
+      // device-tamper/mock-location signal set (already used to gate
+      // premium features) is a reasonable proportionate check to reuse
+      // here, rather than trusting an unconditioned on-device GPS reading
+      // to award heritage-passport stamps / explorer badges / level
+      // progress.
+      if (IntegrityShield().riskScore >= 60) return;
+
       final repository = ref.read(discoveryRepositoryProvider);
       final userPos = await repository.getCurrentLocation().timeout(const Duration(seconds: 8));
       if (userPos == null) return;
@@ -895,9 +907,12 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
       return;
     }
 
-    final profile = UserPreferenceService.getProfile();
-    final isPremium = profile.isPremium;
-    
+    // Security: server-verified, not the local cached profile flag — a
+    // tampered local profile must not be able to bypass the AR proximity
+    // lock (see SecureEntitlements docs; same class of bug already fixed in
+    // UsageLimiterService).
+    final isPremium = await SecureEntitlements().verifyPremium();
+
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -943,33 +958,50 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
       return;
     }
 
-    if (isPremium) {
-      final canAccess = await UsageLimiterService.canAccessArSession();
-      if (!context.mounted) return;
+    // BUG FIX: canAccessArSession()/incrementArSession() were previously
+    // only ever called on the `isPremium` branch (whose monthly quota is
+    // 9999, i.e. effectively unlimited) — free users always fell into the
+    // ARUpgradeDialog branch below regardless of whether they still had
+    // their free monthly AR session available, so the free tier's
+    // `ar_sessions_per_month` entitlement was never actually reachable.
+    // Both tiers must go through the same check-then-consume flow; only
+    // once a tier's quota is exhausted should the paywall/ad-unlock UI show.
+    final canAccess = await UsageLimiterService.canAccessArSession();
+    if (!context.mounted) return;
 
-      if (!canAccess) {
-        showDialog(
-          context: context,
-          builder: (_) => LimitReachedDialog(
-            featureName: 'Heritage Sessions',
-            onWatchAd: () {
-              MonetizationService().showRewardedAd(
-                onRewardEarned: (reward) async {
-                  await UsageLimiterService.provideBonusArSession();
-                  if (!mounted || !context.mounted) return;
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text("Bonus Session Unlocked! Try launching again.")),
-                  );
-                },
-              );
-            },
-          ),
-        );
+    if (canAccess) {
+      // incrementArSession() is the real, atomic enforcement point (a
+      // Firestore transaction) — canAccess above is just a cheap UI
+      // pre-check and can't be trusted alone against concurrent/rapid
+      // launches. If a concurrent call already consumed the last slot,
+      // this returns false and we fall through to the limit-reached UI
+      // instead of navigating to AR content the user didn't actually earn.
+      final claimed = await UsageLimiterService.incrementArSession();
+      if (!context.mounted) return;
+      if (claimed) {
+        _navigateToAR(context);
         return;
       }
+    }
 
-      await UsageLimiterService.incrementArSession();
-      if (context.mounted) _navigateToAR(context);
+    if (isPremium) {
+      showDialog(
+        context: context,
+        builder: (_) => LimitReachedDialog(
+          featureName: 'Heritage Sessions',
+          onWatchAd: () {
+            MonetizationService().showRewardedAd(
+              onRewardEarned: (reward) async {
+                await UsageLimiterService.provideBonusArSession();
+                if (!mounted || !context.mounted) return;
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text("Bonus Session Unlocked! Try launching again.")),
+                );
+              },
+            );
+          },
+        ),
+      );
     } else {
       if (context.mounted) {
         ARUpgradeDialog.show(

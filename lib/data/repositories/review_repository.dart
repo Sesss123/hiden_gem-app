@@ -65,16 +65,19 @@ class ReviewRepository {
       throw Exception("NOT_ELIGIBLE: Participant was not linked to this session.");
     }
 
-    // 2. Prevent Duplicate Reviews (efficient: single compound query)
-    final existing = await _reviewRef
-        .where('sessionId', isEqualTo: review.sessionId)
-        .where('touristId', isEqualTo: review.touristId)
-        .limit(1) // Only need to know if 1 exists
-        .get();
-    if (existing.docs.isNotEmpty) throw Exception("ALREADY_REVIEWED");
-
-    // 3. Create Review
-    final doc = _reviewRef.doc();
+    // 2. Prevent Duplicate Reviews — atomically, via a deterministic
+    // document ID rather than a check-then-write query. The prior
+    // implementation queried for an existing sessionId+touristId review and
+    // only wrote if none was found — but that query and this write aren't
+    // atomic, so N parallel submitReview() calls (rapid-tap, scripted
+    // replay) could all see "no existing review" and all succeed, producing
+    // N review docs for one session. Keying the doc ID to
+    // "{sessionId}_{touristId}" (instead of a random auto-ID) and wrapping
+    // the existence-check + write in a transaction makes Firestore itself
+    // the single point of truth — Firestore serializes/retries conflicting
+    // transactions against the same document, so only the first of N
+    // concurrent submissions can ever land.
+    final doc = _reviewRef.doc('${review.sessionId}_${review.touristId}');
     final verifiedReview = TourReview(
       reviewId: doc.id,
       sessionId: review.sessionId,
@@ -94,7 +97,11 @@ class ReviewRepository {
       moderationStatus: 'active',
     );
 
-    await doc.set(verifiedReview.toJson());
+    await _firestore.runTransaction((transaction) async {
+      final existing = await transaction.get(doc);
+      if (existing.exists) throw Exception("ALREADY_REVIEWED");
+      transaction.set(doc, verifiedReview.toJson());
+    });
 
     // Ask the backend to bump the guide's reviewCount and recalculate
     // ratingAverage — firestore.rules blocks a client from writing those

@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(grep -iE \"google-services\\\\.json|\\\\.env$|serviceAccountKey|firebase-credentials|key\\\\.properties|\\\\.jks$|\\\\.keystore$\")",
-      "Bash(C:\\\\Users\\\\sehas\\\\.config\\\\herd\\\\bin\\\\php.bat -v)"
+      "Bash(C:\\\\Users\\\\sehas\\\\.config\\\\herd\\\\bin\\\\php.bat -v)",
+      "Bash(grep -v \"//\")"
     ]
   }
 }

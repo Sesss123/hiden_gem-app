@@ -4,6 +4,7 @@ class OperatorAccount {
   final String? bio;
   final String ownerUserId;
   final List<String> teamGuideIds;
+  final List<String> pendingTeamGuideIds; // Invited but not yet accepted by the guide
   final Map<String, String> teamRoles; // {userId: role} - owner, manager, dispatcher, analyst
   final List<String> vehicleIds;
   
@@ -33,6 +34,7 @@ class OperatorAccount {
     this.bio,
     required this.ownerUserId,
     this.teamGuideIds = const [],
+    this.pendingTeamGuideIds = const [],
     this.teamRoles = const {},
     this.vehicleIds = const [],
     required this.brNumber,
@@ -55,6 +57,7 @@ class OperatorAccount {
     'bio': bio,
     'ownerUserId': ownerUserId,
     'teamGuideIds': teamGuideIds,
+    'pendingTeamGuideIds': pendingTeamGuideIds,
     'teamRoles': teamRoles,
     'vehicleIds': vehicleIds,
     'brNumber': brNumber,
@@ -77,6 +80,7 @@ class OperatorAccount {
     bio: json['bio'],
     ownerUserId: json['ownerUserId'],
     teamGuideIds: List<String>.from(json['teamGuideIds'] ?? []),
+    pendingTeamGuideIds: List<String>.from(json['pendingTeamGuideIds'] ?? []),
     teamRoles: Map<String, String>.from(json['teamRoles'] ?? {}),
     vehicleIds: List<String>.from(json['vehicleIds'] ?? []),
     brNumber: json['brNumber'],

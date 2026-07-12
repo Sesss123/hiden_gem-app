@@ -18,12 +18,28 @@
       ]
     },
     {
+      "collectionGroup": "booking_requests",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "operatorId", "order": "ASCENDING" },
+        { "fieldPath": "createdAt", "order": "ASCENDING" }
+      ]
+    },
+    {
       "collectionGroup": "user_notifications",
       "queryScope": "COLLECTION",
       "fields": [
         { "fieldPath": "recipientId", "order": "ASCENDING" },
         { "fieldPath": "type", "order": "ASCENDING" },
         { "fieldPath": "isRead", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "tour_sessions",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "touristIds", "arrayConfig": "CONTAINS" },
+        { "fieldPath": "status", "order": "ASCENDING" }
       ]
     }
   ],

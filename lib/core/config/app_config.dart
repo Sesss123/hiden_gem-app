@@ -19,6 +19,16 @@ class AppConfig {
   // Alias for backward compatibility (defaults to Laravel backend)
   static const String baseUrl = laravelUrl;
 
+  /// Web root of the Laravel backend (laravelUrl minus the `/api/v1` API
+  /// prefix) — used for links meant to be opened in a browser by someone
+  /// without the app, e.g. family-sharing "join" links.
+  static String get webBaseUrl {
+    const suffix = '/api/v1';
+    return laravelUrl.endsWith(suffix)
+        ? laravelUrl.substring(0, laravelUrl.length - suffix.length)
+        : laravelUrl;
+  }
+
   static String get reverbWsUrl {
     final customWs = const String.fromEnvironment('REVERB_WS_URL');
     if (customWs.isNotEmpty) return customWs;
@@ -176,6 +186,12 @@ class AppConfig {
     }
     if (isPlaceholder(appStoreId)) {
       throw AssertionError("CRITICAL: Must configure a valid APP_STORE_ID.");
+    }
+    if (isPlaceholder(geminiApiKey)) {
+      throw AssertionError("CRITICAL: Must configure a valid GEMINI_API_KEY environment variable.");
+    }
+    if (isPlaceholder(weatherApiKey)) {
+      throw AssertionError("CRITICAL: Must configure a valid WEATHER_API_KEY environment variable.");
     }
     if (isPlaceholder(const String.fromEnvironment('ADMOB_BANNER_ID', defaultValue: 'YOUR_REAL_BANNER_ID'))) {
       throw AssertionError("CRITICAL: Must configure a valid ADMOB_BANNER_ID.");

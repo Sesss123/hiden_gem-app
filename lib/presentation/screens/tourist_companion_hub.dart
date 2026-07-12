@@ -22,6 +22,10 @@ import '../../core/services/monsoon_broadcast_service.dart';
 import 'review_submission_screen.dart';
 import '../../core/theme/app_theme.dart';
 import 'package:hidden_gems_sl/core/utils/secure_logger.dart';
+import '../../core/services/secure_entitlements.dart';
+import '../../core/services/emergency_translator_service.dart';
+import 'emergency_translator_screen.dart';
+import 'premium_hub_screen.dart';
 
 class TouristCompanionHub extends StatefulWidget {
   final String sessionId;
@@ -458,6 +462,9 @@ class _TouristCompanionHubState extends State<TouristCompanionHub> {
         // Only show if it was sent in the last 2 minutes
         if (DateTime.now().difference(latest.createdAt).inMinutes > 2) return const SizedBox.shrink();
 
+        final myUid = AuthService().currentUser?.uid;
+        final alreadyAcked = myUid != null && latest.acknowledgedBy.contains(myUid);
+
         return Positioned(
           top: 60,
           left: 20,
@@ -493,14 +500,26 @@ class _TouristCompanionHubState extends State<TouristCompanionHub> {
                     width: double.infinity,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppTheme.colors.greenAccent,
+                        backgroundColor: alreadyAcked ? AppTheme.colors.greenAccent.withValues(alpha: 0.3) : AppTheme.colors.greenAccent,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
                         padding: const EdgeInsets.symmetric(vertical: 10),
                       ),
-                      onPressed: () {
-                        // Acknowledge logic
-                      },
-                      child: Text("I acknowledge", style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w700, color: AppTheme.colors.black)),
+                      onPressed: alreadyAcked
+                          ? null
+                          : () async {
+                              HapticFeedback.lightImpact();
+                              final uid = myUid;
+                              if (uid == null) return;
+                              try {
+                                await _broadcastRepo.acknowledgeMessage(widget.sessionId, latest.messageId, uid);
+                              } catch (e) {
+                                SecureLogger.error('[Broadcast] Failed to acknowledge message', e);
+                              }
+                            },
+                      child: Text(
+                        alreadyAcked ? "Acknowledged" : "I acknowledge",
+                        style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w700, color: AppTheme.colors.black),
+                      ),
                     ),
                   ),
               ],
@@ -528,7 +547,7 @@ class _TouristCompanionHubState extends State<TouristCompanionHub> {
                 icon: Icons.family_restroom_rounded,
                 title: "Share live",
                 subtitle: "Family access",
-                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const FamilyShareScreen())),
+                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => FamilyShareScreen(sessionId: widget.sessionId))),
               ),
             ),
             const SizedBox(width: 12),
@@ -628,14 +647,20 @@ class _TouristCompanionHubState extends State<TouristCompanionHub> {
     HapticFeedback.heavyImpact();
     try {
       final pos = await Geolocator.getCurrentPosition(locationSettings: const LocationSettings(accuracy: LocationAccuracy.high));
-      
-      // Update presence so guide sees them on the map
-      await _presenceRepo.updateParticipantPresence(
-        sessionId: session.sessionId,
-        userId: 'tourist_${AuthService().currentUser?.uid ?? "unknown"}',
-        position: pos,
-        role: 'tourist',
-      );
+
+      // Update presence so guide sees them on the map. The doc ID must be
+      // exactly the caller's own auth UID — firestore.rules only allows a
+      // presence write where presenceId == request.auth.uid, so a prefixed
+      // ID like 'tourist_$uid' is silently denied.
+      final touristUid = AuthService().currentUser?.uid;
+      if (touristUid != null) {
+        await _presenceRepo.updateParticipantPresence(
+          sessionId: session.sessionId,
+          userId: touristUid,
+          position: pos,
+          role: 'tourist',
+        );
+      }
 
       // Send critical broadcast
       final msg = BroadcastMessage(
@@ -684,7 +709,52 @@ class _TouristCompanionHubState extends State<TouristCompanionHub> {
           backgroundColor: AppTheme.colors.redAccent,
         ),
       );
+      await _offerEmergencyTranslator();
     }
+  }
+
+  /// Premium benefit: right after SOS is broadcast, offer to open the
+  /// Emergency Translator so the tourist can immediately show/play a
+  /// Sinhala explanation of their situation to whoever is helping them.
+  Future<void> _offerEmergencyTranslator() async {
+    if (!mounted) return;
+    final isPremium = await SecureEntitlements().verifyPremium();
+    if (!mounted) return;
+
+    if (isPremium) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const EmergencyTranslatorScreen(initialType: EmergencySituationType.unsafe)),
+      );
+      return;
+    }
+
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: Theme.of(context).cardColor,
+        icon: Icon(Icons.translate_rounded, color: AppTheme.colors.redAccent, size: 32),
+        title: Text("Emergency Translator", style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: AppTheme.textPrimary(context))),
+        content: Text(
+          "Instantly explain your situation to Sri Lankan police or hospital staff in spoken Sinhala — a Premium safety feature.",
+          style: GoogleFonts.inter(fontSize: 13, color: AppTheme.textSecondary(context), height: 1.5),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text("Not now", style: TextStyle(color: AppTheme.textSecondary(context))),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(ctx);
+              Navigator.push(context, MaterialPageRoute(builder: (_) => const PremiumHubScreen()));
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: AppTheme.colors.redAccent, foregroundColor: AppTheme.colors.white),
+            child: const Text("View Plans"),
+          ),
+        ],
+      ),
+    );
   }
 
   void _openMap(TourSession session, String target) {

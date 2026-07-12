@@ -147,6 +147,28 @@ class FirestoreService
     }
 
     /**
+     * Deletes a Firestore document via REST API.
+     */
+    public function deleteDocument(string $collection, string $documentId): bool
+    {
+        try {
+            $token = $this->getToken();
+            $url = "https://firestore.googleapis.com/v1/projects/{$this->projectId}/databases/(default)/documents/{$collection}/{$documentId}";
+            $response = Http::withToken($token)->delete($url);
+
+            if ($response->successful()) {
+                Log::info("Firestore {$collection}/{$documentId} deleted via REST.");
+                return true;
+            }
+            Log::error("Firestore REST delete error ({$response->status()}): " . $response->body());
+            return false;
+        } catch (\Exception $e) {
+            Log::error("Firestore REST exception deleting {$collection}/{$documentId}: " . $e->getMessage());
+            throw $e;
+        }
+    }
+
+    /**
      * Update or merge data into a guide application document in Firestore.
      */
     public function updateGuideApplication($userId, array $data)

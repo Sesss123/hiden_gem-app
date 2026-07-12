@@ -43,7 +43,8 @@ class HomeScreen extends ConsumerStatefulWidget {
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   int _selectedIndex = 0; // For bottom navigation
-  
+  String? _discoveryCategoryFilter; // Pending category tapped from "Explore by Category"
+
   List<EventModel> _todayEvents = [];
   bool _showEventBanner = true;
   List<DiscoveryPlace> _localGems = [];
@@ -128,9 +129,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Future<void> _handleRefresh() async {
     HapticFeedback.mediumImpact();
     if (mounted) {
+      // BUG-6 FIX: Also reload place cards on pull-to-refresh.
+      // Previously only events were refreshed — the Featured Destination
+      // card and local gems list remained stale after a pull-to-refresh.
       _checkTodayEvents();
+      await _loadLocalGems();
     }
-    // await Future.delayed(const Duration(milliseconds: 800));
   }
 
   Widget _buildFeaturedDestinationCard() {
@@ -444,7 +448,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         index: _selectedIndex,
         children: [
           _buildHomeContent(l10n, isOffline),
-          const DiscoveryScreen(),
+          DiscoveryScreen(key: ValueKey('discovery_$_discoveryCategoryFilter'), initialFilter: _discoveryCategoryFilter),
           const EventCalendarScreen(),
           const ProfileScreen(),
         ],
@@ -843,11 +847,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   Widget _buildCategoriesGrid() {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final List<(String, IconData, List<Color>)> categories = [
-      ("Nature", Icons.forest_outlined, isDark ? [const Color(0xFF241D15), const Color(0xFF241D15)] : [const Color(0xFF557A4A), const Color(0xFF2C3D24)]),
-      ("Beaches", Icons.waves_rounded, [const Color(0xFF3A7A8A), const Color(0xFF1C3D44)]),
-      ("Culture", Icons.temple_hindu_outlined, [Theme.of(context).colorScheme.primary, isDark ? AppPaletteDark.gemDim : AppPalette.rustDim]),
-      ("Adventure", Icons.explore_outlined, [AppPalette.heroOchre, const Color(0xFFA97A1E)]),
+    // Label -> the matching DiscoveryScreen filter key (see discovery_screen.dart's _filters/_applyFilter).
+    final List<(String, IconData, List<Color>, String)> categories = [
+      ("Nature", Icons.forest_outlined, isDark ? [const Color(0xFF241D15), const Color(0xFF241D15)] : [const Color(0xFF557A4A), const Color(0xFF2C3D24)], "nature"),
+      ("Beaches", Icons.waves_rounded, [const Color(0xFF3A7A8A), const Color(0xFF1C3D44)], "coastal"),
+      ("Culture", Icons.temple_hindu_outlined, [Theme.of(context).colorScheme.primary, isDark ? AppPaletteDark.gemDim : AppPalette.rustDim], "culture"),
+      ("Adventure", Icons.explore_outlined, [AppPalette.heroOchre, const Color(0xFFA97A1E)], "hiking"),
     ];
 
     return Column(
@@ -872,6 +877,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               onTap: () {
                 Haptics.light();
                 setState(() {
+                  _discoveryCategoryFilter = cat.$4;
                   _selectedIndex = 1;
                 });
               },

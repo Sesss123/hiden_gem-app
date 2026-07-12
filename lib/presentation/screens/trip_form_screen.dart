@@ -242,7 +242,7 @@ class _TripFormScreenState extends State<TripFormScreen> {
             hint: "Airport, Colombo...",
             icon: Icons.flight_takeoff,
             onSelected: (v) => _origin = v,
-            onChanged: (v) => _origin = v,
+            onChanged: (v) => setState(() => _origin = v),
             initialText: _origin,
           ),
           const SizedBox(height: 16),
@@ -251,7 +251,7 @@ class _TripFormScreenState extends State<TripFormScreen> {
             hint: "Ella, Galle, Kandy...",
             icon: Icons.place_outlined,
             onSelected: (v) => _destination = v,
-            onChanged: (v) => _destination = v,
+            onChanged: (v) => setState(() => _destination = v),
             initialText: _destination,
           ),
           const SizedBox(height: 16),
@@ -588,7 +588,17 @@ class _TripFormScreenState extends State<TripFormScreen> {
     );
   }
 
+  bool _isSubmitting = false;
+
   void _submit() async {
+    // Re-entrancy guard: without this, a rapid double-tap could fire two
+    // concurrent _submit() calls before the first's dialog/navigation even
+    // appears. The real quota enforcement is now the atomic transaction in
+    // incrementAiTrip() below, but this still avoids redundant duplicate
+    // trip-generation network calls from a single accidental double-tap.
+    if (_isSubmitting) return;
+    _isSubmitting = true;
+
     // Show a small processing overlay
     showDialog(
       context: context,
@@ -596,13 +606,17 @@ class _TripFormScreenState extends State<TripFormScreen> {
       builder: (_) => Center(child: CircularProgressIndicator(color: Theme.of(context).colorScheme.primary)),
     );
 
-    // AI Trip Limits check
+    // Cheap early-out check (non-atomic, just avoids the overlay flashing
+    // when the user is obviously already over quota). The real enforcement
+    // is incrementAiTrip()'s atomic transaction below — this check alone is
+    // NOT sufficient against concurrent/scripted calls (that's the bug that
+    // was fixed: quota is now enforced server-side inside a Firestore
+    // transaction, not by trusting this pre-check).
     final canGenerate = await UsageLimiterService.canGenerateAiTrip();
-    
-    // Close loading
-    if (mounted) Navigator.pop(context);
 
     if (!canGenerate) {
+      if (mounted) Navigator.pop(context);
+      _isSubmitting = false;
       if (mounted) {
         showDialog(
           context: context,
@@ -626,9 +640,38 @@ class _TripFormScreenState extends State<TripFormScreen> {
     }
 
     final budgetLkr = int.tryParse(_budgetController.text) ?? 25000;
-    
-    // Valid trip, record the usage
-    await UsageLimiterService.incrementAiTrip();
+
+    // Atomically claim one unit of quota — this is the real enforcement
+    // point. If a concurrent request already consumed the last slot between
+    // the check above and now, this returns false and no trip is generated.
+    final claimed = await UsageLimiterService.incrementAiTrip();
+
+    // Close loading
+    if (mounted) Navigator.pop(context);
+    _isSubmitting = false;
+
+    if (!claimed) {
+      if (mounted) {
+        showDialog(
+          context: context,
+          builder: (_) => LimitReachedDialog(
+            featureName: 'AI Trips',
+            onWatchAd: () {
+              MonetizationService().showRewardedAd(
+                onRewardEarned: (reward) async {
+                  await UsageLimiterService.provideBonusAiTrip();
+                  if (!mounted || !context.mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("Bonus Trip Unlocked! Try submitting again.")),
+                  );
+                },
+              );
+            },
+          ),
+        );
+      }
+      return;
+    }
 
     if (mounted) {
       Navigator.push(

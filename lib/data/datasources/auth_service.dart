@@ -6,6 +6,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import '../../core/config/app_config.dart';
 import '../../core/services/brute_force_service.dart';
 import '../../core/utils/secure_logger.dart';
+import '../../core/notifications/notification_service.dart';
 import 'user_preference_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
@@ -95,6 +96,16 @@ class AuthService {
         await userCredential.user!.updateDisplayName(name);
         // Sync to Firestore
         await _syncUserData(userCredential.user!, name: name);
+        // Email/password signups aren't pre-verified the way Google
+        // Sign-In accounts are (Google's own email_verified claim is
+        // already true) — send a verification email so this account can
+        // later clear the email_verified_at gate the Laravel backend now
+        // requires before a guide application can be submitted.
+        try {
+          await userCredential.user!.sendEmailVerification();
+        } catch (e) {
+          SecureLogger.warning("Failed to send verification email: $e");
+        }
       }
       return userCredential;
     } catch (e) {
@@ -244,6 +255,13 @@ class AuthService {
 
   // Sign out
   Future<void> signOut() async {
+    final uid = _auth.currentUser?.uid;
+    // Tear down the FCM topic subscription before the session is gone —
+    // without this, the device keeps receiving pushes meant for the
+    // account that just logged out (topic subscriptions are device-level
+    // and outlive Firebase Auth sign-out).
+    await NotificationService().stopWatchingUserNotifications(uid);
+
     if (!kIsWeb) {
       try { await GoogleSignIn.instance.signOut(); } catch (e) { SecureLogger.warning('Google sign out failed: $e'); }
     }

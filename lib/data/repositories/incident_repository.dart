@@ -160,11 +160,13 @@ class IncidentRepository {
             .toList());
   }
 
+  // Admin-only dashboard (low traffic), capped as defense-in-depth.
   Stream<List<IncidentReport>> getActiveIncidents() {
     return _incidentRef
         .where('status', whereIn: ['open', 'under_review', 'escalated'])
         .orderBy('priorityTier', descending: true)
         .orderBy('createdAt')
+        .limit(200)
         .snapshots()
         .map((snapshot) => snapshot.docs
             .map((doc) => IncidentReport.fromJson(doc.data()))

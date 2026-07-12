@@ -18,10 +18,19 @@ use App\Http\Controllers\Admin\PlaceController;
 use App\Http\Controllers\Admin\EventController;
 use App\Http\Controllers\Admin\GuideController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\PartnerController;
+use App\Http\Controllers\JoinController;
+use App\Http\Controllers\Api\V1\GuideDocumentUploadController;
 
 Route::get('/', function () {
     return redirect()->route('admin.login');
 });
+
+// Public family-sharing "join" page — no auth, rate limited to blunt token
+// enumeration attempts against the 8-char share token.
+Route::get('/join/{token}', [JoinController::class, 'show'])
+    ->middleware('throttle:20,1')
+    ->name('join.show');
 
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
@@ -39,6 +48,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
         // Events CRUD
         Route::resource('events', EventController::class);
 
+        // Curator Partners CRUD (Firestore-backed, no MySQL table)
+        Route::resource('partners', PartnerController::class);
+
         // Guide Moderation
         Route::get('/guides', [GuideController::class, 'index'])->name('guides.index');
         Route::get('/guides/{id}', [GuideController::class, 'show'])->name('guides.show');
@@ -46,6 +58,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/guides/{id}/reject', [GuideController::class, 'reject'])->name('guides.reject');
         Route::post('/guides/{id}/ban', [GuideController::class, 'ban'])->name('guides.ban');
         Route::post('/guides/{id}/remove', [GuideController::class, 'remove'])->name('guides.remove');
+
+        // Guide verification document viewer — see security note on
+        // GuideDocumentUploadController::upload()/download(). Session
+        // (auth + is_admin) gated, same as the rest of this route group.
+        Route::get('/guide-documents/{uid}/{filename}', [GuideDocumentUploadController::class, 'download'])
+            ->name('guide-documents.download');
 
         // Users CRUD
         Route::resource('users', UserController::class);

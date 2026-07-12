@@ -19,6 +19,7 @@ import '../widgets/offline_highlights_widget.dart';
 import '../widgets/custom_buttons.dart';
 import '../widgets/skeleton_loaders.dart';
 import '../widgets/kinetic_timeline_view.dart';
+import '../widgets/limit_reached_dialog.dart';
 import 'map_route_screen.dart';
 import 'budget_tracker_screen.dart';
 
@@ -480,6 +481,16 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
       ),
       onPressed: () async {
         if (!_isSaved) {
+          final canSave = await UsageLimiterService.canSavePlan();
+          if (!canSave) {
+            if (context.mounted) {
+              showDialog(
+                context: context,
+                builder: (_) => const LimitReachedDialog(featureName: 'Saved Plans'),
+              );
+            }
+            return;
+          }
           final id = await TripCacheService.savePlan(plan);
           if (mounted) {
             setState(() {

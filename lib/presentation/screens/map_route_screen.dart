@@ -8,7 +8,9 @@ import '../../core/theme/app_theme.dart';
 import '../../data/models/trip_plan_model.dart';
 import '../../data/datasources/trip_cache_service.dart';
 import '../../core/utils/secure_logger.dart';
+import '../../core/services/usage_limiter_service.dart';
 import '../widgets/cached_image.dart';
+import '../widgets/limit_reached_dialog.dart';
 
 class MapRouteScreen extends StatefulWidget {
   final TripPlan plan;
@@ -90,6 +92,16 @@ class _MapRouteScreenState extends State<MapRouteScreen> {
                     label: "SAVE TRIP",
                     onPressed: () async {
                       try {
+                        final canSave = await UsageLimiterService.canSavePlan();
+                        if (!canSave) {
+                          if (context.mounted) {
+                            showDialog(
+                              context: context,
+                              builder: (_) => const LimitReachedDialog(featureName: 'Saved Plans'),
+                            );
+                          }
+                          return;
+                        }
                         final id = await TripCacheService.savePlan(_plan);
                         final path = await TripCacheService.saveOfflineMap(id, imageBytes);
                         if (path != null) {

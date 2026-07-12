@@ -21,6 +21,7 @@ import '../../core/services/explorer_progress_service.dart';
 import '../../data/datasources/premium_service.dart';
 import '../../data/datasources/user_preference_service.dart';
 import '../../data/datasources/auth_service.dart';
+import '../../core/notifications/notification_service.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:hidden_gems_sl/l10n/app_localizations.dart';
@@ -125,16 +126,17 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
           if (mounted) setState(() {});
         }
 
-        // The Profile tab is kept alive (AutomaticKeepAliveClientMixin), so
-        // initState only runs once per app session — without this, a guide
-        // whose application gets approved/rejected while they're browsing
-        // elsewhere in the app would never see the update short of a full
-        // restart. Poll only while pending, since that's the only state a
-        // change is actually expected in.
+        // BUG-8 FIX: The timer callback previously called _refreshRoleOnce()
+        // directly — a recursive pattern where _refreshRoleOnce() sets up a
+        // timer that calls _refreshRoleOnce() again. Under heavy load or rapid
+        // re-mounts, this could let a second timer spawn before ??= blocks it.
+        // Now the timer calls a dedicated lightweight poll (_pollGuideStatus)
+        // that only runs the guide-application check, not the full Firestore
+        // role sync — which already only runs once per _roleCheckWindow anyway.
         if (app.status == GuideStatus.pending) {
           _pendingGuideStatusPoll ??= Timer.periodic(
             const Duration(seconds: 30),
-            (_) => _refreshRoleOnce(),
+            (_) => _pollGuideStatus(),
           );
         } else {
           _pendingGuideStatusPoll?.cancel();
@@ -184,7 +186,41 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
     }
   }
 
+  /// Lightweight guide-status poll used by the periodic timer.
+  /// BUG-8 FIX: This is intentionally separate from _refreshRoleOnce() to
+  /// break the recursive timer pattern. It only checks the guide application
+  /// status (free Laravel call) and updates local state \u2014 it does NOT set up
+  /// another timer, keeping the call chain strictly one level deep.
+  Future<void> _pollGuideStatus() async {
+    if (!mounted) return;
+    try {
+      final app = await GuideApplicationRepository().getMyApplication().catchError((_) => null);
+      if (app == null || !mounted) return;
+
+      bool changed = false;
+      if (app.status == GuideStatus.approved && profile.guideStatus != GuideStatus.approved) {
+        profile.guideStatus = GuideStatus.approved;
+        profile.role = 'guide_approved';
+        profile.isGuideApproved = true;
+        changed = true;
+      } else if (app.status == GuideStatus.rejected && profile.guideStatus != GuideStatus.rejected) {
+        profile.guideStatus = GuideStatus.rejected;
+        changed = true;
+        // Stop polling once a terminal state is reached.
+        _pendingGuideStatusPoll?.cancel();
+        _pendingGuideStatusPoll = null;
+      }
+      if (changed) {
+        await UserPreferenceService.saveProfile(profile);
+        if (mounted) setState(() {});
+      }
+    } catch (e, st) {
+      SecureLogger.error("Error in guide status poll", e, st, "ProfileScreen");
+    }
+  }
+
   // ── Language Picker ─────────────────────────────────────────────────────────
+
   void _showLanguagePicker(BuildContext context) {
     final languages = [
       {'name': 'English', 'code': 'en', 'flag': '🇺🇸'},
@@ -427,7 +463,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
   Widget _buildHeroAppBar(bool isPremium, AppLocalizations l10n, bool isDark) {
     final primary = Theme.of(context).colorScheme.primary;
     final secondary = Theme.of(context).colorScheme.secondary;
-    final levelNumber = ExplorerProgressService().currentLevel.index + 1;
 
     return SliverAppBar(
       expandedHeight: 300,
@@ -448,97 +483,110 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
               bottomRight: Radius.circular(36),
             ),
           ),
-          child: SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(22, 12, 22, 16),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // Avatar, centered
-                  GestureDetector(
-                    onTap: () => _pickImage(l10n),
-                    child: Stack(
-                      clipBehavior: Clip.none,
-                      children: [
-                        Container(
-                          width: 88,
-                          height: 88,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(color: AppTheme.colors.white.withValues(alpha: 0.55), width: 2.5),
-                          ),
-                          child: ClipOval(child: _buildProfileImage(profile, isPremium)),
-                        ),
-                        Positioned(
-                          right: -2,
-                          bottom: -2,
-                          child: Container(
-                            padding: const EdgeInsets.all(6),
-                            decoration: BoxDecoration(
-                              color: AppPalette.heroOchre,
-                              shape: BoxShape.circle,
-                              border: Border.all(color: primary, width: 2),
-                            ),
-                            child: Icon(
-                              isPremium ? Icons.verified_rounded : Icons.camera_alt_rounded,
-                              color: AppPalette.ink,
-                              size: 14,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ).animate(onPlay: (c) => c.repeat()).shimmer(
-                        duration: 3.seconds, delay: 2.seconds, color: AppTheme.colors.white.withValues(alpha: 0.3)),
-                  ),
-                  const SizedBox(height: 14),
-                  Text(
-                    isPremium ? "Premium Traveler" : "Oracle Traveler",
-                    textAlign: TextAlign.center,
-                    style: GoogleFonts.outfit(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w800,
-                      color: AppTheme.colors.white,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: AppTheme.colors.white.withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(100),
-                    ),
-                    child: Text(
-                      "${ExplorerProgressService().currentLevel.title} · Level $levelNumber",
-                      style: GoogleFonts.inter(
-                        fontSize: 10,
-                        color: AppTheme.colors.white,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: 0.3,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 14),
-                  Container(height: 1, color: AppTheme.colors.white.withValues(alpha: 0.15)),
-                  const SizedBox(height: 12),
-                  // Stats, embedded directly in the hero card
-                  Row(
+          // BUG-6 FIX: Listen to ExplorerProgressService.visitedSites so
+          // the level badge and Level stat tile rebuild the instant Firestore
+          // data syncs — previously the hero read a stale index-0 snapshot
+          // computed at build time and never refreshed until the user scrolled
+          // to the ExplorerProgressCard which called init() on its own.
+          child: ValueListenableBuilder<int>(
+            valueListenable: ExplorerProgressService().visitedSites,
+            builder: (context, _, __) {
+              final svc = ExplorerProgressService();
+              final levelNumber = svc.currentLevel.index + 1;
+              return SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(22, 12, 22, 16),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      Expanded(child: _heroStatTile(profile.totalTripsGenerated.toString(), "Trips")),
-                      Container(width: 1, height: 32, color: AppTheme.colors.white.withValues(alpha: 0.15)),
-                      Expanded(child: _heroStatTile(profile.visitedPlaces.length.toString(), "Places")),
-                      Container(width: 1, height: 32, color: AppTheme.colors.white.withValues(alpha: 0.15)),
-                      Expanded(child: _heroStatTile(levelNumber.toString(), "Level")),
+                      // Avatar, centered
+                      GestureDetector(
+                        onTap: () => _pickImage(l10n),
+                        child: Stack(
+                          clipBehavior: Clip.none,
+                          children: [
+                            Container(
+                              width: 88,
+                              height: 88,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border: Border.all(color: AppTheme.colors.white.withValues(alpha: 0.55), width: 2.5),
+                              ),
+                              child: ClipOval(child: _buildProfileImage(profile, isPremium)),
+                            ),
+                            Positioned(
+                              right: -2,
+                              bottom: -2,
+                              child: Container(
+                                padding: const EdgeInsets.all(6),
+                                decoration: BoxDecoration(
+                                  color: AppPalette.heroOchre,
+                                  shape: BoxShape.circle,
+                                  border: Border.all(color: primary, width: 2),
+                                ),
+                                child: Icon(
+                                  isPremium ? Icons.verified_rounded : Icons.camera_alt_rounded,
+                                  color: AppPalette.ink,
+                                  size: 14,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ).animate(onPlay: (c) => c.repeat()).shimmer(
+                            duration: 3.seconds, delay: 2.seconds, color: AppTheme.colors.white.withValues(alpha: 0.3)),
+                      ),
+                      const SizedBox(height: 14),
+                      Text(
+                        isPremium ? "Premium Traveler" : "Oracle Traveler",
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.outfit(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w800,
+                          color: AppTheme.colors.white,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: AppTheme.colors.white.withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(100),
+                        ),
+                        child: Text(
+                          "${svc.currentLevel.title} · Level $levelNumber",
+                          style: GoogleFonts.inter(
+                            fontSize: 10,
+                            color: AppTheme.colors.white,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 0.3,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 14),
+                      Container(height: 1, color: AppTheme.colors.white.withValues(alpha: 0.15)),
+                      const SizedBox(height: 12),
+                      // Stats, embedded directly in the hero card
+                      Row(
+                        children: [
+                          Expanded(child: _heroStatTile(profile.totalTripsGenerated.toString(), "Trips")),
+                          Container(width: 1, height: 32, color: AppTheme.colors.white.withValues(alpha: 0.15)),
+                          Expanded(child: _heroStatTile(profile.visitedPlaces.length.toString(), "Places")),
+                          Container(width: 1, height: 32, color: AppTheme.colors.white.withValues(alpha: 0.15)),
+                          Expanded(child: _heroStatTile(levelNumber.toString(), "Level")),
+                        ],
+                      ),
                     ],
                   ),
-                ],
-              ),
-            ),
+                ),
+              );
+            },
           ),
         ),
       ),
     );
   }
+
 
   Widget _heroStatTile(String value, String label) {
     return Column(
@@ -1114,15 +1162,16 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
       );
     }
 
-    return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance
-          .collection('user_notifications')
-          .where('recipientId', isEqualTo: uid)
-          .where('type', isEqualTo: 'new_booking')
-          .where('isRead', isEqualTo: false)
-          .snapshots(),
-      builder: (context, snapshot) {
-        final unreadCount = snapshot.data?.docs.length ?? 0;
+    // Firestore cost fix: this used to run its OWN second, separate
+    // `user_notifications` listener just for this badge — a raw duplicate
+    // of the query NotificationService already runs app-wide the moment a
+    // user logs in (and ProfileScreen is a bottom-nav tab kept alive for
+    // the whole session, so this listener used to stay open the entire
+    // time). Reusing NotificationService's in-memory count means zero extra
+    // Firestore reads for this badge.
+    return ValueListenableBuilder<int>(
+      valueListenable: NotificationService().unreadBookingCount,
+      builder: (context, unreadCount, _) {
         return Stack(
           clipBehavior: Clip.none,
           children: [

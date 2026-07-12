@@ -18,6 +18,20 @@ class GuideApplicationController extends Controller
      */
     public function submit(Request $request)
     {
+        // Security: raises the cost of spamming the (human-reviewed) guide
+        // application queue with throwaway accounts — Firebase account
+        // creation itself is free/instant with no CAPTCHA, so the per-user
+        // rate limit alone doesn't stop horizontal account rotation. A
+        // verified email requires access to a real inbox, which is a real
+        // (if modest) barrier a disposable-account script doesn't clear for
+        // free the way account creation does.
+        if (!$request->user()->email_verified_at) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Please verify your email address before submitting a guide application.',
+            ], 403);
+        }
+
         $validator = Validator::make($request->all(), [
             'email' => 'nullable|email|max:255',
             'name' => 'nullable|string|max:255',

@@ -93,6 +93,25 @@ export const report_forensic_signals = functions.https.onCall(async (data: any, 
  * Processes incoming RevenueCat events to securely manage Firestore subscriptions.
  */
 export const revenuecat_webhook = functions.https.onRequest(async (req: functions.https.Request, res: functions.Response) => {
+    // Security: verify the shared secret RevenueCat sends as "Authorization: Bearer <secret>"
+    // (configured in RevenueCat dashboard > Project Settings > Webhooks). Without this check,
+    // anyone who knows a user's uid could POST a forged event and grant themselves premium.
+    const expectedSecret = process.env.REVENUECAT_WEBHOOK_SECRET;
+    if (!expectedSecret) {
+        console.error("revenuecat_webhook: REVENUECAT_WEBHOOK_SECRET is not configured.");
+        res.status(500).send("Server configuration error.");
+        return;
+    }
+    const authHeader = req.header('Authorization') || '';
+    const providedSecret = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : authHeader;
+    const expectedBuf = Buffer.from(expectedSecret);
+    const providedBuf = Buffer.from(providedSecret);
+    const isValidSecret = expectedBuf.length === providedBuf.length && crypto.timingSafeEqual(expectedBuf, providedBuf);
+    if (!providedSecret || !isValidSecret) {
+        res.status(401).send("Unauthorized. Valid RevenueCat webhook secret required.");
+        return;
+    }
+
     const body = req.body;
     const event = body?.event;
 
@@ -352,5 +371,63 @@ export const detectLocationSpoof = functions.https.onCall(async (data: any, cont
     }
 
     return { flagged, spoofCount };
+});
+
+/**
+ * 🔑 validateJoinToken
+ * Rate-limited lookup for a tour_sessions join token — the tourist app's
+ * QR/6-char-code join flow (TourSessionRepository.validateAndJoin) used to
+ * run this lookup as a bare, unthrottled client-side Firestore query. The
+ * token's character set gives ~30 bits of entropy, which is not brute-forceable
+ * by hand but IS by a scripted client with no rate limit in the way — this
+ * wraps the lookup in a per-user attempt counter (5 attempts / 10 minutes,
+ * matching the token's own expiry window) before revealing whether ANY
+ * token guess matched, so a script can't cheaply enumerate the ~1 billion
+ * possible codes. The actual join transaction (touristIds/redeemedCount
+ * update) still happens client-side afterward via the existing atomic
+ * transaction in validateAndJoin — this function only gates the lookup.
+ */
+export const validateJoinToken = functions.https.onCall(async (data: any, context: functions.https.CallableContext) => {
+    if (!context.auth) throw new functions.https.HttpsError('unauthenticated', 'Sign in required to join a tour.');
+    const token = (data?.token || '').toString().trim().toUpperCase();
+    if (!token) throw new functions.https.HttpsError('invalid-argument', 'A join code is required.');
+
+    const uid = context.auth.uid;
+    const attemptRef = admin.firestore().collection('join_attempts').doc(uid);
+    const windowMs = 10 * 60 * 1000; // 10 minutes — matches token expiry window
+    const maxAttempts = 5;
+    const now = Date.now();
+
+    const attemptDoc = await attemptRef.get();
+    const attemptData = attemptDoc.exists ? attemptDoc.data()! : { count: 0, windowStartedAt: now };
+    const windowStartedAt = attemptData.windowStartedAt || now;
+    const withinWindow = now - windowStartedAt < windowMs;
+    const currentCount = withinWindow ? (attemptData.count || 0) : 0;
+
+    if (withinWindow && currentCount >= maxAttempts) {
+        throw new functions.https.HttpsError('resource-exhausted', 'Too many join attempts. Please wait a few minutes and try again.');
+    }
+
+    await attemptRef.set({
+        count: currentCount + 1,
+        windowStartedAt: withinWindow ? windowStartedAt : now,
+    }, { merge: true });
+
+    const snapshot = await admin.firestore()
+        .collection('tour_sessions')
+        .where('joinToken', '==', token)
+        .where('isJoinOpen', '==', true)
+        .limit(1)
+        .get();
+
+    if (snapshot.empty) {
+        return { found: false };
+    }
+
+    const doc = snapshot.docs[0];
+    // On a real match, reset the counter so a legitimate user isn't
+    // penalized for earlier typos once they get it right.
+    await attemptRef.set({ count: 0, windowStartedAt: now }, { merge: true });
+    return { found: true, sessionId: doc.id };
 });
 

@@ -15,20 +15,28 @@ class SecureNetworkOverrides extends HttpOverrides {
   
   /// SSL Fingerprints (SHA-256) of your production server leaf certificates.
   /// Format: { "hostname": ["fingerprint1", "fingerprint2"] }
+  ///
+  /// SECURITY FIX: api.hiddengemssl.com / ai.hiddengemssl.com previously had
+  /// HARDCODED PLACEHOLDER fingerprints here (literal filler hex, not real
+  /// certificate hashes) — since pinnedContext below trusts no CA roots,
+  /// badCertificateCallback fires on every connection to these hosts, and a
+  /// pin that can never match a real cert means every connection was always
+  /// rejected. That's not "pinning to a wrong value" (still dangerous) —
+  /// it's a self-inflicted denial of service against the app's own
+  /// production API, worse than having no pinning at all. Real fingerprints
+  /// need to be obtained (e.g. `openssl s_client -connect
+  /// api.hiddengemssl.com:443 | openssl x509 -fingerprint -sha256 -noout`)
+  /// and set via --dart-define before these two hosts can be safely
+  /// re-added here. Until then, only the SSL_PIN_HOST/SSL_PIN_FINGERPRINT
+  /// env-var pair (a single pin for whichever host you actually configure
+  /// it for) is pinned — every other host uses the standard
+  /// trusted-CA-roots client below, same as normal HTTPS.
   static const String _sslHost = String.fromEnvironment('SSL_PIN_HOST', defaultValue: '');
   static const String _sslFingerprint = String.fromEnvironment('SSL_PIN_FINGERPRINT', defaultValue: '');
 
   static final Map<String, List<String>> _pinnedHosts = {
     if (_sslHost.isNotEmpty && _sslFingerprint.isNotEmpty)
       _sslHost: [_sslFingerprint],
-    'api.hiddengemssl.com': [
-      'a1b2c3d4e5f60718293a4b5c6d7e8f90123456789abcdef0123456789abcdef0', // Primary backup pin
-      'b2c3d4e5f60718293a4b5c6d7e8f90123456789abcdef0123456789abcdef01'  // Secondary backup pin
-    ],
-    'ai.hiddengemssl.com': [
-      'a1b2c3d4e5f60718293a4b5c6d7e8f90123456789abcdef0123456789abcdef0', // Primary backup pin
-      'b2c3d4e5f60718293a4b5c6d7e8f90123456789abcdef0123456789abcdef01'  // Secondary backup pin
-    ],
   };
 
   @override

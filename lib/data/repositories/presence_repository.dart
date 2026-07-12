@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/session_presence.dart';
@@ -48,6 +49,12 @@ class PresenceRepository {
       'lastUpdated': FieldValue.serverTimestamp(),
     });
 
+    // Presence subcollection writes are only allowed under the caller's own
+    // auth UID (firestore.rules) — this must be the real signed-in guide's
+    // UID, not a placeholder, or every write is silently denied.
+    final guideUid = FirebaseAuth.instance.currentUser?.uid;
+    if (guideUid == null) return;
+
     // Also update the guide's individual presence entry.
     // NOTE: previously this method also wrote users/{guideId}.lastKnownLocation
     // ("Legacy support") on every single tick — that field had no readers
@@ -55,7 +62,7 @@ class PresenceRepository {
     // session .get() on every tick. Removed.
     await updateParticipantPresence(
       sessionId: sessionId,
-      userId: 'guide_default', // In production, use real guide UID
+      userId: guideUid,
       position: position,
       role: 'guide',
     );

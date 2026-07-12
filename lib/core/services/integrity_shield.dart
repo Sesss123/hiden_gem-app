@@ -192,7 +192,19 @@ class IntegrityShield {
         _addSignal('package_name_mismatch', score: 90); // Critical: Likely a clone/repacked APK
       }
 
-      // Verify Signature (Mock logic — in production use a native plugin for real fingerprint)
+      // KNOWN LIMITATION (security audit): this does NOT verify the app's
+      // real signing certificate fingerprint — it only checks that
+      // _expectedSignatureHash is non-empty (i.e. that *some* value was
+      // configured). A repackaged/resigned clone APK built with any
+      // non-empty SIGNATURE_HASH dart-define passes this check trivially,
+      // since nothing here ever reads the actual running APK's real
+      // signing cert. Real verification requires a native
+      // Android/iOS plugin reading the platform's actual signing-cert API
+      // (e.g. PackageManager.GET_SIGNING_CERTIFICATES on Android) and
+      // comparing its real fingerprint — no such plugin is wired in here.
+      // Package name (above) and App Check attestation (below) remain the
+      // real, non-decorative signals in this scan; treat this one as a
+      // placeholder until that native check exists.
       if (AppConfig.isPlaceholder(_expectedSignatureHash) && !kDebugMode) {
         SecureLogger.error("CRITICAL: Running in production without a valid SIGNATURE_HASH!");
         _addSignal('missing_prod_signature_hash', score: 20);

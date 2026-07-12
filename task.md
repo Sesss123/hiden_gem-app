@@ -1,7 +1,23 @@
 ## Active Milestone: Enterprise Audit Bug Remediation
-- [ ] Phase 1: Automated Remediation (Flutter Frontend - Null checks, empty catch, UI hardcoded colors)
+- [x] Phase 1: Automated Remediation (Flutter Frontend - Null checks, empty catch, UI hardcoded colors) — Completed 2026-07-11
 - [ ] Phase 2: Manual Remediation (Laravel & Python Backend - security, code smells)
 - [ ] Phase 3: Final Verification and Walkthrough
+
+## Completed: Full App Bug Scan Fixes (2026-07-11)
+- [x] BUG-1: booking_request_screen.dart — Wrong Navigator context (dialog kept booking screen open)
+- [x] BUG-2: booking_inbox_screen.dart — State mutation inside StreamBuilder builder (calendar sync stale data)
+- [x] BUG-3: guide_dashboard_screen.dart — _stopTour() leaked GPS timer + monsoon WebSocket
+- [x] BUG-4: guide_dashboard_screen.dart — GPS crash not handled in _startNewTour
+- [x] BUG-5: booking_inbox_screen.dart — Hardcoded Colombo coords when accepting booking
+- [x] BUG-6: home_screen.dart — Pull-to-refresh didn't reload place cards
+- [x] BUG-7: discovery_screen.dart — Loading spinner could get stuck on partial error
+- [x] BUG-8: profile_screen.dart — Recursive timer pattern (extracted _pollGuideStatus helper)
+- [x] BUG-9: booking_request_screen.dart — No max guest count (now capped at 20)
+- [x] BUG-10: main.dart — freeRASP debug threat closed app in debug builds
+- [x] BUG-11: emergency_kit_screen.dart — Dialog pop was using screen context (might crash screen navigation)
+- [x] BUG-12: ar_viewer_screen.dart — Screen stack recursion on demo preview restart (memory leak fixed)
+- [x] BUG-13: ar_viewer_screen.dart — Audio player not stopped before dispose (native audio crash fixed)
+- [x] BUG-14: trip_form_screen.dart — Autocomplete state updates missing setState in field bindings
 
 ## Completed Milestone: Full Enterprise Code Audit Phase 3 (150 Bugs)
 - [x] Create Implementation Plan and get user approval

@@ -145,6 +145,7 @@ class AuthController extends Controller
             $uid = $verifiedIdToken->claims()->get('sub');
             $email = $verifiedIdToken->claims()->get('email');
             $name = $verifiedIdToken->claims()->get('name') ?? 'Firebase User';
+            $emailVerified = $verifiedIdToken->claims()->get('email_verified') === true;
 
             // Find by firebase_uid first; fall back to matching by email so a
             // Firebase account that was deleted and re-created (new uid, same
@@ -165,7 +166,14 @@ class AuthController extends Controller
                     'password' => Hash::make(\Illuminate\Support\Str::random(32)),
                     'role' => 'tourist',
                     'subscription_tier' => 'Free',
+                    'email_verified_at' => $emailVerified ? now() : null,
                 ]);
+            } elseif ($emailVerified && !$user->email_verified_at) {
+                // Track verification even for pre-existing rows — Firebase's
+                // own claim is the source of truth, re-synced on every login
+                // so a user who verifies their email after initial signup
+                // gets credit for it without a separate endpoint.
+                $user->update(['email_verified_at' => now()]);
             }
 
             // Limit token bloat

@@ -72,6 +72,9 @@
             <a href="{{ route('admin.events.index') }}" class="text-sm font-medium hover:text-emerald-400 transition flex items-center gap-1.5">
                 <i class="fa-solid fa-calendar-days text-emerald-500"></i> Events
             </a>
+            <a href="{{ route('admin.partners.index') }}" class="text-sm font-medium hover:text-emerald-400 transition flex items-center gap-1.5">
+                <i class="fa-solid fa-handshake text-emerald-500"></i> Partners
+            </a>
             <a href="{{ route('admin.guides.index') }}" class="text-sm font-medium hover:text-amber-400 transition flex items-center gap-1.5">
                 <i class="fa-solid fa-user-tie text-amber-500"></i> Guides
             </a>

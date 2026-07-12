@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/services/usage_limiter_service.dart';
 import '../../data/datasources/user_preference_service.dart';
+import '../../core/services/secure_entitlements.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/theme/oracle_ui_system.dart';
 import '../screens/premium_hub_screen.dart';
@@ -31,10 +32,13 @@ class _UsageMeterWidgetState extends State<UsageMeterWidget> {
     try {
       // Mock retrieve using key limit mappings
       await UsageLimiterService.canGenerateAiTrip(); // basic validation
+      // Security: server-verified, not the local cached profile flag — this
+      // meter must not show a tampered device's inflated quota as real.
+      final isPremium = await SecureEntitlements().verifyPremium();
       if (!mounted) return;
       setState(() {
         // Fallback limits based on plan
-        if (profile.isPremium) {
+        if (isPremium) {
           final plan = profile.premiumPlan ?? 'premium';
           if (plan == 'explorer') {
             _aiLimit = 20;

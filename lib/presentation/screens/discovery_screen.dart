@@ -21,7 +21,9 @@ import 'place_details_screen.dart';
 import 'package:shimmer/shimmer.dart';
 
 class DiscoveryScreen extends ConsumerStatefulWidget {
-  const DiscoveryScreen({super.key});
+  final String? initialFilter;
+
+  const DiscoveryScreen({super.key, this.initialFilter});
 
   @override
   ConsumerState<DiscoveryScreen> createState() => _DiscoveryScreenState();
@@ -67,6 +69,9 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
   @override
   void initState() {
     super.initState();
+    if (widget.initialFilter != null && _filters.contains(widget.initialFilter)) {
+      _selectedFilter = widget.initialFilter!;
+    }
     _searchController.addListener(() {
       // BUG-080: Debounce search queries to avoid triggering full redraws
       // and filter evaluations on every single character typed.
@@ -130,6 +135,9 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
       _applyFilter();
     } catch (e) {
       if (!mounted) return;
+      // BUG-7 FIX: Ensure loading spinner is cleared on the error path.
+      // Previously only the catch block cleared _isLoading — if _applyFilter()
+      // itself threw, the spinner would remain on-screen indefinitely.
       setState(() => _isLoading = false);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -237,10 +245,19 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
 
         if (!matchesCategory) return false;
 
-        // 2. Distance Filter
+        // 2. Free-text search (name / category / district substring match)
+        if (_searchQuery.trim().isNotEmpty) {
+          final q = _searchQuery.trim().toLowerCase();
+          final matchesSearch = p.name.toLowerCase().contains(q) ||
+              p.category.toLowerCase().contains(q) ||
+              _resolveDistrict(p).toLowerCase().contains(q);
+          if (!matchesSearch) return false;
+        }
+
+        // 3. Distance Filter
         if (p.distanceKm > _maxDistance) return false;
 
-        // 3. Price Filter — numeric threshold-based (not fragile string matching)
+        // 4. Price Filter — numeric threshold-based (not fragile string matching)
         if (_selectedPriceRange != "All") {
           final price = p.ticketRange.toLowerCase();
           final numMatch = RegExp(r'\d+').firstMatch(price);
@@ -250,7 +267,7 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
           if (_selectedPriceRange == "Premium" && priceNum <= 2000) return false;
         }
 
-        // 4. AR Filter
+        // 5. AR Filter
         if (_onlyAR && !p.arSupported) return false;
 
         return true;
@@ -456,7 +473,7 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
     _applyFilter();
   }
 
-  void _onSearchSubmitted(String query) async {
+  void _onSearchSubmitted(String query) {
     if (query.trim().isEmpty) {
       setState(() {
         _searchQuery = "";
@@ -466,39 +483,13 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
       _applyFilter();
       return;
     }
-    
+
     HapticFeedback.selectionClick();
     setState(() {
       _searchQuery = query;
-      _selectedFilter = "all"; // Map search resets to 'All' instead of empty string
-      _isLoading = true;
+      _selectedFilter = "all"; // Search resets the category filter to 'All'
     });
-    
-    // 🚧 Show Coming Soon Toast while AI model is in development!
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Row(
-          children: [
-            Icon(Icons.auto_awesome, color: AppTheme.colors.amberAccent, size: 20),
-            SizedBox(width: 10),
-            Expanded(child: Text("✨ AI Oracle Recommendations & Vibe Search — Coming Soon!")),
-          ],
-        ),
-        behavior: SnackBarBehavior.floating,
-        backgroundColor: Theme.of(context).colorScheme.surface,
-        duration: const Duration(seconds: 3),
-      ),
-    );
-    
-    final repository = ref.read(discoveryRepositoryProvider);
-    final aiResults = await repository.getAiRecommendations(_allPlaces, customQuery: query);
-    
-    if (mounted) {
-      setState(() {
-        _filteredList = aiResults;
-        _isLoading = false;
-      });
-    }
+    _applyFilter();
   }
 
   void _openPlaceDetails(DiscoveryPlace place) {

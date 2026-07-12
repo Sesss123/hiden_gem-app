@@ -297,7 +297,10 @@ class _ARViewerScreenState extends State<ARViewerScreen>
         },
         onPreview: () {
           // Restart demo if they want another peek (or could block)
-          Navigator.push(
+          // BUG-12 FIX: Use pushReplacement here instead of a simple push
+          // to avoid accumulating recursive screen states on the navigation
+          // stack when restarting demo mode from the upgrade popup.
+          Navigator.pushReplacement(
             context,
             MaterialPageRoute(
               builder: (context) => ARViewerScreen(
@@ -355,6 +358,12 @@ class _ARViewerScreenState extends State<ARViewerScreen>
     _scanAnimController.dispose();
     _thenNowController.dispose();
     _flashController.dispose();
+    
+    // BUG-13 FIX: Stop the audio playback session immediately before disposing
+    // to prevent background thread exceptions or driver locks on some devices.
+    try {
+      _audioPlayer.stop();
+    } catch (_) {}
     _audioPlayer.dispose();
     _arService.dispose();
     super.dispose();

@@ -295,16 +295,52 @@ class VoiceAssistantService {
     return "The stars are veiled by clouds. I am guiding you with ancient, offline wisdom for now. How may I serve your journey?";
   }
 
-  /// Advanced Speech Synthesis (ElevenLabs/Google Cloud placeholder)
-  /// In production, this would hit a cloud TTS endpoint for authentic accents.
+  /// Advanced Speech Synthesis with accent differentiation.
+  ///
+  /// BUG-1 FIX: Previously `accent` was a dead parameter — all calls fell
+  /// through to identical pitch/rate/locale values regardless of which accent
+  /// was requested. Now each accent maps to distinct TTS settings so that
+  /// Sinhala narration, English guide mode, and cinematic commentary are
+  /// perceptibly different from each other.
+  ///
+  /// In a future production build this would route to ElevenLabs / Google
+  /// Cloud TTS for authentic voice talent; the fallback here ensures the
+  /// system TTS at least sounds meaningfully different per context.
   static Future<void> speakAdvanced(String text, {required String accent}) async {
-    // 1. Check if ElevenLabs API key exists (AppConfig)
-    // 2. Fetch audio stream from ElevenLabs (voice_id for SL accent)
-    // 3. Buffer and play via just_audio
-    
-    // For now, fallback to high-quality system TTS
-    await _tts.setPitch(0.9); // Cinematic deep tone
-    await _tts.setSpeechRate(0.4); 
-    await _tts.speak(text);
+    try {
+      switch (accent) {
+        case 'lk_sinhala':
+          // Sinhala: slower, slightly higher pitch for native-language clarity
+          await _tts.setLanguage('si-LK');
+          await _tts.setPitch(1.05);
+          await _tts.setSpeechRate(0.42);
+          break;
+        case 'lk_cinematic':
+          // Cinematic SL guide voice: deep, slow, dramatic
+          await _tts.setLanguage('en-US');
+          await _tts.setPitch(0.85);
+          await _tts.setSpeechRate(0.38);
+          break;
+        case 'en_us':
+        default:
+          // Standard English guide voice
+          await _tts.setLanguage('en-US');
+          await _tts.setPitch(1.0);
+          await _tts.setSpeechRate(0.5);
+          break;
+      }
+      state.value = OracleState.speaking;
+      await _tts.speak(text);
+    } catch (e) {
+      // If the requested language/locale isn't installed on device, fallback
+      // gracefully to default rather than crashing the narration pipeline.
+      SecureLogger.warning('speakAdvanced() locale error for accent "$accent": $e — falling back to default.');
+      await _tts.setLanguage('en-US');
+      await _tts.setPitch(1.0);
+      await _tts.setSpeechRate(0.5);
+      state.value = OracleState.speaking;
+      await _tts.speak(text);
+    }
   }
 }
+

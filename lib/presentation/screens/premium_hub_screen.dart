@@ -6,6 +6,9 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../../core/theme/app_theme.dart';
 import '../../data/datasources/premium_service.dart';
 import '../../data/datasources/user_preference_service.dart';
+import 'curator_deals_screen.dart';
+import 'emergency_translator_screen.dart';
+import '../../core/services/emergency_translator_service.dart';
 
 class PremiumHubScreen extends ConsumerStatefulWidget {
   const PremiumHubScreen({super.key});
@@ -130,6 +133,7 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
   }
 
   Widget _buildBenefitList() {
+    final isPremium = ref.watch(premiumProvider);
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 24),
       child: Column(
@@ -153,60 +157,77 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
             Icons.local_offer_outlined,
             "Exclusive Curator Deals",
             "Access to member-only discounts at handpicked boutique stays.",
+            onTap: isPremium
+                ? () => Navigator.push(context, MaterialPageRoute(builder: (_) => const CuratorDealsScreen()))
+                : null,
+          ),
+          _benefitRow(
+            Icons.translate_rounded,
+            "Guardian Emergency Translator",
+            "Instantly explain your situation to Sri Lankan police or hospital staff in spoken Sinhala during an SOS.",
+            onTap: isPremium
+                ? () => Navigator.push(context, MaterialPageRoute(builder: (_) => const EmergencyTranslatorScreen(initialType: EmergencySituationType.other)))
+                : null,
           ),
         ],
       ),
     );
   }
 
-  Widget _benefitRow(IconData icon, String title, String desc) {
+  Widget _benefitRow(IconData icon, String title, String desc, {VoidCallback? onTap}) {
     final iconColor = Theme.of(context).colorScheme.primary;
     return Padding(
       padding: EdgeInsets.only(bottom: 16),
-      child: Container(
-        padding: EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: AppTheme.surfaceMuted(context),
-          borderRadius: BorderRadius.circular(18),
-        ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Container(
-              padding: EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: iconColor.withValues(alpha: 0.12),
-                borderRadius: BorderRadius.circular(12),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(18),
+        onTap: onTap,
+        child: Container(
+          padding: EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: AppTheme.surfaceMuted(context),
+            borderRadius: BorderRadius.circular(18),
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                padding: EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: iconColor.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(icon, color: iconColor, size: 20),
               ),
-              child: Icon(icon, color: iconColor, size: 20),
-            ),
-            SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: GoogleFonts.outfit(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w700,
-                      color: AppTheme.textPrimary(context),
+              SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: GoogleFonts.outfit(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        color: AppTheme.textPrimary(context),
+                      ),
                     ),
-                  ),
-                  SizedBox(height: 3),
-                  Text(
-                    desc,
-                    style: GoogleFonts.inter(
-                      fontSize: 11,
-                      color: AppTheme.textSecondary(context),
-                      height: 1.4,
-                      fontWeight: FontWeight.w500,
+                    SizedBox(height: 3),
+                    Text(
+                      desc,
+                      style: GoogleFonts.inter(
+                        fontSize: 11,
+                        color: AppTheme.textSecondary(context),
+                        height: 1.4,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          ],
+              if (onTap != null)
+                Icon(Icons.arrow_forward_ios_rounded, size: 14, color: AppTheme.textSecondary(context).withValues(alpha: 0.5)),
+            ],
+          ),
         ),
       ),
     ).animate().fadeIn(duration: 400.ms).slideX(begin: 0.05);
@@ -262,6 +283,20 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
               ],
             ),
           ),
+          if (kDebugMode) ...[
+            SizedBox(height: 16),
+            TextButton.icon(
+              icon: Icon(Icons.restart_alt_rounded, color: AppTheme.colors.redAccent, size: 16),
+              label: Text("RESET PREMIUM (DEV ONLY)",
+                style: GoogleFonts.inter(color: AppTheme.colors.redAccent, fontSize: 11, fontWeight: FontWeight.bold)),
+              onPressed: () {
+                ref.read(premiumProvider.notifier).simulateMockCancel();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text("Premium reset. Pricing tiers are back.")),
+                );
+              },
+            ),
+          ],
         ] else ...[
           _buildTierOption(
             context: context,
