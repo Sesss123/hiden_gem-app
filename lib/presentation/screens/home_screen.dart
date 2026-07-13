@@ -489,7 +489,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Today in Sri Lanka 🇱🇰",
+                      "Today in Sri Lanka",
                       style: GoogleFonts.inter(
                         color: Theme.of(context).colorScheme.primary,
                         fontWeight: FontWeight.w700,

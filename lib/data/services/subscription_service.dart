@@ -81,21 +81,16 @@ class SubscriptionService {
     // Dev-mode bypass: RevenueCat's SDK is never configured when only dummy
     // API keys are present (see premium_service.dart's identical check), so
     // any real Purchases.* call throws "no singleton instance" before it can
-    // even try. Rather than leaving the Fleet Plan screen entirely untestable
-    // through its own UI, skip straight to writing the subscription record —
-    // gated by kDebugMode so this can never fire against a real deployment.
+    // even try. This project has a single firebase_options.dart (no separate
+    // test/dev Firebase project), so a direct client write here would hit
+    // the same tripme-89742 project as production and is correctly blocked
+    // by firestore.rules (subscriptions/{subId} is Admin-SDK-only — see the
+    // rules comment). So this now intentionally does NOT write a Firestore
+    // record; it only lets the Fleet Plan screen's UI flow run to completion
+    // in a debug build without a "no singleton instance" crash. To actually
+    // test a paid plan locally, grant it server-side (Firebase console /
+    // Admin SDK script) rather than through this client path.
     if (kDebugMode && _revenueCatUnconfigured) {
-      final record = SubscriptionRecord(
-        subscriptionId: const Uuid().v4(),
-        accountId: accountId,
-        accountType: accountType,
-        planId: planId,
-        status: 'active',
-        startedAt: DateTime.now(),
-        expiresAt: DateTime.now().add(const Duration(days: 30)),
-        entitlements: {},
-      );
-      await startSubscription(record);
       return;
     }
 
@@ -151,14 +146,18 @@ class SubscriptionService {
     }
   }
 
-  /// Records a purchase attempt. Note: this does NOT grant premium — 'isPremium'
-  /// and related privileged fields on the user's account can only be set by the
-  /// RevenueCat webhook (Laravel backend), since firestore.rules blocks clients
-  /// from writing those fields to their own account document. This record exists
-  /// so the UI has something to show immediately; the webhook is the source of truth.
-  Future<void> startSubscription(SubscriptionRecord record) async {
-    await _subscriptionRef.doc(record.subscriptionId).set(record.toJson());
-  }
+  /// No-op by design. The subscriptions/{subId} doc — and the isPremium/
+  /// planId fields it drives via hasEntitlement()/getLimit() — can only be
+  /// written by the revenuecat_webhook Cloud Function (Admin SDK), never by
+  /// the client directly. firestore.rules previously allowed
+  /// accountId == request.auth.uid clients to write their own subscription
+  /// doc, which let a user self-grant an Elite plan for free; that hole is
+  /// now closed (allow write: if false) and this method deliberately does
+  /// nothing. RevenueCat calls revenuecat_webhook itself immediately after
+  /// purchasePlan()'s Purchases.purchase() succeeds — the UI should read the
+  /// resulting state via getActiveSubscription()/hasEntitlement() rather
+  /// than trust a client-written optimistic record.
+  Future<void> startSubscription(SubscriptionRecord record) async {}
 
   /// Retrieves billing history for an account. One-shot read (not a live
   /// listener) — a billing history screen is a historical record the user

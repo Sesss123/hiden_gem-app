@@ -40,6 +40,12 @@ class GuideListing {
   
   final bool isFeatured;
   final DateTime? featuredUntil;
+  // Guide-settable signal of intent to be featured — NOT a trust field
+  // itself (unlike isFeatured), so it's safe for clients to write freely.
+  // An admin (or a future automated job that checks the guide's real
+  // featuredListings entitlement) reads this queue and grants isFeatured
+  // via GuideListingController::setFeatured server-side.
+  final bool isFeaturedRequested;
   final int profileViews;
   final int bookingRequestsCount;
   
@@ -75,6 +81,7 @@ class GuideListing {
     this.availability,
     this.isFeatured = false,
     this.featuredUntil,
+    this.isFeaturedRequested = false,
     this.profileViews = 0,
     this.bookingRequestsCount = 0,
     required this.createdAt,
@@ -110,6 +117,7 @@ class GuideListing {
     'availability': availability?.toJson(),
     'isFeatured': isFeatured,
     'featuredUntil': featuredUntil?.toIso8601String(),
+    'isFeaturedRequested': isFeaturedRequested,
     'profileViews': profileViews,
     'bookingRequestsCount': bookingRequestsCount,
     'createdAt': createdAt.toIso8601String(),
@@ -145,6 +153,7 @@ class GuideListing {
     availability: json['availability'] != null ? GuideAvailability.fromJson(json['availability']) : null,
     isFeatured: json['isFeatured'] ?? false,
     featuredUntil: json['featuredUntil'] != null ? DateTime.parse(json['featuredUntil']) : null,
+    isFeaturedRequested: json['isFeaturedRequested'] ?? false,
     profileViews: json['profileViews'] ?? 0,
     bookingRequestsCount: json['bookingRequestsCount'] ?? 0,
     createdAt: DateTime.parse(json['createdAt']),

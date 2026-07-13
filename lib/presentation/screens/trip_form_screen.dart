@@ -39,8 +39,8 @@ class _TripFormScreenState extends State<TripFormScreen> {
   final List<String> _paceOptions = ["relaxed", "balanced", "packed"];
   final List<String> _styleOptions = ["budget", "comfort", "luxury"];
   final List<String> _interestOptions = [
-    "Adventure 🧗", "Food 🍛", "Wildlife 🐘", "Photography 📸",
-    "Village Experiences 🌾",
+    "Adventure", "Food", "Wildlife", "Photography",
+    "Village Experiences",
   ];
 
   // Sri Lanka cities for autocomplete — offline, no network needed
@@ -687,7 +687,7 @@ class _TripFormScreenState extends State<TripFormScreen> {
             budgetLkr: budgetLkr,
             style: _style,
             transport: "car",
-            interests: _interests.isEmpty ? ["Nature 🌿"] : _interests,
+            interests: _interests.isEmpty ? ["Nature"] : _interests,
             mustInclude: const [],
             avoid: const [],
             constraints: const [],

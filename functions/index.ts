@@ -323,6 +323,16 @@ export const daily_subscription_safety_net = functions.pubsub.schedule('0 0 * * 
  * Firestore rules deliberately block client writes to this field (it must
  * not be trustable/inflatable by whoever is viewing the profile), so the
  * increment has to happen here with admin privileges instead.
+ *
+ * COST FIX: previously incremented on every single call with no dedup —
+ * a tourist re-opening the same guide's profile repeatedly in one session
+ * (or the same day) counted as a fresh view each time, both inflating the
+ * metric (a "view count" should reasonably mean unique interest, not
+ * screen-open count) and writing to Firestore on every open. Now checks a
+ * small per-(viewer, listing) marker doc with a 24h TTL before
+ * incrementing — repeat views within the same day are free (read-only,
+ * no write), collapsing to at most one write per viewer per listing per
+ * day.
  */
 export const track_profile_view = functions.https.onCall(async (data: any, context: functions.https.CallableContext) => {
     if (!context.auth) throw new functions.https.HttpsError('unauthenticated', 'Login required.');
@@ -332,11 +342,30 @@ export const track_profile_view = functions.https.onCall(async (data: any, conte
         throw new functions.https.HttpsError('invalid-argument', 'listingId is required.');
     }
 
-    await admin.firestore().collection('guide_listings').doc(listingId).update({
-        profileViews: admin.firestore.FieldValue.increment(1),
+    const viewerUid = context.auth.uid;
+    const markerRef = admin.firestore().collection('profile_view_markers').doc(`${listingId}_${viewerUid}`);
+    const listingRef = admin.firestore().collection('guide_listings').doc(listingId);
+    const dayMs = 24 * 60 * 60 * 1000;
+    const now = Date.now();
+
+    // Read-check-write wrapped in a transaction: without this, two
+    // concurrent calls (client retry, double navigation) can both read the
+    // marker as stale before either writes it back, both pass the dedup
+    // check, and both increment profileViews — defeating the dedup this
+    // function exists to enforce.
+    const counted = await admin.firestore().runTransaction(async (tx) => {
+        const markerSnap = await tx.get(markerRef);
+        const lastViewedAtMs = markerSnap.exists ? (markerSnap.data()?.lastViewedAtMs as number | undefined) : undefined;
+        if (lastViewedAtMs && now - lastViewedAtMs < dayMs) {
+            // Already counted within the last 24h — no-op, no write.
+            return false;
+        }
+        tx.update(listingRef, { profileViews: admin.firestore.FieldValue.increment(1) });
+        tx.set(markerRef, { lastViewedAtMs: now }, { merge: true });
+        return true;
     });
 
-    return { ok: true };
+    return { ok: true, counted };
 });
 
 /**

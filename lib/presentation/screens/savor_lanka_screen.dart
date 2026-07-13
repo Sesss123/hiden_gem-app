@@ -13,7 +13,6 @@ import '../../data/models/food_model.dart';
 import '../../core/services/voice_recipe_service.dart';
 import '../../data/repositories/food_repository.dart';
 import '../../core/theme/app_theme.dart';
-import '../../core/config/app_config.dart';
 import 'real_time_food_scanner_screen.dart';
 
 class SavorLankaScreen extends ConsumerStatefulWidget {
@@ -37,7 +36,7 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
   @override
   void initState() {
     super.initState();
-    _savorService = SavorLankaService(apiKey: AppConfig.geminiApiKey);
+    _savorService = SavorLankaService();
     WidgetsBinding.instance.addObserver(this);
     _initCamera();
   }
@@ -269,7 +268,7 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
             Icon(Icons.bolt_rounded, color: AppTheme.colors.cyanAccent, size: 20),
             const SizedBox(width: 8),
             Text(
-              "⚡ LIVE REAL-TIME AI SCANNER (WEBSOCKET)",
+              "LIVE REAL-TIME SCANNER",
               style: GoogleFonts.outfit(
                 color: AppTheme.colors.cyanAccent,
                 fontWeight: FontWeight.w900,

@@ -109,7 +109,7 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> with WidgetsBindi
     if (mounted) {
       setState(() {
         _isScanning = false;
-        _result = "🛰️ Live Cloud Inference Rolling Out Soon!\n\nReal-time neural landmark recognition and object detection are being deployed to our high-speed edge nodes. You will receive an alert as soon as live camera processing goes live in the upcoming update.";
+        _result = "Live scanning is coming soon.\n\nReal-time landmark and object recognition through your camera is on the way. We'll let you know the moment it's ready.";
       });
     }
   }

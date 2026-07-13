@@ -7,10 +7,11 @@ use Illuminate\Console\Command;
 
 /**
  * Flips isFeatured back to false on any guide_listings doc whose
- * featuredUntil has passed. Featuring is granted client-side (Pro/Elite
- * guides toggle it on in guide_listing_editor_screen.dart, which stamps a
- * 30-day featuredUntil), but nothing else ever revisits that field — without
- * this job a listing stays featured forever once turned on.
+ * featuredUntil has passed. Featuring is granted server-side by an admin
+ * (GuideListingController::approve/setFeatured, stamping a featuredUntil —
+ * see firestore.rules, which blocks clients from setting isFeatured
+ * directly), but nothing else ever revisits that field — without this job a
+ * listing stays featured forever once turned on.
  *
  * Scheduled daily in Console/Kernel.php.
  */

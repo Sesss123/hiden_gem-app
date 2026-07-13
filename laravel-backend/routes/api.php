@@ -20,6 +20,7 @@ use App\Http\Controllers\Api\RevenueCatWebhookController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\WishlistController;
 use App\Http\Controllers\Api\V1\GuideApplicationController;
+use App\Http\Controllers\Api\V1\GuideListingController;
 use App\Http\Controllers\Api\V1\GuideDocumentUploadController;
 use App\Http\Controllers\Api\V1\ReviewController;
 use App\Http\Controllers\Api\V1\BookingController;
@@ -75,6 +76,14 @@ Route::prefix('v1')->group(function () {
         Route::get('/', [GuideApplicationController::class, 'index']);
         Route::post('/{id}/approve', [GuideApplicationController::class, 'approve']);
         Route::post('/{id}/reject', [GuideApplicationController::class, 'reject']);
+    });
+
+    // Admin Guide Listings Moderation Routes (Protected by Sanctum Auth, Admin Role, API Key & Rate Limiting)
+    Route::prefix('admin/guide-listings')->middleware(['auth:sanctum', 'is_admin', VerifyApiKey::class, 'throttle:60,1'])->group(function () {
+        Route::get('/', [GuideListingController::class, 'index']);
+        Route::post('/{listingId}/approve', [GuideListingController::class, 'approve']);
+        Route::post('/{listingId}/reject', [GuideListingController::class, 'reject']);
+        Route::post('/{listingId}/featured', [GuideListingController::class, 'setFeatured']);
     });
 
     // Review Routes (Protected by Sanctum Auth, API Key & Rate Limiting)

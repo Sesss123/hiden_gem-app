@@ -2,13 +2,10 @@ import 'package:hidden_gems_sl/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../core/theme/oracle_ui_system.dart';
 import '../../core/services/expense_service.dart';
 import '../../data/models/expense_model.dart';
-import '../../core/config/app_config.dart';
-import 'package:hidden_gems_sl/core/utils/secure_logger.dart';
 
 class BudgetConciergeScreen extends ConsumerStatefulWidget {
   const BudgetConciergeScreen({super.key});
@@ -44,35 +41,18 @@ class _BudgetConciergeScreenState extends ConsumerState<BudgetConciergeScreen> {
   }
 
   Future<void> _getAIAdvice() async {
-    try {
-      if (AppConfig.geminiApiKey.isNotEmpty) {
-        final model = GenerativeModel(
-            model: AppConfig.llmModelName, apiKey: AppConfig.geminiApiKey);
-        final prompt = """
-          You are 'Oracle Budget Concierge' for a traveler in Sri Lanka.
-          The user has spent total $_totalSpent LKR so far.
-          Expenses: ${_expenses.map((e) => "${e.description}: ${e.amount}").join(", ")}
-          
-          Provide a short (2 sentence) cinematic advice on their budget. 
-          Focus on value-for-money transport (like using PickMe/Uber vs private tours) 
-          and suggest maintaining a sustainable pace.
-        """;
-        final response = await model.generateContent([Content.text(prompt)]);
-        if (mounted && response.text != null) {
-          setState(() => _aiAdvice = response.text!);
-          return;
-        }
-      }
-    } catch (e) {
-      SecureLogger.warning("External LLM skipped or failed: $e",
-          tag: "BudgetConcierge");
-    }
-
-    // 🏛️ Offline / Self-Hosted Rule-Based Cinematic Fallback
+    // The commercial Gemini path has been removed — budget advice is now
+    // served entirely by the local rule-based generator below. When the
+    // self-hosted LLM is ready, this is the single place to route through it.
     if (mounted) {
-      setState(() => _aiAdvice =
-          "Your spending pace aligns well with island travel standards. We recommend utilizing PickMe or Uber for transparent transport fares, and sampling local eateries to maximize your value.");
+      setState(() => _aiAdvice = _buildLocalAdvice());
     }
+  }
+
+  String _buildLocalAdvice() {
+    return "Your spending pace aligns well with island travel standards. "
+        "We recommend utilizing PickMe or Uber for transparent transport "
+        "fares, and sampling local eateries to maximize your value.";
   }
 
   @override

@@ -113,19 +113,14 @@ class AppConfig {
     defaultValue: "appl_example_key", // Non-prod placeholder
   );
 
-  static final String geminiApiKey = const String.fromEnvironment(
-    'GEMINI_API_KEY',
-    defaultValue: "",
-  );
-
+  // Commercial Gemini integration has been removed — AI is served by the
+  // self-hosted model (Oracle chat / Trip Planner via pythonUrl, food scan
+  // via the BYOM /food/scan endpoint). llmModelName is kept only as a
+  // metadata label sent to the backend (dynamic_content_service,
+  // remote_config_service); it no longer selects a Google model.
   static const String llmModelName = String.fromEnvironment(
     'LLM_MODEL_NAME',
-    defaultValue: "gemini-2.0-flash",
-  );
-
-  static const String llmApiBaseUrl = String.fromEnvironment(
-    'LLM_API_BASE_URL',
-    defaultValue: "https://generativelanguage.googleapis.com/v1beta",
+    defaultValue: "self-hosted",
   );
 
   static final String weatherApiKey = const String.fromEnvironment(
@@ -186,9 +181,6 @@ class AppConfig {
     }
     if (isPlaceholder(appStoreId)) {
       throw AssertionError("CRITICAL: Must configure a valid APP_STORE_ID.");
-    }
-    if (isPlaceholder(geminiApiKey)) {
-      throw AssertionError("CRITICAL: Must configure a valid GEMINI_API_KEY environment variable.");
     }
     if (isPlaceholder(weatherApiKey)) {
       throw AssertionError("CRITICAL: Must configure a valid WEATHER_API_KEY environment variable.");

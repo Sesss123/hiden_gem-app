@@ -203,6 +203,16 @@ class FirestoreService
     }
 
     /**
+     * Update or merge data into a guide_listings document in Firestore.
+     * Used by GuideListingController — the only trusted path allowed to set
+     * moderationStatus/isFeatured (blocked for clients by firestore.rules).
+     */
+    public function updateGuideListing($listingId, array $data)
+    {
+        return $this->patchDocument('guide_listings', $listingId, $data);
+    }
+
+    /**
      * Fetch a single document's decoded fields, or null if it doesn't exist.
      */
     public function getDocument(string $collection, string $documentId): ?array

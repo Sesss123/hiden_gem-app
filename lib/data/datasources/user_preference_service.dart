@@ -10,6 +10,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../../core/utils/secure_logger.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
+import '../../core/utils/debouncer.dart';
 
 /// [UserPreferenceService] — Hardened local profile cache.
 ///
@@ -40,6 +41,7 @@ class UserPreferenceService {
   static const _flushCooldown = Duration(seconds: 2); // Minimum flush interval
   static bool _pendingFirestoreSync = false;
   static StreamSubscription<List<ConnectivityResult>>? _connectivitySub;
+  static final _firestoreSyncDebouncer = Debouncer(milliseconds: 3000);
 
   // ── Initialization ───────────────────────────────────────────────────────
 
@@ -135,7 +137,7 @@ class UserPreferenceService {
       }
     });
     await _flushToDisk(force: true);
-    syncToFirestore();
+    _scheduleFirestoreSync();
     return isNowBookmarked;
   }
 
@@ -151,8 +153,45 @@ class UserPreferenceService {
       }
     });
     await _flushToDisk(force: true);
-    syncToFirestore();
+    _scheduleFirestoreSync();
     return isNowAdded;
+  }
+
+  /// Debounces syncToFirestore() — cost fix: toggleBookmark()/
+  /// toggleItinerary() previously called syncToFirestore() directly and
+  /// immediately on every single tap, with no rate limiting (unlike the
+  /// disk-flush path, which already coalesces via _flushCooldown). A user
+  /// rapidly bookmarking/unbookmarking several places while browsing a list
+  /// fired one full users/{uid} Firestore write per tap. This collapses N
+  /// rapid taps within the debounce window into a single trailing write of
+  /// the final state — syncToFirestore() always writes the current full
+  /// bookmarkedPlaces/itineraryPlaceIds arrays (not a delta), so only the
+  /// last state in a burst needs to actually reach Firestore.
+  ///
+  /// Trade-off: if the app is killed within the debounce window, the
+  /// pending write would never fire. Mitigated by flushPendingFirestoreSync()
+  /// below, called from main.dart's didChangeAppLifecycleState() on pause/
+  /// detach/hidden — so backgrounding the app (the common real-world case:
+  /// switching apps, a call interrupting, the screen locking) flushes any
+  /// debounced write immediately instead of losing it. A true process kill
+  /// with no OS pause callback at all (rare, and not guaranteed preventable
+  /// on any platform) can still lose the pending write; the local disk write
+  /// (_flushToDisk(force: true) above, unconditional) already happened by
+  /// then, so the change survives on-device and only the Firestore mirror
+  /// can lag in that narrower case. Not applied to any force:true-flushed
+  /// field (premium status, terms agreement, etc.), which don't go through
+  /// this debounce at all.
+  static void _scheduleFirestoreSync() {
+    _firestoreSyncDebouncer.run(syncToFirestore);
+  }
+
+  /// Immediately flushes a pending debounced Firestore sync, if one is
+  /// scheduled. Call this from an app-lifecycle hook (pause/detach/hidden)
+  /// so a backgrounded or killed app doesn't silently lose a bookmark/
+  /// itinerary toggle that was still waiting out its debounce window.
+  /// No-op if nothing is currently scheduled.
+  static void flushPendingFirestoreSync() {
+    _firestoreSyncDebouncer.flush();
   }
 
   static Future<void> updateLanguage(String languageCode) async {

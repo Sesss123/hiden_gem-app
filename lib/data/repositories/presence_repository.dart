@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/session_presence.dart';
@@ -43,29 +42,28 @@ class PresenceRepository {
     _lastGuidePositions[sessionId] = position;
     _lastGuideWriteAt[sessionId] = DateTime.now();
 
+    // Cost fix: this used to ALSO call updateParticipantPresence() below on
+    // every single tick, writing a second document
+    // (tour_sessions/{sessionId}/presence/{guideId}) for the exact same
+    // position update. That subcollection has zero readers anywhere in the
+    // app (getAllParticipantsPresence(), the only method that queries it,
+    // has zero callers) — map_explorer_screen.dart and
+    // tourist_companion_hub.dart both read the guide's live location from
+    // THIS document's lastGuideLat/lastGuideLng fields, not the presence
+    // subcollection. Same class of dead-write bug as the already-removed
+    // users/{guideId}.lastKnownLocation write (see prior fix). During an
+    // active vehicle tour this ran every ~5s, so removing it halves the
+    // guide GPS write volume for the whole tour duration.
+    //
+    // updateParticipantPresence() itself is kept — it's still used by the
+    // tourist "I'm Lost" button and vehicle-position marking, both
+    // low-frequency, user-tap-triggered calls, not this high-frequency
+    // timer path.
     await _firestore.collection('tour_sessions').doc(sessionId).update({
       'lastGuideLat': position.latitude,
       'lastGuideLng': position.longitude,
       'lastUpdated': FieldValue.serverTimestamp(),
     });
-
-    // Presence subcollection writes are only allowed under the caller's own
-    // auth UID (firestore.rules) — this must be the real signed-in guide's
-    // UID, not a placeholder, or every write is silently denied.
-    final guideUid = FirebaseAuth.instance.currentUser?.uid;
-    if (guideUid == null) return;
-
-    // Also update the guide's individual presence entry.
-    // NOTE: previously this method also wrote users/{guideId}.lastKnownLocation
-    // ("Legacy support") on every single tick — that field had no readers
-    // anywhere in the app, so it was a pure-waste 3rd write + a redundant
-    // session .get() on every tick. Removed.
-    await updateParticipantPresence(
-      sessionId: sessionId,
-      userId: guideUid,
-      position: position,
-      role: 'guide',
-    );
   }
 
   Future<void> updateParticipantPresence({

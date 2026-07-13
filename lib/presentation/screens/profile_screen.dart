@@ -47,7 +47,6 @@ import 'subscription_screen.dart';
 import '../../data/services/subscription_service.dart';
 import '../../core/services/ethical_travel_service.dart';
 import '../../core/rating/rating_service.dart';
-import '../../core/notifications/notification_service.dart';
 import 'guide_enrollment_screen.dart';
 import '../../data/repositories/guide_application_repository.dart';
 import 'package:hidden_gems_sl/data/models/guide_status.dart';
@@ -682,14 +681,16 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
         children: [
           Expanded(
             child: _themeOption(
-              "☀️  Light",
+              Icons.light_mode_rounded,
+              "Light",
               themeMode == ThemeMode.light,
               () => ref.read(themeModeProvider.notifier).setMode(ThemeMode.light),
             ),
           ),
           Expanded(
             child: _themeOption(
-              "🌙  Dark",
+              Icons.dark_mode_rounded,
+              "Dark",
               themeMode == ThemeMode.dark,
               () => ref.read(themeModeProvider.notifier).setMode(ThemeMode.dark),
             ),
@@ -699,7 +700,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
     );
   }
 
-  Widget _themeOption(String label, bool isSelected, VoidCallback onTap) {
+  Widget _themeOption(IconData icon, String label, bool isSelected, VoidCallback onTap) {
+    final color = isSelected ? AppTheme.textPrimary(context) : AppTheme.textSecondary(context);
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
@@ -712,14 +714,21 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
               ? [BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.12), blurRadius: 10, offset: const Offset(0, 4))]
               : null,
         ),
-        child: Text(
-          label,
-          textAlign: TextAlign.center,
-          style: GoogleFonts.inter(
-            fontSize: 12,
-            fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
-            color: isSelected ? AppTheme.textPrimary(context) : AppTheme.textSecondary(context),
-          ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, size: 15, color: color),
+            const SizedBox(width: 7),
+            Text(
+              label,
+              textAlign: TextAlign.center,
+              style: GoogleFonts.inter(
+                fontSize: 12,
+                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
+                color: color,
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -898,14 +907,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
               ),
             ),
             const SizedBox(height: 12),
-            _ecoPointTile("✍️ Leave Place Reviews", "+10 Pts", "Support local guides and travelers"),
-            _ecoPointTile("🍛 Sample Local Food", "+15 Pts", "Empower authentic local eateries"),
-            _ecoPointTile("🏛️ Visit Heritage Sites", "+20 Pts", "Promote cultural preservation"),
+            _ecoPointTile(Icons.rate_review_rounded, "Leave Place Reviews", "+10 Pts", "Support local guides and travelers"),
+            _ecoPointTile(Icons.restaurant_rounded, "Sample Local Food", "+15 Pts", "Empower authentic local eateries"),
+            _ecoPointTile(Icons.account_balance_rounded, "Visit Heritage Sites", "+20 Pts", "Promote cultural preservation"),
             const SizedBox(height: 20),
             Align(
               alignment: Alignment.centerLeft,
               child: Text(
-                "🎁 REWARDS & PERKS YOU UNLOCK:",
+                "REWARDS & PERKS YOU UNLOCK:",
                 style: GoogleFonts.outfit(
                   color: Theme.of(context).colorScheme.onSurface,
                   fontWeight: FontWeight.bold,
@@ -915,10 +924,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
               ),
             ),
             const SizedBox(height: 12),
-            _rewardTile("🌟 Eco Guardian Badge", "Stand out on leaderboards & reviews"),
-            _rewardTile("☕ Partner Discounts", "5%-15% off at verified eco-stays & cafes"),
-            _rewardTile("🔓 Free Premium Perks", "Unlock AR guides & offline maps with points"),
-            _rewardTile("🌳 Real-World Impact", "Reach 500 Pts & we plant a tree in SL for you!"),
+            _rewardTile(Icons.workspace_premium_rounded, "Eco Guardian Badge", "Stand out on leaderboards & reviews"),
+            _rewardTile(Icons.local_cafe_rounded, "Partner Discounts", "5%-15% off at verified eco-stays & cafes"),
+            _rewardTile(Icons.lock_open_rounded, "Free Premium Perks", "Unlock AR guides & offline maps with points"),
+            _rewardTile(Icons.park_rounded, "Real-World Impact", "Reach 500 Pts & we plant a tree in SL for you!"),
             const SizedBox(height: 28),
             SizedBox(
               width: double.infinity,
@@ -943,7 +952,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
     );
   }
 
-  Widget _rewardTile(String title, String subtitle) {
+  Widget _rewardTile(IconData icon, String title, String subtitle) {
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
@@ -954,7 +963,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
       ),
       child: Row(
         children: [
-          Icon(Icons.card_giftcard_rounded, color: AppTheme.colors.primary, size: 18),
+          Icon(icon, color: AppTheme.colors.primary, size: 18),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
@@ -970,7 +979,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
     );
   }
 
-  Widget _ecoPointTile(String title, String points, String subtitle) {
+  Widget _ecoPointTile(IconData icon, String title, String points, String subtitle) {
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -982,6 +991,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
+          Icon(icon, color: AppTheme.colors.primary, size: 20),
+          const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

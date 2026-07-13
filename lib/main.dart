@@ -542,6 +542,18 @@ class _HiddenGemsAppState extends ConsumerState<HiddenGemsApp> with WidgetsBindi
   }
 
   @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // Flush any debounced bookmark/itinerary Firestore sync immediately on
+    // pause/detach/hidden, so backgrounding or closing the app doesn't
+    // silently drop a toggle still waiting out its 3s debounce window.
+    if (state == AppLifecycleState.paused ||
+        state == AppLifecycleState.detached ||
+        state == AppLifecycleState.hidden) {
+      UserPreferenceService.flushPendingFirestoreSync();
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final themeMode = ref.watch(themeModeProvider);
     final locale = ref.watch(localeProvider);

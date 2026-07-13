@@ -106,13 +106,22 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
       );
       
       await _presenceRepo.updateGuidePresence(_activeSession!.sessionId, pos);
-      
+
       // Smart Throttle Logic:
-      // Speed > 5 m/s (~18 km/h) -> 5s (Vehicle)
-      // Speed > 1 m/s -> 15s (Walking)
+      // Speed > 5 m/s (~18 km/h) -> 12s (Vehicle)
+      // Speed > 1 m/s -> 20s (Walking)
       // Speed <= 1 m/s -> 30s (Stationary)
-      if (pos.speed > 5) return const Duration(seconds: 5);
-      if (pos.speed > 1) return const Duration(seconds: 15);
+      //
+      // Cost fix: the vehicle tier was previously 5s. PresenceRepository's
+      // 12m movement filter provides little protection at that speed (a
+      // vehicle moving >5 m/s covers >12m well within 5s, so almost every
+      // tick wrote), meaning this timer alone drove ~24 writes/min for the
+      // whole duration of every active vehicle tour — the single largest
+      // Firestore write source in the app. 12s still gives a live map dot
+      // that updates ~5x/minute (smooth enough for a following-a-guide UX)
+      // while roughly halving vehicle-tour write volume.
+      if (pos.speed > 5) return const Duration(seconds: 12);
+      if (pos.speed > 1) return const Duration(seconds: 20);
       return const Duration(seconds: 30);
     } catch (e) {
       if (mounted) {

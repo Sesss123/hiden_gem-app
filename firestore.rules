@@ -57,7 +57,19 @@ service cloud.firestore {
 
     match /users/{userId} {
       allow read: if isOwner(userId) || isAdmin();
-      allow create: if isOwner(userId);
+      // create had no field-shape restriction at all — a new user could
+      // sign up and self-create their own users/{uid} doc with role:'admin'
+      // or isPremium:true baked in from the start, bypassing the update
+      // rule's privileged-field lock below entirely (that lock only guards
+      // updates to an EXISTING doc, not the initial create). Mirrors the
+      // same allowlist the update rule already enforces.
+      allow create: if isOwner(userId) &&
+                       (!('role' in request.resource.data) || request.resource.data.role == 'user') &&
+                       (!('isPremium' in request.resource.data) || request.resource.data.isPremium == false) &&
+                       (!('isBanned' in request.resource.data) || request.resource.data.isBanned == false) &&
+                       (!('isFlagged' in request.resource.data) || request.resource.data.isFlagged == false) &&
+                       (!('isGuideApproved' in request.resource.data) || request.resource.data.isGuideApproved == false) &&
+                       (!('guideStatus' in request.resource.data) || request.resource.data.guideStatus == 'none');
       allow update: if (isOwner(userId) &&
                         !request.resource.data.diff(resource.data)
                           .affectedKeys().hasAny([
@@ -79,10 +91,15 @@ service cloud.firestore {
       }
     }
 
+    // Source of truth for guide/operator plan entitlements
+    // (SubscriptionService.hasEntitlement/getLimit) — must be Admin-SDK-only.
+    // A client-writable accountId==auth.uid rule here previously let any user
+    // self-grant an Elite plan (team management, priority SOS, featured
+    // listings, etc.) for free by writing their own subscriptions/{subId}
+    // doc directly, bypassing RevenueCat entirely.
     match /subscriptions/{subId} {
       allow read: if isSignedIn() && request.auth.uid == resource.data.accountId;
-      allow create: if isSignedIn() && request.resource.data.accountId == request.auth.uid;
-      allow update, delete: if isSignedIn() && resource.data.accountId == request.auth.uid;
+      allow write: if false; // Admin SDK only
     }
 
     // ── Guide Listings (Marketplace) ─────────────────────────────────────────
@@ -98,8 +115,19 @@ service cloud.firestore {
         (!exists(/databases/$(database)/documents/guide_listings/$(listingId))
          || resource.data.status == 'published' && resource.data.moderationStatus == 'approved'
          || isOwner(resource.data.guideId) || isAdmin());
+      // create previously had no lock on moderationStatus/isFeatured/
+      // ratingAverage/profileViews at all — only the update rule blocked
+      // them. Since the read rule above gates PUBLIC visibility on
+      // moderationStatus=='approved', a guide could create a brand-new
+      // listing already marked moderationStatus:'approved', isFeatured:true,
+      // completely skipping the moderation queue. Mirrors GuideListing's own
+      // safe constructor defaults (moderationStatus:'pending', isFeatured:
+      // false, ratingAverage:5.0, profileViews:0).
       allow create: if isVerifiedGuide() &&
-        request.resource.data.guideId == request.auth.uid;
+        request.resource.data.guideId == request.auth.uid &&
+        (!('moderationStatus' in request.resource.data) || request.resource.data.moderationStatus == 'pending') &&
+        (!('isFeatured' in request.resource.data) || request.resource.data.isFeatured == false) &&
+        (!('profileViews' in request.resource.data) || request.resource.data.profileViews == 0);
       allow update: if (isOwner(resource.data.guideId) &&
         !request.resource.data.diff(resource.data).affectedKeys()
           .hasAny(['moderationStatus', 'isFeatured', 'ratingAverage', 'profileViews'])) ||
@@ -173,9 +201,18 @@ service cloud.firestore {
     // ── Tour Packages ────────────────────────────────────────────────────────
     match /tour_packages/{packageId} {
       allow read: if isSignedIn();
+      // isFeatured had no lock on create OR update (unlike guide_listings,
+      // which at least locks it on update) — a guide could create or later
+      // edit their own package with isFeatured:true, self-promoting into any
+      // "featured" UI surface with no admin review. TourPackage's own
+      // constructor defaults isFeatured to false.
       allow create: if isVerifiedGuide() &&
-        request.resource.data.ownerId == request.auth.uid;
-      allow update, delete: if isOwner(resource.data.ownerId) || isAdmin();
+        request.resource.data.ownerId == request.auth.uid &&
+        (!('isFeatured' in request.resource.data) || request.resource.data.isFeatured == false);
+      allow update: if (isOwner(resource.data.ownerId) &&
+        !request.resource.data.diff(resource.data).affectedKeys().hasAny(['isFeatured'])) ||
+        isAdmin();
+      allow delete: if isOwner(resource.data.ownerId) || isAdmin();
     }
 
     // ── Tour Reviews ─────────────────────────────────────────────────────────
@@ -373,8 +410,15 @@ service cloud.firestore {
         request.auth.uid in resource.data.pendingTeamGuideIds ||
         isAdmin()
       );
+      // Same class of gap as users/{userId} create: without a privileged-
+      // field lock here, a new operator could self-create their doc with
+      // isPremium:true baked in from the start, since the update rule's
+      // lock on isPremium/premiumPlanId/etc. only applies to updates to an
+      // already-existing doc.
       allow create: if isSignedIn() && request.resource.data.ownerUserId == request.auth.uid &&
-        (!('teamGuideIds' in request.resource.data) || request.resource.data.teamGuideIds == [request.auth.uid]);
+        (!('teamGuideIds' in request.resource.data) || request.resource.data.teamGuideIds == [request.auth.uid]) &&
+        (!('isPremium' in request.resource.data) || request.resource.data.isPremium == false) &&
+        (!('premiumPlanId' in request.resource.data) || request.resource.data.premiumPlanId == null);
       allow update: if isSignedIn() && (
         !request.resource.data.diff(resource.data).affectedKeys()
           .hasAny(['isPremium', 'premiumPlanId', 'premiumExpiresAt', 'autoRenew']) &&
@@ -591,6 +635,16 @@ service cloud.firestore {
     // attempt counter directly, or they could reset it themselves and
     // defeat the rate limit it exists to enforce.
     match /join_attempts/{uid} {
+      allow read, write: if false; // Admin SDK only
+    }
+
+    // ── Profile View Markers (dedup state for track_profile_view) ────────
+    // Written exclusively by the track_profile_view Cloud Function (Admin
+    // SDK) to dedupe repeat profileViews increments from the same viewer
+    // within 24h — clients must never read or write this directly, or a
+    // guide could reset their own marker docs to re-inflate their own view
+    // count, or clear a viewer's marker to force extra counted views.
+    match /profile_view_markers/{markerId} {
       allow read, write: if false; // Admin SDK only
     }
 

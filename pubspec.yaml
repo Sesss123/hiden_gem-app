@@ -106,7 +106,6 @@ dependencies:
   gal: ^2.3.2
   flutter_cache_manager: ^3.3.2
   purchases_flutter: ^10.4.0
-  google_generative_ai: ^0.4.5
   panorama: ^0.4.1
   weather: ^3.0.1
   flutter_staggered_animations: ^1.1.1

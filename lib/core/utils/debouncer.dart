@@ -37,6 +37,18 @@ class Debouncer {
     _lastAction = null;
   }
 
+  /// If an action is currently pending (scheduled but not yet fired), runs
+  /// it immediately and cancels the timer. No-op if nothing is pending.
+  /// Use this to flush a debounced call on app pause/dispose instead of
+  /// silently losing it when the timer never gets to fire.
+  void flush() {
+    if (_timer == null || !_timer!.isActive) return;
+    _timer!.cancel();
+    final action = _lastAction;
+    _lastAction = null;
+    action?.call();
+  }
+
   /// Disposes the debouncer — call in widget dispose().
   void dispose() {
     _timer?.cancel();

@@ -43,7 +43,7 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
   bool _isLoading = true;
   bool _isSaving = false;
   GuideListing? _existingListing;
-  bool _isFeatured = false;
+  bool _isFeaturedRequested = false;
   bool _canFeature = false;
   bool _isInsured = false;
 
@@ -87,7 +87,7 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
         _vehicleTypeController.text = listing.vehicleType ?? '';
         _vehicleImageUrl = listing.vehicleImageUrl;
         _licenseNumber = listing.licenseNumber;
-        _isFeatured = listing.isFeatured;
+        _isFeaturedRequested = listing.isFeaturedRequested;
         _coverPhotos = List.from(listing.coverPhotos);
         _languagesController.text = listing.languages.join(', ');
         _specializationsController.text = listing.specializations.join(', ');
@@ -254,12 +254,19 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
         hourlyRate: hourlyRate,
         currency: _currency,
         status: status, // 'published' or 'draft'
-        moderationStatus: _existingListing?.moderationStatus ?? 'approved',
+        // moderationStatus/isFeatured/featuredUntil are admin-controlled —
+        // firestore.rules requires moderationStatus:'pending', isFeatured:
+        // false at create, and blocks both from ever changing via a client
+        // update. Always mirror the existing server value (or the safe
+        // create default) rather than deriving from local UI state, so this
+        // save always passes the rules unchanged instead of getting
+        // rejected. The actual moderation decision and featured grant now
+        // happen server-side via GuideListingController (Laravel admin API).
+        moderationStatus: _existingListing?.moderationStatus ?? 'pending',
         availability: _existingListing?.availability ?? GuideAvailability(listingId: uid),
-        isFeatured: _canFeature && _isFeatured,
-        featuredUntil: _canFeature && _isFeatured
-            ? (_existingListing?.isFeatured == true ? _existingListing?.featuredUntil : now.add(const Duration(days: 30)))
-            : null,
+        isFeatured: _existingListing?.isFeatured ?? false,
+        featuredUntil: _existingListing?.featuredUntil,
+        isFeaturedRequested: _canFeature && _isFeaturedRequested,
         profileViews: _existingListing?.profileViews ?? 0,
         bookingRequestsCount: _existingListing?.bookingRequestsCount ?? 0,
         createdAt: _existingListing?.createdAt ?? now,
@@ -762,6 +769,7 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
   }
 
   Widget _buildFeaturedToggle() {
+    final isLiveFeatured = _existingListing?.isFeatured == true;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
@@ -772,11 +780,22 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
       child: _canFeature
           ? SwitchListTile(
               title: Text('Feature this listing', style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.w600)),
-              subtitle: Text('Show up in the marketplace\'s featured guides for 30 days', style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 12)),
-              value: _isFeatured,
+              subtitle: Text(
+                isLiveFeatured
+                    ? 'Currently featured in the marketplace'
+                    : (_isFeaturedRequested
+                        ? 'Requested — an admin will review and enable this shortly'
+                        : 'Request to be featured in the marketplace (subject to admin review)'),
+                style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 12),
+              ),
+              // isFeatured itself is admin-granted (server-side, via
+              // GuideListingController) — this switch only records the
+              // guide's REQUEST (isFeaturedRequested), a non-privileged
+              // field the client is allowed to write freely.
+              value: isLiveFeatured || _isFeaturedRequested,
               activeThumbColor: Theme.of(context).colorScheme.primary,
               contentPadding: EdgeInsets.zero,
-              onChanged: (val) => setState(() => _isFeatured = val),
+              onChanged: isLiveFeatured ? null : (val) => setState(() => _isFeaturedRequested = val),
             )
           : ListTile(
               contentPadding: EdgeInsets.zero,
