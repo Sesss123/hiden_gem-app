@@ -21,6 +21,7 @@ use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\WishlistController;
 use App\Http\Controllers\Api\V1\GuideApplicationController;
 use App\Http\Controllers\Api\V1\GuideListingController;
+use App\Http\Controllers\Api\V1\PayHereController;
 use App\Http\Controllers\Api\V1\GuideDocumentUploadController;
 use App\Http\Controllers\Api\V1\ReviewController;
 use App\Http\Controllers\Api\V1\BookingController;
@@ -38,6 +39,20 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 // its own shared-secret Authorization header instead. See VerifyRevenueCatWebhook.)
 Route::post('/webhooks/revenuecat', [RevenueCatWebhookController::class, 'handle'])
     ->middleware(VerifyRevenueCatWebhook::class);
+
+// PayHere payment callbacks (server-to-server + browser redirects; NO Sanctum
+// token — the notify callback is authenticated by PayHere's own md5 signature,
+// verified inside the controller). These must be public so PayHere's servers
+// and the user's browser can reach them.
+Route::post('/v1/payments/notify', [PayHereController::class, 'notify'])->name('payments.notify');
+Route::get('/v1/payments/return', [PayHereController::class, 'paymentReturn'])->name('payments.return');
+Route::get('/v1/payments/cancel', [PayHereController::class, 'paymentCancel'])->name('payments.cancel');
+// Signed browser redirect that auto-submits the PayHere form. Auth is the
+// signed URL itself (issued by /payments/checkout after ownership check), so
+// no Sanctum token is needed for this plain browser navigation.
+Route::get('/v1/payments/redirect/{bookingId}', [PayHereController::class, 'redirect'])
+    ->name('payments.redirect')
+    ->middleware('signed');
 
 // v1 API Endpoints
 Route::prefix('v1')->group(function () {
@@ -65,21 +80,23 @@ Route::prefix('v1')->group(function () {
     });
 
     // Guide Applications API Routes (Protected by Sanctum Auth, API Key & Rate Limiting)
-    Route::prefix('guide-applications')->middleware(['auth:sanctum', VerifyApiKey::class, 'throttle:30,1'])->group(function () {
+    // 'zenith' verifies the X-Zenith-* request signature on non-multipart
+    // requests (the middleware self-skips the multipart /documents upload).
+    Route::prefix('guide-applications')->middleware(['auth:sanctum', VerifyApiKey::class, 'zenith', 'throttle:30,1'])->group(function () {
         Route::post('/', [GuideApplicationController::class, 'submit']);
         Route::get('/status/{userId}', [GuideApplicationController::class, 'myStatus']);
         Route::post('/documents', [GuideDocumentUploadController::class, 'upload']);
     });
 
     // Admin Guide Applications Routes (Protected by Sanctum Auth, Admin Role, API Key & Rate Limiting)
-    Route::prefix('admin/guide-applications')->middleware(['auth:sanctum', 'is_admin', VerifyApiKey::class, 'throttle:60,1'])->group(function () {
+    Route::prefix('admin/guide-applications')->middleware(['auth:sanctum', 'is_admin', VerifyApiKey::class, 'zenith', 'throttle:60,1'])->group(function () {
         Route::get('/', [GuideApplicationController::class, 'index']);
         Route::post('/{id}/approve', [GuideApplicationController::class, 'approve']);
         Route::post('/{id}/reject', [GuideApplicationController::class, 'reject']);
     });
 
     // Admin Guide Listings Moderation Routes (Protected by Sanctum Auth, Admin Role, API Key & Rate Limiting)
-    Route::prefix('admin/guide-listings')->middleware(['auth:sanctum', 'is_admin', VerifyApiKey::class, 'throttle:60,1'])->group(function () {
+    Route::prefix('admin/guide-listings')->middleware(['auth:sanctum', 'is_admin', VerifyApiKey::class, 'zenith', 'throttle:60,1'])->group(function () {
         Route::get('/', [GuideListingController::class, 'index']);
         Route::post('/{listingId}/approve', [GuideListingController::class, 'approve']);
         Route::post('/{listingId}/reject', [GuideListingController::class, 'reject']);
@@ -87,7 +104,7 @@ Route::prefix('v1')->group(function () {
     });
 
     // Review Routes (Protected by Sanctum Auth, API Key & Rate Limiting)
-    Route::prefix('reviews')->middleware(['auth:sanctum', VerifyApiKey::class, 'throttle:30,1'])->group(function () {
+    Route::prefix('reviews')->middleware(['auth:sanctum', VerifyApiKey::class, 'zenith', 'throttle:30,1'])->group(function () {
         Route::post('/{reviewId}/recalculate', [ReviewController::class, 'recalculate']);
         Route::get('/guide/{guideId}', [ReviewController::class, 'guideReviews']);
     });
@@ -108,9 +125,16 @@ Route::prefix('v1')->group(function () {
     });
 
     // Booking Routes (Protected by Sanctum Auth, API Key & Rate Limiting)
-    Route::prefix('bookings')->middleware(['auth:sanctum', VerifyApiKey::class, 'throttle:30,1'])->group(function () {
+    Route::prefix('bookings')->middleware(['auth:sanctum', VerifyApiKey::class, 'zenith', 'throttle:30,1'])->group(function () {
         Route::get('/quota-check', [BookingController::class, 'quotaCheck']);
         Route::post('/{bookingId}/notify-guide', [BookingController::class, 'notifyGuide']);
+    });
+
+    // Payment checkout (tourist-initiated; returns signed PayHere params).
+    // The notify/return/cancel callbacks are public (registered above) since
+    // PayHere's servers / the user's browser hit them without a Sanctum token.
+    Route::prefix('payments')->middleware(['auth:sanctum', VerifyApiKey::class, 'zenith', 'throttle:30,1'])->group(function () {
+        Route::post('/checkout', [PayHereController::class, 'checkout']);
     });
 
     // Security Routes (Protected by Sanctum Auth, API Key & Rate Limiting)
@@ -122,7 +146,7 @@ Route::prefix('v1')->group(function () {
     // BUG-Q006 / BUG-Q010 / BUG-Q011: Replaced inline closures with AiProxyController.
     // All requests are now validated via FormRequest before being forwarded to Python.
     // Python upstream errors are sanitised — raw error bodies are never returned to clients.
-    Route::middleware(['auth:sanctum', VerifyApiKey::class, 'throttle:30,1'])->group(function () {
+    Route::middleware(['auth:sanctum', VerifyApiKey::class, 'zenith', 'throttle:30,1'])->group(function () {
         Route::post('/ai/plan-itinerary', [AiProxyController::class, 'planItinerary']);
         Route::post('/ai/recommendations', [AiProxyController::class, 'recommendations']);
     });

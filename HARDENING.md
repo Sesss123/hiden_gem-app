@@ -104,9 +104,29 @@ The signature is generated using a secret key. In production, pass this key when
 final client = SecureHttpClient(http.Client(), sharedSecret: 'YOUR_PRODUCTION_SECRET');
 ```
 
-**What this protects against:**
-1. **MITM Tampering**: If an attacker modifies the request body, the backend signature check will fail.
-2. **Replay Attacks**: Because each request has a unique `Nonce`, the backend can reject duplicate requests within a timestamp window.
+**Server-side verification (`VerifyZenithSignature` middleware):**
+The server side is the `zenith` middleware, now applied to the state-changing
+JSON POST route groups in `routes/api.php` (guide-applications, admin
+moderation, reviews, bookings, AI proxy). It is **NOT** applied to multipart
+file-upload routes (the middleware self-skips `multipart/form-data`) or to
+low-value GET-only routes. It **fails open when `HMAC_SECRET` is unset** — so it
+is inert until you configure the secret, at which point real enforcement begins.
+
+> [!IMPORTANT]
+> **Honest scope of this control.** The shared secret is a `--dart-define`
+> constant compiled into the app binary, so it is **extractable by anyone who
+> decompiles the APK** — this does NOT stop a determined attacker who has the
+> secret. What it genuinely stops:
+> 1. **Passive replay**: a network observer who captured a request (e.g. on a
+>    compromised proxy/Wi-Fi) cannot replay it after the 5-minute timestamp
+>    window closes (unique `Nonce` + timestamp).
+> 2. **Tamper-in-flight**: a request whose body was modified in transit fails
+>    the body-hash signature check.
+>
+> It is **not** anti-forgery against a decompiled client. The real
+> anti-forged-client control is **Firebase App Check** (section 4) — its token
+> cannot be extracted from the binary. Treat Zenith as one cost-raising layer,
+> not a primary defense.
 ---
 
 ## 7. Split Architecture Hardening 🧩

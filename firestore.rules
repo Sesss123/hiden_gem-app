@@ -29,6 +29,23 @@ service cloud.firestore {
       );
     }
 
+    // Server-side enforcement of the forensic risk posture. The
+    // report_forensic_signals Cloud Function writes
+    // users/{uid}/security/posture {isBlocked} when a client reports
+    // tamper/root/emulator/clone signals. Without a server-side gate the
+    // IntegrityShield block ladder is purely in-app (bypassable on a patched
+    // APK). This denies the sensitive, standing-granting writes below when a
+    // user is server-flagged as blocked. A user who has never scanned has no
+    // posture doc — treat that as NOT blocked so legitimate users are never
+    // locked out (fail-open on absence). Defense-in-depth: a tampered client
+    // that simply never calls report_forensic_signals has a stale/absent
+    // posture, so App Check (Console-enforced) is the real anti-forged-client
+    // control; this raises attacker cost on top of it.
+    function isNotBlocked() {
+      return !exists(/databases/$(database)/documents/users/$(request.auth.uid)/security/posture)
+        || get(/databases/$(database)/documents/users/$(request.auth.uid)/security/posture).data.isBlocked != true;
+    }
+
     // ── User Profiles ────────────────────────────────────────────────────────
     // •  Users read/write THEIR OWN profile only.
     // •  Admins can read all profiles.
@@ -70,7 +87,12 @@ service cloud.firestore {
                        (!('isFlagged' in request.resource.data) || request.resource.data.isFlagged == false) &&
                        (!('isGuideApproved' in request.resource.data) || request.resource.data.isGuideApproved == false) &&
                        (!('guideStatus' in request.resource.data) || request.resource.data.guideStatus == 'none');
-      allow update: if (isOwner(userId) &&
+      // isNotBlocked() here means a server-flagged (tampered/cloned/rooted)
+      // device can no longer mutate its own user doc — including burning
+      // AI/scan quota fields (dailyAiScans/tokensUsed) or syncing bookmarks —
+      // while admin writes still pass and non-blocked users (everyone without
+      // a posture doc) are unaffected.
+      allow update: if (isOwner(userId) && isNotBlocked() &&
                         !request.resource.data.diff(resource.data)
                           .affectedKeys().hasAny([
                             'role', 'isPremium', 'isBanned', 'expiryDate', 'premiumPlan',
@@ -143,7 +165,7 @@ service cloud.firestore {
     // rejected applicant forge their own "approved" guide badge.
     match /guide_applications/{userId} {
       allow read: if isOwner(userId) || isAdmin();
-      allow create: if isOwner(userId) && request.resource.data.status == 'pending';
+      allow create: if isOwner(userId) && isNotBlocked() && request.resource.data.status == 'pending';
       allow update: if isAdmin() || (
         isOwner(userId) && resource.data.status == 'rejected' &&
         request.resource.data.status == 'pending'
@@ -178,17 +200,23 @@ service cloud.firestore {
       // payoutStatus:'paid'/status:'completed', which would then flow
       // straight into the guide's own earnings dashboard and
       // TourSessionRepository.endSession()'s commission math as if real.
-      allow create: if isSignedIn() && request.resource.data.touristId == request.auth.uid &&
+      allow create: if isSignedIn() && isNotBlocked() && request.resource.data.touristId == request.auth.uid &&
         request.resource.data.status == 'pending' &&
         (!('payoutStatus' in request.resource.data) || request.resource.data.payoutStatus == 'pending') &&
         (!('quotedPrice' in request.resource.data) || request.resource.data.quotedPrice == null) &&
         (!('commissionAmount' in request.resource.data) || request.resource.data.commissionAmount == null) &&
         (!('guideNetAmount' in request.resource.data) || request.resource.data.guideNetAmount == null) &&
         (!('operatorNetAmount' in request.resource.data) || request.resource.data.operatorNetAmount == null);
+      // Payment fields (paidAt/paidAmount/paymentId) join the money/payout
+      // lock: only the PayHere notify webhook (Admin SDK, bypasses rules) may
+      // set them, so a client can never self-mark a booking paid to skip the
+      // platform commission. 'status' is separately gated below (tourist can't
+      // touch it at all; guide can move it through the flow but the paid-
+      // confirmation comes from the webhook, not a client write).
       allow update: if isSignedIn() && (
         !request.resource.data.diff(resource.data).affectedKeys()
           .hasAny(['quotedPrice', 'commissionAmount', 'guideNetAmount', 'operatorNetAmount', 'payoutStatus',
-                   'guideId', 'touristId']) &&
+                   'paidAt', 'paidAmount', 'paymentId', 'guideId', 'touristId']) &&
         (
           resource.data.guideId == request.auth.uid ||
           (resource.data.touristId == request.auth.uid &&
@@ -253,7 +281,7 @@ service cloud.firestore {
       // same session+tourist pair — Firestore's own create-if-absent
       // semantics on a fixed path is the actual atomicity guarantee, not
       // application code.
-      allow create: if isSignedIn() &&
+      allow create: if isSignedIn() && isNotBlocked() &&
         request.resource.data.touristId == request.auth.uid &&
         reviewId == request.resource.data.sessionId + '_' + request.auth.uid &&
         request.resource.data.overallRating is number &&

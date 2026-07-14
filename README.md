@@ -150,20 +150,35 @@ Point the Flutter app at it via `--dart-define=LARAVEL_BACKEND_URL=http://localh
 
 ## 📦 Production Builds & Obfuscation
 
-To protect the application's underlying code against reverse engineering and keep asset payloads minimal, compile using the production build commands below:
+**Always build releases with the committed build script — never a raw
+`flutter build`.** The script guarantees `--obfuscate --split-debug-info` (so a
+release can never ship un-obfuscated by accident) and injects all
+`--dart-define` secrets from `dart_defines.json` instead of hardcoding them.
 
-### Android APK Build
+```powershell
+# Windows (PowerShell) — appbundle by default
+./scripts/build_release.ps1                 # -> .aab
+./scripts/build_release.ps1 -Target apk     # -> .apk
+```
 ```bash
-flutter build apk --obfuscate --split-debug-info=build/app/outputs/symbols
+# macOS / Linux / CI
+./scripts/build_release.sh                  # -> .aab
+./scripts/build_release.sh apk              # -> .apk
+./scripts/build_release.sh ipa              # -> iOS
 ```
 
-### iOS Build
-```bash
-flutter build ios --obfuscate --split-debug-info=build/ios/outputs/symbols
-```
+First-time setup: `cp dart_defines.example.json dart_defines.json` and fill in
+the values (this file is gitignored). Obfuscation symbols are written to
+`symbols/<target>/` — **archive them**; you need them to de-obfuscate
+Crashlytics stack traces.
+
+> [!NOTE]
+> Secrets in `dart_defines.json` are compiled into the binary and ARE
+> extractable from the APK — they raise attacker cost, they are not true
+> secrets. See `HARDENING.md` for what actually protects the app server-side.
 
 ### Web Release Build
-Minification is automatically handled by the compiler compiler optimization scripts:
+Minification is handled automatically by the compiler:
 ```bash
 flutter build web
 ```

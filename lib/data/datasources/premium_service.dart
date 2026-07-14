@@ -22,6 +22,14 @@ class PremiumNotifier extends _$PremiumNotifier {
   static const String entitlementId = 'premium_access';
   static const String premiumId = 'hgems_premium_monthly';
   static const String explorerId = 'hgems_explorer_monthly';
+  // Annual Heritage Premium — same entitlement, cheaper effective monthly
+  // rate (Rs. 9,999/yr ≈ Rs. 833/mo vs Rs. 999/mo billed monthly) to convert
+  // more of the trial/monthly cohort into upfront annual cash + lower churn.
+  // Configure this product ID (with the same 'premium_access' entitlement
+  // attached) in the RevenueCat dashboard — offer a free trial there via the
+  // store's introductory-offer mechanism (App Store Connect / Play Console),
+  // not in app code.
+  static const String premiumAnnualId = 'hgems_premium_annual';
 
   bool get _isFirebaseReady => Firebase.apps.isNotEmpty;
 

@@ -154,9 +154,61 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen> {
               style: GoogleFonts.inter(fontSize: 12, color: AppTheme.textSecondary(context), fontStyle: FontStyle.italic),
             ),
           ],
+          _buildPaymentRow(context, booking),
         ],
       ),
     ).animate().fadeIn(duration: 300.ms).slideY(begin: 0.05);
+  }
+
+  /// Shows the quoted price once a guide has accepted, or a "Paid" badge once
+  /// payment has cleared.
+  ///
+  /// In-app checkout via PayHere is built (see lib/data/services/
+  /// payment_service.dart + PayHereController.php) but INTENTIONALLY NOT
+  /// WIRED HERE — the owner doesn't have a PayHere merchant account yet, so
+  /// payment stays off-platform (tourist and guide settle directly, same as
+  /// before PayHere existed). isPaid will simply never be true today; the
+  /// price is shown for the tourist's reference only.
+  ///
+  /// To re-enable in-app payment once a PayHere merchant account exists:
+  /// restore the "Pay Now" ElevatedButton (see git history / session notes)
+  /// calling PaymentService.fetchQuote() + PaymentService.launchCheckout() —
+  /// no other code needs to change, the backend flow is already live.
+  Widget _buildPaymentRow(BuildContext context, BookingRequest booking) {
+    final hasPrice = (booking.status == 'accepted' || booking.status == 'session_ready') &&
+        (booking.quotedPrice ?? 0) > 0;
+    final isPaid = booking.payoutStatus == 'paid';
+
+    if (!hasPrice && !isPaid) return const SizedBox.shrink();
+
+    final price = booking.quotedPrice ?? 0;
+    final currency = booking.currency ?? 'LKR';
+
+    return Padding(
+      padding: const EdgeInsets.only(top: 12),
+      child: Row(
+        children: [
+          Text(
+            '$currency ${price.toStringAsFixed(2)}',
+            style: GoogleFonts.outfit(fontSize: 15, fontWeight: FontWeight.w800, color: AppTheme.textPrimary(context)),
+          ),
+          const Spacer(),
+          if (isPaid)
+            Row(
+              children: [
+                Icon(Icons.check_circle_rounded, size: 16, color: AppTheme.colors.green),
+                const SizedBox(width: 6),
+                Text('Paid', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w700, color: AppTheme.colors.green)),
+              ],
+            )
+          else
+            Text(
+              'Pay guide directly',
+              style: GoogleFonts.inter(fontSize: 11, color: AppTheme.textSecondary(context), fontWeight: FontWeight.w600),
+            ),
+        ],
+      ),
+    );
   }
 }
 

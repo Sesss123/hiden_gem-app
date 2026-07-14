@@ -1,0 +1,29 @@
+{
+  "_comment": "Copy to dart_defines.json (gitignored) and fill in real values. Consumed by scripts/build_release.* via --dart-define-from-file. These are compiled into the binary and ARE extractable from the APK — they raise attacker cost, they are not true secrets (see HARDENING.md).",
+
+  "PYTHON_BACKEND_URL": "https://ai.hiddengemssl.com/api",
+  "LARAVEL_BACKEND_URL": "https://api.hiddengemssl.com/api/v1",
+
+  "LUMEN_API_KEY": "REPLACE_ME",
+  "HIDDEN_GEMS_API_KEY": "REPLACE_ME",
+
+  "HMAC_SECRET": "REPLACE_ME",
+  "HMAC_EXPIRY_SECRET": "REPLACE_ME",
+  "SHARED_AES_KEY": "REPLACE_ME",
+  "SHARED_HMAC_KEY": "REPLACE_ME",
+  "VAULT_SIGN_KEY": "REPLACE_ME",
+
+  "WEATHER_API_KEY": "REPLACE_ME",
+  "REVENUECAT_API_KEY_ANDROID": "REPLACE_ME",
+  "REVENUECAT_API_KEY_IOS": "REPLACE_ME",
+
+  "APP_STORE_ID": "REPLACE_ME",
+  "ADMOB_BANNER_ID": "REPLACE_ME",
+  "ADMOB_INTERSTITIAL_ID": "REPLACE_ME",
+  "ADMOB_REWARDED_ID": "REPLACE_ME",
+  "ADMOB_NATIVE_ID": "REPLACE_ME",
+
+  "_ssl_pinning_comment": "Optional: set both to enable SSL pinning for one host (see secure_network.dart).",
+  "SSL_PIN_HOST": "",
+  "SSL_PIN_FINGERPRINT": ""
+}

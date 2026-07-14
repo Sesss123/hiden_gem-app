@@ -213,6 +213,17 @@ class FirestoreService
     }
 
     /**
+     * Update or merge data into a booking_requests document in Firestore.
+     * Used by PayHereController — the only trusted path allowed to set the
+     * payment fields (payoutStatus/paidAt/paymentStatus and the confirmed
+     * status), which firestore.rules block clients from writing.
+     */
+    public function updateBooking($bookingId, array $data)
+    {
+        return $this->patchDocument('booking_requests', $bookingId, $data);
+    }
+
+    /**
      * Fetch a single document's decoded fields, or null if it doesn't exist.
      */
     public function getDocument(string $collection, string $documentId): ?array

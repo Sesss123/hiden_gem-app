@@ -242,9 +242,19 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
                       backgroundColor: AppTheme.colors.white.withValues(alpha: 0.8),
                       child: IconButton(
                         icon: Icon(Icons.arrow_back_ios_new, color: AppTheme.textPrimary(context), size: 18),
-                        onPressed: () {
+                        onPressed: () async {
                           HapticFeedback.mediumImpact();
-                          Navigator.pop(context);
+                          // Free users: show one interstitial at this natural
+                          // break-point (finished viewing the plan, leaving the
+                          // screen). Self-throttled by the frequency cap in
+                          // MonetizationService (min 3 min gap, 4/session), so
+                          // it won't fire every time — premium users never see
+                          // it. We don't await the show blocking the pop: the
+                          // ad (if any) fills the transition, then we return.
+                          if (!isPremium) {
+                            await MonetizationService().showInterstitialAd();
+                          }
+                          if (context.mounted) Navigator.pop(context);
                         },
                       ),
                     ),

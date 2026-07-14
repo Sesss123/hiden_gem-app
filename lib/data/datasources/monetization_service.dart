@@ -10,10 +10,34 @@ class MonetizationService {
 
   InterstitialAd? _interstitialAd;
   RewardedAd? _rewardedAd;
-  
+
   int _interstitialRetryCount = 0;
   int _rewardedRetryCount = 0;
   final Set<String> _verifiedReceiptSignatures = {};
+
+  // ── Interstitial frequency cap ──────────────────────────────────────────
+  // Interstitials earn well but annoy users and drive churn if shown too
+  // often. These caps make showInterstitialAd() self-throttle no matter where
+  // it's called, so a caller can safely request one at any natural break-point
+  // and trust it will only actually show if the user hasn't seen one recently.
+  //   - min 3 minutes between interstitials
+  //   - at most 4 interstitials per app session
+  //   - premium users never see one (checked at the call site via _isPremium)
+  static const Duration _interstitialMinGap = Duration(minutes: 3);
+  static const int _interstitialSessionCap = 4;
+  DateTime? _lastInterstitialShownAt;
+  int _interstitialShownThisSession = 0;
+
+  /// Whether an interstitial is allowed to show right now under the frequency
+  /// caps. Callers can check this to decide the flow without triggering a show.
+  bool get canShowInterstitial {
+    if (_interstitialShownThisSession >= _interstitialSessionCap) return false;
+    if (_lastInterstitialShownAt != null &&
+        DateTime.now().difference(_lastInterstitialShownAt!) < _interstitialMinGap) {
+      return false;
+    }
+    return true;
+  }
 
   // Real Ad Units would go here. For dev, we use test IDs.
   String get bannerAdUnitId => kDebugMode 
@@ -136,7 +160,14 @@ class MonetizationService {
     );
   }
 
-  Future<bool> showInterstitialAd({BuildContext? context}) async {
+  /// Shows an interstitial IF the frequency caps allow AND one is preloaded.
+  /// Returns false (and shows nothing) when capped — callers should treat a
+  /// false as "carry on, no ad" rather than an error. Pass respectFrequencyCap:
+  /// false only for a deliberate, rare full-screen moment that must always show.
+  Future<bool> showInterstitialAd({BuildContext? context, bool respectFrequencyCap = true}) async {
+    if (respectFrequencyCap && !canShowInterstitial) {
+      return false; // Too soon / session cap hit — skip silently, no annoyance.
+    }
     if (_interstitialAd != null) {
       final completer = Completer<bool>();
       _interstitialAd!.fullScreenContentCallback = FullScreenContentCallback(
@@ -155,6 +186,8 @@ class MonetizationService {
           });
         },
       );
+      _lastInterstitialShownAt = DateTime.now();
+      _interstitialShownThisSession++;
       _interstitialAd!.show();
       _interstitialAd = null;
       return await completer.future;

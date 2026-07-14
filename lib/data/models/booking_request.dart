@@ -25,7 +25,13 @@ class BookingRequest {
   final double? guideNetAmount;
   final double? operatorNetAmount;
   final String payoutStatus; // pending, paid, disputed, refunded
-  
+
+  // Payment (written server-side only, by PayHereController's notify webhook
+  // — see firestore.rules, these are locked from client writes)
+  final DateTime? paidAt;
+  final String? paymentId;
+  final double? paidAmount;
+
   final DateTime createdAt;
   final DateTime? respondedAt;
   final String? responseNote;
@@ -56,6 +62,9 @@ class BookingRequest {
     this.guideNetAmount,
     this.operatorNetAmount,
     this.payoutStatus = 'pending',
+    this.paidAt,
+    this.paymentId,
+    this.paidAmount,
     required this.createdAt,
     this.respondedAt,
     this.responseNote,
@@ -83,6 +92,9 @@ class BookingRequest {
     'guideNetAmount': guideNetAmount,
     'operatorNetAmount': operatorNetAmount,
     'payoutStatus': payoutStatus,
+    'paidAt': paidAt?.toIso8601String(),
+    'paymentId': paymentId,
+    'paidAmount': paidAmount,
     'createdAt': createdAt.toIso8601String(),
     'respondedAt': respondedAt?.toIso8601String(),
     'responseNote': responseNote,
@@ -110,6 +122,9 @@ class BookingRequest {
     guideNetAmount: (json['guideNetAmount'] as num?)?.toDouble(),
     operatorNetAmount: (json['operatorNetAmount'] as num?)?.toDouble(),
     payoutStatus: json['payoutStatus'] ?? 'pending',
+    paidAt: json['paidAt'] != null ? DateTime.parse(json['paidAt']) : null,
+    paymentId: json['paymentId'],
+    paidAmount: (json['paidAmount'] as num?)?.toDouble(),
     createdAt: DateTime.parse(json['createdAt']),
     respondedAt: json['respondedAt'] != null ? DateTime.parse(json['respondedAt']) : null,
     responseNote: json['responseNote'],

@@ -4,6 +4,10 @@
 *.pyc
 *.swp
 .DS_Store
+
+# Build secrets & obfuscation symbols (see scripts/build_release.*)
+dart_defines.json
+/symbols/
 .atom/
 .build/
 .buildlog/

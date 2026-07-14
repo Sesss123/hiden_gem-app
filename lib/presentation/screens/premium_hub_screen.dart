@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:purchases_flutter/purchases_flutter.dart';
 import '../../core/theme/app_theme.dart';
 import '../../data/datasources/premium_service.dart';
 import '../../data/datasources/user_preference_service.dart';
@@ -20,6 +21,13 @@ class PremiumHubScreen extends ConsumerStatefulWidget {
 class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with SingleTickerProviderStateMixin {
   late AnimationController _pulseController;
 
+  // Monthly/annual toggle for Heritage Premium — the annual product is the
+  // same 'premium_access' entitlement at a discounted effective monthly rate,
+  // configured as a separate RevenueCat product (premiumAnnualId).
+  bool _isAnnual = false;
+  Package? _monthlyPackage;
+  Package? _annualPackage;
+
   @override
   void initState() {
     super.initState();
@@ -27,6 +35,44 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
       vsync: this,
       duration: const Duration(seconds: 3),
     )..repeat(reverse: true);
+    _loadOfferings();
+  }
+
+  /// Fetches the real RevenueCat packages so we can show the store's actual
+  /// price and detect a genuine free trial (StoreProduct.introductoryPrice) —
+  /// never hardcode a trial claim, since it's configured store-side and may
+  /// not exist yet. Falls back to the static Rs. prices below if RevenueCat
+  /// isn't configured (dev mode / offerings unavailable).
+  Future<void> _loadOfferings() async {
+    try {
+      final offerings = await Purchases.getOfferings();
+      final packages = offerings.current?.availablePackages ?? [];
+      for (final pkg in packages) {
+        if (pkg.storeProduct.identifier == PremiumNotifier.premiumId) {
+          _monthlyPackage = pkg;
+        } else if (pkg.storeProduct.identifier == PremiumNotifier.premiumAnnualId) {
+          _annualPackage = pkg;
+        }
+      }
+      if (mounted && (_monthlyPackage != null || _annualPackage != null)) setState(() {});
+    } catch (_) {
+      // RevenueCat not configured (dev/example keys) — static fallback prices used.
+    }
+  }
+
+  /// A human "7-day free trial" style string if the store product actually
+  /// has a zero-cost introductory offer configured, else null.
+  String? _trialLabel(Package? pkg) {
+    final intro = pkg?.storeProduct.introductoryPrice;
+    if (intro == null || intro.price != 0) return null;
+    final unit = switch (intro.periodUnit) {
+      PeriodUnit.day => intro.periodNumberOfUnits == 1 ? 'day' : 'days',
+      PeriodUnit.week => intro.periodNumberOfUnits == 1 ? 'week' : 'weeks',
+      PeriodUnit.month => intro.periodNumberOfUnits == 1 ? 'month' : 'months',
+      PeriodUnit.year => intro.periodNumberOfUnits == 1 ? 'year' : 'years',
+      _ => 'period',
+    };
+    return '${intro.periodNumberOfUnits}-$unit free trial';
   }
 
   @override
@@ -308,16 +354,33 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
             onPressed: () => ref.read(premiumProvider.notifier).buyPremium(productId: PremiumNotifier.explorerId),
           ),
           SizedBox(height: 20),
-          _buildTierOption(
-            context: context,
-            title: "Heritage Premium",
-            priceStr: "Rs. 999",
-            billingCycle: "Billed monthly",
-            features: ["Unlimited AI Itineraries", "Full Heritage AR Access", "All Offline Features"],
-            color: goldColor,
-            isRecommended: true,
-            onPressed: () => ref.read(premiumProvider.notifier).buyPremium(productId: PremiumNotifier.premiumId),
-          ),
+          _buildBillingToggle(context, goldColor),
+          SizedBox(height: 16),
+          Builder(builder: (context) {
+            // Real store price if RevenueCat is configured, else the static
+            // fallback so pricing is never blank in dev/example-key builds.
+            final annualPrice = _annualPackage?.storeProduct.priceString ?? "Rs. 9,999";
+            final monthlyPrice = _monthlyPackage?.storeProduct.priceString ?? "Rs. 999";
+            final trialLabel = _trialLabel(_isAnnual ? _annualPackage : _monthlyPackage);
+
+            return _buildTierOption(
+              context: context,
+              title: "Heritage Premium",
+              priceStr: _isAnnual ? annualPrice : monthlyPrice,
+              billingCycle: _isAnnual ? "Billed yearly · save ~17%" : "Billed monthly",
+              features: [
+                "Unlimited AI Itineraries",
+                "Full Heritage AR Access",
+                "All Offline Features",
+                if (trialLabel != null) trialLabel,
+              ],
+              color: goldColor,
+              isRecommended: true,
+              onPressed: () => ref.read(premiumProvider.notifier).buyPremium(
+                    productId: _isAnnual ? PremiumNotifier.premiumAnnualId : PremiumNotifier.premiumId,
+                  ),
+            );
+          }),
           SizedBox(height: 20),
           _buildTierOption(
             context: context,
@@ -380,6 +443,51 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
             const SnackBar(content: Text("🚀 Mock Purchase Simulated. Refreshing...")),
           );
         },
+      ),
+    );
+  }
+
+  /// Monthly/annual segmented toggle above the Heritage Premium card. Annual
+  /// is the cheaper effective rate — this control is what lets a user opt
+  /// into that upfront-cash, lower-churn plan instead of only ever seeing
+  /// the monthly price.
+  Widget _buildBillingToggle(BuildContext context, Color accent) {
+    Widget segment(String label, bool selected, VoidCallback onTap) {
+      return Expanded(
+        child: GestureDetector(
+          onTap: onTap,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            decoration: BoxDecoration(
+              color: selected ? accent : AppTheme.colors.transparent,
+              borderRadius: BorderRadius.circular(100),
+            ),
+            child: Text(
+              label,
+              textAlign: TextAlign.center,
+              style: GoogleFonts.inter(
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+                color: selected ? AppTheme.colors.white : AppTheme.textSecondary(context),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    return Container(
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: AppTheme.surfaceMuted(context),
+        borderRadius: BorderRadius.circular(100),
+      ),
+      child: Row(
+        children: [
+          segment("Monthly", !_isAnnual, () => setState(() => _isAnnual = false)),
+          segment("Yearly · Save 17%", _isAnnual, () => setState(() => _isAnnual = true)),
+        ],
       ),
     );
   }

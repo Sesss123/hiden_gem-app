@@ -429,6 +429,13 @@ class _GuideEarningsScreenState extends ConsumerState<GuideEarningsScreen> {
                       ),
                       child: Text(statusLabel, style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.w700, color: statusColor)),
                     ),
+                    if (req.paidAt != null) ...[
+                      const SizedBox(width: 8),
+                      Text(
+                        "via PayHere · ${req.paidAt!.toString().split(' ')[0]}",
+                        style: GoogleFonts.inter(fontSize: 10, color: AppTheme.textSecondary(context).withValues(alpha: 0.6)),
+                      ),
+                    ],
                   ],
                 ),
               ],
