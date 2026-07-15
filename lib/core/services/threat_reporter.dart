@@ -37,15 +37,4 @@ class ThreatReporter {
       debugPrint('[ThreatReporter] Failed to report breach: $e');
     }
   }
-
-  /// Logs a simulated "Bot Notification" to make the admin feel the automation.
-  Future<void> logBotNotification(String targetUid, String action) async {
-    await _firestore.collection('security_events').add({
-      'type': 'BOT_ACTION',
-      'details': 'ZenithBot executed $action on $targetUid',
-      'uid': 'ZENITH_BOT',
-      'severity': 'low',
-      'createdAt': FieldValue.serverTimestamp(),
-    });
-  }
 }

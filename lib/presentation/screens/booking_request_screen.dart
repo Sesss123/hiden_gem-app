@@ -6,6 +6,7 @@ import '../../data/repositories/booking_repository.dart';
 import '../../data/models/booking_request.dart';
 import '../../data/repositories/package_repository.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../../l10n/app_localizations.dart';
 
 class BookingRequestScreen extends ConsumerStatefulWidget {
   final String guideId;
@@ -30,6 +31,7 @@ class _BookingRequestScreenState extends ConsumerState<BookingRequestScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
@@ -40,7 +42,7 @@ class _BookingRequestScreenState extends ConsumerState<BookingRequestScreen> {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          'Request booking',
+          l10n.requestBookingTitle,
           style: GoogleFonts.outfit(fontWeight: FontWeight.w800, fontSize: 18, color: AppTheme.textPrimary(context)),
         ),
       ),
@@ -49,19 +51,19 @@ class _BookingRequestScreenState extends ConsumerState<BookingRequestScreen> {
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
           physics: const BouncingScrollPhysics(),
           children: [
-            _buildSectionLabel(context, 'Date'),
+            _buildSectionLabel(context, l10n.dateLabel),
             const SizedBox(height: 10),
             _buildDatePicker(context),
             const SizedBox(height: 24),
-            _buildSectionLabel(context, 'Guests'),
+            _buildSectionLabel(context, l10n.guestsLabel),
             const SizedBox(height: 10),
-            _buildGuestSelector(context),
+            _buildGuestSelector(context, l10n),
             const SizedBox(height: 24),
-            _buildSectionLabel(context, 'Special instructions'),
+            _buildSectionLabel(context, l10n.specialInstructionsLabel),
             const SizedBox(height: 10),
-            _buildNotesField(context),
+            _buildNotesField(context, l10n),
             const SizedBox(height: 32),
-            _buildSubmitButton(context),
+            _buildSubmitButton(context, l10n),
           ],
         ),
       ),
@@ -101,14 +103,14 @@ class _BookingRequestScreenState extends ConsumerState<BookingRequestScreen> {
     );
   }
 
-  Widget _buildGuestSelector(BuildContext context) {
+  Widget _buildGuestSelector(BuildContext context, AppLocalizations l10n) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       decoration: BoxDecoration(color: AppTheme.surfaceMuted(context), borderRadius: BorderRadius.circular(16)),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text('Number of guests', style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.w600)),
+          Text(l10n.numberOfGuestsLabel, style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.w600)),
           Row(
             children: [
               IconButton(
@@ -134,13 +136,13 @@ class _BookingRequestScreenState extends ConsumerState<BookingRequestScreen> {
     );
   }
 
-  Widget _buildNotesField(BuildContext context) {
+  Widget _buildNotesField(BuildContext context, AppLocalizations l10n) {
     return TextField(
       controller: _notesController,
       maxLines: 4,
       style: GoogleFonts.inter(color: AppTheme.textPrimary(context)),
       decoration: InputDecoration(
-        hintText: 'E.g. We are traveling with seniors, need a low-walking route...',
+        hintText: l10n.notesFieldHint,
         hintStyle: GoogleFonts.inter(color: AppTheme.textSecondary(context).withValues(alpha: 0.6)),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
         filled: true,
@@ -149,7 +151,7 @@ class _BookingRequestScreenState extends ConsumerState<BookingRequestScreen> {
     );
   }
 
-  Widget _buildSubmitButton(BuildContext context) {
+  Widget _buildSubmitButton(BuildContext context, AppLocalizations l10n) {
     return SizedBox(
       width: double.infinity,
       height: 52,
@@ -163,22 +165,23 @@ class _BookingRequestScreenState extends ConsumerState<BookingRequestScreen> {
         ),
         child: _isSubmitting
             ? SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Theme.of(context).colorScheme.onPrimary))
-            : Text('Send request', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 14)),
+            : Text(l10n.sendRequestButton, style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 14)),
       ),
     );
   }
 
   Future<void> _submitBooking() async {
     setState(() => _isSubmitting = true);
+    final l10n = AppLocalizations.of(context)!;
     try {
       final user = FirebaseAuth.instance.currentUser;
-      if (user == null) throw Exception("User not authenticated");
+      if (user == null) throw Exception(l10n.userNotAuthenticatedError);
 
       if (widget.guideId.isNotEmpty) {
         final quotaExceeded = await ref.read(bookingRepositoryProvider).checkMonthlyQuota(widget.guideId);
         if (!mounted) return;
         if (quotaExceeded) {
-           throw Exception("This guide has reached their maximum booking quota for the month. Please try again next month or select another guide.");
+           throw Exception(l10n.guideQuotaExceededError);
         }
       }
 
@@ -222,6 +225,7 @@ class _BookingRequestScreenState extends ConsumerState<BookingRequestScreen> {
   }
 
   void _showSuccessDialog(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -240,12 +244,12 @@ class _BookingRequestScreenState extends ConsumerState<BookingRequestScreen> {
               ),
               const SizedBox(height: 20),
               Text(
-                "Request sent",
+                l10n.requestSentTitle,
                 style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.w800, color: AppTheme.textPrimary(dialogContext)),
               ),
               const SizedBox(height: 10),
               Text(
-                "Your booking request has been sent to the guide. You'll get a notification once they respond.",
+                l10n.requestSentMessage,
                 textAlign: TextAlign.center,
                 style: GoogleFonts.inter(color: AppTheme.textSecondary(dialogContext), fontSize: 13, height: 1.5),
               ),
@@ -269,7 +273,7 @@ class _BookingRequestScreenState extends ConsumerState<BookingRequestScreen> {
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
                     elevation: 0,
                   ),
-                  child: const Text("Close", style: TextStyle(fontWeight: FontWeight.w700)),
+                  child: Text(l10n.closeButton, style: const TextStyle(fontWeight: FontWeight.w700)),
                 ),
               ),
             ],

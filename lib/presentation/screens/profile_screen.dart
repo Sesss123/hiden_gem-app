@@ -303,22 +303,22 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
       context: context,
       backgroundColor: AppTheme.colors.transparent,
       builder: (context) => _BottomSheet(
-        title: "PROFILE PHOTO",
+        title: l10n.profilePhoto,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                _photoOption(Icons.camera_alt_outlined, "CAMERA", ImageSource.camera),
-                _photoOption(Icons.photo_library_outlined, "GALLERY", ImageSource.gallery),
+                _photoOption(Icons.camera_alt_outlined, l10n.camera, ImageSource.camera),
+                _photoOption(Icons.photo_library_outlined, l10n.gallery, ImageSource.gallery),
               ],
             ),
             if (profile.profileImagePath != null) ...[
               const SizedBox(height: 16),
               TextButton.icon(
                 icon: Icon(Icons.delete_outline, color: AppTheme.colors.redAccent, size: 18),
-                label: Text("REMOVE PHOTO",
+                label: Text(l10n.removePhoto,
                     style: GoogleFonts.inter(
                         color: AppTheme.colors.redAccent, fontSize: 12, fontWeight: FontWeight.bold)),
                 onPressed: () async {
@@ -377,7 +377,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
 
       if (l10n == null) {
         return Scaffold(
-          body: Center(child: Text("Localization error", style: TextStyle(color: AppTheme.colors.red))),
+          body: Center(child: Text('Loading...', style: TextStyle(color: AppTheme.colors.red))),
         );
       }
 
@@ -423,7 +423,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
                       const SizedBox(height: 28),
 
                       // Theme Toggle
-                      _sectionLabel("Appearance"),
+                      _sectionLabel(l10n.appearance),
                       const SizedBox(height: 12),
                       _buildThemeToggle(),
                       const SizedBox(height: 28),
@@ -433,7 +433,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
                       const SizedBox(height: 28),
 
                       // Settings
-                      _sectionLabel("Settings"),
+                      _sectionLabel(l10n.settingsSectionLabel),
                       const SizedBox(height: 12),
                       _buildSettingsSection(l10n),
                     ],
@@ -445,13 +445,20 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
         ),
       );
     } catch (e, stack) {
+      SecureLogger.error("ProfileScreen crash boundary", e, stack);
+      final fallbackL10n = AppLocalizations.of(context);
       return Scaffold(
         backgroundColor: AppTheme.colors.black,
         body: SafeArea(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: Text("PROFILE ERROR:\n$e\n\n$stack",
-                style: TextStyle(color: AppTheme.colors.red, fontSize: 11)),
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Text(
+                fallbackL10n?.somethingWentWrong ?? 'Something went wrong. Please restart the app.',
+                textAlign: TextAlign.center,
+                style: TextStyle(color: AppTheme.colors.white, fontSize: 14),
+              ),
+            ),
           ),
         ),
       );
@@ -537,7 +544,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
                       ),
                       const SizedBox(height: 14),
                       Text(
-                        isPremium ? "Premium Traveler" : "Oracle Traveler",
+                        isPremium ? l10n.premiumTraveler : l10n.oracleTraveler,
                         textAlign: TextAlign.center,
                         style: GoogleFonts.outfit(
                           fontSize: 20,
@@ -553,7 +560,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
                           borderRadius: BorderRadius.circular(100),
                         ),
                         child: Text(
-                          "${svc.currentLevel.title} · Level $levelNumber",
+                          l10n.levelBadgeLabel(svc.currentLevel.title, levelNumber),
                           style: GoogleFonts.inter(
                             fontSize: 10,
                             color: AppTheme.colors.white,
@@ -568,11 +575,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
                       // Stats, embedded directly in the hero card
                       Row(
                         children: [
-                          Expanded(child: _heroStatTile(profile.totalTripsGenerated.toString(), "Trips")),
+                          Expanded(child: _heroStatTile(profile.totalTripsGenerated.toString(), l10n.statLabelTrips)),
                           Container(width: 1, height: 32, color: AppTheme.colors.white.withValues(alpha: 0.15)),
-                          Expanded(child: _heroStatTile(profile.visitedPlaces.length.toString(), "Places")),
+                          Expanded(child: _heroStatTile(profile.visitedPlaces.length.toString(), l10n.statLabelPlaces)),
                           Container(width: 1, height: 32, color: AppTheme.colors.white.withValues(alpha: 0.15)),
-                          Expanded(child: _heroStatTile(levelNumber.toString(), "Level")),
+                          Expanded(child: _heroStatTile(levelNumber.toString(), l10n.statLabelLevel)),
                         ],
                       ),
                     ],
@@ -605,6 +612,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
 
   // ── Premium Card ─────────────────────────────────────────────────────────────
   Widget _buildPremiumCard(bool isPremium) {
+    final l10n = AppLocalizations.of(context)!;
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final cardBg = isDark ? AppPaletteDark.card : AppPalette.ink;
     return Container(
@@ -634,7 +642,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  isPremium ? "Oracle Explorer" : "Go Premium",
+                  isPremium ? l10n.oracleExplorer : l10n.goPremium,
                   style: GoogleFonts.outfit(
                       color: AppTheme.colors.white,
                       fontWeight: FontWeight.w700,
@@ -642,7 +650,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  isPremium ? "Full AR & AI access granted" : "Unlock AR & AI features",
+                  isPremium ? l10n.fullArAiAccessGranted : l10n.unlockArAiFeatures,
                   style: GoogleFonts.inter(color: AppTheme.colors.white.withValues(alpha: 0.6), fontSize: 11),
                 ),
               ],
@@ -658,7 +666,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
                   color: AppPalette.heroOchre,
                   borderRadius: BorderRadius.circular(100),
                 ),
-                child: Text("Upgrade",
+                child: Text(l10n.upgrade,
                     style: GoogleFonts.inter(
                         color: AppPalette.ink, fontSize: 11, fontWeight: FontWeight.w700)),
               ),
@@ -670,6 +678,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
 
   // ── Theme Toggle ─────────────────────────────────────────────────────────────
   Widget _buildThemeToggle() {
+    final l10n = AppLocalizations.of(context)!;
     final themeMode = ref.watch(themeModeProvider);
     return Container(
       padding: const EdgeInsets.all(4),
@@ -682,7 +691,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
           Expanded(
             child: _themeOption(
               Icons.light_mode_rounded,
-              "Light",
+              l10n.themeLight,
               themeMode == ThemeMode.light,
               () => ref.read(themeModeProvider.notifier).setMode(ThemeMode.light),
             ),
@@ -690,7 +699,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
           Expanded(
             child: _themeOption(
               Icons.dark_mode_rounded,
-              "Dark",
+              l10n.themeDark,
               themeMode == ThemeMode.dark,
               () => ref.read(themeModeProvider.notifier).setMode(ThemeMode.dark),
             ),
@@ -736,23 +745,24 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
 
   // ── Heritage Hub ─────────────────────────────────────────────────────────────
   Widget _buildHeritageHub() {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _sectionLabel("Journey hub"),
+        _sectionLabel(l10n.journeyHub),
         const SizedBox(height: 10),
         _hubCard(
           Icons.account_balance_wallet_outlined,
-          "AI Budget Concierge",
-          "Smart expense advisor",
+          l10n.aiBudgetConcierge,
+          l10n.smartExpenseAdvisor,
           AppPalette.rust,
           _openBudgetHub,
         ),
         const SizedBox(height: 8),
         _hubCard(
           Icons.workspace_premium_outlined,
-          "Heritage Passport",
-          "Verifiable visit collection",
+          l10n.heritagePassport,
+          l10n.verifiableVisitCollection,
           AppPalette.heroOchre,
           () => Navigator.push(context, MaterialPageRoute(builder: (_) => const HeritagePassportScreen())),
         ),
@@ -762,8 +772,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
           builder: (context, snapshot) {
             final score = snapshot.data ?? 0;
             final rank = EthicalTravelService.getRank(score);
-            return _hubCard(Icons.eco_outlined, "Ethical Travel Meter",
-                "Rank: $rank • Score: $score", Theme.of(context).colorScheme.secondary, () => _showEthicalMeterDialog(context, score, rank));
+            return _hubCard(Icons.eco_outlined, l10n.ethicalTravelMeter,
+                l10n.ethicalRankScore(rank, score), Theme.of(context).colorScheme.secondary, () => _showEthicalMeterDialog(context, score, rank));
           },
         ),
       ],
@@ -830,6 +840,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
 
   void _showEthicalMeterDialog(BuildContext context, int score, String rank) {
     HapticFeedback.selectionClick();
+    final l10n = AppLocalizations.of(context)!;
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -866,7 +877,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
             ),
             const SizedBox(height: 16),
             Text(
-              "ETHICAL TRAVEL METER",
+              l10n.ethicalTravelMeterDialogTitle,
               style: GoogleFonts.outfit(
                 color: Theme.of(context).colorScheme.onSurface,
                 fontWeight: FontWeight.w900,
@@ -876,7 +887,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
             ),
             const SizedBox(height: 8),
             Text(
-              "Rank: $rank • Score: $score Pts",
+              l10n.ethicalRankScorePoints(rank, score),
               style: GoogleFonts.inter(
                 color: AppTheme.colors.primary,
                 fontWeight: FontWeight.w800,
@@ -885,7 +896,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
             ),
             const SizedBox(height: 20),
             Text(
-              "Your ethical travel score measures your positive impact on local communities and heritage preservation across Sri Lanka.",
+              l10n.ethicalScoreDescription,
               textAlign: TextAlign.center,
               style: GoogleFonts.inter(
                 color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
@@ -897,7 +908,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
             Align(
               alignment: Alignment.centerLeft,
               child: Text(
-                "HOW TO EARN POINTS:",
+                l10n.howToEarnPointsHeading,
                 style: GoogleFonts.outfit(
                   color: Theme.of(context).colorScheme.onSurface,
                   fontWeight: FontWeight.bold,
@@ -907,14 +918,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
               ),
             ),
             const SizedBox(height: 12),
-            _ecoPointTile(Icons.rate_review_rounded, "Leave Place Reviews", "+10 Pts", "Support local guides and travelers"),
-            _ecoPointTile(Icons.restaurant_rounded, "Sample Local Food", "+15 Pts", "Empower authentic local eateries"),
-            _ecoPointTile(Icons.account_balance_rounded, "Visit Heritage Sites", "+20 Pts", "Promote cultural preservation"),
+            _ecoPointTile(Icons.rate_review_rounded, l10n.earnPointsReviewsTitle, l10n.earnPointsReviewsAmount, l10n.earnPointsReviewsSubtitle),
+            _ecoPointTile(Icons.restaurant_rounded, l10n.earnPointsFoodTitle, l10n.earnPointsFoodAmount, l10n.earnPointsFoodSubtitle),
+            _ecoPointTile(Icons.account_balance_rounded, l10n.earnPointsHeritageTitle, l10n.earnPointsHeritageAmount, l10n.earnPointsHeritageSubtitle),
             const SizedBox(height: 20),
             Align(
               alignment: Alignment.centerLeft,
               child: Text(
-                "REWARDS & PERKS YOU UNLOCK:",
+                l10n.rewardsPerksHeading,
                 style: GoogleFonts.outfit(
                   color: Theme.of(context).colorScheme.onSurface,
                   fontWeight: FontWeight.bold,
@@ -924,10 +935,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
               ),
             ),
             const SizedBox(height: 12),
-            _rewardTile(Icons.workspace_premium_rounded, "Eco Guardian Badge", "Stand out on leaderboards & reviews"),
-            _rewardTile(Icons.local_cafe_rounded, "Partner Discounts", "5%-15% off at verified eco-stays & cafes"),
-            _rewardTile(Icons.lock_open_rounded, "Free Premium Perks", "Unlock AR guides & offline maps with points"),
-            _rewardTile(Icons.park_rounded, "Real-World Impact", "Reach 500 Pts & we plant a tree in SL for you!"),
+            _rewardTile(Icons.workspace_premium_rounded, l10n.rewardEcoGuardianBadgeTitle, l10n.rewardEcoGuardianBadgeSubtitle),
+            _rewardTile(Icons.local_cafe_rounded, l10n.rewardPartnerDiscountsTitle, l10n.rewardPartnerDiscountsSubtitle),
+            _rewardTile(Icons.lock_open_rounded, l10n.rewardFreePremiumPerksTitle, l10n.rewardFreePremiumPerksSubtitle),
+            _rewardTile(Icons.park_rounded, l10n.rewardRealWorldImpactTitle, l10n.rewardRealWorldImpactSubtitle),
             const SizedBox(height: 28),
             SizedBox(
               width: double.infinity,
@@ -940,7 +951,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                 ),
                 child: Text(
-                  "GOT IT, KEEP EXPLORING",
+                  l10n.gotItKeepExploring,
                   style: GoogleFonts.inter(fontWeight: FontWeight.w900, letterSpacing: 1, fontSize: 13),
                 ),
               ),
@@ -1019,6 +1030,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
 
   // ── Guide Command Hub (Option 1 - Redesigned for High Contrast & Luxury) ────
   Widget _buildGuideCommandHub() {
+    final l10n = AppLocalizations.of(context)!;
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       padding: const EdgeInsets.all(18),
@@ -1065,7 +1077,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "GUIDE COMMAND HUB",
+                      l10n.guideCommandHub,
                       style: GoogleFonts.outfit(
                         fontSize: 15,
                         fontWeight: FontWeight.bold,
@@ -1074,7 +1086,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
                       ),
                     ),
                     Text(
-                      "Quick access to your guide tools",
+                      l10n.guideCommandHubSubtitle,
                       style: GoogleFonts.inter(
                         fontSize: 11,
                         color: isDark ? AppTheme.colors.white70 : AppTheme.colors.primary,
@@ -1103,7 +1115,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
                     ),
                     const SizedBox(width: 6),
                     Text(
-                      "ACTIVE",
+                      l10n.activeStatusBadge,
                       style: GoogleFonts.outfit(
                         fontSize: 10,
                         fontWeight: FontWeight.bold,
@@ -1118,8 +1130,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
           const SizedBox(height: 18),
           _buildGuideHubButton(
             Icons.explore_outlined,
-            "Tour Dashboard",
-            "Active tour, QR, listing & safety",
+            l10n.tourDashboard,
+            l10n.tourDashboardSubtitle,
             isDark ? AppTheme.colors.amber[700]! : AppTheme.colors.primary,
             () => Navigator.push(context, MaterialPageRoute(builder: (_) => const GuideDashboardScreen())),
           ),
@@ -1131,8 +1143,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
               Expanded(
                 child: _buildGuideHubButton(
                   Icons.account_balance_wallet_outlined,
-                  "Earnings",
-                  "Payouts & stats",
+                  l10n.earnings,
+                  l10n.earningsSubtitle,
                   isDark ? AppTheme.colors.greenAccent[400]! : AppTheme.colors.primary,
                   () => Navigator.push(context, MaterialPageRoute(builder: (_) => const GuideEarningsScreen())),
                 ),
@@ -1145,8 +1157,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
               Expanded(
                 child: _buildGuideHubButton(
                   Icons.people_outline_rounded,
-                  "Clients",
-                  "History & notes",
+                  l10n.clients,
+                  l10n.clientsSubtitle,
                   isDark ? AppTheme.colors.purpleAccent : AppTheme.colors.primary,
                   () => Navigator.push(context, MaterialPageRoute(builder: (_) => const GuideClientsScreen())),
                 ),
@@ -1162,12 +1174,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
   }
 
   Widget _buildBookingsEntry(bool isDark) {
+    final l10n = AppLocalizations.of(context)!;
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid == null) {
       return _buildGuideHubButton(
         Icons.inbox_rounded,
-        "Bookings",
-        "Tour requests",
+        l10n.bookings,
+        l10n.tourRequests,
         isDark ? AppTheme.colors.blueAccent : AppTheme.colors.primary,
         () => Navigator.push(context, MaterialPageRoute(builder: (_) => const BookingInboxScreen())),
       );
@@ -1188,8 +1201,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
           children: [
             _buildGuideHubButton(
               Icons.inbox_rounded,
-              "Bookings",
-              unreadCount > 0 ? "$unreadCount new request${unreadCount == 1 ? '' : 's'}" : "Tour requests",
+              l10n.bookings,
+              unreadCount > 0 ? l10n.unreadRequestsCount(unreadCount) : l10n.tourRequests,
               isDark ? AppTheme.colors.blueAccent : AppTheme.colors.primary,
               () => Navigator.push(context, MaterialPageRoute(builder: (_) => const BookingInboxScreen())),
             ),
@@ -1216,6 +1229,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
   }
 
   Widget _buildPackagesEntry(bool isDark) {
+    final l10n = AppLocalizations.of(context)!;
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid == null) return const SizedBox.shrink();
 
@@ -1225,8 +1239,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
         final unlocked = snapshot.data ?? false;
         return _buildGuideHubButton(
           unlocked ? Icons.local_offer_outlined : Icons.lock_outline_rounded,
-          "Packages",
-          unlocked ? "Custom tour pricing" : "Upgrade to Pro",
+          l10n.packages,
+          unlocked ? l10n.customTourPricingSubtitle : l10n.upgradeToPro,
           isDark ? AppTheme.colors.orangeAccent : AppTheme.colors.primary,
           () {
             if (unlocked) {
@@ -1241,6 +1255,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
   }
 
   Widget _buildOperatorDashboardEntry(bool isDark) {
+    final l10n = AppLocalizations.of(context)!;
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid == null) return const SizedBox.shrink();
 
@@ -1253,8 +1268,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
             const SizedBox(height: 12),
             _buildGuideHubButton(
               Icons.groups_2_outlined,
-              "Manage team",
-              "Team, roles & branding",
+              l10n.manageTeam,
+              l10n.manageTeamSubtitle,
               isDark ? AppTheme.colors.amber[700]! : AppTheme.colors.primary,
               () => Navigator.push(context, MaterialPageRoute(builder: (_) => const OperatorDashboardScreen())),
             ),
@@ -1344,17 +1359,17 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
       children: [
         // Guide Enrollment (only for non-guides)
         if (profile.guideStatus != GuideStatus.approved && profile.role != 'guide_approved' && !profile.isGuideApproved && profile.role != 'admin') ...[
-          _tile(Icons.badge_outlined, "Become a Guide",
+          _tile(Icons.badge_outlined, l10n.becomeAGuide,
               onTap: () => Navigator.push(
                   context, MaterialPageRoute(builder: (_) => const GuideEnrollmentScreen()))),
         ],
 
-        _tile(Icons.event_note_outlined, "My Bookings",
+        _tile(Icons.event_note_outlined, l10n.myBookings,
             iconColor: AppPalette.rust,
             onTap: () => Navigator.push(
                 context, MaterialPageRoute(builder: (_) => const MyBookingsScreen()))),
 
-        _tile(Icons.family_restroom_outlined, "Family Sharing",
+        _tile(Icons.family_restroom_outlined, l10n.familySharing,
             iconColor: AppTheme.colors.blue[400],
             onTap: () => Navigator.push(
                 context, MaterialPageRoute(builder: (_) => const FamilyShareScreen()))),
@@ -1369,11 +1384,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
             onTap: () => Navigator.push(
                 context, MaterialPageRoute(builder: (_) => const TermsScreen()))),
 
-        _tile(Icons.qr_code_scanner_rounded, "Scan Guide QR",
+        _tile(Icons.qr_code_scanner_rounded, l10n.scanGuideQr,
             onTap: () => Navigator.push(
                 context, MaterialPageRoute(builder: (_) => const QRScannerScreen()))),
 
-        _tile(Icons.camera_alt_outlined, "Oracle Lens",
+        _tile(Icons.camera_alt_outlined, l10n.oracleLens,
             trailing: Switch(
               value: ref.watch(screenshotProvider),
               onChanged: (val) =>
@@ -1381,7 +1396,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
               activeThumbColor: AppPalette.rust,
             )),
 
-        _tile(Icons.fingerprint_rounded, "App Lock (Biometrics)",
+        _tile(Icons.fingerprint_rounded, l10n.appLockBiometrics,
             trailing: Switch(
               value: profile.isAppLockEnabled,
               onChanged: (val) async {
@@ -1395,7 +1410,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
         _tile(Icons.language_outlined, l10n.language,
             onTap: () => _showLanguagePicker(context)),
 
-        _tile(Icons.translate_rounded, "Bilingual (EN/SI)",
+        _tile(Icons.translate_rounded, l10n.bilingualToggle,
             trailing: Switch(
               value: ref.watch(localeProvider)?.languageCode == 'si',
               onChanged: (_) {
@@ -1405,15 +1420,15 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
               activeThumbColor: AppPalette.rust,
             )),
 
-        _tile(Icons.emergency_outlined, "Emergency Protocol",
+        _tile(Icons.emergency_outlined, l10n.emergencyProtocol,
             iconColor: AppTheme.colors.red[600],
             onTap: () => Navigator.push(
                 context, MaterialPageRoute(builder: (_) => const EmergencyKitScreen()))),
 
-        _tile(Icons.star_rate_rounded, "Rate the App",
+        _tile(Icons.star_rate_rounded, l10n.rateTheApp,
             onTap: () => RatingService().forceRequestReview()),
 
-        _tile(Icons.help_outline_rounded, "Support",
+        _tile(Icons.help_outline_rounded, l10n.support,
             onTap: () async {
               final uri = Uri(
                   scheme: 'mailto',
@@ -1425,8 +1440,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
         _tile(Icons.share_rounded, l10n.inviteFriends,
             onTap: () {
               SharePlus.instance.share(ShareParams(
-                text: "Join Hidden Gems SL! 🌍 https://hiddengems.lk",
-                subject: "Join me on Hidden Gems SL!",
+                text: l10n.shareAppMessage,
+                subject: l10n.shareAppSubject,
               ));
             }),
 
@@ -1450,7 +1465,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
             onTap: _confirmDeleteAccount),
 
         // Logout
-        _tile(Icons.logout_rounded, "Sign Out",
+        _tile(Icons.logout_rounded, l10n.signOut,
             textColor: AppTheme.colors.redAccent,
             iconColor: AppTheme.colors.redAccent,
             onTap: _confirmSignOut),
@@ -1464,9 +1479,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
     final confirm = await _showConfirmDialog(
       icon: Icons.warning_amber_rounded,
       iconColor: AppTheme.colors.redAccent,
-      title: "DELETE ACCOUNT",
+      title: l10n.deleteAccountDialogTitle,
       message: l10n.confirmDeleteMessage,
-      confirmLabel: "DELETE",
+      confirmLabel: l10n.deleteButtonLabel,
       confirmColor: AppTheme.colors.redAccent,
     );
     if (confirm != true) return;
@@ -1484,18 +1499,19 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
     } catch (e) {
       if (!mounted) return;
       Navigator.pop(context);
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error: $e")));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.genericErrorWithDetails(e.toString()))));
     }
   }
 
   // ── Confirm Sign Out ──────────────────────────────────────────────────────────
   Future<void> _confirmSignOut() async {
+    final l10n = AppLocalizations.of(context)!;
     final confirm = await _showConfirmDialog(
       icon: Icons.logout_rounded,
       iconColor: AppPalette.rust,
-      title: "SIGN OUT",
-      message: "Are you sure you want to sign out?",
-      confirmLabel: "SIGN OUT",
+      title: l10n.signOutDialogTitle,
+      message: l10n.confirmSignOutMessage,
+      confirmLabel: l10n.signOutDialogTitle,
       confirmColor: AppPalette.rust,
     );
     if (confirm != true) return;
@@ -1554,7 +1570,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                         padding: const EdgeInsets.symmetric(vertical: 14),
                       ),
-                      child: Text("CANCEL",
+                      child: Text(AppLocalizations.of(context)!.cancel.toUpperCase(),
                           style: GoogleFonts.outfit(
                               color: AppTheme.textSecondary(context),
                               fontWeight: FontWeight.bold,

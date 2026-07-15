@@ -8,6 +8,7 @@ import '../../core/theme/app_theme.dart';
 import '../../data/models/booking_request.dart';
 import '../../data/repositories/booking_repository.dart';
 import '../../data/repositories/marketplace_repository.dart';
+import '../../l10n/app_localizations.dart';
 
 /// Tourist-facing booking history — lets a tourist see the status of every
 /// booking request they've sent (pending / accepted / declined / etc.)
@@ -56,6 +57,7 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
@@ -65,12 +67,12 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen> {
           icon: Icon(Icons.arrow_back_ios_new, size: 20, color: AppTheme.textPrimary(context)),
           onPressed: () => Navigator.pop(context),
         ),
-        title: Text('My bookings', style: GoogleFonts.outfit(fontWeight: FontWeight.w800, fontSize: 18, color: AppTheme.textPrimary(context))),
+        title: Text(l10n.myBookingsTitle, style: GoogleFonts.outfit(fontWeight: FontWeight.w800, fontSize: 18, color: AppTheme.textPrimary(context))),
       ),
       body: _isLoading
           ? Center(child: CircularProgressIndicator(color: Theme.of(context).colorScheme.primary))
           : _bookings.isEmpty
-              ? _buildEmptyState(context)
+              ? _buildEmptyState(context, l10n)
               : RefreshIndicator(
                   color: Theme.of(context).colorScheme.primary,
                   onRefresh: _load,
@@ -78,13 +80,13 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen> {
                     padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
                     physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
                     itemCount: _bookings.length,
-                    itemBuilder: (context, index) => _buildBookingCard(context, _bookings[index]),
+                    itemBuilder: (context, index) => _buildBookingCard(context, l10n, _bookings[index]),
                   ),
                 ),
     );
   }
 
-  Widget _buildEmptyState(BuildContext context) {
+  Widget _buildEmptyState(BuildContext context, AppLocalizations l10n) {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
@@ -93,10 +95,10 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen> {
           children: [
             Icon(Icons.event_note_outlined, size: 56, color: AppTheme.textSecondary(context).withValues(alpha: 0.3)),
             const SizedBox(height: 16),
-            Text('No bookings yet', style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.w700, color: AppTheme.textPrimary(context))),
+            Text(l10n.myBookingsEmptyTitle, style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.w700, color: AppTheme.textPrimary(context))),
             const SizedBox(height: 8),
             Text(
-              'Requests you send to guides will show up here with their status.',
+              l10n.myBookingsEmptySubtitle,
               textAlign: TextAlign.center,
               style: GoogleFonts.inter(fontSize: 13, color: AppTheme.textSecondary(context)),
             ),
@@ -106,9 +108,9 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen> {
     );
   }
 
-  Widget _buildBookingCard(BuildContext context, BookingRequest booking) {
-    final guideName = _guideNames[booking.guideId] ?? 'Guide';
-    final status = _StatusInfo.forStatus(booking.status);
+  Widget _buildBookingCard(BuildContext context, AppLocalizations l10n, BookingRequest booking) {
+    final guideName = _guideNames[booking.guideId] ?? l10n.guideFallbackName;
+    final status = _StatusInfo.forStatus(booking.status, l10n);
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
@@ -142,7 +144,7 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen> {
               const SizedBox(width: 16),
               Icon(Icons.group_rounded, size: 13, color: AppTheme.textSecondary(context)),
               const SizedBox(width: 6),
-              Text('${booking.guestCount} guests', style: GoogleFonts.inter(fontSize: 12, color: AppTheme.textSecondary(context))),
+              Text(l10n.guestCountLabel(booking.guestCount), style: GoogleFonts.inter(fontSize: 12, color: AppTheme.textSecondary(context))),
             ],
           ),
           if (booking.notes != null && booking.notes!.isNotEmpty) ...[
@@ -154,7 +156,7 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen> {
               style: GoogleFonts.inter(fontSize: 12, color: AppTheme.textSecondary(context), fontStyle: FontStyle.italic),
             ),
           ],
-          _buildPaymentRow(context, booking),
+          _buildPaymentRow(context, l10n, booking),
         ],
       ),
     ).animate().fadeIn(duration: 300.ms).slideY(begin: 0.05);
@@ -174,7 +176,7 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen> {
   /// restore the "Pay Now" ElevatedButton (see git history / session notes)
   /// calling PaymentService.fetchQuote() + PaymentService.launchCheckout() —
   /// no other code needs to change, the backend flow is already live.
-  Widget _buildPaymentRow(BuildContext context, BookingRequest booking) {
+  Widget _buildPaymentRow(BuildContext context, AppLocalizations l10n, BookingRequest booking) {
     final hasPrice = (booking.status == 'accepted' || booking.status == 'session_ready') &&
         (booking.quotedPrice ?? 0) > 0;
     final isPaid = booking.payoutStatus == 'paid';
@@ -198,12 +200,12 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen> {
               children: [
                 Icon(Icons.check_circle_rounded, size: 16, color: AppTheme.colors.green),
                 const SizedBox(width: 6),
-                Text('Paid', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w700, color: AppTheme.colors.green)),
+                Text(l10n.paymentPaidLabel, style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w700, color: AppTheme.colors.green)),
               ],
             )
           else
             Text(
-              'Pay guide directly',
+              l10n.payGuideDirectlyLabel,
               style: GoogleFonts.inter(fontSize: 11, color: AppTheme.textSecondary(context), fontWeight: FontWeight.w600),
             ),
         ],
@@ -217,25 +219,25 @@ class _StatusInfo {
   final Color color;
   const _StatusInfo(this.label, this.color);
 
-  static _StatusInfo forStatus(String status) {
+  static _StatusInfo forStatus(String status, AppLocalizations l10n) {
     switch (status) {
       case 'pending':
-        return const _StatusInfo('Awaiting response', AppPalette.warning);
+        return _StatusInfo(l10n.bookingStatusPendingLabel, AppPalette.warning);
       case 'accepted':
-        return const _StatusInfo('Accepted', AppPalette.success);
+        return _StatusInfo(l10n.bookingStatusAcceptedLabel, AppPalette.success);
       case 'session_ready':
-        return const _StatusInfo('Ready', AppPalette.success);
+        return _StatusInfo(l10n.bookingStatusSessionReadyLabel, AppPalette.success);
       case 'declined':
-        return const _StatusInfo('Declined', AppPalette.error);
+        return _StatusInfo(l10n.bookingStatusDeclinedLabel, AppPalette.error);
       case 'expired':
-        return const _StatusInfo('Expired', AppPalette.textMuted);
+        return _StatusInfo(l10n.bookingStatusExpiredLabel, AppPalette.textMuted);
       case 'cancelled_by_tourist':
       case 'cancelled_by_guide':
-        return const _StatusInfo('Cancelled', AppPalette.textMuted);
+        return _StatusInfo(l10n.bookingStatusCancelledLabel, AppPalette.textMuted);
       case 'completed':
-        return const _StatusInfo('Completed', AppPalette.earth);
+        return _StatusInfo(l10n.bookingStatusCompletedLabel, AppPalette.earth);
       default:
-        return const _StatusInfo('Pending', AppPalette.warning);
+        return _StatusInfo(l10n.bookingStatusDefaultLabel, AppPalette.warning);
     }
   }
 }

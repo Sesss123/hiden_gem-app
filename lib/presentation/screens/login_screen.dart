@@ -8,6 +8,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../../data/datasources/auth_service.dart';
 import '../../data/datasources/user_preference_service.dart';
 import '../widgets/custom_buttons.dart';
+import '../../l10n/app_localizations.dart';
 import 'home_screen.dart';
 import 'terms_screen.dart';
 
@@ -96,7 +97,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
-                        "Authentication Failed: ${_mapAuthException(e)}",
+                        AppLocalizations.of(context)!.authFailedPrefix(_mapAuthException(context, e)),
                         style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.bold),
                       ),
                     ),
@@ -114,10 +115,11 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _handleForgotPassword() async {
     final email = _emailController.text.trim();
+    final l10n = AppLocalizations.of(context)!;
     if (email.isEmpty || !email.contains('@')) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text("Please enter your registered email address first."),
+          content: Text(l10n.enterEmailFirst),
           backgroundColor: Theme.of(context).colorScheme.error,
           behavior: SnackBarBehavior.floating,
         ),
@@ -129,7 +131,7 @@ class _LoginScreenState extends State<LoginScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text("Password reset instructions sent to $email."),
+          content: Text(AppLocalizations.of(context)!.passwordResetSent(email)),
           backgroundColor: AppTheme.modernGreen(context),
           behavior: SnackBarBehavior.floating,
         ),
@@ -138,7 +140,7 @@ class _LoginScreenState extends State<LoginScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text("Failed to send reset email: ${_mapAuthException(e)}"),
+          content: Text(AppLocalizations.of(context)!.resetEmailFailedPrefix(_mapAuthException(context, e))),
           backgroundColor: Theme.of(context).colorScheme.error,
           behavior: SnackBarBehavior.floating,
         ),
@@ -163,12 +165,12 @@ class _LoginScreenState extends State<LoginScreen> {
                   Icon(Icons.lock_clock_rounded, color: AppTheme.colors.redAccent, size: 48),
                   const SizedBox(height: 24),
                   OracleUI.neonText(
-                    "ZENITH LOCK ACTIVE",
+                    AppLocalizations.of(context)!.zenithLockActive,
                     style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.colors.redAccent, letterSpacing: 2),
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    "Multiple failed attempts detected.\nNeural link restricted to prevent brute force.",
+                    AppLocalizations.of(context)!.lockoutMessage,
                     textAlign: TextAlign.center,
                     style: GoogleFonts.inter(color: AppTheme.colors.white70, fontSize: 13),
                   ),
@@ -193,7 +195,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const SizedBox(height: 32),
                   Text(
-                    "TIME REMAINING",
+                    AppLocalizations.of(context)!.timeRemaining,
                     style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.w900, color: AppTheme.colors.white24, letterSpacing: 2),
                   ),
                 ],
@@ -225,7 +227,7 @@ class _LoginScreenState extends State<LoginScreen> {
         );
       } else if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Google Sign-In was cancelled.")),
+          SnackBar(content: Text(AppLocalizations.of(context)!.googleSignInCancelled)),
         );
       }
     } catch (e) {
@@ -244,7 +246,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      "Google Sign-In Failed: ${_mapAuthException(e)}",
+                      AppLocalizations.of(context)!.googleSignInFailedPrefix(_mapAuthException(context, e)),
                       style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.bold),
                     ),
                   ),
@@ -257,48 +259,49 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  String _mapAuthException(Object e) {
+  String _mapAuthException(BuildContext context, Object e) {
+    final l10n = AppLocalizations.of(context)!;
     if (e is FirebaseAuthException) {
       switch (e.code) {
         case 'invalid-credential':
         case 'wrong-password':
         case 'user-not-found':
-          return "Invalid email or password. Please try again.";
+          return l10n.authErrorInvalidCredential;
         case 'user-disabled':
-          return "This account has been disabled.";
+          return l10n.authErrorUserDisabled;
         case 'email-already-in-use':
-          return "The email address is already in use by another account.";
+          return l10n.authErrorEmailInUse;
         case 'weak-password':
-          return "The password provided is too weak.";
+          return l10n.authErrorWeakPassword;
         case 'invalid-email':
-          return "Please enter a valid email address.";
+          return l10n.authErrorInvalidEmail;
         case 'network-request-failed':
-          return "Network request failed. Please check your internet connection.";
+          return l10n.authErrorNetwork;
         case 'too-many-requests':
-          return "Too many requests. Please try again later.";
+          return l10n.authErrorTooManyRequests;
         case 'operation-not-allowed':
-          return "This operation is not allowed.";
+          return l10n.authErrorNotAllowed;
         default:
-          return e.message ?? "An authentication error occurred.";
+          return e.message ?? l10n.authErrorGeneric;
       }
     }
     final message = e.toString().toLowerCase();
     if (message.contains('invalid-credential') || message.contains('wrong-password') || message.contains('user-not-found')) {
-      return "Invalid email or password. Please try again.";
+      return l10n.authErrorInvalidCredential;
     } else if (message.contains('user-disabled')) {
-      return "This account has been disabled.";
+      return l10n.authErrorUserDisabled;
     } else if (message.contains('email-already-in-use')) {
-      return "The email address is already in use by another account.";
+      return l10n.authErrorEmailInUse;
     } else if (message.contains('weak-password')) {
-      return "The password provided is too weak.";
+      return l10n.authErrorWeakPassword;
     } else if (message.contains('invalid-email')) {
-      return "Please enter a valid email address.";
+      return l10n.authErrorInvalidEmail;
     } else if (message.contains('network-request-failed')) {
-      return "Network request failed. Please check your internet connection.";
+      return l10n.authErrorNetwork;
     } else if (message.contains('too-many-requests')) {
-      return "Too many requests. Please try again later.";
+      return l10n.authErrorTooManyRequests;
     } else if (message.contains('operation-not-allowed')) {
-      return "This operation is not allowed.";
+      return l10n.authErrorNotAllowed;
     }
     return e.toString().split(']').last.replaceAll('Exception:', '').trim();
   }
@@ -307,6 +310,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     final primaryColor = Theme.of(context).colorScheme.primary;
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -342,7 +346,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ).animate().fadeIn(duration: 400.ms).scale(begin: const Offset(0.85, 0.85), end: const Offset(1, 1)),
                     const SizedBox(height: 18),
                     Text(
-                      _isLoginMode ? "Welcome to Hidden Gems" : "Create your account",
+                      _isLoginMode ? l10n.welcomeToApp : l10n.createYourAccount,
                       textAlign: TextAlign.center,
                       style: GoogleFonts.outfit(
                         fontSize: 22,
@@ -353,7 +357,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ).animate().fadeIn(duration: 400.ms, delay: 80.ms),
                     const SizedBox(height: 6),
                     Text(
-                      _isLoginMode ? "Sri Lanka's AI travel companion" : "Start planning your Sri Lanka trip",
+                      _isLoginMode ? l10n.loginSubtitle : l10n.signupSubtitle,
                       textAlign: TextAlign.center,
                       style: GoogleFonts.inter(
                         fontSize: 13,
@@ -372,8 +376,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       child: Row(
                         children: [
-                          Expanded(child: _buildModeTab(context, label: "Sign in", selected: _isLoginMode)),
-                          Expanded(child: _buildModeTab(context, label: "Create account", selected: !_isLoginMode)),
+                          Expanded(child: _buildModeTab(context, label: l10n.signIn, selected: _isLoginMode)),
+                          Expanded(child: _buildModeTab(context, label: l10n.createAccount, selected: !_isLoginMode)),
                         ],
                       ),
                     ),
@@ -392,34 +396,34 @@ class _LoginScreenState extends State<LoginScreen> {
                         if (!_isLoginMode) ...[
                           _buildTextField(
                             controller: _nameController,
-                            label: "Name",
+                            label: l10n.nameLabel,
                             icon: Icons.person_outline_rounded,
                             autofillHints: [AutofillHints.name],
-                            validator: (v) => v!.isEmpty ? "Identifier required" : null,
+                            validator: (v) => v!.isEmpty ? l10n.identifierRequired : null,
                           ),
                           const SizedBox(height: 16),
                         ],
                         _buildTextField(
                           controller: _emailController,
-                          label: "Email",
+                          label: l10n.emailLabel,
                           icon: Icons.alternate_email_rounded,
                           keyboardType: TextInputType.emailAddress,
                           autofillHints: [AutofillHints.email],
-                          validator: (v) => !v!.contains("@") ? "Invalid address" : null,
+                          validator: (v) => !v!.contains("@") ? l10n.invalidAddress : null,
                         ),
                         const SizedBox(height: 16),
                         _buildTextField(
                           controller: _passwordController,
-                          label: "Password",
+                          label: l10n.passwordLabel,
                           icon: Icons.lock_outline_rounded,
                           isPassword: true,
                           autofillHints: _isLoginMode ? [AutofillHints.password] : [AutofillHints.newPassword],
-                          validator: (v) => v!.length < 6 ? "Insufficient complexity" : null,
+                          validator: (v) => v!.length < 6 ? l10n.insufficientComplexity : null,
                         ),
                         if (!_isLoginMode) ...[
                           const SizedBox(height: 6),
                           Text(
-                            "At least 6 characters",
+                            l10n.atLeast6Chars,
                             style: GoogleFonts.inter(
                               fontSize: 11,
                               color: AppTheme.textSecondary(context).withValues(alpha: 0.7),
@@ -438,7 +442,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                               ),
                               child: Text(
-                                "Forgot password?",
+                                l10n.forgotPassword,
                                 style: GoogleFonts.inter(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w600,
@@ -451,7 +455,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         const SizedBox(height: 22),
 
                         PrimaryButton(
-                          label: _isLoginMode ? "Sign in" : "Create account",
+                          label: _isLoginMode ? l10n.signIn : l10n.createAccount,
                           isLoading: _isLoading,
                           onPressed: _isLoading ? null : _handleSubmit,
                         ),
@@ -463,7 +467,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             Padding(
                               padding: const EdgeInsets.symmetric(horizontal: 10),
                               child: Text(
-                                "or continue with",
+                                l10n.orContinueWith,
                                 style: GoogleFonts.inter(
                                   color: AppTheme.textSecondary(context),
                                   fontSize: 12,
@@ -497,7 +501,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   const SizedBox(width: 20, height: 20, child: _GoogleLogo()),
                                   const SizedBox(width: 10),
                                   Text(
-                                    "Google",
+                                    l10n.googleLabel,
                                     style: GoogleFonts.inter(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 13,

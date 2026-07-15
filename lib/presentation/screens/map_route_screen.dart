@@ -11,6 +11,7 @@ import '../../core/utils/secure_logger.dart';
 import '../../core/services/usage_limiter_service.dart';
 import '../widgets/cached_image.dart';
 import '../widgets/limit_reached_dialog.dart';
+import '../../l10n/app_localizations.dart';
 
 class MapRouteScreen extends StatefulWidget {
   final TripPlan plan;
@@ -29,12 +30,22 @@ class _MapRouteScreenState extends State<MapRouteScreen> {
   bool _isOfflineMapMode = false;
   late TripPlan _plan;
 
+  bool _markersInitialized = false;
+
   @override
   void initState() {
     super.initState();
     _plan = widget.plan;
-    _initMarkersAndRoutes(context);
     _checkOfflineStatus();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_markersInitialized) {
+      _markersInitialized = true;
+      _initMarkersAndRoutes(context);
+    }
   }
 
   Future<void> _checkOfflineStatus() async {
@@ -62,7 +73,8 @@ class _MapRouteScreenState extends State<MapRouteScreen> {
   Future<void> _saveOfflineMap() async {
     if (_isSavingMap) return;
     setState(() => _isSavingMap = true);
-    
+    final l10n = AppLocalizations.of(context)!;
+
     try {
       final imageBytes = await _controller.takeSnapshot();
       if (imageBytes != null) {
@@ -80,24 +92,25 @@ class _MapRouteScreenState extends State<MapRouteScreen> {
             });
             await TripCacheService.updateSavedPlan(id, _plan);
             if (mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Offline route map saved successfully!")));
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.offlineRouteMapSavedSuccess)));
             }
           }
         } else {
            if (mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: const Text("Cannot save map. Please save the trip plan first!"),
+                  content: Text(l10n.cannotSaveMapSaveTripFirst),
                   action: SnackBarAction(
-                    label: "SAVE TRIP",
+                    label: l10n.saveTripAction,
                     onPressed: () async {
                       try {
                         final canSave = await UsageLimiterService.canSavePlan();
                         if (!canSave) {
                           if (context.mounted) {
+                            final featureName = AppLocalizations.of(context)!.savedPlansFeatureName;
                             showDialog(
                               context: context,
-                              builder: (_) => const LimitReachedDialog(featureName: 'Saved Plans'),
+                              builder: (_) => LimitReachedDialog(featureName: featureName),
                             );
                           }
                           return;
@@ -112,7 +125,7 @@ class _MapRouteScreenState extends State<MapRouteScreen> {
                           await TripCacheService.updateSavedPlan(id, _plan);
                           if (mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text("Offline route map saved successfully!")),
+                              SnackBar(content: Text(AppLocalizations.of(context)!.offlineRouteMapSavedSuccess)),
                             );
                           }
                         }
@@ -129,7 +142,7 @@ class _MapRouteScreenState extends State<MapRouteScreen> {
     } catch (e) {
       SecureLogger.error("Failed to save map snapshot: $e");
       if (mounted) {
-         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Failed to save map: $e")));
+         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.failedToSaveMapError(e.toString()))));
       }
     } finally {
       if (mounted) setState(() => _isSavingMap = false);
@@ -137,6 +150,7 @@ class _MapRouteScreenState extends State<MapRouteScreen> {
   }
 
   void _initMarkersAndRoutes(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     List<LatLng> points = [];
     int counter = 1;
 
@@ -151,8 +165,8 @@ class _MapRouteScreenState extends State<MapRouteScreen> {
               markerId: MarkerId("${item.title}_$counter"),
               position: pos,
               infoWindow: InfoWindow(
-                title: item.title, 
-                snippet: "Day ${day.day} • ${item.time}",
+                title: item.title,
+                snippet: l10n.mapMarkerDaySnippet(day.day, item.time),
               ),
               icon: BitmapDescriptor.defaultMarkerWithHue(
                 item.isHotel ? BitmapDescriptor.hueAzure : BitmapDescriptor.hueOrange
@@ -202,10 +216,11 @@ class _MapRouteScreenState extends State<MapRouteScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: Text("Visual Route", style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: AppTheme.textPrimary(context))),
+        title: Text(l10n.visualRouteTitle, style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: AppTheme.textPrimary(context))),
         backgroundColor: AppTheme.colors.transparent,
         elevation: 0,
         leading: IconButton(
@@ -282,11 +297,11 @@ class _MapRouteScreenState extends State<MapRouteScreen> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          "Journey Visualizer",
+                          l10n.journeyVisualizerTitle,
                           style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.bold),
                         ),
                         Text(
-                          "${_plan.itinerary.length} Days across ${_plan.destination}",
+                          l10n.journeyVisualizerSubtitle(_plan.itinerary.length, _plan.destination),
                           style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 12),
                         ),
                       ],
@@ -298,13 +313,13 @@ class _MapRouteScreenState extends State<MapRouteScreen> {
                         ? SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: AppPalette.rust, strokeWidth: 2))
                         : Icon(Icons.download, color: AppPalette.rust),
                       onPressed: _saveOfflineMap,
-                      tooltip: "Save Offline Map",
+                      tooltip: l10n.saveOfflineMapTooltip,
                     ),
                     const SizedBox(width: 8),
                     ElevatedButton.icon(
                       onPressed: _fitBounds,
                       icon: const Icon(Icons.center_focus_strong, size: 18),
-                      label: const Text("FOCUS"),
+                      label: Text(l10n.focusButtonLabel),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppPalette.rust,
                         foregroundColor: AppTheme.colors.white,

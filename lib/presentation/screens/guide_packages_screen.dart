@@ -6,6 +6,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../../core/theme/app_theme.dart';
 import '../../data/models/tour_package.dart';
 import '../../data/repositories/package_repository.dart';
+import '../../l10n/app_localizations.dart';
 
 /// Custom Tour Packages — Pro/Elite guide benefit (gated at the profile hub
 /// entry point). Lets a guide offer multiple priced tour options instead of
@@ -59,7 +60,7 @@ class _GuidePackagesScreenState extends ConsumerState<GuidePackagesScreen> {
           icon: Icon(Icons.arrow_back_ios_new, size: 20, color: AppTheme.textPrimary(context)),
           onPressed: () => Navigator.pop(context),
         ),
-        title: Text('Tour packages', style: GoogleFonts.outfit(fontWeight: FontWeight.w800, fontSize: 20, letterSpacing: -0.5, color: AppTheme.textPrimary(context))),
+        title: Text(AppLocalizations.of(context)!.tourPackagesTitle, style: GoogleFonts.outfit(fontWeight: FontWeight.w800, fontSize: 20, letterSpacing: -0.5, color: AppTheme.textPrimary(context))),
         centerTitle: false,
       ),
       floatingActionButton: FloatingActionButton(
@@ -92,10 +93,10 @@ class _GuidePackagesScreenState extends ConsumerState<GuidePackagesScreen> {
           children: [
             Icon(Icons.local_offer_outlined, size: 56, color: AppTheme.textSecondary(context).withValues(alpha: 0.3)),
             const SizedBox(height: 16),
-            Text('No packages yet', style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.w700, color: AppTheme.textPrimary(context))),
+            Text(AppLocalizations.of(context)!.noPackagesYetTitle, style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.w700, color: AppTheme.textPrimary(context))),
             const SizedBox(height: 8),
             Text(
-              'Offer half-day, full-day, or multi-day tour packages with fixed pricing.',
+              AppLocalizations.of(context)!.noPackagesYetSubtitle,
               textAlign: TextAlign.center,
               style: GoogleFonts.inter(fontSize: 13, color: AppTheme.textSecondary(context)),
             ),
@@ -106,6 +107,7 @@ class _GuidePackagesScreenState extends ConsumerState<GuidePackagesScreen> {
   }
 
   Widget _buildPackageCard(TourPackage package) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
@@ -134,18 +136,18 @@ class _GuidePackagesScreenState extends ConsumerState<GuidePackagesScreen> {
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                             decoration: BoxDecoration(color: AppTheme.surfaceMuted(context), borderRadius: BorderRadius.circular(100)),
-                            child: Text('Inactive', style: GoogleFonts.inter(fontSize: 9, fontWeight: FontWeight.w700, color: AppTheme.textSecondary(context))),
+                            child: Text(l10n.inactiveLabel, style: GoogleFonts.inter(fontSize: 9, fontWeight: FontWeight.w700, color: AppTheme.textSecondary(context))),
                           ),
                       ],
                     ),
                     const SizedBox(height: 6),
                     Text(
-                      '${package.durationHours}h · up to ${package.maxGuests} guests',
+                      l10n.durationGuestsLabel(package.durationHours.toString(), package.maxGuests.toString()),
                       style: GoogleFonts.inter(fontSize: 11, color: AppTheme.textSecondary(context)),
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      '${package.currency} ${package.price.toStringAsFixed(0)}',
+                      l10n.currencyPriceLabel(package.currency, package.price.toStringAsFixed(0)),
                       style: GoogleFonts.outfit(fontSize: 15, fontWeight: FontWeight.w800, color: Theme.of(context).colorScheme.primary),
                     ),
                   ],
@@ -252,7 +254,7 @@ class _PackageEditorScreenState extends State<_PackageEditorScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to save package: $e'), backgroundColor: Theme.of(context).colorScheme.error),
+          SnackBar(content: Text(AppLocalizations.of(context)!.failedToSavePackageMessage(e.toString())), backgroundColor: Theme.of(context).colorScheme.error),
         );
       }
     } finally {
@@ -262,6 +264,7 @@ class _PackageEditorScreenState extends State<_PackageEditorScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
@@ -272,7 +275,7 @@ class _PackageEditorScreenState extends State<_PackageEditorScreen> {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          widget.existing == null ? 'New package' : 'Edit package',
+          widget.existing == null ? l10n.newPackageTitle : l10n.editPackageTitle,
           style: GoogleFonts.outfit(fontWeight: FontWeight.w800, fontSize: 18, color: AppTheme.textPrimary(context)),
         ),
       ),
@@ -283,15 +286,15 @@ class _PackageEditorScreenState extends State<_PackageEditorScreen> {
             padding: const EdgeInsets.all(20),
             physics: const BouncingScrollPhysics(),
             children: [
-              _buildTextField(controller: _titleController, label: 'Package title', hint: 'e.g. Full-day Sigiriya & Dambulla', validator: (v) => v == null || v.isEmpty ? 'Required' : null),
+              _buildTextField(controller: _titleController, label: l10n.packageTitleLabel, hint: l10n.packageTitleHint, validator: (v) => v == null || v.isEmpty ? l10n.requiredFieldMessage : null),
               const SizedBox(height: 16),
-              _buildTextField(controller: _descriptionController, label: 'Description', hint: 'What does this package include?', maxLines: 3),
+              _buildTextField(controller: _descriptionController, label: l10n.descriptionLabel, hint: l10n.packageDescriptionHint, maxLines: 3),
               const SizedBox(height: 16),
               Row(
                 children: [
-                  Expanded(child: _buildTextField(controller: _durationController, label: 'Duration (hours)', hint: '4', keyboardType: TextInputType.number)),
+                  Expanded(child: _buildTextField(controller: _durationController, label: l10n.durationHoursLabel, hint: '4', keyboardType: TextInputType.number)),
                   const SizedBox(width: 12),
-                  Expanded(child: _buildTextField(controller: _maxGuestsController, label: 'Max guests', hint: '4', keyboardType: TextInputType.number)),
+                  Expanded(child: _buildTextField(controller: _maxGuestsController, label: l10n.maxGuestsLabel, hint: '4', keyboardType: TextInputType.number)),
                 ],
               ),
               const SizedBox(height: 16),
@@ -299,7 +302,7 @@ class _PackageEditorScreenState extends State<_PackageEditorScreen> {
                 children: [
                   Expanded(
                     flex: 2,
-                    child: _buildTextField(controller: _priceController, label: 'Price', hint: '150', keyboardType: TextInputType.number, validator: (v) => v == null || v.isEmpty ? 'Required' : null),
+                    child: _buildTextField(controller: _priceController, label: l10n.priceLabel, hint: '150', keyboardType: TextInputType.number, validator: (v) => v == null || v.isEmpty ? l10n.requiredFieldMessage : null),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
@@ -307,19 +310,19 @@ class _PackageEditorScreenState extends State<_PackageEditorScreen> {
                       initialValue: _currency,
                       items: _currencies.map((c) => DropdownMenuItem(value: c, child: Text(c))).toList(),
                       onChanged: (v) => setState(() => _currency = v ?? 'USD'),
-                      decoration: InputDecoration(labelText: 'Currency', border: OutlineInputBorder(borderRadius: BorderRadius.circular(14))),
+                      decoration: InputDecoration(labelText: l10n.currencyLabel, border: OutlineInputBorder(borderRadius: BorderRadius.circular(14))),
                     ),
                   ),
                 ],
               ),
               const SizedBox(height: 16),
-              _buildTextField(controller: _inclusionsController, label: 'Inclusions (comma separated)', hint: 'Lunch, entrance fees, water'),
+              _buildTextField(controller: _inclusionsController, label: l10n.inclusionsLabel, hint: l10n.inclusionsHint),
               const SizedBox(height: 16),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                 decoration: BoxDecoration(color: AppTheme.surfaceMuted(context), borderRadius: BorderRadius.circular(16)),
                 child: SwitchListTile(
-                  title: Text('Includes vehicle', style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.w600)),
+                  title: Text(l10n.includesVehicleLabel, style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.w600)),
                   value: _includesVehicle,
                   activeThumbColor: Theme.of(context).colorScheme.primary,
                   contentPadding: EdgeInsets.zero,
@@ -331,7 +334,7 @@ class _PackageEditorScreenState extends State<_PackageEditorScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                 decoration: BoxDecoration(color: AppTheme.surfaceMuted(context), borderRadius: BorderRadius.circular(16)),
                 child: SwitchListTile(
-                  title: Text('Active (bookable by tourists)', style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.w600)),
+                  title: Text(l10n.activeBookableLabel, style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.w600)),
                   value: _isActive,
                   activeThumbColor: Theme.of(context).colorScheme.primary,
                   contentPadding: EdgeInsets.zero,
@@ -352,7 +355,7 @@ class _PackageEditorScreenState extends State<_PackageEditorScreen> {
                   ),
                   child: _isSaving
                       ? SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Theme.of(context).colorScheme.onPrimary))
-                      : Text('Save package', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 14)),
+                      : Text(l10n.savePackageButton, style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 14)),
                 ),
               ),
             ],

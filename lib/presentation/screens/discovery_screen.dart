@@ -141,7 +141,7 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
       setState(() => _isLoading = false);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text("Oracle connection disrupted: ${e.toString()}"),
+          content: Text(AppLocalizations.of(context)!.oracleConnectionDisrupted(e.toString())),
           backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );
@@ -288,7 +288,8 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
       builder: (context) => StatefulBuilder(
         builder: (context, setModalState) {
           final isDark = Theme.of(context).brightness == Brightness.dark;
-          
+          final l10n = AppLocalizations.of(context)!;
+
           return Container(
             height: MediaQuery.of(context).size.height * 0.7,
             decoration: BoxDecoration(
@@ -317,7 +318,7 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       OracleUI.neonText(
-                        "DISCOVERY FILTERS",
+                        l10n.discoveryFiltersTitle,
                         style: GoogleFonts.outfit(fontSize: 24, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.secondary),
                       ),
                       TextButton(
@@ -328,15 +329,15 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
                             _onlyAR = false;
                           });
                         },
-                        child: Text("RESET", style: GoogleFonts.outfit(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.bold, letterSpacing: 1)),
+                        child: Text(l10n.resetButton, style: GoogleFonts.outfit(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.bold, letterSpacing: 1)),
                       ),
                     ],
                   ),
                   const SizedBox(height: 40),
-                  
+
                   // Distance Selector
                   Text(
-                    "MAXIMUM RADIUS: ${_maxDistance.toInt()} KM",
+                    l10n.maximumRadiusKm(_maxDistance.toInt()),
                     style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.bold, color: AppTheme.textPrimary(context), letterSpacing: 1),
                   ),
                   Slider(
@@ -353,7 +354,7 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
 
                   // Price Range
                   Text(
-                    "BUDGET LEVEL",
+                    l10n.budgetLevelLabel,
                     style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.bold, color: AppTheme.textPrimary(context), letterSpacing: 1),
                   ),
                   const SizedBox(height: 16),
@@ -363,6 +364,13 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
                     children: ["All", "Free", "Economy", "Premium"].map((p) {
                       final isSelected = _selectedPriceRange == p;
                       final primary = Theme.of(context).colorScheme.primary;
+                      final label = switch (p) {
+                        "All" => l10n.priceRangeAll,
+                        "Free" => l10n.priceRangeFree,
+                        "Economy" => l10n.priceRangeEconomy,
+                        "Premium" => l10n.priceRangePremium,
+                        _ => p,
+                      };
                       return GestureDetector(
                         onTap: () => setModalState(() => _selectedPriceRange = p),
                         child: AnimatedContainer(
@@ -381,7 +389,7 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
                             ),
                           ),
                           child: Text(
-                            p.toUpperCase(),
+                            label.toUpperCase(),
                             style: GoogleFonts.inter(
                               fontSize: 11,
                               fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
@@ -411,11 +419,11 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  "HERITAGE AR SEARCH",
+                                  l10n.heritageArSearchTitle,
                                   style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 13, color: AppTheme.textPrimary(context)),
                                 ),
                                 Text(
-                                  "ONLY SHOW AR ENABLED SPOTS",
+                                  l10n.onlyShowArEnabledSpots,
                                   style: GoogleFonts.inter(fontSize: 10, color: AppTheme.textSecondary(context)),
                                 ),
                               ],
@@ -445,7 +453,7 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                       ),
                       child: Text(
-                        "REVEAL DESTINIES",
+                        l10n.revealDestinies,
                         style: GoogleFonts.outfit(color: AppTheme.colors.white, fontWeight: FontWeight.bold, letterSpacing: 2),
                       ),
                     ),
@@ -552,7 +560,7 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
                         Icon(Icons.person_pin_rounded, size: 14, color: Theme.of(context).colorScheme.secondary),
                         const SizedBox(width: 4),
                         Text(
-                          "Hosted by ${exp.hostName}",
+                          AppLocalizations.of(context)!.hostedByName(exp.hostName),
                           style: GoogleFonts.inter(fontSize: 12, color: AppTheme.textSecondary(context), fontWeight: FontWeight.w600),
                         ),
                       ],
@@ -576,7 +584,7 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
                     ),
                     const SizedBox(height: 24),
                     Text(
-                      "LKR ${exp.price.toStringAsFixed(0)}",
+                      AppLocalizations.of(context)!.priceInLkr(exp.price.toStringAsFixed(0)),
                       style: GoogleFonts.outfit(fontSize: 22, fontWeight: FontWeight.w800, color: Theme.of(context).colorScheme.primary),
                     ),
                   ],
@@ -990,7 +998,7 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
                     _applyFilter();
                   }),
                   icon: Icon(Icons.refresh_rounded, color: Theme.of(context).colorScheme.primary),
-                  label: Text("RESET ALL FILTERS", style: GoogleFonts.outfit(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.bold, letterSpacing: 1)),
+                  label: Text(l10n.resetAllFilters, style: GoogleFonts.outfit(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.bold, letterSpacing: 1)),
                 ),
               ],
             ),
@@ -1025,6 +1033,7 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
 
 
   Widget _buildSectionTitle(String title, IconData icon) {
+    final l10n = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       child: Row(
@@ -1039,7 +1048,7 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
             ),
           ),
           Text(
-            "See all",
+            l10n.seeAll,
             style: GoogleFonts.inter(
               fontSize: 11,
               fontWeight: FontWeight.w600,
@@ -1139,7 +1148,7 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
                                       Icon(Icons.view_in_ar_rounded, color: Theme.of(context).colorScheme.secondary, size: 14),
                                       const SizedBox(width: 6),
                                       Text(
-                                        "AR",
+                                        l10n.arBadge,
                                         style: GoogleFonts.outfit(color: AppTheme.colors.white, fontWeight: FontWeight.bold, fontSize: 10, letterSpacing: 1),
                                       ),
                                     ],
@@ -1378,7 +1387,7 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
                               Icon(Icons.view_in_ar_rounded, size: 10, color: Theme.of(context).colorScheme.secondary),
                               const SizedBox(width: 6),
                               Text(
-                                "HERITAGE AR",
+                                l10n.heritageArBadge,
                                 style: GoogleFonts.outfit(
                                   color: Theme.of(context).colorScheme.secondary,
                                   fontWeight: FontWeight.bold,

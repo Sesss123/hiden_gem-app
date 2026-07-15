@@ -8,6 +8,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../../core/theme/app_theme.dart';
 import '../../data/datasources/premium_service.dart';
 import 'package:hidden_gems_sl/core/utils/secure_logger.dart';
+import '../../l10n/app_localizations.dart';
 
 class ScannerScreen extends ConsumerStatefulWidget {
   const ScannerScreen({super.key});
@@ -33,22 +34,23 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> with WidgetsBindi
     final status = await Permission.camera.request();
     if (status.isPermanentlyDenied) {
       if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
-            title: const Text('Camera Permission Required'),
-            content: const Text('Please enable camera access in app settings to use the scanner.'),
+            title: Text(l10n.cameraPermissionRequiredTitle),
+            content: Text(l10n.cameraPermissionRequiredMessage),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: const Text('Cancel'),
+                child: Text(l10n.cancel),
               ),
               TextButton(
                 onPressed: () {
                   Navigator.pop(context);
                   openAppSettings();
                 },
-                child: const Text('Open Settings'),
+                child: Text(l10n.openSettings),
               ),
             ],
           ),
@@ -109,7 +111,7 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> with WidgetsBindi
     if (mounted) {
       setState(() {
         _isScanning = false;
-        _result = "Live scanning is coming soon.\n\nReal-time landmark and object recognition through your camera is on the way. We'll let you know the moment it's ready.";
+        _result = AppLocalizations.of(context)!.liveScanningComingSoonMessage;
       });
     }
   }
@@ -117,6 +119,7 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> with WidgetsBindi
   @override
   Widget build(BuildContext context) {
     final isPremium = ref.watch(premiumProvider);
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       backgroundColor: AppTheme.colors.black, // Keep camera background black
@@ -168,7 +171,7 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> with WidgetsBindi
                           onPressed: () => Navigator.pop(context),
                         ),
                         Text(
-                          "Landmark scanner",
+                          l10n.landmarkScannerTitle,
                           style: GoogleFonts.outfit(
                             color: AppTheme.colors.white,
                             fontWeight: FontWeight.w700,
@@ -201,7 +204,7 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> with WidgetsBindi
                               Icon(_isScanning ? Icons.sync_rounded : Icons.filter_center_focus_rounded),
                               SizedBox(width: 12),
                               Text(
-                                _isScanning ? "Identifying…" : "Analyze landmark",
+                                _isScanning ? l10n.identifyingLabel : l10n.analyzeLandmarkButton,
                                 style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 14),
                               ),
                             ],
@@ -234,6 +237,7 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> with WidgetsBindi
   }
 
   Widget _buildPremiumGate() {
+    final l10n = AppLocalizations.of(context)!;
     final secondary = Theme.of(context).colorScheme.secondary;
     return Container(
       padding: const EdgeInsets.all(28),
@@ -263,13 +267,13 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> with WidgetsBindi
           ),
           const SizedBox(height: 16),
           Text(
-            "Unlock landmark scanning",
+            l10n.unlockLandmarkScanningTitle,
             textAlign: TextAlign.center,
             style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.w700, color: AppTheme.colors.white, letterSpacing: -0.3),
           ),
           const SizedBox(height: 10),
           Text(
-            "Point your camera at any site to reveal its hidden history.",
+            l10n.unlockLandmarkScanningSubtitle,
             textAlign: TextAlign.center,
             style: GoogleFonts.inter(color: AppTheme.colors.white.withValues(alpha: 0.7), height: 1.6, fontSize: 13),
           ),
@@ -286,7 +290,7 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> with WidgetsBindi
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
               ),
               child: Text(
-                "Upgrade to premium",
+                l10n.upgradeToPremiumButton,
                 style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 13),
               ),
             ),
@@ -297,6 +301,7 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> with WidgetsBindi
   }
 
   Widget _buildResultCard() {
+    final l10n = AppLocalizations.of(context)!;
     final primary = Theme.of(context).colorScheme.primary;
     return Container(
       padding: const EdgeInsets.all(24),
@@ -319,7 +324,7 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> with WidgetsBindi
               Icon(Icons.verified_rounded, color: primary, size: 20),
               const SizedBox(width: 12),
               Text(
-                "Oracle verified",
+                l10n.oracleVerifiedLabel,
                 style: GoogleFonts.outfit(
                   color: primary,
                   fontWeight: FontWeight.w700,

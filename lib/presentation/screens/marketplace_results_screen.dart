@@ -11,6 +11,7 @@ import '../controllers/marketplace_search_controller.dart';
 import '../widgets/marketplace_search_bar.dart';
 import '../widgets/cached_image.dart';
 import 'guide_public_profile_screen.dart';
+import '../../l10n/app_localizations.dart';
 
 class MarketplaceResultsScreen extends ConsumerStatefulWidget {
   const MarketplaceResultsScreen({super.key});
@@ -99,7 +100,7 @@ class _MarketplaceResultsScreenState extends ConsumerState<MarketplaceResultsScr
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                 child: MarketplaceSearchBar(
-                  hintText: 'Search by name, language, or city...',
+                  hintText: AppLocalizations.of(context)!.marketplaceSearchHint,
                   onCooldownMessage: (msg) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text(msg), backgroundColor: AppTheme.colors.orange),
@@ -144,7 +145,7 @@ class _MarketplaceResultsScreenState extends ConsumerState<MarketplaceResultsScr
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Verified guides",
+                  AppLocalizations.of(context)!.verifiedGuidesEyebrow,
                   style: GoogleFonts.inter(
                     fontSize: 12,
                     fontWeight: FontWeight.w700,
@@ -152,7 +153,7 @@ class _MarketplaceResultsScreenState extends ConsumerState<MarketplaceResultsScr
                   ),
                 ),
                 Text(
-                  "Find your expert",
+                  AppLocalizations.of(context)!.findYourExpertTitle,
                   style: GoogleFonts.outfit(
                     fontSize: 22,
                     fontWeight: FontWeight.w800,
@@ -168,7 +169,21 @@ class _MarketplaceResultsScreenState extends ConsumerState<MarketplaceResultsScr
     );
   }
 
+  String _categoryLabel(String cat, AppLocalizations l10n) {
+    switch (cat) {
+      case 'All': return l10n.categoryAll;
+      case 'Chauffeur': return l10n.categoryChauffeur;
+      case 'Site Guide': return l10n.categorySiteGuide;
+      case 'Adventure': return l10n.categoryAdventure;
+      case 'Wildlife': return l10n.categoryWildlife;
+      case 'Heritage': return l10n.categoryHeritage;
+      case 'Photography': return l10n.categoryPhotography;
+      default: return cat;
+    }
+  }
+
   Widget _buildCategoryChips(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return SizedBox(
       height: 44,
       child: ListView.separated(
@@ -190,7 +205,7 @@ class _MarketplaceResultsScreenState extends ConsumerState<MarketplaceResultsScr
                 borderRadius: BorderRadius.circular(100),
               ),
               child: Text(
-                cat,
+                _categoryLabel(cat, l10n),
                 style: GoogleFonts.inter(
                   fontSize: 13,
                   fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
@@ -220,7 +235,7 @@ class _MarketplaceResultsScreenState extends ConsumerState<MarketplaceResultsScr
         }
         final listings = snapshot.data ?? [];
         if (listings.isEmpty) {
-          return _buildEmptyState(context, "No verified guides published yet.");
+          return _buildEmptyState(context, AppLocalizations.of(context)!.noVerifiedGuidesEmptyState);
         }
         return _buildListingsGrid(listings, isPaginated: false);
       },
@@ -243,7 +258,7 @@ class _MarketplaceResultsScreenState extends ConsumerState<MarketplaceResultsScr
       );
     }
     if (state.results.isEmpty) {
-      return _buildEmptyState(context, "No guides found matching '${state.normalizedQuery}'");
+      return _buildEmptyState(context, AppLocalizations.of(context)!.noGuidesFoundForQuery(state.normalizedQuery));
     }
     return _buildListingsGrid(state.results, isPaginated: true, isLoadingMore: state.isLoading);
   }
@@ -269,10 +284,11 @@ class _MarketplaceResultsScreenState extends ConsumerState<MarketplaceResultsScr
   }
 
   Widget _buildErrorState(BuildContext context, String rawError, {required VoidCallback onRetry}) {
+    final l10n = AppLocalizations.of(context)!;
     final isPermissionError = rawError.contains('permission-denied');
     final message = isPermissionError
-        ? "Sign in to browse verified guides."
-        : "Something went wrong loading guides. Please try again.";
+        ? l10n.signInToBrowseGuidesError
+        : l10n.genericLoadGuidesError;
 
     return Center(
       child: Padding(
@@ -295,7 +311,7 @@ class _MarketplaceResultsScreenState extends ConsumerState<MarketplaceResultsScr
             TextButton(
               onPressed: onRetry,
               child: Text(
-                "Try again",
+                l10n.tryAgainButton,
                 style: GoogleFonts.inter(
                   fontSize: 13,
                   fontWeight: FontWeight.w700,
@@ -429,7 +445,7 @@ class _MarketplaceResultsScreenState extends ConsumerState<MarketplaceResultsScr
                               ),
                             ),
                             Text(
-                              " (${listing.reviewCount})",
+                              AppLocalizations.of(context)!.reviewCountSuffix(listing.reviewCount),
                               style: GoogleFonts.inter(
                                 fontSize: 12,
                                 color: AppTheme.textSecondary(context),
@@ -472,7 +488,7 @@ class _MarketplaceResultsScreenState extends ConsumerState<MarketplaceResultsScr
                         ),
                         const SizedBox(width: 8),
                         Text(
-                          "${listing.currency} ${listing.hourlyRate.toStringAsFixed(0)}/hr",
+                          AppLocalizations.of(context)!.hourlyRateLabel(listing.currency, listing.hourlyRate.toStringAsFixed(0)),
                           style: GoogleFonts.inter(
                             fontSize: 11,
                             fontWeight: FontWeight.w800,

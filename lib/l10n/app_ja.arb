@@ -112,5 +112,1048 @@
   "downloadForOffline": "オフライン用にダウンロード",
   "initiateTravel": "トラベルシーケンスを開始",
   "selectOracleLanguage": "オラクルの言語を選択",
-  "skipForNow": "今はスキップ"
+  "skipForNow": "今はスキップ",
+
+  "privacyPolicyTitle": "プライバシーポリシーと法的事項",
+  "dataProtectionProtocol": "データ保護プロトコル",
+  "lastUpdatedDate": "最終更新日: 2026年7月5日",
+  "privacyIntro": "私たちはお客様のプライバシーとデータ主権を尊重します。この文書では、Hidden Gems Sri Lanka (Pvt) Ltd がスリランカの法律に基づき、お客様の個人情報をどのように収集、保護、管理するかについて説明します。",
+  "contactUsAboutData": "データに関するお問い合わせ",
+  "couldNotOpenEmail": "メールクライアントを開けませんでした。support@hiddengems.lk までメールでお問い合わせください",
+  "privacySection1Title": "1. 収集する情報",
+  "privacySection1Body": "Hidden Gems Sri Lanka は、サービスのご利用に際してお客様が自発的に提供する個人情報を収集します。\n\n• アカウント情報：表示名、メールアドレス、電話番号、プロフィール写真（Firebase Auth / Google サインイン経由）。\n• 正確な位置情報およびリアルタイム位置情報：位置情報に基づく「ディスカバリー」「ローカルジェム」機能、およびライブ追跡機能を提供するため、位置情報の取得を要求します。「ファミリー共有」の利用時には、お客様のリアルタイム座標が処理され、許可された受信者に更新情報が送信されます。\n• ファミリー共有の受信者データ：受信者の氏名、連絡先識別情報、および共有セッション中に生成される一時的な共有トークン。\n• ガイドプロフィールおよび認証データ：ガイド登録時に提出されるライセンス状況、身分証明資格、対応言語、プロフィール詳細。\n• アプリ内メッセージおよび予約情報：観光客とガイド間のやり取り、旅程データ、セッションログ。\n• デバイスおよび分析データ：Firebase Analytics および Crashlytics を通じて取得されるクラッシュ診断情報、パフォーマンス指標、デバイスメタデータ。\n• 決済データ：該当する場合、金融取引は PCI-DSS 準拠の第三者決済ゲートウェイのみで処理されます。Hidden Gems Sri Lanka は、クレジットカード番号や銀行データの生情報を当社サーバーに保存することは一切ありません。",
+  "privacySection2Title": "2. ファミリー共有機能について",
+  "privacySection2Body": "当社の「ファミリー共有」および連携ハブ機能を使用すると、探検者はライブステータス、ガイドの身元情報、待ち合わせ場所、緊急アラートを信頼できる連絡先と共有できます。\n\n• オプトイン方式かつ取り消し可能：共有機能は完全にオプトイン方式であり、ユーザーが全面的に管理します。アプリ内でいつでもアクセス権を取り消したり、有効な共有リンクを削除したりできます。\n• 時間制限付き：共有された位置情報リンクは、選択した期間（例：4時間、12時間、24時間）が経過すると自動的に失効します。失効後、位置情報の送信は直ちに停止します。\n• コンテンツ監視なし：Hidden Gems Sri Lanka は、機能の運用および暗号化されたテレメトリの配信に技術的に必要な範囲を除き、お客様と選択した受信者との間の個人的なやり取りや共有ステータスの当事者ではなく、これを監視・閲覧することもありません。",
+  "privacySection3Title": "3. 法的根拠およびスリランカ法令への準拠",
+  "privacySection3Body": "当社のデータ取り扱いは、スリランカの規制枠組みおよび国際的なベストプラクティスに厳格に準拠しています。\n\n• 適用データ法：本ポリシーは、個人データ保護法 No. 9 of 2022（スリランカ）に準拠します。Hidden Gems Sri Lanka (Pvt) Ltd / TripMe.ai はデータ管理者として、データの最小化、目的の限定、適法な処理、および義務的な違反通知という基本的な法定原則の遵守を約束します。\n• 観光法および SLTDA 規則：観光法 No. 38 of 2005 およびスリランカ観光開発局（SLTDA）のガイドラインに従い、アプリ内プロフィールに表示されるガイド認証情報は、自己申告または可能な範囲で SLTDA の登録情報と照合されています。当社は透明性のためにこの情報を提供しますが、表示されている内容を超えてライセンス状況を保証するものではありません。\n• 国境を越えたデータ移転：スリランカを訪れる海外の観光客がこのアプリケーションを利用する場合、データは国境を越えてグローバルなクラウドインフラ（Google Firebase および AWS サーバーを含む）に転送されます。アプリを利用することにより、お客様はサービス提供のためのこうした国際的なデータ移転に明示的に同意したものとみなされます。",
+  "privacySection4Title": "4. 責任の制限および免責事項",
+  "privacySection4Body": "適用法で認められる最大限の範囲において、本アプリのご利用には以下の制限が適用されます。\n\n• 連携プラットフォームとしての役割：Hidden Gems Sri Lanka は、観光客と独立した現地ガイドおよびサービスを結びつける情報提供・連携プラットフォームとして運営されています。当社は、アプリを通じて連携されるガイド、ドライバー、または第三者サービスの行動、安全性、ライセンスの有効性、または行為について責任を負いません。\n• 緊急時および位置情報機能の限界：位置情報共有、「ファミリー共有」、緊急アラート信号は、ベストエフォート方式の技術サービスとして提供されます。これらは公式の緊急サービスの代替ではありません。緊急時には、必ずスリランカ警察（119）、観光警察（+94 11 242 1052）、またはスワセリヤ救急（1990）にご連絡ください。当社は、ネットワーク遅延、GPSの誤差、または通知配信の失敗について一切の責任を負いません。\n• 独自の確認義務：ユーザーは、旅行前に独自にガイドの資格、車両の安全性、個人の安全を確認する責任を単独で負うものとします。\n• 法定責任の上限：スリランカ法の下、Hidden Gems Sri Lanka (Pvt) Ltd がプラットフォームのご利用に起因または関連して負う責任は、係争対象の特定サービスに対してお客様が当社に支払った料金の総額を上限として厳格に制限されます。",
+  "privacySection5Title": "5. ユーザーの権利とデータ管理",
+  "privacySection5Body": "個人データ保護法 No. 9 of 2022 の下、お客様は自身の個人データに関して以下の基本的権利を有します。\n\n• アクセスおよび訂正の権利：アプリの「プロフィール」画面から、アカウント情報やプロフィールデータを直接確認、ダウンロード、編集できます。\n• 同意の撤回：デバイス設定で位置情報の許可を無効にする、または有効なファミリー共有リンクを取り消すことにより、位置情報の追跡やデータ処理への同意をいつでも撤回できます。\n• 削除の権利（忘れられる権利）：「プロフィール」＞「プライバシー」＞「アカウント削除」から直接、またはデータ保護責任者宛て（support@hiddengems.lk）にメールを送ることで、アカウントの完全削除をリクエストできます。",
+  "privacySection6Title": "6. データの保持と消去",
+  "privacySection6Body": "当社は、本ポリシーに定める目的を達成するために必要な期間に限り、個人データを保持します。\n\n• ファミリー共有および位置情報データ：一時的な共有リンクおよび関連するライブ位置履歴は、リンクの失効または手動での取り消し時に、稼働中のデータベースから自動的に消去されます。\n• アカウントデータ：アカウント削除リクエストの送信後、お客様のプロフィール、保存されたウィッシュリスト、個人識別情報は、規制監査の追跡に必要な匿名化された統計データのみを残し、30日以内に本番サーバーから完全に消去されます。",
+  "privacySection7Title": "7. お子様のプライバシー保護",
+  "privacySection7Body": "Hidden Gems Sri Lanka は、成人の旅行者および独立した観光業従事者向けに設計されています。本アプリケーションは18歳未満のお子様を対象としていません。当社は、未成年者の個人データを意図的に取得、収集、または処理することはありません。未成年ユーザーが検証済みの保護者の同意なしに個人データを提供したことが判明した場合、当社は速やかに当該データを当社のインフラから消去します。",
+  "privacySection8Title": "8. 本ポリシーの変更",
+  "privacySection8Body": "当社は、技術の進歩、新しいアプリ機能、またはスリランカの法的要件の変化を反映するため、本プライバシーポリシーを随時更新することがあります。重要な変更が生じた場合は、アプリ内の目立つバナーでユーザーに通知し、本文書上部の「最終更新日」の表示を更新します。プラットフォームの継続的なご利用は、改定後の条件への同意とみなされます。",
+  "privacySection9Title": "9. 最終的な法的免責事項",
+  "privacySection9Body": "本ポリシーは一般的な情報提供を目的として提供されるものであり、正式な法的助言を構成するものではありません。Hidden Gems Sri Lanka (Pvt) Ltd / TripMe.ai は、ユーザーおよび観光関係者が、個人データ保護法 No. 9 of 2022、観光法 No. 38 of 2005、その他適用される法令への完全な準拠を確認するため、スリランカにおいて独立した法律顧問に相談することを推奨します。",
+  "privacyFooterCompany": "HIDDEN GEMS SRI LANKA (PVT) LTD",
+  "privacyFooterAddress": "登録事務所：スリランカ、コロンボ • support@hiddengems.lk",
+
+  "termsAndPrivacyTitle": "利用規約とプライバシー",
+  "reviewBeforeContinuing": "続行する前にご確認ください",
+  "dataPrivacySectionTitle": "データとプライバシー",
+  "dataPrivacySectionBody": "お客様のデータは安全に保管されます。プロフィールと保存された旅行プランを安全に保管し、お客様のデータを第三者に販売することは決してありません。",
+  "aiPlanningSectionTitle": "AI旅程プランニング",
+  "aiPlanningSectionBody": "当社のAIプランナーは予測型のツールです。正確性の向上に努めていますが、その提案は実際の状況と異なる場合がありますので、重要な情報は必ずご自身で確認してください。\n\nAIプランナーを利用することにより、お客様は以下に同意したものとみなされます。\n• 結果を悪用せず、責任を持って利用すること。\n• AIを不正利用または操作しようとしないこと。\n• すべての提案を保証ではなく、あくまで参考として扱うこと。",
+  "communityConductSectionTitle": "コミュニティ行動規範",
+  "communityConductSectionBody": "お客様は、他の旅行者にとって安全で信頼できるプラットフォームを維持するため、アプリを節度を持ってご利用いただくことに同意するものとします。",
+  "readFullPrivacyPolicy": "プライバシーポリシー全文を読む",
+  "acceptTermsCheckbox": "利用規約およびプライバシーポリシーに同意します",
+  "acceptAiPolicyCheckbox": "AIプランナーの制限事項を理解しました",
+  "continueLabel": "続ける",
+
+  "updateRequiredTitle": "アップデートが必要です",
+  "updateReadyTitle": "新しいバージョンの準備ができました",
+  "updateRequiredBody": "旅を続けるには、アプリをアップデートしてください。",
+  "updateReadyBody": "より優れた地図、より高速なAI旅程プラン、改善されたARがお待ちしています。",
+  "updateNow": "今すぐアップデート",
+  "maybeLater": "後で",
+  "couldNotOpenStore": "ストアを開けませんでした。手動でアップデートしてください。",
+
+  "brandTagline": "スリランカ随一のAIトラベルオラクル",
+  "oracleConnected": "オラクル接続完了",
+  "initializingExperience": "トラベル体験を初期化中...",
+
+  "welcomeToApp": "Hidden Gems へようこそ",
+  "createYourAccount": "アカウントを作成",
+  "loginSubtitle": "スリランカのAIトラベルパートナー",
+  "signupSubtitle": "スリランカ旅行の計画を始めましょう",
+  "signIn": "ログイン",
+  "createAccount": "アカウントを作成",
+  "nameLabel": "名前",
+  "emailLabel": "メールアドレス",
+  "passwordLabel": "パスワード",
+  "identifierRequired": "IDを入力してください",
+  "invalidAddress": "無効なアドレスです",
+  "insufficientComplexity": "パスワードの複雑さが不十分です",
+  "atLeast6Chars": "6文字以上で入力してください",
+  "forgotPassword": "パスワードをお忘れですか？",
+  "orContinueWith": "または次の方法で続ける",
+  "googleLabel": "Google",
+  "zenithLockActive": "ゼニスロック作動中",
+  "lockoutMessage": "複数回のログイン失敗を検出しました。\n不正アクセス防止のため、しばらく接続を制限します。",
+  "timeRemaining": "残り時間",
+  "googleSignInCancelled": "Googleサインインがキャンセルされました。",
+  "authFailedPrefix": "認証に失敗しました：{reason}",
+  "@authFailedPrefix": {
+    "placeholders": { "reason": { "type": "String" } }
+  },
+  "googleSignInFailedPrefix": "Googleサインインに失敗しました：{reason}",
+  "@googleSignInFailedPrefix": {
+    "placeholders": { "reason": { "type": "String" } }
+  },
+  "enterEmailFirst": "まず登録済みのメールアドレスを入力してください。",
+  "passwordResetSent": "パスワード再設定の案内を {email} に送信しました。",
+  "@passwordResetSent": {
+    "placeholders": { "email": { "type": "String" } }
+  },
+  "resetEmailFailedPrefix": "再設定メールの送信に失敗しました：{reason}",
+  "@resetEmailFailedPrefix": {
+    "placeholders": { "reason": { "type": "String" } }
+  },
+  "authErrorInvalidCredential": "メールアドレスまたはパスワードが正しくありません。もう一度お試しください。",
+  "authErrorUserDisabled": "このアカウントは無効になっています。",
+  "authErrorEmailInUse": "このメールアドレスは既に別のアカウントで使用されています。",
+  "authErrorWeakPassword": "入力されたパスワードは脆弱すぎます。",
+  "authErrorInvalidEmail": "有効なメールアドレスを入力してください。",
+  "authErrorNetwork": "通信に失敗しました。インターネット接続をご確認ください。",
+  "authErrorTooManyRequests": "リクエストが多すぎます。しばらくしてから再度お試しください。",
+  "authErrorNotAllowed": "この操作は許可されていません。",
+  "authErrorGeneric": "認証エラーが発生しました。",
+
+  "noPlaceFoundMatching": "「{query}」に一致する場所が見つかりません",
+  "@noPlaceFoundMatching": {
+    "placeholders": { "query": { "type": "String" } }
+  },
+  "featuredLabel": "注目",
+  "exploreLabel": "探索",
+  "planTripAction": "旅行を計画",
+  "findGuideAction": "ガイドを探す",
+  "foodAiAction": "フードAI",
+  "arPortalsAction": "ARポータル",
+  "localGemsNearby": "近くのローカルジェム",
+  "todayInSriLanka": "今日のスリランカ",
+  "discoverSriLanka": "スリランカを発見",
+  "letOracleGuide": "オラクルにあなたの旅を導いてもらいましょう",
+  "searchSecretLocations": "秘密のスポットを検索...",
+  "offlineModeLabel": "オフラインモード",
+  "ayubowanGreeting": "アユボワン、{name}さん！",
+  "@ayubowanGreeting": {
+    "placeholders": { "name": { "type": "String" } }
+  },
+  "travelerFallback": "旅行者",
+  "exploreByCategory": "カテゴリーから探す",
+  "categoryNatureLabel": "自然",
+  "categoryBeachesLabel": "ビーチ",
+  "categoryCultureLabel": "文化",
+  "categoryAdventureLabel": "アドベンチャー",
+  "exploreNavLabel": "探索",
+  "eventsNavLabel": "イベント",
+  "daysLabel": "{count}日間",
+  "@daysLabel": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+
+  "originRequiredError": "出発地を選択または入力してください。",
+  "destinationRequiredError": "目的地を選択または入力してください。",
+  "unsupportedCityError": "「{city}」は対応していないスリランカの都市です。ドロップダウンから選択してください。",
+  "@unsupportedCityError": {
+    "placeholders": { "city": { "type": "String" } }
+  },
+  "originDestinationSameError": "出発地と目的地を同じにすることはできません。",
+  "stepProgressLabel": "ステップ {current} / {total}",
+  "@stepProgressLabel": {
+    "placeholders": { "current": { "type": "int" }, "total": { "type": "int" } }
+  },
+  "step1Title": "どこへご案内しましょうか？",
+  "step1Subtitle": "基本情報",
+  "startingPointLabel": "出発地",
+  "startingPointHint": "空港、コロンボ...",
+  "destinationLabel": "目的地",
+  "destinationHint": "エラ、ゴール、キャンディ...",
+  "startDateLabel": "出発日",
+  "step2Title": "あなたの旅の雰囲気を決めましょう。",
+  "step2Subtitle": "予算とスタイル",
+  "tripLengthLabel": "旅行日数",
+  "tripLengthDaysValue": "{days}日間",
+  "@tripLengthDaysValue": {
+    "placeholders": { "days": { "type": "int" } }
+  },
+  "travelStandardLabel": "旅行のグレード",
+  "step3Title": "誰と旅をしますか？",
+  "step3Subtitle": "同行者とペース",
+  "companionsLabel": "同行者",
+  "travelPaceLabel": "旅のペース",
+  "step4Title": "何があなたの心を動かしますか？",
+  "step4Subtitle": "興味・関心",
+  "estimatedBudgetLabel": "予算の目安",
+  "lkrCurrencyPrefix": "LKR ",
+  "consultTheOracleButton": "オラクルに相談する",
+  "aiTripsFeatureName": "AI旅行プラン",
+  "bonusTripUnlockedMessage": "ボーナス旅行プランが解放されました！もう一度送信してみてください。",
+
+  "groupTypeSolo": "ひとり旅",
+  "groupTypeCouple": "カップル",
+  "groupTypeFamily": "家族",
+  "groupTypeFriends": "友人",
+  "paceRelaxed": "ゆったり",
+  "paceBalanced": "バランス型",
+  "pacePacked": "盛りだくさん",
+  "styleBudget": "節約",
+  "styleComfort": "快適",
+  "styleLuxury": "高級",
+  "interestAdventure": "アドベンチャー",
+  "interestFood": "グルメ",
+  "interestWildlife": "野生動物",
+  "interestPhotography": "写真撮影",
+  "interestVillageExperiences": "村の体験",
+
+  "oracleConnectionDisrupted": "オラクルとの接続が中断されました：{error}",
+  "@oracleConnectionDisrupted": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "discoveryFiltersTitle": "ディスカバリーフィルター",
+  "resetButton": "リセット",
+  "maximumRadiusKm": "最大範囲：{radius} km",
+  "@maximumRadiusKm": {
+    "placeholders": { "radius": { "type": "int" } }
+  },
+  "budgetLevelLabel": "予算レベル",
+  "priceRangeAll": "すべて",
+  "priceRangeFree": "無料",
+  "priceRangeEconomy": "エコノミー",
+  "priceRangePremium": "プレミアム",
+  "heritageArSearchTitle": "ヘリテージAR検索",
+  "onlyShowArEnabledSpots": "AR対応スポットのみ表示",
+  "revealDestinies": "運命を明らかにする",
+  "hostedByName": "主催：{hostName}",
+  "@hostedByName": {
+    "placeholders": { "hostName": { "type": "String" } }
+  },
+  "priceInLkr": "LKR {price}",
+  "@priceInLkr": {
+    "placeholders": { "price": { "type": "String" } }
+  },
+  "resetAllFilters": "すべてのフィルターをリセット",
+  "seeAll": "すべて見る",
+  "arBadge": "AR",
+  "heritageArBadge": "ヘリテージAR",
+
+  "tripDurationStyleLabel": "{days}日間の{style}旅行",
+  "@tripDurationStyleLabel": {
+    "placeholders": { "days": { "type": "int" }, "style": { "type": "String" } }
+  },
+  "budgetTabLabel": "予算",
+  "mapTabLabel": "地図",
+  "premiumFeatureSnackbar": "{featureName} はプレミアム機能です。",
+  "@premiumFeatureSnackbar": {
+    "placeholders": { "featureName": { "type": "String" } }
+  },
+  "savedPlansFeatureName": "保存済みプラン",
+  "noPathFoundTitle": "経路が見つかりません",
+  "noPathFoundMessage": "オラクルはこの目的地への経路を作成できませんでした。予算やスタイルの設定を見直してみてください。",
+  "tripOverviewLabel": "旅程概要",
+  "expenseBreakdownTitle": "支出内訳",
+  "openExpenseTrackerButton": "支出トラッカーを開く",
+  "estimatedTotalLabel": "概算合計",
+  "userBudgetLabel": "設定予算：{amount}",
+  "@userBudgetLabel": {
+    "placeholders": { "amount": { "type": "String" } }
+  },
+  "percentUsedLabel": "{percent}% 使用済み",
+  "@percentUsedLabel": {
+    "placeholders": { "percent": { "type": "int" } }
+  },
+  "percentOfTotalLabel": "合計の{percent}%",
+  "@percentOfTotalLabel": {
+    "placeholders": { "percent": { "type": "int" } }
+  },
+  "visualTourRouteTitle": "ビジュアルツアールート",
+  "visualTourRouteDescription": "涙のしずく型の島を巡る旅程全体を地図で確認。詳細なルート区間と移動時間を表示します。",
+  "openRouteMapButton": "ルートマップを開く",
+  "oracleRainPlanTitle": "オラクルの雨天プラン",
+  "oracleRainPlanSubtitle": "突然の雨に見舞われましたか？こちらに切り替えましょう。",
+  "oracleVaultTitle": "オラクルの金庫",
+  "oracleVaultDescription": "雨天時の代替プランは無料会員にはロックされています。\n短い動画を視聴して、この旅行分を解放しましょう。",
+  "unlockWithAdButton": "広告を見て解放",
+  "goPremiumAdFreeButton": "広告なしのプレミアムにアップグレード",
+  "hiddenGemsLuxuryTitle": "Hidden Gems ラグジュアリー",
+  "premiumCtaDescription": "普通の旅を超えて。オラクルの知恵をすべて解放しましょう。",
+  "premiumFeatureVoice": "音声",
+  "premiumFeaturePdf": "PDF",
+  "premiumFeatureNoAds": "広告なし",
+  "unleashOracleButton": "オラクルを解き放つ",
+  "couldNotOpenMap": "地図を開けませんでした。",
+  "viewOnMapButton": "地図で見る",
+  "verificationSourcesTitle": "検証済み情報源",
+  "proTipsForSriLanka": "💡 スリランカ旅行のプロのコツ",
+  "oracleLocalTipTitle": "オラクルの現地アドバイス",
+  "budgetCategoryTransport": "交通費",
+  "budgetCategoryFood": "食費",
+  "budgetCategoryHotel": "宿泊費",
+  "budgetCategoryAttractions": "観光",
+  "budgetCategoryOther": "その他",
+
+  "profilePhoto": "プロフィール写真",
+  "removePhoto": "写真を削除",
+  "localizationError": "ローカライズエラー",
+  "appearance": "外観",
+  "settingsSectionLabel": "設定",
+  "profileErrorDetails": "プロフィールエラー：\n{error}\n\n{stack}",
+  "@profileErrorDetails": {
+    "placeholders": { "error": { "type": "String" }, "stack": { "type": "String" } }
+  },
+  "premiumTraveler": "プレミアム旅行者",
+  "oracleTraveler": "オラクル旅行者",
+  "levelBadgeLabel": "{levelTitle}・レベル {levelNumber}",
+  "@levelBadgeLabel": {
+    "placeholders": { "levelTitle": { "type": "String" }, "levelNumber": { "type": "int" } }
+  },
+  "statLabelTrips": "旅行数",
+  "statLabelPlaces": "訪問地数",
+  "statLabelLevel": "レベル",
+  "oracleExplorer": "オラクル探検家",
+  "goPremium": "プレミアムに登録",
+  "fullArAiAccessGranted": "AR・AIへのフルアクセスが有効です",
+  "unlockArAiFeatures": "AR・AI機能を解放",
+  "upgrade": "アップグレード",
+  "themeLight": "ライト",
+  "themeDark": "ダーク",
+  "journeyHub": "ジャーニーハブ",
+  "aiBudgetConcierge": "AI予算コンシェルジュ",
+  "smartExpenseAdvisor": "スマート支出アドバイザー",
+  "heritagePassport": "ヘリテージパスポート",
+  "verifiableVisitCollection": "検証可能な訪問記録コレクション",
+  "ethicalTravelMeter": "エシカルトラベルメーター",
+  "ethicalRankScore": "ランク：{rank}・スコア：{score}",
+  "@ethicalRankScore": {
+    "placeholders": { "rank": { "type": "String" }, "score": { "type": "int" } }
+  },
+  "ethicalTravelMeterDialogTitle": "エシカルトラベルメーター",
+  "ethicalRankScorePoints": "ランク：{rank}・スコア：{score} ポイント",
+  "@ethicalRankScorePoints": {
+    "placeholders": { "rank": { "type": "String" }, "score": { "type": "int" } }
+  },
+  "ethicalScoreDescription": "エシカルトラベルスコアは、地域コミュニティや文化遺産の保護に対するあなたの貢献度をスリランカ全土で測定します。",
+  "howToEarnPointsHeading": "ポイントの獲得方法：",
+  "earnPointsReviewsTitle": "スポットのレビューを投稿",
+  "earnPointsReviewsAmount": "+10 ポイント",
+  "earnPointsReviewsSubtitle": "地元ガイドや旅行者を応援しよう",
+  "earnPointsFoodTitle": "地元料理を味わう",
+  "earnPointsFoodAmount": "+15 ポイント",
+  "earnPointsFoodSubtitle": "本格的な地元の飲食店を応援しよう",
+  "earnPointsHeritageTitle": "文化遺産を訪れる",
+  "earnPointsHeritageAmount": "+20 ポイント",
+  "earnPointsHeritageSubtitle": "文化の保護を促進しよう",
+  "rewardsPerksHeading": "獲得できる特典・報酬：",
+  "rewardEcoGuardianBadgeTitle": "エコガーディアンバッジ",
+  "rewardEcoGuardianBadgeSubtitle": "ランキングやレビューで目立とう",
+  "rewardPartnerDiscountsTitle": "提携先の割引",
+  "rewardPartnerDiscountsSubtitle": "認定エコ宿泊施設やカフェで5%～15%オフ",
+  "rewardFreePremiumPerksTitle": "無料プレミアム特典",
+  "rewardFreePremiumPerksSubtitle": "ポイントでARガイドやオフライン地図を解放",
+  "rewardRealWorldImpactTitle": "現実世界へのインパクト",
+  "rewardRealWorldImpactSubtitle": "500ポイント達成でスリランカに植樹します！",
+  "gotItKeepExploring": "了解、探索を続ける",
+  "guideCommandHub": "ガイドコマンドハブ",
+  "guideCommandHubSubtitle": "ガイドツールへのクイックアクセス",
+  "activeStatusBadge": "稼働中",
+  "tourDashboard": "ツアーダッシュボード",
+  "tourDashboardSubtitle": "実施中のツアー、QR、掲載情報、安全管理",
+  "earnings": "収益",
+  "earningsSubtitle": "支払いと統計",
+  "clients": "顧客",
+  "clientsSubtitle": "履歴とメモ",
+  "bookings": "予約",
+  "tourRequests": "ツアーリクエスト",
+  "unreadRequestsCount": "{count, plural, one{新着リクエスト{count}件} other{新着リクエスト{count}件}}",
+  "@unreadRequestsCount": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "packages": "パッケージ",
+  "customTourPricingSubtitle": "カスタムツアー料金設定",
+  "upgradeToPro": "Proにアップグレード",
+  "manageTeam": "チーム管理",
+  "manageTeamSubtitle": "チーム、役割、ブランディング",
+  "becomeAGuide": "ガイドになる",
+  "myBookings": "予約履歴",
+  "familySharing": "ファミリー共有",
+  "scanGuideQr": "ガイドQRをスキャン",
+  "oracleLens": "オラクルレンズ",
+  "appLockBiometrics": "アプリロック（生体認証）",
+  "bilingualToggle": "バイリンガル表示（英語/シンハラ語）",
+  "emergencyProtocol": "緊急時プロトコル",
+  "rateTheApp": "アプリを評価する",
+  "support": "サポート",
+  "signOut": "サインアウト",
+  "deleteAccountDialogTitle": "アカウント削除",
+  "deleteButtonLabel": "削除",
+  "genericErrorWithDetails": "エラー：{error}",
+  "@genericErrorWithDetails": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "signOutDialogTitle": "サインアウト",
+  "confirmSignOutMessage": "本当にサインアウトしますか？",
+  "shareAppMessage": "Hidden Gems SL に参加しよう！🌍 https://hiddengems.lk",
+  "shareAppSubject": "Hidden Gems SL に一緒に参加しませんか！",
+  "somethingWentWrong": "問題が発生しました。アプリを再起動してください。",
+
+  "cameraPermissionRequiredTitle": "カメラの許可が必要です",
+  "cameraPermissionRequiredMessage": "スキャナーを使用するには、アプリ設定でカメラへのアクセスを有効にしてください。",
+  "openSettings": "設定を開く",
+  "liveScanningComingSoonMessage": "ライブスキャン機能は近日公開予定です。\n\nカメラを通じたリアルタイムのランドマーク・物体認識を準備中です。準備が整い次第、お知らせします。",
+  "landmarkScannerTitle": "ランドマークスキャナー",
+  "identifyingLabel": "識別中…",
+  "analyzeLandmarkButton": "ランドマークを分析",
+  "unlockLandmarkScanningTitle": "ランドマークスキャンを解放",
+  "unlockLandmarkScanningSubtitle": "カメラをどんな場所にかざすだけで、隠された歴史が明らかになります。",
+  "upgradeToPremiumButton": "プレミアムにアップグレード",
+  "oracleVerifiedLabel": "オラクル認証済み",
+
+  "mapLoadErrorMessage": "地図データの読み込みに失敗しました：{error}",
+  "@mapLoadErrorMessage": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "guideLiveMarkerLabel": "あなたのガイド（ライブ）",
+  "vehicleMarkerLabel": "あなたの車両",
+  "meetingPointMarkerLabel": "待ち合わせ場所：{pointName}",
+  "@meetingPointMarkerLabel": {
+    "placeholders": { "pointName": { "type": "String" } }
+  },
+  "sosEmergencySignalTitle": "緊急信号",
+  "sosGuideTriggeredMessage": "あなたのガイドがSOSを発信しました",
+  "sosSafetyProtocolsTitle": "安全プロトコル",
+  "sosProtocolStayInLocation": "1. 現在地から動かないでください。",
+  "sosProtocolOpenLiveMap": "2. ライブ地図を開いてガイドを追跡してください。",
+  "sosProtocolWaitForHelp": "3. 緊急サービスまたはガイドからの連絡をお待ちください。",
+  "sosAcknowledgeButton": "確認しました",
+  "distanceAwayLabel": "{distance} km 離れています",
+  "@distanceAwayLabel": {
+    "placeholders": { "distance": { "type": "String" } }
+  },
+
+  "offlineRouteMapSavedSuccess": "オフラインルートマップを保存しました！",
+  "cannotSaveMapSaveTripFirst": "地図を保存できません。先に旅行プランを保存してください！",
+  "saveTripAction": "旅行を保存",
+  "failedToSaveMapError": "地図の保存に失敗しました：{error}",
+  "@failedToSaveMapError": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "mapMarkerDaySnippet": "{day}日目・{time}",
+  "@mapMarkerDaySnippet": {
+    "placeholders": { "day": { "type": "int" }, "time": { "type": "String" } }
+  },
+  "visualRouteTitle": "ビジュアルルート",
+  "journeyVisualizerTitle": "ジャーニービジュアライザー",
+  "journeyVisualizerSubtitle": "{destination}を巡る{dayCount}日間の旅",
+  "@journeyVisualizerSubtitle": {
+    "placeholders": { "dayCount": { "type": "int" }, "destination": { "type": "String" } }
+  },
+  "saveOfflineMapTooltip": "オフライン地図を保存",
+  "focusButtonLabel": "フォーカス",
+
+  "planRemovedSnackbar": "オラクルのキャッシュからプランを削除しました",
+  "viewInArLabel": "ARで見る",
+  "savedTripsTitle": "保存済みの旅行",
+  "clearSavedTripsTitle": "保存済みの旅行を削除",
+  "clearSavedTripsMessage": "このデバイスに保存されているすべての旅行が完全に削除されます。",
+  "eraseAllButton": "すべて削除",
+  "noSavedTripsTitle": "保存された旅行はまだありません",
+  "noSavedTripsSubtitle": "旅行を計画すると、ここに保存されます。",
+  "unknownDateLabel": "日付不明",
+  "noArSpotsSnackbar": "このプランにはARスポットがありません",
+  "tripRouteLabel": "{fromCity} → {destinationCity}",
+  "@tripRouteLabel": {
+    "placeholders": { "fromCity": { "type": "String" }, "destinationCity": { "type": "String" } }
+  },
+  "tripDaysChip": "{days, plural, one{1日間} other{{days}日間}}",
+  "@tripDaysChip": {
+    "placeholders": { "days": { "type": "int" } }
+  },
+  "tripBudgetChip": "Rs {amount}",
+  "@tripBudgetChip": {
+    "placeholders": { "amount": { "type": "String" } }
+  },
+  "arBadgeLabel": "AR",
+  "savedTimeAgoLabel": "{timeAgo}に保存",
+  "@savedTimeAgoLabel": {
+    "placeholders": { "timeAgo": { "type": "String" } }
+  },
+  "minutesAgoShort": "{minutes}分前",
+  "@minutesAgoShort": {
+    "placeholders": { "minutes": { "type": "int" } }
+  },
+  "hoursAgoShort": "{hours}時間前",
+  "@hoursAgoShort": {
+    "placeholders": { "hours": { "type": "int" } }
+  },
+  "daysAgoShort": "{days}日前",
+  "@daysAgoShort": {
+    "placeholders": { "days": { "type": "int" } }
+  },
+  "weeksAgoShort": "{weeks}週間前",
+  "@weeksAgoShort": {
+    "placeholders": { "weeks": { "type": "int" } }
+  },
+
+  "loadingConsultingBrain": "HiddenGems.lk ブレインに相談中...",
+  "loadingTipTrainSchedules": "スリランカの鉄道時刻表を分析中...",
+  "loadingTipWeatherPatterns": "季節の天候パターンを確認中...",
+  "loadingTipClusteringGems": "近くの最高の隠れた名所をまとめています...",
+  "loadingTipBudgetBuffer": "10%の安全バッファを含めて予算を計算中...",
+  "loadingTipCraftingPlan": "あなただけの1日プランを作成中...",
+  "loadingTipRainDayPlanB": "雨天時の代替プラン（プランB）を追加中...",
+  "loadingTipFinalisingExperts": "現地エキスパートのアドバイスを最終調整中...",
+  "loadingOfflineRecoveryTitle": "オフライン復旧",
+  "loadingManifestingTitle": "具現化中",
+  "loadingOfflineSubtitle": "ローカルの記憶を統合しています…",
+  "loadingErrorTitle": "接続が途切れました",
+  "loadingRetryStatus": "オラクルに再接続中...",
+  "loadingErrorRetryButton": "再試行",
+  "loadingErrorRefineButton": "リクエストを修正",
+
+  "fieldNotesTitle": "フィールドノート",
+  "heritageSiteLocked": "遺産サイトはロックされています",
+  "lockOverlayDescription": "このオラクルビジョンはプレミアム探検家専用です。短い広告を視聴すると、本日はこの場所のロックが解除されます。",
+  "watchAdToUnlock": "広告を見て解除",
+  "goBack": "戻る",
+  "etiquetteTipReusableBottle": "マイボトルを持参しましょう",
+  "etiquetteTipAvoidPlastic": "使い捨てのビニール袋は避けましょう",
+  "etiquetteTipRespectWildlife": "野生動物や植物を大切にしましょう",
+  "etiquetteTipRemoveShoes": "入場前に靴と帽子を脱ぎましょう",
+  "etiquetteTipDressModestly": "肩と膝を覆う控えめな服装をしましょう",
+  "etiquetteTipAskPhotoPermission": "人物を撮影する前に許可を求めましょう",
+  "etiquetteTipNoBackToStatues": "仏像に背を向けて写真を撮らないでください",
+  "etiquetteTipStayOnTrails": "植生保護のため指定された小道を歩きましょう",
+  "etiquetteTipPackOutTrash": "ゴミはすべて持ち帰りましょう（Leave No Trace）",
+  "etiquetteTipNoFeedingAnimals": "野生動物への餌やりや接触は避けましょう",
+  "etiquetteTipNoSoapInPools": "自然の池での石鹸・シャンプーの使用は避けましょう",
+  "arTierHeritageShort": "ヘリテージ",
+  "arTierExploreShort": "探索",
+  "arTierStoryShort": "ストーリー",
+  "notAvailableShort": "N/A",
+  "arBadgeHeritage": "ヘリテージ AR",
+  "arBadgeExplore": "エクスプローラー AR",
+  "arBadgeStory": "ストーリービュー",
+  "noRiskTagsFound": "危険の兆候は検出されませんでした。",
+  "noFacilitiesFound": "設備はほとんどありません。",
+  "fieldNoteMobileSignal": "携帯電波",
+  "fieldNoteRoadCondition": "道路状況",
+  "fieldNoteActivities": "アクティビティ",
+  "fieldNotePopularity": "人気度",
+  "fieldNoteFamilyFriendly": "ファミリー向け",
+  "fieldNoteBudget": "予算",
+  "fieldNoteToilets": "トイレ",
+  "fieldNoteFoodNearby": "周辺の飲食店",
+  "fieldNoteWheelchairAccess": "車椅子でのアクセス",
+  "fieldNoteCamping": "キャンプ",
+  "fieldNoteSafetyLevel": "安全レベル",
+  "fieldNoteWildlifeHazard": "野生動物の危険",
+  "fieldNoteGuideRequired": "ガイド必須",
+  "fieldNoteRainSensitivity": "雨天の影響",
+  "fieldNoteMonsoonNote": "モンスーンに関する注意",
+  "fieldNoteSurfing": "サーフィン",
+  "fieldNoteHeight": "高さ",
+  "fieldNoteLength": "長さ",
+  "bookmarkAddedSnackbar": "✨ あなたの旅程に記録しました！",
+  "bookmarkRemovedSnackbar": "ブックマークから削除しました。",
+  "itineraryAddedSnackbar": "🗺️ {placeName} があなたの運命に加わりました！",
+  "@itineraryAddedSnackbar": {
+    "placeholders": { "placeName": { "type": "String" } }
+  },
+  "itineraryRemovedSnackbar": "旅程から削除しました。",
+  "featureNameHeritageSessions": "ヘリテージセッション",
+  "bonusSessionUnlockedSnackbar": "ボーナスセッションが解放されました！もう一度起動してみてください。",
+  "oracleRewardActiveSnackbar": "✨ オラクルの報酬が有効です！ARセッションが解放されました。",
+  "okButton": "OK",
+  "arBrandNameHeritage": "ヘリテージ AR",
+  "arBrandNameExplore": "エクスプローラー AR",
+  "bonusDownloadUnlockedSnackbar": "ボーナスダウンロードが解放されました！もう一度ダウンロードしてみてください。",
+  "featureNameOfflineDownloads": "オフラインダウンロード",
+
+  "myBookingsTitle": "予約履歴",
+  "myBookingsEmptyTitle": "予約はまだありません",
+  "myBookingsEmptySubtitle": "ガイドに送信したリクエストは、ステータスとともにここに表示されます。",
+  "guideFallbackName": "ガイド",
+  "guestCountLabel": "{count, plural, one{ゲスト1名} other{ゲスト{count}名}}",
+  "@guestCountLabel": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "paymentPaidLabel": "支払い済み",
+  "payGuideDirectlyLabel": "ガイドに直接支払う",
+  "bookingStatusPendingLabel": "返信待ち",
+  "bookingStatusAcceptedLabel": "承認済み",
+  "bookingStatusSessionReadyLabel": "準備完了",
+  "bookingStatusDeclinedLabel": "却下されました",
+  "bookingStatusExpiredLabel": "期限切れ",
+  "bookingStatusCancelledLabel": "キャンセル済み",
+  "bookingStatusCompletedLabel": "完了",
+  "bookingStatusDefaultLabel": "保留中",
+
+  "requestBookingTitle": "予約をリクエスト",
+  "dateLabel": "日付",
+  "guestsLabel": "人数",
+  "specialInstructionsLabel": "特別なご要望",
+  "numberOfGuestsLabel": "参加人数",
+  "notesFieldHint": "例：年配の同行者がいるため、歩行の少ないルートを希望します...",
+  "sendRequestButton": "リクエストを送信",
+  "userNotAuthenticatedError": "ユーザーが認証されていません",
+  "guideQuotaExceededError": "このガイドは今月の予約上限に達しています。来月に再度お試しいただくか、別のガイドをお選びください。",
+  "requestSentTitle": "リクエストを送信しました",
+  "requestSentMessage": "予約リクエストがガイドに送信されました。返信があり次第、通知でお知らせします。",
+  "closeButton": "閉じる",
+
+  "noBookingsToSyncMessage": "同期できる承認済みの予約はまだありません。",
+  "calendarEventTitle": "ツアー：{touristName}（ゲスト{guestCount}名）",
+  "@calendarEventTitle": {
+    "placeholders": { "touristName": { "type": "String" }, "guestCount": { "type": "int" } }
+  },
+  "defaultTouristName": "旅行者",
+  "calendarSyncSuccessMessage": "{count, plural, one{予約1件をカレンダーに同期しました。} other{予約{count}件をカレンダーに同期しました。}}",
+  "@calendarSyncSuccessMessage": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "calendarSyncFailedMessage": "カレンダーの同期に失敗しました：{error}",
+  "@calendarSyncFailedMessage": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "loginRequiredMessage": "予約リクエストを表示するにはログインしてください。",
+  "bookingsScreenTitle": "予約",
+  "syncToCalendarTooltip": "カレンダーに同期",
+  "inboxLoadErrorMessage": "受信ボックスの読み込みエラー：{error}",
+  "@inboxLoadErrorMessage": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "filterReadyForTour": "ツアー準備完了",
+  "emptyBookingsMessage": "「{filter}」の予約リクエストはありません。",
+  "@emptyBookingsMessage": {
+    "placeholders": { "filter": { "type": "String" } }
+  },
+  "touristIdLabel": "観光客 #{touristId}",
+  "@touristIdLabel": {
+    "placeholders": { "touristId": { "type": "String" } }
+  },
+  "requestedAtLabel": "リクエスト日時：{time}",
+  "@requestedAtLabel": {
+    "placeholders": { "time": { "type": "String" } }
+  },
+  "priorityBadgeLabel": "優先",
+  "tourDateLabel": "ツアー日程",
+  "guestsCountValue": "{count, plural, one{1名} other{{count}名}}",
+  "@guestsCountValue": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "quotedPriceLabel": "見積り価格",
+  "netPayoutLabel": "あなたの受取額",
+  "notAvailableAbbrev": "未定",
+  "tourNotesLabel": "ツアーに関する要望・注意事項",
+  "responseNoteLabel": "あなたの返信メモ：{note}",
+  "@responseNoteLabel": {
+    "placeholders": { "note": { "type": "String" } }
+  },
+  "declineButtonLabel": "却下",
+  "acceptButtonLabel": "承認",
+  "startTourSessionButtonLabel": "ツアーセッションを開始",
+  "bookingAcceptedMessage": "🎉 予約が承認され、ツアーセッションが作成されました！",
+  "acceptBookingErrorMessage": "予約の承認エラー：{error}",
+  "@acceptBookingErrorMessage": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "declineBookingDialogTitle": "予約を却下しますか？",
+  "declineReasonPrompt": "却下の理由をご記入ください（任意）：",
+  "declineReasonHint": "例：この日は予約でいっぱいです／車両整備のため",
+  "declineConfirmButtonLabel": "却下する",
+  "bookingDeclinedMessage": "予約を却下しました。",
+  "declineBookingErrorMessage": "予約の却下エラー：{error}",
+  "@declineBookingErrorMessage": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "meetingPointPendingLabel": "チャットで確認予定",
+  "bookingAcceptedResponseNote": "予約が承認されました！セッションの準備が整いました。",
+  "bookingDeclinedDefaultNote": "ガイドにより却下されました。",
+  "statusLabelCancelledByTourist": "観光客によりキャンセル",
+  "statusLabelCancelledByGuide": "ガイドによりキャンセル",
+
+  "reviewSubmitSuccessMessage": "送信完了。フィードバックをありがとうございました。",
+  "reviewSubmitErrorMessage": "送信エラー：{error}",
+  "@reviewSubmitErrorMessage": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "overallExperienceLabel": "総合評価",
+  "missionFeedbackEyebrow": "ツアーフィードバック",
+  "rateGuidePerformanceTitle": "ガイドの対応を評価してください。",
+  "trustScoreDisclaimer": "お客様の評価はガイドの信頼スコアの算出に使用されます。客観的かつ公正な評価にご協力ください。",
+  "ratingScaleAverageLabel": "普通",
+  "ratingScaleExceptionalLabel": "非常に良い",
+  "knowledgeFactorLabel": "知識",
+  "communicationFactorLabel": "コミュニケーション",
+  "punctualityFactorLabel": "時間厳守",
+  "safetyFactorLabel": "安全性",
+  "fieldNotesLabelUppercase": "フィールドノート",
+  "commentFieldHint": "特に良かった点は？改善できる点はありますか？",
+  "transmitFeedbackButton": "フィードバックを送信",
+
+  "familyShareLinkLimitReached": "⚠️ アクティブな共有リンクの上限（{maxLinks}件）に達しました。新しく作成するには、いずれかを削除してください。",
+  "@familyShareLinkLimitReached": {
+    "placeholders": { "maxLinks": { "type": "int" } }
+  },
+  "familyShareRecipientNameRequired": "⚠️ 受信者の名前を入力してください。",
+  "familyShareNoActiveSessionError": "⚠️ まずアクティブなツアーセッションを開始してください。共有できる情報がまだありません。",
+  "familyShareLinkGeneratedSuccess": "✅「{name}」さん向けの共有リンクを作成しました！",
+  "@familyShareLinkGeneratedSuccess": {
+    "placeholders": { "name": { "type": "String" } }
+  },
+  "familyShareActiveLinksTitle": "有効なリンク",
+  "familyShareNewLinkButton": "＋ 新規作成",
+  "familyShareAppBarTitle": "ファミリー共有",
+  "familyShareHeroSubtitle": "家族が安全にあなたの旅の状況を確認できるようにします",
+  "familyShareNoActiveSessionNotice": "現在アクティブなツアーはありません。ツアーを開始または参加すると、ライブ共有リンクを作成できます。",
+  "familyShareEmptyStateMessage": "有効な共有リンクが見つかりません",
+  "familyShareExpiredBadge": "期限切れ",
+  "familyShareViewedCountBadge": "閲覧{count}回",
+  "@familyShareViewedCountBadge": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "familyShareLinkNoLongerValid": "無効になりました",
+  "familyShareLinkExpiresAt": "有効期限：{time}",
+  "@familyShareLinkExpiresAt": {
+    "placeholders": { "time": { "type": "String" } }
+  },
+  "familyShareCopyLinkSnackbar": "📋 招待コードをクリップボードにコピーしました！",
+  "familyShareRemoveLinkDialogTitle": "リンクを削除しますか？",
+  "familyShareRemoveLinkDialogBody": "「{recipientName}」さんの共有アクセスが取り消されます。",
+  "@familyShareRemoveLinkDialogBody": {
+    "placeholders": { "recipientName": { "type": "String" } }
+  },
+  "familyShareLinkRemovedSnackbar": "「{recipientName}」さんへのリンクを削除しました。",
+  "@familyShareLinkRemovedSnackbar": {
+    "placeholders": { "recipientName": { "type": "String" } }
+  },
+  "familyShareRemoveButton": "削除",
+  "familyShareCreateSheetTitle": "共有リンクを作成",
+  "familyShareRecipientNameLabel": "受信者の名前",
+  "familyShareRecipientNameHint": "例：お母さん、お父さん、事務所",
+  "familyShareExpiryLabel": "有効期限",
+  "familyShareDuration4Hours": "4時間",
+  "familyShareDuration12Hours": "12時間",
+  "familyShareDuration24Hours": "24時間",
+  "familyShareToggleStatusLabel": "リアルタイムの状況を共有",
+  "familyShareToggleIdentityLabel": "ガイドの身元情報を共有",
+  "familyShareToggleMeetingPointLabel": "待ち合わせ場所を共有",
+  "familyShareToggleEmergencyLabel": "緊急アラートを共有",
+  "familyShareGenerateLinkButton": "リンクを作成",
+
+  "categoryAll": "すべて",
+  "categoryChauffeur": "専属ドライバー",
+  "categorySiteGuide": "現地ガイド",
+  "categoryAdventure": "アドベンチャー",
+  "categoryWildlife": "野生動物",
+  "categoryHeritage": "文化遺産",
+  "categoryPhotography": "写真撮影",
+  "marketplaceSearchHint": "名前、言語、都市で検索...",
+  "verifiedGuidesEyebrow": "認証済みガイド",
+  "findYourExpertTitle": "あなたにぴったりのガイドを探す",
+  "noVerifiedGuidesEmptyState": "公開されている認証済みガイドはまだいません。",
+  "noGuidesFoundForQuery": "「{query}」に一致するガイドが見つかりません",
+  "@noGuidesFoundForQuery": {
+    "placeholders": { "query": { "type": "String" } }
+  },
+  "signInToBrowseGuidesError": "認証済みガイドを閲覧するにはサインインしてください。",
+  "genericLoadGuidesError": "ガイドの読み込み中に問題が発生しました。もう一度お試しください。",
+  "tryAgainButton": "再試行",
+  "reviewCountSuffix": "（{count}件）",
+  "@reviewCountSuffix": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "hourlyRateLabel": "{currency} {rate}／時間",
+  "@hourlyRateLabel": {
+    "placeholders": { "currency": { "type": "String" }, "rate": { "type": "String" } }
+  },
+
+  "zenithPresenceSyncErrorMessage": "ゼニス・プレゼンス同期エラー: {error}",
+  "@zenithPresenceSyncErrorMessage": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "couldNotGetLocationMessage": "現在地を取得できませんでした。デフォルトの座標を使用します。（{error}）",
+  "@couldNotGetLocationMessage": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "failedToUpdatePhaseMessage": "フェーズの更新に失敗しました: {error}",
+  "@failedToUpdatePhaseMessage": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "setMeetingPointDialogTitle": "集合場所を設定",
+  "meetingPointHintText": "例: 寺院の入口、バス停",
+  "cancelButtonUppercase": "キャンセル",
+  "setHereButtonUppercase": "ここに設定",
+  "meetingPointUpdatedTitle": "集合場所が更新されました",
+  "meetingPointUpdatedBody": "新しい集合場所: {name}",
+  "@meetingPointUpdatedBody": {
+    "placeholders": { "name": { "type": "String" } }
+  },
+  "failedToSetMeetingPointMessage": "集合場所の設定に失敗しました: {error}",
+  "@failedToSetMeetingPointMessage": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "vehiclePositionMarkedMessage": "車両の位置をマークしました",
+  "failedToUpdateVehicleLocationMessage": "車両の位置情報の更新に失敗しました: {error}",
+  "@failedToUpdateVehicleLocationMessage": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "tourDashboardTitle": "ツアーダッシュボード",
+  "bottomNavTour": "ツアー",
+  "bottomNavPlan": "プラン",
+  "bottomNavReviews": "レビュー",
+  "bottomNavSafety": "安全",
+  "bottomNavListing": "掲載情報",
+  "noActiveTourTitle": "進行中のツアーはありません",
+  "noActiveTourSubtitle": "新しいツアーを開始し、旅行者が参加できるQRコードを生成しましょう。",
+  "addVehicleFirstMessage": "まず「マイ掲載情報」タブで車両を追加してください",
+  "generateTourQrButton": "ツアーQRを生成",
+  "sessionDataUnavailableMessage": "セッションデータが利用できません。",
+  "upcomingTourSessionReadyTitle": "次のツアーセッションの準備が整いました",
+  "upcomingTourSessionReadyMessage": "旅行者と集合場所が確定しました。あなたと旅行者が集合場所に到着したら、下のボタンをタップしてタイマーとトラッキングを正式に開始してください。",
+  "startTourSessionButton": "ツアーセッションを開始",
+  "tourSessionStartedMessage": "🚀 ツアーセッションを開始しました！",
+  "statLabelTravelers": "旅行者数",
+  "statLabelRating": "評価",
+  "statLabelServed": "対応済み",
+  "updatePointButton": "地点を更新",
+  "setPointButton": "地点を設定",
+  "markVehicleButton": "車両をマーク",
+  "joinStatusLabel": "参加ステータス",
+  "openToScansLabel": "スキャン受付中",
+  "lockedLabel": "ロック中",
+  "joiningPausedLabel": "参加受付を一時停止中",
+  "tapToRefreshJoinCodeLabel": "タップして参加コードを更新",
+  "broadcastButtonLabel": "配信",
+  "sosAlertBroadcastedMessage": "SOSアラートを配信しました！",
+  "connectedTravelersLabel": "接続中の旅行者",
+  "activeCountLabel": "{count} 人が参加中",
+  "@activeCountLabel": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "waitingForScansLabel": "スキャン待機中…",
+  "phaseLabelAssembly": "集合",
+  "phaseLabelEnRoute": "移動中",
+  "phaseLabelAtSite": "現地滞在中",
+  "phaseLabelBreak": "休憩",
+  "phaseLabelReturning": "帰還中",
+  "stopTourSessionButton": "ツアーセッションを終了",
+  "selectVehicleTitle": "車両を選択",
+  "travelerTileLabel": "旅行者 {shortId}",
+  "@travelerTileLabel": {
+    "placeholders": { "shortId": { "type": "String" } }
+  },
+  "weatherHazardLoggedMessage": "✅ 気象ハザードを安全コンソールに記録しました！",
+  "errorLoggingIncidentMessage": "インシデントの記録中にエラーが発生しました: {error}",
+  "@errorLoggingIncidentMessage": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "logIncidentButtonUppercase": "インシデントを記録",
+  "safetyConsoleButtonUppercase": "安全コンソール",
+  "defaultMonsoonAlertTitle": "🚨 緊急モンスーン警報",
+  "defaultMonsoonAlertMessage": "あなたのツアー地区に悪天候警報が発令されています。",
+
+  "earningsTitle": "収益",
+  "pleaseLogInViewEarningsMessage": "収益を表示するにはログインしてください。",
+  "errorLoadingFinancialDataMessage": "財務データの読み込み中にエラーが発生しました: {error}",
+  "@errorLoadingFinancialDataMessage": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "totalNetEarningsLabel": "純収益合計",
+  "netPercentageLabel": "手取り90%",
+  "lkrAmountLabel": "LKR {amount}",
+  "@lkrAmountLabel": {
+    "placeholders": { "amount": { "type": "String" } }
+  },
+  "subStatPending": "保留中",
+  "subStatPaidOut": "支払い済み",
+  "subStatPlatformFee": "プラットフォーム手数料",
+  "requestPayoutButton": "出金をリクエスト",
+  "bankButtonLabel": "銀行",
+  "clientAnalyticsTitle": "顧客分析",
+  "analyticsStatCompletedTours": "完了したツアー",
+  "analyticsStatUniqueClients": "ユニーク顧客数",
+  "analyticsStatRepeatRate": "リピート率",
+  "avgBookingValueLabel": "平均予約額",
+  "clientAnalyticsLockedSubtitle": "リピート率、ユニーク顧客数など — Proプラン限定",
+  "upgradeButtonLabel": "アップグレード",
+  "filterChipAllBookings": "すべての予約",
+  "filterChipPendingPayout": "⏳ 出金保留中",
+  "filterChipPaidOut": "✅ 支払い済み",
+  "filterChipDisputed": "⚠️ 異議あり",
+  "payoutStatusPaid": "支払い済み",
+  "payoutStatusDisputed": "異議あり",
+  "payoutStatusPending": "保留中",
+  "tourBookingIdLabel": "ツアー予約 #{id}",
+  "@tourBookingIdLabel": {
+    "placeholders": { "id": { "type": "String" } }
+  },
+  "guestCountDateLabel": "{count} 名 · {date}",
+  "@guestCountDateLabel": {
+    "placeholders": { "count": { "type": "int" }, "date": { "type": "String" } }
+  },
+  "viaPayHereDateLabel": "PayHere経由 · {date}",
+  "@viaPayHereDateLabel": {
+    "placeholders": { "date": { "type": "String" } }
+  },
+  "grossLkrLabel": "総額 LKR {amount}",
+  "@grossLkrLabel": {
+    "placeholders": { "amount": { "type": "String" } }
+  },
+  "noTransactionsFoundTitle": "取引が見つかりません",
+  "noTransactionsFoundSubtitle": "ツアー予約が完了すると、純支払い額がここに自動的に表示されます。",
+  "noPendingFundsMessage": "出金可能な保留中の資金がありません。",
+  "requestPayoutDialogTitle": "出金をリクエスト",
+  "requestPayoutDialogMessage": "登録済みの銀行口座 / モバイルマネーウォレットへ LKR {amount} の振込をリクエストします。\n\n振込はOracleファイナンスチームにより24営業時間以内に処理されます。",
+  "@requestPayoutDialogMessage": {
+    "placeholders": { "amount": { "type": "String" } }
+  },
+  "cancelButton": "キャンセル",
+  "confirmPayoutButton": "出金を確定",
+  "payoutRequestSubmittedMessage": "出金リクエストが正常に送信されました！",
+  "payoutAccountSettingsTitle": "出金口座設定",
+  "bankNameWalletProviderLabel": "銀行名 / ウォレット提供者",
+  "accountPhoneNumberLabel": "口座番号 / 電話番号",
+  "saveButtonLabel": "保存",
+  "payoutAccountSettingsUpdatedMessage": "出金口座設定を更新しました！",
+
+  "availabilityScheduleTitle": "対応可能時間とスケジュール",
+  "whenYoureFreeToGuideTitle": "ガイド可能な時間帯",
+  "touristsOnlySeeOpenSlotsMessage": "旅行者には、あなたが公開に設定した枠のみが表示されます。",
+  "instantBookNoticeTitle": "即時予約と事前通知",
+  "instantBookLabel": "即時予約",
+  "instantBookSubtitle": "手動承認なしで旅行者がすぐに予約できるようにします",
+  "advanceNoticeLabel": "事前通知期間",
+  "advanceNoticeSubtitle": "ツアー開始前に必要な最短リードタイム",
+  "hoursShortLabel": "{count} 時間",
+  "@hoursShortLabel": {
+    "placeholders": { "count": { "type": "String" } }
+  },
+  "weeklyScheduleTitle": "週間スケジュール",
+  "weeklyScheduleSubtitle": "勤務日を切り替えて時間を設定してください",
+  "dayOffLabel": "休み",
+  "blackoutDatesTitle": "対応不可日",
+  "blackoutDatesCountSuffix": "（{count}）",
+  "@blackoutDatesCountSuffix": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "addDateButtonLabel": "日付を追加",
+  "noBlackoutDatesMessage": "対応不可日はまだ設定されていません — 週間スケジュールに従って対応可能です。",
+  "saveAvailabilityButton": "対応可能時間を保存",
+  "dayMonday": "月曜日",
+  "dayTuesday": "火曜日",
+  "dayWednesday": "水曜日",
+  "dayThursday": "木曜日",
+  "dayFriday": "金曜日",
+  "daySaturday": "土曜日",
+  "daySunday": "日曜日",
+
+  "clientsTitle": "顧客",
+  "pleaseLogInMessage": "ログインしてください。",
+  "noClientsYetTitle": "まだ顧客がいません",
+  "noClientsYetSubtitle": "旅行者があなたのツアーを予約すると、ここに表示されます。",
+  "travelerShortIdLabel": "旅行者 {shortId}",
+  "@travelerShortIdLabel": {
+    "placeholders": { "shortId": { "type": "String" } }
+  },
+  "tourCountCompletedLabel": "{count, plural, one{{count} 件のツアー} other{{count} 件のツアー}}が完了 · 最終: {date}",
+  "@tourCountCompletedLabel": {
+    "placeholders": { "count": { "type": "int" }, "date": { "type": "String" } }
+  },
+  "clientStatTours": "ツアー数",
+  "clientStatTotalSpent": "合計利用額",
+  "clientStatLastVisit": "最終利用日",
+  "notesLabel": "メモ",
+  "clientNoteHint": "好み、アレルギー、思い出に残る瞬間など…",
+  "saveNoteButton": "メモを保存",
+  "noteSavedMessage": "メモを保存しました",
+  "bookingHistoryTitle": "予約履歴",
+  "guestCountParenthesesLabel": "{count} 名",
+  "@guestCountParenthesesLabel": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+
+  "becomeAGuideTitle": "ガイドになる",
+  "fieldsMissingMessage": "未入力の項目があります: すべての項目を入力し、書類をアップロードしてください。",
+  "uploadingDocumentsMessage": "書類をアップロード中…",
+  "documentsUploadFailureMessage": "ガイド書類をOracleボールトに送信できませんでした。接続を確認してください。",
+  "savingApplicationMessage": "申請を保存中…",
+  "synchronizingApplicationMessage": "申請を同期中…",
+  "applicationSubmittedSuccessMessage": "申請が正常に送信されました！",
+  "authRequiredMessage": "認証が必要です。再度ログインしてください。",
+  "cameraAccessDeniedMessage": "カメラへのアクセスが拒否されたか、エラーが発生しました: {error}",
+  "@cameraAccessDeniedMessage": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "takeASelfieTitle": "自撮りを撮影",
+  "uploadDocumentTitle": "書類をアップロード",
+  "cameraOptionLabel": "カメラ",
+  "galleryOptionLabel": "ギャラリー",
+  "errorGenericMessage": "エラー: {error}",
+  "@errorGenericMessage": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "verifyingYourDetailsMessage": "詳細情報を確認中…",
+  "credentialsBeingVerifiedMessage": "あなたの資格情報は安全に確認されています。",
+  "applicationSubmittedTitle": "申請が送信されました",
+  "applicationSubmittedMessage": "当チームが書類を確認し、決定次第ご連絡いたします。",
+  "returnToProfileButton": "プロフィールに戻る",
+  "applicationUnderReviewTitle": "申請審査中",
+  "applicationUnderReviewMessage": "ガイド申請が送信され、現在審査中です。決定次第ご連絡いたします。",
+  "applicationRejectedTitle": "申請が却下されました",
+  "applicationRejectedMessage": "理由: {reason}\n\n必要な項目を修正後、以下から再申請いただけます。",
+  "@applicationRejectedMessage": {
+    "placeholders": { "reason": { "type": "String" } }
+  },
+  "defaultRejectionReason": "書類が不完全または不明瞭です。",
+  "guidePollRejectionReason": "免許証の書類と写真が鮮明で有効であることをご確認ください。",
+  "approvedGuideTitle": "あなたは承認されたガイドです",
+  "approvedGuideMessage": "おめでとうございます！あなたのガイドアイデンティティが有効になりました。プロフィールからガイドダッシュボードにアクセスできます。",
+  "shareLocalKnowledgeTitle": "地元の知識を共有しよう",
+  "guideTravelersEarnSubtitle": "旅行者をガイドして、自分のスケジュールで収入を得ましょう。",
+  "guideCategoryLabel": "ガイドカテゴリー",
+  "categoryNational": "全国",
+  "categoryProvincial": "州",
+  "categorySite": "サイト",
+  "licenseNumberLabel": "免許番号",
+  "licenseNumberHint": "SLTDA-XXXX-XXXX",
+  "shortBioLabel": "簡単な自己紹介",
+  "shortBioHint": "あなたの経験について教えてください…",
+  "verificationDocumentsTitle": "本人確認書類",
+  "guideLicenseLabel": "ガイド免許証",
+  "nicPassportLabel": "NIC（国民身分証）/ パスポート",
+  "selfieForIdentityLabel": "本人確認用の自撮り",
+  "submitApplicationButton": "申請を送信",
+
+  "tourPackagesTitle": "ツアーパッケージ",
+  "noPackagesYetTitle": "まだパッケージがありません",
+  "noPackagesYetSubtitle": "半日、一日、または複数日のツアーパッケージを固定料金で提供しましょう。",
+  "inactiveLabel": "非公開",
+  "durationGuestsLabel": "{hours}時間 · 最大 {guests} 名まで",
+  "@durationGuestsLabel": {
+    "placeholders": { "hours": { "type": "String" }, "guests": { "type": "String" } }
+  },
+  "currencyPriceLabel": "{currency} {price}",
+  "@currencyPriceLabel": {
+    "placeholders": { "currency": { "type": "String" }, "price": { "type": "String" } }
+  },
+  "newPackageTitle": "新規パッケージ",
+  "editPackageTitle": "パッケージを編集",
+  "failedToSavePackageMessage": "パッケージの保存に失敗しました: {error}",
+  "@failedToSavePackageMessage": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "packageTitleLabel": "パッケージ名",
+  "packageTitleHint": "例: シーギリヤ&ダンブッラ日帰りツアー",
+  "requiredFieldMessage": "必須項目です",
+  "descriptionLabel": "説明",
+  "packageDescriptionHint": "このパッケージには何が含まれますか？",
+  "durationHoursLabel": "所要時間（時間）",
+  "maxGuestsLabel": "最大人数",
+  "priceLabel": "料金",
+  "currencyLabel": "通貨",
+  "inclusionsLabel": "含まれるもの（カンマ区切り）",
+  "inclusionsHint": "昼食、入場料、飲料水",
+  "includesVehicleLabel": "車両を含む",
+  "activeBookableLabel": "公開中（旅行者が予約可能）",
+  "savePackageButton": "パッケージを保存",
+  "availabilityScheduleUpdatedMessage": "空き状況とスケジュールを更新しました",
+  "errorSavingAvailabilityMessage": "空き状況の保存エラー: {error}",
+  "@errorSavingAvailabilityMessage": {
+    "placeholders": { "error": { "type": "String" } }
+  }
 }

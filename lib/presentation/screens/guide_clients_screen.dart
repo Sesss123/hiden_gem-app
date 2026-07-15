@@ -8,6 +8,7 @@ import '../../core/theme/app_theme.dart';
 import '../../data/models/booking_request.dart';
 import '../../data/repositories/booking_repository.dart';
 import '../../data/repositories/client_note_repository.dart';
+import '../../l10n/app_localizations.dart';
 
 class _ClientSummary {
   final String touristId;
@@ -38,12 +39,13 @@ class GuideClientsScreen extends ConsumerStatefulWidget {
 class _GuideClientsScreenState extends ConsumerState<GuideClientsScreen> {
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid == null) {
       return Scaffold(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        appBar: AppBar(title: const Text('Clients')),
-        body: Center(child: Text('Please log in.', style: TextStyle(color: AppTheme.textSecondary(context)))),
+        appBar: AppBar(title: Text(l10n.clientsTitle)),
+        body: Center(child: Text(l10n.pleaseLogInMessage, style: TextStyle(color: AppTheme.textSecondary(context)))),
       );
     }
 
@@ -59,7 +61,7 @@ class _GuideClientsScreenState extends ConsumerState<GuideClientsScreen> {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          'Clients',
+          l10n.clientsTitle,
           style: GoogleFonts.outfit(fontWeight: FontWeight.w800, letterSpacing: -0.5, fontSize: 20, color: AppTheme.textPrimary(context)),
         ),
         centerTitle: false,
@@ -87,7 +89,7 @@ class _GuideClientsScreenState extends ConsumerState<GuideClientsScreen> {
                   .firstWhere((n) => n != null && n.isNotEmpty, orElse: () => null);
               return _ClientSummary(
                 touristId: e.key,
-                displayName: displayName ?? 'Traveler ${e.key.substring(0, e.key.length > 6 ? 6 : e.key.length)}',
+                displayName: displayName ?? l10n.travelerShortIdLabel(e.key.substring(0, e.key.length > 6 ? 6 : e.key.length)),
                 bookings: e.value,
               );
             }).toList()
@@ -106,6 +108,7 @@ class _GuideClientsScreenState extends ConsumerState<GuideClientsScreen> {
   }
 
   Widget _buildEmptyState() {
+    final l10n = AppLocalizations.of(context)!;
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
@@ -114,10 +117,10 @@ class _GuideClientsScreenState extends ConsumerState<GuideClientsScreen> {
           children: [
             Icon(Icons.people_outline_rounded, size: 56, color: AppTheme.textSecondary(context).withValues(alpha: 0.3)),
             const SizedBox(height: 16),
-            Text('No clients yet', style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.w700, color: AppTheme.textPrimary(context))),
+            Text(l10n.noClientsYetTitle, style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.w700, color: AppTheme.textPrimary(context))),
             const SizedBox(height: 8),
             Text(
-              'Once travelers book your tours, they\'ll appear here.',
+              l10n.noClientsYetSubtitle,
               textAlign: TextAlign.center,
               style: GoogleFonts.inter(fontSize: 13, color: AppTheme.textSecondary(context)),
             ),
@@ -155,7 +158,7 @@ class _GuideClientsScreenState extends ConsumerState<GuideClientsScreen> {
                     Text(client.displayName, style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.w700, color: AppTheme.textPrimary(context))),
                     const SizedBox(height: 4),
                     Text(
-                      '${client.tourCount} tour${client.tourCount == 1 ? '' : 's'} completed · Last: ${DateFormat('MMM d, yyyy').format(client.lastVisit)}',
+                      AppLocalizations.of(context)!.tourCountCompletedLabel(client.tourCount, DateFormat('MMM d, yyyy').format(client.lastVisit)),
                       style: GoogleFonts.inter(fontSize: 11, color: AppTheme.textSecondary(context)),
                     ),
                   ],
@@ -218,7 +221,7 @@ class _ClientDetailScreenState extends ConsumerState<_ClientDetailScreen> {
       await ClientNoteRepository().upsertNote(guideId: uid, touristId: widget.client.touristId, note: _noteController.text.trim());
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Note saved'), backgroundColor: AppTheme.colors.green),
+          SnackBar(content: Text(AppLocalizations.of(context)!.noteSavedMessage), backgroundColor: AppTheme.colors.green),
         );
       }
     } finally {
@@ -228,6 +231,7 @@ class _ClientDetailScreenState extends ConsumerState<_ClientDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final client = widget.client;
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -246,13 +250,13 @@ class _ClientDetailScreenState extends ConsumerState<_ClientDetailScreen> {
         children: [
           Row(
             children: [
-              Expanded(child: _buildStat('Tours', '${client.tourCount}')),
-              Expanded(child: _buildStat('Total spent', client.totalSpent > 0 ? 'LKR ${client.totalSpent.toStringAsFixed(0)}' : '—')),
-              Expanded(child: _buildStat('Last visit', DateFormat('MMM d').format(client.lastVisit))),
+              Expanded(child: _buildStat(l10n.clientStatTours, '${client.tourCount}')),
+              Expanded(child: _buildStat(l10n.clientStatTotalSpent, client.totalSpent > 0 ? l10n.lkrAmountLabel(client.totalSpent.toStringAsFixed(0)) : '—')),
+              Expanded(child: _buildStat(l10n.clientStatLastVisit, DateFormat('MMM d').format(client.lastVisit))),
             ],
           ),
           const SizedBox(height: 24),
-          Text('Notes', style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.w700, color: AppTheme.textPrimary(context))),
+          Text(l10n.notesLabel, style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.w700, color: AppTheme.textPrimary(context))),
           const SizedBox(height: 12),
           if (_isLoading)
             const Center(child: Padding(padding: EdgeInsets.all(20), child: CircularProgressIndicator()))
@@ -266,7 +270,7 @@ class _ClientDetailScreenState extends ConsumerState<_ClientDetailScreen> {
                 style: GoogleFonts.inter(color: AppTheme.textPrimary(context), fontSize: 13),
                 decoration: InputDecoration(
                   contentPadding: const EdgeInsets.all(14),
-                  hintText: 'Preferences, allergies, memorable moments...',
+                  hintText: l10n.clientNoteHint,
                   hintStyle: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 13),
                   border: InputBorder.none,
                 ),
@@ -284,11 +288,11 @@ class _ClientDetailScreenState extends ConsumerState<_ClientDetailScreen> {
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
                 elevation: 0,
               ),
-              child: Text('Save note', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 13)),
+              child: Text(l10n.saveNoteButton, style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 13)),
             ),
           ),
           const SizedBox(height: 28),
-          Text('Booking history', style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.w700, color: AppTheme.textPrimary(context))),
+          Text(l10n.bookingHistoryTitle, style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.w700, color: AppTheme.textPrimary(context))),
           const SizedBox(height: 12),
           ...client.bookings.map((b) => _buildBookingTile(b)),
         ],
@@ -307,6 +311,7 @@ class _ClientDetailScreenState extends ConsumerState<_ClientDetailScreen> {
   }
 
   Widget _buildBookingTile(BookingRequest b) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(14),
@@ -318,13 +323,38 @@ class _ClientDetailScreenState extends ConsumerState<_ClientDetailScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(DateFormat('MMM d, yyyy').format(b.requestedDate), style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: AppTheme.textPrimary(context))),
-                Text('${b.guestCount} guest(s)', style: GoogleFonts.inter(fontSize: 11, color: AppTheme.textSecondary(context))),
+                Text(l10n.guestCountParenthesesLabel(b.guestCount), style: GoogleFonts.inter(fontSize: 11, color: AppTheme.textSecondary(context))),
               ],
             ),
           ),
-          Text(b.status, style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: AppTheme.textSecondary(context))),
+          Text(_statusLabel(b.status, l10n), style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: AppTheme.textSecondary(context))),
         ],
       ),
     );
+  }
+
+  String _statusLabel(String status, AppLocalizations l10n) {
+    switch (status) {
+      case 'pending':
+        return l10n.bookingStatusPendingLabel;
+      case 'accepted':
+        return l10n.bookingStatusAcceptedLabel;
+      case 'session_ready':
+        return l10n.bookingStatusSessionReadyLabel;
+      case 'completed':
+        return l10n.bookingStatusCompletedLabel;
+      case 'declined':
+        return l10n.bookingStatusDeclinedLabel;
+      case 'expired':
+        return l10n.bookingStatusExpiredLabel;
+      case 'cancelled':
+        return l10n.bookingStatusCancelledLabel;
+      case 'cancelled_by_tourist':
+        return l10n.statusLabelCancelledByTourist;
+      case 'cancelled_by_guide':
+        return l10n.statusLabelCancelledByGuide;
+      default:
+        return l10n.bookingStatusDefaultLabel;
+    }
   }
 }

@@ -274,7 +274,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: const Text("PDF Export is a Premium feature."),
+                              content: Text(l10n.premiumFeatureSnackbar('PDF Export')),
                               backgroundColor: AppTheme.accentOchre(context),
                             ),
                           );
@@ -303,7 +303,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
                         ),
                         const SizedBox(height: 6),
                         Text(
-                          "${_activePlan.tripSummary.days}-day ${_activePlan.tripSummary.style} trip",
+                          l10n.tripDurationStyleLabel(_activePlan.tripSummary.days, _activePlan.tripSummary.style),
                           style: GoogleFonts.inter(
                             fontSize: 13,
                             fontWeight: FontWeight.w500,
@@ -366,8 +366,8 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
                         unselectedLabelStyle: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 10),
                         tabs: [
                           Tab(text: l10n.itinerary),
-                          const Tab(text: "Budget"),
-                          const Tab(text: "Map"),
+                          Tab(text: l10n.budgetTabLabel),
+                          Tab(text: l10n.mapTabLabel),
                           Tab(text: l10n.planB),
                           Tab(text: l10n.tips),
                         ],
@@ -463,7 +463,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
         if (!isPremium) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: const Text("Voice Guide is a Premium feature."),
+              content: Text(AppLocalizations.of(context)!.premiumFeatureSnackbar('Voice Guide')),
               backgroundColor: AppTheme.accentOchre(context),
             ),
           );
@@ -496,7 +496,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
             if (context.mounted) {
               showDialog(
                 context: context,
-                builder: (_) => const LimitReachedDialog(featureName: 'Saved Plans'),
+                builder: (_) => LimitReachedDialog(featureName: AppLocalizations.of(context)!.savedPlansFeatureName),
               );
             }
             return;
@@ -566,7 +566,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
               Icon(Icons.explore_off_outlined, size: 64, color: AppTheme.textSecondary(context).withValues(alpha: 0.3)),
               const SizedBox(height: 16),
               Text(
-                "No path found",
+                l10n.noPathFoundTitle,
                 style: GoogleFonts.outfit(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -575,7 +575,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
               ),
               const SizedBox(height: 8),
               Text(
-                "The Oracle could not chart a path for this destination. Try refining your budget or style preferences.",
+                l10n.noPathFoundMessage,
                 textAlign: TextAlign.center,
                 style: GoogleFonts.inter(
                   fontSize: 12,
@@ -609,7 +609,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
                 Row(
                   children: [
                     Text(
-                      "Trip overview",
+                      l10n.tripOverviewLabel,
                       style: GoogleFonts.inter(
                         color: Theme.of(context).colorScheme.primary,
                         fontWeight: FontWeight.w700,
@@ -655,6 +655,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
   // TAB 2 – ORACLE STYLE
   // ═══════════════════════════════════════════════════════════════════
   Widget _buildBudgetTab(BuildContext context, TripPlan plan) {
+    final l10n = AppLocalizations.of(context)!;
     int totalCost = 0;
     Map<String, int> categories = {
       'Transport': 0,
@@ -694,13 +695,13 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
         children: [
           _buildHeroBudgetCard(context, totalCost, userBudget, progress, isOverBudget),
           SizedBox(height: paddingValue),
-          _buildSectionHeader(context, "Expense Breakdown"),
+          _buildSectionHeader(context, l10n.expenseBreakdownTitle),
           SizedBox(height: 16),
           ...categories.entries.where((e) => e.value > 0).map((e) => _buildBudgetRow(context, e.key, e.value, totalCost)),
           SizedBox(height: paddingValue),
 
           ModernGradientButton(
-            label: "Open Expense Tracker",
+            label: l10n.openExpenseTrackerButton,
             onPressed: () {
               Navigator.push(
                 context,
@@ -722,6 +723,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
   }
 
   Widget _buildHeroBudgetCard(BuildContext context, int total, int userBudget, double progress, bool isOver) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -743,7 +745,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                "Estimated total",
+                l10n.estimatedTotalLabel,
                 style: GoogleFonts.inter(
                   color: Theme.of(context).colorScheme.primary,
                   fontWeight: FontWeight.w700,
@@ -780,14 +782,14 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                "User budget: ${_fmtLkr(userBudget)}",
+                l10n.userBudgetLabel(_fmtLkr(userBudget)),
                 style: TextStyle(
-                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6), 
+                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                   fontSize: 12,
                 ),
               ),
               Text(
-                "${(progress * 100).toInt()}% Used", 
+                l10n.percentUsedLabel((progress * 100).toInt()),
                 style: TextStyle(
                   color: isOver ? AppTheme.colors.orangeAccent : Theme.of(context).colorScheme.primary, 
                   fontSize: 12, 
@@ -802,6 +804,15 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
   }
 
   Widget _buildBudgetRow(BuildContext context, String label, int amount, int total) {
+    final l10n = AppLocalizations.of(context)!;
+    final displayLabel = switch (label) {
+      'Transport' => l10n.budgetCategoryTransport,
+      'Food' => l10n.budgetCategoryFood,
+      'Hotel' => l10n.budgetCategoryHotel,
+      'Attractions' => l10n.budgetCategoryAttractions,
+      'Other' => l10n.budgetCategoryOther,
+      _ => label,
+    };
     final percent = (amount / total * 100).toInt();
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
@@ -829,16 +840,16 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  label, 
+                  displayLabel,
                   style: GoogleFonts.outfit(
-                    color: Theme.of(context).colorScheme.onSurface, 
+                    color: Theme.of(context).colorScheme.onSurface,
                     fontWeight: FontWeight.bold,
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
                 Text(
-                  "$percent% of total", 
+                  l10n.percentOfTotalLabel(percent),
                   style: TextStyle(
                     color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5), 
                     fontSize: 10,
@@ -879,6 +890,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
   }
 
   Widget _buildMapTab(TripPlan plan) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       width: double.infinity,
       padding: EdgeInsets.all(32),
@@ -895,25 +907,25 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
           ),
           SizedBox(height: 32),
           Text(
-            "Visual Tour Route",
+            l10n.visualTourRouteTitle,
             style: GoogleFonts.outfit(
-              fontSize: 24, 
-              fontWeight: FontWeight.bold, 
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
               color: Theme.of(context).colorScheme.onSurface,
             ),
           ),
           SizedBox(height: 12),
           Text(
-            "Plot your entire journey across the teardrop isle. View detailed route segments and travel times.",
+            l10n.visualTourRouteDescription,
             textAlign: TextAlign.center,
             style: TextStyle(
-              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7), 
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
               height: 1.5,
             ),
           ),
           SizedBox(height: 48),
           ModernGradientButton(
-            label: "Open Route Map",
+            label: l10n.openRouteMapButton,
             onPressed: () {
                HapticFeedback.heavyImpact();
                Navigator.push(context, MaterialPageRoute(builder: (_) => MapRouteScreen(plan: plan)));
@@ -928,6 +940,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
   // TAB 3 – PLAN B (RAIN)
   // ═══════════════════════════════════════════════════════════════════
   Widget _buildPlanBTab(TripPlan plan, bool isPremium) {
+    final l10n = AppLocalizations.of(context)!;
     if (!isPremium && !_planBUnlocked) {
       return _buildRewardedGate();
     }
@@ -955,15 +968,15 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "Oracle's Rain Plan", 
+                        l10n.oracleRainPlanTitle,
                         style: GoogleFonts.outfit(
-                          color: Theme.of(context).colorScheme.primary, 
-                          fontWeight: FontWeight.bold, 
+                          color: Theme.of(context).colorScheme.primary,
+                          fontWeight: FontWeight.bold,
                           fontSize: 16,
                         ),
                       ),
                       Text(
-                        "Caught in a sudden shower? Switch to this.", 
+                        l10n.oracleRainPlanSubtitle,
                         style: TextStyle(
                           color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7), 
                           fontSize: 12,
@@ -986,6 +999,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
 
 
   Widget _buildRewardedGate() {
+    final l10n = AppLocalizations.of(context)!;
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32.0),
@@ -1015,16 +1029,16 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
               ),
               SizedBox(height: 24),
               Text(
-                "Oracle's Vault",
+                l10n.oracleVaultTitle,
                 style: GoogleFonts.outfit(
-                  fontSize: 24, 
-                  fontWeight: FontWeight.bold, 
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
                   color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
               SizedBox(height: 12),
               Text(
-                "The rainy-day alternative is locked for free travelers.\nWatch a short video to unlock it for this trip.",
+                l10n.oracleVaultDescription,
                 textAlign: TextAlign.center,
                 style: GoogleFonts.inter(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7)),
               ),
@@ -1036,13 +1050,13 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
                 });
               },
               icon: Icon(Icons.play_circle_fill),
-              label: Text("Unlock with ad"),
+              label: Text(l10n.unlockWithAdButton),
               style: AppTheme.primaryButtonStyle(context),
             ),
             TextButton(
               onPressed: () => ref.read(premiumProvider.notifier).buyPremium(),
               child: Text(
-                "Go Premium for Ad-Free Experience", 
+                l10n.goPremiumAdFreeButton,
                 style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6)),
               ),
             ),
@@ -1054,6 +1068,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
   }
 
   Widget _buildPremiumCTA() {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.all(28),
       decoration: BoxDecoration(
@@ -1078,7 +1093,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
           ),
           SizedBox(height: 20),
           Text(
-            "Hidden Gems luxury",
+            l10n.hiddenGemsLuxuryTitle,
             style: GoogleFonts.outfit(
               color: Theme.of(context).colorScheme.onSurface,
               fontWeight: FontWeight.w800,
@@ -1088,7 +1103,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
           ),
           SizedBox(height: 12),
           Text(
-            "Go beyond the ordinary. Unlock the Oracle's full wisdom.",
+            l10n.premiumCtaDescription,
             textAlign: TextAlign.center,
             style: GoogleFonts.inter(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7), fontSize: 13),
           ),
@@ -1096,9 +1111,9 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              _premiumFeature(Icons.mic_none, "Voice"),
-              _premiumFeature(Icons.picture_as_pdf, "PDF"),
-              _premiumFeature(Icons.block, "No Ads"),
+              _premiumFeature(Icons.mic_none, l10n.premiumFeatureVoice),
+              _premiumFeature(Icons.picture_as_pdf, l10n.premiumFeaturePdf),
+              _premiumFeature(Icons.block, l10n.premiumFeatureNoAds),
             ],
           ),
           SizedBox(height: 32),
@@ -1124,7 +1139,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
               ),
               child: Text(
-                "Unleash the Oracle",
+                l10n.unleashOracleButton,
                 style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 14),
               ),
             ),
@@ -1195,16 +1210,17 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
                     final mapsUrl = 'https://www.google.com/maps/search/?api=1&query=${item.lat},${item.lng}';
                     final uri = Uri.parse(mapsUrl);
                     final messenger = ScaffoldMessenger.of(context);
+                    final l10n = AppLocalizations.of(context)!;
                     if (await canLaunchUrl(uri)) {
                       await launchUrl(uri, mode: LaunchMode.externalApplication);
                     } else {
                       messenger.showSnackBar(
-                        const SnackBar(content: Text('Could not open map.')),
+                        SnackBar(content: Text(l10n.couldNotOpenMap)),
                       );
                     }
                   },
                   icon: const Icon(Icons.map_outlined, size: 18),
-                  label: const Text("View on Map"),
+                  label: Text(AppLocalizations.of(context)!.viewOnMapButton),
                 ),
               ],
             ),
@@ -1218,12 +1234,13 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
   // ═══════════════════════════════════════════════════════════════════
 
   Widget _buildTipsTab(TripPlan plan) {
+    final l10n = AppLocalizations.of(context)!;
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 24, 20, 100),
       children: [
         _buildSafetyHero(plan.safetyTip),
         SizedBox(height: 24),
-        Text("Verification Sources", style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 16, color: Theme.of(context).colorScheme.onSurface)),
+        Text(l10n.verificationSourcesTitle, style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 16, color: Theme.of(context).colorScheme.onSurface)),
         SizedBox(height: 12),
         Wrap(
           spacing: 8,
@@ -1231,7 +1248,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
           children: plan.kbCitations.map((c) => _sourceChip(c)).toList(),
         ),
         SizedBox(height: 32),
-        Text("💡 Pro Tips for Sri Lanka", style: TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7))),
+        Text(l10n.proTipsForSriLanka, style: TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7))),
         SizedBox(height: 12),
         ...plan.tips.map((t) => _tipItem(t)),
       ],
@@ -1239,6 +1256,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
   }
 
   Widget _buildSafetyHero(String tip) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -1254,7 +1272,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
             children: [
               Icon(Icons.shield_outlined, color: AppTheme.warningAmber, size: 24),
               SizedBox(width: 10),
-              Text("Oracle's Local Tip", style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: AppTheme.warningAmber)),
+              Text(l10n.oracleLocalTipTitle, style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: AppTheme.warningAmber)),
             ],
           ),
           SizedBox(height: 12),

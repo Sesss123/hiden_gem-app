@@ -5,6 +5,7 @@ import '../../core/theme/app_theme.dart';
 import '../../data/datasources/ai_trip_service.dart';
 import '../../data/datasources/trip_cache_service.dart';
 import '../../data/models/trip_plan_model.dart';
+import '../../l10n/app_localizations.dart';
 
 import 'results_screen.dart';
 
@@ -46,20 +47,13 @@ class LoadingPlanScreen extends StatefulWidget {
 
 class _LoadingPlanScreenState extends State<LoadingPlanScreen>
     with TickerProviderStateMixin {
-  String _statusText = "Consulting HiddenGems.lk Brain...";
+  String _statusText = "";
   bool _hasError = false;
   bool _isOfflineMode = false;
   String _errorMessage = "";
+  bool _l10nInitialized = false;
 
-  final List<String> _progressMessages = [
-    "Analyzing Sri Lanka train schedules...",
-    "Checking seasonal weather patterns...",
-    "Clustering the best hidden gems nearby...",
-    "Calculating budget with 10% safety buffer...",
-    "Crafting your personalised day plan...",
-    "Adding rain-day alternatives (Plan B)...",
-    "Finalising tips from local experts...",
-  ];
+  List<String> _progressMessages = [];
 
   int _msgIndex = 0;
 
@@ -114,8 +108,27 @@ class _LoadingPlanScreenState extends State<LoadingPlanScreen>
   @override
   void initState() {
     super.initState();
-    _generate();
-    _animateMessages();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_l10nInitialized) {
+      _l10nInitialized = true;
+      final l10n = AppLocalizations.of(context)!;
+      _statusText = l10n.loadingConsultingBrain;
+      _progressMessages = [
+        l10n.loadingTipTrainSchedules,
+        l10n.loadingTipWeatherPatterns,
+        l10n.loadingTipClusteringGems,
+        l10n.loadingTipBudgetBuffer,
+        l10n.loadingTipCraftingPlan,
+        l10n.loadingTipRainDayPlanB,
+        l10n.loadingTipFinalisingExperts,
+      ];
+      _generate();
+      _animateMessages();
+    }
   }
 
   void _animateMessages() async {
@@ -225,6 +238,7 @@ class _LoadingPlanScreenState extends State<LoadingPlanScreen>
   }
 
   Widget _buildManifestingState() {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -255,7 +269,7 @@ class _LoadingPlanScreenState extends State<LoadingPlanScreen>
         ),
         const SizedBox(height: 32),
         Text(
-          _isOfflineMode ? "OFFLINE RECOVERY" : "MANIFESTING",
+          _isOfflineMode ? l10n.loadingOfflineRecoveryTitle : l10n.loadingManifestingTitle,
           style: GoogleFonts.outfit(
             fontSize: 24,
             fontWeight: FontWeight.w900,
@@ -267,7 +281,7 @@ class _LoadingPlanScreenState extends State<LoadingPlanScreen>
         SizedBox(
           height: 80,
           child: Text(
-            _isOfflineMode ? "Synthesizing Local Memories…" : _statusText,
+            _isOfflineMode ? l10n.loadingOfflineSubtitle : _statusText,
             textAlign: TextAlign.center,
             style: GoogleFonts.inter(
               fontSize: 12,
@@ -281,6 +295,7 @@ class _LoadingPlanScreenState extends State<LoadingPlanScreen>
   }
 
   Widget _buildErrorState() {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.all(32),
       decoration: BoxDecoration(
@@ -300,7 +315,7 @@ class _LoadingPlanScreenState extends State<LoadingPlanScreen>
           Icon(Icons.auto_fix_off, size: 60, color: AppTheme.colors.redAccent),
           const SizedBox(height: 24),
           Text(
-            "THE CONNECTION FADED",
+            l10n.loadingErrorTitle,
             style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.textPrimary(context)),
           ),
           const SizedBox(height: 12),
@@ -316,7 +331,7 @@ class _LoadingPlanScreenState extends State<LoadingPlanScreen>
               onPressed: () {
                 setState(() {
                   _hasError = false;
-                  _statusText = "Re-Consulting Oracle...";
+                  _statusText = l10n.loadingRetryStatus;
                 });
                 _generate();
               },
@@ -326,13 +341,13 @@ class _LoadingPlanScreenState extends State<LoadingPlanScreen>
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               ),
-              child: Text("TRY AGAIN", style: GoogleFonts.outfit(fontWeight: FontWeight.bold)),
+              child: Text(l10n.loadingErrorRetryButton, style: GoogleFonts.outfit(fontWeight: FontWeight.bold)),
             ),
           ),
           const SizedBox(height: 8),
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text("REFINE REQUEST", style: TextStyle(color: AppTheme.textSecondary(context), fontWeight: FontWeight.w600)),
+            child: Text(l10n.loadingErrorRefineButton, style: TextStyle(color: AppTheme.textSecondary(context), fontWeight: FontWeight.w600)),
           ),
         ],
       ),

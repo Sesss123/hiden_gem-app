@@ -16,6 +16,7 @@ import '../../data/datasources/user_preference_service.dart';
 import '../../core/services/calendar_sync_service.dart';
 import '../../core/notifications/notification_service.dart';
 import 'tourist_companion_hub.dart';
+import '../../l10n/app_localizations.dart';
 
 class BookingInboxScreen extends ConsumerStatefulWidget {
   const BookingInboxScreen({super.key});
@@ -39,10 +40,11 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
   }
 
   Future<void> _syncToCalendar() async {
+    final l10n = AppLocalizations.of(context)!;
     final upcoming = _latestBookings.where((b) => b.status == 'accepted' || b.status == 'session_ready').toList();
     if (upcoming.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No accepted bookings to sync yet.')),
+        SnackBar(content: Text(l10n.noBookingsToSyncMessage)),
       );
       return;
     }
@@ -51,7 +53,7 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
     try {
       final entries = upcoming.map((b) => CalendarSyncEntry(
         bookingId: b.bookingId,
-        title: 'Tour: ${b.touristDisplayName ?? "Traveler"} (${b.guestCount} guests)',
+        title: l10n.calendarEventTitle(b.touristDisplayName ?? l10n.defaultTouristName, b.guestCount),
         description: b.notes ?? '',
         start: b.requestedDate,
         end: b.requestedDate.add(const Duration(hours: 4)),
@@ -60,13 +62,13 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
       final synced = await CalendarSyncService().syncBookings(entries);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Synced $synced booking(s) to your calendar.'), backgroundColor: AppTheme.colors.green),
+          SnackBar(content: Text(AppLocalizations.of(context)!.calendarSyncSuccessMessage(synced)), backgroundColor: AppTheme.colors.green),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Calendar sync failed: $e'), backgroundColor: Theme.of(context).colorScheme.error),
+          SnackBar(content: Text(AppLocalizations.of(context)!.calendarSyncFailedMessage(e.toString())), backgroundColor: Theme.of(context).colorScheme.error),
         );
       }
     } finally {
@@ -76,11 +78,12 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid == null) {
       return Scaffold(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        body: Center(child: Text("Please log in to view booking requests.", style: TextStyle(color: AppTheme.colors.white))),
+        body: Center(child: Text(l10n.loginRequiredMessage, style: TextStyle(color: AppTheme.colors.white))),
       );
     }
 
@@ -92,7 +95,7 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
         backgroundColor: AppTheme.colors.transparent,
         elevation: 0,
         title: Text(
-          'Bookings',
+          l10n.bookingsScreenTitle,
           style: GoogleFonts.outfit(fontWeight: FontWeight.w800, fontSize: 20, color: AppTheme.textPrimary(context)),
         ),
         centerTitle: false,
@@ -101,7 +104,7 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
             icon: _isSyncingCalendar
                 ? SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: AppTheme.textPrimary(context)))
                 : Icon(Icons.calendar_month_outlined, color: AppTheme.textPrimary(context)),
-            tooltip: 'Sync to calendar',
+            tooltip: l10n.syncToCalendarTooltip,
             onPressed: _isSyncingCalendar ? null : _syncToCalendar,
           ),
         ],
@@ -121,7 +124,7 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
                     }
                     if (snapshot.hasError) {
                       return Center(
-                        child: Text("Error loading inbox: ${snapshot.error}", style: TextStyle(color: AppTheme.colors.redAccent)),
+                        child: Text(l10n.inboxLoadErrorMessage(snapshot.error.toString()), style: TextStyle(color: AppTheme.colors.redAccent)),
                       );
                     }
 
@@ -159,7 +162,7 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
                     });
 
                     if (filteredRequests.isEmpty) {
-                      return _buildEmptyState();
+                      return _buildEmptyState(l10n);
                     }
 
                     return ListView.builder(
@@ -167,7 +170,7 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
                       physics: const BouncingScrollPhysics(),
                       itemCount: filteredRequests.length,
                       itemBuilder: (context, index) {
-                        return _buildBookingCard(context, filteredRequests[index]);
+                        return _buildBookingCard(context, l10n, filteredRequests[index]);
                       },
                     );
                   },
@@ -180,7 +183,26 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
     );
   }
 
+  /// Maps an internal booking-status code (e.g. 'pending', 'cancelled_by_tourist')
+  /// to its localized display label. The status codes themselves are
+  /// Firestore-persisted values and must never be translated in place.
+  String _statusLabel(String status, AppLocalizations l10n) {
+    switch (status) {
+      case 'pending': return l10n.bookingStatusPendingLabel;
+      case 'accepted': return l10n.bookingStatusAcceptedLabel;
+      case 'session_ready': return l10n.bookingStatusSessionReadyLabel;
+      case 'completed': return l10n.bookingStatusCompletedLabel;
+      case 'declined': return l10n.bookingStatusDeclinedLabel;
+      case 'cancelled': return l10n.bookingStatusCancelledLabel;
+      case 'cancelled_by_tourist': return l10n.statusLabelCancelledByTourist;
+      case 'cancelled_by_guide': return l10n.statusLabelCancelledByGuide;
+      case 'all': return l10n.priceRangeAll;
+      default: return l10n.bookingStatusDefaultLabel;
+    }
+  }
+
   Widget _buildFilterChips() {
+    final l10n = AppLocalizations.of(context)!;
     return SizedBox(
       height: 44,
       child: ListView.separated(
@@ -191,8 +213,7 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
         itemBuilder: (context, index) {
           final filter = _filters[index];
           final isSelected = _selectedFilter == filter;
-          String label = _sentenceCase(filter.replaceAll('_', ' '));
-          if (filter == 'session_ready') label = 'Ready for tour';
+          final label = filter == 'session_ready' ? l10n.filterReadyForTour : _statusLabel(filter, l10n);
 
           return OracleUI.glassChip(
             context: context,
@@ -208,12 +229,8 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
     );
   }
 
-  String _sentenceCase(String label) {
-    if (label.isEmpty) return label;
-    return label[0].toUpperCase() + label.substring(1).toLowerCase();
-  }
-
-  Widget _buildEmptyState() {
+  Widget _buildEmptyState(AppLocalizations l10n) {
+    final filterLabel = _selectedFilter == 'all' ? '' : _statusLabel(_selectedFilter, l10n).toLowerCase();
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32.0),
@@ -223,7 +240,7 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
             Icon(Icons.inbox_outlined, size: 64, color: AppTheme.textSecondary(context).withValues(alpha: 0.4)),
             const SizedBox(height: 16),
             Text(
-              "No ${_selectedFilter == 'all' ? '' : _selectedFilter.replaceAll('_', ' ')} booking requests.",
+              l10n.emptyBookingsMessage(filterLabel),
               textAlign: TextAlign.center,
               style: GoogleFonts.inter(fontSize: 16, color: AppTheme.textSecondary(context)),
             ),
@@ -233,7 +250,7 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
     );
   }
 
-  Widget _buildBookingCard(BuildContext context, BookingRequest request) {
+  Widget _buildBookingCard(BuildContext context, AppLocalizations l10n, BookingRequest request) {
     final dateFormat = DateFormat('EEE, MMM d, yyyy');
     final timeFormat = DateFormat('h:mm a');
     final statusColor = _getStatusColor(request.status);
@@ -277,7 +294,7 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "Tourist #${request.touristId.length > 6 ? request.touristId.substring(0, 6) : request.touristId}",
+                          l10n.touristIdLabel(request.touristId.length > 6 ? request.touristId.substring(0, 6) : request.touristId),
                           style: GoogleFonts.inter(
                             fontSize: 13,
                             fontWeight: FontWeight.w700,
@@ -285,7 +302,7 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
                           ),
                         ),
                         Text(
-                          "Requested ${timeFormat.format(request.createdAt)}",
+                          l10n.requestedAtLabel(timeFormat.format(request.createdAt)),
                           style: GoogleFonts.inter(fontSize: 11, color: AppTheme.textSecondary(context)),
                         ),
                       ],
@@ -303,7 +320,7 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
                           borderRadius: BorderRadius.circular(100),
                         ),
                         child: Text(
-                          'PRIORITY',
+                          l10n.priorityBadgeLabel,
                           style: GoogleFonts.outfit(color: AppPalette.heroOchre, fontWeight: FontWeight.w800, fontSize: 9, letterSpacing: 0.5),
                         ),
                       ),
@@ -316,7 +333,7 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
                         borderRadius: BorderRadius.circular(100),
                       ),
                       child: Text(
-                        _sentenceCase(request.status.replaceAll('_', ' ')),
+                        _statusLabel(request.status, l10n),
                         style: GoogleFonts.inter(
                           fontSize: 10,
                           fontWeight: FontWeight.w700,
@@ -332,8 +349,8 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _buildDetailItem(Icons.calendar_today_rounded, "Tour Date", dateFormat.format(request.requestedDate)),
-                _buildDetailItem(Icons.group_outlined, "Guests", "${request.guestCount} Person(s)"),
+                _buildDetailItem(Icons.calendar_today_rounded, l10n.tourDateLabel, dateFormat.format(request.requestedDate)),
+                _buildDetailItem(Icons.group_outlined, l10n.guestsLabel, l10n.guestsCountValue(request.guestCount)),
               ],
             ),
             const SizedBox(height: 12),
@@ -342,13 +359,13 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
               children: [
                 _buildDetailItem(
                   Icons.monetization_on_outlined,
-                  "Quoted Price",
-                  "${request.currency ?? 'USD'} ${request.quotedPrice?.toStringAsFixed(2) ?? 'N/A'}",
+                  l10n.quotedPriceLabel,
+                  "${request.currency ?? 'USD'} ${request.quotedPrice?.toStringAsFixed(2) ?? l10n.notAvailableAbbrev}",
                 ),
                 _buildDetailItem(
                   Icons.account_balance_wallet_outlined,
-                  "Your Net Payout",
-                  "${request.currency ?? 'USD'} ${request.guideNetAmount?.toStringAsFixed(2) ?? (request.quotedPrice != null ? (request.quotedPrice! * 0.85).toStringAsFixed(2) : 'N/A')}",
+                  l10n.netPayoutLabel,
+                  "${request.currency ?? 'USD'} ${request.guideNetAmount?.toStringAsFixed(2) ?? (request.quotedPrice != null ? (request.quotedPrice! * 0.85).toStringAsFixed(2) : l10n.notAvailableAbbrev)}",
                 ),
               ],
             ),
@@ -364,7 +381,7 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("Tour notes / requirements", style: GoogleFonts.inter(fontSize: 10, color: AppTheme.colors.amber[800], fontWeight: FontWeight.w700)),
+                    Text(l10n.tourNotesLabel, style: GoogleFonts.inter(fontSize: 10, color: AppTheme.colors.amber[800], fontWeight: FontWeight.w700)),
                     const SizedBox(height: 4),
                     Text(request.notes!, style: GoogleFonts.inter(fontSize: 13, color: AppTheme.textPrimary(context))),
                   ],
@@ -373,7 +390,7 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
             ],
             if (request.responseNote != null && request.responseNote!.isNotEmpty) ...[
               const SizedBox(height: 12),
-              Text("Your response note: ${request.responseNote}", style: GoogleFonts.inter(fontSize: 12, fontStyle: FontStyle.italic, color: AppTheme.textSecondary(context))),
+              Text(l10n.responseNoteLabel(request.responseNote ?? ''), style: GoogleFonts.inter(fontSize: 12, fontStyle: FontStyle.italic, color: AppTheme.textSecondary(context))),
             ],
             if (request.status == 'pending') ...[
               const SizedBox(height: 20),
@@ -389,7 +406,7 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
                         elevation: 0,
                       ),
-                      child: Text("Decline", style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 12)),
+                      child: Text(l10n.declineButtonLabel, style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 12)),
                     ),
                   ),
                   const SizedBox(width: 10),
@@ -404,7 +421,7 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
                         elevation: 0,
                       ),
-                      child: Text("Accept", style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 12)),
+                      child: Text(l10n.acceptButtonLabel, style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 12)),
                     ),
                   ),
                 ],
@@ -427,7 +444,7 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
                     );
                   },
                   icon: Icon(Icons.play_arrow_rounded, color: AppTheme.colors.white),
-                  label: Text("Start / launch tour session", style: GoogleFonts.inter(color: AppTheme.colors.white, fontWeight: FontWeight.w700, fontSize: 13)),
+                  label: Text(l10n.startTourSessionButtonLabel, style: GoogleFonts.inter(color: AppTheme.colors.white, fontWeight: FontWeight.w700, fontSize: 13)),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppTheme.colors.amber[800],
                     padding: const EdgeInsets.symmetric(vertical: 14),
@@ -489,6 +506,7 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
 
   Future<void> _handleAccept(BookingRequest request) async {
     HapticFeedback.mediumImpact();
+    final l10n = AppLocalizations.of(context)!;
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid == null) return;
 
@@ -526,7 +544,7 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
         sessionId: sessionId,
         guideId: uid,
         touristIds: [request.touristId],
-        meetingPointName: 'To be confirmed in chat',
+        meetingPointName: l10n.meetingPointPendingLabel,
         meetingPointLat: sessionLat,
         meetingPointLng: sessionLng,
         status: 'initial',
@@ -538,7 +556,7 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
       );
 
       await sessionRepo.createSession(session);
-      await bookingRepo.respondToRequest(bookingId: request.bookingId, status: 'session_ready', note: 'Booking Accepted! Session ready.', touristId: request.touristId);
+      await bookingRepo.respondToRequest(bookingId: request.bookingId, status: 'session_ready', note: l10n.bookingAcceptedResponseNote, touristId: request.touristId);
       await bookingRepo.updateLinkedSessionId(request.bookingId, sessionId);
 
       final profile = UserPreferenceService.getProfile();
@@ -547,13 +565,13 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("🎉 Booking accepted & Tour Session created!"), backgroundColor: AppTheme.colors.green),
+          SnackBar(content: Text(l10n.bookingAcceptedMessage), backgroundColor: AppTheme.colors.green),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Error accepting booking: $e"), backgroundColor: AppTheme.colors.redAccent),
+          SnackBar(content: Text(AppLocalizations.of(context)!.acceptBookingErrorMessage(e.toString())), backgroundColor: AppTheme.colors.redAccent),
         );
       }
     }
@@ -561,6 +579,7 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
 
   Future<void> _handleDecline(BookingRequest request) async {
     HapticFeedback.lightImpact();
+    final l10n = AppLocalizations.of(context)!;
     final noteController = TextEditingController();
     try {
       final confirm = await showDialog<bool>(
@@ -568,18 +587,18 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
         builder: (context) => AlertDialog(
           backgroundColor: Theme.of(context).cardColor,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20), side: BorderSide(color: AppTheme.colors.redAccent)),
-          title: Text("Decline Booking?", style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.bold)),
+          title: Text(l10n.declineBookingDialogTitle, style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.bold)),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("Please provide a reason for declining (optional):", style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 13)),
+              Text(l10n.declineReasonPrompt, style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 13)),
               const SizedBox(height: 12),
               TextField(
                 controller: noteController,
                 style: GoogleFonts.inter(color: AppTheme.textPrimary(context)),
                 decoration: InputDecoration(
-                  hintText: "e.g. Fully booked on this date / Vehicle maintenance",
+                  hintText: l10n.declineReasonHint,
                   hintStyle: GoogleFonts.inter(color: AppTheme.textSecondary(context).withValues(alpha: 0.5), fontSize: 12),
                   filled: true,
                   fillColor: AppTheme.borderColor(context),
@@ -590,11 +609,11 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
             ],
           ),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(context, false), child: Text("CANCEL", style: TextStyle(color: AppTheme.textSecondary(context)))),
+            TextButton(onPressed: () => Navigator.pop(context, false), child: Text(l10n.cancel, style: TextStyle(color: AppTheme.textSecondary(context)))),
             ElevatedButton(
               onPressed: () => Navigator.pop(context, true),
               style: ElevatedButton.styleFrom(backgroundColor: AppTheme.colors.redAccent, foregroundColor: AppTheme.colors.white),
-              child: const Text("DECLINE"),
+              child: Text(l10n.declineConfirmButtonLabel),
             ),
           ],
         ),
@@ -607,19 +626,19 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
         await bookingRepo.respondToRequest(
           bookingId: request.bookingId,
           status: 'declined',
-          note: noteController.text.trim().isNotEmpty ? noteController.text.trim() : 'Declined by guide.',
+          note: noteController.text.trim().isNotEmpty ? noteController.text.trim() : l10n.bookingDeclinedDefaultNote,
           touristId: request.touristId,
         );
 
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("Booking declined."), backgroundColor: AppTheme.colors.redAccent),
+            SnackBar(content: Text(l10n.bookingDeclinedMessage), backgroundColor: AppTheme.colors.redAccent),
           );
         }
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("Error declining booking: $e"), backgroundColor: AppTheme.colors.redAccent),
+            SnackBar(content: Text(AppLocalizations.of(context)!.declineBookingErrorMessage(e.toString())), backgroundColor: AppTheme.colors.redAccent),
           );
         }
       }

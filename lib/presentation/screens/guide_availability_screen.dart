@@ -10,6 +10,7 @@ import '../../data/models/guide_availability.dart';
 import '../../data/models/guide_listing.dart';
 import '../../data/repositories/marketplace_repository.dart';
 import 'package:hidden_gems_sl/core/utils/secure_logger.dart';
+import '../../l10n/app_localizations.dart';
 
 class GuideAvailabilityScreen extends ConsumerStatefulWidget {
   final GuideListing? listing;
@@ -30,8 +31,11 @@ class _GuideAvailabilityScreenState extends ConsumerState<GuideAvailabilityScree
   List<DateTime> _blackoutDates = [];
   final Map<int, RecurringSlot?> _weeklySlots = {}; // dayOfWeek (1-7) -> slot or null if off
 
-  final List<String> _daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
   final List<String> _noticeOptions = ['2', '6', '12', '24', '48', '72'];
+
+  List<String> _daysOfWeek(AppLocalizations l10n) => [
+    l10n.dayMonday, l10n.dayTuesday, l10n.dayWednesday, l10n.dayThursday, l10n.dayFriday, l10n.daySaturday, l10n.daySunday,
+  ];
 
   @override
   void initState() {
@@ -179,7 +183,7 @@ class _GuideAvailabilityScreenState extends ConsumerState<GuideAvailabilityScree
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Availability & schedule updated', style: GoogleFonts.inter(fontWeight: FontWeight.w600)),
+            content: Text(AppLocalizations.of(context)!.availabilityScheduleUpdatedMessage, style: GoogleFonts.inter(fontWeight: FontWeight.w600)),
             backgroundColor: AppTheme.colors.greenAccent,
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
@@ -191,7 +195,7 @@ class _GuideAvailabilityScreenState extends ConsumerState<GuideAvailabilityScree
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error saving availability: $e', style: GoogleFonts.inter(fontWeight: FontWeight.w600)),
+            content: Text(AppLocalizations.of(context)!.errorSavingAvailabilityMessage(e.toString()), style: GoogleFonts.inter(fontWeight: FontWeight.w600)),
             backgroundColor: AppTheme.colors.redAccent,
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
@@ -212,6 +216,7 @@ class _GuideAvailabilityScreenState extends ConsumerState<GuideAvailabilityScree
       );
     }
 
+    final l10n = AppLocalizations.of(context)!;
     final dateFormat = DateFormat('MMM d, yyyy');
 
     return Scaffold(
@@ -227,7 +232,7 @@ class _GuideAvailabilityScreenState extends ConsumerState<GuideAvailabilityScree
               onPressed: () => Navigator.pop(context),
             ),
             title: Text(
-              "Availability & schedule",
+              l10n.availabilityScheduleTitle,
               style: GoogleFonts.outfit(
                 fontSize: 18,
                 fontWeight: FontWeight.w800,
@@ -270,12 +275,12 @@ class _GuideAvailabilityScreenState extends ConsumerState<GuideAvailabilityScree
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                "When you're free to guide",
+                                l10n.whenYoureFreeToGuideTitle,
                                 style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.w700, color: AppTheme.colors.white),
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                "Tourists only see slots you mark open.",
+                                l10n.touristsOnlySeeOpenSlotsMessage,
                                 style: GoogleFonts.inter(fontSize: 11, color: AppTheme.colors.white.withValues(alpha: 0.85)),
                               ),
                             ],
@@ -286,7 +291,7 @@ class _GuideAvailabilityScreenState extends ConsumerState<GuideAvailabilityScree
                   ).animate().fadeIn(duration: 500.ms).slideY(begin: 0.08, end: 0),
                   const SizedBox(height: 28),
 
-                  _buildSectionTitle(context, 'Instant book & notice'),
+                  _buildSectionTitle(context, l10n.instantBookNoticeTitle),
                   const SizedBox(height: 12),
                   Container(
                     padding: const EdgeInsets.all(18),
@@ -300,8 +305,8 @@ class _GuideAvailabilityScreenState extends ConsumerState<GuideAvailabilityScree
                     child: Column(
                       children: [
                         SwitchListTile(
-                          title: Text('Instant book', style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.w700, fontSize: 14)),
-                          subtitle: Text('Let tourists book you immediately, no manual approval', style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 12)),
+                          title: Text(l10n.instantBookLabel, style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.w700, fontSize: 14)),
+                          subtitle: Text(l10n.instantBookSubtitle, style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 12)),
                           value: _instantBookEnabled,
                           activeThumbColor: Theme.of(context).colorScheme.primary,
                           contentPadding: EdgeInsets.zero,
@@ -315,9 +320,9 @@ class _GuideAvailabilityScreenState extends ConsumerState<GuideAvailabilityScree
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text('Advance notice', style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.w700, fontSize: 13)),
+                                  Text(l10n.advanceNoticeLabel, style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.w700, fontSize: 13)),
                                   const SizedBox(height: 2),
-                                  Text('Minimum lead time before a tour starts', style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 11)),
+                                  Text(l10n.advanceNoticeSubtitle, style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 11)),
                                 ],
                               ),
                             ),
@@ -333,7 +338,7 @@ class _GuideAvailabilityScreenState extends ConsumerState<GuideAvailabilityScree
                                 dropdownColor: Theme.of(context).colorScheme.surface,
                                 underline: const SizedBox(),
                                 icon: Icon(Icons.expand_more_rounded, color: Theme.of(context).colorScheme.primary, size: 20),
-                                items: _noticeOptions.map((e) => DropdownMenuItem(value: e, child: Text('$e hrs', style: GoogleFonts.inter(color: AppTheme.textPrimary(context), fontWeight: FontWeight.w700, fontSize: 13)))).toList(),
+                                items: _noticeOptions.map((e) => DropdownMenuItem(value: e, child: Text(l10n.hoursShortLabel(e), style: GoogleFonts.inter(color: AppTheme.textPrimary(context), fontWeight: FontWeight.w700, fontSize: 13)))).toList(),
                                 onChanged: (val) => setState(() => _advanceNoticeHours = val!),
                               ),
                             ),
@@ -344,13 +349,13 @@ class _GuideAvailabilityScreenState extends ConsumerState<GuideAvailabilityScree
                   ),
                   const SizedBox(height: 28),
 
-                  _buildSectionTitle(context, 'Weekly schedule'),
+                  _buildSectionTitle(context, l10n.weeklyScheduleTitle),
                   const SizedBox(height: 4),
-                  Text('Toggle the days you work and set your hours', style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 12)),
+                  Text(l10n.weeklyScheduleSubtitle, style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 12)),
                   const SizedBox(height: 14),
                   ...List.generate(7, (index) {
                     final dayIndex = index + 1;
-                    final dayName = _daysOfWeek[index];
+                    final dayName = _daysOfWeek(l10n)[index];
                     final slot = _weeklySlots[dayIndex];
                     final isWorking = slot != null;
                     final primary = Theme.of(context).colorScheme.primary;
@@ -415,7 +420,7 @@ class _GuideAvailabilityScreenState extends ConsumerState<GuideAvailabilityScree
                             ),
                           ] else ...[
                             const SizedBox(width: 8),
-                            Text('Off', style: GoogleFonts.inter(color: AppTheme.textSecondary(context).withValues(alpha: 0.6), fontSize: 12, fontWeight: FontWeight.w600)),
+                            Text(l10n.dayOffLabel, style: GoogleFonts.inter(color: AppTheme.textSecondary(context).withValues(alpha: 0.6), fontSize: 12, fontWeight: FontWeight.w600)),
                           ],
                         ],
                       ),
@@ -426,11 +431,11 @@ class _GuideAvailabilityScreenState extends ConsumerState<GuideAvailabilityScree
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      _buildSectionTitle(context, 'Blackout dates${_blackoutDates.isNotEmpty ? ' (${_blackoutDates.length})' : ''}'),
+                      _buildSectionTitle(context, l10n.blackoutDatesTitle + (_blackoutDates.isNotEmpty ? l10n.blackoutDatesCountSuffix(_blackoutDates.length) : '')),
                       TextButton.icon(
                         onPressed: _pickBlackoutDate,
                         icon: Icon(Icons.add_circle_outline_rounded, color: Theme.of(context).colorScheme.primary, size: 18),
-                        label: Text('Add date', style: GoogleFonts.inter(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.w700, fontSize: 12)),
+                        label: Text(l10n.addDateButtonLabel, style: GoogleFonts.inter(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.w700, fontSize: 12)),
                       ),
                     ],
                   ),
@@ -445,7 +450,7 @@ class _GuideAvailabilityScreenState extends ConsumerState<GuideAvailabilityScree
                         borderRadius: BorderRadius.circular(18),
                       ),
                       child: Text(
-                        'No blackout dates yet — you\'re available according to your weekly schedule.',
+                        l10n.noBlackoutDatesMessage,
                         textAlign: TextAlign.center,
                         style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 12),
                       ),
@@ -484,7 +489,7 @@ class _GuideAvailabilityScreenState extends ConsumerState<GuideAvailabilityScree
                       ),
                       child: _isSaving
                           ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                          : Text('Save availability', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 14)),
+                          : Text(l10n.saveAvailabilityButton, style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 14)),
                     ),
                   ),
                 ],

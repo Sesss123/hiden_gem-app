@@ -10,6 +10,7 @@ import '../../data/repositories/booking_repository.dart';
 import '../../data/services/subscription_service.dart';
 import 'subscription_screen.dart';
 import '../../core/utils/secure_logger.dart';
+import '../../l10n/app_localizations.dart';
 
 class GuideEarningsScreen extends ConsumerStatefulWidget {
   const GuideEarningsScreen({super.key});
@@ -23,12 +24,13 @@ class _GuideEarningsScreenState extends ConsumerState<GuideEarningsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid == null) {
       return Scaffold(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        appBar: AppBar(title: const Text("Earnings")),
-        body: Center(child: Text("Please log in to view earnings.", style: TextStyle(color: AppTheme.textPrimary(context)))),
+        appBar: AppBar(title: Text(l10n.earningsTitle)),
+        body: Center(child: Text(l10n.pleaseLogInViewEarningsMessage, style: TextStyle(color: AppTheme.textPrimary(context)))),
       );
     }
 
@@ -40,7 +42,7 @@ class _GuideEarningsScreenState extends ConsumerState<GuideEarningsScreen> {
         backgroundColor: AppTheme.colors.transparent,
         elevation: 0,
         title: Text(
-          'Earnings',
+          l10n.earningsTitle,
           style: GoogleFonts.outfit(fontWeight: FontWeight.w800, letterSpacing: -0.5, fontSize: 20, color: AppTheme.textPrimary(context)),
         ),
         centerTitle: false,
@@ -55,7 +57,7 @@ class _GuideEarningsScreenState extends ConsumerState<GuideEarningsScreen> {
               }
               if (snapshot.hasError) {
                 return Center(
-                  child: Text("Error loading financial data: ${snapshot.error}", style: TextStyle(color: AppTheme.colors.redAccent)),
+                  child: Text(l10n.errorLoadingFinancialDataMessage(snapshot.error.toString()), style: TextStyle(color: AppTheme.colors.redAccent)),
                 );
               }
 
@@ -93,13 +95,13 @@ class _GuideEarningsScreenState extends ConsumerState<GuideEarningsScreen> {
 
               return Column(
                 children: [
-                  _buildSummarySection(totalNet, pendingPayout, completedPayout, totalCommission),
+                  _buildSummarySection(l10n, totalNet, pendingPayout, completedPayout, totalCommission),
                   const SizedBox(height: 16),
-                  _buildActionButtons(context, pendingPayout),
+                  _buildActionButtons(context, l10n, pendingPayout),
                   const SizedBox(height: 16),
                   _buildAnalyticsSection(uid, validRequests),
                   const SizedBox(height: 16),
-                  _buildFilterChips(),
+                  _buildFilterChips(l10n),
                   const SizedBox(height: 8),
                   Expanded(
                     child: filteredList.isEmpty
@@ -109,7 +111,7 @@ class _GuideEarningsScreenState extends ConsumerState<GuideEarningsScreen> {
                             physics: const BouncingScrollPhysics(),
                             itemCount: filteredList.length,
                             itemBuilder: (context, index) {
-                              return _buildTransactionCard(context, filteredList[index]);
+                              return _buildTransactionCard(context, l10n, filteredList[index]);
                             },
                           ),
                   ),
@@ -122,7 +124,7 @@ class _GuideEarningsScreenState extends ConsumerState<GuideEarningsScreen> {
     );
   }
 
-  Widget _buildSummarySection(double totalNet, double pendingPayout, double completedPayout, double totalCommission) {
+  Widget _buildSummarySection(AppLocalizations l10n, double totalNet, double pendingPayout, double completedPayout, double totalCommission) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -140,17 +142,17 @@ class _GuideEarningsScreenState extends ConsumerState<GuideEarningsScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text("Total net earnings", style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: AppTheme.colors.white.withValues(alpha: 0.65))),
+                    Text(l10n.totalNetEarningsLabel, style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: AppTheme.colors.white.withValues(alpha: 0.65))),
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                       decoration: BoxDecoration(color: AppPaletteDark.gold.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(100)),
-                      child: Text("90% net", style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w700, color: AppPaletteDark.gold)),
+                      child: Text(l10n.netPercentageLabel, style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w700, color: AppPaletteDark.gold)),
                     ),
                   ],
                 ),
                 const SizedBox(height: 10),
                 Text(
-                  "LKR ${totalNet.toStringAsFixed(0)}",
+                  l10n.lkrAmountLabel(totalNet.toStringAsFixed(0)),
                   style: GoogleFonts.outfit(fontSize: 30, fontWeight: FontWeight.w800, color: AppTheme.colors.white),
                 ),
                 const SizedBox(height: 18),
@@ -159,13 +161,13 @@ class _GuideEarningsScreenState extends ConsumerState<GuideEarningsScreen> {
                 Row(
                   children: [
                     Expanded(
-                      child: _buildSubStat("Pending", "LKR ${pendingPayout.toStringAsFixed(0)}"),
+                      child: _buildSubStat(l10n.subStatPending, l10n.lkrAmountLabel(pendingPayout.toStringAsFixed(0))),
                     ),
                     Expanded(
-                      child: _buildSubStat("Paid out", "LKR ${completedPayout.toStringAsFixed(0)}"),
+                      child: _buildSubStat(l10n.subStatPaidOut, l10n.lkrAmountLabel(completedPayout.toStringAsFixed(0))),
                     ),
                     Expanded(
-                      child: _buildSubStat("Platform fee", "LKR ${totalCommission.toStringAsFixed(0)}"),
+                      child: _buildSubStat(l10n.subStatPlatformFee, l10n.lkrAmountLabel(totalCommission.toStringAsFixed(0))),
                     ),
                   ],
                 ),
@@ -188,7 +190,7 @@ class _GuideEarningsScreenState extends ConsumerState<GuideEarningsScreen> {
     );
   }
 
-  Widget _buildActionButtons(BuildContext context, double pendingPayout) {
+  Widget _buildActionButtons(BuildContext context, AppLocalizations l10n, double pendingPayout) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Row(
@@ -205,7 +207,7 @@ class _GuideEarningsScreenState extends ConsumerState<GuideEarningsScreen> {
                 elevation: 0,
               ),
               icon: const Icon(Icons.account_balance_wallet_rounded, size: 18),
-              label: Text("Request payout", style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 13)),
+              label: Text(l10n.requestPayoutButton, style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 13)),
             ),
           ),
           const SizedBox(width: 12),
@@ -221,7 +223,7 @@ class _GuideEarningsScreenState extends ConsumerState<GuideEarningsScreen> {
                 elevation: 0,
               ),
               icon: const Icon(Icons.settings_outlined, size: 18),
-              label: Text("Bank", style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 13)),
+              label: Text(l10n.bankButtonLabel, style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 13)),
             ),
           ),
         ],
@@ -271,20 +273,20 @@ class _GuideEarningsScreenState extends ConsumerState<GuideEarningsScreen> {
             children: [
               Icon(Icons.insights_rounded, size: 16, color: Theme.of(context).colorScheme.primary),
               const SizedBox(width: 8),
-              Text("Client analytics", style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.w700, color: AppTheme.textPrimary(context))),
+              Text(AppLocalizations.of(context)!.clientAnalyticsTitle, style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.w700, color: AppTheme.textPrimary(context))),
             ],
           ),
           const SizedBox(height: 16),
           Row(
             children: [
-              Expanded(child: _buildAnalyticsStat("Completed tours", "$completed")),
-              Expanded(child: _buildAnalyticsStat("Unique clients", "$uniqueClients")),
-              Expanded(child: _buildAnalyticsStat("Repeat rate", "${repeatRate.toStringAsFixed(0)}%")),
+              Expanded(child: _buildAnalyticsStat(AppLocalizations.of(context)!.analyticsStatCompletedTours, "$completed")),
+              Expanded(child: _buildAnalyticsStat(AppLocalizations.of(context)!.analyticsStatUniqueClients, "$uniqueClients")),
+              Expanded(child: _buildAnalyticsStat(AppLocalizations.of(context)!.analyticsStatRepeatRate, "${repeatRate.toStringAsFixed(0)}%")),
             ],
           ),
           const SizedBox(height: 4),
-          Text("Avg. booking value", style: GoogleFonts.inter(fontSize: 11, color: AppTheme.textSecondary(context))),
-          Text("LKR ${avgBookingValue.toStringAsFixed(0)}", style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w700, color: AppTheme.textPrimary(context))),
+          Text(AppLocalizations.of(context)!.avgBookingValueLabel, style: GoogleFonts.inter(fontSize: 11, color: AppTheme.textSecondary(context))),
+          Text(AppLocalizations.of(context)!.lkrAmountLabel(avgBookingValue.toStringAsFixed(0)), style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w700, color: AppTheme.textPrimary(context))),
         ],
       ),
     );
@@ -323,34 +325,34 @@ class _GuideEarningsScreenState extends ConsumerState<GuideEarningsScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("Client analytics", style: GoogleFonts.outfit(fontSize: 13, fontWeight: FontWeight.w700, color: AppTheme.textPrimary(context))),
-                Text("Repeat rate, unique clients & more — Pro tier", style: GoogleFonts.inter(fontSize: 11, color: AppTheme.textSecondary(context))),
+                Text(AppLocalizations.of(context)!.clientAnalyticsTitle, style: GoogleFonts.outfit(fontSize: 13, fontWeight: FontWeight.w700, color: AppTheme.textPrimary(context))),
+                Text(AppLocalizations.of(context)!.clientAnalyticsLockedSubtitle, style: GoogleFonts.inter(fontSize: 11, color: AppTheme.textSecondary(context))),
               ],
             ),
           ),
           TextButton(
             onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SubscriptionScreen())),
-            child: Text("Upgrade", style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 12, color: Theme.of(context).colorScheme.primary)),
+            child: Text(AppLocalizations.of(context)!.upgradeButtonLabel, style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 12, color: Theme.of(context).colorScheme.primary)),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildFilterChips() {
+  Widget _buildFilterChips(AppLocalizations l10n) {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       padding: const EdgeInsets.symmetric(horizontal: 20),
       physics: const BouncingScrollPhysics(),
       child: Row(
         children: [
-          _filterChip('all', 'All Bookings'),
+          _filterChip('all', l10n.filterChipAllBookings),
           const SizedBox(width: 8),
-          _filterChip('pending', '⏳ Pending Payout'),
+          _filterChip('pending', l10n.filterChipPendingPayout),
           const SizedBox(width: 8),
-          _filterChip('paid', '✅ Paid Out'),
+          _filterChip('paid', l10n.filterChipPaidOut),
           const SizedBox(width: 8),
-          _filterChip('disputed', '⚠️ Disputed'),
+          _filterChip('disputed', l10n.filterChipDisputed),
         ],
       ),
     );
@@ -366,7 +368,7 @@ class _GuideEarningsScreenState extends ConsumerState<GuideEarningsScreen> {
     );
   }
 
-  Widget _buildTransactionCard(BuildContext context, BookingRequest req) {
+  Widget _buildTransactionCard(BuildContext context, AppLocalizations l10n, BookingRequest req) {
     final gross = req.quotedPrice ?? 0.0;
     final net = req.guideNetAmount ?? (gross * 0.90);
     final status = req.payoutStatus.isEmpty ? 'pending' : req.payoutStatus;
@@ -375,13 +377,13 @@ class _GuideEarningsScreenState extends ConsumerState<GuideEarningsScreen> {
     String statusLabel;
     if (status == 'paid') {
       statusColor = AppTheme.colors.green;
-      statusLabel = "Paid";
+      statusLabel = l10n.payoutStatusPaid;
     } else if (status == 'disputed') {
       statusColor = AppTheme.colors.redAccent;
-      statusLabel = "Disputed";
+      statusLabel = l10n.payoutStatusDisputed;
     } else {
       statusColor = AppTheme.colors.orange;
-      statusLabel = "Pending";
+      statusLabel = l10n.payoutStatusPending;
     }
 
     return Container(
@@ -410,12 +412,12 @@ class _GuideEarningsScreenState extends ConsumerState<GuideEarningsScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Tour booking #${req.bookingId.substring(0, 6).toUpperCase()}",
+                  l10n.tourBookingIdLabel(req.bookingId.substring(0, 6).toUpperCase()),
                   style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.w700, letterSpacing: -0.2, color: AppTheme.textPrimary(context)),
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  "${req.guestCount} guests · ${req.requestedDate.toString().split(' ')[0]}",
+                  l10n.guestCountDateLabel(req.guestCount, req.requestedDate.toString().split(' ')[0]),
                   style: GoogleFonts.inter(fontSize: 12, color: AppTheme.textSecondary(context)),
                 ),
                 const SizedBox(height: 6),
@@ -432,7 +434,7 @@ class _GuideEarningsScreenState extends ConsumerState<GuideEarningsScreen> {
                     if (req.paidAt != null) ...[
                       const SizedBox(width: 8),
                       Text(
-                        "via PayHere · ${req.paidAt!.toString().split(' ')[0]}",
+                        l10n.viaPayHereDateLabel(req.paidAt!.toString().split(' ')[0]),
                         style: GoogleFonts.inter(fontSize: 10, color: AppTheme.textSecondary(context).withValues(alpha: 0.6)),
                       ),
                     ],
@@ -445,12 +447,12 @@ class _GuideEarningsScreenState extends ConsumerState<GuideEarningsScreen> {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                "LKR ${net.toStringAsFixed(0)}",
+                l10n.lkrAmountLabel(net.toStringAsFixed(0)),
                 style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w700, color: AppTheme.colors.green[700]),
               ),
               const SizedBox(height: 2),
               Text(
-                "Gross LKR ${gross.toStringAsFixed(0)}",
+                l10n.grossLkrLabel(gross.toStringAsFixed(0)),
                 style: GoogleFonts.inter(fontSize: 11, color: AppTheme.textSecondary(context).withValues(alpha: 0.6), decoration: TextDecoration.lineThrough),
               ),
             ],
@@ -461,6 +463,7 @@ class _GuideEarningsScreenState extends ConsumerState<GuideEarningsScreen> {
   }
 
   Widget _buildEmptyState() {
+    final l10n = AppLocalizations.of(context)!;
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -468,12 +471,12 @@ class _GuideEarningsScreenState extends ConsumerState<GuideEarningsScreen> {
           Icon(Icons.account_balance_wallet_outlined, size: 56, color: AppTheme.textSecondary(context).withValues(alpha: 0.3)),
           const SizedBox(height: 16),
           Text(
-            "No transactions found",
+            l10n.noTransactionsFoundTitle,
             style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.w700, letterSpacing: -0.3, color: AppTheme.textPrimary(context)),
           ),
           const SizedBox(height: 8),
           Text(
-            "When you complete tour bookings, your net payouts\nwill appear here automatically.",
+            l10n.noTransactionsFoundSubtitle,
             textAlign: TextAlign.center,
             style: GoogleFonts.inter(fontSize: 13, color: AppTheme.textSecondary(context)),
           ),
@@ -483,9 +486,10 @@ class _GuideEarningsScreenState extends ConsumerState<GuideEarningsScreen> {
   }
 
   void _showWithdrawDialog(BuildContext context, double pendingPayout) {
+    final l10n = AppLocalizations.of(context)!;
     if (pendingPayout <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("No pending funds available for payout withdrawal.")),
+        SnackBar(content: Text(l10n.noPendingFundsMessage)),
       );
       return;
     }
@@ -495,15 +499,15 @@ class _GuideEarningsScreenState extends ConsumerState<GuideEarningsScreen> {
       builder: (ctx) => AlertDialog(
         backgroundColor: Theme.of(context).cardColor,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text("Request Payout", style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.bold)),
+        title: Text(l10n.requestPayoutDialogTitle, style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.bold)),
         content: Text(
-          "You are requesting a transfer of LKR ${pendingPayout.toStringAsFixed(0)} to your registered Bank Account / Mobile Money wallet.\n\nTransfers are processed by the Oracle finance team within 24 business hours.",
+          l10n.requestPayoutDialogMessage(pendingPayout.toStringAsFixed(0)),
           style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 13),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: Text("Cancel", style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontWeight: FontWeight.w600)),
+            child: Text(l10n.cancelButton, style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontWeight: FontWeight.w600)),
           ),
           ElevatedButton(
             onPressed: () {
@@ -511,7 +515,7 @@ class _GuideEarningsScreenState extends ConsumerState<GuideEarningsScreen> {
               SecureLogger.info("Guide requested payout: LKR $pendingPayout", tag: "Finance");
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text("Payout request submitted successfully!"),
+                  content: Text(l10n.payoutRequestSubmittedMessage),
                   backgroundColor: AppTheme.colors.green,
                 ),
               );
@@ -521,7 +525,7 @@ class _GuideEarningsScreenState extends ConsumerState<GuideEarningsScreen> {
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
               elevation: 0,
             ),
-            child: Text("Confirm payout", style: GoogleFonts.inter(color: AppTheme.colors.white, fontWeight: FontWeight.w700)),
+            child: Text(l10n.confirmPayoutButton, style: GoogleFonts.inter(color: AppTheme.colors.white, fontWeight: FontWeight.w700)),
           ),
         ],
       ),
@@ -529,6 +533,7 @@ class _GuideEarningsScreenState extends ConsumerState<GuideEarningsScreen> {
   }
 
   void _showPayoutSettingsDialog(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final bankController = TextEditingController(text: "Bank of Ceylon (BOC)");
     final accController = TextEditingController(text: "1002345678");
 
@@ -537,33 +542,33 @@ class _GuideEarningsScreenState extends ConsumerState<GuideEarningsScreen> {
       builder: (ctx) => AlertDialog(
         backgroundColor: Theme.of(context).cardColor,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text("Payout Account Settings", style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.bold)),
+        title: Text(l10n.payoutAccountSettingsTitle, style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.bold)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             TextField(
               controller: bankController,
               style: TextStyle(color: AppTheme.textPrimary(context)),
-              decoration: InputDecoration(labelText: "Bank Name / Wallet Provider", labelStyle: TextStyle(color: AppTheme.textSecondary(context))),
+              decoration: InputDecoration(labelText: l10n.bankNameWalletProviderLabel, labelStyle: TextStyle(color: AppTheme.textSecondary(context))),
             ),
             const SizedBox(height: 12),
             TextField(
               controller: accController,
               style: TextStyle(color: AppTheme.textPrimary(context)),
-              decoration: InputDecoration(labelText: "Account / Phone Number", labelStyle: TextStyle(color: AppTheme.textSecondary(context))),
+              decoration: InputDecoration(labelText: l10n.accountPhoneNumberLabel, labelStyle: TextStyle(color: AppTheme.textSecondary(context))),
             ),
           ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: Text("Cancel", style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontWeight: FontWeight.w600)),
+            child: Text(l10n.cancelButton, style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontWeight: FontWeight.w600)),
           ),
           ElevatedButton(
             onPressed: () {
               Navigator.pop(ctx);
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text("Payout account settings updated!")),
+                SnackBar(content: Text(l10n.payoutAccountSettingsUpdatedMessage)),
               );
             },
             style: ElevatedButton.styleFrom(
@@ -571,7 +576,7 @@ class _GuideEarningsScreenState extends ConsumerState<GuideEarningsScreen> {
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
               elevation: 0,
             ),
-            child: Text("Save", style: GoogleFonts.inter(color: AppTheme.colors.white, fontWeight: FontWeight.w700)),
+            child: Text(l10n.saveButtonLabel, style: GoogleFonts.inter(color: AppTheme.colors.white, fontWeight: FontWeight.w700)),
           ),
         ],
       ),

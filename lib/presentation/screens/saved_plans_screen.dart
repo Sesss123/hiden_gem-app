@@ -12,6 +12,7 @@ import 'results_screen.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:collection/collection.dart';
 import '../../data/models/ar_place_data.dart';
+import '../../l10n/app_localizations.dart';
 
 class SavedPlansScreen extends ConsumerStatefulWidget {
   const SavedPlansScreen({super.key});
@@ -35,7 +36,7 @@ class _SavedPlansScreenState extends ConsumerState<SavedPlansScreen> {
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Plan removed from Oracle cache', style: GoogleFonts.inter(color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.w600)),
+          content: Text(AppLocalizations.of(context)!.planRemovedSnackbar, style: GoogleFonts.inter(color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.w600)),
           behavior: SnackBarBehavior.floating,
           backgroundColor: Theme.of(context).cardTheme.color,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12), side: BorderSide(color: Theme.of(context).dividerColor.withValues(alpha: 0.2))),
@@ -73,7 +74,7 @@ class _SavedPlansScreenState extends ConsumerState<SavedPlansScreen> {
           if (hasAR) ...[
             const SizedBox(width: 12),
             Text(
-              "View in AR",
+              AppLocalizations.of(context)!.viewInArLabel,
               style: GoogleFonts.outfit(
                 color: AppTheme.colors.black,
                 fontWeight: FontWeight.w700,
@@ -87,14 +88,15 @@ class _SavedPlansScreenState extends ConsumerState<SavedPlansScreen> {
   }
 
   void _launchARShortcut(BuildContext context, String name) {
+    final l10n = AppLocalizations.of(context)!;
     final arData = ARPlaceData(
       arSupported: true,
       arTier: 1,
-      arBrandName: "Heritage AR",
+      arBrandName: l10n.arBrandNameHeritage,
       arModelUrl: "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/AntiqueCamera/glTF-Binary/AntiqueCamera.glb",
       arHistoricalModelUrl: "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/AntiqueCamera/glTF-Binary/AntiqueCamera.glb",
       arModelScale: 0.05,
-      historicalPeriod: "Anuradhapura Era",
+      historicalPeriod: l10n.ancientHeritageSite,
       audioUrlSi: "",
       audioUrlEn: "",
       fallbackVideoUrl: "",
@@ -118,6 +120,7 @@ class _SavedPlansScreenState extends ConsumerState<SavedPlansScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       extendBodyBehindAppBar: true,
@@ -127,7 +130,7 @@ class _SavedPlansScreenState extends ConsumerState<SavedPlansScreen> {
         centerTitle: false,
         iconTheme: IconThemeData(color: Theme.of(context).colorScheme.onSurface),
         title: Text(
-          "Saved trips",
+          l10n.savedTripsTitle,
           style: GoogleFonts.outfit(
             fontWeight: FontWeight.w800,
             fontSize: 20,
@@ -145,15 +148,15 @@ class _SavedPlansScreenState extends ConsumerState<SavedPlansScreen> {
                   builder: (_) => AlertDialog(
                     backgroundColor: Theme.of(context).colorScheme.surface,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-                    title: Text('Clear saved trips', style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.w700, letterSpacing: -0.3, color: AppTheme.textPrimary(context))),
-                    content: Text('This will permanently remove all saved trips from this device.', style: GoogleFonts.inter(color: AppTheme.textSecondary(context))),
+                    title: Text(l10n.clearSavedTripsTitle, style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.w700, letterSpacing: -0.3, color: AppTheme.textPrimary(context))),
+                    content: Text(l10n.clearSavedTripsMessage, style: GoogleFonts.inter(color: AppTheme.textSecondary(context))),
                     actions: [
                       TextButton(
                           onPressed: () => Navigator.pop(context, false),
-                          child: Text('Cancel', style: TextStyle(color: AppTheme.textSecondary(context), fontWeight: FontWeight.w600))),
+                          child: Text(l10n.cancel, style: TextStyle(color: AppTheme.textSecondary(context), fontWeight: FontWeight.w600))),
                       TextButton(
                           onPressed: () => Navigator.pop(context, true),
-                          child: Text('Erase all', style: TextStyle(color: AppTheme.colors.redAccent, fontWeight: FontWeight.w700))),
+                          child: Text(l10n.eraseAllButton, style: TextStyle(color: AppTheme.colors.redAccent, fontWeight: FontWeight.w700))),
                     ],
                   ),
                 );
@@ -195,9 +198,9 @@ class _SavedPlansScreenState extends ConsumerState<SavedPlansScreen> {
             child: Icon(Icons.bookmark_outline_rounded, size: 56, color: Theme.of(context).colorScheme.primary),
           ),
           const SizedBox(height: 24),
-          Text('No saved trips yet', style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.w700, letterSpacing: -0.3, color: AppTheme.textPrimary(context))),
+          Text(AppLocalizations.of(context)!.noSavedTripsTitle, style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.w700, letterSpacing: -0.3, color: AppTheme.textPrimary(context))),
           const SizedBox(height: 8),
-          Text('Plan a trip to see it saved here.',
+          Text(AppLocalizations.of(context)!.noSavedTripsSubtitle,
               textAlign: TextAlign.center,
               style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 13)),
         ],
@@ -213,9 +216,10 @@ class _SavedPlansScreenState extends ConsumerState<SavedPlansScreen> {
       itemCount: _plans.length,
       separatorBuilder: (_, __) => const SizedBox(height: 14),
       itemBuilder: (context, i) {
+        final l10n = AppLocalizations.of(context)!;
         final (:id, :plan) = _plans[i];
         final summary = plan.tripSummary;
-        final cachedAgo = plan.cachedAt != null ? _timeAgo(plan.cachedAt!) : 'Unknown date';
+        final cachedAgo = plan.cachedAt != null ? _timeAgo(plan.cachedAt!, l10n) : l10n.unknownDateLabel;
 
         return Dismissible(
           key: Key(id),
@@ -240,7 +244,7 @@ class _SavedPlansScreenState extends ConsumerState<SavedPlansScreen> {
                 _launchARShortcut(context, arItem.title);
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text("No AR spots in this plan"))
+                  SnackBar(content: Text(l10n.noArSpotsSnackbar))
                 );
               }
               return false;
@@ -290,7 +294,7 @@ class _SavedPlansScreenState extends ConsumerState<SavedPlansScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          '${summary.fromCity} → ${summary.destinationCity}',
+                          l10n.tripRouteLabel(summary.fromCity, summary.destinationCity),
                           style: GoogleFonts.outfit(
                             fontWeight: FontWeight.bold,
                             fontSize: 16,
@@ -302,10 +306,10 @@ class _SavedPlansScreenState extends ConsumerState<SavedPlansScreen> {
                           spacing: 12,
                           runSpacing: 4,
                           children: [
-                            _chip(Icons.nights_stay_outlined, '${summary.days} days'),
+                            _chip(Icons.nights_stay_outlined, l10n.tripDaysChip(summary.days)),
                             _chip(Icons.people_outline, summary.groupType),
                             _chip(Icons.account_balance_wallet_outlined,
-                                'Rs ${_fmt(summary.userBudgetLkr)}'),
+                                l10n.tripBudgetChip(_fmt(summary.userBudgetLkr))),
                             if (plan.itinerary.any((day) => day.items.any((item) => item.arSupported)))
                               Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -319,7 +323,7 @@ class _SavedPlansScreenState extends ConsumerState<SavedPlansScreen> {
                                     Icon(Icons.view_in_ar_rounded, size: 10, color: Theme.of(context).colorScheme.primary),
                                     SizedBox(width: 4),
                                     Text(
-                                      "AR",
+                                      l10n.arBadgeLabel,
                                       style: TextStyle(
                                         color: Theme.of(context).colorScheme.primary,
                                         fontWeight: FontWeight.w700,
@@ -333,7 +337,7 @@ class _SavedPlansScreenState extends ConsumerState<SavedPlansScreen> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'Saved $cachedAgo',
+                          l10n.savedTimeAgoLabel(cachedAgo),
                           style: GoogleFonts.inter(
                             fontSize: 9,
                             color: AppTheme.textSecondary(context).withValues(alpha: 0.6),
@@ -371,12 +375,12 @@ class _SavedPlansScreenState extends ConsumerState<SavedPlansScreen> {
     );
   }
 
-  String _timeAgo(DateTime dt) {
+  String _timeAgo(DateTime dt, AppLocalizations l10n) {
     final diff = DateTime.now().difference(dt);
-    if (diff.inMinutes < 60) return '${diff.inMinutes}m ago';
-    if (diff.inHours < 24) return '${diff.inHours}h ago';
-    if (diff.inDays < 7) return '${diff.inDays}d ago';
-    return '${(diff.inDays / 7).floor()}w ago';
+    if (diff.inMinutes < 60) return l10n.minutesAgoShort(diff.inMinutes);
+    if (diff.inHours < 24) return l10n.hoursAgoShort(diff.inHours);
+    if (diff.inDays < 7) return l10n.daysAgoShort(diff.inDays);
+    return l10n.weeksAgoShort((diff.inDays / 7).floor());
   }
 
   String _fmt(int v) {

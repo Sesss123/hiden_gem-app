@@ -7,6 +7,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../../core/theme/app_theme.dart';
 
 import '../../core/providers/screenshot_provider.dart';
+import '../../l10n/app_localizations.dart';
 import '../../presentation/widgets/golden_tracer_indicator.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
@@ -88,6 +89,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final bgColor = isDark ? AppPaletteDark.bg : AppPalette.bg;
     final primaryTextColor = isDark ? AppPaletteDark.text : AppPalette.ink;
@@ -226,7 +228,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
 
                       // Subtitle matching app label style
                       Text(
-                        "SRI LANKA'S PREMIER AI TRAVEL ORACLE",
+                        l10n.brandTagline,
                         style: GoogleFonts.inter(
                           fontSize: 10,
                           fontWeight: FontWeight.w700,
@@ -250,7 +252,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                           .fadeIn(delay: 600.ms),
                       const SizedBox(height: 14),
                       Text(
-                        widget.isReady ? "ORACLE CONNECTED" : "INITIALIZING TRAVEL EXPERIENCE...",
+                        widget.isReady ? l10n.oracleConnected : l10n.initializingExperience,
                         style: GoogleFonts.inter(
                           fontSize: 10,
                           fontWeight: FontWeight.w700,

@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/theme/app_theme.dart';
 import '../../data/datasources/user_preference_service.dart';
 import '../../data/datasources/auth_service.dart';
+import '../../l10n/app_localizations.dart';
 import 'home_screen.dart';
 import 'login_screen.dart';
 import 'privacy_policy_screen.dart';
@@ -39,6 +40,7 @@ class _TermsScreenState extends ConsumerState<TermsScreen> {
   Widget build(BuildContext context) {
     ref.watch(authStateProvider);
     final primaryColor = Theme.of(context).colorScheme.primary;
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -53,7 +55,7 @@ class _TermsScreenState extends ConsumerState<TermsScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "Terms & privacy",
+                    l10n.termsAndPrivacyTitle,
                     style: GoogleFonts.outfit(
                       fontSize: 26,
                       fontWeight: FontWeight.w800,
@@ -63,7 +65,7 @@ class _TermsScreenState extends ConsumerState<TermsScreen> {
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    "Please review before continuing",
+                    l10n.reviewBeforeContinuing,
                     style: GoogleFonts.inter(
                       fontSize: 12,
                       fontWeight: FontWeight.w500,
@@ -84,20 +86,20 @@ class _TermsScreenState extends ConsumerState<TermsScreen> {
                     children: [
                       _sectionCard(
                         color: AppTheme.successGreen,
-                        title: "Data & privacy",
-                        body: "We keep your data secure. We securely store your profile and saved trips, and never sell your data to third parties.",
+                        title: l10n.dataPrivacySectionTitle,
+                        body: l10n.dataPrivacySectionBody,
                       ),
                       const SizedBox(height: 12),
                       _sectionCard(
                         color: AppTheme.warningAmber,
-                        title: "AI trip planning",
-                        body: "Our AI planner is a predictive tool. While we strive for accuracy, its suggestions may differ from real-time conditions, so please verify critical information independently.\n\nBy using the AI planner, you agree to:\n• Use results responsibly, not maliciously.\n• Never attempt to exploit or manipulate the AI.\n• Treat all suggestions as guidance, not guarantees.",
+                        title: l10n.aiPlanningSectionTitle,
+                        body: l10n.aiPlanningSectionBody,
                       ),
                       const SizedBox(height: 12),
                       _sectionCard(
                         color: Theme.of(context).colorScheme.primary,
-                        title: "Community conduct",
-                        body: "You agree to use the app respectfully, helping keep the platform safe and reliable for other travelers.",
+                        title: l10n.communityConductSectionTitle,
+                        body: l10n.communityConductSectionBody,
                       ),
                       const SizedBox(height: 32),
                     ],
@@ -126,7 +128,7 @@ class _TermsScreenState extends ConsumerState<TermsScreen> {
                       },
                       style: TextButton.styleFrom(padding: EdgeInsets.zero, alignment: Alignment.centerLeft),
                       child: Text(
-                        "Read the full privacy policy",
+                        l10n.readFullPrivacyPolicy,
                         style: GoogleFonts.inter(
                           fontSize: 12,
                           fontWeight: FontWeight.w700,
@@ -139,13 +141,13 @@ class _TermsScreenState extends ConsumerState<TermsScreen> {
                   const SizedBox(height: 8),
                   _buildCheckbox(
                     value: _agreedToTerms,
-                    label: "I accept the Terms of Service & Privacy Policy",
+                    label: l10n.acceptTermsCheckbox,
                     onChanged: (val) => setState(() => _agreedToTerms = val ?? false),
                   ),
                   const SizedBox(height: 12),
                   _buildCheckbox(
                     value: _agreedToAiPolicy,
-                    label: "I understand the AI planner's limitations",
+                    label: l10n.acceptAiPolicyCheckbox,
                     onChanged: (val) => setState(() => _agreedToAiPolicy = val ?? false),
                   ),
                   const SizedBox(height: 20),
@@ -161,7 +163,7 @@ class _TermsScreenState extends ConsumerState<TermsScreen> {
                         elevation: 0,
                       ),
                       child: Text(
-                        "Continue",
+                        l10n.continueLabel,
                         style: GoogleFonts.inter(
                           fontSize: 14,
                           fontWeight: FontWeight.w700,

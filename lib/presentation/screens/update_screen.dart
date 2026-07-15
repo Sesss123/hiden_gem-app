@@ -5,6 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/services/update_service.dart';
 import '../../core/config/app_config.dart';
+import '../../l10n/app_localizations.dart';
 import '../widgets/golden_tracer_indicator.dart';
 
 class UpdateScreen extends StatelessWidget {
@@ -33,7 +34,7 @@ class UpdateScreen extends StatelessWidget {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text("Failed to open store. Please update manually."),
+            content: Text(AppLocalizations.of(context)!.couldNotOpenStore),
             backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
@@ -44,6 +45,7 @@ class UpdateScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bool isForce = type == UpdateType.force;
+    final l10n = AppLocalizations.of(context)!;
 
     return PopScope(
       canPop: !isForce,
@@ -90,7 +92,7 @@ class UpdateScreen extends StatelessWidget {
 
                   // Text Content
                   Text(
-                    isForce ? "An update is required" : "A new version is ready",
+                    isForce ? l10n.updateRequiredTitle : l10n.updateReadyTitle,
                     style: GoogleFonts.outfit(
                       fontSize: 24,
                       fontWeight: FontWeight.w800,
@@ -101,9 +103,7 @@ class UpdateScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    isForce
-                        ? "Please update the app to continue your journey."
-                        : "Better maps, faster AI trips, and improved AR are waiting for you.",
+                    isForce ? l10n.updateRequiredBody : l10n.updateReadyBody,
                     style: GoogleFonts.inter(
                       fontSize: 13,
                       fontWeight: FontWeight.w500,
@@ -122,7 +122,7 @@ class UpdateScreen extends StatelessWidget {
                     children: [
                       _buildButton(
                         context,
-                        label: "Update now",
+                        label: l10n.updateNow,
                         isPrimary: true,
                         onTap: () => _launchStore(context),
                       ),
@@ -131,7 +131,7 @@ class UpdateScreen extends StatelessWidget {
                         TextButton(
                           onPressed: onMaybeLater,
                           child: Text(
-                            "Maybe later",
+                            l10n.maybeLater,
                             style: GoogleFonts.inter(
                               fontSize: 13,
                               fontWeight: FontWeight.w600,

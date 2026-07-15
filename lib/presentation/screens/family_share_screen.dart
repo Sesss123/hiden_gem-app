@@ -13,6 +13,7 @@ import '../../data/models/family_share_link.dart';
 import '../../data/repositories/tour_session_repository.dart';
 import '../../core/config/app_config.dart';
 import 'package:hidden_gems_sl/core/utils/secure_logger.dart';
+import '../../l10n/app_localizations.dart';
 
 class FamilyShareScreen extends ConsumerStatefulWidget {
   final String? sessionId;
@@ -153,10 +154,11 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
   static const int _maxActiveLinks = 10;
 
   void _generateLink() {
+    final l10n = AppLocalizations.of(context)!;
     final name = _nameController.text.trim();
     if (_activeLinks.where((l) => !l.isExpired).length >= _maxActiveLinks) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text("⚠️ You've reached the limit of $_maxActiveLinks active share links. Remove one to create another."),
+        content: Text(l10n.familyShareLinkLimitReached(_maxActiveLinks)),
         behavior: SnackBarBehavior.floating,
         backgroundColor: AppTheme.colors.redAccent,
       ));
@@ -164,7 +166,7 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
     }
     if (name.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text("⚠️ Please enter a recipient name."),
+        content: Text(l10n.familyShareRecipientNameRequired),
         behavior: SnackBarBehavior.floating,
         backgroundColor: AppTheme.colors.redAccent,
       ));
@@ -172,7 +174,7 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
     }
     if (_resolvedSessionId == null || _resolvedSessionId!.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: const Text("⚠️ Start an active tour session first — there's nothing to share yet."),
+        content: Text(l10n.familyShareNoActiveSessionError),
         behavior: SnackBarBehavior.floating,
         backgroundColor: AppTheme.colors.redAccent,
       ));
@@ -209,7 +211,7 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
     Navigator.pop(context);
 
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text("✅ Mission link generated for \"$name\"!"),
+      content: Text(l10n.familyShareLinkGeneratedSuccess(name)),
       behavior: SnackBarBehavior.floating,
       backgroundColor: AppTheme.colors.primary,
     ));
@@ -221,28 +223,29 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: AppTheme.colors.transparent,
       body: OracleUI.auraBackground(
         child: CustomScrollView(
           slivers: [
-            _buildAppBar(),
+            _buildAppBar(l10n),
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.all(24),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildHero(),
+                    _buildHero(l10n),
                     if (!_resolvingSession && _resolvedSessionId == null) ...[
                       const SizedBox(height: 16),
-                      _buildNoActiveSessionNotice(),
+                      _buildNoActiveSessionNotice(l10n),
                     ],
                     const SizedBox(height: 32),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text("Active links", style: GoogleFonts.inter(color: AppTheme.textPrimary(context), fontSize: 14, fontWeight: FontWeight.w700)),
+                        Text(l10n.familyShareActiveLinksTitle, style: GoogleFonts.inter(color: AppTheme.textPrimary(context), fontSize: 14, fontWeight: FontWeight.w700)),
                         GestureDetector(
                           onTap: _showCreateLinkSheet,
                           child: Container(
@@ -251,13 +254,13 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
                               color: Theme.of(context).colorScheme.primary,
                               borderRadius: BorderRadius.circular(100),
                             ),
-                            child: Text("+ New", style: GoogleFonts.inter(color: AppTheme.colors.white, fontWeight: FontWeight.w700, fontSize: 12)),
+                            child: Text(l10n.familyShareNewLinkButton, style: GoogleFonts.inter(color: AppTheme.colors.white, fontWeight: FontWeight.w700, fontSize: 12)),
                           ),
                         ),
                       ],
                     ),
                     const SizedBox(height: 16),
-                    if (_activeLinks.isEmpty) _buildEmptyState() else ..._activeLinks.map((l) => _buildLinkCard(l)),
+                    if (_activeLinks.isEmpty) _buildEmptyState(l10n) else ..._activeLinks.map((l) => _buildLinkCard(l, l10n)),
                     const SizedBox(height: 100),
                   ],
                 ),
@@ -269,19 +272,19 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
     );
   }
 
-  Widget _buildAppBar() {
+  Widget _buildAppBar(AppLocalizations l10n) {
     return SliverAppBar(
       floating: true,
       backgroundColor: AppTheme.colors.transparent,
       elevation: 0,
       title: Text(
-        "Family sharing",
+        l10n.familyShareAppBarTitle,
         style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.w800, letterSpacing: -0.5, color: AppTheme.textPrimary(context)),
       ),
     );
   }
 
-  Widget _buildHero() {
+  Widget _buildHero(AppLocalizations l10n) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(28),
@@ -309,7 +312,7 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
           ),
           const SizedBox(height: 16),
           Text(
-            "Let family track your trip status securely",
+            l10n.familyShareHeroSubtitle,
             textAlign: TextAlign.center,
             style: GoogleFonts.inter(color: AppTheme.colors.white, fontSize: 14, fontWeight: FontWeight.w600, height: 1.5),
           ),
@@ -318,7 +321,7 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
     );
   }
 
-  Widget _buildNoActiveSessionNotice() {
+  Widget _buildNoActiveSessionNotice(AppLocalizations l10n) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
@@ -332,7 +335,7 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
           const SizedBox(width: 10),
           Expanded(
             child: Text(
-              "No active tour right now — start or join a tour to generate a live share link.",
+              l10n.familyShareNoActiveSessionNotice,
               style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 12, fontWeight: FontWeight.w500),
             ),
           ),
@@ -341,7 +344,7 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
     );
   }
 
-  Widget _buildEmptyState() {
+  Widget _buildEmptyState(AppLocalizations l10n) {
     return Container(
       padding: const EdgeInsets.all(40),
       decoration: BoxDecoration(
@@ -356,14 +359,14 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
           children: [
             Icon(Icons.link_off_rounded, color: AppTheme.textSecondary(context).withValues(alpha: 0.4), size: 40),
             const SizedBox(height: 20),
-            Text("No active sharing links found", style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 13, fontWeight: FontWeight.w500)),
+            Text(l10n.familyShareEmptyStateMessage, style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 13, fontWeight: FontWeight.w500)),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildLinkCard(FamilyShareLink link) {
+  Widget _buildLinkCard(FamilyShareLink link, AppLocalizations l10n) {
     final isExpired = link.isExpired || !link.isActive;
 
     return Padding(
@@ -393,20 +396,20 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                             decoration: BoxDecoration(color: AppTheme.colors.redAccent, borderRadius: BorderRadius.circular(100)),
-                            child: Text("Expired", style: GoogleFonts.inter(color: AppTheme.colors.white, fontSize: 9, fontWeight: FontWeight.w700)),
+                            child: Text(l10n.familyShareExpiredBadge, style: GoogleFonts.inter(color: AppTheme.colors.white, fontSize: 9, fontWeight: FontWeight.w700)),
                           ),
                         ] else if (link.viewCount > 0) ...[
                           const SizedBox(width: 8),
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                             decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary, borderRadius: BorderRadius.circular(100)),
-                            child: Text("Viewed ${link.viewCount}x", style: GoogleFonts.inter(color: AppTheme.colors.white, fontSize: 9, fontWeight: FontWeight.w700)),
+                            child: Text(l10n.familyShareViewedCountBadge(link.viewCount), style: GoogleFonts.inter(color: AppTheme.colors.white, fontSize: 9, fontWeight: FontWeight.w700)),
                           ),
                         ],
                       ],
                     ),
                     const SizedBox(height: 4),
-                    Text(isExpired ? "No longer valid" : "Expires ${link.expiresAt.hour}:${link.expiresAt.minute.toString().padLeft(2, '0')}", style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 11, fontWeight: FontWeight.w500)),
+                    Text(isExpired ? l10n.familyShareLinkNoLongerValid : l10n.familyShareLinkExpiresAt('${link.expiresAt.hour}:${link.expiresAt.minute.toString().padLeft(2, '0')}'), style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 11, fontWeight: FontWeight.w500)),
                   ],
                 ),
               ),
@@ -416,8 +419,8 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
                   Clipboard.setData(ClipboardData(
                     text: 'Track my trip live: ${AppConfig.webBaseUrl}/join/${link.shareToken}',
                   ));
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                    content: Text("📋 Invite code copied to clipboard!"),
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Text(l10n.familyShareCopyLinkSnackbar),
                     behavior: SnackBarBehavior.floating,
                   ));
                 },
@@ -429,14 +432,14 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
                     context: context,
                     builder: (ctx) => AlertDialog(
                       backgroundColor: Theme.of(context).cardColor,
-                      title: Text("Remove Link?",
+                      title: Text(l10n.familyShareRemoveLinkDialogTitle,
                           style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: AppTheme.textPrimary(context))),
-                      content: Text("This will revoke \"${link.recipientName}\"'s shared access.",
+                      content: Text(l10n.familyShareRemoveLinkDialogBody(link.recipientName),
                           style: GoogleFonts.inter(fontSize: 13, color: AppTheme.textSecondary(context))),
                       actions: [
                         TextButton(
                           onPressed: () => Navigator.pop(ctx),
-                          child: Text("Cancel", style: TextStyle(color: AppTheme.textSecondary(context))),
+                          child: Text(l10n.cancel, style: TextStyle(color: AppTheme.textSecondary(context))),
                         ),
                         TextButton(
                           onPressed: () {
@@ -447,11 +450,11 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
                                 .delete().catchError((_) {});
                             setState(() => _activeLinks.remove(link));
                             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                              content: Text("Link for \"${link.recipientName}\" removed."),
+                              content: Text(l10n.familyShareLinkRemovedSnackbar(link.recipientName)),
                               behavior: SnackBarBehavior.floating,
                             ));
                           },
-                          child: Text("Remove", style: TextStyle(color: AppTheme.colors.redAccent)),
+                          child: Text(l10n.familyShareRemoveButton, style: TextStyle(color: AppTheme.colors.redAccent)),
                         ),
                       ],
                     ),
@@ -469,6 +472,7 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
     _nameController.clear();
     _selectedHours = 4;
     _permissions.updateAll((key, value) => true);
+    final l10n = AppLocalizations.of(context)!;
 
     showModalBottomSheet(
       context: context,
@@ -489,28 +493,28 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "Create share link",
+                    l10n.familyShareCreateSheetTitle,
                     style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.w800, letterSpacing: -0.5, color: AppTheme.textPrimary(context)),
                   ),
                   const SizedBox(height: 28),
-                  _buildTextField("Recipient name", "E.g. Mom, Dad, Home office", _nameController),
+                  _buildTextField(l10n.familyShareRecipientNameLabel, l10n.familyShareRecipientNameHint, _nameController),
                   const SizedBox(height: 24),
-                  Text("Expiry", style: GoogleFonts.inter(color: AppTheme.textPrimary(context), fontSize: 12, fontWeight: FontWeight.w700)),
+                  Text(l10n.familyShareExpiryLabel, style: GoogleFonts.inter(color: AppTheme.textPrimary(context), fontSize: 12, fontWeight: FontWeight.w700)),
                   const SizedBox(height: 12),
                   Row(
                     children: [
-                      _buildTimeOption("4 hours", _selectedHours == 4, () => setSheetState(() => _selectedHours = 4)),
+                      _buildTimeOption(l10n.familyShareDuration4Hours, _selectedHours == 4, () => setSheetState(() => _selectedHours = 4)),
                       const SizedBox(width: 12),
-                      _buildTimeOption("12 hours", _selectedHours == 12, () => setSheetState(() => _selectedHours = 12)),
+                      _buildTimeOption(l10n.familyShareDuration12Hours, _selectedHours == 12, () => setSheetState(() => _selectedHours = 12)),
                       const SizedBox(width: 12),
-                      _buildTimeOption("24 hours", _selectedHours == 24, () => setSheetState(() => _selectedHours = 24)),
+                      _buildTimeOption(l10n.familyShareDuration24Hours, _selectedHours == 24, () => setSheetState(() => _selectedHours = 24)),
                     ],
                   ),
                   const SizedBox(height: 28),
-                  _buildPermissionRow("Share live status", _permissions['show_status']!, (v) => setSheetState(() => _permissions['show_status'] = v)),
-                  _buildPermissionRow("Share guide identity", _permissions['show_identity']!, (v) => setSheetState(() => _permissions['show_identity'] = v)),
-                  _buildPermissionRow("Share meeting point", _permissions['show_meeting_point']!, (v) => setSheetState(() => _permissions['show_meeting_point'] = v)),
-                  _buildPermissionRow("Share emergency alerts", _permissions['show_emergency']!, (v) => setSheetState(() => _permissions['show_emergency'] = v)),
+                  _buildPermissionRow(l10n.familyShareToggleStatusLabel, _permissions['show_status']!, (v) => setSheetState(() => _permissions['show_status'] = v)),
+                  _buildPermissionRow(l10n.familyShareToggleIdentityLabel, _permissions['show_identity']!, (v) => setSheetState(() => _permissions['show_identity'] = v)),
+                  _buildPermissionRow(l10n.familyShareToggleMeetingPointLabel, _permissions['show_meeting_point']!, (v) => setSheetState(() => _permissions['show_meeting_point'] = v)),
+                  _buildPermissionRow(l10n.familyShareToggleEmergencyLabel, _permissions['show_emergency']!, (v) => setSheetState(() => _permissions['show_emergency'] = v)),
                   const SizedBox(height: 36),
                   SizedBox(
                     width: double.infinity,
@@ -523,7 +527,7 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
                         elevation: 0,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
                       ),
-                      child: Text("Generate link", style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 14)),
+                      child: Text(l10n.familyShareGenerateLinkButton, style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 14)),
                     ),
                   ),
                   const SizedBox(height: 32),

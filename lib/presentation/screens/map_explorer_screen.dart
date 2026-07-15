@@ -14,6 +14,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../data/datasources/user_preference_service.dart';
 import 'dart:ui';
 import '../widgets/cached_image.dart';
+import '../../l10n/app_localizations.dart';
 
 class MapExplorerScreen extends ConsumerStatefulWidget {
   final LatLng initialPosition;
@@ -66,7 +67,7 @@ class _MapExplorerScreenState extends ConsumerState<MapExplorerScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text("Failed to load map data: ${e.toString()}"),
+            content: Text(AppLocalizations.of(context)!.mapLoadErrorMessage(e.toString())),
             backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
@@ -111,6 +112,7 @@ class _MapExplorerScreenState extends ConsumerState<MapExplorerScreen> {
   }
 
   void _createMarkers() {
+    final l10n = AppLocalizations.of(context)!;
     _markers.clear();
     for (var place in _places) {
       _markers.add(
@@ -131,7 +133,7 @@ class _MapExplorerScreenState extends ConsumerState<MapExplorerScreen> {
           markerId: const MarkerId('guide_location'),
           position: _guideLocation!,
           icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueCyan),
-          infoWindow: const InfoWindow(title: "YOUR GUIDE (LIVE)"),
+          infoWindow: InfoWindow(title: l10n.guideLiveMarkerLabel),
           zIndexInt: 15,
         ),
       );
@@ -143,7 +145,7 @@ class _MapExplorerScreenState extends ConsumerState<MapExplorerScreen> {
           markerId: const MarkerId('vehicle_location'),
           position: _vehicleLocation!,
           icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange),
-          infoWindow: const InfoWindow(title: "YOUR VEHICLE"),
+          infoWindow: InfoWindow(title: l10n.vehicleMarkerLabel),
           zIndexInt: 12,
         ),
       );
@@ -155,7 +157,7 @@ class _MapExplorerScreenState extends ConsumerState<MapExplorerScreen> {
           markerId: const MarkerId('meeting_point'),
           position: _meetingPointLocation!,
           icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
-          infoWindow: InfoWindow(title: "MEETING POINT: $_meetingPointName"),
+          infoWindow: InfoWindow(title: l10n.meetingPointMarkerLabel(_meetingPointName ?? '')),
           zIndexInt: 10,
         ),
       );
@@ -235,6 +237,7 @@ class _MapExplorerScreenState extends ConsumerState<MapExplorerScreen> {
   }
 
   Widget _buildSosCinematicOverlay() {
+    final l10n = AppLocalizations.of(context)!;
     return BackdropFilter(
       filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
       child: Container(
@@ -250,12 +253,12 @@ class _MapExplorerScreenState extends ConsumerState<MapExplorerScreen> {
                 .tint(color: AppTheme.colors.redAccent),
             const SizedBox(height: 24),
             Text(
-              "EMERGENCY SIGNAL",
+              l10n.sosEmergencySignalTitle,
               style: GoogleFonts.outfit(fontSize: 28, fontWeight: FontWeight.bold, color: AppTheme.colors.white),
             ),
             const SizedBox(height: 16),
             Text(
-              "YOUR GUIDE HAS TRIGGERED AN SOS",
+              l10n.sosGuideTriggeredMessage,
               textAlign: TextAlign.center,
               style: GoogleFonts.inter(color: AppTheme.colors.white, fontWeight: FontWeight.bold, letterSpacing: 1),
             ),
@@ -269,11 +272,11 @@ class _MapExplorerScreenState extends ConsumerState<MapExplorerScreen> {
               ),
               child: Column(
                 children: [
-                   Text("SAFETY PROTOCOLS", style: GoogleFonts.outfit(color: AppTheme.colors.redAccent, fontWeight: FontWeight.bold)),
+                   Text(l10n.sosSafetyProtocolsTitle, style: GoogleFonts.outfit(color: AppTheme.colors.redAccent, fontWeight: FontWeight.bold)),
                    const SizedBox(height: 16),
-                   _buildProtocolItem("1. Stay in your current location."),
-                   _buildProtocolItem("2. Open your live map to track the guide."),
-                   _buildProtocolItem("3. Wait for emergency services or guide signal."),
+                   _buildProtocolItem(l10n.sosProtocolStayInLocation),
+                   _buildProtocolItem(l10n.sosProtocolOpenLiveMap),
+                   _buildProtocolItem(l10n.sosProtocolWaitForHelp),
                 ],
               ),
             ).animate().slideY(begin: 0.5, end: 0, duration: 800.ms, curve: Curves.easeOut),
@@ -285,7 +288,7 @@ class _MapExplorerScreenState extends ConsumerState<MapExplorerScreen> {
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               ),
               onPressed: () => setState(() => _isSosActive = false),
-              child: const Text("ACKNOWLEDGE"),
+              child: Text(l10n.sosAcknowledgeButton),
             ),
           ],
         ),
@@ -350,7 +353,7 @@ class _MapExplorerScreenState extends ConsumerState<MapExplorerScreen> {
                     children: [
                       const Icon(Icons.directions_car_filled, color: AppPalette.rust, size: 14),
                       const SizedBox(width: 4),
-                      Text("${place.distanceKm.toStringAsFixed(1)} km away", style: GoogleFonts.inter(color: AppPalette.rust, fontSize: 12, fontWeight: FontWeight.bold)),
+                      Text(AppLocalizations.of(context)!.distanceAwayLabel(place.distanceKm.toStringAsFixed(1)), style: GoogleFonts.inter(color: AppPalette.rust, fontSize: 12, fontWeight: FontWeight.bold)),
                     ],
                   ),
                 ],

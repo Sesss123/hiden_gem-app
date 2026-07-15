@@ -112,5 +112,1046 @@
   "downloadForOffline": "오프라인용 다운로드",
   "initiateTravel": "여행 시퀀스 시작",
   "selectOracleLanguage": "오라클 언어 선택",
-  "skipForNow": "지금 건너뛰기"
+  "skipForNow": "지금 건너뛰기",
+
+  "privacyPolicyTitle": "개인정보처리방침 및 법적 고지",
+  "dataProtectionProtocol": "데이터 보호 프로토콜",
+  "lastUpdatedDate": "최종 업데이트: 2026년 7월 5일",
+  "privacyIntro": "저희는 고객님의 개인정보와 데이터 주권을 소중히 여깁니다. 본 문서는 Hidden Gems Sri Lanka (Pvt) Ltd가 스리랑카 법률에 따라 고객님의 개인정보를 어떻게 수집, 보호, 관리하는지 설명합니다.",
+  "contactUsAboutData": "개인정보 관련 문의하기",
+  "couldNotOpenEmail": "이메일 클라이언트를 열 수 없습니다. support@hiddengems.lk로 이메일을 보내주세요.",
+  "privacySection1Title": "1. 수집하는 정보",
+  "privacySection1Body": "Hidden Gems Sri Lanka는 서비스 이용 시 자발적으로 제공되는 개인정보를 수집합니다:\n\n• 계정 정보: 표시 이름, 이메일 주소, 전화번호, 프로필 사진(Firebase Auth / Google 로그인을 통해).\n• 정밀 및 실시간 위치 정보: 위치 기반 발견, 로컬 명소, 실시간 추적 기능을 제공하기 위해 위치 데이터를 요청합니다. 가족 공유 기능 사용 시, 승인된 수신자에게 정보를 업데이트하기 위해 실시간 좌표가 처리됩니다.\n• 가족 공유 수신자 데이터: 조율 세션 중 생성되는 수신자 이름, 연락처 식별자, 임시 공유 토큰.\n• 가이드 프로필 및 인증 데이터: 가이드 등록 시 제출되는 라이선스 상태, 신원 확인 자격증명, 구사 언어, 소개 정보.\n• 인앱 메시지 및 예약: 여행자와 가이드 간의 커뮤니케이션, 일정 데이터, 세션 로그.\n• 기기 및 분석 데이터: Firebase Analytics 및 Crashlytics를 통한 충돌 진단, 성능 지표, 기기 메타데이터.\n• 결제 데이터: 해당되는 경우, 금융 거래는 PCI-DSS를 준수하는 제3자 결제 게이트웨이를 통해서만 처리됩니다. Hidden Gems Sri Lanka는 신용카드 번호나 은행 정보를 서버에 원본 형태로 저장하지 않습니다.",
+  "privacySection2Title": "2. 가족 공유 기능에 관한 세부사항",
+  "privacySection2Body": "저희의 '가족 공유' 및 조율 허브를 통해 탐험가는 실시간 상태, 가이드 신원, 만남 장소, 긴급 알림을 신뢰하는 개인 연락처와 공유할 수 있습니다:\n\n• 선택적 동의 및 철회 가능: 공유는 전적으로 사용자의 선택에 의해 이루어지며 사용자가 직접 제어합니다. 언제든지 앱에서 접근 권한을 철회하거나 활성화된 공유 링크를 삭제할 수 있습니다.\n• 시간 제한: 공유된 미션 링크는 선택한 기간(예: 4시간, 12시간, 24시간)이 지나면 자동으로 만료됩니다. 만료 즉시 위치 전송이 중단됩니다.\n• 콘텐츠 미모니터링: Hidden Gems Sri Lanka는 사용자와 지정된 수신자 간의 개인 커뮤니케이션 또는 공유된 상태 정보의 당사자가 아니며, 기능 운영과 암호화된 텔레메트리 전달에 기술적으로 필요한 범위를 넘어서 이를 모니터링하거나 열람하지 않습니다.",
+  "privacySection3Title": "3. 법적 근거 및 스리랑카 법규 준수",
+  "privacySection3Body": "저희의 데이터 처리 관행은 스리랑카 규제 체계와 국제 모범 사례를 엄격히 준수합니다:\n\n• 관련 데이터 법률: 본 정책은 개인정보보호법(Personal Data Protection Act, No. 9 of 2022, 스리랑카)의 적용을 받습니다. Hidden Gems Sri Lanka (Pvt) Ltd / TripMe.ai는 데이터 관리자로서 데이터 최소화, 목적 제한, 적법한 처리, 의무적인 유출 통지 등 핵심 법적 원칙을 준수할 것을 약속합니다.\n• 관광법 및 SLTDA 규정: 관광법(Tourism Act, No. 38 of 2005) 및 스리랑카 관광개발청(SLTDA) 지침을 준수하여, 앱 프로필에 표시되는 가이드 인증 자격정보는 자체 보고되거나 가능한 경우 SLTDA 등록부와 대조하여 확인됩니다. 회사는 투명성을 위해 이 정보를 제공하지만, 표시된 내용 이상의 라이선스 상태를 보장하지는 않습니다.\n• 국경 간 데이터 이전: 스리랑카를 방문하는 해외 여행자의 경우, 본 애플리케이션 이용에는 국경을 넘어 글로벌 클라우드 인프라(Google Firebase 및 AWS 서버 포함)로 데이터가 전송되는 과정이 포함됩니다. 앱을 이용함으로써 귀하는 서비스 제공을 위한 이러한 국제 데이터 이전에 명시적으로 동의하는 것입니다.",
+  "privacySection4Title": "4. 책임 제한 및 면책 조항",
+  "privacySection4Body": "관련 법률이 허용하는 최대 범위 내에서, 앱 사용은 다음의 제한 사항이 적용됩니다:\n\n• 연결 플랫폼으로서의 역할: Hidden Gems Sri Lanka는 여행자와 독립적인 현지 가이드 및 서비스를 연결하는 정보 제공 및 연결 플랫폼으로 운영됩니다. 저희는 앱을 통해 연결된 가이드, 운전기사, 제3자 서비스의 행위, 안전, 라이선스 유효성 또는 행동에 대해 책임을 지지 않습니다.\n• 긴급 및 위치 기능의 한계: 위치 공유, '가족 공유', 긴급 알림 신호는 최선의 기술적 노력을 기반으로 제공됩니다. 이는 공식 긴급 서비스를 대체하지 않습니다. 긴급 상황 발생 시 항상 스리랑카 경찰(119), 관광 경찰(+94 11 242 1052), 또는 Suwaseriya 구급차(1990)에 연락하십시오. 회사는 네트워크 지연, GPS 부정확성, 알림 전송 실패에 대해 책임을 지지 않습니다.\n• 독립적 확인: 사용자는 여행 전 가이드 자격, 차량 안전, 개인 보안을 독립적으로 확인할 책임이 있습니다.\n• 법정 책임 한도: 스리랑카 법률에 따라, Hidden Gems Sri Lanka (Pvt) Ltd의 플랫폼 이용과 관련하여 발생하는 모든 책임은 분쟁이 된 특정 서비스에 대해 귀하가 회사에 지불한 총 요금으로 엄격히 제한됩니다.",
+  "privacySection5Title": "5. 사용자 권리 및 데이터 통제",
+  "privacySection5Body": "개인정보보호법 No. 9 of 2022에 따라, 귀하는 개인정보에 관한 기본적인 권리를 보유합니다:\n\n• 접근 및 정정 권리: 앱의 프로필 화면에서 직접 계정 정보와 프로필 데이터를 검토, 다운로드, 편집할 수 있습니다.\n• 동의 철회: 기기 설정에서 위치 권한을 비활성화하거나 활성화된 가족 공유 링크를 철회하여 언제든지 위치 추적 또는 데이터 처리에 대한 동의를 철회할 수 있습니다.\n• 삭제 권리(잊혀질 권리): 프로필 > 개인정보 보호 > 계정 삭제를 통해, 또는 데이터 보호 담당자 이메일(support@hiddengems.lk)로 연락하여 계정의 영구 삭제를 요청할 수 있습니다.",
+  "privacySection6Title": "6. 데이터 보관 및 파기",
+  "privacySection6Body": "저희는 본 정책에서 설명한 목적을 달성하는 데 필요한 기간 동안만 개인정보를 보관합니다:\n\n• 가족 공유 및 위치 데이터: 임시 공유 링크와 관련된 실시간 위치 기록은 링크 만료 또는 수동 철회 시 활성 데이터베이스에서 자동으로 삭제됩니다.\n• 계정 데이터: 계정 삭제 요청이 제출되면, 프로필, 저장된 위시리스트, 개인 식별 정보는 30일 이내에 운영 서버에서 영구적으로 삭제되며, 규제 감사 추적에 필요한 익명화된 통계 데이터만 보관됩니다.",
+  "privacySection7Title": "7. 아동 개인정보 보호",
+  "privacySection7Body": "Hidden Gems Sri Lanka는 성인 여행자와 독립적인 관광 전문가를 위해 설계되었습니다. 본 애플리케이션은 만 18세 미만 아동을 대상으로 하지 않습니다. 저희는 미성년자의 개인정보를 고의로 요청, 수집 또는 처리하지 않습니다. 검증된 부모 동의 없이 미성년 사용자가 개인정보를 제공한 사실을 발견할 경우, 저희는 즉시 해당 데이터를 인프라에서 삭제합니다.",
+  "privacySection8Title": "8. 본 정책의 변경",
+  "privacySection8Body": "저희는 기술 발전, 새로운 앱 기능, 또는 변화하는 스리랑카 법적 요건을 반영하기 위해 본 개인정보처리방침을 주기적으로 업데이트할 수 있습니다. 중대한 변경이 발생하는 경우, 저희는 눈에 띄는 인앱 배너를 통해 사용자에게 알리고 본 문서 상단의 '최종 업데이트' 타임스탬프를 갱신합니다. 플랫폼을 계속 이용하는 것은 변경된 약관에 대한 동의로 간주됩니다.",
+  "privacySection9Title": "9. 최종 법적 면책 조항",
+  "privacySection9Body": "본 정책은 일반적인 정보 제공 목적으로 제공되며 공식적인 법률 자문을 구성하지 않습니다. Hidden Gems Sri Lanka (Pvt) Ltd / TripMe.ai는 사용자와 관광 이해관계자가 개인정보보호법 No. 9 of 2022, 관광법 No. 38 of 2005, 및 기타 관련 법령을 완전히 준수하는지 확인하기 위해 스리랑카 내 독립적인 법률 자문을 구할 것을 권장합니다.",
+  "privacyFooterCompany": "HIDDEN GEMS SRI LANKA (PVT) LTD",
+  "privacyFooterAddress": "등록 사무소: 콜롬보, 스리랑카 • support@hiddengems.lk",
+
+  "termsAndPrivacyTitle": "약관 및 개인정보처리방침",
+  "reviewBeforeContinuing": "계속하기 전에 검토해 주세요",
+  "dataPrivacySectionTitle": "데이터 및 개인정보",
+  "dataPrivacySectionBody": "저희는 고객님의 데이터를 안전하게 보호합니다. 프로필과 저장된 여행 정보를 안전하게 보관하며, 절대 제3자에게 데이터를 판매하지 않습니다.",
+  "aiPlanningSectionTitle": "AI 여행 계획",
+  "aiPlanningSectionBody": "저희 AI 플래너는 예측 도구입니다. 정확성을 위해 최선을 다하지만, 제안 내용이 실시간 상황과 다를 수 있으므로 중요한 정보는 별도로 확인해 주시기 바랍니다.\n\nAI 플래너를 사용함으로써 귀하는 다음에 동의합니다:\n• 결과를 악의적이 아닌 책임감 있게 사용합니다.\n• AI를 악용하거나 조작하려는 시도를 하지 않습니다.\n• 모든 제안을 보장이 아닌 참고 사항으로 취급합니다.",
+  "communityConductSectionTitle": "커뮤니티 행동 수칙",
+  "communityConductSectionBody": "귀하는 다른 여행자들을 위해 플랫폼을 안전하고 신뢰할 수 있게 유지하도록, 앱을 예의 있게 사용하는 데 동의합니다.",
+  "readFullPrivacyPolicy": "전체 개인정보처리방침 읽기",
+  "acceptTermsCheckbox": "서비스 약관 및 개인정보처리방침에 동의합니다",
+  "acceptAiPolicyCheckbox": "AI 플래너의 한계를 이해했습니다",
+  "continueLabel": "계속",
+
+  "updateRequiredTitle": "업데이트가 필요합니다",
+  "updateReadyTitle": "새 버전이 준비되었습니다",
+  "updateRequiredBody": "여정을 계속하려면 앱을 업데이트해 주세요.",
+  "updateReadyBody": "더 나은 지도, 더 빠른 AI 여행, 향상된 AR이 기다리고 있습니다.",
+  "updateNow": "지금 업데이트",
+  "maybeLater": "나중에 하기",
+  "couldNotOpenStore": "스토어를 열지 못했습니다. 수동으로 업데이트해 주세요.",
+
+  "brandTagline": "스리랑카 최고의 AI 여행 오라클",
+  "oracleConnected": "오라클 연결됨",
+  "initializingExperience": "여행 경험 초기화 중...",
+
+  "welcomeToApp": "Hidden Gems에 오신 것을 환영합니다",
+  "createYourAccount": "계정 만들기",
+  "loginSubtitle": "스리랑카의 AI 여행 동반자",
+  "signupSubtitle": "스리랑카 여행 계획을 시작하세요",
+  "signIn": "로그인",
+  "createAccount": "계정 만들기",
+  "nameLabel": "이름",
+  "emailLabel": "이메일",
+  "passwordLabel": "비밀번호",
+  "identifierRequired": "아이디를 입력해 주세요",
+  "invalidAddress": "잘못된 주소입니다",
+  "insufficientComplexity": "비밀번호가 너무 단순합니다",
+  "atLeast6Chars": "6자 이상 입력하세요",
+  "forgotPassword": "비밀번호를 잊으셨나요?",
+  "orContinueWith": "또는 다음으로 계속하기",
+  "googleLabel": "Google",
+  "zenithLockActive": "제니스 잠금 활성화됨",
+  "lockoutMessage": "여러 번 로그인에 실패했습니다.\n무차별 대입 공격을 방지하기 위해 인증이 제한되었습니다.",
+  "timeRemaining": "남은 시간",
+  "googleSignInCancelled": "Google 로그인이 취소되었습니다.",
+  "authFailedPrefix": "인증 실패: {reason}",
+  "@authFailedPrefix": {
+    "placeholders": { "reason": { "type": "String" } }
+  },
+  "googleSignInFailedPrefix": "Google 로그인 실패: {reason}",
+  "@googleSignInFailedPrefix": {
+    "placeholders": { "reason": { "type": "String" } }
+  },
+  "enterEmailFirst": "등록된 이메일 주소를 먼저 입력해 주세요.",
+  "passwordResetSent": "{email}로 비밀번호 재설정 안내를 보냈습니다.",
+  "@passwordResetSent": {
+    "placeholders": { "email": { "type": "String" } }
+  },
+  "resetEmailFailedPrefix": "재설정 이메일 전송 실패: {reason}",
+  "@resetEmailFailedPrefix": {
+    "placeholders": { "reason": { "type": "String" } }
+  },
+  "authErrorInvalidCredential": "이메일 또는 비밀번호가 올바르지 않습니다. 다시 시도해 주세요.",
+  "authErrorUserDisabled": "이 계정은 사용이 중지되었습니다.",
+  "authErrorEmailInUse": "이미 다른 계정에서 사용 중인 이메일 주소입니다.",
+  "authErrorWeakPassword": "입력하신 비밀번호가 너무 취약합니다.",
+  "authErrorInvalidEmail": "올바른 이메일 주소를 입력해 주세요.",
+  "authErrorNetwork": "네트워크 요청에 실패했습니다. 인터넷 연결을 확인해 주세요.",
+  "authErrorTooManyRequests": "요청이 너무 많습니다. 잠시 후 다시 시도해 주세요.",
+  "authErrorNotAllowed": "허용되지 않는 작업입니다.",
+  "authErrorGeneric": "인증 오류가 발생했습니다.",
+
+  "noPlaceFoundMatching": "\"{query}\"와 일치하는 장소를 찾을 수 없습니다",
+  "@noPlaceFoundMatching": {
+    "placeholders": { "query": { "type": "String" } }
+  },
+  "featuredLabel": "추천",
+  "exploreLabel": "탐색",
+  "planTripAction": "여행 계획",
+  "findGuideAction": "가이드 찾기",
+  "foodAiAction": "음식 AI",
+  "arPortalsAction": "AR 포털",
+  "localGemsNearby": "근처의 로컬 명소",
+  "todayInSriLanka": "오늘의 스리랑카",
+  "discoverSriLanka": "스리랑카 발견하기",
+  "letOracleGuide": "오라클이 당신의 길을 안내하게 하세요",
+  "searchSecretLocations": "숨겨진 장소 검색...",
+  "offlineModeLabel": "오프라인 모드",
+  "ayubowanGreeting": "아유보완, {name}님!",
+  "@ayubowanGreeting": {
+    "placeholders": { "name": { "type": "String" } }
+  },
+  "travelerFallback": "여행자",
+  "exploreByCategory": "카테고리별 탐색",
+  "categoryNatureLabel": "자연",
+  "categoryBeachesLabel": "해변",
+  "categoryCultureLabel": "문화",
+  "categoryAdventureLabel": "모험",
+  "exploreNavLabel": "탐색",
+  "eventsNavLabel": "이벤트",
+  "daysLabel": "{count}일",
+  "@daysLabel": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+
+  "originRequiredError": "출발지를 선택하거나 입력해 주세요.",
+  "destinationRequiredError": "목적지를 선택하거나 입력해 주세요.",
+  "unsupportedCityError": "\"{city}\"는 지원되지 않는 스리랑카 도시입니다. 드롭다운에서 선택해 주세요.",
+  "@unsupportedCityError": {
+    "placeholders": { "city": { "type": "String" } }
+  },
+  "originDestinationSameError": "출발지와 목적지는 같을 수 없습니다.",
+  "stepProgressLabel": "{total}단계 중 {current}단계",
+  "@stepProgressLabel": {
+    "placeholders": { "current": { "type": "int" }, "total": { "type": "int" } }
+  },
+  "step1Title": "어디로 안내해 드릴까요?",
+  "step1Subtitle": "기본 정보",
+  "startingPointLabel": "출발지",
+  "startingPointHint": "공항, 콜롬보...",
+  "destinationLabel": "목적지",
+  "destinationHint": "엘라, 골, 캔디...",
+  "startDateLabel": "출발 날짜",
+  "step2Title": "여행의 분위기를 정해보세요.",
+  "step2Subtitle": "예산 및 스타일",
+  "tripLengthLabel": "여행 기간",
+  "tripLengthDaysValue": "{days}일",
+  "@tripLengthDaysValue": {
+    "placeholders": { "days": { "type": "int" } }
+  },
+  "travelStandardLabel": "여행 등급",
+  "step3Title": "누구와 함께 여행하시나요?",
+  "step3Subtitle": "동행자 및 여행 속도",
+  "companionsLabel": "동행자",
+  "travelPaceLabel": "여행 속도",
+  "step4Title": "무엇이 당신의 마음을 움직이나요?",
+  "step4Subtitle": "관심사 및 취향",
+  "estimatedBudgetLabel": "예상 예산",
+  "lkrCurrencyPrefix": "LKR ",
+  "consultTheOracleButton": "오라클에게 물어보기",
+  "aiTripsFeatureName": "AI 여행",
+  "bonusTripUnlockedMessage": "보너스 여행이 잠금 해제되었습니다! 다시 제출해 보세요.",
+
+  "groupTypeSolo": "혼자",
+  "groupTypeCouple": "커플",
+  "groupTypeFamily": "가족",
+  "groupTypeFriends": "친구",
+  "paceRelaxed": "여유롭게",
+  "paceBalanced": "균형있게",
+  "pacePacked": "알차게",
+  "styleBudget": "저예산",
+  "styleComfort": "편안함",
+  "styleLuxury": "럭셔리",
+  "interestAdventure": "모험",
+  "interestFood": "음식",
+  "interestWildlife": "야생동물",
+  "interestPhotography": "사진",
+  "interestVillageExperiences": "마을 체험",
+
+  "oracleConnectionDisrupted": "오라클 연결이 끊겼습니다: {error}",
+  "@oracleConnectionDisrupted": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "discoveryFiltersTitle": "발견 필터",
+  "resetButton": "초기화",
+  "maximumRadiusKm": "최대 반경: {radius} KM",
+  "@maximumRadiusKm": {
+    "placeholders": { "radius": { "type": "int" } }
+  },
+  "budgetLevelLabel": "예산 수준",
+  "priceRangeAll": "전체",
+  "priceRangeFree": "무료",
+  "priceRangeEconomy": "이코노미",
+  "priceRangePremium": "프리미엄",
+  "heritageArSearchTitle": "유산 AR 검색",
+  "onlyShowArEnabledSpots": "AR 사용 가능한 장소만 표시",
+  "revealDestinies": "운명 드러내기",
+  "hostedByName": "{hostName}님이 주최",
+  "@hostedByName": {
+    "placeholders": { "hostName": { "type": "String" } }
+  },
+  "priceInLkr": "LKR {price}",
+  "@priceInLkr": {
+    "placeholders": { "price": { "type": "String" } }
+  },
+  "resetAllFilters": "모든 필터 초기화",
+  "seeAll": "전체 보기",
+  "arBadge": "AR",
+  "heritageArBadge": "유산 AR",
+
+  "tripDurationStyleLabel": "{days}일 {style} 여행",
+  "@tripDurationStyleLabel": {
+    "placeholders": { "days": { "type": "int" }, "style": { "type": "String" } }
+  },
+  "budgetTabLabel": "예산",
+  "mapTabLabel": "지도",
+  "premiumFeatureSnackbar": "{featureName}은(는) 프리미엄 기능입니다.",
+  "@premiumFeatureSnackbar": {
+    "placeholders": { "featureName": { "type": "String" } }
+  },
+  "savedPlansFeatureName": "저장된 일정",
+  "noPathFoundTitle": "경로를 찾을 수 없습니다",
+  "noPathFoundMessage": "오라클이 이 목적지의 경로를 계획할 수 없었습니다. 예산이나 스타일 설정을 조정해 보세요.",
+  "tripOverviewLabel": "여행 개요",
+  "expenseBreakdownTitle": "지출 내역",
+  "openExpenseTrackerButton": "지출 관리 열기",
+  "estimatedTotalLabel": "예상 총액",
+  "userBudgetLabel": "사용자 예산: {amount}",
+  "@userBudgetLabel": {
+    "placeholders": { "amount": { "type": "String" } }
+  },
+  "percentUsedLabel": "{percent}% 사용됨",
+  "@percentUsedLabel": {
+    "placeholders": { "percent": { "type": "int" } }
+  },
+  "percentOfTotalLabel": "전체의 {percent}%",
+  "@percentOfTotalLabel": {
+    "placeholders": { "percent": { "type": "int" } }
+  },
+  "visualTourRouteTitle": "시각적 투어 경로",
+  "visualTourRouteDescription": "눈물방울 모양의 섬 전체에 걸친 여정을 계획해 보세요. 상세 경로 구간과 이동 시간을 확인하세요.",
+  "openRouteMapButton": "경로 지도 열기",
+  "oracleRainPlanTitle": "오라클의 우천 대비 계획",
+  "oracleRainPlanSubtitle": "갑작스러운 소나기를 만났나요? 이걸로 전환하세요.",
+  "oracleVaultTitle": "오라클의 금고",
+  "oracleVaultDescription": "우천 대비 대안은 무료 여행자에게 잠겨 있습니다.\n짧은 영상을 시청하여 이번 여행에 대해 잠금을 해제하세요.",
+  "unlockWithAdButton": "광고 시청 후 잠금 해제",
+  "goPremiumAdFreeButton": "광고 없는 경험을 위해 프리미엄으로 전환",
+  "hiddenGemsLuxuryTitle": "Hidden Gems 럭셔리",
+  "premiumCtaDescription": "평범함을 넘어서세요. 오라클의 모든 지혜를 잠금 해제하세요.",
+  "premiumFeatureVoice": "음성",
+  "premiumFeaturePdf": "PDF",
+  "premiumFeatureNoAds": "광고 없음",
+  "unleashOracleButton": "오라클 해방하기",
+  "couldNotOpenMap": "지도를 열 수 없습니다.",
+  "viewOnMapButton": "지도에서 보기",
+  "verificationSourcesTitle": "검증 출처",
+  "proTipsForSriLanka": "💡 스리랑카 여행 꿀팁",
+  "oracleLocalTipTitle": "오라클의 현지 팁",
+  "budgetCategoryTransport": "교통",
+  "budgetCategoryFood": "음식",
+  "budgetCategoryHotel": "숙박",
+  "budgetCategoryAttractions": "관광지",
+  "budgetCategoryOther": "기타",
+
+  "profilePhoto": "프로필 사진",
+  "localizationError": "언어 설정 오류",
+  "appearance": "화면 테마",
+  "settingsSectionLabel": "설정",
+  "profileErrorDetails": "프로필 오류:\n{error}\n\n{stack}",
+  "@profileErrorDetails": {
+    "placeholders": { "error": { "type": "String" }, "stack": { "type": "String" } }
+  },
+  "premiumTraveler": "프리미엄 여행자",
+  "oracleTraveler": "오라클 여행자",
+  "levelBadgeLabel": "{levelTitle} · 레벨 {levelNumber}",
+  "@levelBadgeLabel": {
+    "placeholders": { "levelTitle": { "type": "String" }, "levelNumber": { "type": "int" } }
+  },
+  "statLabelTrips": "여행",
+  "statLabelPlaces": "장소",
+  "statLabelLevel": "레벨",
+  "oracleExplorer": "오라클 탐험가",
+  "goPremium": "프리미엄으로 전환",
+  "fullArAiAccessGranted": "AR 및 AI 전체 이용 권한이 부여되었습니다",
+  "unlockArAiFeatures": "AR 및 AI 기능 잠금 해제",
+  "upgrade": "업그레이드",
+  "themeLight": "라이트",
+  "themeDark": "다크",
+  "journeyHub": "여정 허브",
+  "aiBudgetConcierge": "AI 예산 컨시어지",
+  "smartExpenseAdvisor": "스마트 지출 어드바이저",
+  "heritagePassport": "헤리티지 패스포트",
+  "verifiableVisitCollection": "검증 가능한 방문 기록",
+  "ethicalTravelMeter": "윤리적 여행 지수",
+  "ethicalRankScore": "등급: {rank} • 점수: {score}",
+  "@ethicalRankScore": {
+    "placeholders": { "rank": { "type": "String" }, "score": { "type": "int" } }
+  },
+  "ethicalTravelMeterDialogTitle": "윤리적 여행 지수",
+  "ethicalRankScorePoints": "등급: {rank} • 점수: {score}점",
+  "@ethicalRankScorePoints": {
+    "placeholders": { "rank": { "type": "String" }, "score": { "type": "int" } }
+  },
+  "ethicalScoreDescription": "윤리적 여행 점수는 스리랑카 전역의 지역 사회와 유산 보존에 대한 귀하의 긍정적인 영향을 측정합니다.",
+  "howToEarnPointsHeading": "포인트 적립 방법:",
+  "earnPointsReviewsTitle": "장소 리뷰 남기기",
+  "earnPointsReviewsAmount": "+10점",
+  "earnPointsReviewsSubtitle": "현지 가이드와 여행자를 응원하세요",
+  "earnPointsFoodTitle": "현지 음식 맛보기",
+  "earnPointsFoodAmount": "+15점",
+  "earnPointsFoodSubtitle": "진정한 현지 식당에 힘을 실어주세요",
+  "earnPointsHeritageTitle": "유적지 방문하기",
+  "earnPointsHeritageAmount": "+20점",
+  "earnPointsHeritageSubtitle": "문화 보존을 촉진하세요",
+  "rewardsPerksHeading": "잠금 해제되는 보상 및 혜택:",
+  "rewardEcoGuardianBadgeTitle": "에코 가디언 배지",
+  "rewardEcoGuardianBadgeSubtitle": "리더보드와 리뷰에서 돋보이세요",
+  "rewardPartnerDiscountsTitle": "파트너 할인",
+  "rewardPartnerDiscountsSubtitle": "인증된 친환경 숙소 및 카페에서 5%~15% 할인",
+  "rewardFreePremiumPerksTitle": "무료 프리미엄 혜택",
+  "rewardFreePremiumPerksSubtitle": "포인트로 AR 가이드와 오프라인 지도를 잠금 해제하세요",
+  "rewardRealWorldImpactTitle": "현실 세계의 영향",
+  "rewardRealWorldImpactSubtitle": "500점을 달성하면 스리랑카에 나무를 심어드립니다!",
+  "gotItKeepExploring": "알겠습니다, 계속 탐험하기",
+  "guideCommandHub": "가이드 커맨드 허브",
+  "guideCommandHubSubtitle": "가이드 도구에 빠르게 접근하세요",
+  "activeStatusBadge": "활성",
+  "tourDashboard": "투어 대시보드",
+  "tourDashboardSubtitle": "진행 중인 투어, QR, 등록 정보 및 안전",
+  "earnings": "수익",
+  "earningsSubtitle": "정산 및 통계",
+  "clients": "고객",
+  "clientsSubtitle": "이력 및 메모",
+  "bookings": "예약",
+  "tourRequests": "투어 요청",
+  "unreadRequestsCount": "{count, plural, one{새 요청 {count}건} other{새 요청 {count}건}}",
+  "@unreadRequestsCount": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "packages": "패키지",
+  "customTourPricingSubtitle": "맞춤 투어 가격 설정",
+  "upgradeToPro": "프로로 업그레이드",
+  "manageTeam": "팀 관리",
+  "manageTeamSubtitle": "팀, 역할 및 브랜딩",
+  "becomeAGuide": "가이드 되기",
+  "myBookings": "내 예약",
+  "familySharing": "가족 공유",
+  "scanGuideQr": "가이드 QR 스캔",
+  "oracleLens": "오라클 렌즈",
+  "appLockBiometrics": "앱 잠금 (생체 인증)",
+  "bilingualToggle": "이중 언어 (영어/싱할라어)",
+  "emergencyProtocol": "긴급 대응 프로토콜",
+  "rateTheApp": "앱 평가하기",
+  "support": "지원",
+  "signOut": "로그아웃",
+  "deleteAccountDialogTitle": "계정 삭제",
+  "deleteButtonLabel": "삭제",
+  "genericErrorWithDetails": "오류: {error}",
+  "@genericErrorWithDetails": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "signOutDialogTitle": "로그아웃",
+  "confirmSignOutMessage": "정말 로그아웃 하시겠습니까?",
+  "shareAppMessage": "Hidden Gems SL에 참여하세요! 🌍 https://hiddengems.lk",
+  "shareAppSubject": "Hidden Gems SL에서 함께해요!",
+  "somethingWentWrong": "문제가 발생했습니다. 앱을 다시 시작해 주세요.",
+
+  "cameraPermissionRequiredTitle": "카메라 권한이 필요합니다",
+  "cameraPermissionRequiredMessage": "스캐너를 사용하려면 앱 설정에서 카메라 접근을 허용해 주세요.",
+  "openSettings": "설정 열기",
+  "liveScanningComingSoonMessage": "실시간 스캔 기능이 곧 제공됩니다.\n\n카메라를 통한 실시간 랜드마크 및 사물 인식 기능을 준비 중입니다. 준비가 완료되면 바로 알려드릴게요.",
+  "landmarkScannerTitle": "랜드마크 스캐너",
+  "identifyingLabel": "식별 중…",
+  "analyzeLandmarkButton": "랜드마크 분석",
+  "unlockLandmarkScanningTitle": "랜드마크 스캔 잠금 해제",
+  "unlockLandmarkScanningSubtitle": "카메라를 어느 장소든 비추면 숨겨진 이야기가 펼쳐집니다.",
+  "upgradeToPremiumButton": "프리미엄으로 업그레이드",
+  "oracleVerifiedLabel": "오라클 인증됨",
+
+  "mapLoadErrorMessage": "지도 데이터를 불러오지 못했습니다: {error}",
+  "@mapLoadErrorMessage": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "guideLiveMarkerLabel": "가이드 (실시간)",
+  "vehicleMarkerLabel": "탑승 차량",
+  "meetingPointMarkerLabel": "만남의 장소: {pointName}",
+  "@meetingPointMarkerLabel": {
+    "placeholders": { "pointName": { "type": "String" } }
+  },
+  "sosEmergencySignalTitle": "긴급 신호",
+  "sosGuideTriggeredMessage": "가이드가 SOS를 발신했습니다",
+  "sosSafetyProtocolsTitle": "안전 수칙",
+  "sosProtocolStayInLocation": "1. 현재 위치에서 대기하세요.",
+  "sosProtocolOpenLiveMap": "2. 실시간 지도를 열어 가이드의 위치를 확인하세요.",
+  "sosProtocolWaitForHelp": "3. 응급 구조대 또는 가이드의 신호를 기다리세요.",
+  "sosAcknowledgeButton": "확인",
+  "distanceAwayLabel": "{distance}km 거리",
+  "@distanceAwayLabel": {
+    "placeholders": { "distance": { "type": "String" } }
+  },
+
+  "offlineRouteMapSavedSuccess": "오프라인 경로 지도가 저장되었습니다!",
+  "cannotSaveMapSaveTripFirst": "지도를 저장할 수 없습니다. 먼저 여행 일정을 저장해 주세요!",
+  "saveTripAction": "여행 저장",
+  "failedToSaveMapError": "지도를 저장하지 못했습니다: {error}",
+  "@failedToSaveMapError": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "mapMarkerDaySnippet": "{day}일차 • {time}",
+  "@mapMarkerDaySnippet": {
+    "placeholders": { "day": { "type": "int" }, "time": { "type": "String" } }
+  },
+  "visualRouteTitle": "경로 시각화",
+  "journeyVisualizerTitle": "여정 시각화",
+  "journeyVisualizerSubtitle": "{destination} 일대 {dayCount}일 여정",
+  "@journeyVisualizerSubtitle": {
+    "placeholders": { "dayCount": { "type": "int" }, "destination": { "type": "String" } }
+  },
+  "saveOfflineMapTooltip": "오프라인 지도 저장",
+  "focusButtonLabel": "포커스",
+
+  "planRemovedSnackbar": "오라클 캐시에서 일정이 삭제되었습니다",
+  "viewInArLabel": "AR로 보기",
+  "savedTripsTitle": "저장된 여행",
+  "clearSavedTripsTitle": "저장된 여행 삭제",
+  "clearSavedTripsMessage": "이 기기에 저장된 모든 여행이 영구적으로 삭제됩니다.",
+  "eraseAllButton": "전체 삭제",
+  "noSavedTripsTitle": "저장된 여행이 없습니다",
+  "noSavedTripsSubtitle": "여행을 계획하면 여기에 저장됩니다.",
+  "unknownDateLabel": "날짜 미상",
+  "noArSpotsSnackbar": "이 일정에는 AR 명소가 없습니다",
+  "tripRouteLabel": "{fromCity} → {destinationCity}",
+  "@tripRouteLabel": {
+    "placeholders": { "fromCity": { "type": "String" }, "destinationCity": { "type": "String" } }
+  },
+  "tripDaysChip": "{days, plural, one{1일} other{{days}일}}",
+  "@tripDaysChip": {
+    "placeholders": { "days": { "type": "int" } }
+  },
+  "tripBudgetChip": "Rs {amount}",
+  "@tripBudgetChip": {
+    "placeholders": { "amount": { "type": "String" } }
+  },
+  "arBadgeLabel": "AR",
+  "savedTimeAgoLabel": "{timeAgo} 저장됨",
+  "@savedTimeAgoLabel": {
+    "placeholders": { "timeAgo": { "type": "String" } }
+  },
+  "minutesAgoShort": "{minutes}분 전",
+  "@minutesAgoShort": {
+    "placeholders": { "minutes": { "type": "int" } }
+  },
+  "hoursAgoShort": "{hours}시간 전",
+  "@hoursAgoShort": {
+    "placeholders": { "hours": { "type": "int" } }
+  },
+  "daysAgoShort": "{days}일 전",
+  "@daysAgoShort": {
+    "placeholders": { "days": { "type": "int" } }
+  },
+  "weeksAgoShort": "{weeks}주 전",
+  "@weeksAgoShort": {
+    "placeholders": { "weeks": { "type": "int" } }
+  },
+
+  "loadingConsultingBrain": "HiddenGems.lk 브레인에 문의 중...",
+  "loadingTipTrainSchedules": "스리랑카 기차 시간표를 분석하는 중...",
+  "loadingTipWeatherPatterns": "계절별 날씨 패턴을 확인하는 중...",
+  "loadingTipClusteringGems": "주변의 숨은 명소를 모으는 중...",
+  "loadingTipBudgetBuffer": "10% 예비 여유분을 포함해 예산을 계산하는 중...",
+  "loadingTipCraftingPlan": "맞춤형 일정을 짜는 중...",
+  "loadingTipRainDayPlanB": "우천 대비 대안(플랜 B)을 추가하는 중...",
+  "loadingTipFinalisingExperts": "현지 전문가의 팁을 정리하는 중...",
+  "loadingOfflineRecoveryTitle": "오프라인 복구",
+  "loadingManifestingTitle": "생성 중",
+  "loadingOfflineSubtitle": "현지의 기억을 되살리는 중…",
+  "loadingErrorTitle": "연결이 끊어졌습니다",
+  "loadingRetryStatus": "오라클에게 다시 문의하는 중...",
+  "loadingErrorRetryButton": "다시 시도",
+  "loadingErrorRefineButton": "요청 수정하기",
+
+  "fieldNotesTitle": "현장 노트",
+  "heritageSiteLocked": "유적지 잠김",
+  "lockOverlayDescription": "이 오라클 비전은 프리미엄 탐험가 전용입니다. 짧은 광고를 시청하면 오늘 하루 이 장소를 이용할 수 있습니다.",
+  "watchAdToUnlock": "광고 보고 잠금 해제",
+  "goBack": "뒤로 가기",
+  "etiquetteTipReusableBottle": "재사용 가능한 물병을 챙기세요",
+  "etiquetteTipAvoidPlastic": "일회용 비닐봉지 사용을 자제하세요",
+  "etiquetteTipRespectWildlife": "현지 야생동물과 식물을 존중하세요",
+  "etiquetteTipRemoveShoes": "입장 전 신발과 모자를 벗으세요",
+  "etiquetteTipDressModestly": "단정한 복장을 착용하세요 (어깨와 무릎을 가리세요)",
+  "etiquetteTipAskPhotoPermission": "사람을 촬영하기 전에 허락을 구하세요",
+  "etiquetteTipNoBackToStatues": "불상을 등지고 사진을 찍지 마세요",
+  "etiquetteTipStayOnTrails": "식생 보호를 위해 지정된 길로만 다니세요",
+  "etiquetteTipPackOutTrash": "쓰레기는 모두 되가져가세요 (흔적 남기지 않기)",
+  "etiquetteTipNoFeedingAnimals": "야생동물에게 먹이를 주거나 방해하지 마세요",
+  "etiquetteTipNoSoapInPools": "자연 풀장에서는 비누/샴푸 사용을 삼가세요",
+  "arTierHeritageShort": "유적",
+  "arTierExploreShort": "탐험",
+  "arTierStoryShort": "이야기",
+  "notAvailableShort": "해당 없음",
+  "arBadgeHeritage": "유적 AR",
+  "arBadgeExplore": "탐험 AR",
+  "arBadgeStory": "스토리 뷰",
+  "noRiskTagsFound": "감지된 위험 요소가 없습니다.",
+  "noFacilitiesFound": "편의시설이 거의 없습니다.",
+  "fieldNoteMobileSignal": "휴대폰 신호",
+  "fieldNoteRoadCondition": "도로 상태",
+  "fieldNoteActivities": "액티비티",
+  "fieldNotePopularity": "인기도",
+  "fieldNoteFamilyFriendly": "가족 친화적",
+  "fieldNoteBudget": "예산",
+  "fieldNoteToilets": "화장실",
+  "fieldNoteFoodNearby": "주변 식당",
+  "fieldNoteWheelchairAccess": "휠체어 접근성",
+  "fieldNoteCamping": "캠핑",
+  "fieldNoteSafetyLevel": "안전 수준",
+  "fieldNoteWildlifeHazard": "야생동물 위험",
+  "fieldNoteGuideRequired": "가이드 필요",
+  "fieldNoteRainSensitivity": "강우 민감도",
+  "fieldNoteMonsoonNote": "몬순 관련 정보",
+  "fieldNoteSurfing": "서핑",
+  "fieldNoteHeight": "높이",
+  "fieldNoteLength": "길이",
+  "bookmarkAddedSnackbar": "✨ 여정에 표시되었습니다!",
+  "bookmarkRemovedSnackbar": "북마크에서 삭제되었습니다.",
+  "itineraryAddedSnackbar": "🗺️ {placeName}이(가) 당신의 여정에 추가되었습니다!",
+  "@itineraryAddedSnackbar": {
+    "placeholders": { "placeName": { "type": "String" } }
+  },
+  "itineraryRemovedSnackbar": "일정에서 삭제되었습니다.",
+  "featureNameHeritageSessions": "유적 탐방 세션",
+  "bonusSessionUnlockedSnackbar": "보너스 세션이 잠금 해제되었습니다! 다시 실행해 보세요.",
+  "oracleRewardActiveSnackbar": "✨ 오라클 보상이 적용되었습니다! AR 세션이 잠금 해제되었습니다.",
+  "okButton": "확인",
+  "arBrandNameHeritage": "유적 AR",
+  "arBrandNameExplore": "탐험 AR",
+  "bonusDownloadUnlockedSnackbar": "보너스 다운로드가 잠금 해제되었습니다! 다시 다운로드해 보세요.",
+  "featureNameOfflineDownloads": "오프라인 다운로드",
+
+  "myBookingsTitle": "내 예약",
+  "myBookingsEmptyTitle": "아직 예약이 없습니다",
+  "myBookingsEmptySubtitle": "가이드에게 보낸 요청이 상태와 함께 여기에 표시됩니다.",
+  "guideFallbackName": "가이드",
+  "guestCountLabel": "{count, plural, one{게스트 1명} other{게스트 {count}명}}",
+  "@guestCountLabel": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "paymentPaidLabel": "결제 완료",
+  "payGuideDirectlyLabel": "가이드에게 직접 결제",
+  "bookingStatusPendingLabel": "응답 대기 중",
+  "bookingStatusAcceptedLabel": "수락됨",
+  "bookingStatusSessionReadyLabel": "준비 완료",
+  "bookingStatusDeclinedLabel": "거절됨",
+  "bookingStatusExpiredLabel": "만료됨",
+  "bookingStatusCancelledLabel": "취소됨",
+  "bookingStatusCompletedLabel": "완료됨",
+  "bookingStatusDefaultLabel": "대기 중",
+
+  "requestBookingTitle": "예약 요청",
+  "dateLabel": "날짜",
+  "guestsLabel": "인원",
+  "specialInstructionsLabel": "특별 요청사항",
+  "numberOfGuestsLabel": "인원 수",
+  "notesFieldHint": "예: 어르신과 함께 여행하며, 걷는 거리가 짧은 코스가 필요합니다...",
+  "sendRequestButton": "요청 보내기",
+  "userNotAuthenticatedError": "사용자 인증이 필요합니다",
+  "guideQuotaExceededError": "이 가이드는 이번 달 최대 예약 한도에 도달했습니다. 다음 달에 다시 시도하거나 다른 가이드를 선택해 주세요.",
+  "requestSentTitle": "요청 전송 완료",
+  "requestSentMessage": "예약 요청이 가이드에게 전송되었습니다. 가이드가 응답하면 알림을 받게 됩니다.",
+  "closeButton": "닫기",
+
+  "noBookingsToSyncMessage": "아직 동기화할 수락된 예약이 없습니다.",
+  "calendarEventTitle": "투어: {touristName} (게스트 {guestCount}명)",
+  "@calendarEventTitle": {
+    "placeholders": { "touristName": { "type": "String" }, "guestCount": { "type": "int" } }
+  },
+  "defaultTouristName": "여행자",
+  "calendarSyncSuccessMessage": "{count, plural, one{예약 1건을 캘린더에 동기화했습니다.} other{예약 {count}건을 캘린더에 동기화했습니다.}}",
+  "@calendarSyncSuccessMessage": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "calendarSyncFailedMessage": "캘린더 동기화 실패: {error}",
+  "@calendarSyncFailedMessage": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "loginRequiredMessage": "예약 요청을 보려면 로그인해 주세요.",
+  "bookingsScreenTitle": "예약",
+  "syncToCalendarTooltip": "캘린더에 동기화",
+  "inboxLoadErrorMessage": "받은함을 불러오는 중 오류 발생: {error}",
+  "@inboxLoadErrorMessage": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "filterReadyForTour": "투어 준비 완료",
+  "emptyBookingsMessage": "{filter} 상태의 예약 요청이 없습니다.",
+  "@emptyBookingsMessage": {
+    "placeholders": { "filter": { "type": "String" } }
+  },
+  "touristIdLabel": "여행자 #{touristId}",
+  "@touristIdLabel": {
+    "placeholders": { "touristId": { "type": "String" } }
+  },
+  "requestedAtLabel": "요청 시각: {time}",
+  "@requestedAtLabel": {
+    "placeholders": { "time": { "type": "String" } }
+  },
+  "priorityBadgeLabel": "우선순위",
+  "tourDateLabel": "투어 날짜",
+  "guestsCountValue": "{count, plural, one{1인} other{{count}인}}",
+  "@guestsCountValue": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "quotedPriceLabel": "견적 금액",
+  "netPayoutLabel": "실 수령액",
+  "notAvailableAbbrev": "해당 없음",
+  "tourNotesLabel": "투어 메모 / 요청사항",
+  "responseNoteLabel": "회신 메모: {note}",
+  "@responseNoteLabel": {
+    "placeholders": { "note": { "type": "String" } }
+  },
+  "declineButtonLabel": "거절",
+  "acceptButtonLabel": "수락",
+  "startTourSessionButtonLabel": "투어 세션 시작 / 실행",
+  "bookingAcceptedMessage": "🎉 예약이 수락되었으며 투어 세션이 생성되었습니다!",
+  "acceptBookingErrorMessage": "예약 수락 중 오류 발생: {error}",
+  "@acceptBookingErrorMessage": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "declineBookingDialogTitle": "예약을 거절하시겠습니까?",
+  "declineReasonPrompt": "거절 사유를 입력해 주세요 (선택 사항):",
+  "declineReasonHint": "예: 해당 날짜 예약 마감 / 차량 정비",
+  "declineConfirmButtonLabel": "거절하기",
+  "bookingDeclinedMessage": "예약이 거절되었습니다.",
+  "declineBookingErrorMessage": "예약 거절 중 오류 발생: {error}",
+  "@declineBookingErrorMessage": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "meetingPointPendingLabel": "채팅에서 확정 예정",
+  "bookingAcceptedResponseNote": "예약이 수락되었습니다! 세션이 준비되었습니다.",
+  "bookingDeclinedDefaultNote": "가이드가 거절했습니다.",
+  "statusLabelCancelledByTourist": "여행자가 취소함",
+  "statusLabelCancelledByGuide": "가이드가 취소함",
+
+  "reviewSubmitSuccessMessage": "전송 완료. 소중한 의견 감사합니다.",
+  "reviewSubmitErrorMessage": "전송 오류: {error}",
+  "@reviewSubmitErrorMessage": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "overallExperienceLabel": "전체 경험",
+  "missionFeedbackEyebrow": "미션 피드백",
+  "rateGuidePerformanceTitle": "가이드의 서비스를 평가해 주세요.",
+  "trustScoreDisclaimer": "이 데이터는 가이드의 신뢰 점수 산정에 사용됩니다. 객관적이고 공정하게 평가해 주세요.",
+  "ratingScaleAverageLabel": "보통",
+  "ratingScaleExceptionalLabel": "매우 우수",
+  "knowledgeFactorLabel": "전문 지식",
+  "communicationFactorLabel": "의사소통",
+  "punctualityFactorLabel": "시간 엄수",
+  "safetyFactorLabel": "안전",
+  "fieldNotesLabelUppercase": "현장 메모",
+  "commentFieldHint": "무엇이 인상 깊었나요? 개선할 점이 있다면 알려주세요.",
+  "transmitFeedbackButton": "피드백 전송",
+
+  "familyShareLinkLimitReached": "⚠️ 활성 공유 링크 한도({maxLinks}개)에 도달했습니다. 새로 만들려면 기존 링크를 삭제해 주세요.",
+  "@familyShareLinkLimitReached": {
+    "placeholders": { "maxLinks": { "type": "int" } }
+  },
+  "familyShareRecipientNameRequired": "⚠️ 수신자 이름을 입력해 주세요.",
+  "familyShareNoActiveSessionError": "⚠️ 먼저 활성 투어 세션을 시작해 주세요 — 아직 공유할 내용이 없습니다.",
+  "familyShareLinkGeneratedSuccess": "✅ \"{name}\"님을 위한 미션 링크가 생성되었습니다!",
+  "@familyShareLinkGeneratedSuccess": {
+    "placeholders": { "name": { "type": "String" } }
+  },
+  "familyShareActiveLinksTitle": "활성 링크",
+  "familyShareNewLinkButton": "+ 새로 만들기",
+  "familyShareAppBarTitle": "가족 공유",
+  "familyShareHeroSubtitle": "가족이 안전하게 여행 상태를 확인할 수 있도록 하세요",
+  "familyShareNoActiveSessionNotice": "현재 진행 중인 투어가 없습니다 — 투어를 시작하거나 참여하면 실시간 공유 링크를 생성할 수 있습니다.",
+  "familyShareEmptyStateMessage": "활성 공유 링크가 없습니다",
+  "familyShareExpiredBadge": "만료됨",
+  "familyShareViewedCountBadge": "{count}회 조회됨",
+  "@familyShareViewedCountBadge": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "familyShareLinkNoLongerValid": "더 이상 유효하지 않음",
+  "familyShareLinkExpiresAt": "만료: {time}",
+  "@familyShareLinkExpiresAt": {
+    "placeholders": { "time": { "type": "String" } }
+  },
+  "familyShareCopyLinkSnackbar": "📋 초대 코드가 클립보드에 복사되었습니다!",
+  "familyShareRemoveLinkDialogTitle": "링크를 삭제하시겠습니까?",
+  "familyShareRemoveLinkDialogBody": "\"{recipientName}\"님의 공유 접근 권한이 취소됩니다.",
+  "@familyShareRemoveLinkDialogBody": {
+    "placeholders": { "recipientName": { "type": "String" } }
+  },
+  "familyShareLinkRemovedSnackbar": "\"{recipientName}\"님의 링크가 삭제되었습니다.",
+  "@familyShareLinkRemovedSnackbar": {
+    "placeholders": { "recipientName": { "type": "String" } }
+  },
+  "familyShareRemoveButton": "삭제",
+  "familyShareCreateSheetTitle": "공유 링크 생성",
+  "familyShareRecipientNameLabel": "수신자 이름",
+  "familyShareRecipientNameHint": "예: 엄마, 아빠, 사무실",
+  "familyShareExpiryLabel": "만료 기한",
+  "familyShareDuration4Hours": "4시간",
+  "familyShareDuration12Hours": "12시간",
+  "familyShareDuration24Hours": "24시간",
+  "familyShareToggleStatusLabel": "실시간 상태 공유",
+  "familyShareToggleIdentityLabel": "가이드 신원 공유",
+  "familyShareToggleMeetingPointLabel": "만남 장소 공유",
+  "familyShareToggleEmergencyLabel": "긴급 알림 공유",
+  "familyShareGenerateLinkButton": "링크 생성",
+
+  "categoryAll": "전체",
+  "categoryChauffeur": "전용 기사",
+  "categorySiteGuide": "현지 가이드",
+  "categoryAdventure": "액티비티",
+  "categoryWildlife": "야생동물",
+  "categoryHeritage": "유적",
+  "categoryPhotography": "사진 촬영",
+  "marketplaceSearchHint": "이름, 언어 또는 도시로 검색...",
+  "verifiedGuidesEyebrow": "인증된 가이드",
+  "findYourExpertTitle": "나에게 맞는 전문가 찾기",
+  "noVerifiedGuidesEmptyState": "아직 게시된 인증 가이드가 없습니다.",
+  "noGuidesFoundForQuery": "'{query}'와(과) 일치하는 가이드를 찾을 수 없습니다",
+  "@noGuidesFoundForQuery": {
+    "placeholders": { "query": { "type": "String" } }
+  },
+  "signInToBrowseGuidesError": "인증된 가이드를 보려면 로그인해 주세요.",
+  "genericLoadGuidesError": "가이드 정보를 불러오는 중 문제가 발생했습니다. 다시 시도해 주세요.",
+  "tryAgainButton": "다시 시도",
+  "reviewCountSuffix": " ({count})",
+  "@reviewCountSuffix": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "hourlyRateLabel": "{currency} {rate}/시간",
+  "@hourlyRateLabel": {
+    "placeholders": { "currency": { "type": "String" }, "rate": { "type": "String" } }
+  },
+  "zenithPresenceSyncErrorMessage": "제니스 프레즌스 동기화 오류: {error}",
+  "@zenithPresenceSyncErrorMessage": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "couldNotGetLocationMessage": "위치를 가져올 수 없습니다. 기본 좌표를 사용합니다. ({error})",
+  "@couldNotGetLocationMessage": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "failedToUpdatePhaseMessage": "단계 업데이트 실패: {error}",
+  "@failedToUpdatePhaseMessage": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "setMeetingPointDialogTitle": "집합 장소 설정",
+  "meetingPointHintText": "예: 사원 입구, 버스 정류장",
+  "cancelButtonUppercase": "취소",
+  "setHereButtonUppercase": "여기로 설정",
+  "meetingPointUpdatedTitle": "집합 장소가 업데이트되었습니다",
+  "meetingPointUpdatedBody": "새 집합 장소: {name}",
+  "@meetingPointUpdatedBody": {
+    "placeholders": { "name": { "type": "String" } }
+  },
+  "failedToSetMeetingPointMessage": "집합 장소 설정 실패: {error}",
+  "@failedToSetMeetingPointMessage": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "vehiclePositionMarkedMessage": "차량 위치가 표시되었습니다",
+  "failedToUpdateVehicleLocationMessage": "차량 위치 업데이트 실패: {error}",
+  "@failedToUpdateVehicleLocationMessage": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "tourDashboardTitle": "투어 대시보드",
+  "bottomNavTour": "투어",
+  "bottomNavPlan": "일정",
+  "bottomNavReviews": "리뷰",
+  "bottomNavSafety": "안전",
+  "bottomNavListing": "등록 정보",
+  "noActiveTourTitle": "진행 중인 투어 없음",
+  "noActiveTourSubtitle": "새 투어를 시작하고 여행자가 접속할 수 있는 QR 코드를 생성하세요.",
+  "addVehicleFirstMessage": "먼저 \"내 등록 정보\" 탭에서 차량을 추가하세요",
+  "generateTourQrButton": "투어 QR 생성",
+  "sessionDataUnavailableMessage": "세션 데이터를 사용할 수 없습니다.",
+  "upcomingTourSessionReadyTitle": "예정된 투어 세션 준비 완료",
+  "upcomingTourSessionReadyMessage": "여행자와 집합 장소가 확정되었습니다. 아래 버튼을 눌러 본인과 여행자가 집합 장소에 도착했을 때 타이머와 위치 추적을 공식적으로 시작하세요.",
+  "startTourSessionButton": "투어 세션 시작",
+  "tourSessionStartedMessage": "🚀 투어 세션이 시작되었습니다!",
+  "statLabelTravelers": "여행자",
+  "statLabelRating": "평점",
+  "statLabelServed": "진행 건수",
+  "updatePointButton": "지점 업데이트",
+  "setPointButton": "지점 설정",
+  "markVehicleButton": "차량 표시",
+  "joinStatusLabel": "참가 상태",
+  "openToScansLabel": "스캔 가능",
+  "lockedLabel": "잠김",
+  "joiningPausedLabel": "참가 일시 중지됨",
+  "tapToRefreshJoinCodeLabel": "탭하여 참가 코드 새로고침",
+  "broadcastButtonLabel": "방송",
+  "sosAlertBroadcastedMessage": "SOS 경보가 전송되었습니다!",
+  "connectedTravelersLabel": "연결된 여행자",
+  "activeCountLabel": "{count}명 활동 중",
+  "@activeCountLabel": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "waitingForScansLabel": "스캔 대기 중...",
+  "phaseLabelAssembly": "집합",
+  "phaseLabelEnRoute": "이동 중",
+  "phaseLabelAtSite": "현장 도착",
+  "phaseLabelBreak": "휴식",
+  "phaseLabelReturning": "귀환 중",
+  "stopTourSessionButton": "투어 세션 종료",
+  "selectVehicleTitle": "차량 선택",
+  "travelerTileLabel": "여행자 {shortId}",
+  "@travelerTileLabel": {
+    "placeholders": { "shortId": { "type": "String" } }
+  },
+  "weatherHazardLoggedMessage": "✅ 기상 위험이 안전 콘솔에 기록되었습니다!",
+  "errorLoggingIncidentMessage": "사고 기록 오류: {error}",
+  "@errorLoggingIncidentMessage": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "logIncidentButtonUppercase": "사고 기록",
+  "safetyConsoleButtonUppercase": "안전 콘솔",
+  "defaultMonsoonAlertTitle": "🚨 긴급 몬순 경보",
+  "defaultMonsoonAlertMessage": "투어 지역에 악천후 경보가 발령되었습니다.",
+
+  "earningsTitle": "수익",
+  "pleaseLogInViewEarningsMessage": "수익을 보려면 로그인하세요.",
+  "errorLoadingFinancialDataMessage": "재무 데이터 로드 오류: {error}",
+  "@errorLoadingFinancialDataMessage": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "totalNetEarningsLabel": "총 순수익",
+  "netPercentageLabel": "순수익 90%",
+  "lkrAmountLabel": "LKR {amount}",
+  "@lkrAmountLabel": {
+    "placeholders": { "amount": { "type": "String" } }
+  },
+  "subStatPending": "대기 중",
+  "subStatPaidOut": "지급 완료",
+  "subStatPlatformFee": "플랫폼 수수료",
+  "requestPayoutButton": "정산 요청",
+  "bankButtonLabel": "은행",
+  "clientAnalyticsTitle": "고객 분석",
+  "analyticsStatCompletedTours": "완료된 투어",
+  "analyticsStatUniqueClients": "순 고객 수",
+  "analyticsStatRepeatRate": "재방문율",
+  "avgBookingValueLabel": "평균 예약 금액",
+  "clientAnalyticsLockedSubtitle": "재방문율, 순 고객 수 등 — 프로 등급",
+  "upgradeButtonLabel": "업그레이드",
+  "filterChipAllBookings": "전체 예약",
+  "filterChipPendingPayout": "⏳ 정산 대기",
+  "filterChipPaidOut": "✅ 지급 완료",
+  "filterChipDisputed": "⚠️ 분쟁 중",
+  "payoutStatusPaid": "지급됨",
+  "payoutStatusDisputed": "분쟁 중",
+  "payoutStatusPending": "대기 중",
+  "tourBookingIdLabel": "투어 예약 #{id}",
+  "@tourBookingIdLabel": {
+    "placeholders": { "id": { "type": "String" } }
+  },
+  "guestCountDateLabel": "게스트 {count}명 · {date}",
+  "@guestCountDateLabel": {
+    "placeholders": { "count": { "type": "int" }, "date": { "type": "String" } }
+  },
+  "viaPayHereDateLabel": "PayHere 통해 · {date}",
+  "@viaPayHereDateLabel": {
+    "placeholders": { "date": { "type": "String" } }
+  },
+  "grossLkrLabel": "총액 LKR {amount}",
+  "@grossLkrLabel": {
+    "placeholders": { "amount": { "type": "String" } }
+  },
+  "noTransactionsFoundTitle": "거래 내역이 없습니다",
+  "noTransactionsFoundSubtitle": "투어 예약을 완료하면\n순 정산 내역이 여기에 자동으로 표시됩니다.",
+  "noPendingFundsMessage": "정산 요청 가능한 대기 자금이 없습니다.",
+  "requestPayoutDialogTitle": "정산 요청",
+  "requestPayoutDialogMessage": "등록된 은행 계좌 / 모바일 머니 지갑으로 LKR {amount}의 이체를 요청하려고 합니다.\n\n이체는 오라클 재무팀에서 영업일 기준 24시간 이내에 처리됩니다.",
+  "@requestPayoutDialogMessage": {
+    "placeholders": { "amount": { "type": "String" } }
+  },
+  "cancelButton": "취소",
+  "confirmPayoutButton": "정산 확인",
+  "payoutRequestSubmittedMessage": "정산 요청이 성공적으로 제출되었습니다!",
+  "payoutAccountSettingsTitle": "정산 계좌 설정",
+  "bankNameWalletProviderLabel": "은행명 / 지갑 제공업체",
+  "accountPhoneNumberLabel": "계좌 / 전화번호",
+  "saveButtonLabel": "저장",
+  "payoutAccountSettingsUpdatedMessage": "정산 계좌 설정이 업데이트되었습니다!",
+
+  "availabilityScheduleTitle": "가능 시간 및 일정",
+  "whenYoureFreeToGuideTitle": "가이드 가능한 시간",
+  "touristsOnlySeeOpenSlotsMessage": "여행자에게는 열려 있다고 표시한 시간대만 보입니다.",
+  "instantBookNoticeTitle": "즉시 예약 및 사전 통지",
+  "instantBookLabel": "즉시 예약",
+  "instantBookSubtitle": "수동 승인 없이 여행자가 바로 예약할 수 있도록 허용",
+  "advanceNoticeLabel": "사전 통지",
+  "advanceNoticeSubtitle": "투어 시작 전 최소 소요 시간",
+  "hoursShortLabel": "{count}시간",
+  "@hoursShortLabel": {
+    "placeholders": { "count": { "type": "String" } }
+  },
+  "weeklyScheduleTitle": "주간 일정",
+  "weeklyScheduleSubtitle": "근무하는 요일을 전환하고 시간을 설정하세요",
+  "dayOffLabel": "휴무",
+  "blackoutDatesTitle": "휴무일",
+  "blackoutDatesCountSuffix": " ({count})",
+  "@blackoutDatesCountSuffix": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "addDateButtonLabel": "날짜 추가",
+  "noBlackoutDatesMessage": "아직 휴무일이 없습니다 — 주간 일정에 따라 예약이 가능합니다.",
+  "saveAvailabilityButton": "가능 시간 저장",
+  "dayMonday": "월요일",
+  "dayTuesday": "화요일",
+  "dayWednesday": "수요일",
+  "dayThursday": "목요일",
+  "dayFriday": "금요일",
+  "daySaturday": "토요일",
+  "daySunday": "일요일",
+
+  "clientsTitle": "고객",
+  "pleaseLogInMessage": "로그인해 주세요.",
+  "noClientsYetTitle": "아직 고객이 없습니다",
+  "noClientsYetSubtitle": "여행자가 투어를 예약하면 여기에 표시됩니다.",
+  "travelerShortIdLabel": "여행자 {shortId}",
+  "@travelerShortIdLabel": {
+    "placeholders": { "shortId": { "type": "String" } }
+  },
+  "tourCountCompletedLabel": "{count, plural, one{투어 1건} other{투어 {count}건}} 완료 · 최근: {date}",
+  "@tourCountCompletedLabel": {
+    "placeholders": { "count": { "type": "int" }, "date": { "type": "String" } }
+  },
+  "clientStatTours": "투어",
+  "clientStatTotalSpent": "총 지출액",
+  "clientStatLastVisit": "최근 방문",
+  "notesLabel": "메모",
+  "clientNoteHint": "선호 사항, 알레르기, 특별한 순간...",
+  "saveNoteButton": "메모 저장",
+  "noteSavedMessage": "메모가 저장되었습니다",
+  "bookingHistoryTitle": "예약 내역",
+  "guestCountParenthesesLabel": "게스트 {count}명",
+  "@guestCountParenthesesLabel": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+
+  "becomeAGuideTitle": "가이드 되기",
+  "fieldsMissingMessage": "필드 누락: 모든 항목을 작성하고 문서를 업로드해 주세요.",
+  "uploadingDocumentsMessage": "문서 업로드 중...",
+  "documentsUploadFailureMessage": "가이드 문서를 오라클 저장소로 전송하지 못했습니다. 연결 상태를 확인해 주세요.",
+  "savingApplicationMessage": "신청서 저장 중...",
+  "synchronizingApplicationMessage": "신청서 동기화 중...",
+  "applicationSubmittedSuccessMessage": "신청서가 성공적으로 제출되었습니다!",
+  "authRequiredMessage": "인증이 필요합니다. 다시 로그인해 주세요.",
+  "cameraAccessDeniedMessage": "카메라 접근이 거부되었거나 오류가 발생했습니다: {error}",
+  "@cameraAccessDeniedMessage": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "takeASelfieTitle": "셀피 촬영",
+  "uploadDocumentTitle": "문서 업로드",
+  "cameraOptionLabel": "카메라",
+  "galleryOptionLabel": "갤러리",
+  "errorGenericMessage": "오류: {error}",
+  "@errorGenericMessage": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "verifyingYourDetailsMessage": "세부 정보 확인 중...",
+  "credentialsBeingVerifiedMessage": "자격 증명을 안전하게 확인하고 있습니다.",
+  "applicationSubmittedTitle": "신청서 제출 완료",
+  "applicationSubmittedMessage": "저희 팀이 제출하신 문서를 검토한 후 결과를 알려드리겠습니다.",
+  "returnToProfileButton": "프로필로 돌아가기",
+  "applicationUnderReviewTitle": "신청서 검토 중",
+  "applicationUnderReviewMessage": "가이드 신청서가 제출되어 현재 검토 중입니다. 결과가 나오면 알려드리겠습니다.",
+  "applicationRejectedTitle": "신청서 반려",
+  "applicationRejectedMessage": "사유: {reason}\n\n필요한 항목을 수정한 후 아래에서 신청서를 다시 제출할 수 있습니다.",
+  "@applicationRejectedMessage": {
+    "placeholders": { "reason": { "type": "String" } }
+  },
+  "defaultRejectionReason": "문서가 불완전하거나 명확하지 않습니다.",
+  "guidePollRejectionReason": "면허 문서와 사진이 선명하고 유효한지 확인해 주세요.",
+  "approvedGuideTitle": "승인된 가이드입니다",
+  "approvedGuideMessage": "축하합니다! 가이드 신원이 활성화되었습니다. 프로필에서 가이드 대시보드에 접근할 수 있습니다.",
+  "shareLocalKnowledgeTitle": "현지 지식을 공유하세요",
+  "guideTravelersEarnSubtitle": "여행자를 안내하고 원하는 일정에 맞춰 수익을 올리세요.",
+  "guideCategoryLabel": "가이드 분류",
+  "categoryNational": "전국",
+  "categoryProvincial": "지방",
+  "categorySite": "현지",
+  "licenseNumberLabel": "면허 번호",
+  "licenseNumberHint": "SLTDA-XXXX-XXXX",
+  "shortBioLabel": "간단한 소개",
+  "shortBioHint": "본인의 경력을 알려주세요...",
+  "verificationDocumentsTitle": "인증 문서",
+  "guideLicenseLabel": "가이드 면허",
+  "nicPassportLabel": "NIC / 여권",
+  "selfieForIdentityLabel": "신원 확인용 셀피",
+  "submitApplicationButton": "신청서 제출",
+
+  "tourPackagesTitle": "투어 패키지",
+  "noPackagesYetTitle": "아직 패키지가 없습니다",
+  "noPackagesYetSubtitle": "고정 가격의 반나절, 하루 또는 여러 날짜의 투어 패키지를 제공하세요.",
+  "inactiveLabel": "비활성",
+  "durationGuestsLabel": "{hours}시간 · 최대 {guests}명",
+  "@durationGuestsLabel": {
+    "placeholders": { "hours": { "type": "String" }, "guests": { "type": "String" } }
+  },
+  "currencyPriceLabel": "{currency} {price}",
+  "@currencyPriceLabel": {
+    "placeholders": { "currency": { "type": "String" }, "price": { "type": "String" } }
+  },
+  "newPackageTitle": "새 패키지",
+  "editPackageTitle": "패키지 편집",
+  "failedToSavePackageMessage": "패키지 저장 실패: {error}",
+  "@failedToSavePackageMessage": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "packageTitleLabel": "패키지 제목",
+  "packageTitleHint": "예: 시기리야 & 담불라 당일 투어",
+  "requiredFieldMessage": "필수 항목",
+  "descriptionLabel": "설명",
+  "packageDescriptionHint": "이 패키지에는 무엇이 포함되나요?",
+  "durationHoursLabel": "소요 시간(시간)",
+  "maxGuestsLabel": "최대 게스트 수",
+  "priceLabel": "가격",
+  "currencyLabel": "통화",
+  "inclusionsLabel": "포함 사항(쉼표로 구분)",
+  "inclusionsHint": "점심, 입장료, 물",
+  "includesVehicleLabel": "차량 포함",
+  "activeBookableLabel": "활성(여행자가 예약 가능)",
+  "savePackageButton": "패키지 저장",
+  "availabilityScheduleUpdatedMessage": "예약 가능 시간 및 일정이 업데이트되었습니다",
+  "errorSavingAvailabilityMessage": "예약 가능 시간 저장 오류: {error}",
+  "@errorSavingAvailabilityMessage": {
+    "placeholders": { "error": { "type": "String" } }
+  }
 }

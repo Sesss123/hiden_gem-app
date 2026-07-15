@@ -137,7 +137,7 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
                             _buildDetailsSection(context, Icons.local_cafe_outlined, l10n.provisions, _buildFacilities(context)).animate().fadeIn(delay: 700.ms, duration: 600.ms),
                             const SizedBox(height: 24),
                             if (_hasFieldNotes())
-                              _buildDetailsSection(context, Icons.fact_check_outlined, "Field Notes", _buildFieldNotes(context)).animate().fadeIn(delay: 750.ms, duration: 600.ms),
+                              _buildDetailsSection(context, Icons.fact_check_outlined, l10n.fieldNotesTitle, _buildFieldNotes(context)).animate().fadeIn(delay: 750.ms, duration: 600.ms),
                             if (_hasFieldNotes()) const SizedBox(height: 24),
                             _buildEtiquetteSection(context, l10n).animate().fadeIn(delay: 800.ms, duration: 600.ms),
                             const SizedBox(height: 24),
@@ -180,12 +180,12 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
               const Icon(Icons.lock_outline_rounded, color: AppPalette.sigiriyaOchre, size: 64),
               const SizedBox(height: 24),
               OracleUI.neonText(
-                "Heritage Site Locked",
+                l10n.heritageSiteLocked,
                 style: GoogleFonts.outfit(fontSize: 22, fontWeight: FontWeight.bold, color: AppPalette.sigiriyaOchre),
               ),
               const SizedBox(height: 16),
               Text(
-                "This Oracle Vision is reserved for Premium Explorers. Watch a short Ad to unlock this place for today.",
+                l10n.lockOverlayDescription,
                 textAlign: TextAlign.center,
                 style: GoogleFonts.inter(color: AppTheme.colors.white70, height: 1.5),
               ),
@@ -202,7 +202,7 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
                     );
                   },
                   icon: Icon(Icons.play_circle_outline, color: AppTheme.colors.black),
-                  label: Text("WATCH AD TO UNLOCK", style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: AppTheme.colors.black)),
+                  label: Text(l10n.watchAdToUnlock, style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: AppTheme.colors.black)),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppPalette.sigiriyaOchre,
                     padding: const EdgeInsets.symmetric(vertical: 16),
@@ -213,7 +213,7 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
               const SizedBox(height: 16),
               TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: Text("Go Back", style: TextStyle(color: AppTheme.colors.white38)),
+                child: Text(l10n.goBack, style: TextStyle(color: AppTheme.colors.white38)),
               ),
             ],
           ),
@@ -228,28 +228,28 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
     String title = l10n.sustainableEthos;
     IconData icon = Icons.eco_outlined;
     List<String> tips = [
-      "Carry a reusable water bottle",
-      "Avoid plastic single-use bags",
-      "Respect local wildlife and plants"
+      l10n.etiquetteTipReusableBottle,
+      l10n.etiquetteTipAvoidPlastic,
+      l10n.etiquetteTipRespectWildlife,
     ];
 
     if (cat.contains("temple") || cat.contains("culture") || cat.contains("historical")) {
       title = l10n.culturalEtiquette;
       icon = Icons.temple_buddhist_outlined;
       tips = [
-        "Remove shoes and hats before entering",
-        "Dress modestly (cover shoulders and knees)",
-        "Ask permission before taking photos of people",
-        "Do not pose for photos with your back to statues"
+        l10n.etiquetteTipRemoveShoes,
+        l10n.etiquetteTipDressModestly,
+        l10n.etiquetteTipAskPhotoPermission,
+        l10n.etiquetteTipNoBackToStatues,
       ];
     } else if (cat.contains("nature") || cat.contains("waterfall") || cat.contains("hiking")) {
       title = l10n.ecoResponsibleTravel;
       icon = Icons.nature_people_outlined;
       tips = [
-        "Stay on marked trails to protect flora",
-        "Pack out all your trash (Leave no trace)",
-        "Do not feed or disturb wild animals",
-        "Avoid using soap/shampoo in natural pools"
+        l10n.etiquetteTipStayOnTrails,
+        l10n.etiquetteTipPackOutTrash,
+        l10n.etiquetteTipNoFeedingAnimals,
+        l10n.etiquetteTipNoSoapInPools,
       ];
     }
 
@@ -373,17 +373,18 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
   }
 
   Widget _buildARTierBadge(BuildContext context, int tier) {
+    final l10n = AppLocalizations.of(context)!;
     String icon = 'ðŸ›';
-    String label = 'HERITAGE AR';
+    String label = l10n.arBadgeHeritage;
     Color color = Theme.of(context).colorScheme.secondary;
 
     if (tier == 2) {
       icon = 'ðŸ”­';
-      label = 'EXPLORE AR';
+      label = l10n.arBadgeExplore;
       color = AppTheme.colors.primary;
     } else if (tier == 3) {
       icon = 'ðŸ“–';
-      label = 'STORY VIEW';
+      label = l10n.arBadgeStory;
       color = Theme.of(context).colorScheme.primary;
     }
 
@@ -616,7 +617,7 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
         _statBox(
           context,
           l10n.reality,
-          widget.place.arTier == 1 ? "Heritage" : (widget.place.arTier == 2 ? "Explore" : "Story"),
+          widget.place.arTier == 1 ? l10n.arTierHeritageShort : (widget.place.arTier == 2 ? l10n.arTierExploreShort : l10n.arTierStoryShort),
         ),
     ];
 
@@ -641,7 +642,7 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
           ),
           SizedBox(height: 4),
           Text(
-            value.isEmpty ? "N/A" : value,
+            value.isEmpty ? AppLocalizations.of(context)!.notAvailableShort : value,
             style: GoogleFonts.outfit(fontWeight: FontWeight.w700, fontSize: 13, color: AppTheme.textPrimary(context)),
             textAlign: TextAlign.center,
             maxLines: 1,
@@ -697,7 +698,7 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
   }
 
   Widget _buildRiskTags(BuildContext context) {
-    if (widget.place.riskTags.isEmpty) return Text("No manifestations detected.", style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5), fontSize: 13));
+    if (widget.place.riskTags.isEmpty) return Text(AppLocalizations.of(context)!.noRiskTagsFound, style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5), fontSize: 13));
     return Wrap(
       spacing: 12,
       runSpacing: 12,
@@ -706,7 +707,7 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
   }
 
   Widget _buildFacilities(BuildContext context) {
-    if (widget.place.facilities.isEmpty) return Text("Minimal provisions found.", style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5), fontSize: 13));
+    if (widget.place.facilities.isEmpty) return Text(AppLocalizations.of(context)!.noFacilitiesFound, style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5), fontSize: 13));
     return Wrap(
       spacing: 12,
       runSpacing: 12,
@@ -727,26 +728,27 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
   }
 
   Widget _buildFieldNotes(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final p = widget.place;
     final entries = <MapEntry<String, String>>[
-      MapEntry("Mobile Signal", p.mobileSignal),
-      MapEntry("Road Condition", p.roadCondition),
-      MapEntry("Activities", p.activities),
-      MapEntry("Popularity", p.touristPopularity),
-      MapEntry("Family Friendly", p.familyFriendly),
-      MapEntry("Budget", p.budgetCategory),
-      MapEntry("Toilets", p.toilets),
-      MapEntry("Food Nearby", p.foodNearby),
-      MapEntry("Wheelchair Access", p.wheelchairAccess),
-      MapEntry("Camping", p.campingAllowed),
-      MapEntry("Safety Level", p.safetyLevel),
-      MapEntry("Wildlife Hazard", p.wildlifeHazard),
-      MapEntry("Guide Required", p.guideRequired),
-      MapEntry("Rain Sensitivity", p.rainSensitivity),
-      MapEntry("Monsoon Note", p.monsoonNote),
-      MapEntry("Surfing", p.surfing),
-      if ((double.tryParse(p.heightM) ?? 0) > 0) MapEntry("Height", "${p.heightM} m"),
-      if ((double.tryParse(p.lengthKm) ?? 0) > 0) MapEntry("Length", "${p.lengthKm} km"),
+      MapEntry(l10n.fieldNoteMobileSignal, p.mobileSignal),
+      MapEntry(l10n.fieldNoteRoadCondition, p.roadCondition),
+      MapEntry(l10n.fieldNoteActivities, p.activities),
+      MapEntry(l10n.fieldNotePopularity, p.touristPopularity),
+      MapEntry(l10n.fieldNoteFamilyFriendly, p.familyFriendly),
+      MapEntry(l10n.fieldNoteBudget, p.budgetCategory),
+      MapEntry(l10n.fieldNoteToilets, p.toilets),
+      MapEntry(l10n.fieldNoteFoodNearby, p.foodNearby),
+      MapEntry(l10n.fieldNoteWheelchairAccess, p.wheelchairAccess),
+      MapEntry(l10n.fieldNoteCamping, p.campingAllowed),
+      MapEntry(l10n.fieldNoteSafetyLevel, p.safetyLevel),
+      MapEntry(l10n.fieldNoteWildlifeHazard, p.wildlifeHazard),
+      MapEntry(l10n.fieldNoteGuideRequired, p.guideRequired),
+      MapEntry(l10n.fieldNoteRainSensitivity, p.rainSensitivity),
+      MapEntry(l10n.fieldNoteMonsoonNote, p.monsoonNote),
+      MapEntry(l10n.fieldNoteSurfing, p.surfing),
+      if ((double.tryParse(p.heightM) ?? 0) > 0) MapEntry(l10n.fieldNoteHeight, "${p.heightM} m"),
+      if ((double.tryParse(p.lengthKm) ?? 0) > 0) MapEntry(l10n.fieldNoteLength, "${p.lengthKm} km"),
     ].where((e) => e.value.trim().isNotEmpty).toList();
 
     return Column(
@@ -826,8 +828,8 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
                   setState(() => _isBookmarked = nowBookmarked);
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                     content: Text(nowBookmarked
-                        ? "✨ Marked in your journey!"
-                        : "Removed from bookmarks."),
+                        ? l10n.bookmarkAddedSnackbar
+                        : l10n.bookmarkRemovedSnackbar),
                     backgroundColor: AppTheme.accentOchre(context),
                   ));
                 },
@@ -864,8 +866,8 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
                       if (!context.mounted) return;
                       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                           content: Text(nowAdded
-                              ? "🗺️ ${widget.place.name} added to your destiny!"
-                              : "Removed from itinerary."),
+                              ? l10n.itineraryAddedSnackbar(widget.place.name)
+                              : l10n.itineraryRemovedSnackbar),
                       ));
                     }
                   },
@@ -988,14 +990,14 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
       showDialog(
         context: context,
         builder: (_) => LimitReachedDialog(
-          featureName: 'Heritage Sessions',
+          featureName: AppLocalizations.of(context)!.featureNameHeritageSessions,
           onWatchAd: () {
             MonetizationService().showRewardedAd(
               onRewardEarned: (reward) async {
                 await UsageLimiterService.provideBonusArSession();
                 if (!mounted || !context.mounted) return;
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text("Bonus Session Unlocked! Try launching again.")),
+                  SnackBar(content: Text(AppLocalizations.of(context)!.bonusSessionUnlockedSnackbar)),
                 );
               },
             );
@@ -1019,7 +1021,7 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text('✨ Oracle reward active! AR session unlocked.'),
+                      content: Text(AppLocalizations.of(context)!.oracleRewardActiveSnackbar),
                       backgroundColor: AppTheme.colors.green,
                     ),
                   );
@@ -1134,7 +1136,7 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
         backgroundColor: Theme.of(context).colorScheme.surface,
         title: Text(title, style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
         content: Text(msg, style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7))),
-        actions: [TextButton(onPressed: () => Navigator.pop(context), child: Text("OK"))],
+        actions: [TextButton(onPressed: () => Navigator.pop(context), child: Text(AppLocalizations.of(context)!.okButton))],
       ),
     );
   }
@@ -1200,18 +1202,19 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
   }
 
   ARPlaceData _getARPlaceData(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return ARPlaceData(
       arSupported: widget.place.arSupported,
       arTier: widget.place.arTier,
-      arBrandName: widget.place.arTier == 1 ? "Heritage AR" : "Explore AR",
-      arModelUrl: widget.place.arModelUrl.isNotEmpty 
-          ? widget.place.arModelUrl 
+      arBrandName: widget.place.arTier == 1 ? l10n.arBrandNameHeritage : l10n.arBrandNameExplore,
+      arModelUrl: widget.place.arModelUrl.isNotEmpty
+          ? widget.place.arModelUrl
           : "https://github.com/KhronosGroup/glTF-Sample-Models/raw/master/2.0/Duck/glTF-Binary/Duck.glb",
-      arHistoricalModelUrl: widget.place.arHistoricalModelUrl.isNotEmpty 
-          ? widget.place.arHistoricalModelUrl 
+      arHistoricalModelUrl: widget.place.arHistoricalModelUrl.isNotEmpty
+          ? widget.place.arHistoricalModelUrl
           : "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/AntiqueCamera/glTF-Binary/AntiqueCamera.glb",
       arModelScale: widget.place.arModelScale > 0 ? widget.place.arModelScale : 0.01,
-      historicalPeriod: widget.place.historicalPeriod.isNotEmpty ? widget.place.historicalPeriod : "Ancient Era",
+      historicalPeriod: widget.place.historicalPeriod.isNotEmpty ? widget.place.historicalPeriod : l10n.ancientHeritageSite,
       modelFileSizeMb: widget.place.arFileSizeMb,
       authorName: widget.place.arAuthor,
       audioUrlSi: widget.place.audioUrlSi,
@@ -1450,14 +1453,14 @@ class _DownloadButtonState extends State<_DownloadButton> {
           showDialog(
             context: context,
             builder: (_) => LimitReachedDialog(
-              featureName: 'Offline Downloads',
+              featureName: l10n.featureNameOfflineDownloads,
               onWatchAd: () {
                 MonetizationService().showRewardedAd(
                   onRewardEarned: (reward) async {
                     await UsageLimiterService.provideBonusOfflineDownload();
                     if (!mounted || !context.mounted) return;
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text("Bonus Download Unlocked! Try downloading again.")),
+                      SnackBar(content: Text(AppLocalizations.of(context)!.bonusDownloadUnlockedSnackbar)),
                     );
                   },
                 );

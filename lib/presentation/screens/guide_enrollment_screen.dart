@@ -14,6 +14,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io' as io;
 import 'dart:ui';
+import '../../l10n/app_localizations.dart';
 
 class GuideEnrollmentScreen extends StatefulWidget {
   const GuideEnrollmentScreen({super.key});
@@ -34,7 +35,7 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
   final _bioController = TextEditingController();
 
   bool _isLoading = false;
-  String _loadingStatus = "Verifying your details...";
+  String? _loadingStatus;
   String _selectedCategory = 'National';
   String? _rejectionReason;
   GuideStatus _currentStatus = GuideStatus.none;
@@ -69,7 +70,7 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
       setState(() {
         _currentStatus = app.status;
         if (app.status == GuideStatus.rejected) {
-          _rejectionReason = app.adminComment ?? "Please ensure your license documents and photos are clear and valid.";
+          _rejectionReason = app.adminComment ?? AppLocalizations.of(context)!.guidePollRejectionReason;
         }
       });
       final currentProfile = UserPreferenceService.getProfile();
@@ -121,7 +122,7 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
     } catch (e) {
        if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Camera access denied or error: $e")),
+          SnackBar(content: Text(AppLocalizations.of(context)!.cameraAccessDeniedMessage(e.toString()))),
         );
       }
     }
@@ -143,7 +144,7 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              type == 'selfie' ? "Take a selfie" : "Upload document",
+              type == 'selfie' ? AppLocalizations.of(context)!.takeASelfieTitle : AppLocalizations.of(context)!.uploadDocumentTitle,
               style: GoogleFonts.outfit(
                 color: AppTheme.textPrimary(context),
                 fontSize: 16,
@@ -155,8 +156,8 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                _photoOption(Icons.camera_alt_outlined, "Camera", ImageSource.camera, type),
-                _photoOption(Icons.photo_library_outlined, "Gallery", ImageSource.gallery, type),
+                _photoOption(Icons.camera_alt_outlined, AppLocalizations.of(context)!.cameraOptionLabel, ImageSource.camera, type),
+                _photoOption(Icons.photo_library_outlined, AppLocalizations.of(context)!.galleryOptionLabel, ImageSource.gallery, type),
               ],
             ),
             const SizedBox(height: 16),
@@ -202,10 +203,11 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
   }
 
   Future<void> _submitApplication() async {
+    final l10n = AppLocalizations.of(context)!;
     // 1. Basic UI Check
-    if (_licenseController.text.isEmpty || _bioController.text.isEmpty || 
+    if (_licenseController.text.isEmpty || _bioController.text.isEmpty ||
         _licenseFile == null || _nicFile == null || _selfieFile == null) {
-      _showNotification("Fields missing: Please fill all and upload documents.", isError: true);
+      _showNotification(l10n.fieldsMissingMessage, isError: true);
       return;
     }
 
@@ -214,29 +216,29 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
     try {
       final uid = FirebaseAuth.instance.currentUser?.uid;
       final guardian = OracleGuardian();
-      
+
       // Security Certification
       if (!await guardian.certifyTransition('IDLE', 'SUBMITTING')) {
         guardian.secureLog('Unauthorized transition attempt', isCritical: true);
       }
 
       if (uid == null) {
-        throw OracleException("Authentication required. Please login again.", code: "AUTH_REQUIRED");
+        throw OracleException(l10n.authRequiredMessage, code: "AUTH_REQUIRED");
       }
 
       // 1. Upload Documents
-      _showNotification("Uploading documents...");
-      
+      _showNotification(l10n.uploadingDocumentsMessage);
+
       final licenseUrl = await _repo.uploadDocument(file: _licenseFile!, docType: 'license');
       final nicUrl = await _repo.uploadDocument(file: _nicFile!, docType: 'nic');
       final selfieUrl = await _repo.uploadDocument(file: _selfieFile!, docType: 'selfie');
 
       if (licenseUrl == null || nicUrl == null || selfieUrl == null) {
-        throw OracleException("Guide documents could not be transmitted to the Oracle vault. Please verify your connection.", code: "UPLOAD_FAILURE");
+        throw OracleException(l10n.documentsUploadFailureMessage, code: "UPLOAD_FAILURE");
       }
 
       // 2. Submit Application
-      _showNotification("Saving application...");
+      _showNotification(l10n.savingApplicationMessage);
       final application = GuideApplication(
         userId: uid,
         licenseNumber: _licenseController.text,
@@ -253,8 +255,8 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
 
       // 3. Update Local Cache
       if (!mounted) return;
-      setState(() => _loadingStatus = "Synchronizing application...");
-      
+      setState(() => _loadingStatus = l10n.synchronizingApplicationMessage);
+
       final obfuscatedStatus = guardian.obfuscateStatus('PENDING');
       guardian.secureLog("Transitioned state to $obfuscatedStatus");
 
@@ -262,20 +264,20 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
       profile.role = 'guide_pending';
       profile.guideStatus = GuideStatus.pending;
       await UserPreferenceService.saveProfile(profile);
-      
-      _showNotification("Application submitted successfully!");
+
+      _showNotification(l10n.applicationSubmittedSuccessMessage);
       if (mounted) {
         _showSuccessOverlay();
       }
     } catch (e) {
       if (mounted) {
-        _showNotification("Error: ${e.toString()}", isError: true);
+        _showNotification(l10n.errorGenericMessage(e.toString()), isError: true);
       }
     } finally {
       if (mounted) {
         setState(() {
           _isLoading = false;
-          _loadingStatus = "Verifying your details...";
+          _loadingStatus = null;
         });
       }
     }
@@ -315,7 +317,7 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
         ),
         const SizedBox(height: 24),
         Text(
-          _loadingStatus,
+          _loadingStatus ?? AppLocalizations.of(context)!.verifyingYourDetailsMessage,
           style: GoogleFonts.outfit(
             fontSize: 13,
             fontWeight: FontWeight.w700,
@@ -324,7 +326,7 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
         ).animate(onPlay: (c) => c.repeat()).shimmer(duration: 2.seconds),
         const SizedBox(height: 8),
         Text(
-          "Your credentials are being securely verified.",
+          AppLocalizations.of(context)!.credentialsBeingVerifiedMessage,
           textAlign: TextAlign.center,
           style: GoogleFonts.inter(
             fontSize: 11,
@@ -393,7 +395,7 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
                 ),
                 const SizedBox(height: 28),
                 Text(
-                  "Application submitted",
+                  AppLocalizations.of(context)!.applicationSubmittedTitle,
                   textAlign: TextAlign.center,
                   style: GoogleFonts.outfit(
                     fontSize: 19,
@@ -404,7 +406,7 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
                 ),
                 const SizedBox(height: 10),
                 Text(
-                  "Our team will review your documents and let you know once a decision is made.",
+                  AppLocalizations.of(context)!.applicationSubmittedMessage,
                   textAlign: TextAlign.center,
                   style: GoogleFonts.inter(
                     fontSize: 13,
@@ -428,7 +430,7 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
                       Navigator.pop(context); // Close screen
                     },
                     child: Text(
-                      "Return to profile",
+                      AppLocalizations.of(context)!.returnToProfileButton,
                       style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 14),
                     ),
                   ),
@@ -443,6 +445,7 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: CustomScrollView(
@@ -455,7 +458,7 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
               onPressed: () => Navigator.pop(context),
             ),
             title: Text(
-              "Become a guide",
+              l10n.becomeAGuideTitle,
               style: GoogleFonts.outfit(
                 fontSize: 20,
                 fontWeight: FontWeight.w800,
@@ -473,22 +476,22 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
                     const SizedBox(height: 20),
                     if (_currentStatus == GuideStatus.pending) ...[
                       _buildStatusBanner(
-                        title: "Application under review",
-                        message: "Your guide application has been submitted and is currently being reviewed. You will be notified once a decision is made.",
+                        title: l10n.applicationUnderReviewTitle,
+                        message: l10n.applicationUnderReviewMessage,
                         color: AppTheme.colors.amber,
                       ),
                       const SizedBox(height: 20),
                     ] else if (_currentStatus == GuideStatus.rejected) ...[
                       _buildStatusBanner(
-                        title: "Application rejected",
-                        message: "Reason: ${_rejectionReason ?? 'Documents incomplete or unclear.'}\n\nYou can re-submit your application below once you fix the required items.",
+                        title: l10n.applicationRejectedTitle,
+                        message: l10n.applicationRejectedMessage(_rejectionReason ?? l10n.defaultRejectionReason),
                         color: AppTheme.colors.redAccent,
                       ),
                       const SizedBox(height: 20),
                     ] else if (_currentStatus == GuideStatus.approved) ...[
                       _buildStatusBanner(
-                        title: "You are an approved guide",
-                        message: "Congratulations! Your guide identity is active. You can access the Guide Dashboard from your profile.",
+                        title: l10n.approvedGuideTitle,
+                        message: l10n.approvedGuideMessage,
                         color: AppTheme.colors.greenAccent,
                       ),
                       const SizedBox(height: 20),
@@ -524,7 +527,7 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
                           ),
                           const SizedBox(height: 14),
                           Text(
-                            "Share your local knowledge",
+                            l10n.shareLocalKnowledgeTitle,
                             style: GoogleFonts.outfit(
                               fontSize: 14,
                               fontWeight: FontWeight.w700,
@@ -533,7 +536,7 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            "Guide travelers and earn on your own schedule.",
+                            l10n.guideTravelersEarnSubtitle,
                             textAlign: TextAlign.center,
                             style: GoogleFonts.inter(
                               fontSize: 11,
@@ -548,20 +551,20 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
                     _buildCategorySelector(),
                     const SizedBox(height: 24),
                     _buildInputField(
-                      "License number",
-                      "SLTDA-XXXX-XXXX",
+                      l10n.licenseNumberLabel,
+                      l10n.licenseNumberHint,
                       _licenseController,
                     ).animate().fadeIn(delay: 200.ms, duration: 800.ms).slideX(begin: -0.1, end: 0),
                     const SizedBox(height: 24),
                     _buildInputField(
-                      "Short bio",
-                      "Tell us about your experience...",
+                      l10n.shortBioLabel,
+                      l10n.shortBioHint,
                       _bioController,
                       maxLines: 4,
                     ).animate().fadeIn(delay: 400.ms, duration: 800.ms).slideX(begin: 0.1, end: 0),
                     const SizedBox(height: 28),
                     Text(
-                      "Verification documents",
+                      l10n.verificationDocumentsTitle,
                       style: GoogleFonts.outfit(
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
@@ -570,11 +573,11 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    _buildDocPicker("Guide license", _licenseFile, () => _showPhotoPicker('license')),
+                    _buildDocPicker(l10n.guideLicenseLabel, _licenseFile, () => _showPhotoPicker('license')),
                     const SizedBox(height: 12),
-                    _buildDocPicker("NIC / passport", _nicFile, () => _showPhotoPicker('nic')),
+                    _buildDocPicker(l10n.nicPassportLabel, _nicFile, () => _showPhotoPicker('nic')),
                     const SizedBox(height: 12),
-                    _buildDocPicker("Selfie for identity", _selfieFile, () => _showPhotoPicker('selfie')),
+                    _buildDocPicker(l10n.selfieForIdentityLabel, _selfieFile, () => _showPhotoPicker('selfie')),
                     const SizedBox(height: 40),
                     _isLoading
                         ? Container(
@@ -599,7 +602,7 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
                               ),
                               onPressed: _submitApplication,
                               child: Text(
-                                "Submit application",
+                                l10n.submitApplicationButton,
                                 style: GoogleFonts.inter(
                                   fontWeight: FontWeight.w700,
                                   fontSize: 14,
@@ -619,11 +622,12 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
   }
 
   Widget _buildCategorySelector() {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "Guide category",
+          l10n.guideCategoryLabel,
           style: GoogleFonts.outfit(
             fontSize: 14,
             fontWeight: FontWeight.w700,
@@ -645,7 +649,7 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
                   borderRadius: BorderRadius.circular(100),
                 ),
                 child: Text(
-                  cat,
+                  _categoryLabel(cat, l10n),
                   style: GoogleFonts.inter(
                     color: isSelected ? AppTheme.colors.white : AppTheme.textSecondary(context),
                     fontSize: 12,
@@ -658,6 +662,19 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
         ),
       ],
     );
+  }
+
+  String _categoryLabel(String cat, AppLocalizations l10n) {
+    switch (cat) {
+      case 'National':
+        return l10n.categoryNational;
+      case 'Provincial':
+        return l10n.categoryProvincial;
+      case 'Site':
+        return l10n.categorySite;
+      default:
+        return cat;
+    }
   }
 
   Widget _buildDocPicker(String label, XFile? file, VoidCallback onTap) {

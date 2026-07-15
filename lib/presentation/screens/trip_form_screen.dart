@@ -8,6 +8,7 @@ import '../widgets/custom_buttons.dart';
 import '../widgets/limit_reached_dialog.dart';
 import '../../core/services/usage_limiter_service.dart';
 import '../../data/datasources/monetization_service.dart';
+import '../../l10n/app_localizations.dart';
 import 'loading_plan_screen.dart';
 import '../widgets/soft_upgrade_nudge_card.dart';
 
@@ -77,26 +78,27 @@ class _TripFormScreenState extends State<TripFormScreen> {
       final cleanOrigin = _origin.trim().toLowerCase();
       final cleanDest = _destination.trim().toLowerCase();
 
+      final l10n = AppLocalizations.of(context)!;
       if (cleanOrigin.isEmpty) {
-        _showValidationError("Please select or enter a starting point.");
+        _showValidationError(l10n.originRequiredError);
         return false;
       }
       if (cleanDest.isEmpty) {
-        _showValidationError("Please select or enter a destination.");
+        _showValidationError(l10n.destinationRequiredError);
         return false;
       }
 
       final validCities = _sriLankaCities.map((c) => c.toLowerCase()).toSet();
       if (!validCities.contains(cleanOrigin)) {
-        _showValidationError("'$cleanOrigin' is not a supported Sri Lankan city. Please select from the dropdown.");
+        _showValidationError(l10n.unsupportedCityError(cleanOrigin));
         return false;
       }
       if (!validCities.contains(cleanDest)) {
-        _showValidationError("'$cleanDest' is not a supported Sri Lankan city. Please select from the dropdown.");
+        _showValidationError(l10n.unsupportedCityError(cleanDest));
         return false;
       }
       if (cleanOrigin == cleanDest) {
-        _showValidationError("Starting point and destination cannot be the same.");
+        _showValidationError(l10n.originDestinationSameError);
         return false;
       }
     }
@@ -143,8 +145,33 @@ class _TripFormScreenState extends State<TripFormScreen> {
   String _formatDate(DateTime d) =>
       "${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}";
 
+  /// Maps an internal option value (e.g. "solo", "balanced", "Adventure" —
+  /// used as-is for backend requests and equality checks) to its localized
+  /// display label. The internal values themselves must never change.
+  String _localizedLabel(AppLocalizations l10n, String value) {
+    switch (value) {
+      case 'solo': return l10n.groupTypeSolo;
+      case 'couple': return l10n.groupTypeCouple;
+      case 'family': return l10n.groupTypeFamily;
+      case 'friends': return l10n.groupTypeFriends;
+      case 'relaxed': return l10n.paceRelaxed;
+      case 'balanced': return l10n.paceBalanced;
+      case 'packed': return l10n.pacePacked;
+      case 'budget': return l10n.styleBudget;
+      case 'comfort': return l10n.styleComfort;
+      case 'luxury': return l10n.styleLuxury;
+      case 'Adventure': return l10n.interestAdventure;
+      case 'Food': return l10n.interestFood;
+      case 'Wildlife': return l10n.interestWildlife;
+      case 'Photography': return l10n.interestPhotography;
+      case 'Village Experiences': return l10n.interestVillageExperiences;
+      default: return value;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
@@ -174,7 +201,7 @@ class _TripFormScreenState extends State<TripFormScreen> {
             padding: const EdgeInsets.only(right: 20),
             child: Center(
               child: Text(
-                "Step ${_currentStep + 1} of $_totalSteps",
+                l10n.stepProgressLabel(_currentStep + 1, _totalSteps),
                 style: GoogleFonts.inter(
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
@@ -199,16 +226,16 @@ class _TripFormScreenState extends State<TripFormScreen> {
                 setState(() => _currentStep = i);
               },
               children: [
-                _buildStep1(),
-                _buildStep2(),
-                _buildStep3(),
-                _buildStep4(),
+                _buildStep1(l10n),
+                _buildStep2(l10n),
+                _buildStep3(l10n),
+                _buildStep4(l10n),
               ],
             ),
           ),
         ],
       ),
-      bottomNavigationBar: _buildBottomBar(),
+      bottomNavigationBar: _buildBottomBar(l10n),
     );
   }
 
@@ -230,16 +257,16 @@ class _TripFormScreenState extends State<TripFormScreen> {
     );
   }
 
-  Widget _buildStep1() {
+  Widget _buildStep1(AppLocalizations l10n) {
     return _stepLayout(
-      title: "Where should we\nguide you?",
-      subtitle: "The Essentials",
+      title: l10n.step1Title,
+      subtitle: l10n.step1Subtitle,
       content: Column(
         children: [
           const SoftUpgradeNudgeCard(featureName: 'AI Travel Plans'),
           _cityAutocomplete(
-            label: "Starting Point",
-            hint: "Airport, Colombo...",
+            label: l10n.startingPointLabel,
+            hint: l10n.startingPointHint,
             icon: Icons.flight_takeoff,
             onSelected: (v) => _origin = v,
             onChanged: (v) => setState(() => _origin = v),
@@ -247,32 +274,32 @@ class _TripFormScreenState extends State<TripFormScreen> {
           ),
           const SizedBox(height: 16),
           _cityAutocomplete(
-            label: "Destination",
-            hint: "Ella, Galle, Kandy...",
+            label: l10n.destinationLabel,
+            hint: l10n.destinationHint,
             icon: Icons.place_outlined,
             onSelected: (v) => _destination = v,
             onChanged: (v) => setState(() => _destination = v),
             initialText: _destination,
           ),
           const SizedBox(height: 16),
-          _outlinedTile(icon: Icons.calendar_month, label: "Start Date", value: _formatDate(_startDate), onTap: _pickDate),
+          _outlinedTile(icon: Icons.calendar_month, label: l10n.startDateLabel, value: _formatDate(_startDate), onTap: _pickDate),
         ],
       ),
     );
   }
 
-  Widget _buildStep2() {
+  Widget _buildStep2(AppLocalizations l10n) {
     return _stepLayout(
-      title: "Define the vibe of\nyour journey.",
-      subtitle: "Budget & Style",
+      title: l10n.step2Title,
+      subtitle: l10n.step2Subtitle,
       content: Column(
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Text("Trip length", style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: AppTheme.textPrimary(context))),
-              Text("$_days days", style: GoogleFonts.outfit(fontSize: 22, fontWeight: FontWeight.w800, color: Theme.of(context).colorScheme.primary)),
+              Text(l10n.tripLengthLabel, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: AppTheme.textPrimary(context))),
+              Text(l10n.tripLengthDaysValue(_days), style: GoogleFonts.outfit(fontSize: 22, fontWeight: FontWeight.w800, color: Theme.of(context).colorScheme.primary)),
             ],
           ),
           Slider(
@@ -283,32 +310,32 @@ class _TripFormScreenState extends State<TripFormScreen> {
             onChanged: (v) => setState(() => _days = v.toInt()),
           ),
           const SizedBox(height: 24),
-          _choiceGroup("Travel Standard", _styleOptions, _style, (v) => setState(() => _style = v)),
+          _choiceGroup(l10n, l10n.travelStandardLabel, _styleOptions, _style, (v) => setState(() => _style = v)),
           const SizedBox(height: 24),
-          _budgetField(),
+          _budgetField(l10n),
         ],
       ),
     );
   }
 
-  Widget _buildStep3() {
+  Widget _buildStep3(AppLocalizations l10n) {
     return _stepLayout(
-      title: "With whom do you\ntravel?",
-      subtitle: "Companions & Pace",
+      title: l10n.step3Title,
+      subtitle: l10n.step3Subtitle,
       content: Column(
         children: [
-          _choiceGroup("Companions", _groupOptions, _groupType, (v) => setState(() => _groupType = v)),
+          _choiceGroup(l10n, l10n.companionsLabel, _groupOptions, _groupType, (v) => setState(() => _groupType = v)),
           const SizedBox(height: 24),
-          _choiceGroup("Travel Pace", _paceOptions, _pace, (v) => setState(() => _pace = v)),
+          _choiceGroup(l10n, l10n.travelPaceLabel, _paceOptions, _pace, (v) => setState(() => _pace = v)),
         ],
       ),
     );
   }
 
-  Widget _buildStep4() {
+  Widget _buildStep4(AppLocalizations l10n) {
     return _stepLayout(
-      title: "What stirs your\nsoul?",
-      subtitle: "Interests & Passions",
+      title: l10n.step4Title,
+      subtitle: l10n.step4Subtitle,
       content: Wrap(
         spacing: 8,
         runSpacing: 12,
@@ -326,7 +353,7 @@ class _TripFormScreenState extends State<TripFormScreen> {
                 borderRadius: BorderRadius.circular(100),
               ),
               child: Text(
-                opt,
+                _localizedLabel(l10n, opt),
                 style: GoogleFonts.inter(
                   color: isSelected ? Theme.of(context).colorScheme.onPrimary : AppTheme.textSecondary(context),
                   fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
@@ -466,7 +493,7 @@ class _TripFormScreenState extends State<TripFormScreen> {
     );
   }
 
-  Widget _budgetField() {
+  Widget _budgetField(AppLocalizations l10n) {
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
@@ -477,7 +504,7 @@ class _TripFormScreenState extends State<TripFormScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "Estimated budget",
+            l10n.estimatedBudgetLabel,
             style: GoogleFonts.inter(
               fontSize: 11,
               fontWeight: FontWeight.w600,
@@ -495,7 +522,7 @@ class _TripFormScreenState extends State<TripFormScreen> {
             ),
             keyboardType: TextInputType.number,
             decoration: InputDecoration(
-              prefixText: "LKR ",
+              prefixText: l10n.lkrCurrencyPrefix,
               prefixStyle: TextStyle(color: AppTheme.textSecondary(context)),
               border: InputBorder.none,
               isDense: true,
@@ -507,7 +534,7 @@ class _TripFormScreenState extends State<TripFormScreen> {
     );
   }
 
-  Widget _choiceGroup(String label, List<String> options, String current, Function(String) onSelect) {
+  Widget _choiceGroup(AppLocalizations l10n, String label, List<String> options, String current, Function(String) onSelect) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -531,7 +558,7 @@ class _TripFormScreenState extends State<TripFormScreen> {
                     borderRadius: BorderRadius.circular(14),
                   ),
                   child: Text(
-                    opt[0].toUpperCase() + opt.substring(1),
+                    _localizedLabel(l10n, opt),
                     style: GoogleFonts.inter(
                       color: isSelected ? Theme.of(context).colorScheme.onPrimary : AppTheme.textSecondary(context),
                       fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
@@ -571,7 +598,7 @@ class _TripFormScreenState extends State<TripFormScreen> {
     );
   }
 
-  Widget _buildBottomBar() {
+  Widget _buildBottomBar(AppLocalizations l10n) {
     return Container(
       padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
       decoration: BoxDecoration(
@@ -579,7 +606,7 @@ class _TripFormScreenState extends State<TripFormScreen> {
         border: Border(top: BorderSide(color: AppTheme.secondaryBorder(context))),
       ),
       child: PrimaryButton(
-        label: _currentStep == _totalSteps - 1 ? "Consult the Oracle" : "Continue",
+        label: _currentStep == _totalSteps - 1 ? l10n.consultTheOracleButton : l10n.continueLabel,
         onPressed: () {
           HapticFeedback.mediumImpact();
           _nextStep();
@@ -618,17 +645,18 @@ class _TripFormScreenState extends State<TripFormScreen> {
       if (mounted) Navigator.pop(context);
       _isSubmitting = false;
       if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
         showDialog(
           context: context,
           builder: (_) => LimitReachedDialog(
-            featureName: 'AI Trips',
+            featureName: l10n.aiTripsFeatureName,
             onWatchAd: () {
               MonetizationService().showRewardedAd(
                 onRewardEarned: (reward) async {
                   await UsageLimiterService.provideBonusAiTrip();
                   if (!mounted || !context.mounted) return;
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text("Bonus Trip Unlocked! Try submitting again.")),
+                    SnackBar(content: Text(AppLocalizations.of(context)!.bonusTripUnlockedMessage)),
                   );
                 },
               );
@@ -652,17 +680,18 @@ class _TripFormScreenState extends State<TripFormScreen> {
 
     if (!claimed) {
       if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
         showDialog(
           context: context,
           builder: (_) => LimitReachedDialog(
-            featureName: 'AI Trips',
+            featureName: l10n.aiTripsFeatureName,
             onWatchAd: () {
               MonetizationService().showRewardedAd(
                 onRewardEarned: (reward) async {
                   await UsageLimiterService.provideBonusAiTrip();
                   if (!mounted || !context.mounted) return;
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text("Bonus Trip Unlocked! Try submitting again.")),
+                    SnackBar(content: Text(AppLocalizations.of(context)!.bonusTripUnlockedMessage)),
                   );
                 },
               );

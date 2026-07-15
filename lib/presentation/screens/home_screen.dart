@@ -73,7 +73,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       _openPlace(_searchResults.first);
     } else if (query.trim().isNotEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('No place found matching "$query"')),
+        SnackBar(content: Text(AppLocalizations.of(context)!.noPlaceFoundMatching(query))),
       );
     }
   }
@@ -137,7 +137,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     }
   }
 
-  Widget _buildFeaturedDestinationCard() {
+  Widget _buildFeaturedDestinationCard(AppLocalizations l10n) {
     final hasGem = _localGems.isNotEmpty;
     final String name = hasGem ? _localGems.first.name : "Sigiriya Ancient Fortress";
     final String district = hasGem ? _localGems.first.district : "Matale";
@@ -194,7 +194,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             borderRadius: const BorderRadius.all(Radius.circular(12)),
                           ),
                           child: Text(
-                            "Featured",
+                            l10n.featuredLabel,
                             style: GoogleFonts.inter(
                               color: AppTheme.colors.white,
                               fontSize: 9,
@@ -269,7 +269,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(
-                                "Explore",
+                                l10n.exploreLabel,
                                 style: GoogleFonts.inter(
                                   fontWeight: FontWeight.w700,
                                   fontSize: 11,
@@ -292,12 +292,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
-  Widget _buildQuickActionsRow() {
+  Widget _buildQuickActionsRow(AppLocalizations l10n) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
         _buildQuickActionItem(
-          "Plan Trip",
+          l10n.planTripAction,
           Icons.edit_calendar_outlined,
           AppTheme.colors.teal,
           () {
@@ -306,7 +306,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           },
         ),
         _buildQuickActionItem(
-          "Find Guide",
+          l10n.findGuideAction,
           Icons.person_search_outlined,
           AppTheme.colors.amber,
           () {
@@ -315,7 +315,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           },
         ),
         _buildQuickActionItem(
-          "Food AI",
+          l10n.foodAiAction,
           Icons.restaurant_menu_outlined,
           AppTheme.colors.orangeAccent,
           () {
@@ -324,7 +324,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           },
         ),
         _buildQuickActionItem(
-          "AR Portals",
+          l10n.arPortalsAction,
           Icons.view_in_ar_rounded,
           AppTheme.colors.indigoAccent,
           () {
@@ -392,23 +392,23 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             ),
                           ),
                           children: [
-                            _journalUnfold(child: _buildWelcomeCard()),
+                            _journalUnfold(child: _buildWelcomeCard(l10n)),
                             const SizedBox(height: 20),
-                            _buildFeaturedDestinationCard(),
+                            _buildFeaturedDestinationCard(l10n),
                             const SizedBox(height: 24),
-                            _buildQuickActionsRow(),
+                            _buildQuickActionsRow(l10n),
                             const SizedBox(height: 32),
                             if (_todayEvents.isNotEmpty && _showEventBanner) ...[
-                               _buildTodayEventBanner(),
+                               _buildTodayEventBanner(l10n),
                                const SizedBox(height: 24),
                             ],
                             if (isOffline || _localGems.isNotEmpty) ...[
-                              _buildSectionHeader(isOffline ? l10n.localGemsOffline : "Local Gems Nearby"),
+                              _buildSectionHeader(isOffline ? l10n.localGemsOffline : l10n.localGemsNearby),
                               const SizedBox(height: 16),
                               _buildLocalGemsScroller(context),
                               const SizedBox(height: 24),
                             ],
-                            _buildCategoriesGrid(),
+                            _buildCategoriesGrid(l10n),
                             const SizedBox(height: 32),
                             const NativeAdWidget(),
                             const SizedBox(height: 32),
@@ -465,7 +465,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
-  Widget _buildTodayEventBanner() {
+  Widget _buildTodayEventBanner(AppLocalizations l10n) {
     final event = _todayEvents.first;
     return OracleUI.glassContainer(
       padding: const EdgeInsets.all(20),
@@ -489,7 +489,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Today in Sri Lanka",
+                      l10n.todayInSriLanka,
                       style: GoogleFonts.inter(
                         color: Theme.of(context).colorScheme.primary,
                         fontWeight: FontWeight.w700,
@@ -564,6 +564,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Widget _buildAppBar(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final user = widget.isOffline ? null : (ref.watch(authStateProvider).value ?? FirebaseAuth.instance.currentUser);
     return SliverAppBar(
       expandedHeight: 360,
@@ -604,7 +605,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 children: [
                     const SizedBox(height: 48),
                     Text(
-                      "Discover Sri Lanka",
+                      l10n.discoverSriLanka,
                       style: GoogleFonts.outfit(
                         fontSize: 28,
                         fontWeight: FontWeight.w800,
@@ -614,7 +615,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      "Let the Oracle guide your path",
+                      l10n.letOracleGuide,
                       style: GoogleFonts.inter(
                         fontSize: 12,
                         fontWeight: FontWeight.w500,
@@ -646,7 +647,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                   decoration: InputDecoration(
                                     isDense: true,
                                     border: InputBorder.none,
-                                    hintText: "Search secret locations...",
+                                    hintText: l10n.searchSecretLocations,
                                     hintStyle: GoogleFonts.inter(
                                       color: AppTheme.textSecondary(context).withValues(alpha: 0.6),
                                       fontSize: 13,
@@ -675,7 +676,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                   ? Padding(
                                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                                       child: Text(
-                                        'No place found matching "$_searchQuery"',
+                                        l10n.noPlaceFoundMatching(_searchQuery),
                                         style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 12),
                                       ),
                                     )
@@ -774,7 +775,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             Icon(Icons.cloud_off_rounded, color: AppTheme.colors.redAccent, size: 14),
             const SizedBox(width: 6),
             Text(
-              "OFFLINE MODE",
+              AppLocalizations.of(context)!.offlineModeLabel,
               style: GoogleFonts.outfit(fontSize: 10, fontWeight: FontWeight.bold, color: AppTheme.colors.redAccent),
             ),
           ],
@@ -783,9 +784,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
-  Widget _buildWelcomeCard() {
+  Widget _buildWelcomeCard(AppLocalizations l10n) {
     final user = widget.isOffline ? null : (ref.watch(authStateProvider).value ?? FirebaseAuth.instance.currentUser);
-    final name = user?.displayName?.split(" ").first ?? "Traveler";
+    final name = user?.displayName?.split(" ").first ?? l10n.travelerFallback;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -804,7 +805,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   Icon(Icons.auto_awesome, color: Theme.of(context).colorScheme.primary, size: 12),
                   const SizedBox(width: 6),
                   Text(
-                    "Ayubowan, $name!",
+                    l10n.ayubowanGreeting(name),
                     style: GoogleFonts.outfit(
                       fontSize: 11,
                       color: Theme.of(context).colorScheme.primary,
@@ -819,7 +820,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ),
         const SizedBox(height: 12),
         Text(
-          "Let the Oracle guide your path",
+          l10n.letOracleGuide,
           style: GoogleFonts.outfit(
             fontSize: 22,
             fontWeight: FontWeight.w800,
@@ -845,20 +846,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
-  Widget _buildCategoriesGrid() {
+  Widget _buildCategoriesGrid(AppLocalizations l10n) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     // Label -> the matching DiscoveryScreen filter key (see discovery_screen.dart's _filters/_applyFilter).
     final List<(String, IconData, List<Color>, String)> categories = [
-      ("Nature", Icons.forest_outlined, isDark ? [const Color(0xFF241D15), const Color(0xFF241D15)] : [const Color(0xFF557A4A), const Color(0xFF2C3D24)], "nature"),
-      ("Beaches", Icons.waves_rounded, [const Color(0xFF3A7A8A), const Color(0xFF1C3D44)], "coastal"),
-      ("Culture", Icons.temple_hindu_outlined, [Theme.of(context).colorScheme.primary, isDark ? AppPaletteDark.gemDim : AppPalette.rustDim], "culture"),
-      ("Adventure", Icons.explore_outlined, [AppPalette.heroOchre, const Color(0xFFA97A1E)], "hiking"),
+      (l10n.categoryNatureLabel, Icons.forest_outlined, isDark ? [const Color(0xFF241D15), const Color(0xFF241D15)] : [const Color(0xFF557A4A), const Color(0xFF2C3D24)], "nature"),
+      (l10n.categoryBeachesLabel, Icons.waves_rounded, [const Color(0xFF3A7A8A), const Color(0xFF1C3D44)], "coastal"),
+      (l10n.categoryCultureLabel, Icons.temple_hindu_outlined, [Theme.of(context).colorScheme.primary, isDark ? AppPaletteDark.gemDim : AppPalette.rustDim], "culture"),
+      (l10n.categoryAdventureLabel, Icons.explore_outlined, [AppPalette.heroOchre, const Color(0xFFA97A1E)], "hiking"),
     ];
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildSectionHeader("Explore by Category"),
+        _buildSectionHeader(l10n.exploreByCategory),
         const SizedBox(height: 16),
         GridView.builder(
           padding: EdgeInsets.zero,
@@ -936,10 +937,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         _buildSectionHeader(l10n.recentPlans),
         const SizedBox(height: 16),
         ...cachedTrips.take(3).map((trip) => _buildPlanCard(
-          context, 
-          trip.destination, 
-          trip.humanText, 
-          "${trip.itinerary.length} Days"
+          context,
+          trip.destination,
+          trip.humanText,
+          l10n.daysLabel(trip.itinerary.length),
         )),
       ],
     );
@@ -1069,9 +1070,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               _navItem(l10n.home, Icons.home_rounded, 0),
-              _navItem("Explore", Icons.travel_explore_rounded, 1),
+              _navItem(l10n.exploreNavLabel, Icons.travel_explore_rounded, 1),
               const SizedBox(width: 60),
-              _navItem("Events", Icons.calendar_month_rounded, 2),
+              _navItem(l10n.eventsNavLabel, Icons.calendar_month_rounded, 2),
               _navItem(l10n.profile, Icons.person_rounded, 3),
             ],
           ),

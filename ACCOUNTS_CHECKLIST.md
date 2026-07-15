@@ -81,6 +81,21 @@ laravel-backend/.env:  HMAC_SECRET=...
 dart_defines.json:     HMAC_SECRET=...
 ```
 
+### [ ] 8. SSL Certificate Pinning (`api.hiddengemssl.com`)
+**Mokada:** App eka real server ekatama witharak connect wenawa kiyala guarantee karana control eka (fake/MITM server ekak block karanawa). Code eka (`secure_network.dart`) already wired — real certificate fingerprint eka witharai one.
+**Kohomada:** Domain eka live unama (server eke real SSL cert eka install unama), me command eka run karanna:
+```bash
+openssl s_client -connect api.hiddengemssl.com:443 </dev/null 2>/dev/null | openssl x509 -fingerprint -sha256 -noout
+```
+Output eke `SHA256 Fingerprint=...` value eka copy karanna (colon walin sahitha hex string eka).
+**Danna:**
+```
+dart_defines.json:
+  SSL_PIN_HOST=api.hiddengemssl.com
+  SSL_PIN_FINGERPRINT=<fingerprint eka danna>
+```
+**Waradi vela — danna kalin:** Server certificate eka renew unama (yearly wage) me fingerprint eka change wenawa — ehema unama app eka update karala aluth fingerprint eka danna one, natahnam okkoma users ta connection eka fail wenawa. Ithin **dan skip karala thiyanna puluwan** — set karanne nathnam pinning eka witharak off wenawa, app eka normal HTTPS (still secure) ekenma vada karanawa.
+
 ---
 
 ## 🟢 Priority 4 — Other (rendered/nice-to-have)

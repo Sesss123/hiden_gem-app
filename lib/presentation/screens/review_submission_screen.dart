@@ -6,6 +6,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../../core/theme/oracle_ui_system.dart';
 import '../../data/models/tour_review.dart';
 import '../../data/repositories/review_repository.dart';
+import '../../l10n/app_localizations.dart';
 
 class ReviewSubmissionScreen extends ConsumerStatefulWidget {
   final String sessionId;
@@ -58,16 +59,16 @@ class _ReviewSubmissionScreenState extends ConsumerState<ReviewSubmissionScreen>
       );
 
       await ref.read(reviewRepositoryProvider).submitReview(review);
-      
+
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Transmission Complete. Thank you for your feedback.")),
+        SnackBar(content: Text(AppLocalizations.of(context)!.reviewSubmitSuccessMessage)),
       );
       Navigator.pop(context);
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Transmission Error: $e"), backgroundColor: AppTheme.colors.red),
+        SnackBar(content: Text(AppLocalizations.of(context)!.reviewSubmitErrorMessage(e.toString())), backgroundColor: AppTheme.colors.red),
       );
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
@@ -76,6 +77,7 @@ class _ReviewSubmissionScreenState extends ConsumerState<ReviewSubmissionScreen>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       body: OracleUI.auraBackground(
         child: SingleChildScrollView(
@@ -84,15 +86,15 @@ class _ReviewSubmissionScreenState extends ConsumerState<ReviewSubmissionScreen>
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 48),
-              _buildHeader(),
+              _buildHeader(l10n),
               const SizedBox(height: 40),
-              _buildRatingSection("OVERALL EXPERIENCE", _overallRating, (v) => setState(() => _overallRating = v)),
+              _buildRatingSection(l10n.overallExperienceLabel, _overallRating, (v) => setState(() => _overallRating = v)),
               const SizedBox(height: 32),
-              _buildFactorGrid(),
+              _buildFactorGrid(l10n),
               const SizedBox(height: 40),
-              _buildCommentSection(),
+              _buildCommentSection(l10n),
               const SizedBox(height: 48),
-              _buildSubmitButton(),
+              _buildSubmitButton(l10n),
               const SizedBox(height: 40),
             ],
           ),
@@ -101,7 +103,7 @@ class _ReviewSubmissionScreenState extends ConsumerState<ReviewSubmissionScreen>
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(AppLocalizations l10n) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -111,17 +113,17 @@ class _ReviewSubmissionScreenState extends ConsumerState<ReviewSubmissionScreen>
         ),
         const SizedBox(height: 24),
         OracleUI.neonText(
-          "MISSION FEEDBACK",
+          l10n.missionFeedbackEyebrow,
           style: GoogleFonts.outfit(fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: 4, color: AppTheme.colors.white24),
         ),
         const SizedBox(height: 8),
         Text(
-          "Rate your guide's performance.",
+          l10n.rateGuidePerformanceTitle,
           style: GoogleFonts.outfit(color: AppTheme.colors.white, fontSize: 28, fontWeight: FontWeight.w900),
         ).animate().fadeIn().slideY(begin: 0.1),
         const SizedBox(height: 12),
         Text(
-          "Your data is used to calculate the guide's Trust Score. Be objective and fair.",
+          l10n.trustScoreDisclaimer,
           style: GoogleFonts.inter(color: AppTheme.colors.white10, fontSize: 13, fontWeight: FontWeight.bold),
         ),
       ],
@@ -157,8 +159,8 @@ class _ReviewSubmissionScreenState extends ConsumerState<ReviewSubmissionScreen>
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text("AVERAGE", style: GoogleFonts.inter(color: AppTheme.colors.white10, fontSize: 10, fontWeight: FontWeight.bold)),
-                  Text("EXCEPTIONAL", style: GoogleFonts.inter(color: AppTheme.colors.white10, fontSize: 10, fontWeight: FontWeight.bold)),
+                  Text(AppLocalizations.of(context)!.ratingScaleAverageLabel, style: GoogleFonts.inter(color: AppTheme.colors.white10, fontSize: 10, fontWeight: FontWeight.bold)),
+                  Text(AppLocalizations.of(context)!.ratingScaleExceptionalLabel, style: GoogleFonts.inter(color: AppTheme.colors.white10, fontSize: 10, fontWeight: FontWeight.bold)),
                 ],
               ),
             ],
@@ -168,7 +170,7 @@ class _ReviewSubmissionScreenState extends ConsumerState<ReviewSubmissionScreen>
     );
   }
 
-  Widget _buildFactorGrid() {
+  Widget _buildFactorGrid(AppLocalizations l10n) {
     return GridView.count(
       crossAxisCount: 2,
       shrinkWrap: true,
@@ -177,10 +179,10 @@ class _ReviewSubmissionScreenState extends ConsumerState<ReviewSubmissionScreen>
       crossAxisSpacing: 16,
       childAspectRatio: 1.5,
       children: [
-        _buildFactorItem("KNOWLEDGE", _knowledgeRating, (v) => setState(() => _knowledgeRating = v)),
-        _buildFactorItem("COMMUNICATION", _communicationRating, (v) => setState(() => _communicationRating = v)),
-        _buildFactorItem("PUNCTUALITY", _punctualityRating, (v) => setState(() => _punctualityRating = v)),
-        _buildFactorItem("SAFETY", _safetyRating, (v) => setState(() => _safetyRating = v)),
+        _buildFactorItem(l10n.knowledgeFactorLabel, _knowledgeRating, (v) => setState(() => _knowledgeRating = v)),
+        _buildFactorItem(l10n.communicationFactorLabel, _communicationRating, (v) => setState(() => _communicationRating = v)),
+        _buildFactorItem(l10n.punctualityFactorLabel, _punctualityRating, (v) => setState(() => _punctualityRating = v)),
+        _buildFactorItem(l10n.safetyFactorLabel, _safetyRating, (v) => setState(() => _safetyRating = v)),
       ],
     ).animate().fadeIn(delay: 400.ms);
   }
@@ -220,12 +222,12 @@ class _ReviewSubmissionScreenState extends ConsumerState<ReviewSubmissionScreen>
     );
   }
 
-  Widget _buildCommentSection() {
+  Widget _buildCommentSection(AppLocalizations l10n) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "FIELD NOTES",
+          l10n.fieldNotesLabelUppercase,
           style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: 2, color: AppTheme.colors.white60),
         ),
         const SizedBox(height: 16),
@@ -238,7 +240,7 @@ class _ReviewSubmissionScreenState extends ConsumerState<ReviewSubmissionScreen>
             maxLines: 4,
             style: TextStyle(color: AppTheme.colors.white),
             decoration: InputDecoration(
-              hintText: "What impressed you? Where could they improve?",
+              hintText: l10n.commentFieldHint,
               hintStyle: GoogleFonts.inter(color: AppTheme.colors.white12, fontSize: 13, height: 1.5),
               border: InputBorder.none,
             ),
@@ -248,7 +250,7 @@ class _ReviewSubmissionScreenState extends ConsumerState<ReviewSubmissionScreen>
     );
   }
 
-  Widget _buildSubmitButton() {
+  Widget _buildSubmitButton(AppLocalizations l10n) {
     return SizedBox(
       width: double.infinity,
       height: 64,
@@ -261,10 +263,10 @@ class _ReviewSubmissionScreenState extends ConsumerState<ReviewSubmissionScreen>
           elevation: 20,
           shadowColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
         ),
-        child: _isSubmitting 
+        child: _isSubmitting
           ? CircularProgressIndicator(color: AppTheme.colors.black)
           : Text(
-              "TRANSMIT FEEDBACK",
+              l10n.transmitFeedbackButton,
               style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w900, letterSpacing: 2),
             ),
       ).animate(onPlay: (c) => c.repeat()).shimmer(duration: 3.seconds, color: AppTheme.colors.white24),

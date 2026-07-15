@@ -112,5 +112,1235 @@
   "downloadForOffline": "Download for Offline",
   "initiateTravel": "INITIATE TRAVEL SEQUENCE",
   "selectOracleLanguage": "SELECT YOUR ORACLE LANGUAGE",
-  "skipForNow": "SKIP FOR NOW"
+  "skipForNow": "SKIP FOR NOW",
+
+  "privacyPolicyTitle": "PRIVACY POLICY & LEGAL",
+  "dataProtectionProtocol": "DATA PROTECTION PROTOCOL",
+  "lastUpdatedDate": "LAST UPDATED: JULY 5, 2026",
+  "privacyIntro": "We value your privacy and data sovereignty. This document outlines how Hidden Gems Sri Lanka (Pvt) Ltd collects, protects, and governs your personal information under Sri Lankan law.",
+  "contactUsAboutData": "CONTACT US ABOUT YOUR DATA",
+  "couldNotOpenEmail": "Could not open email client. Please email support@hiddengems.lk",
+  "privacySection1Title": "1. DATA WE COLLECT",
+  "privacySection1Body": "Hidden Gems Sri Lanka collects personal information voluntarily provided when using our services:\n\n• Account Information: Display name, email address, phone number, and profile picture (via Firebase Auth / Google Sign-In).\n• Precise & Live Location: We request location data to enable location-based Discovery, Local Gems, and live tracking features. When using Family Sharing, your real-time coordinates are processed to update authorized recipients.\n• Family Sharing Recipient Data: Recipient names, contact identifiers, and temporary share tokens generated during coordination sessions.\n• Guide Profile & Verification Data: Licensing status, identification credentials, languages spoken, and bio details submitted during guide enrollment.\n• In-App Messages & Bookings: Communications between tourists and guides, itinerary data, and session logs.\n• Device & Analytics Data: Crash diagnostics, performance metrics, and device metadata via Firebase Analytics and Crashlytics.\n• Payment Data: If applicable, financial transactions are processed exclusively by PCI-DSS compliant third-party payment gateways. Hidden Gems Sri Lanka never stores raw credit card numbers or banking data on our servers.",
+  "privacySection2Title": "2. FAMILY SHARING FEATURE SPECIFICALLY",
+  "privacySection2Body": "Our 'Family Sharing' and coordination hub allows explorers to share live status, guide identity, meeting points, and emergency alerts with trusted personal contacts:\n\n• Opt-In & Revocable: Sharing is strictly opt-in and controlled entirely by the user. You may revoke access or delete active sharing links at any time in the app.\n• Time-Limited: Shared mission links automatically expire after your selected duration (e.g., 4, 12, or 24 hours). Once expired, location transmission ceases immediately.\n• Zero Content Monitoring: Hidden Gems Sri Lanka is not a party to and does not monitor or inspect the personal communications or shared status between you and your chosen recipients beyond what is technically necessary to operate the feature and deliver encrypted telemetry.",
+  "privacySection3Title": "3. LEGAL BASIS & SRI LANKA COMPLIANCE",
+  "privacySection3Body": "Our data practices strictly adhere to Sri Lankan regulatory frameworks and international best practices:\n\n• Governing Data Law: This policy is governed by the Personal Data Protection Act, No. 9 of 2022 (Sri Lanka). Hidden Gems Sri Lanka (Pvt) Ltd / TripMe.ai acts as the Data Controller and commits to the core statutory principles of data minimization, purpose limitation, lawful processing, and mandatory breach notification.\n• Tourism Act & SLTDA Regulations: In compliance with the Tourism Act, No. 38 of 2005 and Sri Lanka Tourism Development Authority (SLTDA) guidelines, guide verification credentials displayed in app profiles are self-reported or verified against SLTDA registries where available. The company provides this information for transparency but does not guarantee licensing status beyond what is displayed.\n• Cross-Border Data Transfers: For international tourists visiting Sri Lanka, using this application involves transferring data across borders to global cloud infrastructure (including Google Firebase and AWS servers). By utilizing the app, you explicitly consent to these international data transfers for the performance of the service.",
+  "privacySection4Title": "4. LIABILITY LIMITATION & DISCLAIMERS",
+  "privacySection4Body": "To the maximum extent permitted by applicable law, your use of the app is subject to the following limitations:\n\n• Connective Platform Role: Hidden Gems Sri Lanka operates as an informational and connective platform connecting tourists with independent local guides and services. We are not liable for the conduct, safety, licensing validity, or actions of any guide, driver, or third-party service connected through the app.\n• Emergency & Location Feature Limitations: Location-sharing, 'Family Sharing', and emergency alert signals are provided on a best-effort technical basis. THEY ARE NOT A SUBSTITUTE FOR OFFICIAL EMERGENCY SERVICES. In an emergency, always contact Sri Lanka Police (119), Tourist Police (+94 11 242 1052), or Suwaseriya Ambulance (1990). The company assumes no liability for network delays, GPS inaccuracies, or notification delivery failures.\n• Independent Verification: Users remain solely responsible for verifying guide credentials, vehicle safety, and personal security independently prior to travel.\n• Statutory Liability Cap: Under Sri Lankan law, any liability of Hidden Gems Sri Lanka (Pvt) Ltd arising out of or related to your use of the platform is strictly limited to the total fees paid by you to the company for the specific service in dispute.",
+  "privacySection5Title": "5. USER RIGHTS & DATA CONTROL",
+  "privacySection5Body": "Under the Personal Data Protection Act No. 9 of 2022, you hold fundamental rights regarding your personal data:\n\n• Right of Access & Correction: You may review, download, or edit your account information and profile data directly within the app's Profile Screen.\n• Withdrawal of Consent: You may withdraw consent for location tracking or data processing at any time by disabling location permissions in device settings or revoking active Family Sharing links.\n• Right to Deletion (Right to be Forgotten): You can request permanent account deletion directly via Profile > Privacy > Account Deletion, or by emailing our data protection officer at support@hiddengems.lk.",
+  "privacySection6Title": "6. DATA RETENTION & PURGATION",
+  "privacySection6Body": "We retain personal data only for as long as necessary to fulfill the purposes outlined in this policy:\n\n• Family Sharing & Location Data: Temporary share links and associated live location history are automatically purged from active databases upon link expiration or manual revocation.\n• Account Data: Upon submitting an account deletion request, your profile, saved wishlists, and personal identifiers are permanently scrubbed from our production servers within 30 days, retaining only anonymized statistical data required for regulatory audit trails.",
+  "privacySection7Title": "7. CHILDREN'S PRIVACY PROTECTION",
+  "privacySection7Body": "Hidden Gems Sri Lanka is designed for adult travelers and independent tourism professionals. The application is not directed at children under the age of 18. We do not knowingly solicit, collect, or process personal data from minors. If we discover that an underage user has provided personal data without verified parental consent, we will immediately purge such data from our infrastructure.",
+  "privacySection8Title": "8. CHANGES TO THIS POLICY",
+  "privacySection8Body": "We may update this Privacy Policy periodically to reflect technological advancements, new app features, or evolving Sri Lankan legal requirements. When material changes occur, we will notify users via prominent in-app banners and update the persistent 'Last Updated' timestamp at the top of this document. Continued use of the platform constitutes acceptance of the revised terms.",
+  "privacySection9Title": "9. CLOSING LEGAL DISCLAIMER",
+  "privacySection9Body": "This policy is provided for general informational purposes and does not constitute formal legal advice. Hidden Gems Sri Lanka (Pvt) Ltd / TripMe.ai recommends that users and tourism stakeholders seek independent legal counsel in Sri Lanka to confirm full compliance with the Personal Data Protection Act No. 9 of 2022, the Tourism Act No. 38 of 2005, and any other applicable statutory regulations.",
+  "privacyFooterCompany": "HIDDEN GEMS SRI LANKA (PVT) LTD",
+  "privacyFooterAddress": "Registered Office: Colombo, Sri Lanka • support@hiddengems.lk",
+
+  "termsAndPrivacyTitle": "Terms & privacy",
+  "reviewBeforeContinuing": "Please review before continuing",
+  "dataPrivacySectionTitle": "Data & privacy",
+  "dataPrivacySectionBody": "We keep your data secure. We securely store your profile and saved trips, and never sell your data to third parties.",
+  "aiPlanningSectionTitle": "AI trip planning",
+  "aiPlanningSectionBody": "Our AI planner is a predictive tool. While we strive for accuracy, its suggestions may differ from real-time conditions, so please verify critical information independently.\n\nBy using the AI planner, you agree to:\n• Use results responsibly, not maliciously.\n• Never attempt to exploit or manipulate the AI.\n• Treat all suggestions as guidance, not guarantees.",
+  "communityConductSectionTitle": "Community conduct",
+  "communityConductSectionBody": "You agree to use the app respectfully, helping keep the platform safe and reliable for other travelers.",
+  "readFullPrivacyPolicy": "Read the full privacy policy",
+  "acceptTermsCheckbox": "I accept the Terms of Service & Privacy Policy",
+  "acceptAiPolicyCheckbox": "I understand the AI planner's limitations",
+  "continueLabel": "Continue",
+
+  "updateRequiredTitle": "An update is required",
+  "updateReadyTitle": "A new version is ready",
+  "updateRequiredBody": "Please update the app to continue your journey.",
+  "updateReadyBody": "Better maps, faster AI trips, and improved AR are waiting for you.",
+  "updateNow": "Update now",
+  "maybeLater": "Maybe later",
+  "couldNotOpenStore": "Failed to open store. Please update manually.",
+
+  "brandTagline": "SRI LANKA'S PREMIER AI TRAVEL ORACLE",
+  "oracleConnected": "ORACLE CONNECTED",
+  "initializingExperience": "INITIALIZING TRAVEL EXPERIENCE...",
+
+  "welcomeToApp": "Welcome to Hidden Gems",
+  "createYourAccount": "Create your account",
+  "loginSubtitle": "Sri Lanka's AI travel companion",
+  "signupSubtitle": "Start planning your Sri Lanka trip",
+  "signIn": "Sign in",
+  "createAccount": "Create account",
+  "nameLabel": "Name",
+  "emailLabel": "Email",
+  "passwordLabel": "Password",
+  "identifierRequired": "Identifier required",
+  "invalidAddress": "Invalid address",
+  "insufficientComplexity": "Insufficient complexity",
+  "atLeast6Chars": "At least 6 characters",
+  "forgotPassword": "Forgot password?",
+  "orContinueWith": "or continue with",
+  "googleLabel": "Google",
+  "zenithLockActive": "ZENITH LOCK ACTIVE",
+  "lockoutMessage": "Multiple failed attempts detected.\nNeural link restricted to prevent brute force.",
+  "timeRemaining": "TIME REMAINING",
+  "googleSignInCancelled": "Google Sign-In was cancelled.",
+  "authFailedPrefix": "Authentication Failed: {reason}",
+  "@authFailedPrefix": {
+    "placeholders": { "reason": { "type": "String" } }
+  },
+  "googleSignInFailedPrefix": "Google Sign-In Failed: {reason}",
+  "@googleSignInFailedPrefix": {
+    "placeholders": { "reason": { "type": "String" } }
+  },
+  "enterEmailFirst": "Please enter your registered email address first.",
+  "passwordResetSent": "Password reset instructions sent to {email}.",
+  "@passwordResetSent": {
+    "placeholders": { "email": { "type": "String" } }
+  },
+  "resetEmailFailedPrefix": "Failed to send reset email: {reason}",
+  "@resetEmailFailedPrefix": {
+    "placeholders": { "reason": { "type": "String" } }
+  },
+  "authErrorInvalidCredential": "Invalid email or password. Please try again.",
+  "authErrorUserDisabled": "This account has been disabled.",
+  "authErrorEmailInUse": "The email address is already in use by another account.",
+  "authErrorWeakPassword": "The password provided is too weak.",
+  "authErrorInvalidEmail": "Please enter a valid email address.",
+  "authErrorNetwork": "Network request failed. Please check your internet connection.",
+  "authErrorTooManyRequests": "Too many requests. Please try again later.",
+  "authErrorNotAllowed": "This operation is not allowed.",
+  "authErrorGeneric": "An authentication error occurred.",
+
+  "noPlaceFoundMatching": "No place found matching \"{query}\"",
+  "@noPlaceFoundMatching": {
+    "placeholders": { "query": { "type": "String" } }
+  },
+  "featuredLabel": "Featured",
+  "exploreLabel": "Explore",
+  "planTripAction": "Plan Trip",
+  "findGuideAction": "Find Guide",
+  "foodAiAction": "Food AI",
+  "arPortalsAction": "AR Portals",
+  "localGemsNearby": "Local Gems Nearby",
+  "todayInSriLanka": "Today in Sri Lanka",
+  "discoverSriLanka": "Discover Sri Lanka",
+  "letOracleGuide": "Let the Oracle guide your path",
+  "searchSecretLocations": "Search secret locations...",
+  "offlineModeLabel": "OFFLINE MODE",
+  "ayubowanGreeting": "Ayubowan, {name}!",
+  "@ayubowanGreeting": {
+    "placeholders": { "name": { "type": "String" } }
+  },
+  "travelerFallback": "Traveler",
+  "exploreByCategory": "Explore by Category",
+  "categoryNatureLabel": "Nature",
+  "categoryBeachesLabel": "Beaches",
+  "categoryCultureLabel": "Culture",
+  "categoryAdventureLabel": "Adventure",
+  "exploreNavLabel": "Explore",
+  "eventsNavLabel": "Events",
+  "daysLabel": "{count} Days",
+  "@daysLabel": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+
+  "originRequiredError": "Please select or enter a starting point.",
+  "destinationRequiredError": "Please select or enter a destination.",
+  "unsupportedCityError": "\"{city}\" is not a supported Sri Lankan city. Please select from the dropdown.",
+  "@unsupportedCityError": {
+    "placeholders": { "city": { "type": "String" } }
+  },
+  "originDestinationSameError": "Starting point and destination cannot be the same.",
+  "stepProgressLabel": "Step {current} of {total}",
+  "@stepProgressLabel": {
+    "placeholders": { "current": { "type": "int" }, "total": { "type": "int" } }
+  },
+  "step1Title": "Where should we guide you?",
+  "step1Subtitle": "The Essentials",
+  "startingPointLabel": "Starting Point",
+  "startingPointHint": "Airport, Colombo...",
+  "destinationLabel": "Destination",
+  "destinationHint": "Ella, Galle, Kandy...",
+  "startDateLabel": "Start Date",
+  "step2Title": "Define the vibe of your journey.",
+  "step2Subtitle": "Budget & Style",
+  "tripLengthLabel": "Trip length",
+  "tripLengthDaysValue": "{days} days",
+  "@tripLengthDaysValue": {
+    "placeholders": { "days": { "type": "int" } }
+  },
+  "travelStandardLabel": "Travel Standard",
+  "step3Title": "With whom do you travel?",
+  "step3Subtitle": "Companions & Pace",
+  "companionsLabel": "Companions",
+  "travelPaceLabel": "Travel Pace",
+  "step4Title": "What stirs your soul?",
+  "step4Subtitle": "Interests & Passions",
+  "estimatedBudgetLabel": "Estimated budget",
+  "lkrCurrencyPrefix": "LKR ",
+  "consultTheOracleButton": "Consult the Oracle",
+  "aiTripsFeatureName": "AI Trips",
+  "bonusTripUnlockedMessage": "Bonus Trip Unlocked! Try submitting again.",
+
+  "groupTypeSolo": "Solo",
+  "groupTypeCouple": "Couple",
+  "groupTypeFamily": "Family",
+  "groupTypeFriends": "Friends",
+  "paceRelaxed": "Relaxed",
+  "paceBalanced": "Balanced",
+  "pacePacked": "Packed",
+  "styleBudget": "Budget",
+  "styleComfort": "Comfort",
+  "styleLuxury": "Luxury",
+  "interestAdventure": "Adventure",
+  "interestFood": "Food",
+  "interestWildlife": "Wildlife",
+  "interestPhotography": "Photography",
+  "interestVillageExperiences": "Village Experiences",
+
+  "oracleConnectionDisrupted": "Oracle connection disrupted: {error}",
+  "@oracleConnectionDisrupted": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "discoveryFiltersTitle": "DISCOVERY FILTERS",
+  "resetButton": "RESET",
+  "maximumRadiusKm": "MAXIMUM RADIUS: {radius} KM",
+  "@maximumRadiusKm": {
+    "placeholders": { "radius": { "type": "int" } }
+  },
+  "budgetLevelLabel": "BUDGET LEVEL",
+  "priceRangeAll": "All",
+  "priceRangeFree": "Free",
+  "priceRangeEconomy": "Economy",
+  "priceRangePremium": "Premium",
+  "heritageArSearchTitle": "HERITAGE AR SEARCH",
+  "onlyShowArEnabledSpots": "ONLY SHOW AR ENABLED SPOTS",
+  "revealDestinies": "REVEAL DESTINIES",
+  "hostedByName": "Hosted by {hostName}",
+  "@hostedByName": {
+    "placeholders": { "hostName": { "type": "String" } }
+  },
+  "priceInLkr": "LKR {price}",
+  "@priceInLkr": {
+    "placeholders": { "price": { "type": "String" } }
+  },
+  "resetAllFilters": "RESET ALL FILTERS",
+  "seeAll": "See all",
+  "arBadge": "AR",
+  "heritageArBadge": "HERITAGE AR",
+
+  "tripDurationStyleLabel": "{days}-day {style} trip",
+  "@tripDurationStyleLabel": {
+    "placeholders": { "days": { "type": "int" }, "style": { "type": "String" } }
+  },
+  "budgetTabLabel": "Budget",
+  "mapTabLabel": "Map",
+  "premiumFeatureSnackbar": "{featureName} is a Premium feature.",
+  "@premiumFeatureSnackbar": {
+    "placeholders": { "featureName": { "type": "String" } }
+  },
+  "savedPlansFeatureName": "Saved Plans",
+  "noPathFoundTitle": "No path found",
+  "noPathFoundMessage": "The Oracle could not chart a path for this destination. Try refining your budget or style preferences.",
+  "tripOverviewLabel": "Trip overview",
+  "expenseBreakdownTitle": "Expense Breakdown",
+  "openExpenseTrackerButton": "Open Expense Tracker",
+  "estimatedTotalLabel": "Estimated total",
+  "userBudgetLabel": "User budget: {amount}",
+  "@userBudgetLabel": {
+    "placeholders": { "amount": { "type": "String" } }
+  },
+  "percentUsedLabel": "{percent}% Used",
+  "@percentUsedLabel": {
+    "placeholders": { "percent": { "type": "int" } }
+  },
+  "percentOfTotalLabel": "{percent}% of total",
+  "@percentOfTotalLabel": {
+    "placeholders": { "percent": { "type": "int" } }
+  },
+  "visualTourRouteTitle": "Visual Tour Route",
+  "visualTourRouteDescription": "Plot your entire journey across the teardrop isle. View detailed route segments and travel times.",
+  "openRouteMapButton": "Open Route Map",
+  "oracleRainPlanTitle": "Oracle's Rain Plan",
+  "oracleRainPlanSubtitle": "Caught in a sudden shower? Switch to this.",
+  "oracleVaultTitle": "Oracle's Vault",
+  "oracleVaultDescription": "The rainy-day alternative is locked for free travelers.\nWatch a short video to unlock it for this trip.",
+  "unlockWithAdButton": "Unlock with ad",
+  "goPremiumAdFreeButton": "Go Premium for Ad-Free Experience",
+  "hiddenGemsLuxuryTitle": "Hidden Gems luxury",
+  "premiumCtaDescription": "Go beyond the ordinary. Unlock the Oracle's full wisdom.",
+  "premiumFeatureVoice": "Voice",
+  "premiumFeaturePdf": "PDF",
+  "premiumFeatureNoAds": "No Ads",
+  "unleashOracleButton": "Unleash the Oracle",
+  "couldNotOpenMap": "Could not open map.",
+  "viewOnMapButton": "View on Map",
+  "verificationSourcesTitle": "Verification Sources",
+  "proTipsForSriLanka": "💡 Pro Tips for Sri Lanka",
+  "oracleLocalTipTitle": "Oracle's Local Tip",
+  "budgetCategoryTransport": "Transport",
+  "budgetCategoryFood": "Food",
+  "budgetCategoryHotel": "Hotel",
+  "budgetCategoryAttractions": "Attractions",
+  "budgetCategoryOther": "Other",
+
+  "profilePhoto": "PROFILE PHOTO",
+  "localizationError": "Localization error",
+  "appearance": "Appearance",
+  "settingsSectionLabel": "Settings",
+  "profileErrorDetails": "PROFILE ERROR:\n{error}\n\n{stack}",
+  "@profileErrorDetails": {
+    "placeholders": { "error": { "type": "String" }, "stack": { "type": "String" } }
+  },
+  "premiumTraveler": "Premium Traveler",
+  "oracleTraveler": "Oracle Traveler",
+  "levelBadgeLabel": "{levelTitle} · Level {levelNumber}",
+  "@levelBadgeLabel": {
+    "placeholders": { "levelTitle": { "type": "String" }, "levelNumber": { "type": "int" } }
+  },
+  "statLabelTrips": "Trips",
+  "statLabelPlaces": "Places",
+  "statLabelLevel": "Level",
+  "oracleExplorer": "Oracle Explorer",
+  "goPremium": "Go Premium",
+  "fullArAiAccessGranted": "Full AR & AI access granted",
+  "unlockArAiFeatures": "Unlock AR & AI features",
+  "upgrade": "Upgrade",
+  "themeLight": "Light",
+  "themeDark": "Dark",
+  "journeyHub": "Journey hub",
+  "aiBudgetConcierge": "AI Budget Concierge",
+  "smartExpenseAdvisor": "Smart expense advisor",
+  "heritagePassport": "Heritage Passport",
+  "verifiableVisitCollection": "Verifiable visit collection",
+  "ethicalTravelMeter": "Ethical Travel Meter",
+  "ethicalRankScore": "Rank: {rank} • Score: {score}",
+  "@ethicalRankScore": {
+    "placeholders": { "rank": { "type": "String" }, "score": { "type": "int" } }
+  },
+  "ethicalTravelMeterDialogTitle": "ETHICAL TRAVEL METER",
+  "ethicalRankScorePoints": "Rank: {rank} • Score: {score} Pts",
+  "@ethicalRankScorePoints": {
+    "placeholders": { "rank": { "type": "String" }, "score": { "type": "int" } }
+  },
+  "ethicalScoreDescription": "Your ethical travel score measures your positive impact on local communities and heritage preservation across Sri Lanka.",
+  "howToEarnPointsHeading": "HOW TO EARN POINTS:",
+  "earnPointsReviewsTitle": "Leave Place Reviews",
+  "earnPointsReviewsAmount": "+10 Pts",
+  "earnPointsReviewsSubtitle": "Support local guides and travelers",
+  "earnPointsFoodTitle": "Sample Local Food",
+  "earnPointsFoodAmount": "+15 Pts",
+  "earnPointsFoodSubtitle": "Empower authentic local eateries",
+  "earnPointsHeritageTitle": "Visit Heritage Sites",
+  "earnPointsHeritageAmount": "+20 Pts",
+  "earnPointsHeritageSubtitle": "Promote cultural preservation",
+  "rewardsPerksHeading": "REWARDS & PERKS YOU UNLOCK:",
+  "rewardEcoGuardianBadgeTitle": "Eco Guardian Badge",
+  "rewardEcoGuardianBadgeSubtitle": "Stand out on leaderboards & reviews",
+  "rewardPartnerDiscountsTitle": "Partner Discounts",
+  "rewardPartnerDiscountsSubtitle": "5%-15% off at verified eco-stays & cafes",
+  "rewardFreePremiumPerksTitle": "Free Premium Perks",
+  "rewardFreePremiumPerksSubtitle": "Unlock AR guides & offline maps with points",
+  "rewardRealWorldImpactTitle": "Real-World Impact",
+  "rewardRealWorldImpactSubtitle": "Reach 500 Pts & we plant a tree in SL for you!",
+  "gotItKeepExploring": "GOT IT, KEEP EXPLORING",
+  "guideCommandHub": "GUIDE COMMAND HUB",
+  "guideCommandHubSubtitle": "Quick access to your guide tools",
+  "activeStatusBadge": "ACTIVE",
+  "tourDashboard": "Tour Dashboard",
+  "tourDashboardSubtitle": "Active tour, QR, listing & safety",
+  "earnings": "Earnings",
+  "earningsSubtitle": "Payouts & stats",
+  "clients": "Clients",
+  "clientsSubtitle": "History & notes",
+  "bookings": "Bookings",
+  "tourRequests": "Tour requests",
+  "unreadRequestsCount": "{count, plural, one{{count} new request} other{{count} new requests}}",
+  "@unreadRequestsCount": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "packages": "Packages",
+  "customTourPricingSubtitle": "Custom tour pricing",
+  "upgradeToPro": "Upgrade to Pro",
+  "manageTeam": "Manage team",
+  "manageTeamSubtitle": "Team, roles & branding",
+  "becomeAGuide": "Become a Guide",
+  "myBookings": "My Bookings",
+  "familySharing": "Family Sharing",
+  "scanGuideQr": "Scan Guide QR",
+  "oracleLens": "Oracle Lens",
+  "appLockBiometrics": "App Lock (Biometrics)",
+  "bilingualToggle": "Bilingual (EN/SI)",
+  "emergencyProtocol": "Emergency Protocol",
+  "rateTheApp": "Rate the App",
+  "support": "Support",
+  "signOut": "Sign Out",
+  "deleteAccountDialogTitle": "DELETE ACCOUNT",
+  "deleteButtonLabel": "DELETE",
+  "genericErrorWithDetails": "Error: {error}",
+  "@genericErrorWithDetails": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "signOutDialogTitle": "SIGN OUT",
+  "confirmSignOutMessage": "Are you sure you want to sign out?",
+  "shareAppMessage": "Join Hidden Gems SL! 🌍 https://hiddengems.lk",
+  "shareAppSubject": "Join me on Hidden Gems SL!",
+  "somethingWentWrong": "Something went wrong. Please restart the app.",
+
+  "cameraPermissionRequiredTitle": "Camera Permission Required",
+  "cameraPermissionRequiredMessage": "Please enable camera access in app settings to use the scanner.",
+  "openSettings": "Open Settings",
+  "liveScanningComingSoonMessage": "Live scanning is coming soon.\n\nReal-time landmark and object recognition through your camera is on the way. We'll let you know the moment it's ready.",
+  "landmarkScannerTitle": "Landmark scanner",
+  "identifyingLabel": "Identifying…",
+  "analyzeLandmarkButton": "Analyze landmark",
+  "unlockLandmarkScanningTitle": "Unlock landmark scanning",
+  "unlockLandmarkScanningSubtitle": "Point your camera at any site to reveal its hidden history.",
+  "upgradeToPremiumButton": "Upgrade to premium",
+  "oracleVerifiedLabel": "Oracle verified",
+
+  "mapLoadErrorMessage": "Failed to load map data: {error}",
+  "@mapLoadErrorMessage": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "guideLiveMarkerLabel": "YOUR GUIDE (LIVE)",
+  "vehicleMarkerLabel": "YOUR VEHICLE",
+  "meetingPointMarkerLabel": "MEETING POINT: {pointName}",
+  "@meetingPointMarkerLabel": {
+    "placeholders": { "pointName": { "type": "String" } }
+  },
+  "sosEmergencySignalTitle": "EMERGENCY SIGNAL",
+  "sosGuideTriggeredMessage": "YOUR GUIDE HAS TRIGGERED AN SOS",
+  "sosSafetyProtocolsTitle": "SAFETY PROTOCOLS",
+  "sosProtocolStayInLocation": "1. Stay in your current location.",
+  "sosProtocolOpenLiveMap": "2. Open your live map to track the guide.",
+  "sosProtocolWaitForHelp": "3. Wait for emergency services or guide signal.",
+  "sosAcknowledgeButton": "ACKNOWLEDGE",
+  "distanceAwayLabel": "{distance} km away",
+  "@distanceAwayLabel": {
+    "placeholders": { "distance": { "type": "String" } }
+  },
+
+  "offlineRouteMapSavedSuccess": "Offline route map saved successfully!",
+  "cannotSaveMapSaveTripFirst": "Cannot save map. Please save the trip plan first!",
+  "saveTripAction": "SAVE TRIP",
+  "failedToSaveMapError": "Failed to save map: {error}",
+  "@failedToSaveMapError": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "mapMarkerDaySnippet": "Day {day} • {time}",
+  "@mapMarkerDaySnippet": {
+    "placeholders": { "day": { "type": "int" }, "time": { "type": "String" } }
+  },
+  "visualRouteTitle": "Visual Route",
+  "journeyVisualizerTitle": "Journey Visualizer",
+  "journeyVisualizerSubtitle": "{dayCount} Days across {destination}",
+  "@journeyVisualizerSubtitle": {
+    "placeholders": { "dayCount": { "type": "int" }, "destination": { "type": "String" } }
+  },
+  "saveOfflineMapTooltip": "Save Offline Map",
+  "focusButtonLabel": "FOCUS",
+
+  "planRemovedSnackbar": "Plan removed from Oracle cache",
+  "viewInArLabel": "View in AR",
+  "savedTripsTitle": "Saved trips",
+  "clearSavedTripsTitle": "Clear saved trips",
+  "clearSavedTripsMessage": "This will permanently remove all saved trips from this device.",
+  "eraseAllButton": "Erase all",
+  "noSavedTripsTitle": "No saved trips yet",
+  "noSavedTripsSubtitle": "Plan a trip to see it saved here.",
+  "unknownDateLabel": "Unknown date",
+  "noArSpotsSnackbar": "No AR spots in this plan",
+  "tripRouteLabel": "{fromCity} → {destinationCity}",
+  "@tripRouteLabel": {
+    "placeholders": { "fromCity": { "type": "String" }, "destinationCity": { "type": "String" } }
+  },
+  "tripDaysChip": "{days, plural, one{1 day} other{{days} days}}",
+  "@tripDaysChip": {
+    "placeholders": { "days": { "type": "int" } }
+  },
+  "tripBudgetChip": "Rs {amount}",
+  "@tripBudgetChip": {
+    "placeholders": { "amount": { "type": "String" } }
+  },
+  "arBadgeLabel": "AR",
+  "savedTimeAgoLabel": "Saved {timeAgo}",
+  "@savedTimeAgoLabel": {
+    "placeholders": { "timeAgo": { "type": "String" } }
+  },
+  "minutesAgoShort": "{minutes}m ago",
+  "@minutesAgoShort": {
+    "placeholders": { "minutes": { "type": "int" } }
+  },
+  "hoursAgoShort": "{hours}h ago",
+  "@hoursAgoShort": {
+    "placeholders": { "hours": { "type": "int" } }
+  },
+  "daysAgoShort": "{days}d ago",
+  "@daysAgoShort": {
+    "placeholders": { "days": { "type": "int" } }
+  },
+  "weeksAgoShort": "{weeks}w ago",
+  "@weeksAgoShort": {
+    "placeholders": { "weeks": { "type": "int" } }
+  },
+
+  "loadingConsultingBrain": "Consulting HiddenGems.lk Brain...",
+  "loadingTipTrainSchedules": "Analyzing Sri Lanka train schedules...",
+  "loadingTipWeatherPatterns": "Checking seasonal weather patterns...",
+  "loadingTipClusteringGems": "Clustering the best hidden gems nearby...",
+  "loadingTipBudgetBuffer": "Calculating budget with 10% safety buffer...",
+  "loadingTipCraftingPlan": "Crafting your personalised day plan...",
+  "loadingTipRainDayPlanB": "Adding rain-day alternatives (Plan B)...",
+  "loadingTipFinalisingExperts": "Finalising tips from local experts...",
+  "loadingOfflineRecoveryTitle": "OFFLINE RECOVERY",
+  "loadingManifestingTitle": "MANIFESTING",
+  "loadingOfflineSubtitle": "Synthesizing Local Memories…",
+  "loadingErrorTitle": "THE CONNECTION FADED",
+  "loadingRetryStatus": "Re-Consulting Oracle...",
+  "loadingErrorRetryButton": "TRY AGAIN",
+  "loadingErrorRefineButton": "REFINE REQUEST",
+
+  "fieldNotesTitle": "Field Notes",
+  "heritageSiteLocked": "Heritage Site Locked",
+  "lockOverlayDescription": "This Oracle Vision is reserved for Premium Explorers. Watch a short Ad to unlock this place for today.",
+  "watchAdToUnlock": "WATCH AD TO UNLOCK",
+  "goBack": "Go Back",
+  "etiquetteTipReusableBottle": "Carry a reusable water bottle",
+  "etiquetteTipAvoidPlastic": "Avoid plastic single-use bags",
+  "etiquetteTipRespectWildlife": "Respect local wildlife and plants",
+  "etiquetteTipRemoveShoes": "Remove shoes and hats before entering",
+  "etiquetteTipDressModestly": "Dress modestly (cover shoulders and knees)",
+  "etiquetteTipAskPhotoPermission": "Ask permission before taking photos of people",
+  "etiquetteTipNoBackToStatues": "Do not pose for photos with your back to statues",
+  "etiquetteTipStayOnTrails": "Stay on marked trails to protect flora",
+  "etiquetteTipPackOutTrash": "Pack out all your trash (Leave no trace)",
+  "etiquetteTipNoFeedingAnimals": "Do not feed or disturb wild animals",
+  "etiquetteTipNoSoapInPools": "Avoid using soap/shampoo in natural pools",
+  "arTierHeritageShort": "Heritage",
+  "arTierExploreShort": "Explore",
+  "arTierStoryShort": "Story",
+  "notAvailableShort": "N/A",
+  "arBadgeHeritage": "HERITAGE AR",
+  "arBadgeExplore": "EXPLORE AR",
+  "arBadgeStory": "STORY VIEW",
+  "noRiskTagsFound": "No manifestations detected.",
+  "noFacilitiesFound": "Minimal provisions found.",
+  "fieldNoteMobileSignal": "Mobile Signal",
+  "fieldNoteRoadCondition": "Road Condition",
+  "fieldNoteActivities": "Activities",
+  "fieldNotePopularity": "Popularity",
+  "fieldNoteFamilyFriendly": "Family Friendly",
+  "fieldNoteBudget": "Budget",
+  "fieldNoteToilets": "Toilets",
+  "fieldNoteFoodNearby": "Food Nearby",
+  "fieldNoteWheelchairAccess": "Wheelchair Access",
+  "fieldNoteCamping": "Camping",
+  "fieldNoteSafetyLevel": "Safety Level",
+  "fieldNoteWildlifeHazard": "Wildlife Hazard",
+  "fieldNoteGuideRequired": "Guide Required",
+  "fieldNoteRainSensitivity": "Rain Sensitivity",
+  "fieldNoteMonsoonNote": "Monsoon Note",
+  "fieldNoteSurfing": "Surfing",
+  "fieldNoteHeight": "Height",
+  "fieldNoteLength": "Length",
+  "bookmarkAddedSnackbar": "✨ Marked in your journey!",
+  "bookmarkRemovedSnackbar": "Removed from bookmarks.",
+  "itineraryAddedSnackbar": "🗺️ {placeName} added to your destiny!",
+  "@itineraryAddedSnackbar": {
+    "placeholders": { "placeName": { "type": "String" } }
+  },
+  "itineraryRemovedSnackbar": "Removed from itinerary.",
+  "featureNameHeritageSessions": "Heritage Sessions",
+  "bonusSessionUnlockedSnackbar": "Bonus Session Unlocked! Try launching again.",
+  "oracleRewardActiveSnackbar": "✨ Oracle reward active! AR session unlocked.",
+  "okButton": "OK",
+  "arBrandNameHeritage": "Heritage AR",
+  "arBrandNameExplore": "Explore AR",
+  "bonusDownloadUnlockedSnackbar": "Bonus Download Unlocked! Try downloading again.",
+  "featureNameOfflineDownloads": "Offline Downloads",
+
+  "myBookingsTitle": "My bookings",
+  "myBookingsEmptyTitle": "No bookings yet",
+  "myBookingsEmptySubtitle": "Requests you send to guides will show up here with their status.",
+  "guideFallbackName": "Guide",
+  "guestCountLabel": "{count, plural, one{1 guest} other{{count} guests}}",
+  "@guestCountLabel": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "paymentPaidLabel": "Paid",
+  "payGuideDirectlyLabel": "Pay guide directly",
+  "bookingStatusPendingLabel": "Awaiting response",
+  "bookingStatusAcceptedLabel": "Accepted",
+  "bookingStatusSessionReadyLabel": "Ready",
+  "bookingStatusDeclinedLabel": "Declined",
+  "bookingStatusExpiredLabel": "Expired",
+  "bookingStatusCancelledLabel": "Cancelled",
+  "bookingStatusCompletedLabel": "Completed",
+  "bookingStatusDefaultLabel": "Pending",
+
+  "requestBookingTitle": "Request booking",
+  "dateLabel": "Date",
+  "guestsLabel": "Guests",
+  "specialInstructionsLabel": "Special instructions",
+  "numberOfGuestsLabel": "Number of guests",
+  "notesFieldHint": "E.g. We are traveling with seniors, need a low-walking route...",
+  "sendRequestButton": "Send request",
+  "userNotAuthenticatedError": "User not authenticated",
+  "guideQuotaExceededError": "This guide has reached their maximum booking quota for the month. Please try again next month or select another guide.",
+  "requestSentTitle": "Request sent",
+  "requestSentMessage": "Your booking request has been sent to the guide. You'll get a notification once they respond.",
+  "closeButton": "Close",
+
+  "noBookingsToSyncMessage": "No accepted bookings to sync yet.",
+  "calendarEventTitle": "Tour: {touristName} ({guestCount} guests)",
+  "@calendarEventTitle": {
+    "placeholders": { "touristName": { "type": "String" }, "guestCount": { "type": "int" } }
+  },
+  "defaultTouristName": "Traveler",
+  "calendarSyncSuccessMessage": "{count, plural, one{Synced 1 booking to your calendar.} other{Synced {count} bookings to your calendar.}}",
+  "@calendarSyncSuccessMessage": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "calendarSyncFailedMessage": "Calendar sync failed: {error}",
+  "@calendarSyncFailedMessage": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "loginRequiredMessage": "Please log in to view booking requests.",
+  "bookingsScreenTitle": "Bookings",
+  "syncToCalendarTooltip": "Sync to calendar",
+  "inboxLoadErrorMessage": "Error loading inbox: {error}",
+  "@inboxLoadErrorMessage": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "filterReadyForTour": "Ready for tour",
+  "emptyBookingsMessage": "No {filter} booking requests.",
+  "@emptyBookingsMessage": {
+    "placeholders": { "filter": { "type": "String" } }
+  },
+  "touristIdLabel": "Tourist #{touristId}",
+  "@touristIdLabel": {
+    "placeholders": { "touristId": { "type": "String" } }
+  },
+  "requestedAtLabel": "Requested {time}",
+  "@requestedAtLabel": {
+    "placeholders": { "time": { "type": "String" } }
+  },
+  "priorityBadgeLabel": "PRIORITY",
+  "tourDateLabel": "Tour Date",
+  "guestsCountValue": "{count, plural, one{1 Person} other{{count} Person(s)}}",
+  "@guestsCountValue": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "quotedPriceLabel": "Quoted Price",
+  "netPayoutLabel": "Your Net Payout",
+  "notAvailableAbbrev": "N/A",
+  "tourNotesLabel": "Tour notes / requirements",
+  "responseNoteLabel": "Your response note: {note}",
+  "@responseNoteLabel": {
+    "placeholders": { "note": { "type": "String" } }
+  },
+  "declineButtonLabel": "Decline",
+  "acceptButtonLabel": "Accept",
+  "startTourSessionButtonLabel": "Start / launch tour session",
+  "bookingAcceptedMessage": "🎉 Booking accepted & Tour Session created!",
+  "acceptBookingErrorMessage": "Error accepting booking: {error}",
+  "@acceptBookingErrorMessage": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "declineBookingDialogTitle": "Decline Booking?",
+  "declineReasonPrompt": "Please provide a reason for declining (optional):",
+  "declineReasonHint": "e.g. Fully booked on this date / Vehicle maintenance",
+  "declineConfirmButtonLabel": "DECLINE",
+  "bookingDeclinedMessage": "Booking declined.",
+  "declineBookingErrorMessage": "Error declining booking: {error}",
+  "@declineBookingErrorMessage": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "meetingPointPendingLabel": "To be confirmed in chat",
+  "bookingAcceptedResponseNote": "Booking Accepted! Session ready.",
+  "bookingDeclinedDefaultNote": "Declined by guide.",
+  "statusLabelCancelledByTourist": "Cancelled by tourist",
+  "statusLabelCancelledByGuide": "Cancelled by guide",
+
+  "reviewSubmitSuccessMessage": "Transmission Complete. Thank you for your feedback.",
+  "reviewSubmitErrorMessage": "Transmission Error: {error}",
+  "@reviewSubmitErrorMessage": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "overallExperienceLabel": "OVERALL EXPERIENCE",
+  "missionFeedbackEyebrow": "MISSION FEEDBACK",
+  "rateGuidePerformanceTitle": "Rate your guide's performance.",
+  "trustScoreDisclaimer": "Your data is used to calculate the guide's Trust Score. Be objective and fair.",
+  "ratingScaleAverageLabel": "AVERAGE",
+  "ratingScaleExceptionalLabel": "EXCEPTIONAL",
+  "knowledgeFactorLabel": "KNOWLEDGE",
+  "communicationFactorLabel": "COMMUNICATION",
+  "punctualityFactorLabel": "PUNCTUALITY",
+  "safetyFactorLabel": "SAFETY",
+  "fieldNotesLabelUppercase": "FIELD NOTES",
+  "commentFieldHint": "What impressed you? Where could they improve?",
+  "transmitFeedbackButton": "TRANSMIT FEEDBACK",
+
+  "familyShareLinkLimitReached": "⚠️ You've reached the limit of {maxLinks} active share links. Remove one to create another.",
+  "@familyShareLinkLimitReached": {
+    "placeholders": { "maxLinks": { "type": "int" } }
+  },
+  "familyShareRecipientNameRequired": "⚠️ Please enter a recipient name.",
+  "familyShareNoActiveSessionError": "⚠️ Start an active tour session first — there's nothing to share yet.",
+  "familyShareLinkGeneratedSuccess": "✅ Mission link generated for \"{name}\"!",
+  "@familyShareLinkGeneratedSuccess": {
+    "placeholders": { "name": { "type": "String" } }
+  },
+  "familyShareActiveLinksTitle": "Active links",
+  "familyShareNewLinkButton": "+ New",
+  "familyShareAppBarTitle": "Family sharing",
+  "familyShareHeroSubtitle": "Let family track your trip status securely",
+  "familyShareNoActiveSessionNotice": "No active tour right now — start or join a tour to generate a live share link.",
+  "familyShareEmptyStateMessage": "No active sharing links found",
+  "familyShareExpiredBadge": "Expired",
+  "familyShareViewedCountBadge": "Viewed {count}x",
+  "@familyShareViewedCountBadge": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "familyShareLinkNoLongerValid": "No longer valid",
+  "familyShareLinkExpiresAt": "Expires {time}",
+  "@familyShareLinkExpiresAt": {
+    "placeholders": { "time": { "type": "String" } }
+  },
+  "familyShareCopyLinkSnackbar": "📋 Invite code copied to clipboard!",
+  "familyShareRemoveLinkDialogTitle": "Remove Link?",
+  "familyShareRemoveLinkDialogBody": "This will revoke \"{recipientName}\"'s shared access.",
+  "@familyShareRemoveLinkDialogBody": {
+    "placeholders": { "recipientName": { "type": "String" } }
+  },
+  "familyShareLinkRemovedSnackbar": "Link for \"{recipientName}\" removed.",
+  "@familyShareLinkRemovedSnackbar": {
+    "placeholders": { "recipientName": { "type": "String" } }
+  },
+  "familyShareRemoveButton": "Remove",
+  "familyShareCreateSheetTitle": "Create share link",
+  "familyShareRecipientNameLabel": "Recipient name",
+  "familyShareRecipientNameHint": "E.g. Mom, Dad, Home office",
+  "familyShareExpiryLabel": "Expiry",
+  "familyShareDuration4Hours": "4 hours",
+  "familyShareDuration12Hours": "12 hours",
+  "familyShareDuration24Hours": "24 hours",
+  "familyShareToggleStatusLabel": "Share live status",
+  "familyShareToggleIdentityLabel": "Share guide identity",
+  "familyShareToggleMeetingPointLabel": "Share meeting point",
+  "familyShareToggleEmergencyLabel": "Share emergency alerts",
+  "familyShareGenerateLinkButton": "Generate link",
+
+  "categoryAll": "All",
+  "categoryChauffeur": "Chauffeur",
+  "categorySiteGuide": "Site Guide",
+  "categoryAdventure": "Adventure",
+  "categoryWildlife": "Wildlife",
+  "categoryHeritage": "Heritage",
+  "categoryPhotography": "Photography",
+  "marketplaceSearchHint": "Search by name, language, or city...",
+  "verifiedGuidesEyebrow": "Verified guides",
+  "findYourExpertTitle": "Find your expert",
+  "noVerifiedGuidesEmptyState": "No verified guides published yet.",
+  "noGuidesFoundForQuery": "No guides found matching '{query}'",
+  "@noGuidesFoundForQuery": {
+    "placeholders": { "query": { "type": "String" } }
+  },
+  "signInToBrowseGuidesError": "Sign in to browse verified guides.",
+  "genericLoadGuidesError": "Something went wrong loading guides. Please try again.",
+  "tryAgainButton": "Try again",
+  "reviewCountSuffix": " ({count})",
+  "@reviewCountSuffix": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "hourlyRateLabel": "{currency} {rate}/hr",
+  "@hourlyRateLabel": {
+    "placeholders": { "currency": { "type": "String" }, "rate": { "type": "String" } }
+  },
+
+  "zenithPresenceSyncErrorMessage": "Zenith Presence Sync Error: {error}",
+  "@zenithPresenceSyncErrorMessage": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "couldNotGetLocationMessage": "Could not get your location. Using default coordinates. ({error})",
+  "@couldNotGetLocationMessage": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "failedToUpdatePhaseMessage": "Failed to update phase: {error}",
+  "@failedToUpdatePhaseMessage": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "setMeetingPointDialogTitle": "SET MEETING POINT",
+  "meetingPointHintText": "e.g., Temple Entrance, Bus Stand",
+  "cancelButtonUppercase": "CANCEL",
+  "setHereButtonUppercase": "SET HERE",
+  "meetingPointUpdatedTitle": "Meeting point updated",
+  "meetingPointUpdatedBody": "New meeting point: {name}",
+  "@meetingPointUpdatedBody": {
+    "placeholders": { "name": { "type": "String" } }
+  },
+  "failedToSetMeetingPointMessage": "Failed to set meeting point: {error}",
+  "@failedToSetMeetingPointMessage": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "vehiclePositionMarkedMessage": "Vehicle position marked",
+  "failedToUpdateVehicleLocationMessage": "Failed to update vehicle location: {error}",
+  "@failedToUpdateVehicleLocationMessage": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "tourDashboardTitle": "Tour dashboard",
+  "bottomNavTour": "Tour",
+  "bottomNavPlan": "Plan",
+  "bottomNavReviews": "Reviews",
+  "bottomNavSafety": "Safety",
+  "bottomNavListing": "Listing",
+  "noActiveTourTitle": "No active tour",
+  "noActiveTourSubtitle": "Start a new tour and generate a QR for your travelers to connect.",
+  "addVehicleFirstMessage": "Add your vehicle in the \"My Listing\" tab first",
+  "generateTourQrButton": "Generate tour QR",
+  "sessionDataUnavailableMessage": "Session data unavailable.",
+  "upcomingTourSessionReadyTitle": "Upcoming tour session ready",
+  "upcomingTourSessionReadyMessage": "Travelers and meeting point confirmed. Tap below when you and the travelers arrive at the meeting point to officially start the timer and tracking.",
+  "startTourSessionButton": "Start tour session",
+  "tourSessionStartedMessage": "🚀 Tour Session Started!",
+  "statLabelTravelers": "Travelers",
+  "statLabelRating": "Rating",
+  "statLabelServed": "Served",
+  "updatePointButton": "Update point",
+  "setPointButton": "Set point",
+  "markVehicleButton": "Mark vehicle",
+  "joinStatusLabel": "Join status",
+  "openToScansLabel": "Open to scans",
+  "lockedLabel": "Locked",
+  "joiningPausedLabel": "Joining paused",
+  "tapToRefreshJoinCodeLabel": "Tap to refresh join code",
+  "broadcastButtonLabel": "Broadcast",
+  "sosAlertBroadcastedMessage": "SOS ALERT BROADCASTED!",
+  "connectedTravelersLabel": "Connected travelers",
+  "activeCountLabel": "{count} active",
+  "@activeCountLabel": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "waitingForScansLabel": "Waiting for scans...",
+  "phaseLabelAssembly": "ASSEMBLY",
+  "phaseLabelEnRoute": "EN ROUTE",
+  "phaseLabelAtSite": "AT SITE",
+  "phaseLabelBreak": "BREAK",
+  "phaseLabelReturning": "RETURNING",
+  "stopTourSessionButton": "Stop tour session",
+  "selectVehicleTitle": "Select vehicle",
+  "travelerTileLabel": "Traveler {shortId}",
+  "@travelerTileLabel": {
+    "placeholders": { "shortId": { "type": "String" } }
+  },
+  "weatherHazardLoggedMessage": "✅ Weather hazard logged to Safety Console!",
+  "errorLoggingIncidentMessage": "Error logging incident: {error}",
+  "@errorLoggingIncidentMessage": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "logIncidentButtonUppercase": "LOG INCIDENT",
+  "safetyConsoleButtonUppercase": "SAFETY CONSOLE",
+  "defaultMonsoonAlertTitle": "🚨 EMERGENCY MONSOON ALERT",
+  "defaultMonsoonAlertMessage": "Severe weather warning in your tour district.",
+
+  "earningsTitle": "Earnings",
+  "pleaseLogInViewEarningsMessage": "Please log in to view earnings.",
+  "errorLoadingFinancialDataMessage": "Error loading financial data: {error}",
+  "@errorLoadingFinancialDataMessage": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "totalNetEarningsLabel": "Total net earnings",
+  "netPercentageLabel": "90% net",
+  "lkrAmountLabel": "LKR {amount}",
+  "@lkrAmountLabel": {
+    "placeholders": { "amount": { "type": "String" } }
+  },
+  "subStatPending": "Pending",
+  "subStatPaidOut": "Paid out",
+  "subStatPlatformFee": "Platform fee",
+  "requestPayoutButton": "Request payout",
+  "bankButtonLabel": "Bank",
+  "clientAnalyticsTitle": "Client analytics",
+  "analyticsStatCompletedTours": "Completed tours",
+  "analyticsStatUniqueClients": "Unique clients",
+  "analyticsStatRepeatRate": "Repeat rate",
+  "avgBookingValueLabel": "Avg. booking value",
+  "clientAnalyticsLockedSubtitle": "Repeat rate, unique clients & more — Pro tier",
+  "upgradeButtonLabel": "Upgrade",
+  "filterChipAllBookings": "All Bookings",
+  "filterChipPendingPayout": "⏳ Pending Payout",
+  "filterChipPaidOut": "✅ Paid Out",
+  "filterChipDisputed": "⚠️ Disputed",
+  "payoutStatusPaid": "Paid",
+  "payoutStatusDisputed": "Disputed",
+  "payoutStatusPending": "Pending",
+  "tourBookingIdLabel": "Tour booking #{id}",
+  "@tourBookingIdLabel": {
+    "placeholders": { "id": { "type": "String" } }
+  },
+  "guestCountDateLabel": "{count} guests · {date}",
+  "@guestCountDateLabel": {
+    "placeholders": { "count": { "type": "int" }, "date": { "type": "String" } }
+  },
+  "viaPayHereDateLabel": "via PayHere · {date}",
+  "@viaPayHereDateLabel": {
+    "placeholders": { "date": { "type": "String" } }
+  },
+  "grossLkrLabel": "Gross LKR {amount}",
+  "@grossLkrLabel": {
+    "placeholders": { "amount": { "type": "String" } }
+  },
+  "noTransactionsFoundTitle": "No transactions found",
+  "noTransactionsFoundSubtitle": "When you complete tour bookings, your net payouts\nwill appear here automatically.",
+  "noPendingFundsMessage": "No pending funds available for payout withdrawal.",
+  "requestPayoutDialogTitle": "Request Payout",
+  "requestPayoutDialogMessage": "You are requesting a transfer of LKR {amount} to your registered Bank Account / Mobile Money wallet.\n\nTransfers are processed by the Oracle finance team within 24 business hours.",
+  "@requestPayoutDialogMessage": {
+    "placeholders": { "amount": { "type": "String" } }
+  },
+  "cancelButton": "Cancel",
+  "confirmPayoutButton": "Confirm payout",
+  "payoutRequestSubmittedMessage": "Payout request submitted successfully!",
+  "payoutAccountSettingsTitle": "Payout Account Settings",
+  "bankNameWalletProviderLabel": "Bank Name / Wallet Provider",
+  "accountPhoneNumberLabel": "Account / Phone Number",
+  "saveButtonLabel": "Save",
+  "payoutAccountSettingsUpdatedMessage": "Payout account settings updated!",
+
+  "availabilityScheduleTitle": "Availability & schedule",
+  "whenYoureFreeToGuideTitle": "When you're free to guide",
+  "touristsOnlySeeOpenSlotsMessage": "Tourists only see slots you mark open.",
+  "instantBookNoticeTitle": "Instant book & notice",
+  "instantBookLabel": "Instant book",
+  "instantBookSubtitle": "Let tourists book you immediately, no manual approval",
+  "advanceNoticeLabel": "Advance notice",
+  "advanceNoticeSubtitle": "Minimum lead time before a tour starts",
+  "hoursShortLabel": "{count} hrs",
+  "@hoursShortLabel": {
+    "placeholders": { "count": { "type": "String" } }
+  },
+  "weeklyScheduleTitle": "Weekly schedule",
+  "weeklyScheduleSubtitle": "Toggle the days you work and set your hours",
+  "dayOffLabel": "Off",
+  "blackoutDatesTitle": "Blackout dates",
+  "blackoutDatesCountSuffix": " ({count})",
+  "@blackoutDatesCountSuffix": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "addDateButtonLabel": "Add date",
+  "noBlackoutDatesMessage": "No blackout dates yet — you're available according to your weekly schedule.",
+  "saveAvailabilityButton": "Save availability",
+  "dayMonday": "Monday",
+  "dayTuesday": "Tuesday",
+  "dayWednesday": "Wednesday",
+  "dayThursday": "Thursday",
+  "dayFriday": "Friday",
+  "daySaturday": "Saturday",
+  "daySunday": "Sunday",
+
+  "clientsTitle": "Clients",
+  "pleaseLogInMessage": "Please log in.",
+  "noClientsYetTitle": "No clients yet",
+  "noClientsYetSubtitle": "Once travelers book your tours, they'll appear here.",
+  "travelerShortIdLabel": "Traveler {shortId}",
+  "@travelerShortIdLabel": {
+    "placeholders": { "shortId": { "type": "String" } }
+  },
+  "tourCountCompletedLabel": "{count, plural, one{1 tour} other{{count} tours}} completed · Last: {date}",
+  "@tourCountCompletedLabel": {
+    "placeholders": { "count": { "type": "int" }, "date": { "type": "String" } }
+  },
+  "clientStatTours": "Tours",
+  "clientStatTotalSpent": "Total spent",
+  "clientStatLastVisit": "Last visit",
+  "notesLabel": "Notes",
+  "clientNoteHint": "Preferences, allergies, memorable moments...",
+  "saveNoteButton": "Save note",
+  "noteSavedMessage": "Note saved",
+  "bookingHistoryTitle": "Booking history",
+  "guestCountParenthesesLabel": "{count} guest(s)",
+  "@guestCountParenthesesLabel": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+
+  "becomeAGuideTitle": "Become a guide",
+  "fieldsMissingMessage": "Fields missing: Please fill all and upload documents.",
+  "uploadingDocumentsMessage": "Uploading documents...",
+  "documentsUploadFailureMessage": "Guide documents could not be transmitted to the Oracle vault. Please verify your connection.",
+  "savingApplicationMessage": "Saving application...",
+  "synchronizingApplicationMessage": "Synchronizing application...",
+  "applicationSubmittedSuccessMessage": "Application submitted successfully!",
+  "authRequiredMessage": "Authentication required. Please login again.",
+  "cameraAccessDeniedMessage": "Camera access denied or error: {error}",
+  "@cameraAccessDeniedMessage": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "takeASelfieTitle": "Take a selfie",
+  "uploadDocumentTitle": "Upload document",
+  "cameraOptionLabel": "Camera",
+  "galleryOptionLabel": "Gallery",
+  "errorGenericMessage": "Error: {error}",
+  "@errorGenericMessage": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "verifyingYourDetailsMessage": "Verifying your details...",
+  "credentialsBeingVerifiedMessage": "Your credentials are being securely verified.",
+  "applicationSubmittedTitle": "Application submitted",
+  "applicationSubmittedMessage": "Our team will review your documents and let you know once a decision is made.",
+  "returnToProfileButton": "Return to profile",
+  "applicationUnderReviewTitle": "Application under review",
+  "applicationUnderReviewMessage": "Your guide application has been submitted and is currently being reviewed. You will be notified once a decision is made.",
+  "applicationRejectedTitle": "Application rejected",
+  "applicationRejectedMessage": "Reason: {reason}\n\nYou can re-submit your application below once you fix the required items.",
+  "@applicationRejectedMessage": {
+    "placeholders": { "reason": { "type": "String" } }
+  },
+  "defaultRejectionReason": "Documents incomplete or unclear.",
+  "guidePollRejectionReason": "Please ensure your license documents and photos are clear and valid.",
+  "approvedGuideTitle": "You are an approved guide",
+  "approvedGuideMessage": "Congratulations! Your guide identity is active. You can access the Guide Dashboard from your profile.",
+  "shareLocalKnowledgeTitle": "Share your local knowledge",
+  "guideTravelersEarnSubtitle": "Guide travelers and earn on your own schedule.",
+  "guideCategoryLabel": "Guide category",
+  "categoryNational": "National",
+  "categoryProvincial": "Provincial",
+  "categorySite": "Site",
+  "licenseNumberLabel": "License number",
+  "licenseNumberHint": "SLTDA-XXXX-XXXX",
+  "shortBioLabel": "Short bio",
+  "shortBioHint": "Tell us about your experience...",
+  "verificationDocumentsTitle": "Verification documents",
+  "guideLicenseLabel": "Guide license",
+  "nicPassportLabel": "NIC / passport",
+  "selfieForIdentityLabel": "Selfie for identity",
+  "submitApplicationButton": "Submit application",
+
+  "tourPackagesTitle": "Tour packages",
+  "noPackagesYetTitle": "No packages yet",
+  "noPackagesYetSubtitle": "Offer half-day, full-day, or multi-day tour packages with fixed pricing.",
+  "inactiveLabel": "Inactive",
+  "durationGuestsLabel": "{hours}h · up to {guests} guests",
+  "@durationGuestsLabel": {
+    "placeholders": { "hours": { "type": "String" }, "guests": { "type": "String" } }
+  },
+  "currencyPriceLabel": "{currency} {price}",
+  "@currencyPriceLabel": {
+    "placeholders": { "currency": { "type": "String" }, "price": { "type": "String" } }
+  },
+  "newPackageTitle": "New package",
+  "editPackageTitle": "Edit package",
+  "failedToSavePackageMessage": "Failed to save package: {error}",
+  "@failedToSavePackageMessage": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "packageTitleLabel": "Package title",
+  "packageTitleHint": "e.g. Full-day Sigiriya & Dambulla",
+  "requiredFieldMessage": "Required",
+  "descriptionLabel": "Description",
+  "packageDescriptionHint": "What does this package include?",
+  "durationHoursLabel": "Duration (hours)",
+  "maxGuestsLabel": "Max guests",
+  "priceLabel": "Price",
+  "currencyLabel": "Currency",
+  "inclusionsLabel": "Inclusions (comma separated)",
+  "inclusionsHint": "Lunch, entrance fees, water",
+  "includesVehicleLabel": "Includes vehicle",
+  "activeBookableLabel": "Active (bookable by tourists)",
+  "savePackageButton": "Save package",
+  "availabilityScheduleUpdatedMessage": "Availability & schedule updated",
+  "errorSavingAvailabilityMessage": "Error saving availability: {error}",
+  "@errorSavingAvailabilityMessage": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+
+  "broadcastSentSuccessMessage": "Broadcast sent successfully",
+  "broadcastTitle": "Broadcast",
+  "activeBroadcastsTitle": "Active broadcasts",
+  "messageToTravelersLabel": "Message to travelers",
+  "messageToTravelersHint": "Enter your message to travelers...",
+  "sendToAllTravelersButton": "Send to all travelers",
+  "priorityLabel": "Priority",
+  "noActiveBroadcastsMessage": "No active broadcasts",
+  "acksCountLabel": "{count} acks",
+  "@acksCountLabel": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "expireButtonLabel": "Expire",
+  "broadcastTypeGeneral": "General",
+  "broadcastTypeWeather": "Weather",
+  "broadcastTypeMeetingPoint": "Meeting point",
+  "broadcastTypeDelay": "Delay",
+  "broadcastTypeEmergency": "Emergency",
+  "broadcastPriorityLow": "Low",
+  "broadcastPriorityNormal": "Normal",
+  "broadcastPriorityHigh": "High",
+  "broadcastPriorityCritical": "Critical",
+
+  "writeReviewButton": "WRITE REVIEW",
+  "reviewsTitle": "Reviews",
+  "failedToLoadReviewsMessage": "Failed to load reviews. Please try again.",
+  "premiumAnalyticsLockedTitle": "PREMIUM ANALYTICS LOCKED",
+  "premiumAnalyticsLockedMessage": "Upgrade to PRO or ELITE to unlock deep insights into your performance, trust score, and tourist feedback.",
+  "upgradeNowButton": "UPGRADE NOW",
+  "trustScoreLabel": "Trust score",
+  "tierBronze": "Bronze tier",
+  "tierDiamond": "Diamond tier",
+  "tierGold": "Gold tier",
+  "tierSilver": "Silver tier",
+  "miniStatTrips": "Trips",
+  "miniStatRating": "Rating",
+  "miniStatIncidents": "Incidents",
+  "verifiedTripBadge": "Verified trip",
+  "touristShortIdLabel": "Tourist {shortId}",
+  "@touristShortIdLabel": {
+    "placeholders": { "shortId": { "type": "String" } }
+  },
+  "noReviewsYetTitle": "No reviews yet",
+  "noReviewsYetSubtitle": "Verified participants can leave feedback after session completion.",
+
+  "guideProfileNotFoundMessage": "Guide profile not found",
+  "aboutSectionTitle": "About",
+  "noBioProvidedMessage": "No bio provided.",
+  "vehicleSectionTitle": "Vehicle",
+  "vehicleDetailsNotProvidedMessage": "Vehicle details not provided",
+  "vehicleProvidedByGuideMessage": "Provided by the guide for tours",
+  "packagesSectionTitle": "Packages",
+  "tapPackageToBookMessage": "Tap a package to book it directly",
+  "standardPackageLabel": "Standard package",
+  "durationHoursShortLabel": "{hours}h",
+  "@durationHoursShortLabel": {
+    "placeholders": { "hours": { "type": "String" } }
+  },
+  "guestsCountShortLabel": "{count} guests",
+  "@guestsCountShortLabel": {
+    "placeholders": { "count": { "type": "String" } }
+  },
+  "totalLabel": "Total",
+  "requestThisGuideButton": "Request this guide",
+  "experienceStatLabel": "Experience",
+  "yearsExperienceLabel": "{years} years",
+  "@yearsExperienceLabel": {
+    "placeholders": { "years": { "type": "String" } }
+  },
+  "ratingStatLabel": "Rating",
+  "rankStatLabel": "Rank",
+  "licensedGuideLabel": "Licensed guide • {licenseNumber}",
+  "@licensedGuideLabel": {
+    "placeholders": { "licenseNumber": { "type": "String" } }
+  },
+  "platformVerifiedInsuredLabel": "Platform verified & insured",
+
+  "yourListingTitle": "Your listing",
+  "basicInformationTitle": "Basic information",
+  "displayNameLabel": "Display Name",
+  "displayNameHint": "e.g. Kasun Perera",
+  "aboutMeBioLabel": "About Me (Bio)",
+  "aboutMeBioHint": "Tell tourists about your passion, experience, and favorite spots...",
+  "categorySpecialtiesTitle": "Category & specialties",
+  "primaryCategoryLabel": "Primary Category",
+  "languagesCommaLabel": "Languages (comma separated)",
+  "languagesCommaHint": "e.g. English, Sinhala, German",
+  "specializationsCommaLabel": "Specializations (comma separated)",
+  "specializationsCommaHint": "e.g. Heritage, Wildlife, Photography",
+  "serviceRegionsLabel": "Service Regions (comma separated)",
+  "serviceRegionsHint": "e.g. Central, Southern, Western",
+  "pricingVehicleTitle": "Pricing & vehicle",
+  "hourlyRateFieldLabel": "Hourly Rate",
+  "hourlyRateHint": "e.g. 25",
+  "vehicleAvailableForToursLabel": "Vehicle available for tours",
+  "provideTransportationLabel": "Do you provide transportation?",
+  "vehicleTypeModelLabel": "Vehicle Type & Model",
+  "vehicleTypeModelHint": "e.g. Toyota Prius Hybrid / Luxury Van",
+  "coverPhotosCountTitle": "Cover photos ({count})",
+  "@coverPhotosCountTitle": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "availabilityCalendarTitle": "Availability calendar",
+  "visibilityBoostTitle": "Visibility boost",
+  "saveDraftButton": "Save draft",
+  "publishListingButton": "Publish listing",
+  "uploadingPhotoMessage": "Uploading photo...",
+  "photoUploadedSuccessMessage": "Photo uploaded successfully!",
+  "failedToUploadPhotoMessage": "Failed to upload photo.",
+  "uploadingVehiclePhotoMessage": "Uploading vehicle photo...",
+  "vehiclePhotoUploadedMessage": "Vehicle photo uploaded!",
+  "listingPublishedMessage": "🎉 Listing Published to Marketplace!",
+  "draftSavedMessage": "💾 Draft Saved Successfully",
+  "failedToSaveListingMessage": "Failed to save listing: {error}",
+  "@failedToSaveListingMessage": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "addPhotoLabel": "Add photo",
+  "verifiedLicenseLabel": "Verified license",
+  "addVehiclePhotoLabel": "Add vehicle photo",
+  "manageAvailabilityTitle": "Manage Availability",
+  "manageAvailabilitySubtitle": "Set blackout dates & recurring working hours",
+  "featureThisListingLabel": "Feature this listing",
+  "currentlyFeaturedMessage": "Currently featured in the marketplace",
+  "featureRequestedMessage": "Requested — an admin will review and enable this shortly",
+  "featureRequestPromptMessage": "Request to be featured in the marketplace (subject to admin review)",
+  "upgradeToProFeatureMessage": "Upgrade to Pro to boost your visibility in the marketplace",
+
+  "safetyConsoleTitle": "Safety console",
+  "offlineErrorMessage": "Offline Error: {error}",
+  "@offlineErrorMessage": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "secureOperationsTitle": "Secure operations",
+  "allIncidentsLoggedMessage": "All incidents logged with audit trail",
+  "filterActive": "Active",
+  "filterResolved": "Resolved",
+  "filterMyReports": "My Reports",
+  "priorityBadgeText": "PRIORITY",
+  "updatesCountLabel": "{count} updates",
+  "@updatesCountLabel": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "noCriticalIncidentsTitle": "No critical incidents",
+  "sessionWithinSafetyParamsMessage": "Session operations are within safety parameters.",
+  "reportIncidentButton": "Report incident",
+  "fileAnIncidentTitle": "File an incident",
+  "incidentAuditTrailMessage": "Provide accurate details, this is logged with an audit trail.",
+  "incidentTitleHint": "Incident title",
+  "descriptionOfEventHint": "Description of event",
+  "transmitReportButton": "Transmit report",
+  "incidentStatusOpen": "Open",
+  "incidentStatusInvestigating": "Investigating",
+  "incidentStatusResolved": "Resolved",
+  "incidentStatusClosed": "Closed",
+
+  "manageTeamTitle": "Manage team",
+  "signInToManageTeamMessage": "Sign in to manage your team.",
+  "guideAddedToTeamMessage": "Guide added to your team",
+  "failedToInviteGuideMessage": "Failed to invite guide: {error}",
+  "@failedToInviteGuideMessage": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "failedToRemoveGuideMessage": "Failed to remove guide: {error}",
+  "@failedToRemoveGuideMessage": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "failedToUploadLogoMessage": "Failed to upload logo: {error}",
+  "@failedToUploadLogoMessage": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "tabOverview": "Overview",
+  "tabTeam": "Team",
+  "tabBranding": "Branding",
+  "eliteOperatorAccountLabel": "Elite operator account",
+  "overviewStatTeamSize": "Team size",
+  "overviewStatMissions": "Missions",
+  "overviewStatAvgRating": "Avg. rating",
+  "guideUserIdToInviteHint": "Guide user ID to invite",
+  "teamMembersCountTitle": "Team members ({count})",
+  "@teamMembersCountTitle": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "roleMember": "member",
+  "logoLabel": "Logo",
+  "brandColorLabel": "Brand color",
+  "brandColorAppliedMessage": "Your brand color is applied across this team dashboard for your organization."
 }

@@ -91,15 +91,6 @@ class _ARContentPreviewScreenState extends State<ARContentPreviewScreen> {
     SharePlus.instance.share(ShareParams(text: shareText));
   }
 
-  void _addToItinerary() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('${_currentContent.name} added to your active itinerary!'),
-        backgroundColor: AppTheme.colors.green,
-      ),
-    );
-  }
-
   Future<void> _fetchFullContent() async {
     if (!mounted) return;
     setState(() {
@@ -390,16 +381,6 @@ class _ARContentPreviewScreenState extends State<ARContentPreviewScreen> {
                                 active: false,
                                 color: AppTheme.colors.blueAccent,
                                 onTap: _sharePortal,
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: _buildActionIconButton(
-                                icon: Icons.calendar_today_rounded,
-                                label: 'Itinerary',
-                                active: false,
-                                color: AppTheme.colors.green,
-                                onTap: _addToItinerary,
                               ),
                             ),
                           ],
