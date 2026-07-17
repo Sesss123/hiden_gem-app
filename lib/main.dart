@@ -35,7 +35,6 @@ import 'presentation/screens/booking_inbox_screen.dart';
 import 'presentation/screens/language_selection_screen.dart';
 import 'presentation/screens/terms_screen.dart';
 import 'presentation/widgets/graceful_error_widget.dart';
-import 'presentation/widgets/app_lock_wrapper.dart';
 import 'firebase_options.dart';
 import 'core/config/remote_config_service.dart';
 import 'core/providers/screenshot_provider.dart';
@@ -229,7 +228,11 @@ final appInitializationProvider = FutureProvider<AppInitState>((ref) async {
 
   UpdateType updateType = UpdateType.none;
   if (result.firebaseSuccess) {
-    await initializeOtherServices();
+    try {
+      await initializeOtherServices().timeout(const Duration(seconds: 30));
+    } catch (e) {
+      SecureLogger.warning("initializeOtherServices timed out or failed, continuing to app: $e");
+    }
     try {
       updateType = await UpdateService().checkUpdate().timeout(
         const Duration(seconds: 5),
@@ -430,18 +433,25 @@ Future<InitializationResult> performInitialization() async {
 
 
 
+// Each service init below is wrapped in its own timeout, not just a
+// try/catch — a try/catch alone doesn't help if the awaited call never
+// completes (e.g. a native permission dialog whose result never arrives,
+// or a platform channel call that hangs with no network). Since this whole
+// function runs AFTER performInitialization()'s own 20s timeout (see
+// appInitializationProvider), an unbounded hang here blocks the app from
+// ever leaving the splash screen — no error, just permanently stuck.
 Future<void> initializeOtherServices() async {
   try {
     if (!kIsWeb) {
       // Initializes ATT (iOS) and UMP (GDPR) before calling MobileAds.instance.initialize()
-      await ConsentService().init();
+      await ConsentService().init().timeout(const Duration(seconds: 10));
     }
   } catch (e) {
     SecureLogger.error("Ads Init Error: $e");
   }
 
   try {
-    await NotificationService().init();
+    await NotificationService().init().timeout(const Duration(seconds: 10));
   } catch (e) {
     SecureLogger.error("Notify Init Error: $e");
   }
@@ -451,13 +461,13 @@ Future<void> initializeOtherServices() async {
   } catch (e) {
     SecureLogger.warning("Failed to log app_opened event: $e");
   }
-  
+
   // Ads & Voice Pre-load
   MonetizationService().loadInterstitialAd();
   MonetizationService().loadRewardedAd();
-  
+
   try {
-    await VoiceService().init();
+    await VoiceService().init().timeout(const Duration(seconds: 10));
   } catch (e) {
     debugPrint("Voice Init Error: $e");
   }
@@ -467,7 +477,7 @@ Future<void> initializeOtherServices() async {
   // Without this, currentLevel.index always returns 0 (Level 1) on first open
   // because the ValueNotifiers default to 0 until syncFromCloud() runs.
   try {
-    await ExplorerProgressService().init();
+    await ExplorerProgressService().init().timeout(const Duration(seconds: 10));
   } catch (e) {
     debugPrint("ExplorerProgress Init Error: $e");
   }
@@ -597,7 +607,7 @@ class _HiddenGemsAppState extends ConsumerState<HiddenGemsApp> with WidgetsBindi
             );
           }
           if (_showMainApp) {
-            return AppLockWrapper(child: _buildHomeModule(initState.result));
+            return _buildHomeModule(initState.result);
           }
           return SplashScreen(
             onFinish: () => setState(() => _showMainApp = true),

@@ -502,6 +502,24 @@ abstract class AppLocalizations {
   /// **'ORACLE\\\'S VISION'**
   String get oracleVision;
 
+  /// No description provided for @goodToKnow.
+  ///
+  /// In en, this message translates to:
+  /// **'Good to know'**
+  String get goodToKnow;
+
+  /// No description provided for @bestAtLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Best at {time}'**
+  String bestAtLabel(String time);
+
+  /// No description provided for @arHeritageReady.
+  ///
+  /// In en, this message translates to:
+  /// **'AR Heritage ready'**
+  String get arHeritageReady;
+
   /// No description provided for @theKnowledge.
   ///
   /// In en, this message translates to:
@@ -2433,12 +2451,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Oracle Lens'**
   String get oracleLens;
-
-  /// No description provided for @appLockBiometrics.
-  ///
-  /// In en, this message translates to:
-  /// **'App Lock (Biometrics)'**
-  String get appLockBiometrics;
 
   /// No description provided for @bilingualToggle.
   ///

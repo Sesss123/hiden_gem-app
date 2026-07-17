@@ -14,6 +14,7 @@ import '../../core/services/asset_cache_service.dart';
 import 'package:hidden_gems_sl/data/repositories/discovery_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../widgets/cached_image.dart';
+import '../../core/services/media_cache_manager.dart';
 import '../../data/models/discovery_place.dart';
 import '../../data/datasources/user_preference_service.dart';
 import '../../data/datasources/portal_service.dart';
@@ -115,33 +116,27 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
                 CustomScrollView(
                   physics: const BouncingScrollPhysics(),
                   slivers: [
-                    _buildHeroImage(context),
+    _buildHeroImage(context, l10n),
                     SliverToBoxAdapter(
                       child: Padding(
-                        padding: const EdgeInsets.all(20),
+                        padding: const EdgeInsets.fromLTRB(20, 24, 20, 0),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            _buildHeaderInfo(context, l10n).animate().fadeIn(duration: 600.ms).slideX(begin: -0.1),
-                            const SizedBox(height: 24),
+                            _buildStatPillStrip(context, l10n).animate().fadeIn(duration: 600.ms),
+                            const SizedBox(height: 26),
                             _buildAIReason(context, l10n).animate().fadeIn(delay: 200.ms, duration: 600.ms).slideY(begin: 0.1),
                             const SizedBox(height: 24),
                             _buildSponsoredExperience().animate().fadeIn(delay: 300.ms, duration: 600.ms),
-                            const SizedBox(height: 24),
-                            _buildQuickStats(context, l10n).animate().fadeIn(delay: 400.ms, duration: 600.ms).scale(begin: const Offset(0.95, 0.95)),
-                            const SizedBox(height: 24),
-                            _buildDetailsSection(context, Icons.info_outline, l10n.theKnowledge, _buildDetailsChips(context, l10n)).animate().fadeIn(delay: 500.ms, duration: 600.ms),
-                            const SizedBox(height: 24),
-                            _buildDetailsSection(context, Icons.warning_amber_rounded, l10n.safetyProtocols, _buildRiskTags(context)).animate().fadeIn(delay: 600.ms, duration: 600.ms),
-                            const SizedBox(height: 24),
-                            _buildDetailsSection(context, Icons.local_cafe_outlined, l10n.provisions, _buildFacilities(context)).animate().fadeIn(delay: 700.ms, duration: 600.ms),
-                            const SizedBox(height: 24),
+                            const SizedBox(height: 28),
+                            _buildGoodToKnowCard(context, l10n).animate().fadeIn(delay: 400.ms, duration: 600.ms),
+                            const SizedBox(height: 28),
                             if (_hasFieldNotes())
-                              _buildDetailsSection(context, Icons.fact_check_outlined, l10n.fieldNotesTitle, _buildFieldNotes(context)).animate().fadeIn(delay: 750.ms, duration: 600.ms),
+                              _buildFieldNotesCard(context, l10n).animate().fadeIn(delay: 500.ms, duration: 600.ms),
                             if (_hasFieldNotes()) const SizedBox(height: 24),
-                            _buildEtiquetteSection(context, l10n).animate().fadeIn(delay: 800.ms, duration: 600.ms),
-                            const SizedBox(height: 24),
-                            _buildAncestralPortalCard(context).animate().fadeIn(delay: 900.ms, duration: 600.ms).shimmer(delay: 2.seconds, duration: 1500.ms),
+                            _buildEtiquetteSection(context, l10n).animate().fadeIn(delay: 600.ms, duration: 600.ms),
+                            const SizedBox(height: 20),
+                            _buildAncestralPortalCard(context).animate().fadeIn(delay: 700.ms, duration: 600.ms).shimmer(delay: 2.seconds, duration: 1500.ms),
                             const SizedBox(height: 100),
                           ],
                         ),
@@ -253,32 +248,32 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
       ];
     }
 
-    return OracleUI.glassContainer(
-      showGlow: true,
-      padding: EdgeInsets.all(20),
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: AppTheme.surfaceMuted(context),
+        borderRadius: BorderRadius.circular(20),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(icon, color: Theme.of(context).colorScheme.primary, size: 22),
-              SizedBox(width: 10),
-              OracleUI.neonText(
-                title, 
-                style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.primary, letterSpacing: 2),
+              Icon(icon, color: Theme.of(context).colorScheme.primary, size: 18),
+              const SizedBox(width: 10),
+              Text(
+                title,
+                style: GoogleFonts.outfit(fontSize: 12.5, fontWeight: FontWeight.w700, color: AppTheme.textPrimary(context), letterSpacing: 0.3),
               ),
             ],
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 14),
           ...tips.map((tip) => Padding(
-            padding: EdgeInsets.only(bottom: 12),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Icon(Icons.check_circle_outline, color: Theme.of(context).colorScheme.primary, size: 16),
-                SizedBox(width: 12),
-                Expanded(child: Text(tip, style: GoogleFonts.inter(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7), fontSize: 13))),
-              ],
+            padding: const EdgeInsets.only(bottom: 10),
+            child: Text(
+              "·  $tip",
+              style: GoogleFonts.inter(color: AppTheme.textPrimary(context).withValues(alpha: 0.75), fontSize: 12.5),
             ),
           )),
         ],
@@ -286,40 +281,14 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
     );
   }
 
-  Widget _buildHeroImage(BuildContext context) {
+  Widget _buildHeroImage(BuildContext context, AppLocalizations l10n) {
     return SliverAppBar(
-      expandedHeight: 320,
+      expandedHeight: 380,
       pinned: true,
       stretch: true,
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       elevation: 0,
-      leading: Padding(
-        padding: EdgeInsets.all(8.0),
-        child: CircleAvatar(
-          backgroundColor: AppTheme.colors.black.withValues(alpha: 0.3),
-          child: IconButton(
-            icon: Icon(Icons.arrow_back_ios_new, color: AppTheme.colors.white, size: 18),
-            onPressed: () => Navigator.pop(context),
-          ),
-        ),
-      ),
-      actions: [
-        IconButton(
-          icon: Icon(Icons.audiotrack_outlined, color: Theme.of(context).colorScheme.secondary),
-          onPressed: () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => AudioGuideScreen(place: widget.place)),
-          ),
-        ),
-        IconButton(
-          icon: Icon(Icons.wallet_membership_outlined, color: Theme.of(context).colorScheme.secondary),
-          onPressed: () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const HeritagePassportScreen()),
-          ),
-        ),
-        SizedBox(width: 8),
-      ],
+      automaticallyImplyLeading: false,
       flexibleSpace: FlexibleSpaceBar(
         stretchModes: const [StretchMode.zoomBackground, StretchMode.blurBackground],
         background: Stack(
@@ -330,163 +299,255 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
                   ? widget.place.imageUrl
                   : ImageUtils.getPlaceholderImage(widget.place.category, widget.place.name),
               fit: BoxFit.cover,
+              poolType: CachePoolType.full,
             ),
-            // Subdued top overlay for back button visibility
+            // Top overlay for back/action button visibility
             Container(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    AppTheme.colors.black.withValues(alpha: 0.4), 
-                    AppTheme.colors.transparent, 
+                    AppTheme.colors.black.withValues(alpha: 0.45),
+                    AppTheme.colors.transparent,
                   ],
-                  stops: [0, 0.3],
+                  stops: const [0, 0.22],
                 ),
               ),
             ),
-            // Bottom glow/fade to content
+            // Bottom fade so the overlapping title block stays legible
             Container(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    AppTheme.colors.transparent, 
-                    Theme.of(context).scaffoldBackgroundColor.withValues(alpha: 0.5),
-                    Theme.of(context).scaffoldBackgroundColor
+                    AppTheme.colors.transparent,
+                    Theme.of(context).scaffoldBackgroundColor.withValues(alpha: 0.85),
+                    Theme.of(context).scaffoldBackgroundColor,
                   ],
-                  stops: [0.6, 0.85, 1],
+                  stops: const [0.42, 0.92, 1],
                 ),
+              ),
+            ),
+            // Back button
+            Positioned(
+              top: 56,
+              left: 16,
+              child: _heroIconButton(
+                context,
+                icon: Icons.arrow_back_ios_new_rounded,
+                onTap: () => Navigator.pop(context),
+              ),
+            ),
+            // Audio guide + heritage passport actions
+            Positioned(
+              top: 56,
+              right: 16,
+              child: Row(
+                children: [
+                  _heroIconButton(
+                    context,
+                    icon: Icons.audiotrack_outlined,
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => AudioGuideScreen(place: widget.place)),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  _heroIconButton(
+                    context,
+                    icon: Icons.wallet_membership_outlined,
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const HeritagePassportScreen()),
+                    ),
+                  ),
+                ],
               ),
             ),
             if (widget.place.arSupported)
               Positioned(
-                top: 80,
-                right: 20,
+                top: 104,
+                right: 16,
                 child: _buildARTierBadge(context, widget.place.arTier),
+              )
+            else if (widget.place.category.isNotEmpty)
+              Positioned(
+                top: 104,
+                right: 16,
+                child: _buildCategoryBadge(context, l10n),
               ),
+            // Title block overlapping the hero bottom
+            Positioned(
+              left: 20,
+              right: 20,
+              bottom: 26,
+              child: _buildHeaderInfo(context, l10n),
+            ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _heroIconButton(BuildContext context, {required IconData icon, required VoidCallback onTap}) {
+    return ClipOval(
+      child: Material(
+        color: AppTheme.colors.black.withValues(alpha: 0.28),
+        child: InkWell(
+          onTap: onTap,
+          child: SizedBox(
+            width: 36,
+            height: 36,
+            child: Icon(icon, color: AppTheme.colors.white, size: 16),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCategoryBadge(BuildContext context, AppLocalizations l10n) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 7),
+      decoration: BoxDecoration(
+        color: AppTheme.colors.black.withValues(alpha: 0.32),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppTheme.colors.white.withValues(alpha: 0.2)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.account_balance_outlined, color: Colors.white, size: 13),
+          const SizedBox(width: 7),
+          Text(
+            L10nUtils.getLocalizedCategory(context, widget.place.category).toUpperCase(),
+            style: GoogleFonts.outfit(fontSize: 10, fontWeight: FontWeight.w700, color: AppTheme.colors.white, letterSpacing: 1.5),
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildARTierBadge(BuildContext context, int tier) {
     final l10n = AppLocalizations.of(context)!;
-    String icon = 'ðŸ›';
     String label = l10n.arBadgeHeritage;
-    Color color = Theme.of(context).colorScheme.secondary;
 
     if (tier == 2) {
-      icon = 'ðŸ”­';
       label = l10n.arBadgeExplore;
-      color = AppTheme.colors.primary;
     } else if (tier == 3) {
-      icon = 'ðŸ“–';
       label = l10n.arBadgeStory;
-      color = Theme.of(context).colorScheme.primary;
     }
 
-    return OracleUI.glassContainer(
-      padding: EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 7),
+      decoration: BoxDecoration(
+        color: AppTheme.colors.black.withValues(alpha: 0.32),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppTheme.colors.white.withValues(alpha: 0.2)),
+      ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(icon, style: TextStyle(fontSize: 14)),
-          SizedBox(width: 8),
-          OracleUI.neonText(
-            label,
-            style: GoogleFonts.outfit(
-              color: color,
-              fontWeight: FontWeight.bold,
-              fontSize: 11,
-              letterSpacing: 1.5,
-            ),
+          Icon(Icons.account_balance_outlined, color: AppTheme.colors.white, size: 13),
+          const SizedBox(width: 7),
+          Text(
+            label.toUpperCase(),
+            style: GoogleFonts.outfit(fontSize: 10, fontWeight: FontWeight.w700, color: AppTheme.colors.white, letterSpacing: 1.5),
           ),
         ],
       ),
     ).animate(onPlay: (c) => c.repeat()).shimmer(
-      duration: 3.seconds, 
-      color: (Theme.of(context).brightness == Brightness.dark ? AppTheme.colors.white : AppTheme.colors.black).withValues(alpha: 0.1)
+      duration: 3.seconds,
+      color: AppTheme.colors.white.withValues(alpha: 0.15),
     );
   }
-
   Widget _buildHeaderInfo(BuildContext context, AppLocalizations l10n) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                widget.place.name,
+                style: GoogleFonts.outfit(
+                  fontSize: 27,
+                  fontWeight: FontWeight.w800,
+                  color: Theme.of(context).colorScheme.onSurface,
+                  height: 1.08,
+                  letterSpacing: -0.4
+                ).copyWith(
+                  fontFamilyFallback: [GoogleFonts.abhayaLibre().fontFamily!, GoogleFonts.hindGuntur().fontFamily!],
+                ),
+              ),
+              SizedBox(height: 8),
+              Row(
                 children: [
-                  Text(
-                    widget.place.name,
-                    style: GoogleFonts.outfit(
-                      fontSize: 28,
-                      fontWeight: FontWeight.w800,
-                      color: Theme.of(context).colorScheme.onSurface,
-                      height: 1.1,
-                      letterSpacing: -0.4
-                    ).copyWith(
-                      fontFamilyFallback: [GoogleFonts.abhayaLibre().fontFamily!, GoogleFonts.hindGuntur().fontFamily!],
+                  Icon(Icons.location_on_rounded, color: Theme.of(context).colorScheme.primary, size: 13),
+                  SizedBox(width: 6),
+                  Flexible(
+                    child: Text(
+                      widget.place.distanceKm > 0
+                          ? "${widget.place.district} · ${widget.place.distanceKm.toStringAsFixed(1)} km"
+                          : widget.place.district,
+                      style: GoogleFonts.inter(fontSize: 11.5, color: AppTheme.textSecondary(context), fontWeight: FontWeight.w600),
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                  SizedBox(height: 10),
-                  Row(
-                    children: [
-                      Text(
-                        widget.place.district,
-                        style: GoogleFonts.inter(
-                          fontSize: 12,
-                          color: AppTheme.textSecondary(context),
-                          fontWeight: FontWeight.w600,
-                        )
-                      ),
-                      if (widget.place.distanceKm > 0) ...[
-                        Text(
-                          " · ${widget.place.distanceKm.toStringAsFixed(1)} km",
-                          style: GoogleFonts.inter(
-                            fontSize: 12,
-                            color: AppTheme.textSecondary(context),
-                            fontWeight: FontWeight.w600,
-                          )
-                        ),
-                      ]
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.secondary.withValues(alpha: 0.15),
-                borderRadius: BorderRadius.circular(100),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(Icons.star_rounded, color: Theme.of(context).colorScheme.secondary, size: 15),
+                  SizedBox(width: 8),
+                  Container(width: 3, height: 3, decoration: BoxDecoration(shape: BoxShape.circle, color: AppTheme.textSecondary(context))),
+                  SizedBox(width: 8),
+                  Icon(Icons.star_rounded, color: AppTheme.sigiriyaOchre(context), size: 13),
                   SizedBox(width: 4),
                   Text(
                     widget.place.rating.toString(),
-                    style: GoogleFonts.inter(
-                      fontWeight: FontWeight.w700,
-                      color: Theme.of(context).colorScheme.secondary,
-                      fontSize: 13
-                    )
+                    style: GoogleFonts.inter(fontWeight: FontWeight.w700, color: AppTheme.sigiriyaOchre(context), fontSize: 12),
                   ),
                 ],
               ),
-            ),
-          ],
+            ],
+          ),
         ),
+        SizedBox(width: 12),
+        _buildBookmarkSquare(context, l10n),
       ],
+    );
+  }
+
+  Widget _buildBookmarkSquare(BuildContext context, AppLocalizations l10n) {
+    return Container(
+      width: 42,
+      height: 42,
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppTheme.primaryBorder(context)),
+        boxShadow: AppTheme.softShadow,
+      ),
+      child: Material(
+        color: AppTheme.colors.transparent,
+        borderRadius: BorderRadius.circular(14),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: () async {
+            HapticFeedback.mediumImpact();
+            final nowBookmarked = await UserPreferenceService.toggleBookmark(widget.place.id);
+            if (!context.mounted) return;
+            setState(() => _isBookmarked = nowBookmarked);
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text(nowBookmarked ? l10n.bookmarkAddedSnackbar : l10n.bookmarkRemovedSnackbar),
+              backgroundColor: AppTheme.accentOchre(context),
+            ));
+          },
+          child: Icon(
+            _isBookmarked ? Icons.bookmark_rounded : Icons.bookmark_border_rounded,
+            color: Theme.of(context).colorScheme.primary,
+            size: 18,
+          ),
+        ),
+      ),
     );
   }
 
@@ -495,13 +556,20 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
     final currentLocale = Localizations.localeOf(context).languageCode;
     final canTranslate = currentLocale == 'si' && _translatedAiReason == null;
 
-    return Container(
-      padding: EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: AppTheme.surfaceMuted(context),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Column(
+    return IntrinsicHeight(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Container(
+            width: 3,
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.primary,
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
@@ -582,6 +650,9 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
               ),
             ],
           ],
+              ),
+            ),
+          ],
         ),
       );
     }
@@ -609,78 +680,257 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
     return _DownloadButton(place: widget.place);
   }
 
-  Widget _buildQuickStats(BuildContext context, AppLocalizations l10n) {
-    final items = <Widget>[
-      _statBox(context, l10n.moment, widget.place.bestTime),
-      _statBox(context, l10n.offering, widget.place.ticketRange),
+  Widget _buildStatPillStrip(BuildContext context, AppLocalizations l10n) {
+    final pills = <Widget>[
+      if (widget.place.bestTime.isNotEmpty)
+        _statPill(context, Icons.schedule_rounded, l10n.bestAtLabel(widget.place.bestTime)),
+      if (widget.place.ticketRange.isNotEmpty)
+        _statPill(context, Icons.confirmation_number_outlined, widget.place.ticketRange),
       if (widget.place.arSupported)
-        _statBox(
+        _statPill(
           context,
-          l10n.reality,
-          widget.place.arTier == 1 ? l10n.arTierHeritageShort : (widget.place.arTier == 2 ? l10n.arTierExploreShort : l10n.arTierStoryShort),
+          Icons.view_in_ar_outlined,
+          l10n.arHeritageReady,
+          accent: AppTheme.sigiriyaOchre(context),
         ),
     ];
 
-    final children = <Widget>[];
-    for (var i = 0; i < items.length; i++) {
-      if (i > 0) {
-        children.add(Container(width: 1, height: 32, color: AppTheme.borderColor(context)));
-      }
-      children.add(items[i]);
-    }
+    if (pills.isEmpty) return const SizedBox.shrink();
 
-    return Row(children: children);
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        children: [
+          for (var i = 0; i < pills.length; i++) ...[
+            if (i > 0) const SizedBox(width: 10),
+            pills[i],
+          ],
+        ],
+      ),
+    );
   }
 
-  Widget _statBox(BuildContext context, String title, String value) {
-    return Expanded(
-      child: Column(
+  Widget _statPill(BuildContext context, IconData icon, String label, {Color? accent}) {
+    final color = accent ?? AppTheme.textPrimary(context);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
+      decoration: BoxDecoration(
+        color: accent != null ? accent.withValues(alpha: 0.15) : AppTheme.surfaceMuted(context),
+        borderRadius: BorderRadius.circular(100),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
         children: [
+          Icon(icon, size: 14, color: color),
+          const SizedBox(width: 8),
           Text(
-            title,
-            style: GoogleFonts.inter(fontSize: 9, fontWeight: FontWeight.w700, color: AppTheme.textSecondary(context))
-          ),
-          SizedBox(height: 4),
-          Text(
-            value.isEmpty ? AppLocalizations.of(context)!.notAvailableShort : value,
-            style: GoogleFonts.outfit(fontWeight: FontWeight.w700, fontSize: 13, color: AppTheme.textPrimary(context)),
-            textAlign: TextAlign.center,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
+            label,
+            style: GoogleFonts.inter(fontSize: 11.5, fontWeight: FontWeight.w700, color: color),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildDetailsSection(BuildContext context, IconData icon, String title, Widget content) {
+  Widget _buildGoodToKnowCard(BuildContext context, AppLocalizations l10n) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          l10n.goodToKnow,
+          style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.w700, color: AppTheme.textPrimary(context)),
+        ),
+        const SizedBox(height: 14),
+        Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: AppTheme.primaryBorder(context)),
+          ),
+          child: Column(
+            children: [
+              _goodToKnowRow(context, Icons.info_outline, l10n.theKnowledge, Theme.of(context).colorScheme.primary, _buildDetailsChips(context, l10n), showDivider: true),
+              _goodToKnowRow(context, Icons.warning_amber_rounded, l10n.safetyProtocols, AppTheme.errorRed, _buildRiskTags(context), showDivider: true),
+              _goodToKnowRow(context, Icons.local_cafe_outlined, l10n.provisions, AppTheme.colors.teal.shade700, _buildFacilities(context), showDivider: false),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _goodToKnowRow(BuildContext context, IconData icon, String title, Color iconColor, Widget content, {required bool showDivider}) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: showDivider
+          ? BoxDecoration(border: Border(bottom: BorderSide(color: AppTheme.primaryBorder(context))))
+          : null,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(icon, size: 18, color: iconColor),
+              const SizedBox(width: 14),
+              Text(
+                title,
+                style: GoogleFonts.outfit(fontSize: 12.5, fontWeight: FontWeight.w700, color: AppTheme.textPrimary(context)),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Padding(
+            padding: const EdgeInsets.only(left: 32),
+            child: content,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFieldNotesCard(BuildContext context, AppLocalizations l10n) {
+    final entries = _fieldNoteEntries(context, l10n);
+    if (entries.isEmpty) return const SizedBox.shrink();
+
+    // Prose-style fields (activities, condition notes) can run to a full
+    // sentence and don't fit a fixed-aspect-ratio grid tile without
+    // overflowing — they render as their own full-width rows instead of
+    // being forced into the 2-column compact grid.
+    final compact = entries.where((e) => !e.$4).toList();
+    final prose = entries.where((e) => e.$4).toList();
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           children: [
-            Container(
-              padding: EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Icon(icon, size: 18, color: Theme.of(context).colorScheme.primary),
-            ),
-            SizedBox(width: 14),
             Text(
-              title,
-              style: GoogleFonts.outfit(
-                fontSize: 15,
-                fontWeight: FontWeight.w700,
-                color: AppTheme.textPrimary(context),
-              )
+              l10n.fieldNotesTitle,
+              style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.w700, color: AppTheme.textPrimary(context)),
+            ),
+            const SizedBox(width: 8),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+              decoration: BoxDecoration(
+                color: AppTheme.sigiriyaOchre(context).withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(100),
+              ),
+              child: Text(
+                "${entries.length}",
+                style: GoogleFonts.inter(fontSize: 10.5, fontWeight: FontWeight.w700, color: AppTheme.sigiriyaOchre(context)),
+              ),
             ),
           ],
         ),
-        SizedBox(height: 16),
-        content,
+        const SizedBox(height: 14),
+        if (compact.isNotEmpty)
+          GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: compact.length,
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              crossAxisSpacing: 12,
+              mainAxisSpacing: 12,
+              childAspectRatio: 1.55,
+            ),
+            itemBuilder: (context, i) => _fieldNoteTile(context, compact[i].$1, compact[i].$2, compact[i].$3),
+          ),
+        if (compact.isNotEmpty && prose.isNotEmpty) const SizedBox(height: 12),
+        for (var i = 0; i < prose.length; i++) ...[
+          if (i > 0) const SizedBox(height: 12),
+          _fieldNoteProseRow(context, prose[i].$1, prose[i].$2, prose[i].$3),
+        ],
       ],
+    );
+  }
+
+  List<(IconData, String, String, bool)> _fieldNoteEntries(BuildContext context, AppLocalizations l10n) {
+    final p = widget.place;
+    return <(IconData, String, String, bool)>[
+      (Icons.signal_cellular_alt_rounded, l10n.fieldNoteMobileSignal, p.mobileSignal, false),
+      (Icons.route_outlined, l10n.fieldNoteRoadCondition, p.roadCondition, false),
+      (Icons.hiking_rounded, l10n.fieldNoteActivities, p.activities, true),
+      (Icons.trending_up_rounded, l10n.fieldNotePopularity, p.touristPopularity, false),
+      (Icons.family_restroom_rounded, l10n.fieldNoteFamilyFriendly, p.familyFriendly, false),
+      (Icons.savings_outlined, l10n.fieldNoteBudget, p.budgetCategory, false),
+      (Icons.wc_rounded, l10n.fieldNoteToilets, p.toilets, false),
+      (Icons.restaurant_outlined, l10n.fieldNoteFoodNearby, p.foodNearby, false),
+      (Icons.accessible_rounded, l10n.fieldNoteWheelchairAccess, p.wheelchairAccess, false),
+      (Icons.forest_outlined, l10n.fieldNoteCamping, p.campingAllowed, false),
+      (Icons.shield_outlined, l10n.fieldNoteSafetyLevel, p.safetyLevel, false),
+      (Icons.pets_outlined, l10n.fieldNoteWildlifeHazard, p.wildlifeHazard, true),
+      (Icons.person_pin_circle_outlined, l10n.fieldNoteGuideRequired, p.guideRequired, false),
+      (Icons.water_drop_outlined, l10n.fieldNoteRainSensitivity, p.rainSensitivity, false),
+      (Icons.cloud_outlined, l10n.fieldNoteMonsoonNote, p.monsoonNote, true),
+      (Icons.surfing_outlined, l10n.fieldNoteSurfing, p.surfing, false),
+      if ((double.tryParse(p.heightM) ?? 0) > 0) (Icons.height_rounded, l10n.fieldNoteHeight, "${p.heightM} m", false),
+      if ((double.tryParse(p.lengthKm) ?? 0) > 0) (Icons.straighten_rounded, l10n.fieldNoteLength, "${p.lengthKm} km", false),
+    ].where((e) => e.$3.trim().isNotEmpty).toList();
+  }
+
+  Widget _fieldNoteProseRow(BuildContext context, IconData icon, String label, String value) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppTheme.surfaceMuted(context),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, size: 18, color: Theme.of(context).colorScheme.primary),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label.toUpperCase(),
+                  style: GoogleFonts.inter(fontSize: 9, fontWeight: FontWeight.w700, color: AppTheme.textSecondary(context), letterSpacing: 0.3),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  value,
+                  style: GoogleFonts.outfit(fontSize: 13.5, fontWeight: FontWeight.w600, color: AppTheme.textPrimary(context), height: 1.4),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _fieldNoteTile(BuildContext context, IconData icon, String label, String value) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: AppTheme.surfaceMuted(context),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(icon, size: 18, color: Theme.of(context).colorScheme.primary),
+          const SizedBox(height: 8),
+          Text(
+            label.toUpperCase(),
+            style: GoogleFonts.inter(fontSize: 9, fontWeight: FontWeight.w700, color: AppTheme.textSecondary(context), letterSpacing: 0.3),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+          const SizedBox(height: 3),
+          Text(
+            value,
+            style: GoogleFonts.outfit(fontSize: 13, fontWeight: FontWeight.w700, color: AppTheme.textPrimary(context)),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
+      ),
     );
   }
 
@@ -727,56 +977,6 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
         (double.tryParse(p.lengthKm) ?? 0) > 0;
   }
 
-  Widget _buildFieldNotes(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    final p = widget.place;
-    final entries = <MapEntry<String, String>>[
-      MapEntry(l10n.fieldNoteMobileSignal, p.mobileSignal),
-      MapEntry(l10n.fieldNoteRoadCondition, p.roadCondition),
-      MapEntry(l10n.fieldNoteActivities, p.activities),
-      MapEntry(l10n.fieldNotePopularity, p.touristPopularity),
-      MapEntry(l10n.fieldNoteFamilyFriendly, p.familyFriendly),
-      MapEntry(l10n.fieldNoteBudget, p.budgetCategory),
-      MapEntry(l10n.fieldNoteToilets, p.toilets),
-      MapEntry(l10n.fieldNoteFoodNearby, p.foodNearby),
-      MapEntry(l10n.fieldNoteWheelchairAccess, p.wheelchairAccess),
-      MapEntry(l10n.fieldNoteCamping, p.campingAllowed),
-      MapEntry(l10n.fieldNoteSafetyLevel, p.safetyLevel),
-      MapEntry(l10n.fieldNoteWildlifeHazard, p.wildlifeHazard),
-      MapEntry(l10n.fieldNoteGuideRequired, p.guideRequired),
-      MapEntry(l10n.fieldNoteRainSensitivity, p.rainSensitivity),
-      MapEntry(l10n.fieldNoteMonsoonNote, p.monsoonNote),
-      MapEntry(l10n.fieldNoteSurfing, p.surfing),
-      if ((double.tryParse(p.heightM) ?? 0) > 0) MapEntry(l10n.fieldNoteHeight, "${p.heightM} m"),
-      if ((double.tryParse(p.lengthKm) ?? 0) > 0) MapEntry(l10n.fieldNoteLength, "${p.lengthKm} km"),
-    ].where((e) => e.value.trim().isNotEmpty).toList();
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: entries.map((e) => Padding(
-        padding: const EdgeInsets.only(bottom: 12),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(
-              width: 130,
-              child: Text(
-                e.key.toUpperCase(),
-                style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.w700, color: AppTheme.textSecondary(context), letterSpacing: 0.3),
-              ),
-            ),
-            Expanded(
-              child: Text(
-                e.value,
-                style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w500, color: AppTheme.textPrimary(context)),
-              ),
-            ),
-          ],
-        ),
-      )).toList(),
-    );
-  }
-
   Widget _chip(BuildContext context, String label, Color color) {
     final isNeutral = color == Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4) ||
         color == Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.2);
@@ -800,28 +1000,24 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
   Widget _buildBottomActions(BuildContext context, WidgetRef ref, AppLocalizations l10n) {
     return Container(
       color: AppTheme.colors.transparent,
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
-      child: OracleUI.glassContainer(
-        padding: EdgeInsets.all(12),
-        showGlow: true,
-        child: Row(
-          children: [
-            Container(
-              height: 60,
-              width: 60,
-              decoration: BoxDecoration(
-                border: Border.all(color: AppTheme.primaryBorder(context)),
-                borderRadius: BorderRadius.circular(18),
-                color: AppTheme.glassBackground(context),
-              ),
-              child: IconButton(
-                icon: Icon(
-                  _isBookmarked ? Icons.bookmark_rounded : Icons.bookmark_border_rounded,
-                  color: _isBookmarked
-                      ? Theme.of(context).colorScheme.primary
-                      : Theme.of(context).colorScheme.onSurface,
-                ),
-                onPressed: () async {
+      padding: const EdgeInsets.fromLTRB(20, 14, 20, 24),
+      child: Row(
+        children: [
+          Container(
+            height: 56,
+            width: 56,
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surface,
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(color: AppTheme.primaryBorder(context)),
+              boxShadow: AppTheme.softShadow,
+            ),
+            child: Material(
+              color: AppTheme.colors.transparent,
+              borderRadius: BorderRadius.circular(18),
+              clipBehavior: Clip.antiAlias,
+              child: InkWell(
+                onTap: () async {
                   HapticFeedback.mediumImpact();
                   final nowBookmarked = await UserPreferenceService.toggleBookmark(widget.place.id);
                   if (!context.mounted) return;
@@ -833,63 +1029,69 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
                     backgroundColor: AppTheme.accentOchre(context),
                   ));
                 },
-              ),
-            ),
-            SizedBox(width: 16),
-            Expanded(
-              child: Container(
-                height: 56,
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primary,
-                  borderRadius: BorderRadius.circular(100),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.35),
-                      blurRadius: 20,
-                      offset: const Offset(0, 8),
-                    )
-                  ],
-                ),
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppTheme.colors.transparent,
-                    foregroundColor: Theme.of(context).colorScheme.onPrimary,
-                    shadowColor: AppTheme.colors.transparent,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
-                  ),
-                  onPressed: () async {
-                    HapticFeedback.mediumImpact();
-                    if (widget.place.arSupported) {
-                      _handleARLaunch(context, ref, l10n);
-                    } else {
-                      final nowAdded = await UserPreferenceService.toggleItinerary(widget.place.id);
-                      if (!context.mounted) return;
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          content: Text(nowAdded
-                              ? l10n.itineraryAddedSnackbar(widget.place.name)
-                              : l10n.itineraryRemovedSnackbar),
-                      ));
-                    }
-                  },
-                  child: FittedBox(
-                    fit: BoxFit.scaleDown,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(widget.place.arSupported ? Icons.view_in_ar : Icons.auto_fix_high, size: 20),
-                        SizedBox(width: 10),
-                        Text(
-                          widget.place.arSupported ? l10n.invokeAr : l10n.addToDestiny,
-                          style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w700),
-                        ),
-                      ],
-                    ),
-                  ),
+                child: Icon(
+                  _isBookmarked ? Icons.bookmark_rounded : Icons.bookmark_border_rounded,
+                  color: _isBookmarked
+                      ? Theme.of(context).colorScheme.primary
+                      : Theme.of(context).colorScheme.onSurface,
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Container(
+              height: 56,
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.primary,
+                borderRadius: BorderRadius.circular(100),
+                boxShadow: [
+                  BoxShadow(
+                    color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.32),
+                    blurRadius: 26,
+                    offset: const Offset(0, 12),
+                  )
+                ],
+              ),
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppTheme.colors.transparent,
+                  foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                  shadowColor: AppTheme.colors.transparent,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
+                ),
+                onPressed: () async {
+                  HapticFeedback.mediumImpact();
+                  if (widget.place.arSupported) {
+                    _handleARLaunch(context, ref, l10n);
+                  } else {
+                    final nowAdded = await UserPreferenceService.toggleItinerary(widget.place.id);
+                    if (!context.mounted) return;
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: Text(nowAdded
+                            ? l10n.itineraryAddedSnackbar(widget.place.name)
+                            : l10n.itineraryRemovedSnackbar),
+                    ));
+                  }
+                },
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(widget.place.arSupported ? Icons.view_in_ar : Icons.auto_fix_high, size: 20),
+                      const SizedBox(width: 10),
+                      Text(
+                        widget.place.arSupported ? l10n.invokeAr : l10n.addToDestiny,
+                        style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w700),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

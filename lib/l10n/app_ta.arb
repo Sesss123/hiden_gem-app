@@ -68,6 +68,16 @@
   "categoryFamily": "குடும்பம்",
   "categoryBudget": "பட்ஜெட்",
   "oracleVision": "ஆரக்கிள் பார்வை",
+  "goodToKnow": "தெரிந்து கொள்ள வேண்டியவை",
+  "bestAtLabel": "சிறந்த நேரம்: {time}",
+  "@bestAtLabel": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "arHeritageReady": "AR பாரம்பரிய அனுபவம் தயார்",
   "theKnowledge": "அறிவு",
   "safetyProtocols": "பாதுகாப்பு நெறிமுறைகள்",
   "provisions": "வசதிகள்",
@@ -476,7 +486,6 @@
   "familySharing": "குடும்பப் பகிர்வு",
   "scanGuideQr": "வழிகாட்டி QR ஐ ஸ்கேன் செய்யவும்",
   "oracleLens": "ஆரக்கிள் லென்ஸ்",
-  "appLockBiometrics": "செயலி பூட்டு (பயோமெட்ரிக்ஸ்)",
   "bilingualToggle": "இருமொழி (EN/SI)",
   "emergencyProtocol": "அவசர நெறிமுறை",
   "rateTheApp": "செயலியை மதிப்பிடுங்கள்",

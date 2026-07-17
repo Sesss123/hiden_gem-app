@@ -207,6 +207,17 @@ class AppLocalizationsJa extends AppLocalizations {
   String get oracleVision => 'オラクルのビジョン';
 
   @override
+  String get goodToKnow => '知っておくべきこと';
+
+  @override
+  String bestAtLabel(String time) {
+    return 'おすすめの時間帯: $time';
+  }
+
+  @override
+  String get arHeritageReady => 'AR遺産体験が利用可能';
+
+  @override
   String get theKnowledge => '知識';
 
   @override
@@ -1250,9 +1261,6 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get oracleLens => 'オラクルレンズ';
-
-  @override
-  String get appLockBiometrics => 'アプリロック（生体認証）';
 
   @override
   String get bilingualToggle => 'バイリンガル表示（英語/シンハラ語）';

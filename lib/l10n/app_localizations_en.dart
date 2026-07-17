@@ -209,6 +209,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get oracleVision => 'ORACLE\\\'S VISION';
 
   @override
+  String get goodToKnow => 'Good to know';
+
+  @override
+  String bestAtLabel(String time) {
+    return 'Best at $time';
+  }
+
+  @override
+  String get arHeritageReady => 'AR Heritage ready';
+
+  @override
   String get theKnowledge => 'THE KNOWLEDGE';
 
   @override
@@ -1274,9 +1285,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get oracleLens => 'Oracle Lens';
-
-  @override
-  String get appLockBiometrics => 'App Lock (Biometrics)';
 
   @override
   String get bilingualToggle => 'Bilingual (EN/SI)';

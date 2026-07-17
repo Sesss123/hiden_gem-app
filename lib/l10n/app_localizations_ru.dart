@@ -209,6 +209,17 @@ class AppLocalizationsRu extends AppLocalizations {
   String get oracleVision => 'ВИДЕНИЕ ОРАКУЛА';
 
   @override
+  String get goodToKnow => 'Полезно знать';
+
+  @override
+  String bestAtLabel(String time) {
+    return 'Лучше всего в $time';
+  }
+
+  @override
+  String get arHeritageReady => 'AR-наследие готово';
+
+  @override
   String get theKnowledge => 'ЗНАНИЯ';
 
   @override
@@ -1293,9 +1304,6 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get oracleLens => 'Линза Оракула';
-
-  @override
-  String get appLockBiometrics => 'Блокировка приложения (Биометрия)';
 
   @override
   String get bilingualToggle => 'Двуязычный режим (EN/SI)';

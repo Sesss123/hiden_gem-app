@@ -63,8 +63,6 @@
 		<string>Guides can sync their tour bookings to their device calendar.</string>
 		<key>NSCalendarsFullAccessUsageDescription</key>
 		<string>Guides can sync their tour bookings to their device calendar.</string>
-		<key>NSFaceIDUsageDescription</key>
-		<string>Face ID is used to unlock the app when App Lock is enabled in Settings.</string>
 		<key>NSPhotoLibraryAddUsageDescription</key>
 		<string>Hidden Gems SL saves your AR heritage photos to your photo library.</string>
 		<key>NSSpeechRecognitionUsageDescription</key>

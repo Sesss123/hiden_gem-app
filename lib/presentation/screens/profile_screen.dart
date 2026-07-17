@@ -1407,17 +1407,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
               activeThumbColor: AppPalette.rust,
             )),
 
-        _tile(Icons.fingerprint_rounded, l10n.appLockBiometrics,
-            trailing: Switch(
-              value: profile.isAppLockEnabled,
-              onChanged: (val) async {
-                HapticFeedback.selectionClick();
-                await UserPreferenceService.updateAppLockStatus(val);
-                if (mounted) setState(() => profile = UserPreferenceService.getProfile());
-              },
-              activeThumbColor: AppPalette.rust,
-            )),
-
         _tile(Icons.language_outlined, l10n.language,
             onTap: () => _showLanguagePicker(context)),
 

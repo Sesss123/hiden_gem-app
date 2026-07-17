@@ -209,6 +209,17 @@ class AppLocalizationsTa extends AppLocalizations {
   String get oracleVision => 'ஆரக்கிள் பார்வை';
 
   @override
+  String get goodToKnow => 'தெரிந்து கொள்ள வேண்டியவை';
+
+  @override
+  String bestAtLabel(String time) {
+    return 'சிறந்த நேரம்: $time';
+  }
+
+  @override
+  String get arHeritageReady => 'AR பாரம்பரிய அனுபவம் தயார்';
+
+  @override
   String get theKnowledge => 'அறிவு';
 
   @override
@@ -1289,9 +1300,6 @@ class AppLocalizationsTa extends AppLocalizations {
 
   @override
   String get oracleLens => 'ஆரக்கிள் லென்ஸ்';
-
-  @override
-  String get appLockBiometrics => 'செயலி பூட்டு (பயோமெட்ரிக்ஸ்)';
 
   @override
   String get bilingualToggle => 'இருமொழி (EN/SI)';

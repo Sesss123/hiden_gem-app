@@ -693,6 +693,9 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
             Image.asset(
               "assets/images/sri_lanka_live_base.jpg",
               fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) => Container(
+                color: Theme.of(context).colorScheme.primary,
+              ),
             ),
             Container(
               decoration: BoxDecoration(

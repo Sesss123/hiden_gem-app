@@ -208,6 +208,17 @@ class AppLocalizationsKo extends AppLocalizations {
   String get oracleVision => '오라클의 비전';
 
   @override
+  String get goodToKnow => '알아두면 좋은 정보';
+
+  @override
+  String bestAtLabel(String time) {
+    return '최적 시간: $time';
+  }
+
+  @override
+  String get arHeritageReady => 'AR 유산 준비 완료';
+
+  @override
   String get theKnowledge => '지식';
 
   @override
@@ -1254,9 +1265,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get oracleLens => '오라클 렌즈';
-
-  @override
-  String get appLockBiometrics => '앱 잠금 (생체 인증)';
 
   @override
   String get bilingualToggle => '이중 언어 (영어/싱할라어)';

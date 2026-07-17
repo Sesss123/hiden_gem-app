@@ -68,6 +68,16 @@
   "categoryFamily": "Family",
   "categoryBudget": "Budget",
   "oracleVision": "ORACLE\\'S VISION",
+  "goodToKnow": "Good to know",
+  "bestAtLabel": "Best at {time}",
+  "@bestAtLabel": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "arHeritageReady": "AR Heritage ready",
   "theKnowledge": "THE KNOWLEDGE",
   "safetyProtocols": "SAFETY PROTOCOLS",
   "provisions": "PROVISIONS",
@@ -476,7 +486,6 @@
   "familySharing": "Family Sharing",
   "scanGuideQr": "Scan Guide QR",
   "oracleLens": "Oracle Lens",
-  "appLockBiometrics": "App Lock (Biometrics)",
   "bilingualToggle": "Bilingual (EN/SI)",
   "emergencyProtocol": "Emergency Protocol",
   "rateTheApp": "Rate the App",

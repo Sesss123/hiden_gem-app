@@ -162,6 +162,9 @@ class _ARContentPreviewScreenState extends State<ARContentPreviewScreen> {
                   Image.asset(
                     _getHeroImage(_currentContent.locationId),
                     fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) => Container(
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
                   ),
                   Container(
                     decoration: BoxDecoration(

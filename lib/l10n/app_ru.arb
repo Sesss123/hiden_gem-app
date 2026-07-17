@@ -68,6 +68,16 @@
   "categoryFamily": "Семья",
   "categoryBudget": "Бюджет",
   "oracleVision": "ВИДЕНИЕ ОРАКУЛА",
+  "goodToKnow": "Полезно знать",
+  "bestAtLabel": "Лучше всего в {time}",
+  "@bestAtLabel": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "arHeritageReady": "AR-наследие готово",
   "theKnowledge": "ЗНАНИЯ",
   "safetyProtocols": "ПРОТОКОЛЫ БЕЗОПАСНОСТИ",
   "provisions": "ОБЕСПЕЧЕНИЕ",
@@ -477,7 +487,6 @@
   "familySharing": "Семейный доступ",
   "scanGuideQr": "Сканировать QR гида",
   "oracleLens": "Линза Оракула",
-  "appLockBiometrics": "Блокировка приложения (Биометрия)",
   "bilingualToggle": "Двуязычный режим (EN/SI)",
   "emergencyProtocol": "Протокол экстренной помощи",
   "rateTheApp": "Оценить приложение",

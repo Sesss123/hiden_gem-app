@@ -17,7 +17,6 @@ class UserProfile {
   String themeMode; // "system", "light", "dark"
   List<String> tripHistory; // past destinations for AI memory
   bool showScreenshotButton; // Whether to show the floating camera button
-  bool isAppLockEnabled; // Whether to show app lock on app startup
   bool hasAgreedToTerms; // Whether the user accepted Privacy Policy & Terms
   bool hasCompletedOnboarding; // Whether the user completed the onboarding presentation
   String role; // "user", "admin", "banned", "premium_user" -- guide-approval state lives in guideStatus, not here (legacy "guide_pending"/"guide_approved" values may still be read for back-compat but are no longer written)
@@ -62,7 +61,6 @@ class UserProfile {
     this.themeMode = 'system',
     List<String>? tripHistory,
     this.showScreenshotButton = true,
-    this.isAppLockEnabled = true,
     this.hasAgreedToTerms = false,
     this.hasCompletedOnboarding = false,
     this.role = 'user',
@@ -104,7 +102,6 @@ class UserProfile {
       vibeTheme: 'ceylon_blue',
       themeMode: 'system',
       showScreenshotButton: true,
-      isAppLockEnabled: true,
       hasAgreedToTerms: false,
       hasCompletedOnboarding: false,
       role: 'user',
@@ -132,7 +129,6 @@ class UserProfile {
         'themeMode': themeMode,
         'tripHistory': tripHistory,
         'showScreenshotButton': showScreenshotButton,
-        'isAppLockEnabled': isAppLockEnabled,
         'hasAgreedToTerms': hasAgreedToTerms,
         'hasCompletedOnboarding': hasCompletedOnboarding,
         'role': role,
@@ -177,7 +173,6 @@ class UserProfile {
         themeMode: json['themeMode'] ?? 'system',
         tripHistory: List<String>.from(json['tripHistory'] ?? []),
         showScreenshotButton: json['showScreenshotButton'] ?? true,
-        isAppLockEnabled: json['isAppLockEnabled'] ?? true,
         hasAgreedToTerms: json['hasAgreedToTerms'] ?? false,
         hasCompletedOnboarding: json['hasCompletedOnboarding'] ?? false,
         role: roleStr,

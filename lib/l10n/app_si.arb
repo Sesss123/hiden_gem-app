@@ -65,6 +65,16 @@
   "categoryFamily": "පවුල",
   "categoryBudget": "අවම පිරිවැය",
   "oracleVision": "ඔරකල් දැක්ම",
+  "goodToKnow": "දැනගත යුතු දේ",
+  "bestAtLabel": "වඩාත් සුදුසුම වේලාව: {time}",
+  "@bestAtLabel": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "arHeritageReady": "AR උරුම අත්දැකීම සූදානම්",
   "theKnowledge": "විස්තරාත්මක තොරතුරු",
   "safetyProtocols": "ආරක්ෂක පිළිවෙත්",
   "provisions": "පහසුකම්",
@@ -473,7 +483,6 @@
   "familySharing": "පවුල් බෙදාගැනීම",
   "scanGuideQr": "මාර්ගෝපදේශක QR ස්කෑන් කරන්න",
   "oracleLens": "ඔරකල් කාචය",
-  "appLockBiometrics": "යෙදුම් අගුල (ජීවමිතික)",
   "bilingualToggle": "ද්විභාෂා (EN/SI)",
   "emergencyProtocol": "හදිසි ප්‍රොටෝකෝලය",
   "rateTheApp": "යෙදුම ශ්‍රේණිගත කරන්න",

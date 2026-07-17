@@ -68,6 +68,16 @@
   "categoryFamily": "家族",
   "categoryBudget": "予算",
   "oracleVision": "オラクルのビジョン",
+  "goodToKnow": "知っておくべきこと",
+  "bestAtLabel": "おすすめの時間帯: {time}",
+  "@bestAtLabel": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "arHeritageReady": "AR遺産体験が利用可能",
   "theKnowledge": "知識",
   "safetyProtocols": "安全プロトコル",
   "provisions": "準備",
@@ -477,7 +487,6 @@
   "familySharing": "ファミリー共有",
   "scanGuideQr": "ガイドQRをスキャン",
   "oracleLens": "オラクルレンズ",
-  "appLockBiometrics": "アプリロック（生体認証）",
   "bilingualToggle": "バイリンガル表示（英語/シンハラ語）",
   "emergencyProtocol": "緊急時プロトコル",
   "rateTheApp": "アプリを評価する",

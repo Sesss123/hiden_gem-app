@@ -68,6 +68,16 @@
   "categoryFamily": "가족",
   "categoryBudget": "저예산",
   "oracleVision": "오라클의 비전",
+  "goodToKnow": "알아두면 좋은 정보",
+  "bestAtLabel": "최적 시간: {time}",
+  "@bestAtLabel": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "arHeritageReady": "AR 유산 준비 완료",
   "theKnowledge": "지식",
   "safetyProtocols": "안전 프로토콜",
   "provisions": "준비물",
@@ -476,7 +486,6 @@
   "familySharing": "가족 공유",
   "scanGuideQr": "가이드 QR 스캔",
   "oracleLens": "오라클 렌즈",
-  "appLockBiometrics": "앱 잠금 (생체 인증)",
   "bilingualToggle": "이중 언어 (영어/싱할라어)",
   "emergencyProtocol": "긴급 대응 프로토콜",
   "rateTheApp": "앱 평가하기",
