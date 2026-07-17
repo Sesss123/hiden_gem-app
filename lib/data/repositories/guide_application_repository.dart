@@ -130,10 +130,12 @@ class GuideApplicationRepository {
 
   // Admin-only dashboard (low traffic), capped as defense-in-depth against
   // an unbounded pending-applications backlog re-delivering on every change.
-  Stream<List<GuideApplication>> getPendingApplications() {
+  Stream<List<GuideApplication>> getPendingApplications() => getApplicationsByStatus(GuideStatus.pending.name);
+
+  Stream<List<GuideApplication>> getApplicationsByStatus(String status) {
     return _firestore
         .collection('guide_applications')
-        .where('status', isEqualTo: GuideStatus.pending.name)
+        .where('status', isEqualTo: status)
         .limit(200)
         .snapshots()
         .map((snapshot) => snapshot.docs.map((doc) => GuideApplication.fromJson(doc.data())).toList());
@@ -180,7 +182,9 @@ class GuideApplicationRepository {
       }).catchError((_) {});
     } else if (status == GuideStatus.rejected) {
       await _firestore.collection('users').doc(userId).update({
+        'role': 'user',
         'guideStatus': GuideStatus.rejected.name,
+        'isGuideApproved': false,
         'guideRejectionReason': adminComment ?? "Documents incomplete or unclear. Please reapply.",
       }).catchError((_) {});
     }

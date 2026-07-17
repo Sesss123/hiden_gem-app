@@ -552,6 +552,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get googleLabel => 'Google';
 
   @override
+  String get appleLabel => 'Apple';
+
+  @override
   String get zenithLockActive => 'ゼニスロック作動中';
 
   @override
@@ -571,6 +574,11 @@ class AppLocalizationsJa extends AppLocalizations {
   @override
   String googleSignInFailedPrefix(String reason) {
     return 'Googleサインインに失敗しました：$reason';
+  }
+
+  @override
+  String appleSignInFailedPrefix(String reason) {
+    return 'Appleサインインに失敗しました：$reason';
   }
 
   @override
@@ -4699,4 +4707,168 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get ancientArtifactsLabel => '古代の遺物';
+
+  @override
+  String get adminGuideVerificationTile => 'ガイド認証';
+
+  @override
+  String get adminVerificationConsoleTitle => '認証コンソール';
+
+  @override
+  String get pendingReviewsSubtitle => '提出されたガイド申請と書類を確認します。';
+
+  @override
+  String get filterPending => '審査待ち';
+
+  @override
+  String get filterApproved => '承認済み';
+
+  @override
+  String get filterRejected => '却下済み';
+
+  @override
+  String get filterExpiringSoon => '期限間近';
+
+  @override
+  String get filterExpired => '期限切れ';
+
+  @override
+  String noApplicationsFoundMessage(String filter) {
+    return '$filterの申請はありません。';
+  }
+
+  @override
+  String appliedOnLabel(String date) {
+    return '申請日: $date';
+  }
+
+  @override
+  String licenseNumberDisplayLabel(String number) {
+    return 'ライセンス番号: $number';
+  }
+
+  @override
+  String get applicantDetailsTitle => '申請者情報';
+
+  @override
+  String get bioLabel => '自己紹介';
+
+  @override
+  String get licenseDocumentLabel => 'ライセンス書類';
+
+  @override
+  String get nicDocumentLabel => '国民ID（NIC）書類';
+
+  @override
+  String get selfiePhotoLabel => '自撮り写真';
+
+  @override
+  String get imageFailedToLoadMessage => '画像の読み込みに失敗しました';
+
+  @override
+  String get noDocumentProvidedMessage => '書類が提供されていません';
+
+  @override
+  String get adminCommentHint => 'コメントを追加（却下する場合は必須）';
+
+  @override
+  String get rejectionReasonRequiredMessage => '却下する前に理由を入力してください。';
+
+  @override
+  String get approveButtonLabel => '承認';
+
+  @override
+  String get rejectButtonLabel => '却下';
+
+  @override
+  String get applicationApprovedNoticeMessage => '申請が承認されました。';
+
+  @override
+  String get applicationRejectedNoticeMessage => '申請が却下されました。';
+
+  @override
+  String reviewActionFailedMessage(String error) {
+    return '審査の送信に失敗しました: $error';
+  }
+
+  @override
+  String get licenseExpiryLabel => 'ライセンス有効期限';
+
+  @override
+  String get notProvidedLabel => '未提供';
+
+  @override
+  String get expiryStatusValid => '有効';
+
+  @override
+  String get expiryStatusExpiringSoon => '期限間近';
+
+  @override
+  String get expiryStatusExpired => '期限切れ';
+
+  @override
+  String get selectExpiryDateButton => 'ライセンス有効期限を選択';
+
+  @override
+  String get languagesSectionTitle => '対応言語';
+
+  @override
+  String get tourTypesSectionTitle => '提供ツアー';
+
+  @override
+  String get tourTypeBoatSafari => 'ボートサファリ';
+
+  @override
+  String get tourTypeWildlifeSafari => '野生動物サファリ';
+
+  @override
+  String get tourTypeHiking => 'ハイキング';
+
+  @override
+  String get tourTypeDiving => 'ダイビング';
+
+  @override
+  String get tourTypeCulturalTours => '文化ツアー';
+
+  @override
+  String get reportReviewTitle => 'レビューを報告';
+
+  @override
+  String get reportReviewSubtitle => 'このレビューを報告する理由は何ですか？';
+
+  @override
+  String get reportReasonInappropriate => '不適切なコンテンツ';
+
+  @override
+  String get reportReasonSpam => 'スパム';
+
+  @override
+  String get reportReasonHarassment => '嫌がらせ';
+
+  @override
+  String get reportReasonOther => 'その他';
+
+  @override
+  String get reportSubmittedMessage => 'ありがとうございます。このレビューはモデレーションのために報告されました。';
+
+  @override
+  String get reportFailedMessage => 'このレビューの報告に失敗しました。もう一度お試しください。';
+
+  @override
+  String get filterSheetTitle => 'ガイドを絞り込む';
+
+  @override
+  String get filterHasVehicle => '車両あり';
+
+  @override
+  String get filterApplyButton => 'フィルターを適用';
+
+  @override
+  String get filterClearButton => 'クリア';
+
+  @override
+  String get filterRegionLabel => '地域';
+
+  @override
+  String get filterLanguageLabel => '言語';
 }

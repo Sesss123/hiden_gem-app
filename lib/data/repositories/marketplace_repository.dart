@@ -124,18 +124,32 @@ class MarketplaceRepository {
 
   // --- Search (Paginated, On-Demand) ---
 
+  // Fixed tour-type boolean field names — mirrors kTourTypes in
+  // lib/core/constants/tour_types.dart. Validated against this set before
+  // being used as a dynamic Firestore field name so `tourType` can never
+  // reach _buildSearchQuery with an arbitrary/unindexed field.
+  static const Set<String> _validTourTypeFields = {
+    'doesBoatSafari',
+    'doesWildlifeSafari',
+    'doesHiking',
+    'doesDiving',
+    'doesCulturalTours',
+  };
+
   /// First page of a marketplace search. Returns a [MarketplacePage].
   Future<MarketplacePage> searchMarketplace({
     String? region,
     String? category,
     String? language,
     bool? vehicleRequired,
+    String? tourType,
   }) async {
     Query query = _buildSearchQuery(
       region: region,
       category: category,
       language: language,
       vehicleRequired: vehicleRequired,
+      tourType: tourType,
     );
 
     final snapshot = await query
@@ -152,12 +166,14 @@ class MarketplaceRepository {
     String? category,
     String? language,
     bool? vehicleRequired,
+    String? tourType,
   }) async {
     Query query = _buildSearchQuery(
       region: region,
       category: category,
       language: language,
       vehicleRequired: vehicleRequired,
+      tourType: tourType,
     );
 
     final snapshot = await query
@@ -173,6 +189,7 @@ class MarketplaceRepository {
     String? category,
     String? language,
     bool? vehicleRequired,
+    String? tourType,
   }) {
     Query query = _listingRef
         .where('status', isEqualTo: 'published')
@@ -187,6 +204,9 @@ class MarketplaceRepository {
     }
     if (vehicleRequired == true) {
       query = query.where('vehicleAvailable', isEqualTo: true);
+    }
+    if (tourType != null && _validTourTypeFields.contains(tourType)) {
+      query = query.where(tourType, isEqualTo: true);
     }
 
     return query.orderBy('ratingAverage', descending: true);

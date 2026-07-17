@@ -10,6 +10,26 @@
       ]
     },
     {
+      "collectionGroup": "guide_listings",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "status", "order": "ASCENDING" },
+        { "fieldPath": "moderationStatus", "order": "ASCENDING" },
+        { "fieldPath": "doesBoatSafari", "order": "ASCENDING" },
+        { "fieldPath": "ratingAverage", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "guide_listings",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "status", "order": "ASCENDING" },
+        { "fieldPath": "moderationStatus", "order": "ASCENDING" },
+        { "fieldPath": "vehicleAvailable", "order": "ASCENDING" },
+        { "fieldPath": "ratingAverage", "order": "DESCENDING" }
+      ]
+    },
+    {
       "collectionGroup": "booking_requests",
       "queryScope": "COLLECTION",
       "fields": [

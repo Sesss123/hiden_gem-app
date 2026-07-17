@@ -1156,6 +1156,12 @@ abstract class AppLocalizations {
   /// **'Google'**
   String get googleLabel;
 
+  /// No description provided for @appleLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Apple'**
+  String get appleLabel;
+
   /// No description provided for @zenithLockActive.
   ///
   /// In en, this message translates to:
@@ -1191,6 +1197,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Google Sign-In Failed: {reason}'**
   String googleSignInFailedPrefix(String reason);
+
+  /// No description provided for @appleSignInFailedPrefix.
+  ///
+  /// In en, this message translates to:
+  /// **'Apple Sign-In Failed: {reason}'**
+  String appleSignInFailedPrefix(String reason);
 
   /// No description provided for @enterEmailFirst.
   ///
@@ -8619,6 +8631,318 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'ANCIENT ARTIFACTS'**
   String get ancientArtifactsLabel;
+
+  /// No description provided for @adminGuideVerificationTile.
+  ///
+  /// In en, this message translates to:
+  /// **'Guide Verifications'**
+  String get adminGuideVerificationTile;
+
+  /// No description provided for @adminVerificationConsoleTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Verification Console'**
+  String get adminVerificationConsoleTitle;
+
+  /// No description provided for @pendingReviewsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Review submitted guide applications and documents.'**
+  String get pendingReviewsSubtitle;
+
+  /// No description provided for @filterPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get filterPending;
+
+  /// No description provided for @filterApproved.
+  ///
+  /// In en, this message translates to:
+  /// **'Approved'**
+  String get filterApproved;
+
+  /// No description provided for @filterRejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected'**
+  String get filterRejected;
+
+  /// No description provided for @filterExpiringSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Expiring Soon'**
+  String get filterExpiringSoon;
+
+  /// No description provided for @filterExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'Expired'**
+  String get filterExpired;
+
+  /// No description provided for @noApplicationsFoundMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'No {filter} applications.'**
+  String noApplicationsFoundMessage(String filter);
+
+  /// No description provided for @appliedOnLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Applied {date}'**
+  String appliedOnLabel(String date);
+
+  /// No description provided for @licenseNumberDisplayLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'License No. {number}'**
+  String licenseNumberDisplayLabel(String number);
+
+  /// No description provided for @applicantDetailsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Applicant Details'**
+  String get applicantDetailsTitle;
+
+  /// No description provided for @bioLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Bio'**
+  String get bioLabel;
+
+  /// No description provided for @licenseDocumentLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'License Document'**
+  String get licenseDocumentLabel;
+
+  /// No description provided for @nicDocumentLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'NIC Document'**
+  String get nicDocumentLabel;
+
+  /// No description provided for @selfiePhotoLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Selfie Photo'**
+  String get selfiePhotoLabel;
+
+  /// No description provided for @imageFailedToLoadMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Image failed to load'**
+  String get imageFailedToLoadMessage;
+
+  /// No description provided for @noDocumentProvidedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'No document provided'**
+  String get noDocumentProvidedMessage;
+
+  /// No description provided for @adminCommentHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a comment (required to reject)'**
+  String get adminCommentHint;
+
+  /// No description provided for @rejectionReasonRequiredMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Please add a reason before rejecting.'**
+  String get rejectionReasonRequiredMessage;
+
+  /// No description provided for @approveButtonLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Approve'**
+  String get approveButtonLabel;
+
+  /// No description provided for @rejectButtonLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Reject'**
+  String get rejectButtonLabel;
+
+  /// No description provided for @applicationApprovedNoticeMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Application approved.'**
+  String get applicationApprovedNoticeMessage;
+
+  /// No description provided for @applicationRejectedNoticeMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Application rejected.'**
+  String get applicationRejectedNoticeMessage;
+
+  /// No description provided for @reviewActionFailedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to submit review: {error}'**
+  String reviewActionFailedMessage(String error);
+
+  /// No description provided for @licenseExpiryLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'License Expiry'**
+  String get licenseExpiryLabel;
+
+  /// No description provided for @notProvidedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Not provided'**
+  String get notProvidedLabel;
+
+  /// No description provided for @expiryStatusValid.
+  ///
+  /// In en, this message translates to:
+  /// **'Valid'**
+  String get expiryStatusValid;
+
+  /// No description provided for @expiryStatusExpiringSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Expiring Soon'**
+  String get expiryStatusExpiringSoon;
+
+  /// No description provided for @expiryStatusExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'Expired'**
+  String get expiryStatusExpired;
+
+  /// No description provided for @selectExpiryDateButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Select License Expiry Date'**
+  String get selectExpiryDateButton;
+
+  /// No description provided for @languagesSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Languages Spoken'**
+  String get languagesSectionTitle;
+
+  /// No description provided for @tourTypesSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Tours Offered'**
+  String get tourTypesSectionTitle;
+
+  /// No description provided for @tourTypeBoatSafari.
+  ///
+  /// In en, this message translates to:
+  /// **'Boat Safari'**
+  String get tourTypeBoatSafari;
+
+  /// No description provided for @tourTypeWildlifeSafari.
+  ///
+  /// In en, this message translates to:
+  /// **'Wildlife Safari'**
+  String get tourTypeWildlifeSafari;
+
+  /// No description provided for @tourTypeHiking.
+  ///
+  /// In en, this message translates to:
+  /// **'Hiking'**
+  String get tourTypeHiking;
+
+  /// No description provided for @tourTypeDiving.
+  ///
+  /// In en, this message translates to:
+  /// **'Diving'**
+  String get tourTypeDiving;
+
+  /// No description provided for @tourTypeCulturalTours.
+  ///
+  /// In en, this message translates to:
+  /// **'Cultural Tours'**
+  String get tourTypeCulturalTours;
+
+  /// No description provided for @reportReviewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Report Review'**
+  String get reportReviewTitle;
+
+  /// No description provided for @reportReviewSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Why are you reporting this review?'**
+  String get reportReviewSubtitle;
+
+  /// No description provided for @reportReasonInappropriate.
+  ///
+  /// In en, this message translates to:
+  /// **'Inappropriate content'**
+  String get reportReasonInappropriate;
+
+  /// No description provided for @reportReasonSpam.
+  ///
+  /// In en, this message translates to:
+  /// **'Spam'**
+  String get reportReasonSpam;
+
+  /// No description provided for @reportReasonHarassment.
+  ///
+  /// In en, this message translates to:
+  /// **'Harassment'**
+  String get reportReasonHarassment;
+
+  /// No description provided for @reportReasonOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get reportReasonOther;
+
+  /// No description provided for @reportSubmittedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Thanks — this review has been reported for moderation.'**
+  String get reportSubmittedMessage;
+
+  /// No description provided for @reportFailedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to report this review. Please try again.'**
+  String get reportFailedMessage;
+
+  /// No description provided for @filterSheetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter Guides'**
+  String get filterSheetTitle;
+
+  /// No description provided for @filterHasVehicle.
+  ///
+  /// In en, this message translates to:
+  /// **'Has Vehicle'**
+  String get filterHasVehicle;
+
+  /// No description provided for @filterApplyButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply Filters'**
+  String get filterApplyButton;
+
+  /// No description provided for @filterClearButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get filterClearButton;
+
+  /// No description provided for @filterRegionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Region'**
+  String get filterRegionLabel;
+
+  /// No description provided for @filterLanguageLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get filterLanguageLabel;
 }
 
 class _AppLocalizationsDelegate

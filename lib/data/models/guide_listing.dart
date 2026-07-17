@@ -15,7 +15,16 @@ class GuideListing {
   final List<String> languages;
   final List<String> specializations; // heritage, wildlife, photography
   final List<String> regions; // central, southern, etc.
-  
+
+  // Fixed, filterable tour-type taxonomy (booleans, not a List<String>, so
+  // each is an independent equality filter — Firestore allows only one
+  // arrayContains per query, and regions/languages already use theirs).
+  final bool doesBoatSafari;
+  final bool doesWildlifeSafari;
+  final bool doesHiking;
+  final bool doesDiving;
+  final bool doesCulturalTours;
+
   // Public Performance
   final double ratingAverage;
   final int reviewCount;
@@ -65,6 +74,11 @@ class GuideListing {
     this.languages = const ['English'],
     this.specializations = const [],
     this.regions = const [],
+    this.doesBoatSafari = false,
+    this.doesWildlifeSafari = false,
+    this.doesHiking = false,
+    this.doesDiving = false,
+    this.doesCulturalTours = false,
     this.ratingAverage = 5.0,
     this.reviewCount = 0,
     this.trustTierPublic = 'Strong',
@@ -101,6 +115,11 @@ class GuideListing {
     'languages': languages,
     'specializations': specializations,
     'regions': regions,
+    'doesBoatSafari': doesBoatSafari,
+    'doesWildlifeSafari': doesWildlifeSafari,
+    'doesHiking': doesHiking,
+    'doesDiving': doesDiving,
+    'doesCulturalTours': doesCulturalTours,
     'ratingAverage': ratingAverage,
     'reviewCount': reviewCount,
     'trustTierPublic': trustTierPublic,
@@ -137,6 +156,11 @@ class GuideListing {
     languages: List<String>.from(json['languages'] ?? []),
     specializations: List<String>.from(json['specializations'] ?? []),
     regions: List<String>.from(json['regions'] ?? []),
+    doesBoatSafari: json['doesBoatSafari'] ?? false,
+    doesWildlifeSafari: json['doesWildlifeSafari'] ?? false,
+    doesHiking: json['doesHiking'] ?? false,
+    doesDiving: json['doesDiving'] ?? false,
+    doesCulturalTours: json['doesCulturalTours'] ?? false,
     ratingAverage: (json['ratingAverage'] ?? 5.0).toDouble(),
     reviewCount: json['reviewCount'] ?? 0,
     trustTierPublic: json['trustTierPublic'] ?? 'Strong',

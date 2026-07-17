@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../core/utils/secure_logger.dart';
+import '../models/guide_status.dart';
 
 class UserRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -32,6 +33,7 @@ class UserRepository {
     try {
       await _firestore.collection('users').doc(uid).update({
         'role': 'banned',
+        'guideStatus': GuideStatus.suspended.name,
       });
     } catch (e) {
       SecureLogger.error("Failed to ban user: $e");

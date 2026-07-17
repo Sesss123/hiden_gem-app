@@ -35,6 +35,7 @@ import 'presentation/screens/booking_inbox_screen.dart';
 import 'presentation/screens/language_selection_screen.dart';
 import 'presentation/screens/terms_screen.dart';
 import 'presentation/widgets/graceful_error_widget.dart';
+import 'presentation/widgets/app_lock_wrapper.dart';
 import 'firebase_options.dart';
 import 'core/config/remote_config_service.dart';
 import 'core/providers/screenshot_provider.dart';
@@ -596,7 +597,7 @@ class _HiddenGemsAppState extends ConsumerState<HiddenGemsApp> with WidgetsBindi
             );
           }
           if (_showMainApp) {
-            return _buildHomeModule(initState.result);
+            return AppLockWrapper(child: _buildHomeModule(initState.result));
           }
           return SplashScreen(
             onFinish: () => setState(() => _showMainApp = true),

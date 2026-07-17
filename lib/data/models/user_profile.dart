@@ -20,7 +20,7 @@ class UserProfile {
   bool isAppLockEnabled; // Whether to show app lock on app startup
   bool hasAgreedToTerms; // Whether the user accepted Privacy Policy & Terms
   bool hasCompletedOnboarding; // Whether the user completed the onboarding presentation
-  String role; // "user", "admin", "guide_pending", "guide_approved"
+  String role; // "user", "admin", "banned", "premium_user" -- guide-approval state lives in guideStatus, not here (legacy "guide_pending"/"guide_approved" values may still be read for back-compat but are no longer written)
   bool isPremium;
   String? premiumPlan; // "monthly", "yearly"
   String? premiumSource; // "app_store", "google_play"
@@ -205,4 +205,9 @@ class UserProfile {
         itineraryPlaceIds: List<String>.from(json['itineraryPlaceIds'] ?? []),
       );
   }
+
+  /// Single source of truth for guide-approval state. Use this instead of
+  /// comparing role directly for guide checks - role is only authoritative
+  /// for admin/banned/premium-tier distinctions.
+  bool get isGuideApprovedEffective => guideStatus == GuideStatus.approved;
 }

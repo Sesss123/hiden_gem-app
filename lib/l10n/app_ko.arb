@@ -182,6 +182,7 @@
   "forgotPassword": "비밀번호를 잊으셨나요?",
   "orContinueWith": "또는 다음으로 계속하기",
   "googleLabel": "Google",
+  "appleLabel": "Apple",
   "zenithLockActive": "제니스 잠금 활성화됨",
   "lockoutMessage": "여러 번 로그인에 실패했습니다.\n무차별 대입 공격을 방지하기 위해 인증이 제한되었습니다.",
   "timeRemaining": "남은 시간",
@@ -192,6 +193,10 @@
   },
   "googleSignInFailedPrefix": "Google 로그인 실패: {reason}",
   "@googleSignInFailedPrefix": {
+    "placeholders": { "reason": { "type": "String" } }
+  },
+  "appleSignInFailedPrefix": "Apple 로그인 실패: {reason}",
+  "@appleSignInFailedPrefix": {
     "placeholders": { "reason": { "type": "String" } }
   },
   "enterEmailFirst": "등록된 이메일 주소를 먼저 입력해 주세요.",
@@ -1944,5 +1949,71 @@
   "watch10SecPreviewButton": "10초 미리보기 보기",
   "watchAdUnlockSessionButton": "광고를 보고 세션 잠금 해제",
   "notNowButtonLabel": "나중에",
-  "ancientArtifactsLabel": "고대 유물"
+  "ancientArtifactsLabel": "고대 유물",
+
+  "adminGuideVerificationTile": "가이드 인증",
+  "adminVerificationConsoleTitle": "인증 콘솔",
+  "pendingReviewsSubtitle": "제출된 가이드 신청서와 서류를 검토하세요.",
+  "filterPending": "대기 중",
+  "filterApproved": "승인됨",
+  "filterRejected": "거절됨",
+  "filterExpiringSoon": "곧 만료",
+  "filterExpired": "만료됨",
+  "noApplicationsFoundMessage": "{filter} 신청서가 없습니다.",
+  "@noApplicationsFoundMessage": {
+    "placeholders": { "filter": { "type": "String" } }
+  },
+  "appliedOnLabel": "신청일 {date}",
+  "@appliedOnLabel": {
+    "placeholders": { "date": { "type": "String" } }
+  },
+  "licenseNumberDisplayLabel": "면허 번호 {number}",
+  "@licenseNumberDisplayLabel": {
+    "placeholders": { "number": { "type": "String" } }
+  },
+  "applicantDetailsTitle": "신청자 정보",
+  "bioLabel": "소개",
+  "licenseDocumentLabel": "면허 서류",
+  "nicDocumentLabel": "국민신분증(NIC) 서류",
+  "selfiePhotoLabel": "셀피 사진",
+  "imageFailedToLoadMessage": "이미지를 불러오지 못했습니다",
+  "noDocumentProvidedMessage": "제공된 서류가 없습니다",
+  "adminCommentHint": "코멘트를 추가하세요 (거절 시 필수)",
+  "rejectionReasonRequiredMessage": "거절하기 전에 사유를 입력해 주세요.",
+  "approveButtonLabel": "승인",
+  "rejectButtonLabel": "거절",
+  "applicationApprovedNoticeMessage": "신청이 승인되었습니다.",
+  "applicationRejectedNoticeMessage": "신청이 거절되었습니다.",
+  "reviewActionFailedMessage": "검토 제출 실패: {error}",
+  "@reviewActionFailedMessage": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "licenseExpiryLabel": "면허 만료일",
+  "notProvidedLabel": "제공되지 않음",
+  "expiryStatusValid": "유효",
+  "expiryStatusExpiringSoon": "곧 만료",
+  "expiryStatusExpired": "만료됨",
+  "selectExpiryDateButton": "면허 만료일 선택",
+
+  "languagesSectionTitle": "구사 가능 언어",
+  "tourTypesSectionTitle": "제공 투어",
+  "tourTypeBoatSafari": "보트 사파리",
+  "tourTypeWildlifeSafari": "야생동물 사파리",
+  "tourTypeHiking": "하이킹",
+  "tourTypeDiving": "다이빙",
+  "tourTypeCulturalTours": "문화 투어",
+  "reportReviewTitle": "리뷰 신고",
+  "reportReviewSubtitle": "이 리뷰를 신고하는 이유는 무엇인가요?",
+  "reportReasonInappropriate": "부적절한 콘텐츠",
+  "reportReasonSpam": "스팸",
+  "reportReasonHarassment": "괴롭힘",
+  "reportReasonOther": "기타",
+  "reportSubmittedMessage": "감사합니다 — 이 리뷰가 검토를 위해 신고되었습니다.",
+  "reportFailedMessage": "리뷰 신고에 실패했습니다. 다시 시도해 주세요.",
+  "filterSheetTitle": "가이드 필터",
+  "filterHasVehicle": "차량 보유",
+  "filterApplyButton": "필터 적용",
+  "filterClearButton": "지우기",
+  "filterRegionLabel": "지역",
+  "filterLanguageLabel": "언어"
 }

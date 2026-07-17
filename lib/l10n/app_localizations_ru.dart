@@ -573,6 +573,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get googleLabel => 'Google';
 
   @override
+  String get appleLabel => 'Apple';
+
+  @override
   String get zenithLockActive => 'БЛОКИРОВКА АКТИВНА';
 
   @override
@@ -593,6 +596,11 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String googleSignInFailedPrefix(String reason) {
     return 'Ошибка входа через Google: $reason';
+  }
+
+  @override
+  String appleSignInFailedPrefix(String reason) {
+    return 'Ошибка входа через Apple: $reason';
   }
 
   @override
@@ -2804,7 +2812,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String applicationRejectedMessage(String reason) {
-    return 'Причина: $reason\n\nВы можете повторно подать заявку ниже после устранения необходимых замечаний.';
+    return 'Причина: $reason\n\nВы можете повторно подать заявку ниже после исправления необходимых пунктов.';
   }
 
   @override
@@ -4910,4 +4918,173 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get ancientArtifactsLabel => 'ДРЕВНИЕ АРТЕФАКТЫ';
+
+  @override
+  String get adminGuideVerificationTile => 'Верификация гидов';
+
+  @override
+  String get adminVerificationConsoleTitle => 'Консоль верификации';
+
+  @override
+  String get pendingReviewsSubtitle =>
+      'Просмотр поданных заявок гидов и документов.';
+
+  @override
+  String get filterPending => 'На рассмотрении';
+
+  @override
+  String get filterApproved => 'Одобрено';
+
+  @override
+  String get filterRejected => 'Отклонено';
+
+  @override
+  String get filterExpiringSoon => 'Скоро истекает';
+
+  @override
+  String get filterExpired => 'Истёк срок';
+
+  @override
+  String noApplicationsFoundMessage(String filter) {
+    return 'Нет заявок со статусом «$filter».';
+  }
+
+  @override
+  String appliedOnLabel(String date) {
+    return 'Подано $date';
+  }
+
+  @override
+  String licenseNumberDisplayLabel(String number) {
+    return '№ лицензии $number';
+  }
+
+  @override
+  String get applicantDetailsTitle => 'Данные заявителя';
+
+  @override
+  String get bioLabel => 'Биография';
+
+  @override
+  String get licenseDocumentLabel => 'Документ лицензии';
+
+  @override
+  String get nicDocumentLabel => 'Документ NIC';
+
+  @override
+  String get selfiePhotoLabel => 'Селфи-фото';
+
+  @override
+  String get imageFailedToLoadMessage => 'Не удалось загрузить изображение';
+
+  @override
+  String get noDocumentProvidedMessage => 'Документ не предоставлен';
+
+  @override
+  String get adminCommentHint =>
+      'Добавьте комментарий (обязателен для отклонения)';
+
+  @override
+  String get rejectionReasonRequiredMessage =>
+      'Пожалуйста, укажите причину перед отклонением.';
+
+  @override
+  String get approveButtonLabel => 'Одобрить';
+
+  @override
+  String get rejectButtonLabel => 'Отклонить';
+
+  @override
+  String get applicationApprovedNoticeMessage => 'Заявка одобрена.';
+
+  @override
+  String get applicationRejectedNoticeMessage => 'Заявка отклонена.';
+
+  @override
+  String reviewActionFailedMessage(String error) {
+    return 'Не удалось отправить решение: $error';
+  }
+
+  @override
+  String get licenseExpiryLabel => 'Срок действия лицензии';
+
+  @override
+  String get notProvidedLabel => 'Не указано';
+
+  @override
+  String get expiryStatusValid => 'Действительна';
+
+  @override
+  String get expiryStatusExpiringSoon => 'Скоро истекает';
+
+  @override
+  String get expiryStatusExpired => 'Истёк срок';
+
+  @override
+  String get selectExpiryDateButton => 'Выбрать дату окончания лицензии';
+
+  @override
+  String get languagesSectionTitle => 'Разговорные языки';
+
+  @override
+  String get tourTypesSectionTitle => 'Предлагаемые туры';
+
+  @override
+  String get tourTypeBoatSafari => 'Лодочное сафари';
+
+  @override
+  String get tourTypeWildlifeSafari => 'Сафари по дикой природе';
+
+  @override
+  String get tourTypeHiking => 'Пешие походы';
+
+  @override
+  String get tourTypeDiving => 'Дайвинг';
+
+  @override
+  String get tourTypeCulturalTours => 'Культурные туры';
+
+  @override
+  String get reportReviewTitle => 'Пожаловаться на отзыв';
+
+  @override
+  String get reportReviewSubtitle => 'Почему вы жалуетесь на этот отзыв?';
+
+  @override
+  String get reportReasonInappropriate => 'Неприемлемый контент';
+
+  @override
+  String get reportReasonSpam => 'Спам';
+
+  @override
+  String get reportReasonHarassment => 'Оскорбления';
+
+  @override
+  String get reportReasonOther => 'Другое';
+
+  @override
+  String get reportSubmittedMessage =>
+      'Спасибо — жалоба на этот отзыв отправлена на модерацию.';
+
+  @override
+  String get reportFailedMessage =>
+      'Не удалось отправить жалобу на этот отзыв. Пожалуйста, попробуйте снова.';
+
+  @override
+  String get filterSheetTitle => 'Фильтр гидов';
+
+  @override
+  String get filterHasVehicle => 'Есть автомобиль';
+
+  @override
+  String get filterApplyButton => 'Применить фильтры';
+
+  @override
+  String get filterClearButton => 'Очистить';
+
+  @override
+  String get filterRegionLabel => 'Регион';
+
+  @override
+  String get filterLanguageLabel => 'Язык';
 }

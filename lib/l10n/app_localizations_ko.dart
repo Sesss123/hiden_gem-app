@@ -555,6 +555,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get googleLabel => 'Google';
 
   @override
+  String get appleLabel => 'Apple';
+
+  @override
   String get zenithLockActive => '제니스 잠금 활성화됨';
 
   @override
@@ -575,6 +578,11 @@ class AppLocalizationsKo extends AppLocalizations {
   @override
   String googleSignInFailedPrefix(String reason) {
     return 'Google 로그인 실패: $reason';
+  }
+
+  @override
+  String appleSignInFailedPrefix(String reason) {
+    return 'Apple 로그인 실패: $reason';
   }
 
   @override
@@ -4708,4 +4716,168 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get ancientArtifactsLabel => '고대 유물';
+
+  @override
+  String get adminGuideVerificationTile => '가이드 인증';
+
+  @override
+  String get adminVerificationConsoleTitle => '인증 콘솔';
+
+  @override
+  String get pendingReviewsSubtitle => '제출된 가이드 신청서와 서류를 검토하세요.';
+
+  @override
+  String get filterPending => '대기 중';
+
+  @override
+  String get filterApproved => '승인됨';
+
+  @override
+  String get filterRejected => '거절됨';
+
+  @override
+  String get filterExpiringSoon => '곧 만료';
+
+  @override
+  String get filterExpired => '만료됨';
+
+  @override
+  String noApplicationsFoundMessage(String filter) {
+    return '$filter 신청서가 없습니다.';
+  }
+
+  @override
+  String appliedOnLabel(String date) {
+    return '신청일 $date';
+  }
+
+  @override
+  String licenseNumberDisplayLabel(String number) {
+    return '면허 번호 $number';
+  }
+
+  @override
+  String get applicantDetailsTitle => '신청자 정보';
+
+  @override
+  String get bioLabel => '소개';
+
+  @override
+  String get licenseDocumentLabel => '면허 서류';
+
+  @override
+  String get nicDocumentLabel => '국민신분증(NIC) 서류';
+
+  @override
+  String get selfiePhotoLabel => '셀피 사진';
+
+  @override
+  String get imageFailedToLoadMessage => '이미지를 불러오지 못했습니다';
+
+  @override
+  String get noDocumentProvidedMessage => '제공된 서류가 없습니다';
+
+  @override
+  String get adminCommentHint => '코멘트를 추가하세요 (거절 시 필수)';
+
+  @override
+  String get rejectionReasonRequiredMessage => '거절하기 전에 사유를 입력해 주세요.';
+
+  @override
+  String get approveButtonLabel => '승인';
+
+  @override
+  String get rejectButtonLabel => '거절';
+
+  @override
+  String get applicationApprovedNoticeMessage => '신청이 승인되었습니다.';
+
+  @override
+  String get applicationRejectedNoticeMessage => '신청이 거절되었습니다.';
+
+  @override
+  String reviewActionFailedMessage(String error) {
+    return '검토 제출 실패: $error';
+  }
+
+  @override
+  String get licenseExpiryLabel => '면허 만료일';
+
+  @override
+  String get notProvidedLabel => '제공되지 않음';
+
+  @override
+  String get expiryStatusValid => '유효';
+
+  @override
+  String get expiryStatusExpiringSoon => '곧 만료';
+
+  @override
+  String get expiryStatusExpired => '만료됨';
+
+  @override
+  String get selectExpiryDateButton => '면허 만료일 선택';
+
+  @override
+  String get languagesSectionTitle => '구사 가능 언어';
+
+  @override
+  String get tourTypesSectionTitle => '제공 투어';
+
+  @override
+  String get tourTypeBoatSafari => '보트 사파리';
+
+  @override
+  String get tourTypeWildlifeSafari => '야생동물 사파리';
+
+  @override
+  String get tourTypeHiking => '하이킹';
+
+  @override
+  String get tourTypeDiving => '다이빙';
+
+  @override
+  String get tourTypeCulturalTours => '문화 투어';
+
+  @override
+  String get reportReviewTitle => '리뷰 신고';
+
+  @override
+  String get reportReviewSubtitle => '이 리뷰를 신고하는 이유는 무엇인가요?';
+
+  @override
+  String get reportReasonInappropriate => '부적절한 콘텐츠';
+
+  @override
+  String get reportReasonSpam => '스팸';
+
+  @override
+  String get reportReasonHarassment => '괴롭힘';
+
+  @override
+  String get reportReasonOther => '기타';
+
+  @override
+  String get reportSubmittedMessage => '감사합니다 — 이 리뷰가 검토를 위해 신고되었습니다.';
+
+  @override
+  String get reportFailedMessage => '리뷰 신고에 실패했습니다. 다시 시도해 주세요.';
+
+  @override
+  String get filterSheetTitle => '가이드 필터';
+
+  @override
+  String get filterHasVehicle => '차량 보유';
+
+  @override
+  String get filterApplyButton => '필터 적용';
+
+  @override
+  String get filterClearButton => '지우기';
+
+  @override
+  String get filterRegionLabel => '지역';
+
+  @override
+  String get filterLanguageLabel => '언어';
 }

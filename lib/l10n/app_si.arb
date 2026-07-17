@@ -179,6 +179,7 @@
   "forgotPassword": "මුරපදය අමතකද?",
   "orContinueWith": "නැතහොත් මේවායින් ඉදිරියට යන්න",
   "googleLabel": "Google",
+  "appleLabel": "Apple",
   "zenithLockActive": "ZENITH අගුල සක්‍රියයි",
   "lockoutMessage": "අසාර්ථක උත්සාහයන් කිහිපයක් හඳුනාගන්නා ලදී.\nබලහත්කාරී ප්‍රහාර වැළැක්වීම සඳහා සම්බන්ධතාවය සීමා කර ඇත.",
   "timeRemaining": "ඉතිරි කාලය",
@@ -189,6 +190,10 @@
   },
   "googleSignInFailedPrefix": "Google පිවිසුම අසාර්ථකයි: {reason}",
   "@googleSignInFailedPrefix": {
+    "placeholders": { "reason": { "type": "String" } }
+  },
+  "appleSignInFailedPrefix": "Apple පිවිසුම අසාර්ථකයි: {reason}",
+  "@appleSignInFailedPrefix": {
     "placeholders": { "reason": { "type": "String" } }
   },
   "enterEmailFirst": "කරුණාකර ඔබේ ලියාපදිංචි විද්‍යුත් තැපැල් ලිපිනය මුලින්ම ඇතුළත් කරන්න.",
@@ -1942,5 +1947,71 @@
   "watch10SecPreviewButton": "තත්පර 10ක පෙරදසුන නරඹන්න",
   "watchAdUnlockSessionButton": "සැසිය අගුළු හැරීමට දැන්වීමක් නරඹන්න",
   "notNowButtonLabel": "දැන් නොවේ",
-  "ancientArtifactsLabel": "පුරාණ පුරාවස්තු"
+  "ancientArtifactsLabel": "පුරාණ පුරාවස්තු",
+
+  "adminGuideVerificationTile": "මාර්ගෝපදේශක සත්‍යාපන",
+  "adminVerificationConsoleTitle": "සත්‍යාපන කවුළුව",
+  "pendingReviewsSubtitle": "ඉදිරිපත් කළ මාර්ගෝපදේශක අයදුම්පත් සහ ලේඛන සමාලෝචනය කරන්න.",
+  "filterPending": "සමාලෝචනයට ඉතිරි",
+  "filterApproved": "අනුමත කළ",
+  "filterRejected": "ප්‍රතික්ෂේප කළ",
+  "filterExpiringSoon": "ඉක්මනින් කල් ඉකුත් වේ",
+  "filterExpired": "කල් ඉකුත් වූ",
+  "noApplicationsFoundMessage": "{filter} අයදුම්පත් නොමැත.",
+  "@noApplicationsFoundMessage": {
+    "placeholders": { "filter": { "type": "String" } }
+  },
+  "appliedOnLabel": "{date} දින අයදුම් කළා",
+  "@appliedOnLabel": {
+    "placeholders": { "date": { "type": "String" } }
+  },
+  "licenseNumberDisplayLabel": "බලපත්‍ර අංකය {number}",
+  "@licenseNumberDisplayLabel": {
+    "placeholders": { "number": { "type": "String" } }
+  },
+  "applicantDetailsTitle": "අයදුම්කරු පිළිබඳ විස්තර",
+  "bioLabel": "ජීව දත්ත",
+  "licenseDocumentLabel": "බලපත්‍ර ලේඛනය",
+  "nicDocumentLabel": "ජා.හැ.කා. ලේඛනය",
+  "selfiePhotoLabel": "සෙල්ෆි ඡායාරූපය",
+  "imageFailedToLoadMessage": "රූපය පූරණය වීමට අසමත් විය",
+  "noDocumentProvidedMessage": "ලේඛනයක් ලබා දී නොමැත",
+  "adminCommentHint": "අදහසක් එක් කරන්න (ප්‍රතික්ෂේප කිරීමට අවශ්‍යයි)",
+  "rejectionReasonRequiredMessage": "ප්‍රතික්ෂේප කිරීමට පෙර හේතුවක් එක් කරන්න.",
+  "approveButtonLabel": "අනුමත කරන්න",
+  "rejectButtonLabel": "ප්‍රතික්ෂේප කරන්න",
+  "applicationApprovedNoticeMessage": "අයදුම්පත අනුමත කරන ලදී.",
+  "applicationRejectedNoticeMessage": "අයදුම්පත ප්‍රතික්ෂේප කරන ලදී.",
+  "reviewActionFailedMessage": "සමාලෝචනය ඉදිරිපත් කිරීමට අසමත් විය: {error}",
+  "@reviewActionFailedMessage": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "licenseExpiryLabel": "බලපත්‍ර කල් ඉකුත් වීම",
+  "notProvidedLabel": "ලබා දී නොමැත",
+  "expiryStatusValid": "වලංගුයි",
+  "expiryStatusExpiringSoon": "ඉක්මනින් කල් ඉකුත් වේ",
+  "expiryStatusExpired": "කල් ඉකුත් වී ඇත",
+  "selectExpiryDateButton": "බලපත්‍ර කල් ඉකුත් වන දිනය තෝරන්න",
+
+  "languagesSectionTitle": "කථා කරන භාෂා",
+  "tourTypesSectionTitle": "සංචාරන ලබා දෙනු ලැබේ",
+  "tourTypeBoatSafari": "බෝට්ටු සෆාරි",
+  "tourTypeWildlifeSafari": "වන්‍යජීවී සෆාරි",
+  "tourTypeHiking": "කඳු නැගීම",
+  "tourTypeDiving": "කිමිදීම",
+  "tourTypeCulturalTours": "සංස්කෘතික සංචාර",
+  "reportReviewTitle": "සමාලෝචනය වාර්තා කරන්න",
+  "reportReviewSubtitle": "ඔබ මෙම සමාලෝචනය වාර්තා කරන්නේ ඇයි?",
+  "reportReasonInappropriate": "නුසුදුසු අන්තර්ගතය",
+  "reportReasonSpam": "ස්පෑම්",
+  "reportReasonHarassment": "හිරිහැරය",
+  "reportReasonOther": "වෙනත්",
+  "reportSubmittedMessage": "ස්තූතියි — මෙම සමාලෝචනය සමාලෝචනය සඳහා වාර්තා කර ඇත.",
+  "reportFailedMessage": "මෙම සමාලෝචනය වාර්තා කිරීමට අසමත් විය. නැවත උත්සාහ කරන්න.",
+  "filterSheetTitle": "මාර්ගෝපදේශකයින් පෙරහන් කරන්න",
+  "filterHasVehicle": "වාහනයක් තිබේ",
+  "filterApplyButton": "පෙරහන් යොදන්න",
+  "filterClearButton": "ඉවත් කරන්න",
+  "filterRegionLabel": "ප්‍රදේශය",
+  "filterLanguageLabel": "භාෂාව"
 }

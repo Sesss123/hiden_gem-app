@@ -68,6 +68,7 @@ __pycache__/
 
 # Secrets & API Keys
 .env
+google-services.json
 backend/.env
 backend/serviceAccountKey.json
 backend/data/api_keys_config.json

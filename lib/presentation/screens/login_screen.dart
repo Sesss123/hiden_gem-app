@@ -1,3 +1,5 @@
+import 'dart:io' show Platform;
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter/services.dart';
@@ -247,6 +249,54 @@ class _LoginScreenState extends State<LoginScreen> {
                   Expanded(
                     child: Text(
                       AppLocalizations.of(context)!.googleSignInFailedPrefix(_mapAuthException(context, e)),
+                      style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _handleAppleSignIn() async {
+    setState(() => _isLoading = true);
+    try {
+      final user = await _authService.signInWithApple();
+      if (!mounted) return;
+      setState(() => _isLoading = false);
+
+      if (user != null) {
+        final profile = UserPreferenceService.getProfile();
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => profile.hasAgreedToTerms
+                ? const HomeScreen()
+                : const TermsScreen(),
+          ),
+        );
+      }
+    } catch (e) {
+      setState(() => _isLoading = false);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: AppTheme.colors.transparent,
+            elevation: 0,
+            content: OracleUI.glassContainer(
+              padding: const EdgeInsets.all(16),
+              borderColor: AppTheme.colors.redAccent.withValues(alpha: 0.3),
+              child: Row(
+                children: [
+                  Icon(Icons.error_outline_rounded, color: AppTheme.colors.redAccent),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      AppLocalizations.of(context)!.appleSignInFailedPrefix(_mapAuthException(context, e)),
                       style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.bold),
                     ),
                   ),
@@ -513,6 +563,42 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ),
                         ),
+                        if (!kIsWeb && Platform.isIOS) ...[
+                          const SizedBox(height: 12),
+                          Container(
+                            height: 52,
+                            decoration: BoxDecoration(
+                              color: isDark ? AppTheme.colors.white.withValues(alpha: 0.03) : AppTheme.colors.white,
+                              borderRadius: BorderRadius.circular(100),
+                              border: Border.all(
+                                color: AppTheme.secondaryBorder(context),
+                                width: 1.5,
+                              ),
+                            ),
+                            child: Material(
+                              color: AppTheme.colors.transparent,
+                              child: InkWell(
+                                onTap: _isLoading ? null : _handleAppleSignIn,
+                                borderRadius: BorderRadius.circular(100),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(Icons.apple, size: 22, color: AppTheme.textPrimary(context)),
+                                    const SizedBox(width: 10),
+                                    Text(
+                                      l10n.appleLabel,
+                                      style: GoogleFonts.inter(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 13,
+                                        color: AppTheme.textPrimary(context),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ],
                     ),
                   ),

@@ -10,8 +10,10 @@ import '../../data/repositories/marketplace_repository.dart';
 import '../controllers/marketplace_search_controller.dart';
 import '../widgets/marketplace_search_bar.dart';
 import '../widgets/cached_image.dart';
+import '../widgets/guide_rating_badge.dart';
 import 'guide_public_profile_screen.dart';
 import '../../l10n/app_localizations.dart';
+import '../../core/constants/tour_types.dart';
 
 class MarketplaceResultsScreen extends ConsumerStatefulWidget {
   const MarketplaceResultsScreen({super.key});
@@ -25,15 +27,12 @@ class _MarketplaceResultsScreenState extends ConsumerState<MarketplaceResultsScr
   late Future<List<GuideListing>> _defaultListingsFuture;
   String? _selectedCategory;
 
-  final List<String> _categories = [
-    'All',
-    'Chauffeur',
-    'Site Guide',
-    'Adventure',
-    'Wildlife',
-    'Heritage',
-    'Photography',
-  ];
+  final List<String> _categories = ['All', ...kGuideCategories];
+
+  String? _selectedRegion;
+  String? _selectedLanguage;
+  String? _selectedTourType;
+  bool _vehicleFilterOn = false;
 
   @override
   void initState() {
@@ -70,12 +69,23 @@ class _MarketplaceResultsScreenState extends ConsumerState<MarketplaceResultsScr
     setState(() {
       _selectedCategory = category == 'All' ? null : category;
     });
+    _runSearch();
+  }
+
+  bool get _hasActiveFilters =>
+      _selectedRegion != null || _selectedLanguage != null || _selectedTourType != null || _vehicleFilterOn;
+
+  void _runSearch() {
     final controller = ref.read(marketplaceSearchControllerProvider.notifier);
     final currentQuery = ref.read(marketplaceSearchControllerProvider).normalizedQuery;
-    if (currentQuery.length >= 2 || _selectedCategory != null) {
+    if (currentQuery.length >= 2 || _selectedCategory != null || _hasActiveFilters) {
       controller.search(
         currentQuery.isEmpty ? 'a' : currentQuery,
         category: _selectedCategory,
+        region: _selectedRegion,
+        language: _selectedLanguage,
+        vehicleRequired: _vehicleFilterOn ? true : null,
+        tourType: _selectedTourType,
       );
     } else {
       controller.clear();
@@ -83,6 +93,162 @@ class _MarketplaceResultsScreenState extends ConsumerState<MarketplaceResultsScr
         _defaultListingsFuture = _loadDefaultListings();
       });
     }
+  }
+
+  Widget _buildFilterButton(BuildContext context) {
+    return GestureDetector(
+      onTap: () => _showFilterSheet(context),
+      child: Container(
+        width: 44,
+        height: 44,
+        margin: const EdgeInsets.only(left: 8),
+        decoration: BoxDecoration(
+          color: _hasActiveFilters ? Theme.of(context).colorScheme.primary : AppTheme.surfaceMuted(context),
+          shape: BoxShape.circle,
+        ),
+        child: Icon(
+          Icons.tune_rounded,
+          color: _hasActiveFilters ? AppTheme.colors.white : AppTheme.textSecondary(context),
+          size: 20,
+        ),
+      ),
+    );
+  }
+
+  void _showFilterSheet(BuildContext context) {
+    String? sheetRegion = _selectedRegion;
+    String? sheetLanguage = _selectedLanguage;
+    String? sheetTourType = _selectedTourType;
+    bool sheetVehicle = _vehicleFilterOn;
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppTheme.colors.transparent,
+      isScrollControlled: true,
+      builder: (sheetContext) => StatefulBuilder(
+        builder: (sheetContext, setSheetState) {
+          final l10n = AppLocalizations.of(sheetContext)!;
+          return Container(
+            padding: EdgeInsets.only(
+              left: 24, right: 24, top: 24,
+              bottom: 24 + MediaQuery.of(sheetContext).viewInsets.bottom,
+            ),
+            decoration: BoxDecoration(
+              color: Theme.of(sheetContext).colorScheme.surface,
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+            ),
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Center(
+                    child: Container(
+                      width: 40, height: 4,
+                      decoration: BoxDecoration(color: AppTheme.surfaceMuted(sheetContext), borderRadius: BorderRadius.circular(2)),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Text(
+                    l10n.filterSheetTitle,
+                    style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.w800, color: AppTheme.textPrimary(sheetContext)),
+                  ),
+                  const SizedBox(height: 20),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    decoration: BoxDecoration(color: AppTheme.surfaceMuted(sheetContext), borderRadius: BorderRadius.circular(16)),
+                    child: SwitchListTile(
+                      title: Text(l10n.filterHasVehicle, style: GoogleFonts.inter(color: AppTheme.textPrimary(sheetContext), fontWeight: FontWeight.w600)),
+                      value: sheetVehicle,
+                      activeThumbColor: Theme.of(sheetContext).colorScheme.primary,
+                      contentPadding: EdgeInsets.zero,
+                      onChanged: (val) => setSheetState(() => sheetVehicle = val),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Text(l10n.tourTypesSectionTitle, style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.w700, color: AppTheme.textPrimary(sheetContext))),
+                  const SizedBox(height: 12),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: kTourTypes.map((tourType) {
+                      final isSelected = sheetTourType == tourType.fieldKey;
+                      return GestureDetector(
+                        onTap: () => setSheetState(() => sheetTourType = isSelected ? null : tourType.fieldKey),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                          decoration: BoxDecoration(
+                            color: isSelected ? Theme.of(sheetContext).colorScheme.primary : AppTheme.surfaceMuted(sheetContext),
+                            borderRadius: BorderRadius.circular(100),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(tourType.icon, size: 16, color: isSelected ? AppTheme.colors.white : AppTheme.textSecondary(sheetContext)),
+                              const SizedBox(width: 6),
+                              Text(
+                                tourType.label(l10n),
+                                style: GoogleFonts.inter(color: isSelected ? AppTheme.colors.white : AppTheme.textSecondary(sheetContext), fontWeight: FontWeight.w600, fontSize: 13),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                  const SizedBox(height: 24),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: () {
+                            setSheetState(() {
+                              sheetRegion = null;
+                              sheetLanguage = null;
+                              sheetTourType = null;
+                              sheetVehicle = false;
+                            });
+                          },
+                          style: OutlinedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
+                          ),
+                          child: Text(l10n.filterClearButton, style: GoogleFonts.inter(fontWeight: FontWeight.w700)),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        flex: 2,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            setState(() {
+                              _selectedRegion = sheetRegion;
+                              _selectedLanguage = sheetLanguage;
+                              _selectedTourType = sheetTourType;
+                              _vehicleFilterOn = sheetVehicle;
+                            });
+                            Navigator.pop(sheetContext);
+                            _runSearch();
+                          },
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            backgroundColor: Theme.of(sheetContext).colorScheme.primary,
+                            foregroundColor: AppTheme.colors.white,
+                            elevation: 0,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
+                          ),
+                          child: Text(l10n.filterApplyButton, style: GoogleFonts.inter(fontWeight: FontWeight.w700)),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
   }
 
   @override
@@ -108,7 +274,13 @@ class _MarketplaceResultsScreenState extends ConsumerState<MarketplaceResultsScr
                   },
                 ),
               ),
-              _buildCategoryChips(context),
+              Row(
+                children: [
+                  Expanded(child: _buildCategoryChips(context)),
+                  _buildFilterButton(context),
+                  const SizedBox(width: 20),
+                ],
+              ),
               const SizedBox(height: 10),
               Expanded(
                 child: isSearching
@@ -250,11 +422,7 @@ class _MarketplaceResultsScreenState extends ConsumerState<MarketplaceResultsScr
       return _buildErrorState(
         context,
         state.error!,
-        onRetry: () {
-          final controller = ref.read(marketplaceSearchControllerProvider.notifier);
-          final query = ref.read(marketplaceSearchControllerProvider).normalizedQuery;
-          controller.search(query.isEmpty ? 'a' : query, category: _selectedCategory);
-        },
+        onRetry: _runSearch,
       );
     }
     if (state.results.isEmpty) {
@@ -329,8 +497,7 @@ class _MarketplaceResultsScreenState extends ConsumerState<MarketplaceResultsScr
     return RefreshIndicator(
       onRefresh: () async {
         if (isPaginated) {
-          final query = ref.read(marketplaceSearchControllerProvider).normalizedQuery;
-          ref.read(marketplaceSearchControllerProvider.notifier).search(query, category: _selectedCategory);
+          _runSearch();
         } else {
           setState(() {
             _defaultListingsFuture = _loadDefaultListings();
@@ -432,27 +599,7 @@ class _MarketplaceResultsScreenState extends ConsumerState<MarketplaceResultsScr
                             ),
                           ),
                         ),
-                        Row(
-                          children: [
-                            Icon(Icons.star_rounded, color: AppTheme.colors.amber, size: 18),
-                            const SizedBox(width: 4),
-                            Text(
-                              listing.ratingAverage.toStringAsFixed(1),
-                              style: GoogleFonts.outfit(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14,
-                                color: AppTheme.textPrimary(context),
-                              ),
-                            ),
-                            Text(
-                              AppLocalizations.of(context)!.reviewCountSuffix(listing.reviewCount),
-                              style: GoogleFonts.inter(
-                                fontSize: 12,
-                                color: AppTheme.textSecondary(context),
-                              ),
-                            ),
-                          ],
-                        ),
+                        GuideRatingBadge(rating: listing.ratingAverage, reviewCount: listing.reviewCount),
                       ],
                     ),
                     const SizedBox(height: 8),
@@ -497,6 +644,7 @@ class _MarketplaceResultsScreenState extends ConsumerState<MarketplaceResultsScr
                         ),
                       ],
                     ),
+                    _buildTourTypeBadgeRow(context, listing),
                   ],
                 ),
               ),
@@ -507,5 +655,35 @@ class _MarketplaceResultsScreenState extends ConsumerState<MarketplaceResultsScr
         ),
       ),
     );
+  }
+
+  Widget _buildTourTypeBadgeRow(BuildContext context, GuideListing listing) {
+    final active = kTourTypes.where((t) => _tourTypeFlag(listing, t.fieldKey)).toList();
+    if (active.isEmpty) return const SizedBox.shrink();
+    return Padding(
+      padding: const EdgeInsets.only(top: 6),
+      child: Row(
+        children: active
+            .map((t) => Padding(
+                  padding: const EdgeInsets.only(right: 6),
+                  child: Tooltip(
+                    message: t.label(AppLocalizations.of(context)!),
+                    child: Icon(t.icon, size: 15, color: Theme.of(context).colorScheme.primary),
+                  ),
+                ))
+            .toList(),
+      ),
+    );
+  }
+
+  bool _tourTypeFlag(GuideListing listing, String fieldKey) {
+    switch (fieldKey) {
+      case 'doesBoatSafari': return listing.doesBoatSafari;
+      case 'doesWildlifeSafari': return listing.doesWildlifeSafari;
+      case 'doesHiking': return listing.doesHiking;
+      case 'doesDiving': return listing.doesDiving;
+      case 'doesCulturalTours': return listing.doesCulturalTours;
+      default: return false;
+    }
   }
 }

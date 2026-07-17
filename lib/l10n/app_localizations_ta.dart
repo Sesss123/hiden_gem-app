@@ -569,6 +569,9 @@ class AppLocalizationsTa extends AppLocalizations {
   String get googleLabel => 'Google';
 
   @override
+  String get appleLabel => 'Apple';
+
+  @override
   String get zenithLockActive => 'ZENITH பூட்டு செயலில் உள்ளது';
 
   @override
@@ -589,6 +592,11 @@ class AppLocalizationsTa extends AppLocalizations {
   @override
   String googleSignInFailedPrefix(String reason) {
     return 'Google உள்நுழைவு தோல்வியடைந்தது: $reason';
+  }
+
+  @override
+  String appleSignInFailedPrefix(String reason) {
+    return 'Apple உள்நுழைவு தோல்வியடைந்தது: $reason';
   }
 
   @override
@@ -4909,4 +4917,176 @@ class AppLocalizationsTa extends AppLocalizations {
 
   @override
   String get ancientArtifactsLabel => 'பண்டைய பொருட்கள்';
+
+  @override
+  String get adminGuideVerificationTile => 'வழிகாட்டி சரிபார்ப்புகள்';
+
+  @override
+  String get adminVerificationConsoleTitle => 'சரிபார்ப்பு கட்டுப்பாட்டு பலகை';
+
+  @override
+  String get pendingReviewsSubtitle =>
+      'சமர்ப்பிக்கப்பட்ட வழிகாட்டி விண்ணப்பங்கள் மற்றும் ஆவணங்களை மதிப்பாய்வு செய்யவும்.';
+
+  @override
+  String get filterPending => 'நிலுவையில்';
+
+  @override
+  String get filterApproved => 'அங்கீகரிக்கப்பட்டது';
+
+  @override
+  String get filterRejected => 'நிராகரிக்கப்பட்டது';
+
+  @override
+  String get filterExpiringSoon => 'விரைவில் காலாவதியாகிறது';
+
+  @override
+  String get filterExpired => 'காலாவதியானது';
+
+  @override
+  String noApplicationsFoundMessage(String filter) {
+    return '$filter விண்ணப்பங்கள் எதுவும் இல்லை.';
+  }
+
+  @override
+  String appliedOnLabel(String date) {
+    return '$date அன்று விண்ணப்பிக்கப்பட்டது';
+  }
+
+  @override
+  String licenseNumberDisplayLabel(String number) {
+    return 'உரிம எண். $number';
+  }
+
+  @override
+  String get applicantDetailsTitle => 'விண்ணப்பதாரர் விவரங்கள்';
+
+  @override
+  String get bioLabel => 'சுயவிவரம்';
+
+  @override
+  String get licenseDocumentLabel => 'உரிம ஆவணம்';
+
+  @override
+  String get nicDocumentLabel => 'தே.அ.அ ஆவணம்';
+
+  @override
+  String get selfiePhotoLabel => 'செல்·பி புகைப்படம்';
+
+  @override
+  String get imageFailedToLoadMessage => 'படத்தை ஏற்ற முடியவில்லை';
+
+  @override
+  String get noDocumentProvidedMessage => 'ஆவணம் எதுவும் வழங்கப்படவில்லை';
+
+  @override
+  String get adminCommentHint =>
+      'ஒரு கருத்தைச் சேர்க்கவும் (நிராகரிக்க அவசியம்)';
+
+  @override
+  String get rejectionReasonRequiredMessage =>
+      'நிராகரிக்கும் முன் ஒரு காரணத்தைச் சேர்க்கவும்.';
+
+  @override
+  String get approveButtonLabel => 'அங்கீகரி';
+
+  @override
+  String get rejectButtonLabel => 'நிராகரி';
+
+  @override
+  String get applicationApprovedNoticeMessage =>
+      'விண்ணப்பம் அங்கீகரிக்கப்பட்டது.';
+
+  @override
+  String get applicationRejectedNoticeMessage =>
+      'விண்ணப்பம் நிராகரிக்கப்பட்டது.';
+
+  @override
+  String reviewActionFailedMessage(String error) {
+    return 'மதிப்பாய்வைச் சமர்ப்பிக்க முடியவில்லை: $error';
+  }
+
+  @override
+  String get licenseExpiryLabel => 'உரிமத்தின் காலாவதி';
+
+  @override
+  String get notProvidedLabel => 'வழங்கப்படவில்லை';
+
+  @override
+  String get expiryStatusValid => 'செல்லுபடியாகும்';
+
+  @override
+  String get expiryStatusExpiringSoon => 'விரைவில் காலாவதியாகிறது';
+
+  @override
+  String get expiryStatusExpired => 'காலாவதியானது';
+
+  @override
+  String get selectExpiryDateButton =>
+      'உரிமத்தின் காலாவதி தேதியைத் தேர்ந்தெடுக்கவும்';
+
+  @override
+  String get languagesSectionTitle => 'பேசும் மொழிகள்';
+
+  @override
+  String get tourTypesSectionTitle => 'வழங்கப்படும் சுற்றுலாக்கள்';
+
+  @override
+  String get tourTypeBoatSafari => 'படகு சபாரி';
+
+  @override
+  String get tourTypeWildlifeSafari => 'வனவிலங்கு சபாரி';
+
+  @override
+  String get tourTypeHiking => 'மலையேற்றம்';
+
+  @override
+  String get tourTypeDiving => 'நீர்மூழ்குதல்';
+
+  @override
+  String get tourTypeCulturalTours => 'கலாச்சார சுற்றுலாக்கள்';
+
+  @override
+  String get reportReviewTitle => 'மதிப்பாய்வைப் புகாரளி';
+
+  @override
+  String get reportReviewSubtitle => 'இந்த மதிப்பாய்வை ஏன் புகாரளிக்கிறீர்கள்?';
+
+  @override
+  String get reportReasonInappropriate => 'பொருத்தமற்ற உள்ளடக்கம்';
+
+  @override
+  String get reportReasonSpam => 'ஸ்பேம்';
+
+  @override
+  String get reportReasonHarassment => 'துன்புறுத்தல்';
+
+  @override
+  String get reportReasonOther => 'மற்றவை';
+
+  @override
+  String get reportSubmittedMessage =>
+      'நன்றி — இந்த மதிப்பாய்வு மேலாய்வுக்காக புகாரளிக்கப்பட்டுள்ளது.';
+
+  @override
+  String get reportFailedMessage =>
+      'இந்த மதிப்பாய்வைப் புகாரளிக்க முடியவில்லை. மீண்டும் முயற்சிக்கவும்.';
+
+  @override
+  String get filterSheetTitle => 'வழிகாட்டிகளை வடிகட்டு';
+
+  @override
+  String get filterHasVehicle => 'வாகனம் உள்ளது';
+
+  @override
+  String get filterApplyButton => 'வடிப்பான்களைப் பயன்படுத்து';
+
+  @override
+  String get filterClearButton => 'அழி';
+
+  @override
+  String get filterRegionLabel => 'பிராந்தியம்';
+
+  @override
+  String get filterLanguageLabel => 'மொழி';
 }

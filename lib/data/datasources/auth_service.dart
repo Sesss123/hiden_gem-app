@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -11,6 +12,8 @@ import 'user_preference_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'dart:math';
+import 'package:crypto/crypto.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -75,6 +78,54 @@ class AuthService {
     }
   }
 
+
+  // Sign in with Apple (App Store Guideline 4.8 — required alongside Google Sign-In)
+  Future<UserCredential?> signInWithApple() async {
+    try {
+      final rawNonce = _generateNonce();
+      final nonce = _sha256ofString(rawNonce);
+
+      final appleCredential = await SignInWithApple.getAppleIDCredential(
+        scopes: [
+          AppleIDAuthorizationScopes.email,
+          AppleIDAuthorizationScopes.fullName,
+        ],
+        nonce: nonce,
+      );
+
+      final oauthCredential = OAuthProvider("apple.com").credential(
+        idToken: appleCredential.identityToken,
+        rawNonce: rawNonce,
+      );
+
+      final UserCredential userCredential =
+          await _auth.signInWithCredential(oauthCredential);
+      if (userCredential.user != null) {
+        // Apple only returns givenName/familyName on the FIRST authorization
+        // ever — Firebase's displayName is usually null for Apple sign-ins,
+        // so pass it through explicitly when available.
+        final name = [appleCredential.givenName, appleCredential.familyName]
+            .whereType<String>()
+            .join(' ')
+            .trim();
+        await _syncUserData(userCredential.user!, name: name.isEmpty ? null : name);
+      }
+      return userCredential;
+    } catch (e) {
+      SecureLogger.error("Error during Apple Sign-In: $e");
+      rethrow;
+    }
+  }
+
+  String _generateNonce([int length = 32]) {
+    const charset = '0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._';
+    final random = Random.secure();
+    return List.generate(length, (_) => charset[random.nextInt(charset.length)]).join();
+  }
+
+  String _sha256ofString(String input) {
+    return sha256.convert(utf8.encode(input)).toString();
+  }
 
   // Send password reset email
   Future<void> sendPasswordResetEmail(String email) async {

@@ -350,6 +350,15 @@ class _GuideReviewsScreenState extends ConsumerState<GuideReviewsScreen> {
                     ],
                   ),
                 ),
+                const SizedBox(width: 8),
+                InkWell(
+                  onTap: () => _showReportDialog(context, review.reviewId),
+                  borderRadius: BorderRadius.circular(100),
+                  child: Padding(
+                    padding: const EdgeInsets.all(4),
+                    child: Icon(Icons.flag_outlined, size: 16, color: AppTheme.textSecondary(context)),
+                  ),
+                ),
               ],
             ),
             const SizedBox(height: 16),
@@ -383,6 +392,62 @@ class _GuideReviewsScreenState extends ConsumerState<GuideReviewsScreen> {
         ),
       );
     });
+  }
+
+  void _showReportDialog(BuildContext context, String reviewId) {
+    final l10n = AppLocalizations.of(context)!;
+    final reasons = [
+      l10n.reportReasonInappropriate,
+      l10n.reportReasonSpam,
+      l10n.reportReasonHarassment,
+      l10n.reportReasonOther,
+    ];
+
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n.reportReviewTitle, style: GoogleFonts.outfit(fontWeight: FontWeight.w700)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(l10n.reportReviewSubtitle, style: GoogleFonts.inter(fontSize: 13, color: AppTheme.textSecondary(dialogContext))),
+            const SizedBox(height: 16),
+            ...reasons.map((reason) => ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: Text(reason, style: GoogleFonts.inter(fontSize: 14)),
+                  onTap: () {
+                    Navigator.pop(dialogContext);
+                    _submitReport(reviewId, reason);
+                  },
+                )),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: Text(l10n.cancelButton),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _submitReport(String reviewId, String reason) async {
+    final l10n = AppLocalizations.of(context)!;
+    try {
+      await ReviewRepository().flagReview(reviewId, reason);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.reportSubmittedMessage)),
+      );
+    } catch (e) {
+      SecureLogger.error("Failed to flag review", e);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.reportFailedMessage), backgroundColor: AppTheme.colors.redAccent),
+      );
+    }
   }
 
   Widget _buildEmptyState() {

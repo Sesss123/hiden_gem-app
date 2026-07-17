@@ -37,6 +37,7 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
   bool _isLoading = false;
   String? _loadingStatus;
   String _selectedCategory = 'National';
+  DateTime? _licenseExpiryDate;
   String? _rejectionReason;
   GuideStatus _currentStatus = GuideStatus.none;
   Timer? _pollTimer;
@@ -202,6 +203,19 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
     OracleNotification.show(context, text, isError: isError);
   }
 
+  Future<void> _pickLicenseExpiryDate() async {
+    final now = DateTime.now();
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: _licenseExpiryDate ?? now.add(const Duration(days: 365)),
+      firstDate: now,
+      lastDate: now.add(const Duration(days: 3650)),
+    );
+    if (picked != null && mounted) {
+      setState(() => _licenseExpiryDate = picked);
+    }
+  }
+
   Future<void> _submitApplication() async {
     final l10n = AppLocalizations.of(context)!;
     // 1. Basic UI Check
@@ -249,6 +263,7 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
         selfieDocUrl: selfieUrl,
         status: GuideStatus.pending,
         appliedAt: DateTime.now(),
+        licenseExpiryDate: _licenseExpiryDate,
       );
 
       await _repo.submitApplication(application);
@@ -562,6 +577,8 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
                       _bioController,
                       maxLines: 4,
                     ).animate().fadeIn(delay: 400.ms, duration: 800.ms).slideX(begin: 0.1, end: 0),
+                    const SizedBox(height: 24),
+                    _buildExpiryDatePicker(l10n),
                     const SizedBox(height: 28),
                     Text(
                       l10n.verificationDocumentsTitle,
@@ -675,6 +692,38 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
       default:
         return cat;
     }
+  }
+
+  Widget _buildExpiryDatePicker(AppLocalizations l10n) {
+    final label = _licenseExpiryDate != null
+        ? "${_licenseExpiryDate!.year}-${_licenseExpiryDate!.month.toString().padLeft(2, '0')}-${_licenseExpiryDate!.day.toString().padLeft(2, '0')}"
+        : l10n.selectExpiryDateButton;
+    return InkWell(
+      onTap: _pickLicenseExpiryDate,
+      borderRadius: BorderRadius.circular(14),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        decoration: BoxDecoration(
+          color: AppTheme.surfaceMuted(context),
+          borderRadius: BorderRadius.circular(14),
+        ),
+        child: Row(
+          children: [
+            Icon(
+              _licenseExpiryDate == null ? Icons.event_outlined : Icons.check_circle_rounded,
+              color: _licenseExpiryDate == null ? AppTheme.textSecondary(context) : AppTheme.colors.greenAccent,
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Text(
+                label,
+                style: GoogleFonts.inter(color: AppTheme.textPrimary(context), fontSize: 13, fontWeight: FontWeight.w500),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget _buildDocPicker(String label, XFile? file, VoidCallback onTap) {

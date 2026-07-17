@@ -567,6 +567,9 @@ class AppLocalizationsSi extends AppLocalizations {
   String get googleLabel => 'Google';
 
   @override
+  String get appleLabel => 'Apple';
+
+  @override
   String get zenithLockActive => 'ZENITH අගුල සක්‍රියයි';
 
   @override
@@ -587,6 +590,11 @@ class AppLocalizationsSi extends AppLocalizations {
   @override
   String googleSignInFailedPrefix(String reason) {
     return 'Google පිවිසුම අසාර්ථකයි: $reason';
+  }
+
+  @override
+  String appleSignInFailedPrefix(String reason) {
+    return 'Apple පිවිසුම අසාර්ථකයි: $reason';
   }
 
   @override
@@ -4871,4 +4879,174 @@ class AppLocalizationsSi extends AppLocalizations {
 
   @override
   String get ancientArtifactsLabel => 'පුරාණ පුරාවස්තු';
+
+  @override
+  String get adminGuideVerificationTile => 'මාර්ගෝපදේශක සත්‍යාපන';
+
+  @override
+  String get adminVerificationConsoleTitle => 'සත්‍යාපන කවුළුව';
+
+  @override
+  String get pendingReviewsSubtitle =>
+      'ඉදිරිපත් කළ මාර්ගෝපදේශක අයදුම්පත් සහ ලේඛන සමාලෝචනය කරන්න.';
+
+  @override
+  String get filterPending => 'සමාලෝචනයට ඉතිරි';
+
+  @override
+  String get filterApproved => 'අනුමත කළ';
+
+  @override
+  String get filterRejected => 'ප්‍රතික්ෂේප කළ';
+
+  @override
+  String get filterExpiringSoon => 'ඉක්මනින් කල් ඉකුත් වේ';
+
+  @override
+  String get filterExpired => 'කල් ඉකුත් වූ';
+
+  @override
+  String noApplicationsFoundMessage(String filter) {
+    return '$filter අයදුම්පත් නොමැත.';
+  }
+
+  @override
+  String appliedOnLabel(String date) {
+    return '$date දින අයදුම් කළා';
+  }
+
+  @override
+  String licenseNumberDisplayLabel(String number) {
+    return 'බලපත්‍ර අංකය $number';
+  }
+
+  @override
+  String get applicantDetailsTitle => 'අයදුම්කරු පිළිබඳ විස්තර';
+
+  @override
+  String get bioLabel => 'ජීව දත්ත';
+
+  @override
+  String get licenseDocumentLabel => 'බලපත්‍ර ලේඛනය';
+
+  @override
+  String get nicDocumentLabel => 'ජා.හැ.කා. ලේඛනය';
+
+  @override
+  String get selfiePhotoLabel => 'සෙල්ෆි ඡායාරූපය';
+
+  @override
+  String get imageFailedToLoadMessage => 'රූපය පූරණය වීමට අසමත් විය';
+
+  @override
+  String get noDocumentProvidedMessage => 'ලේඛනයක් ලබා දී නොමැත';
+
+  @override
+  String get adminCommentHint =>
+      'අදහසක් එක් කරන්න (ප්‍රතික්ෂේප කිරීමට අවශ්‍යයි)';
+
+  @override
+  String get rejectionReasonRequiredMessage =>
+      'ප්‍රතික්ෂේප කිරීමට පෙර හේතුවක් එක් කරන්න.';
+
+  @override
+  String get approveButtonLabel => 'අනුමත කරන්න';
+
+  @override
+  String get rejectButtonLabel => 'ප්‍රතික්ෂේප කරන්න';
+
+  @override
+  String get applicationApprovedNoticeMessage => 'අයදුම්පත අනුමත කරන ලදී.';
+
+  @override
+  String get applicationRejectedNoticeMessage =>
+      'අයදුම්පත ප්‍රතික්ෂේප කරන ලදී.';
+
+  @override
+  String reviewActionFailedMessage(String error) {
+    return 'සමාලෝචනය ඉදිරිපත් කිරීමට අසමත් විය: $error';
+  }
+
+  @override
+  String get licenseExpiryLabel => 'බලපත්‍ර කල් ඉකුත් වීම';
+
+  @override
+  String get notProvidedLabel => 'ලබා දී නොමැත';
+
+  @override
+  String get expiryStatusValid => 'වලංගුයි';
+
+  @override
+  String get expiryStatusExpiringSoon => 'ඉක්මනින් කල් ඉකුත් වේ';
+
+  @override
+  String get expiryStatusExpired => 'කල් ඉකුත් වී ඇත';
+
+  @override
+  String get selectExpiryDateButton => 'බලපත්‍ර කල් ඉකුත් වන දිනය තෝරන්න';
+
+  @override
+  String get languagesSectionTitle => 'කථා කරන භාෂා';
+
+  @override
+  String get tourTypesSectionTitle => 'සංචාරන ලබා දෙනු ලැබේ';
+
+  @override
+  String get tourTypeBoatSafari => 'බෝට්ටු සෆාරි';
+
+  @override
+  String get tourTypeWildlifeSafari => 'වන්‍යජීවී සෆාරි';
+
+  @override
+  String get tourTypeHiking => 'කඳු නැගීම';
+
+  @override
+  String get tourTypeDiving => 'කිමිදීම';
+
+  @override
+  String get tourTypeCulturalTours => 'සංස්කෘතික සංචාර';
+
+  @override
+  String get reportReviewTitle => 'සමාලෝචනය වාර්තා කරන්න';
+
+  @override
+  String get reportReviewSubtitle => 'ඔබ මෙම සමාලෝචනය වාර්තා කරන්නේ ඇයි?';
+
+  @override
+  String get reportReasonInappropriate => 'නුසුදුසු අන්තර්ගතය';
+
+  @override
+  String get reportReasonSpam => 'ස්පෑම්';
+
+  @override
+  String get reportReasonHarassment => 'හිරිහැරය';
+
+  @override
+  String get reportReasonOther => 'වෙනත්';
+
+  @override
+  String get reportSubmittedMessage =>
+      'ස්තූතියි — මෙම සමාලෝචනය සමාලෝචනය සඳහා වාර්තා කර ඇත.';
+
+  @override
+  String get reportFailedMessage =>
+      'මෙම සමාලෝචනය වාර්තා කිරීමට අසමත් විය. නැවත උත්සාහ කරන්න.';
+
+  @override
+  String get filterSheetTitle => 'මාර්ගෝපදේශකයින් පෙරහන් කරන්න';
+
+  @override
+  String get filterHasVehicle => 'වාහනයක් තිබේ';
+
+  @override
+  String get filterApplyButton => 'පෙරහන් යොදන්න';
+
+  @override
+  String get filterClearButton => 'ඉවත් කරන්න';
+
+  @override
+  String get filterRegionLabel => 'ප්‍රදේශය';
+
+  @override
+  String get filterLanguageLabel => 'භාෂාව';
 }

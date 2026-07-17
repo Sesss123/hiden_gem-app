@@ -182,6 +182,7 @@
   "forgotPassword": "Забыли пароль?",
   "orContinueWith": "или продолжить с",
   "googleLabel": "Google",
+  "appleLabel": "Apple",
   "zenithLockActive": "БЛОКИРОВКА АКТИВНА",
   "lockoutMessage": "Обнаружено несколько неудачных попыток.\nНейросвязь ограничена для предотвращения подбора пароля.",
   "timeRemaining": "ОСТАВШЕЕСЯ ВРЕМЯ",
@@ -192,6 +193,10 @@
   },
   "googleSignInFailedPrefix": "Ошибка входа через Google: {reason}",
   "@googleSignInFailedPrefix": {
+    "placeholders": { "reason": { "type": "String" } }
+  },
+  "appleSignInFailedPrefix": "Ошибка входа через Apple: {reason}",
+  "@appleSignInFailedPrefix": {
     "placeholders": { "reason": { "type": "String" } }
   },
   "enterEmailFirst": "Пожалуйста, сначала введите ваш зарегистрированный адрес электронной почты.",
@@ -1094,7 +1099,7 @@
   "applicationUnderReviewTitle": "Заявка на рассмотрении",
   "applicationUnderReviewMessage": "Ваша заявка на статус гида отправлена и сейчас рассматривается. Вы будете уведомлены, как только будет принято решение.",
   "applicationRejectedTitle": "Заявка отклонена",
-  "applicationRejectedMessage": "Причина: {reason}\n\nВы можете повторно подать заявку ниже после устранения необходимых замечаний.",
+  "applicationRejectedMessage": "Причина: {reason}\n\nВы можете повторно подать заявку ниже после исправления необходимых пунктов.",
   "@applicationRejectedMessage": {
     "placeholders": { "reason": { "type": "String" } }
   },
@@ -1945,5 +1950,71 @@
   "watch10SecPreviewButton": "Посмотреть 10-секундный превью",
   "watchAdUnlockSessionButton": "Посмотреть рекламу, чтобы разблокировать сессию",
   "notNowButtonLabel": "Не сейчас",
-  "ancientArtifactsLabel": "ДРЕВНИЕ АРТЕФАКТЫ"
+  "ancientArtifactsLabel": "ДРЕВНИЕ АРТЕФАКТЫ",
+
+  "adminGuideVerificationTile": "Верификация гидов",
+  "adminVerificationConsoleTitle": "Консоль верификации",
+  "pendingReviewsSubtitle": "Просмотр поданных заявок гидов и документов.",
+  "filterPending": "На рассмотрении",
+  "filterApproved": "Одобрено",
+  "filterRejected": "Отклонено",
+  "filterExpiringSoon": "Скоро истекает",
+  "filterExpired": "Истёк срок",
+  "noApplicationsFoundMessage": "Нет заявок со статусом «{filter}».",
+  "@noApplicationsFoundMessage": {
+    "placeholders": { "filter": { "type": "String" } }
+  },
+  "appliedOnLabel": "Подано {date}",
+  "@appliedOnLabel": {
+    "placeholders": { "date": { "type": "String" } }
+  },
+  "licenseNumberDisplayLabel": "№ лицензии {number}",
+  "@licenseNumberDisplayLabel": {
+    "placeholders": { "number": { "type": "String" } }
+  },
+  "applicantDetailsTitle": "Данные заявителя",
+  "bioLabel": "Биография",
+  "licenseDocumentLabel": "Документ лицензии",
+  "nicDocumentLabel": "Документ NIC",
+  "selfiePhotoLabel": "Селфи-фото",
+  "imageFailedToLoadMessage": "Не удалось загрузить изображение",
+  "noDocumentProvidedMessage": "Документ не предоставлен",
+  "adminCommentHint": "Добавьте комментарий (обязателен для отклонения)",
+  "rejectionReasonRequiredMessage": "Пожалуйста, укажите причину перед отклонением.",
+  "approveButtonLabel": "Одобрить",
+  "rejectButtonLabel": "Отклонить",
+  "applicationApprovedNoticeMessage": "Заявка одобрена.",
+  "applicationRejectedNoticeMessage": "Заявка отклонена.",
+  "reviewActionFailedMessage": "Не удалось отправить решение: {error}",
+  "@reviewActionFailedMessage": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "licenseExpiryLabel": "Срок действия лицензии",
+  "notProvidedLabel": "Не указано",
+  "expiryStatusValid": "Действительна",
+  "expiryStatusExpiringSoon": "Скоро истекает",
+  "expiryStatusExpired": "Истёк срок",
+  "selectExpiryDateButton": "Выбрать дату окончания лицензии",
+
+  "languagesSectionTitle": "Разговорные языки",
+  "tourTypesSectionTitle": "Предлагаемые туры",
+  "tourTypeBoatSafari": "Лодочное сафари",
+  "tourTypeWildlifeSafari": "Сафари по дикой природе",
+  "tourTypeHiking": "Пешие походы",
+  "tourTypeDiving": "Дайвинг",
+  "tourTypeCulturalTours": "Культурные туры",
+  "reportReviewTitle": "Пожаловаться на отзыв",
+  "reportReviewSubtitle": "Почему вы жалуетесь на этот отзыв?",
+  "reportReasonInappropriate": "Неприемлемый контент",
+  "reportReasonSpam": "Спам",
+  "reportReasonHarassment": "Оскорбления",
+  "reportReasonOther": "Другое",
+  "reportSubmittedMessage": "Спасибо — жалоба на этот отзыв отправлена на модерацию.",
+  "reportFailedMessage": "Не удалось отправить жалобу на этот отзыв. Пожалуйста, попробуйте снова.",
+  "filterSheetTitle": "Фильтр гидов",
+  "filterHasVehicle": "Есть автомобиль",
+  "filterApplyButton": "Применить фильтры",
+  "filterClearButton": "Очистить",
+  "filterRegionLabel": "Регион",
+  "filterLanguageLabel": "Язык"
 }

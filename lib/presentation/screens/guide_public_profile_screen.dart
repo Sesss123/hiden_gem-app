@@ -10,6 +10,7 @@ import 'booking_request_screen.dart';
 import 'package:flutter/services.dart';
 import '../widgets/cached_image.dart';
 import '../../l10n/app_localizations.dart';
+import '../../core/constants/tour_types.dart';
 
 class GuidePublicProfileScreen extends ConsumerStatefulWidget {
   final String guideId;
@@ -106,6 +107,14 @@ class _GuidePublicProfileScreenState extends ConsumerState<GuidePublicProfileScr
                 _buildTrustCard(context, guide),
                 const SizedBox(height: 32),
                 _buildBio(context, guide),
+                if (guide.languages.isNotEmpty) ...[
+                  const SizedBox(height: 32),
+                  _buildLanguagesSection(context, guide),
+                ],
+                if (_activeTourTypes(guide).isNotEmpty) ...[
+                  const SizedBox(height: 32),
+                  _buildTourTypesSection(context, guide),
+                ],
                 if (guide.vehicleAvailable) ...[
                   const SizedBox(height: 32),
                   _buildVehicleSection(context, guide),
@@ -272,6 +281,84 @@ class _GuidePublicProfileScreenState extends ConsumerState<GuidePublicProfileScr
         ),
       ],
     ).animate().fadeIn(delay: 400.ms);
+  }
+
+  Widget _buildLanguagesSection(BuildContext context, GuideListing guide) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          AppLocalizations.of(context)!.languagesSectionTitle,
+          style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontSize: 16, fontWeight: FontWeight.w700, letterSpacing: -0.2),
+        ),
+        const SizedBox(height: 12),
+        Wrap(
+          spacing: 10, runSpacing: 10,
+          children: guide.languages.map((lang) => Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+            decoration: BoxDecoration(
+              color: AppTheme.surfaceMuted(context),
+              borderRadius: BorderRadius.circular(100),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.language_rounded, size: 14, color: AppTheme.textSecondary(context)),
+                const SizedBox(width: 6),
+                Text(lang, style: GoogleFonts.inter(color: AppTheme.textPrimary(context), fontSize: 12, fontWeight: FontWeight.w600)),
+              ],
+            ),
+          )).toList(),
+        ),
+      ],
+    ).animate().fadeIn(delay: 350.ms);
+  }
+
+  List<TourType> _activeTourTypes(GuideListing guide) {
+    return kTourTypes.where((t) => _tourTypeFlag(guide, t.fieldKey)).toList();
+  }
+
+  bool _tourTypeFlag(GuideListing guide, String fieldKey) {
+    switch (fieldKey) {
+      case 'doesBoatSafari': return guide.doesBoatSafari;
+      case 'doesWildlifeSafari': return guide.doesWildlifeSafari;
+      case 'doesHiking': return guide.doesHiking;
+      case 'doesDiving': return guide.doesDiving;
+      case 'doesCulturalTours': return guide.doesCulturalTours;
+      default: return false;
+    }
+  }
+
+  Widget _buildTourTypesSection(BuildContext context, GuideListing guide) {
+    final l10n = AppLocalizations.of(context)!;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          l10n.tourTypesSectionTitle,
+          style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontSize: 16, fontWeight: FontWeight.w700, letterSpacing: -0.2),
+        ),
+        const SizedBox(height: 12),
+        Wrap(
+          spacing: 10, runSpacing: 10,
+          children: _activeTourTypes(guide).map((t) => Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(100),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(t.icon, size: 14, color: Theme.of(context).colorScheme.primary),
+                const SizedBox(width: 6),
+                Text(t.label(l10n), style: GoogleFonts.inter(color: Theme.of(context).colorScheme.primary, fontSize: 12, fontWeight: FontWeight.w600)),
+              ],
+            ),
+          )).toList(),
+        ),
+      ],
+    ).animate().fadeIn(delay: 360.ms);
   }
 
   Widget _buildVehicleSection(BuildContext context, GuideListing guide) {

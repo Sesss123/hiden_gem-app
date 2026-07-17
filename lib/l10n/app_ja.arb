@@ -182,6 +182,7 @@
   "forgotPassword": "パスワードをお忘れですか？",
   "orContinueWith": "または次の方法で続ける",
   "googleLabel": "Google",
+  "appleLabel": "Apple",
   "zenithLockActive": "ゼニスロック作動中",
   "lockoutMessage": "複数回のログイン失敗を検出しました。\n不正アクセス防止のため、しばらく接続を制限します。",
   "timeRemaining": "残り時間",
@@ -192,6 +193,10 @@
   },
   "googleSignInFailedPrefix": "Googleサインインに失敗しました：{reason}",
   "@googleSignInFailedPrefix": {
+    "placeholders": { "reason": { "type": "String" } }
+  },
+  "appleSignInFailedPrefix": "Appleサインインに失敗しました：{reason}",
+  "@appleSignInFailedPrefix": {
     "placeholders": { "reason": { "type": "String" } }
   },
   "enterEmailFirst": "まず登録済みのメールアドレスを入力してください。",
@@ -1945,5 +1950,71 @@
   "watch10SecPreviewButton": "10秒プレビューを見る",
   "watchAdUnlockSessionButton": "広告を見てセッションをアンロック",
   "notNowButtonLabel": "今はしない",
-  "ancientArtifactsLabel": "古代の遺物"
+  "ancientArtifactsLabel": "古代の遺物",
+
+  "adminGuideVerificationTile": "ガイド認証",
+  "adminVerificationConsoleTitle": "認証コンソール",
+  "pendingReviewsSubtitle": "提出されたガイド申請と書類を確認します。",
+  "filterPending": "審査待ち",
+  "filterApproved": "承認済み",
+  "filterRejected": "却下済み",
+  "filterExpiringSoon": "期限間近",
+  "filterExpired": "期限切れ",
+  "noApplicationsFoundMessage": "{filter}の申請はありません。",
+  "@noApplicationsFoundMessage": {
+    "placeholders": { "filter": { "type": "String" } }
+  },
+  "appliedOnLabel": "申請日: {date}",
+  "@appliedOnLabel": {
+    "placeholders": { "date": { "type": "String" } }
+  },
+  "licenseNumberDisplayLabel": "ライセンス番号: {number}",
+  "@licenseNumberDisplayLabel": {
+    "placeholders": { "number": { "type": "String" } }
+  },
+  "applicantDetailsTitle": "申請者情報",
+  "bioLabel": "自己紹介",
+  "licenseDocumentLabel": "ライセンス書類",
+  "nicDocumentLabel": "国民ID（NIC）書類",
+  "selfiePhotoLabel": "自撮り写真",
+  "imageFailedToLoadMessage": "画像の読み込みに失敗しました",
+  "noDocumentProvidedMessage": "書類が提供されていません",
+  "adminCommentHint": "コメントを追加（却下する場合は必須）",
+  "rejectionReasonRequiredMessage": "却下する前に理由を入力してください。",
+  "approveButtonLabel": "承認",
+  "rejectButtonLabel": "却下",
+  "applicationApprovedNoticeMessage": "申請が承認されました。",
+  "applicationRejectedNoticeMessage": "申請が却下されました。",
+  "reviewActionFailedMessage": "審査の送信に失敗しました: {error}",
+  "@reviewActionFailedMessage": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "licenseExpiryLabel": "ライセンス有効期限",
+  "notProvidedLabel": "未提供",
+  "expiryStatusValid": "有効",
+  "expiryStatusExpiringSoon": "期限間近",
+  "expiryStatusExpired": "期限切れ",
+  "selectExpiryDateButton": "ライセンス有効期限を選択",
+
+  "languagesSectionTitle": "対応言語",
+  "tourTypesSectionTitle": "提供ツアー",
+  "tourTypeBoatSafari": "ボートサファリ",
+  "tourTypeWildlifeSafari": "野生動物サファリ",
+  "tourTypeHiking": "ハイキング",
+  "tourTypeDiving": "ダイビング",
+  "tourTypeCulturalTours": "文化ツアー",
+  "reportReviewTitle": "レビューを報告",
+  "reportReviewSubtitle": "このレビューを報告する理由は何ですか？",
+  "reportReasonInappropriate": "不適切なコンテンツ",
+  "reportReasonSpam": "スパム",
+  "reportReasonHarassment": "嫌がらせ",
+  "reportReasonOther": "その他",
+  "reportSubmittedMessage": "ありがとうございます。このレビューはモデレーションのために報告されました。",
+  "reportFailedMessage": "このレビューの報告に失敗しました。もう一度お試しください。",
+  "filterSheetTitle": "ガイドを絞り込む",
+  "filterHasVehicle": "車両あり",
+  "filterApplyButton": "フィルターを適用",
+  "filterClearButton": "クリア",
+  "filterRegionLabel": "地域",
+  "filterLanguageLabel": "言語"
 }

@@ -182,6 +182,7 @@
   "forgotPassword": "கடவுச்சொல்லை மறந்துவிட்டீர்களா?",
   "orContinueWith": "அல்லது இதனுடன் தொடரவும்",
   "googleLabel": "Google",
+  "appleLabel": "Apple",
   "zenithLockActive": "ZENITH பூட்டு செயலில் உள்ளது",
   "lockoutMessage": "பல முறை தோல்வியுற்ற முயற்சிகள் கண்டறியப்பட்டன.\nமூர்க்கத்தனமான முயற்சிகளைத் தடுக்க நரம்பியல் இணைப்பு கட்டுப்படுத்தப்பட்டுள்ளது.",
   "timeRemaining": "மீதமுள்ள நேரம்",
@@ -192,6 +193,10 @@
   },
   "googleSignInFailedPrefix": "Google உள்நுழைவு தோல்வியடைந்தது: {reason}",
   "@googleSignInFailedPrefix": {
+    "placeholders": { "reason": { "type": "String" } }
+  },
+  "appleSignInFailedPrefix": "Apple உள்நுழைவு தோல்வியடைந்தது: {reason}",
+  "@appleSignInFailedPrefix": {
     "placeholders": { "reason": { "type": "String" } }
   },
   "enterEmailFirst": "முதலில் உங்கள் பதிவு செய்யப்பட்ட மின்னஞ்சல் முகவரியை உள்ளிடவும்.",
@@ -1943,5 +1948,71 @@
   "watch10SecPreviewButton": "10-வினாடி முன்னோட்டத்தைப் பார்க்கவும்",
   "watchAdUnlockSessionButton": "அமர்வைத் திறக்க விளம்பரத்தைப் பார்க்கவும்",
   "notNowButtonLabel": "இப்போது வேண்டாம்",
-  "ancientArtifactsLabel": "பண்டைய பொருட்கள்"
+  "ancientArtifactsLabel": "பண்டைய பொருட்கள்",
+
+  "adminGuideVerificationTile": "வழிகாட்டி சரிபார்ப்புகள்",
+  "adminVerificationConsoleTitle": "சரிபார்ப்பு கட்டுப்பாட்டு பலகை",
+  "pendingReviewsSubtitle": "சமர்ப்பிக்கப்பட்ட வழிகாட்டி விண்ணப்பங்கள் மற்றும் ஆவணங்களை மதிப்பாய்வு செய்யவும்.",
+  "filterPending": "நிலுவையில்",
+  "filterApproved": "அங்கீகரிக்கப்பட்டது",
+  "filterRejected": "நிராகரிக்கப்பட்டது",
+  "filterExpiringSoon": "விரைவில் காலாவதியாகிறது",
+  "filterExpired": "காலாவதியானது",
+  "noApplicationsFoundMessage": "{filter} விண்ணப்பங்கள் எதுவும் இல்லை.",
+  "@noApplicationsFoundMessage": {
+    "placeholders": { "filter": { "type": "String" } }
+  },
+  "appliedOnLabel": "{date} அன்று விண்ணப்பிக்கப்பட்டது",
+  "@appliedOnLabel": {
+    "placeholders": { "date": { "type": "String" } }
+  },
+  "licenseNumberDisplayLabel": "உரிம எண். {number}",
+  "@licenseNumberDisplayLabel": {
+    "placeholders": { "number": { "type": "String" } }
+  },
+  "applicantDetailsTitle": "விண்ணப்பதாரர் விவரங்கள்",
+  "bioLabel": "சுயவிவரம்",
+  "licenseDocumentLabel": "உரிம ஆவணம்",
+  "nicDocumentLabel": "தே.அ.அ ஆவணம்",
+  "selfiePhotoLabel": "செல்·பி புகைப்படம்",
+  "imageFailedToLoadMessage": "படத்தை ஏற்ற முடியவில்லை",
+  "noDocumentProvidedMessage": "ஆவணம் எதுவும் வழங்கப்படவில்லை",
+  "adminCommentHint": "ஒரு கருத்தைச் சேர்க்கவும் (நிராகரிக்க அவசியம்)",
+  "rejectionReasonRequiredMessage": "நிராகரிக்கும் முன் ஒரு காரணத்தைச் சேர்க்கவும்.",
+  "approveButtonLabel": "அங்கீகரி",
+  "rejectButtonLabel": "நிராகரி",
+  "applicationApprovedNoticeMessage": "விண்ணப்பம் அங்கீகரிக்கப்பட்டது.",
+  "applicationRejectedNoticeMessage": "விண்ணப்பம் நிராகரிக்கப்பட்டது.",
+  "reviewActionFailedMessage": "மதிப்பாய்வைச் சமர்ப்பிக்க முடியவில்லை: {error}",
+  "@reviewActionFailedMessage": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "licenseExpiryLabel": "உரிமத்தின் காலாவதி",
+  "notProvidedLabel": "வழங்கப்படவில்லை",
+  "expiryStatusValid": "செல்லுபடியாகும்",
+  "expiryStatusExpiringSoon": "விரைவில் காலாவதியாகிறது",
+  "expiryStatusExpired": "காலாவதியானது",
+  "selectExpiryDateButton": "உரிமத்தின் காலாவதி தேதியைத் தேர்ந்தெடுக்கவும்",
+
+  "languagesSectionTitle": "பேசும் மொழிகள்",
+  "tourTypesSectionTitle": "வழங்கப்படும் சுற்றுலாக்கள்",
+  "tourTypeBoatSafari": "படகு சபாரி",
+  "tourTypeWildlifeSafari": "வனவிலங்கு சபாரி",
+  "tourTypeHiking": "மலையேற்றம்",
+  "tourTypeDiving": "நீர்மூழ்குதல்",
+  "tourTypeCulturalTours": "கலாச்சார சுற்றுலாக்கள்",
+  "reportReviewTitle": "மதிப்பாய்வைப் புகாரளி",
+  "reportReviewSubtitle": "இந்த மதிப்பாய்வை ஏன் புகாரளிக்கிறீர்கள்?",
+  "reportReasonInappropriate": "பொருத்தமற்ற உள்ளடக்கம்",
+  "reportReasonSpam": "ஸ்பேம்",
+  "reportReasonHarassment": "துன்புறுத்தல்",
+  "reportReasonOther": "மற்றவை",
+  "reportSubmittedMessage": "நன்றி — இந்த மதிப்பாய்வு மேலாய்வுக்காக புகாரளிக்கப்பட்டுள்ளது.",
+  "reportFailedMessage": "இந்த மதிப்பாய்வைப் புகாரளிக்க முடியவில்லை. மீண்டும் முயற்சிக்கவும்.",
+  "filterSheetTitle": "வழிகாட்டிகளை வடிகட்டு",
+  "filterHasVehicle": "வாகனம் உள்ளது",
+  "filterApplyButton": "வடிப்பான்களைப் பயன்படுத்து",
+  "filterClearButton": "அழி",
+  "filterRegionLabel": "பிராந்தியம்",
+  "filterLanguageLabel": "மொழி"
 }

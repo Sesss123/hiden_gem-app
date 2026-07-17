@@ -562,6 +562,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get googleLabel => 'Google';
 
   @override
+  String get appleLabel => 'Apple';
+
+  @override
   String get zenithLockActive => 'ZENITH LOCK ACTIVE';
 
   @override
@@ -582,6 +585,11 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String googleSignInFailedPrefix(String reason) {
     return 'Google Sign-In Failed: $reason';
+  }
+
+  @override
+  String appleSignInFailedPrefix(String reason) {
+    return 'Apple Sign-In Failed: $reason';
   }
 
   @override
@@ -4821,4 +4829,172 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get ancientArtifactsLabel => 'ANCIENT ARTIFACTS';
+
+  @override
+  String get adminGuideVerificationTile => 'Guide Verifications';
+
+  @override
+  String get adminVerificationConsoleTitle => 'Verification Console';
+
+  @override
+  String get pendingReviewsSubtitle =>
+      'Review submitted guide applications and documents.';
+
+  @override
+  String get filterPending => 'Pending';
+
+  @override
+  String get filterApproved => 'Approved';
+
+  @override
+  String get filterRejected => 'Rejected';
+
+  @override
+  String get filterExpiringSoon => 'Expiring Soon';
+
+  @override
+  String get filterExpired => 'Expired';
+
+  @override
+  String noApplicationsFoundMessage(String filter) {
+    return 'No $filter applications.';
+  }
+
+  @override
+  String appliedOnLabel(String date) {
+    return 'Applied $date';
+  }
+
+  @override
+  String licenseNumberDisplayLabel(String number) {
+    return 'License No. $number';
+  }
+
+  @override
+  String get applicantDetailsTitle => 'Applicant Details';
+
+  @override
+  String get bioLabel => 'Bio';
+
+  @override
+  String get licenseDocumentLabel => 'License Document';
+
+  @override
+  String get nicDocumentLabel => 'NIC Document';
+
+  @override
+  String get selfiePhotoLabel => 'Selfie Photo';
+
+  @override
+  String get imageFailedToLoadMessage => 'Image failed to load';
+
+  @override
+  String get noDocumentProvidedMessage => 'No document provided';
+
+  @override
+  String get adminCommentHint => 'Add a comment (required to reject)';
+
+  @override
+  String get rejectionReasonRequiredMessage =>
+      'Please add a reason before rejecting.';
+
+  @override
+  String get approveButtonLabel => 'Approve';
+
+  @override
+  String get rejectButtonLabel => 'Reject';
+
+  @override
+  String get applicationApprovedNoticeMessage => 'Application approved.';
+
+  @override
+  String get applicationRejectedNoticeMessage => 'Application rejected.';
+
+  @override
+  String reviewActionFailedMessage(String error) {
+    return 'Failed to submit review: $error';
+  }
+
+  @override
+  String get licenseExpiryLabel => 'License Expiry';
+
+  @override
+  String get notProvidedLabel => 'Not provided';
+
+  @override
+  String get expiryStatusValid => 'Valid';
+
+  @override
+  String get expiryStatusExpiringSoon => 'Expiring Soon';
+
+  @override
+  String get expiryStatusExpired => 'Expired';
+
+  @override
+  String get selectExpiryDateButton => 'Select License Expiry Date';
+
+  @override
+  String get languagesSectionTitle => 'Languages Spoken';
+
+  @override
+  String get tourTypesSectionTitle => 'Tours Offered';
+
+  @override
+  String get tourTypeBoatSafari => 'Boat Safari';
+
+  @override
+  String get tourTypeWildlifeSafari => 'Wildlife Safari';
+
+  @override
+  String get tourTypeHiking => 'Hiking';
+
+  @override
+  String get tourTypeDiving => 'Diving';
+
+  @override
+  String get tourTypeCulturalTours => 'Cultural Tours';
+
+  @override
+  String get reportReviewTitle => 'Report Review';
+
+  @override
+  String get reportReviewSubtitle => 'Why are you reporting this review?';
+
+  @override
+  String get reportReasonInappropriate => 'Inappropriate content';
+
+  @override
+  String get reportReasonSpam => 'Spam';
+
+  @override
+  String get reportReasonHarassment => 'Harassment';
+
+  @override
+  String get reportReasonOther => 'Other';
+
+  @override
+  String get reportSubmittedMessage =>
+      'Thanks — this review has been reported for moderation.';
+
+  @override
+  String get reportFailedMessage =>
+      'Failed to report this review. Please try again.';
+
+  @override
+  String get filterSheetTitle => 'Filter Guides';
+
+  @override
+  String get filterHasVehicle => 'Has Vehicle';
+
+  @override
+  String get filterApplyButton => 'Apply Filters';
+
+  @override
+  String get filterClearButton => 'Clear';
+
+  @override
+  String get filterRegionLabel => 'Region';
+
+  @override
+  String get filterLanguageLabel => 'Language';
 }

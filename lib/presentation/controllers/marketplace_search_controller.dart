@@ -98,6 +98,7 @@ class MarketplaceSearchController extends _$MarketplaceSearchController {
   String? _category;
   String? _language;
   bool? _vehicleRequired;
+  String? _tourType;
 
   @override
   MarketplaceSearchState build() {
@@ -117,6 +118,7 @@ class MarketplaceSearchController extends _$MarketplaceSearchController {
     String? category,
     String? language,
     bool? vehicleRequired,
+    String? tourType,
   }) async {
     // A. Normalize query
     final query = _normalize(rawQuery);
@@ -141,7 +143,7 @@ class MarketplaceSearchController extends _$MarketplaceSearchController {
     }
 
     // D. Cache check
-    final cacheKey = _buildCacheKey(query, region, category, language, vehicleRequired);
+    final cacheKey = _buildCacheKey(query, region, category, language, vehicleRequired, tourType);
     final cached = _queryCache[cacheKey];
     if (cached != null && DateTime.now().isBefore(cached.expiresAt)) {
       state = state.copyWith(
@@ -168,6 +170,7 @@ class MarketplaceSearchController extends _$MarketplaceSearchController {
     _category = category;
     _language = language;
     _vehicleRequired = vehicleRequired;
+    _tourType = tourType;
     _lastPage = null;
 
     state = state.copyWith(
@@ -185,6 +188,7 @@ class MarketplaceSearchController extends _$MarketplaceSearchController {
             category: category,
             language: language,
             vehicleRequired: vehicleRequired,
+            tourType: tourType,
           )
           .timeout(_fetchTimeout);
 
@@ -251,6 +255,7 @@ class MarketplaceSearchController extends _$MarketplaceSearchController {
             category: _category,
             language: _language,
             vehicleRequired: _vehicleRequired,
+            tourType: _tourType,
           )
           .timeout(_fetchTimeout);
 
@@ -293,8 +298,8 @@ class MarketplaceSearchController extends _$MarketplaceSearchController {
   // ── Cache ───────────────────────────────────────────────────────────────
 
   String _buildCacheKey(String query, String? region, String? category,
-      String? language, bool? vehicleRequired) {
-    return '$query|${region ?? ""}|${category ?? ""}|${language ?? ""}|${vehicleRequired ?? ""}';
+      String? language, bool? vehicleRequired, String? tourType) {
+    return '$query|${region ?? ""}|${category ?? ""}|${language ?? ""}|${vehicleRequired ?? ""}|${tourType ?? ""}';
   }
 
   // ── Rate Limiter ────────────────────────────────────────────────────────

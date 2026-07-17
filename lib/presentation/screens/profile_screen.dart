@@ -53,6 +53,8 @@ import 'package:hidden_gems_sl/data/models/guide_status.dart';
 import 'package:hidden_gems_sl/presentation/screens/family_share_screen.dart';
 import 'package:hidden_gems_sl/presentation/screens/privacy_policy_screen.dart';
 import 'package:hidden_gems_sl/presentation/screens/terms_screen.dart';
+import '../../core/services/secure_entitlements.dart';
+import 'admin_guide_verification_screen.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
@@ -1387,6 +1389,24 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
         _tile(Icons.qr_code_scanner_rounded, l10n.scanGuideQr,
             onTap: () => Navigator.push(
                 context, MaterialPageRoute(builder: (_) => const QRScannerScreen()))),
+
+        // Admin-only: local check is UX polish, verifyAdmin() on tap is the real gate.
+        if (profile.role == 'admin')
+          _tile(Icons.verified_user_rounded, l10n.adminGuideVerificationTile,
+              iconColor: AppTheme.colors.blue[600],
+              onTap: () async {
+                final isAdmin = await SecureEntitlements().verifyAdmin();
+                if (!mounted) return;
+                if (!isAdmin) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(l10n.accessDeniedMessage)),
+                  );
+                  return;
+                }
+                if (!mounted) return;
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (_) => const AdminGuideVerificationScreen()));
+              }),
 
         _tile(Icons.camera_alt_outlined, l10n.oracleLens,
             trailing: Switch(

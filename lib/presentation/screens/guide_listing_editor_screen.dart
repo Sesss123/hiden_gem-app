@@ -16,6 +16,7 @@ import '../widgets/cached_image.dart';
 import 'guide_availability_screen.dart';
 import 'package:hidden_gems_sl/core/utils/secure_logger.dart';
 import '../../l10n/app_localizations.dart';
+import '../../core/constants/tour_types.dart';
 
 class GuideListingEditorScreen extends ConsumerStatefulWidget {
   final bool embedded;
@@ -50,16 +51,11 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
 
   final _picker = ImagePicker();
 
-  final List<String> _categories = [
-    'Chauffeur',
-    'Site Guide',
-    'Adventure',
-    'Wildlife',
-    'Heritage',
-    'Photography',
-  ];
+  final List<String> _categories = kGuideCategories;
 
   final List<String> _currencies = ['USD', 'LKR', 'EUR', 'GBP'];
+
+  final Set<String> _selectedTourTypes = {};
 
   @override
   void initState() {
@@ -93,6 +89,12 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
         _languagesController.text = listing.languages.join(', ');
         _specializationsController.text = listing.specializations.join(', ');
         _regionsController.text = listing.regions.join(', ');
+        _selectedTourTypes.clear();
+        if (listing.doesBoatSafari) _selectedTourTypes.add('doesBoatSafari');
+        if (listing.doesWildlifeSafari) _selectedTourTypes.add('doesWildlifeSafari');
+        if (listing.doesHiking) _selectedTourTypes.add('doesHiking');
+        if (listing.doesDiving) _selectedTourTypes.add('doesDiving');
+        if (listing.doesCulturalTours) _selectedTourTypes.add('doesCulturalTours');
       } else if (mounted) {
         // Set defaults from auth user if available
         final user = FirebaseAuth.instance.currentUser;
@@ -247,6 +249,11 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
         languages: languages.isEmpty ? ['English'] : languages,
         specializations: specializations,
         regions: regions,
+        doesBoatSafari: _selectedTourTypes.contains('doesBoatSafari'),
+        doesWildlifeSafari: _selectedTourTypes.contains('doesWildlifeSafari'),
+        doesHiking: _selectedTourTypes.contains('doesHiking'),
+        doesDiving: _selectedTourTypes.contains('doesDiving'),
+        doesCulturalTours: _selectedTourTypes.contains('doesCulturalTours'),
         ratingAverage: _existingListing?.ratingAverage ?? 5.0,
         reviewCount: _existingListing?.reviewCount ?? 0,
         trustTierPublic: _existingListing?.trustTierPublic ?? 'Strong',
@@ -390,6 +397,10 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
                   hint: l10n.specializationsCommaHint,
                   icon: Icons.star_border,
                 ),
+                const SizedBox(height: 16),
+                _buildSectionTitle(l10n.tourTypesSectionTitle),
+                const SizedBox(height: 12),
+                _buildTourTypeChips(),
                 const SizedBox(height: 16),
                 _buildTextField(
                   controller: _regionsController,
@@ -582,6 +593,49 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
           border: InputBorder.none,
         ),
       ),
+    );
+  }
+
+  Widget _buildTourTypeChips() {
+    final l10n = AppLocalizations.of(context)!;
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      children: kTourTypes.map((tourType) {
+        final isSelected = _selectedTourTypes.contains(tourType.fieldKey);
+        return GestureDetector(
+          onTap: () => setState(() {
+            if (isSelected) {
+              _selectedTourTypes.remove(tourType.fieldKey);
+            } else {
+              _selectedTourTypes.add(tourType.fieldKey);
+            }
+          }),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+            decoration: BoxDecoration(
+              color: isSelected ? Theme.of(context).colorScheme.primary : AppTheme.surfaceMuted(context),
+              borderRadius: BorderRadius.circular(100),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(tourType.icon, size: 16, color: isSelected ? AppTheme.colors.white : AppTheme.textSecondary(context)),
+                const SizedBox(width: 6),
+                Text(
+                  tourType.label(l10n),
+                  style: GoogleFonts.inter(
+                    color: isSelected ? AppTheme.colors.white : AppTheme.textSecondary(context),
+                    fontWeight: FontWeight.w600,
+                    fontSize: 13,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      }).toList(),
     );
   }
 

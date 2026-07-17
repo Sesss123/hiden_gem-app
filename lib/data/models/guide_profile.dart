@@ -11,6 +11,7 @@ class GuideProfile {
   final String? licenseDocUrl;
   final String? nicDocUrl;
   final String? selfieDocUrl;
+  final DateTime? licenseExpiryDate;
 
   GuideProfile({
     this.licenseNumber,
@@ -25,6 +26,7 @@ class GuideProfile {
     this.licenseDocUrl,
     this.nicDocUrl,
     this.selfieDocUrl,
+    this.licenseExpiryDate,
   });
 
   Map<String, dynamic> toJson() => {
@@ -40,6 +42,7 @@ class GuideProfile {
     'licenseDocUrl': licenseDocUrl,
     'nicDocUrl': nicDocUrl,
     'selfieDocUrl': selfieDocUrl,
+    'licenseExpiryDate': licenseExpiryDate?.toIso8601String(),
   };
 
   factory GuideProfile.fromJson(Map<String, dynamic> json) => GuideProfile(
@@ -55,6 +58,7 @@ class GuideProfile {
     licenseDocUrl: json['licenseDocUrl'],
     nicDocUrl: json['nicDocUrl'],
     selfieDocUrl: json['selfieDocUrl'],
+    licenseExpiryDate: json['licenseExpiryDate'] != null ? DateTime.parse(json['licenseExpiryDate']) : null,
   );
 
   GuideProfile copyWith({
@@ -70,6 +74,7 @@ class GuideProfile {
     String? licenseDocUrl,
     String? nicDocUrl,
     String? selfieDocUrl,
+    DateTime? licenseExpiryDate,
   }) {
     return GuideProfile(
       licenseNumber: licenseNumber ?? this.licenseNumber,
@@ -84,6 +89,7 @@ class GuideProfile {
       licenseDocUrl: licenseDocUrl ?? this.licenseDocUrl,
       nicDocUrl: nicDocUrl ?? this.nicDocUrl,
       selfieDocUrl: selfieDocUrl ?? this.selfieDocUrl,
+      licenseExpiryDate: licenseExpiryDate ?? this.licenseExpiryDate,
     );
   }
 }

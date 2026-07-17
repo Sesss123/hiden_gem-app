@@ -12,6 +12,7 @@ class GuideApplication {
   final String? adminComment;
   final DateTime appliedAt;
   final DateTime? reviewedAt;
+  final DateTime? licenseExpiryDate;
 
   GuideApplication({
     required this.userId,
@@ -25,6 +26,7 @@ class GuideApplication {
     this.adminComment,
     required this.appliedAt,
     this.reviewedAt,
+    this.licenseExpiryDate,
   });
 
   Map<String, dynamic> toJson() => {
@@ -39,6 +41,7 @@ class GuideApplication {
     'admin_comment': adminComment,
     'applied_at': appliedAt.toIso8601String(),
     'reviewed_at': reviewedAt?.toIso8601String(),
+    'license_expiry_date': licenseExpiryDate?.toIso8601String(),
   };
 
   factory GuideApplication.fromJson(Map<String, dynamic> json) => GuideApplication(
@@ -54,6 +57,9 @@ class GuideApplication {
     appliedAt: DateTime.parse(json['applied_at'] ?? json['appliedAt'] ?? DateTime.now().toIso8601String()),
     reviewedAt: (json['reviewed_at'] ?? json['reviewedAt']) != null
         ? DateTime.parse(json['reviewed_at'] ?? json['reviewedAt'])
+        : null,
+    licenseExpiryDate: (json['license_expiry_date'] ?? json['licenseExpiryDate']) != null
+        ? DateTime.parse(json['license_expiry_date'] ?? json['licenseExpiryDate'])
         : null,
   );
 }

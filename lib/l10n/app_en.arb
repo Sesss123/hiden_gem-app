@@ -182,6 +182,7 @@
   "forgotPassword": "Forgot password?",
   "orContinueWith": "or continue with",
   "googleLabel": "Google",
+  "appleLabel": "Apple",
   "zenithLockActive": "ZENITH LOCK ACTIVE",
   "lockoutMessage": "Multiple failed attempts detected.\nNeural link restricted to prevent brute force.",
   "timeRemaining": "TIME REMAINING",
@@ -192,6 +193,10 @@
   },
   "googleSignInFailedPrefix": "Google Sign-In Failed: {reason}",
   "@googleSignInFailedPrefix": {
+    "placeholders": { "reason": { "type": "String" } }
+  },
+  "appleSignInFailedPrefix": "Apple Sign-In Failed: {reason}",
+  "@appleSignInFailedPrefix": {
     "placeholders": { "reason": { "type": "String" } }
   },
   "enterEmailFirst": "Please enter your registered email address first.",
@@ -1945,5 +1950,71 @@
   "watch10SecPreviewButton": "Watch 10-sec Preview",
   "watchAdUnlockSessionButton": "Watch Ad to Unlock Session",
   "notNowButtonLabel": "Not Now",
-  "ancientArtifactsLabel": "ANCIENT ARTIFACTS"
+  "ancientArtifactsLabel": "ANCIENT ARTIFACTS",
+
+  "adminGuideVerificationTile": "Guide Verifications",
+  "adminVerificationConsoleTitle": "Verification Console",
+  "pendingReviewsSubtitle": "Review submitted guide applications and documents.",
+  "filterPending": "Pending",
+  "filterApproved": "Approved",
+  "filterRejected": "Rejected",
+  "filterExpiringSoon": "Expiring Soon",
+  "filterExpired": "Expired",
+  "noApplicationsFoundMessage": "No {filter} applications.",
+  "@noApplicationsFoundMessage": {
+    "placeholders": { "filter": { "type": "String" } }
+  },
+  "appliedOnLabel": "Applied {date}",
+  "@appliedOnLabel": {
+    "placeholders": { "date": { "type": "String" } }
+  },
+  "licenseNumberDisplayLabel": "License No. {number}",
+  "@licenseNumberDisplayLabel": {
+    "placeholders": { "number": { "type": "String" } }
+  },
+  "applicantDetailsTitle": "Applicant Details",
+  "bioLabel": "Bio",
+  "licenseDocumentLabel": "License Document",
+  "nicDocumentLabel": "NIC Document",
+  "selfiePhotoLabel": "Selfie Photo",
+  "imageFailedToLoadMessage": "Image failed to load",
+  "noDocumentProvidedMessage": "No document provided",
+  "adminCommentHint": "Add a comment (required to reject)",
+  "rejectionReasonRequiredMessage": "Please add a reason before rejecting.",
+  "approveButtonLabel": "Approve",
+  "rejectButtonLabel": "Reject",
+  "applicationApprovedNoticeMessage": "Application approved.",
+  "applicationRejectedNoticeMessage": "Application rejected.",
+  "reviewActionFailedMessage": "Failed to submit review: {error}",
+  "@reviewActionFailedMessage": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "licenseExpiryLabel": "License Expiry",
+  "notProvidedLabel": "Not provided",
+  "expiryStatusValid": "Valid",
+  "expiryStatusExpiringSoon": "Expiring Soon",
+  "expiryStatusExpired": "Expired",
+  "selectExpiryDateButton": "Select License Expiry Date",
+
+  "languagesSectionTitle": "Languages Spoken",
+  "tourTypesSectionTitle": "Tours Offered",
+  "tourTypeBoatSafari": "Boat Safari",
+  "tourTypeWildlifeSafari": "Wildlife Safari",
+  "tourTypeHiking": "Hiking",
+  "tourTypeDiving": "Diving",
+  "tourTypeCulturalTours": "Cultural Tours",
+  "reportReviewTitle": "Report Review",
+  "reportReviewSubtitle": "Why are you reporting this review?",
+  "reportReasonInappropriate": "Inappropriate content",
+  "reportReasonSpam": "Spam",
+  "reportReasonHarassment": "Harassment",
+  "reportReasonOther": "Other",
+  "reportSubmittedMessage": "Thanks — this review has been reported for moderation.",
+  "reportFailedMessage": "Failed to report this review. Please try again.",
+  "filterSheetTitle": "Filter Guides",
+  "filterHasVehicle": "Has Vehicle",
+  "filterApplyButton": "Apply Filters",
+  "filterClearButton": "Clear",
+  "filterRegionLabel": "Region",
+  "filterLanguageLabel": "Language"
 }
