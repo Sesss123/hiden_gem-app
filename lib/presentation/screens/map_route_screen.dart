@@ -106,13 +106,13 @@ class _MapRouteScreenState extends State<MapRouteScreen> {
                       try {
                         final canSave = await UsageLimiterService.canSavePlan();
                         if (!canSave) {
-                          if (context.mounted) {
-                            final featureName = AppLocalizations.of(context)!.savedPlansFeatureName;
-                            showDialog(
-                              context: context,
-                              builder: (_) => LimitReachedDialog(featureName: featureName),
-                            );
-                          }
+                          if (!mounted) return;
+                          final featureName = AppLocalizations.of(context)!.savedPlansFeatureName;
+                          if (!mounted) return;
+                          showDialog(
+                            context: context,
+                            builder: (_) => LimitReachedDialog(featureName: featureName),
+                          );
                           return;
                         }
                         final id = await TripCacheService.savePlan(_plan);

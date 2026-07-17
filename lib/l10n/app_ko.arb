@@ -1153,5 +1153,796 @@
   "errorSavingAvailabilityMessage": "예약 가능 시간 저장 오류: {error}",
   "@errorSavingAvailabilityMessage": {
     "placeholders": { "error": { "type": "String" } }
-  }
+  },
+
+  "broadcastSentSuccessMessage": "방송이 성공적으로 전송되었습니다",
+  "broadcastTitle": "방송",
+  "activeBroadcastsTitle": "활성 방송",
+  "messageToTravelersLabel": "여행자에게 보낼 메시지",
+  "messageToTravelersHint": "여행자에게 보낼 메시지를 입력하세요...",
+  "sendToAllTravelersButton": "모든 여행자에게 보내기",
+  "priorityLabel": "우선순위",
+  "noActiveBroadcastsMessage": "활성 방송이 없습니다",
+  "acksCountLabel": "확인 {count}건",
+  "@acksCountLabel": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "expireButtonLabel": "만료",
+  "broadcastTypeGeneral": "일반",
+  "broadcastTypeWeather": "날씨",
+  "broadcastTypeMeetingPoint": "집합 장소",
+  "broadcastTypeDelay": "지연",
+  "broadcastTypeDeparture": "출발",
+  "broadcastTypeVehicleChange": "차량 변경",
+  "broadcastTypeSafety": "안전",
+  "broadcastPriorityLow": "낮음",
+  "broadcastPriorityNormal": "보통",
+  "broadcastPriorityHigh": "높음",
+  "broadcastPriorityCritical": "매우 긴급",
+
+  "writeReviewButton": "리뷰 작성",
+  "reviewsTitle": "리뷰",
+  "failedToLoadReviewsMessage": "리뷰를 불러오지 못했습니다. 다시 시도해 주세요.",
+  "premiumAnalyticsLockedTitle": "프리미엄 분석 잠금",
+  "premiumAnalyticsLockedMessage": "성과, 신뢰 점수, 여행자 피드백에 대한 심층 인사이트를 확인하려면 PRO 또는 ELITE로 업그레이드하세요.",
+  "upgradeNowButton": "지금 업그레이드",
+  "trustScoreLabel": "신뢰 점수",
+  "tierBronze": "브론즈 등급",
+  "tierDiamond": "다이아몬드 등급",
+  "tierGold": "골드 등급",
+  "tierSilver": "실버 등급",
+  "miniStatTrips": "투어 수",
+  "miniStatRating": "평점",
+  "miniStatIncidents": "사건 수",
+  "verifiedTripBadge": "확인된 투어",
+  "touristShortIdLabel": "여행자 {shortId}",
+  "@touristShortIdLabel": {
+    "placeholders": { "shortId": { "type": "String" } }
+  },
+  "noReviewsYetTitle": "아직 리뷰가 없습니다",
+  "noReviewsYetSubtitle": "확인된 참가자는 세션 완료 후 피드백을 남길 수 있습니다.",
+
+  "guideProfileNotFoundMessage": "가이드 프로필을 찾을 수 없습니다",
+  "aboutSectionTitle": "소개",
+  "noBioProvidedMessage": "소개가 등록되어 있지 않습니다.",
+  "vehicleSectionTitle": "차량",
+  "vehicleDetailsNotProvidedMessage": "차량 정보가 등록되어 있지 않습니다",
+  "vehicleProvidedByGuideMessage": "투어를 위해 가이드가 제공합니다",
+  "packagesSectionTitle": "패키지",
+  "tapPackageToBookMessage": "패키지를 탭하여 바로 예약하세요",
+  "standardPackageLabel": "기본 패키지",
+  "durationHoursShortLabel": "{hours}시간",
+  "@durationHoursShortLabel": {
+    "placeholders": { "hours": { "type": "String" } }
+  },
+  "guestsCountShortLabel": "{count}명",
+  "@guestsCountShortLabel": {
+    "placeholders": { "count": { "type": "String" } }
+  },
+  "totalLabel": "합계",
+  "requestThisGuideButton": "이 가이드 요청하기",
+  "experienceStatLabel": "경력",
+  "yearsExperienceLabel": "{years}년",
+  "@yearsExperienceLabel": {
+    "placeholders": { "years": { "type": "String" } }
+  },
+  "ratingStatLabel": "평점",
+  "rankStatLabel": "등급",
+  "licensedGuideLabel": "면허 가이드 • {licenseNumber}",
+  "@licensedGuideLabel": {
+    "placeholders": { "licenseNumber": { "type": "String" } }
+  },
+  "platformVerifiedInsuredLabel": "플랫폼 인증 및 보험 가입 완료",
+
+  "yourListingTitle": "내 리스팅",
+  "basicInformationTitle": "기본 정보",
+  "displayNameLabel": "표시 이름",
+  "displayNameHint": "예: 카순 페레라",
+  "aboutMeBioLabel": "자기소개",
+  "aboutMeBioHint": "여러분의 열정, 경험, 좋아하는 장소에 대해 여행자에게 알려주세요...",
+  "categorySpecialtiesTitle": "카테고리 및 전문 분야",
+  "primaryCategoryLabel": "주요 카테고리",
+  "languagesCommaLabel": "구사 언어(쉼표로 구분)",
+  "languagesCommaHint": "예: 영어, 신할라어, 독일어",
+  "specializationsCommaLabel": "전문 분야(쉼표로 구분)",
+  "specializationsCommaHint": "예: 유적지, 야생동물, 사진 촬영",
+  "serviceRegionsLabel": "서비스 지역(쉼표로 구분)",
+  "serviceRegionsHint": "예: 중부, 남부, 서부",
+  "pricingVehicleTitle": "요금 및 차량",
+  "hourlyRateFieldLabel": "시간당 요금",
+  "hourlyRateHint": "예: 25",
+  "vehicleAvailableForToursLabel": "투어용 차량 제공",
+  "provideTransportationLabel": "이동 수단을 제공하시나요?",
+  "vehicleTypeModelLabel": "차량 종류 및 모델",
+  "vehicleTypeModelHint": "예: 도요타 프리우스 하이브리드 / 럭셔리 밴",
+  "coverPhotosCountTitle": "커버 사진({count}장)",
+  "@coverPhotosCountTitle": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "availabilityCalendarTitle": "예약 가능 일정",
+  "visibilityBoostTitle": "노출도 향상",
+  "saveDraftButton": "임시 저장",
+  "publishListingButton": "리스팅 게시",
+  "uploadingPhotoMessage": "사진 업로드 중...",
+  "photoUploadedSuccessMessage": "사진이 성공적으로 업로드되었습니다!",
+  "failedToUploadPhotoMessage": "사진 업로드에 실패했습니다.",
+  "uploadingVehiclePhotoMessage": "차량 사진 업로드 중...",
+  "vehiclePhotoUploadedMessage": "차량 사진이 업로드되었습니다!",
+  "listingPublishedMessage": "🎉 마켓플레이스에 리스팅이 게시되었습니다!",
+  "draftSavedMessage": "💾 임시 저장 완료",
+  "failedToSaveListingMessage": "리스팅 저장에 실패했습니다: {error}",
+  "@failedToSaveListingMessage": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "addPhotoLabel": "사진 추가",
+  "verifiedLicenseLabel": "인증된 면허",
+  "addVehiclePhotoLabel": "차량 사진 추가",
+  "manageAvailabilityTitle": "예약 가능 시간 관리",
+  "manageAvailabilitySubtitle": "휴무일 및 정기 근무 시간 설정",
+  "featureThisListingLabel": "이 리스팅 추천 등록",
+  "currentlyFeaturedMessage": "현재 마켓플레이스에서 추천 중입니다",
+  "featureRequestedMessage": "요청됨 — 관리자가 검토 후 곧 활성화됩니다",
+  "featureRequestPromptMessage": "마켓플레이스 추천 등록 요청(관리자 검토 필요)",
+  "upgradeToProFeatureMessage": "마켓플레이스에서 노출도를 높이려면 Pro로 업그레이드하세요",
+
+  "safetyConsoleTitle": "안전 콘솔",
+  "offlineErrorMessage": "오프라인 오류: {error}",
+  "@offlineErrorMessage": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "secureOperationsTitle": "안전한 운영",
+  "allIncidentsLoggedMessage": "모든 사건은 감사 추적과 함께 기록됩니다",
+  "filterActive": "진행 중",
+  "filterResolved": "해결됨",
+  "filterMyReports": "내 신고 내역",
+  "priorityBadgeText": "우선순위",
+  "updatesCountLabel": "업데이트 {count}건",
+  "@updatesCountLabel": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "noCriticalIncidentsTitle": "중대한 사건이 없습니다",
+  "sessionWithinSafetyParamsMessage": "세션 운영이 안전 기준 범위 내에 있습니다.",
+  "reportIncidentButton": "사건 신고",
+  "fileAnIncidentTitle": "사건 신고하기",
+  "incidentAuditTrailMessage": "정확한 세부 정보를 입력해 주세요. 이는 감사 추적으로 기록됩니다.",
+  "incidentTitleHint": "사건 제목",
+  "descriptionOfEventHint": "사건 설명",
+  "transmitReportButton": "신고서 전송",
+  "incidentStatusOpen": "접수",
+  "incidentStatusInvestigating": "조사 중",
+  "incidentStatusResolved": "해결됨",
+  "incidentStatusClosed": "종료",
+
+  "manageTeamTitle": "팀 관리",
+  "signInToManageTeamMessage": "팀을 관리하려면 로그인하세요.",
+  "guideAddedToTeamMessage": "가이드가 팀에 추가되었습니다",
+  "failedToInviteGuideMessage": "가이드 초대에 실패했습니다: {error}",
+  "@failedToInviteGuideMessage": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "failedToRemoveGuideMessage": "가이드 제거에 실패했습니다: {error}",
+  "@failedToRemoveGuideMessage": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "failedToUploadLogoMessage": "로고 업로드에 실패했습니다: {error}",
+  "@failedToUploadLogoMessage": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "tabOverview": "개요",
+  "tabTeam": "팀",
+  "tabBranding": "브랜딩",
+  "eliteOperatorAccountLabel": "엘리트 운영자 계정",
+  "overviewStatTeamSize": "팀 규모",
+  "overviewStatMissions": "완료한 미션",
+  "overviewStatAvgRating": "평균 평점",
+  "guideUserIdToInviteHint": "초대할 가이드 사용자 ID",
+  "teamMembersCountTitle": "팀 구성원({count}명)",
+  "@teamMembersCountTitle": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "roleMember": "구성원",
+  "logoLabel": "로고",
+  "brandColorLabel": "브랜드 색상",
+  "brandColorAppliedMessage": "귀하의 브랜드 색상이 조직의 이 팀 대시보드 전체에 적용됩니다.",
+
+  "incidentNotFoundTitle": "사건을 찾을 수 없음",
+  "incidentNotFoundDescription": "기록이 정리되었거나 이동되었습니다.",
+  "statusLabel": "상태",
+  "severityLabel": "심각도",
+  "timelineLabel": "타임라인",
+  "encryptedLogLabel": "암호화된 로그",
+  "noTimelineActiveMessage": "활성화된 타임라인이 없습니다.",
+  "minutesAgoLabel": "{minutes}분 전",
+  "@minutesAgoLabel": {
+    "placeholders": { "minutes": { "type": "int" } }
+  },
+  "verifiedAuditLogLabel": "검증된 감사 로그",
+  "forensicIntegrityLockedMessage": "이 보고서는 포렌식 무결성을 위해 잠겨 있습니다. 승인된 관리자만 상태를 수정할 수 있습니다.",
+  "addEvidenceButton": "증거 추가",
+  "escalateButton": "상황 escalation",
+  "timelineTypeSosTriggered": "SOS 발동됨",
+
+  "invalidQrCodeFormatMessage": "잘못된 QR 코드 형식",
+  "unrecognizedQrCodeMessage": "인식할 수 없는 QR 코드",
+  "sessionNotFoundClosedMessage": "세션을 찾을 수 없거나 종료되었습니다",
+  "connectionErrorMessage": "연결 오류",
+  "tourVerificationTitle": "투어 인증",
+  "localGuideFallback": "현지 가이드",
+  "vehicleNumberLabel": "차량 번호: {vehicleNumber}",
+  "@vehicleNumberLabel": {
+    "placeholders": { "vehicleNumber": { "type": "String" } }
+  },
+  "consentTrackingMessage": "이번 투어 세션 동안 실시간 위치 추적 및 안전 모니터링에 동의합니다.",
+  "connectSyncButton": "연결 및 동기화",
+  "realitySyncedTitle": "동기화 완료",
+  "safetyProtocolsActiveMessage": "전역 안전 프로토콜 및 실시간 추적이 활성화되었습니다.",
+  "enterHubButton": "허브 입장",
+  "decryptingTokenMessage": "토큰 복호화 중…",
+  "scanGuideTourCodeMessage": "가이드의 투어 코드를 스캔하세요",
+
+  "emergencyTranslatorTitle": "긴급 번역기",
+  "showScreenToBystanderMessage": "이 화면을 주변 사람, 경찰관 또는 병원 직원에게 보여주세요 — 당신을 대신해 싱할라어로 말합니다.",
+  "locationCoordinatesTapMapsLabel": "{lat}, {lng} — 탭하여 지도에서 열기",
+  "@locationCoordinatesTapMapsLabel": {
+    "placeholders": { "lat": { "type": "String" }, "lng": { "type": "String" } }
+  },
+  "locationUnavailableMessage": "위치를 사용할 수 없음",
+  "speakingEllipsisMessage": "말하는 중…",
+  "playAgainButton": "다시 재생",
+
+  "emergencyTitle": "비상",
+  "criticalContactsTitle": "긴급 연락처",
+  "medicalFacilitiesNearbyTitle": "근처 의료 시설",
+  "emergencyProtocolLabel": "비상 프로토콜",
+  "sendingAlertMessage": "경보 전송 중…",
+  "keepHoldingToConfirmMessage": "확인하려면 계속 누르고 있으세요…",
+  "pressHoldTwoSecondsMessage": "경보를 보내려면 2초간 길게 누르세요",
+  "preventsAccidentalTriggersMessage": "실수로 작동하는 것을 방지합니다",
+  "sosLabel": "SOS",
+  "contactNamePolice": "경찰",
+  "contactNameAmbulance": "구급차",
+  "contactNameTouristPolice": "관광 경찰",
+  "contactNameFireDept": "소방서",
+  "privateGuardiansTitle": "개인 보호자",
+  "noGuardiansAssignedMessage": "지정된 보호자가 없습니다. 신호는 기본적으로 긴급 서비스로 전송됩니다.",
+  "nearestHospitalTitle": "어디에 있든 가장 가까운 병원",
+  "checkingLocationAccessMessage": "위치 접근 권한 확인 중…",
+  "locationAccessDeniedGeneralMessage": "위치 접근이 거부되었습니다 — 대신 일반적으로 검색합니다.",
+  "hospitalMapsExplanationMessage": "실시간 GPS를 사용해 Google 지도를 엽니다 — 스리랑카 어디에 있든 근처의 모든 공립 및 사립 병원을 보여줍니다.",
+  "findNearestHospitalButton": "지도에서 가장 가까운 병원 찾기",
+  "addGuardianTitle": "보호자 추가",
+  "guardianPhoneNumberHint": "보호자 전화번호",
+  "addGuardianButton": "보호자 추가",
+  "sosAlertsPreparedLoggedMessage": "SOS 경보가 준비되어 보안 저장소에 기록되었습니다!",
+  "sosCriticalAlertTitle": "긴급 SOS 경보",
+  "sosDistressSignalDescription": "보호자 시스템에서 비상 조난 신호가 발동되었습니다.",
+  "locationPermissionsPermanentlyDeniedMessage": "위치 권한이 영구적으로 거부되었습니다.",
+  "emergencyTranslatorPremiumMessage": "스리랑카 경찰이나 병원 직원에게 상황을 싱할라어 음성으로 즉시 설명하세요 — 프리미엄 안전 기능입니다.",
+  "notNowButton": "나중에",
+  "viewPlansButton": "요금제 보기",
+
+  "monsoonHazardAlertTitle": "몬순 위험 경보",
+  "districtLabel": "지역: {district}",
+  "@districtLabel": {
+    "placeholders": { "district": { "type": "String" } }
+  },
+  "districtGeneralFallback": "일반",
+  "severeMonsoonWeatherDetectedMessage": "심각한 몬순 기상이 감지되었습니다.",
+  "acknowledgeButton": "확인",
+  "offlineErrorGenericMessage": "오프라인 오류: {error}",
+  "@offlineErrorGenericMessage": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "sessionNotFoundMessage": "세션을 찾을 수 없습니다",
+  "yourTourTitle": "내 투어",
+  "tourActiveTitle": "투어 진행 중",
+  "preparingTourTitle": "투어 준비 중",
+  "everythingOnTrackMessage": "모든 것이 순조롭습니다",
+  "statusColonValueLabel": "상태: {status}",
+  "@statusColonValueLabel": {
+    "placeholders": { "status": { "type": "String" } }
+  },
+  "phaseAssemblingGroup": "그룹 집결 중",
+  "phaseEnRoute": "이동 중",
+  "phaseAtDestination": "목적지 도착",
+  "phaseFreeTimeBreak": "자유 시간 / 휴식",
+  "phaseReturningToBase": "복귀 중",
+  "liveNavigationTitle": "실시간 내비게이션",
+  "findGuideLabel": "가이드 찾기",
+  "liveTrackingLabel": "실시간 추적",
+  "findVehicleLabel": "차량 찾기",
+  "parkedSpotLabel": "주차 위치",
+  "meetingPointLabel": "집합 장소",
+  "returnHereIfLostMessage": "길을 잃거나 그룹에서 떨어졌을 경우 이곳으로 돌아오세요.",
+  "navigateToPointButton": "지점으로 이동",
+  "guideAnnouncementLabel": "가이드 공지",
+  "justNowLabel": "방금 전",
+  "acknowledgedLabel": "확인됨",
+  "iAcknowledgeButton": "확인했습니다",
+  "moreLabel": "더보기",
+  "shareLiveLabel": "실시간 공유",
+  "familyAccessLabel": "가족 접근 권한",
+  "rateTourLabel": "투어 평가",
+  "buildReputationLabel": "평판 쌓기",
+  "helpImLostButton": "도와주세요, 길을 잃었어요",
+  "emergencySosButton": "긴급 SOS",
+  "instantAlertAdminPoliceMessage": "관리자, 경찰, 허브에 즉시 경보가 전송됩니다.",
+  "signalSentStayMessage": "신호가 전송되었습니다! 그 자리에서 기다리세요.",
+  "travelerLostBroadcastTitle": "여행자 실종",
+  "travelerLostBroadcastBody": "한 여행자가 길을 잃었다는 신호를 보냈습니다! 위치가 지도에 공유되었습니다.",
+  "sosCooledDownMessage": "SOS가 쿨다운되었습니다. {seconds}초 기다려 주세요.",
+  "@sosCooledDownMessage": {
+    "placeholders": { "seconds": { "type": "int" } }
+  },
+  "sosBroadcastedAuthoritiesMessage": "SOS 경보가 모든 관계 당국에 전송되었습니다!",
+  "tourCompletedTitle": "투어 완료!",
+  "tourCompletedRateMessage": "멋진 경험이었기를 바랍니다! 지금 가이드를 평가하시겠어요? 여러분의 피드백은 가이드가 높은 수준을 유지하는 데 도움이 됩니다.",
+  "remindLaterButton": "나중에 알림",
+  "reminderSetMessage": "⏰ 알림이 설정되었습니다! 내일 알림을 보내드릴게요.",
+  "rateNowButton": "지금 평가하기 ⭐",
+
+  "eventsTitle": "이벤트",
+  "topPicksForYouTitle": "당신을 위한 추천",
+  "categoryAllFilter": "전체",
+  "categoryBeach": "해변",
+  "categoryCultural": "문화",
+  "categoryReligious": "종교",
+  "categorySports": "스포츠",
+  "categorySeasonal": "시즌",
+  "categoryFestival": "축제",
+  "categoryParty": "파티",
+  "availableEventsTitle": "이용 가능한 이벤트",
+  "temporalDataLabel": "시간 데이터",
+  "acquirePassButton": "패스 구매",
+  "unpinButton": "고정 해제",
+  "pinToHudButton": "HUD에 고정",
+  "noEventsOnDayMessage": "이 날에는 이벤트가 없습니다",
+  "musicPreferencesTitle": "음악 취향",
+  "fineTuneOracleMessage": "당신의 취향에 맞춰 시간 예측 오라클을 정밀하게 조정하세요.",
+  "syncPreferencesButton": "취향 동기화",
+  "failedToShareTimelineMessage": "타임라인 공유 실패: {error}",
+  "@failedToShareTimelineMessage": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "hazardWarningMessage": "🚨 위험 경고: {message}",
+  "@hazardWarningMessage": {
+    "placeholders": { "message": { "type": "String" } }
+  },
+  "extremeWeatherAlertFallback": "극한 기상 경보!",
+  "recommendedForYouLabel": "당신을 위한 추천",
+  "eventLocationCategoryLabel": "{location} · {category}",
+  "@eventLocationCategoryLabel": {
+    "placeholders": { "location": { "type": "String" }, "category": { "type": "String" } }
+  },
+
+  "budgetTitle": "예산",
+  "addExpenseTitle": "지출 추가",
+  "resourceDescriptionLabel": "항목 설명",
+  "amountLkrLabel": "금액 (LKR)",
+  "categoryLabel": "카테고리",
+  "saveExpenseButton": "지출 저장",
+  "planLimitLabel": "플랜 한도",
+  "spentLabel": "지출액",
+  "expenseLedgerTitle": "지출 내역",
+  "entriesCountLabel": "{count}건의 내역",
+  "@entriesCountLabel": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "noEntriesYetMessage": "아직 내역이 없습니다",
+  "addFirstEntryButton": "첫 내역 추가",
+  "expenseCategoryFood": "식비",
+  "expenseCategoryTransport": "교통비",
+  "expenseCategoryTickets": "입장료",
+  "expenseCategoryMisc": "기타",
+
+  "budgetConciergeTitle": "예산 컨시어지",
+  "analyzingSpendingPatternsMessage": "지출 패턴을 분석하고 있습니다...",
+  "localAdviceMessage": "당신의 지출 속도는 섬 여행의 표준에 잘 부합합니다. 투명한 교통 요금을 위해 PickMe나 Uber를 이용하고, 가치를 극대화하려면 현지 식당을 이용해 보세요.",
+  "recentTransactionsTitle": "최근 거래 내역",
+  "totalSpentSoFarLabel": "현재까지 총 지출액",
+  "approxUsdLabel": "≈ US$ {amount}",
+  "@approxUsdLabel": {
+    "placeholders": { "amount": { "type": "String" } }
+  },
+  "oracleAdviceLabel": "오라클의 조언",
+  "logTransactionTitle": "거래 기록",
+  "whatWasThePurposeHint": "무엇을 위한 지출이었나요?",
+  "amountLkrHint": "금액 (LKR)",
+  "expenseCategoryAttraction": "관광지",
+  "expenseCategoryLodging": "숙박",
+  "expenseCategoryOther": "기타",
+
+  "billingHistoryTitle": "결제 내역",
+  "errorGenericColonMessage": "오류: {error}",
+  "@errorGenericColonMessage": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "noBillingHistoryFoundMessage": "결제 내역을 찾을 수 없습니다.",
+  "planLabel": "플랜: {planId}",
+  "@planLabel": {
+    "placeholders": { "planId": { "type": "String" } }
+  },
+  "startedLabel": "시작일",
+  "expiresLabel": "만료일",
+  "idLabel": "ID: {subscriptionId}",
+  "@idLabel": {
+    "placeholders": { "subscriptionId": { "type": "String" } }
+  },
+  "subscriptionStatusCancelled": "취소됨",
+  "subscriptionStatusExpired": "만료됨",
+  "subscriptionStatusActive": "활성",
+
+  "accessDeniedMessage": "접근 거부됨",
+  "subscribedToPlanMessage": "✅ \"{planId}\" 플랜을 구독했습니다!",
+  "@subscribedToPlanMessage": {
+    "placeholders": { "planId": { "type": "String" } }
+  },
+  "subscriptionFailedMessage": "구독 실패: {error}",
+  "@subscriptionFailedMessage": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "purchasesRestoredMessage": "✅ 구매 내역이 성공적으로 복원되었습니다.",
+  "restoreFailedMessage": "복원 실패: {error}",
+  "@restoreFailedMessage": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "serviceTiersTitle": "서비스 등급",
+  "freeTierTitle": "무료 등급",
+  "freeTierDescription": "인증된 가이드를 위한 필수 투어 도구.",
+  "featureBasicOperations": "기본 운영 기능",
+  "featureVerifiedBadge": "인증 배지",
+  "featureStandardSos": "기본 SOS",
+  "proCommanderTitle": "프로 커맨더",
+  "proCommanderDescription": "노출도와 도구를 한 단계 업그레이드하세요.",
+  "featureFeaturedListings": "추천 리스팅",
+  "featureAdvancedAnalytics": "고급 분석",
+  "featureClientAnalytics": "고객 분석",
+  "featurePrioritySos": "우선 SOS",
+  "eliteAgencyTitle": "엘리트 에이전시",
+  "eliteAgencyDescription": "전체 차량 및 회사 관리.",
+  "featureTeamManagement": "팀 관리",
+  "featureOperatorDashboard": "운영자 대시보드",
+  "featureWhiteLabelBranding": "화이트 라벨 브랜딩",
+  "fleetPlansTitle": "차량단 플랜",
+  "restoreButton": "복원",
+  "currentPlanLabel": "현재 플랜",
+  "freeTierLabel": "무료 등급",
+  "expiresColonDateLabel": "만료일: {date}",
+  "@expiresColonDateLabel": {
+    "placeholders": { "date": { "type": "String" } }
+  },
+  "upgradeButton": "업그레이드",
+  "manageButton": "관리",
+  "mostPopularLabel": "가장 인기",
+  "perMonthSlashLabel": "/월",
+  "currentPlanButton": "현재 플랜",
+  "selectThisPlanButton": "이 플랜 선택",
+
+  "goPremiumTitle": "프리미엄으로 전환",
+  "fullArUnlimitedAiTripsMessage": "전체 AR 및 무제한 AI 여행",
+  "heritageArModeTitle": "헤리티지 AR 모드",
+  "heritageArModeDescription": "고대 유적을 1:1 비율로 재현하고 역사 오디오 가이드와 함께 감상하세요.",
+  "oracleAiTripIntelligenceTitle": "오라클 AI 여행 인텔리전스",
+  "oracleAiTripIntelligenceDescription": "오라클 엔진이 제공하는 무제한 초개인화 일정.",
+  "offlineDigitalTwinsTitle": "오프라인 디지털 트윈",
+  "offlineDigitalTwinsDescription": "신호가 약한 지역을 위해 고해상도 지도와 100개 이상의 관심 지점을 다운로드하세요.",
+  "exclusiveCuratorDealsTitle": "독점 큐레이터 혜택",
+  "exclusiveCuratorDealsDescription": "엄선된 부티크 숙소의 회원 전용 할인 혜택 이용.",
+  "guardianEmergencyTranslatorTitle": "가디언 긴급 번역기",
+  "guardianEmergencyTranslatorDescription": "SOS 상황에서 스리랑카 경찰이나 병원 직원에게 상황을 구두 싱할라어로 즉시 설명해 드립니다.",
+  "premiumActiveLabel": "{plan} 활성화됨",
+  "@premiumActiveLabel": {
+    "placeholders": { "plan": { "type": "String" } }
+  },
+  "premiumFallback": "프리미엄",
+  "renewingOnLabel": "{date}에 갱신",
+  "@renewingOnLabel": {
+    "placeholders": { "date": { "type": "String" } }
+  },
+  "viaSourceLabel": "{source} 경유",
+  "@viaSourceLabel": {
+    "placeholders": { "source": { "type": "String" } }
+  },
+  "storeFallback": "스토어",
+  "resetPremiumDevButton": "프리미엄 초기화 (개발 전용)",
+  "premiumResetMessage": "프리미엄이 초기화되었습니다. 요금제가 다시 표시됩니다.",
+  "smartTravelerTitle": "스마트 트래블러",
+  "billedMonthlyLabel": "월 단위 결제",
+  "featureAiItineraries20": "월 20회 AI 일정",
+  "featureSelectedArPlaces": "선택된 AR 장소",
+  "featureOfflineMapsBasic": "오프라인 지도 (기본)",
+  "heritagePremiumTitle": "헤리티지 프리미엄",
+  "billedYearlySaveLabel": "연 단위 결제 · 약 17% 절약",
+  "featureUnlimitedAiItineraries": "무제한 AI 일정",
+  "featureFullHeritageArAccess": "헤리티지 AR 전체 이용",
+  "featureAllOfflineFeatures": "모든 오프라인 기능",
+  "ultraExplorerTitle": "울트라 익스플로러",
+  "waitlistLabel": "대기자 명단",
+  "nextGenExperienceLabel": "차세대 경험",
+  "featureVrModeSupport": "VR 모드 지원",
+  "featureHistoricalTimelines": "역사 타임라인",
+  "featurePersonalAiCurator": "개인 AI 큐레이터",
+  "ultraExplorerWaitlistMessage": "🚀 울트라 익스플로러는 대기자 명단에 등록되었습니다! 출시되면 알려드릴게요.",
+  "restorePreviousPurchasesButton": "이전 구매 내역 복원",
+  "termsPrivacyLabel": "이용약관  •  개인정보처리방침",
+  "testBuyDevButton": "테스트 구매 (개발 전용)",
+  "mockPurchaseSimulatedMessage": "🚀 모의 구매가 시뮬레이션되었습니다. 새로고침 중...",
+  "monthlyLabel": "월간",
+  "yearlySaveLabel": "연간 · 17% 절약",
+  "lockedLabelShort": "잠금",
+  "perMonthLabel": "/ 월",
+  "comingSoonButton": "출시 예정",
+  "upgradeNowLongButton": "지금 업그레이드",
+  "trialDaysLabel": "{count, plural, one{무료 체험 1일} other{무료 체험 {count}일}}",
+  "@trialDaysLabel": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "trialWeeksLabel": "{count, plural, one{무료 체험 1주} other{무료 체험 {count}주}}",
+  "@trialWeeksLabel": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "trialMonthsLabel": "{count, plural, one{무료 체험 1개월} other{무료 체험 {count}개월}}",
+  "@trialMonthsLabel": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "trialYearsLabel": "{count, plural, one{무료 체험 1년} other{무료 체험 {count}년}}",
+  "@trialYearsLabel": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "trialPeriodLabel": "무료 체험 {count}기간",
+  "@trialPeriodLabel": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+
+  "oracleLostFocusMessage": "오라클 포커스 상실: {error}",
+  "@oracleLostFocusMessage": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "savorLankaAiTitle": "세이버랑카 AI",
+  "culinaryVisionEngineLabel": "요리 비전 엔진 V2",
+  "liveRealTimeScannerLabel": "실시간 라이브 스캐너",
+  "nutritionReliabilityLabel": "영양 신뢰도: {reliability}",
+  "@nutritionReliabilityLabel": {
+    "placeholders": { "reliability": { "type": "String" } }
+  },
+  "neuralReasoningLabel": "신경망 추론",
+  "aiVisualMarkersFallback": "AI가 {label}과 일치하는 시각적 요리 특징을 식별했습니다.",
+  "@aiVisualMarkersFallback": {
+    "placeholders": { "label": { "type": "String" } }
+  },
+  "authenticityIntelligenceTitle": "정통성 인텔리전스",
+  "ingredientCertaintyTitle": "재료 확실성",
+  "manualCulinaryOverrideTitle": "수동 요리 재정의",
+  "refineIngredientsHint": "재료를 다듬어 주세요 (쉼표로 구분)...",
+  "cancelButtonUppercaseAlt": "취소",
+  "applyOverrideButton": "재정의 적용",
+  "ingredientTierConfirmed": "확인됨",
+  "ingredientTierLikely": "가능성 높음",
+  "ingredientTierOptional": "선택 / 곁들임",
+  "mealContextLabel": "식사 상황: {context}",
+  "@mealContextLabel": {
+    "placeholders": { "context": { "type": "String" } }
+  },
+  "supportingElementsLabel": "보조 구성 요소:",
+  "influencesLabel": "영향: {influences}",
+  "@influencesLabel": {
+    "placeholders": { "influences": { "type": "String" } }
+  },
+  "visualFreshnessQualityLabel": "시각적 신선도 및 품질",
+  "qualityColonLabel": "품질: {quality}",
+  "@qualityColonLabel": {
+    "placeholders": { "quality": { "type": "String" } }
+  },
+  "textureColonLabel": "식감: {texture}",
+  "@textureColonLabel": {
+    "placeholders": { "texture": { "type": "String" } }
+  },
+  "heritageNarrativeEngineTitle": "헤리티지 내러티브 엔진",
+  "verifiedLegacyTitle": "검증된 유산",
+  "regionalTraditionTitle": "지역 전통",
+  "folkloreNarrativeTitle": "설화 이야기",
+  "culinaryGapPairingEngineTitle": "요리 공백 및 페어링 엔진",
+  "missingCompanionsLabel": "빠진 곁들임 요리:",
+  "engineNotesLabel": "엔진 노트:",
+  "recipeRefactorEngineTitle": "레시피 리팩터 엔진",
+  "refactoredStepsForYouLabel": "당신을 위해 재구성된 단계:",
+  "prepMetricLabel": "준비",
+  "cookMetricLabel": "조리",
+  "levelMetricLabel": "난이도",
+  "calMetricLabel": "칼로리",
+  "proteinLabel": "단백질",
+  "carbsLabel": "탄수화물",
+  "fatLabel": "지방",
+  "fiberLabel": "식이섬유",
+  "healthRatingLabel": "건강 등급",
+  "healthRatingValueLabel": "{rating}/10",
+  "@healthRatingValueLabel": {
+    "placeholders": { "rating": { "type": "int" } }
+  },
+  "sinhalaLabel": "싱할라어",
+  "englishLabel": "영어",
+  "backLabel": "뒤로",
+  "nextLabel": "다음",
+  "rescanLabel": "다시 스캔",
+  "oracleInsightsTitle": "오라클 인사이트",
+  "globalSubstitutionsTitle": "글로벌 대체 재료",
+  "aiEstimatedValuesDisclaimer": "AI가 추정한 값입니다. 전통적인 방식과 차이가 있을 수 있습니다.",
+  "savedLabel": "저장됨",
+  "saveToCookbookLabel": "쿡북에 저장",
+  "voiceGuideLabel": "음성 가이드",
+  "savorLankaShareText": "Hidden Gems SL.ai에서 발견한 이 {name} 레시피를 확인해 보세요! 정통 스리랑카 별미입니다. \n\n오라클 점수: {score}%",
+  "@savorLankaShareText": {
+    "placeholders": { "name": { "type": "String" }, "score": { "type": "String" } }
+  },
+  "savorLankaShareSubject": "Hidden Gems SL.ai - 세이버랑카 레시피",
+  "phase3CrossMatchTitle": "3단계: 교차 매칭 대체",
+  "visuallySimilarAlternativesLabel": "시각적으로 유사한 대안",
+  "aiCrossMatchReasoningLabel": "AI 교차 매칭 추론:",
+  "phase6HygienePresentationTitle": "6단계: 위생 및 플레이팅",
+  "presentationLabel": "플레이팅",
+  "integrityLabel": "무결성",
+  "popularLabel": "인기",
+
+  "curatorDealsTitle": "큐레이터 특가",
+  "noDealsRightNowTitle": "현재 이용 가능한 특가 없음",
+  "newPartnerDiscountsMessage": "새로운 파트너 할인이 정기적으로 추가됩니다 — 나중에 다시 확인해 주세요.",
+  "percentOffLabel": "{percent}% 할인",
+  "@percentOffLabel": {
+    "placeholders": { "percent": { "type": "int" } }
+  },
+  "validUntilLabel": "{date}까지 유효",
+  "@validUntilLabel": {
+    "placeholders": { "date": { "type": "String" } }
+  },
+  "claimDealButton": "특가 받기",
+
+  "passportTitle": "패스포트",
+  "verifiedVisitCollectionSubtitle": "인증된 방문 컬렉션",
+  "passportIsEmptyTitle": "패스포트가 비어 있습니다",
+  "exploreHistoricalGemsMessage": "역사적인 명소를 탐험하고\n나만의 디지털 스탬프를 받아보세요.",
+  "claimedOnLabel": "{date}에 획득함",
+  "@claimedOnLabel": {
+    "placeholders": { "date": { "type": "String" } }
+  },
+  "verifiableHashLabel": "검증 가능한 해시",
+  "shareCollectibleButton": "수집품 공유",
+  "stampRarityCommon": "일반",
+  "stampRarityRare": "희귀",
+  "stampRarityMythic": "신화",
+
+  "audioGuideLabel": "오디오 가이드",
+  "sinhalaShortLabel": "සිංහල",
+  "englishShortLabel": "영어",
+
+  "joinGroupTourTitle": "그룹 투어 참가",
+  "enterSixDigitCodeMessage": "가이드가 제공한 6자리 코드를 입력하세요.",
+  "cancelButtonUppercaseThird": "취소",
+  "joinButtonUppercase": "참가",
+  "tapFlatSurfaceMessage": "👆 평평한 표면을 탭하여 모델을 배치하세요",
+  "groupTourStartedCodeLabel": "그룹 투어가 시작되었습니다! 코드: {code}",
+  "@groupTourStartedCodeLabel": {
+    "placeholders": { "code": { "type": "String" } }
+  },
+  "invalidSessionCodeMessage": "잘못된 세션 코드",
+  "couldNotLoadAudioMessage": "오디오 내레이션을 불러올 수 없습니다.",
+  "galleryPermissionDeniedMessage": "갤러리 권한이 거부되었습니다",
+  "failedToCapturePhotoMessage": "사진 캡처 실패: {error}",
+  "@failedToCapturePhotoMessage": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "codeColonLabel": "코드: {code}",
+  "@codeColonLabel": {
+    "placeholders": { "code": { "type": "String" } }
+  },
+  "thenLabel": "이전",
+  "nowLabel": "현재",
+  "resetLabel": "초기화",
+  "scalePlusLabel": "확대+",
+  "scaleMinusLabel": "축소-",
+  "memoryLabel": "메모리",
+  "removeLabel": "제거",
+  "placeLabel": "배치",
+  "historicalInfoComingSoonMessage": "역사 정보가 곧 제공될 예정입니다.",
+  "preparingHeritageAssetsMessage": "유산 자산 준비 중...",
+  "progressSizeLabel": "{progress}% • {size} MB",
+  "@progressSizeLabel": {
+    "placeholders": { "progress": { "type": "int" }, "size": { "type": "String" } }
+  },
+  "modelColonNameLabel": "모델: {name}",
+  "@modelColonNameLabel": {
+    "placeholders": { "name": { "type": "String" } }
+  },
+  "authorColonNameLabel": "제작자: {name}",
+  "@authorColonNameLabel": {
+    "placeholders": { "name": { "type": "String" } }
+  },
+  "moveSlowlyToScanMessage": "휴대폰을 천천히 움직여\n평평한 표면을 스캔하세요",
+  "tapPlaceToPlaceModelMessage": "👇 \"배치\"를 탭한 후 평평한 표면을 탭하세요",
+  "demoModeSecondsRemainingLabel": "데모 모드: {seconds} 남음",
+  "@demoModeSecondsRemainingLabel": {
+    "placeholders": { "seconds": { "type": "int" } }
+  },
+  "premiumHeritageSessionLabel": "프리미엄 유산 세션",
+  "artifactDiscoveredLabel": "유물 발견!",
+  "ptsRarityLabel": "+{points} 포인트 • {rarity}",
+  "@ptsRarityLabel": {
+    "placeholders": { "points": { "type": "int" }, "rarity": { "type": "String" } }
+  },
+  "hiddenGemsSlWatermark": "HIDDEN GEMS SL",
+  "heritageArWatermark": "HERITAGE AR",
+  "captureSuccessfulTitle": "캡처 성공!",
+  "shareDiscoveryMessage": "당신의 역사적 발견을 세상과 공유하세요",
+  "instagramLabel": "인스타그램",
+  "tiktokLabel": "틱톡",
+  "savedLabelShort": "저장됨",
+  "sharePlatformCaptionInstagram": "#HiddenGemsSL과 함께 AR로 {placeName}을(를) 탐험하고 있어요",
+  "@sharePlatformCaptionInstagram": {
+    "placeholders": { "placeName": { "type": "String" } }
+  },
+  "sharePlatformCaptionTiktok": "역사가 살아납니다! #HiddenGemsSL #HeritageAR",
+  "photoSavedGalleryMessage": "사진이 갤러리에 저장되었습니다!",
+  "backToArButton": "AR로 돌아가기",
+  "distanceToTargetLabel": "{placeName}까지 {distance}m",
+  "@distanceToTargetLabel": {
+    "placeholders": { "distance": { "type": "String" }, "placeName": { "type": "String" } }
+  },
+  "recommendedLabel": "추천",
+  "categoryRatingLabel": "{category} • {rating} ★",
+  "@categoryRatingLabel": {
+    "placeholders": { "category": { "type": "String" }, "rating": { "type": "String" } }
+  },
+  "viewButtonUppercase": "보기",
+  "loginToLeaveMemoryMessage": "AR 메모리를 남기려면 로그인하세요!",
+  "leaveArMemoryTitle": "AR 메모리 남기기",
+  "whatDoYouSeeHereHint": "여기서 무엇이 보이나요?",
+  "cancelButton2": "취소",
+  "dropButton": "남기기",
+  "memoryDroppedMessage": "메모리가 AR 세계에 남겨졌습니다!",
+  "explorerFallback": "탐험가",
+  "signalPercentLabel": "신호: {percent}%",
+  "@signalPercentLabel": {
+    "placeholders": { "percent": { "type": "int" } }
+  },
+  "searchingLabel": "검색 중...",
+
+  "cameraAccessNeededTitle": "카메라 접근 권한이 필요합니다",
+  "arNotAvailableDeviceTitle": "이 기기에서는 AR을 사용할 수 없습니다",
+  "arCouldntLoadTitle": "이번에는 AR을 불러올 수 없습니다",
+  "cameraAccessNeededMessage": "AR 기능을 사용하려면 카메라 접근 권한이 필요합니다. 대신 영화 같은 재구성을 보여드립니다.",
+  "arNotAvailableMessage": "대신 같은 시대의 영화 같은 360° 뷰를 보여드립니다.",
+  "arCouldntLoadMessage": "역사적인 3D 모델을 불러올 수 없었습니다. 대신 영화 같은 대체 화면을 보여드립니다.",
+  "closeButtonLabel": "닫기",
+  "watchAdToUnlockButton": "광고를 보고 잠금 해제",
+  "oracleRewardFallbackMessage": "✨ 오라클 보상이 활성화되었습니다! 대체 모드와 프리미엄 콘텐츠가 잠금 해제되었습니다.",
+  "arNotAvailableInfoBarMessage": "이 기기에서는 AR을 사용할 수 없습니다 · 360° 뷰 표시 중",
+  "cinematicPreviewUnavailableMessage": "영화 같은 미리보기를 사용할 수 없습니다",
+  "interactive3dViewTitle": "인터랙티브 3D 뷰",
+  "touchToRotateMonumentMessage": "터치하여 기념물 회전",
+  "historicalStoryLabel": "역사 이야기",
+  "unveilingEraTitle": "{era} 공개",
+  "@unveilingEraTitle": {
+    "placeholders": { "era": { "type": "String" } }
+  },
+  "heritageStoryBody": "스리랑카의 유산은 시간의 결 깊숙이 자리하고 있습니다. {era}까지 거슬러 올라가는 이곳은 한때 수리 공학과 영적 건축을 개척한 번영한 문명의 중심지였습니다.\n\n오늘날 우리가 보는 스투파는 1억 개가 넘는 햇볕에 구운 벽돌로 지어졌으며, 고대 왕들의 놀라운 공학 기술을 증명하고 있습니다...",
+  "@heritageStoryBody": {
+    "placeholders": { "era": { "type": "String" } }
+  },
+  "listenToNarrationLabel": "내레이션 듣기",
+  "sinhalaEnglishAvailableLabel": "싱할라어 및 영어 제공",
+  "illustrationCaptionLabel": "삽화: 고대 공학 (컨셉 아트)",
+  "mode360Label": "360°",
+  "mode3dLabel": "3D",
+  "modeStoryLabel": "이야기",
+
+  "unlockArHeritageModeTitle": "AR 유산 모드 잠금 해제",
+  "arHeritageModeSubtitle": "수천 년 전 모습 그대로의 스리랑카를 경험하세요.",
+  "featureAncient3dReconstruction": "고대 3D 재구성",
+  "featureAudioNarrationBilingual": "오디오 내레이션 (සිංහල / English)",
+  "featureArPhotoCapture": "AR 사진 캡처 및 소셜 공유",
+  "pricingTrialLabel": "월 Rs. 299부터  ·  7일 무료 체험",
+  "upgradeToPremiumButton": "프리미엄으로 업그레이드",
+  "watch10SecPreviewButton": "10초 미리보기 보기",
+  "watchAdUnlockSessionButton": "광고를 보고 세션 잠금 해제",
+  "notNowButtonLabel": "나중에",
+  "ancientArtifactsLabel": "고대 유물"
 }

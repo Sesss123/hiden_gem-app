@@ -5,6 +5,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/services/emergency_translator_service.dart';
+import '../../l10n/app_localizations.dart';
 
 /// Full-screen, hand-to-a-stranger emergency communicator. Opened right
 /// after SOS is triggered: picks a situation type, translates it to
@@ -91,7 +92,7 @@ class _EmergencyTranslatorScreenState extends State<EmergencyTranslatorScreen> {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          "Emergency Translator",
+          AppLocalizations.of(context)!.emergencyTranslatorTitle,
           style: GoogleFonts.outfit(color: AppTheme.colors.white, fontWeight: FontWeight.w800, fontSize: 17),
         ),
       ),
@@ -102,7 +103,7 @@ class _EmergencyTranslatorScreenState extends State<EmergencyTranslatorScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Text(
-                "Show this screen to a bystander, police officer, or hospital staff — it's speaking Sinhala for you.",
+                AppLocalizations.of(context)!.showScreenToBystanderMessage,
                 textAlign: TextAlign.center,
                 style: GoogleFonts.inter(color: AppTheme.colors.white70, fontSize: 12.5, height: 1.5),
               ),
@@ -214,8 +215,8 @@ class _EmergencyTranslatorScreenState extends State<EmergencyTranslatorScreen> {
             Expanded(
               child: Text(
                 _position != null
-                    ? '${_position!.latitude.toStringAsFixed(5)}, ${_position!.longitude.toStringAsFixed(5)} — tap to open in Maps'
-                    : 'Location unavailable',
+                    ? AppLocalizations.of(context)!.locationCoordinatesTapMapsLabel(_position!.latitude.toStringAsFixed(5), _position!.longitude.toStringAsFixed(5))
+                    : AppLocalizations.of(context)!.locationUnavailableMessage,
                 style: GoogleFonts.inter(color: AppTheme.colors.white70, fontSize: 12, fontWeight: FontWeight.w600),
               ),
             ),
@@ -234,7 +235,7 @@ class _EmergencyTranslatorScreenState extends State<EmergencyTranslatorScreen> {
         onPressed: (_isTranslating || _isSpeaking) ? null : _speak,
         icon: Icon(_isSpeaking ? Icons.volume_up_rounded : Icons.replay_rounded, color: AppTheme.colors.white),
         label: Text(
-          _isSpeaking ? "Speaking…" : "Play again",
+          _isSpeaking ? AppLocalizations.of(context)!.speakingEllipsisMessage : AppLocalizations.of(context)!.playAgainButton,
           style: GoogleFonts.inter(color: AppTheme.colors.white, fontWeight: FontWeight.w700, fontSize: 15),
         ),
         style: ElevatedButton.styleFrom(

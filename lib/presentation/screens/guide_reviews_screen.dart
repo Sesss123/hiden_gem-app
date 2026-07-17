@@ -13,6 +13,7 @@ import 'review_submission_screen.dart';
 import 'subscription_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../core/utils/secure_logger.dart';
+import '../../l10n/app_localizations.dart';
 
 class GuideReviewsScreen extends ConsumerStatefulWidget {
   final String guideId;
@@ -45,7 +46,7 @@ class _GuideReviewsScreenState extends ConsumerState<GuideReviewsScreen> {
         },
         backgroundColor: AppTheme.colors.amberAccent,
         icon: Icon(Icons.edit_note, color: AppTheme.colors.black87),
-        label: Text("WRITE REVIEW", style: GoogleFonts.outfit(color: AppTheme.colors.black87, fontWeight: FontWeight.bold)),
+        label: Text(AppLocalizations.of(context)!.writeReviewButton, style: GoogleFonts.outfit(color: AppTheme.colors.black87, fontWeight: FontWeight.bold)),
       ),
       body: OracleUI.auraBackground(
         child: CustomScrollView(
@@ -97,7 +98,7 @@ class _GuideReviewsScreenState extends ConsumerState<GuideReviewsScreen> {
                             Icon(Icons.error_outline, color: AppTheme.colors.redAccent, size: 48),
                             const SizedBox(height: 16),
                             Text(
-                              "Failed to load reviews. Please try again.",
+                              AppLocalizations.of(context)!.failedToLoadReviewsMessage,
                               style: GoogleFonts.inter(color: AppTheme.colors.white70),
                             ),
                           ],
@@ -147,7 +148,7 @@ class _GuideReviewsScreenState extends ConsumerState<GuideReviewsScreen> {
         builder: (context) => FlexibleSpaceBar(
           titlePadding: const EdgeInsets.only(left: 56, bottom: 16),
           title: Text(
-            "Reviews",
+            AppLocalizations.of(context)!.reviewsTitle,
             style: GoogleFonts.outfit(fontWeight: FontWeight.w800, letterSpacing: -0.5, fontSize: 20, color: AppTheme.textPrimary(context)),
           ),
         ),
@@ -185,12 +186,12 @@ class _GuideReviewsScreenState extends ConsumerState<GuideReviewsScreen> {
             Icon(Icons.lock_person_rounded, size: 48, color: AppTheme.colors.amber),
             const SizedBox(height: 16),
             Text(
-              "PREMIUM ANALYTICS LOCKED",
+              AppLocalizations.of(context)!.premiumAnalyticsLockedTitle,
               style: GoogleFonts.outfit(color: AppTheme.colors.amber, fontSize: 14, fontWeight: FontWeight.w900, letterSpacing: 2),
             ),
             const SizedBox(height: 8),
             Text(
-              "Upgrade to PRO or ELITE to unlock deep insights into your performance, trust score, and tourist feedback.",
+              AppLocalizations.of(context)!.premiumAnalyticsLockedMessage,
               textAlign: TextAlign.center,
               style: GoogleFonts.inter(color: AppTheme.colors.white70, fontSize: 12),
             ),
@@ -205,7 +206,7 @@ class _GuideReviewsScreenState extends ConsumerState<GuideReviewsScreen> {
                 foregroundColor: AppTheme.colors.black,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
               ),
-              child: Text("UPGRADE NOW", style: GoogleFonts.outfit(fontWeight: FontWeight.bold)),
+              child: Text(AppLocalizations.of(context)!.upgradeNowButton, style: GoogleFonts.outfit(fontWeight: FontWeight.bold)),
             ),
           ],
         ),
@@ -242,7 +243,7 @@ class _GuideReviewsScreenState extends ConsumerState<GuideReviewsScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "Trust score",
+                        AppLocalizations.of(context)!.trustScoreLabel,
                         style: GoogleFonts.inter(color: AppTheme.colors.white.withValues(alpha: 0.8), fontSize: 12, fontWeight: FontWeight.w600),
                       ),
                       const SizedBox(height: 6),
@@ -261,9 +262,9 @@ class _GuideReviewsScreenState extends ConsumerState<GuideReviewsScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  _buildMiniStat(snapshot.completedTours.toString(), "Trips"),
-                  _buildMiniStat("${snapshot.ratingAverage.toStringAsFixed(1)} ★", "Rating"),
-                  _buildMiniStat(snapshot.totalSafetyIncidents.toString(), "Incidents"),
+                  _buildMiniStat(snapshot.completedTours.toString(), AppLocalizations.of(context)!.miniStatTrips),
+                  _buildMiniStat("${snapshot.ratingAverage.toStringAsFixed(1)} ★", AppLocalizations.of(context)!.miniStatRating),
+                  _buildMiniStat(snapshot.totalSafetyIncidents.toString(), AppLocalizations.of(context)!.miniStatIncidents),
                 ],
               ),
             ],
@@ -274,26 +275,29 @@ class _GuideReviewsScreenState extends ConsumerState<GuideReviewsScreen> {
   }
 
   Widget _buildTierBadge(double score) {
-    String tier = "Bronze tier";
-    if (score >= 0.9) {
-      tier = "Diamond tier";
-    } else if (score >= 0.7) {
-      tier = "Gold tier";
-    } else if (score >= 0.5) {
-      tier = "Silver tier";
-    }
+    return Builder(builder: (context) {
+      final l10n = AppLocalizations.of(context)!;
+      String tier = l10n.tierBronze;
+      if (score >= 0.9) {
+        tier = l10n.tierDiamond;
+      } else if (score >= 0.7) {
+        tier = l10n.tierGold;
+      } else if (score >= 0.5) {
+        tier = l10n.tierSilver;
+      }
 
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: AppTheme.colors.white.withValues(alpha: 0.15),
-        borderRadius: BorderRadius.circular(14),
-      ),
-      child: Text(
-        tier,
-        style: GoogleFonts.inter(color: AppTheme.colors.white, fontSize: 11, fontWeight: FontWeight.w700),
-      ),
-    );
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: AppTheme.colors.white.withValues(alpha: 0.15),
+          borderRadius: BorderRadius.circular(14),
+        ),
+        child: Text(
+          tier,
+          style: GoogleFonts.inter(color: AppTheme.colors.white, fontSize: 11, fontWeight: FontWeight.w700),
+        ),
+      );
+    });
   }
 
   Widget _buildMiniStat(String value, String label) {
@@ -340,7 +344,7 @@ class _GuideReviewsScreenState extends ConsumerState<GuideReviewsScreen> {
                       Icon(Icons.verified_rounded, color: AppTheme.colors.greenAccent, size: 10),
                       const SizedBox(width: 4),
                       Text(
-                        "Verified trip",
+                        AppLocalizations.of(context)!.verifiedTripBadge,
                         style: GoogleFonts.inter(color: AppTheme.colors.greenAccent, fontSize: 10, fontWeight: FontWeight.w700),
                       ),
                     ],
@@ -365,7 +369,7 @@ class _GuideReviewsScreenState extends ConsumerState<GuideReviewsScreen> {
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  "Tourist ${review.touristId.substring(0, 4)}", // Simplified
+                  AppLocalizations.of(context)!.touristShortIdLabel(review.touristId.substring(0, 4)),
                   style: GoogleFonts.inter(color: AppTheme.textPrimary(context), fontSize: 12, fontWeight: FontWeight.w600),
                 ),
                 const Spacer(),
@@ -390,12 +394,12 @@ class _GuideReviewsScreenState extends ConsumerState<GuideReviewsScreen> {
             Icon(Icons.rate_review_outlined, size: 56, color: AppTheme.textSecondary(context).withValues(alpha: 0.3)),
             const SizedBox(height: 16),
             Text(
-              "No reviews yet",
+              AppLocalizations.of(context)!.noReviewsYetTitle,
               style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.w700, fontSize: 18, letterSpacing: -0.3),
             ),
             const SizedBox(height: 8),
             Text(
-              "Verified participants can leave feedback after session completion.",
+              AppLocalizations.of(context)!.noReviewsYetSubtitle,
               textAlign: TextAlign.center,
               style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 13),
             ),

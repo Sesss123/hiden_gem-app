@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/theme/app_theme.dart';
+import '../../l10n/app_localizations.dart';
 
 /// Shows the AR Premium upgrade bottom sheet dialog.
 /// Call via: ARUpgradeDialog.show(context, onPreview: ..., onUpgrade: ...)
@@ -93,7 +94,7 @@ class ARUpgradeDialog extends StatelessWidget {
 
           // Title
           Text(
-            'Unlock AR Heritage Mode',
+            AppLocalizations.of(context)!.unlockArHeritageModeTitle,
             textAlign: TextAlign.center,
             style: GoogleFonts.outfit(
               color: AppTheme.textPrimary(context),
@@ -105,7 +106,7 @@ class ARUpgradeDialog extends StatelessWidget {
 
           // Subtitle
           Text(
-            'Experience Sri Lanka as it looked thousands of years ago.',
+            AppLocalizations.of(context)!.arHeritageModeSubtitle,
             textAlign: TextAlign.center,
             style: GoogleFonts.inter(
               color: AppTheme.textSecondary(context),
@@ -116,16 +117,16 @@ class ARUpgradeDialog extends StatelessWidget {
           const SizedBox(height: 24),
 
           // Feature list
-          _featureRow('🏺', 'Ancient 3D Reconstruction'),
+          _featureRow('🏺', AppLocalizations.of(context)!.featureAncient3dReconstruction),
           const SizedBox(height: 12),
-          _featureRow('🎧', 'Audio Narration (සිංහල / English)'),
+          _featureRow('🎧', AppLocalizations.of(context)!.featureAudioNarrationBilingual),
           const SizedBox(height: 12),
-          _featureRow('📸', 'AR Photo Capture & Social Share'),
+          _featureRow('📸', AppLocalizations.of(context)!.featureArPhotoCapture),
           const SizedBox(height: 28),
 
           // Pricing
           Text(
-            'From Rs. 299/month  ·  7-day free trial',
+            AppLocalizations.of(context)!.pricingTrialLabel,
             style: GoogleFonts.inter(
               color: AppPalette.rust,
               fontSize: 13,
@@ -161,7 +162,7 @@ class ARUpgradeDialog extends StatelessWidget {
                   alignment: Alignment.center,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   child: Text(
-                    'Upgrade to Premium',
+                    AppLocalizations.of(context)!.upgradeToPremiumButton,
                     style: GoogleFonts.outfit(
                       color: AppTheme.colors.white,
                       fontSize: 16,
@@ -190,7 +191,7 @@ class ARUpgradeDialog extends StatelessWidget {
                 ),
               ),
               child: Text(
-                'Watch 10-sec Preview',
+                AppLocalizations.of(context)!.watch10SecPreviewButton,
                 style: GoogleFonts.outfit(
                   color: AppPalette.rust,
                   fontWeight: FontWeight.bold,
@@ -216,7 +217,7 @@ class ARUpgradeDialog extends StatelessWidget {
                   ),
                 ),
                 label: Text(
-                  'Watch Ad to Unlock Session',
+                  AppLocalizations.of(context)!.watchAdUnlockSessionButton,
                   style: GoogleFonts.outfit(
                     color: AppTheme.colors.white,
                     fontSize: 15,
@@ -232,7 +233,7 @@ class ARUpgradeDialog extends StatelessWidget {
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: Text(
-              'Not Now',
+              AppLocalizations.of(context)!.notNowButtonLabel,
               style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 13),
             ),
           ),

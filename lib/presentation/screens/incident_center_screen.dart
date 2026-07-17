@@ -7,6 +7,7 @@ import '../../core/theme/oracle_ui_system.dart';
 import '../../data/models/incident_report.dart';
 import '../../data/repositories/incident_repository.dart';
 import 'incident_detail_screen.dart';
+import '../../l10n/app_localizations.dart';
 
 class IncidentCenterScreen extends ConsumerStatefulWidget {
   final String? sessionId;
@@ -51,7 +52,7 @@ class _IncidentCenterScreenState extends ConsumerState<IncidentCenterScreen> {
                 if (snapshot.hasError) {
                   return SliverFillRemaining(
                     child: Center(
-                      child: Text("Offline Error: ${snapshot.error}", style: TextStyle(color: AppTheme.colors.redAccent)),
+                      child: Text(AppLocalizations.of(context)!.offlineErrorMessage(snapshot.error.toString()), style: TextStyle(color: AppTheme.colors.redAccent)),
                     ),
                   );
                 }
@@ -92,7 +93,7 @@ class _IncidentCenterScreenState extends ConsumerState<IncidentCenterScreen> {
         builder: (context) => FlexibleSpaceBar(
           titlePadding: const EdgeInsets.only(left: 20, bottom: 16),
           title: Text(
-            "Safety console",
+            AppLocalizations.of(context)!.safetyConsoleTitle,
             style: GoogleFonts.outfit(fontWeight: FontWeight.w800, letterSpacing: -0.5, fontSize: 20, color: AppTheme.textPrimary(context)),
           ),
         ),
@@ -124,7 +125,7 @@ class _IncidentCenterScreenState extends ConsumerState<IncidentCenterScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "Secure operations",
+                    AppLocalizations.of(context)!.secureOperationsTitle,
                     style: GoogleFonts.outfit(
                       color: AppTheme.textPrimary(context),
                       fontWeight: FontWeight.w700,
@@ -133,7 +134,7 @@ class _IncidentCenterScreenState extends ConsumerState<IncidentCenterScreen> {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    "All incidents logged with audit trail",
+                    AppLocalizations.of(context)!.allIncidentsLoggedMessage,
                     style: GoogleFonts.inter(
                       color: AppTheme.textSecondary(context),
                       fontSize: 12,
@@ -151,12 +152,19 @@ class _IncidentCenterScreenState extends ConsumerState<IncidentCenterScreen> {
 
   Widget _buildFilterChips() {
     return Builder(builder: (context) {
+      final l10n = AppLocalizations.of(context)!;
+      final filters = {
+        'Active': l10n.filterActive,
+        'Resolved': l10n.filterResolved,
+        'My Reports': l10n.filterMyReports,
+      };
       return Container(
         height: 60,
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         child: ListView(
           scrollDirection: Axis.horizontal,
-          children: ['Active', 'Resolved', 'My Reports'].map((filter) {
+          children: filters.entries.map((entry) {
+            final filter = entry.key;
             final isSelected = _selectedFilter == filter;
             return Padding(
               padding: const EdgeInsets.only(right: 8),
@@ -170,7 +178,7 @@ class _IncidentCenterScreenState extends ConsumerState<IncidentCenterScreen> {
                     borderRadius: BorderRadius.circular(100),
                   ),
                   child: Text(
-                    filter,
+                    entry.value,
                     style: GoogleFonts.inter(
                       color: isSelected ? Theme.of(context).colorScheme.surface : AppTheme.textSecondary(context),
                       fontWeight: FontWeight.w600,
@@ -234,7 +242,7 @@ class _IncidentCenterScreenState extends ConsumerState<IncidentCenterScreen> {
                               borderRadius: BorderRadius.circular(100),
                             ),
                             child: Text(
-                              'PRIORITY',
+                              AppLocalizations.of(context)!.priorityBadgeText,
                               style: GoogleFonts.outfit(color: AppPalette.heroOchre, fontWeight: FontWeight.w800, fontSize: 9, letterSpacing: 0.5),
                             ),
                           ),
@@ -274,7 +282,7 @@ class _IncidentCenterScreenState extends ConsumerState<IncidentCenterScreen> {
                     ),
                     const Spacer(),
                     Text(
-                      "${incident.timelineCount} updates",
+                      AppLocalizations.of(context)!.updatesCountLabel(incident.timelineCount),
                       style: GoogleFonts.inter(
                         color: Theme.of(context).colorScheme.primary,
                         fontSize: 11,
@@ -299,7 +307,7 @@ class _IncidentCenterScreenState extends ConsumerState<IncidentCenterScreen> {
         borderRadius: BorderRadius.circular(100),
       ),
       child: Text(
-        _sentenceCase(status),
+        _incidentStatusLabel(status, AppLocalizations.of(context)!),
         style: GoogleFonts.inter(
           color: AppTheme.textSecondary(context),
           fontSize: 10,
@@ -309,9 +317,19 @@ class _IncidentCenterScreenState extends ConsumerState<IncidentCenterScreen> {
     );
   }
 
-  String _sentenceCase(String value) {
-    if (value.isEmpty) return value;
-    return value[0].toUpperCase() + value.substring(1).toLowerCase();
+  String _incidentStatusLabel(String status, AppLocalizations l10n) {
+    switch (status.toLowerCase()) {
+      case 'open':
+        return l10n.incidentStatusOpen;
+      case 'investigating':
+        return l10n.incidentStatusInvestigating;
+      case 'resolved':
+        return l10n.incidentStatusResolved;
+      case 'closed':
+        return l10n.incidentStatusClosed;
+      default:
+        return status;
+    }
   }
 
   Widget _buildEmptyState() {
@@ -323,7 +341,7 @@ class _IncidentCenterScreenState extends ConsumerState<IncidentCenterScreen> {
             Icon(Icons.check_circle_outline_rounded, size: 56, color: AppTheme.textSecondary(context).withValues(alpha: 0.3)),
             const SizedBox(height: 16),
             Text(
-              "No critical incidents",
+              AppLocalizations.of(context)!.noCriticalIncidentsTitle,
               style: GoogleFonts.outfit(
                 color: AppTheme.textPrimary(context),
                 fontWeight: FontWeight.w700,
@@ -333,7 +351,7 @@ class _IncidentCenterScreenState extends ConsumerState<IncidentCenterScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              "Session operations are within safety parameters.",
+              AppLocalizations.of(context)!.sessionWithinSafetyParamsMessage,
               style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 13),
             ),
           ],
@@ -348,7 +366,7 @@ class _IncidentCenterScreenState extends ConsumerState<IncidentCenterScreen> {
       backgroundColor: AppTheme.colors.redAccent,
       icon: Icon(Icons.add_alert_rounded, color: AppTheme.colors.white),
       label: Text(
-        "Report incident",
+        AppLocalizations.of(context)!.reportIncidentButton,
         style: GoogleFonts.inter(fontWeight: FontWeight.w700, color: AppTheme.colors.white),
       ),
     ).animate().scale(delay: 1.seconds);
@@ -381,18 +399,18 @@ class _IncidentCenterScreenState extends ConsumerState<IncidentCenterScreen> {
                 ),
                 const SizedBox(height: 32),
                 Text(
-                  "File an incident",
+                  AppLocalizations.of(context)!.fileAnIncidentTitle,
                   style: GoogleFonts.outfit(fontSize: 22, fontWeight: FontWeight.w800, letterSpacing: -0.4, color: AppTheme.textPrimary(context)),
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  "Provide accurate details, this is logged with an audit trail.",
+                  AppLocalizations.of(context)!.incidentAuditTrailMessage,
                   style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 12),
                 ),
                 const SizedBox(height: 32),
-                _buildLargeField(context, "Incident title", Icons.title_rounded),
+                _buildLargeField(context, AppLocalizations.of(context)!.incidentTitleHint, Icons.title_rounded),
                 const SizedBox(height: 20),
-                _buildLargeField(context, "Description of event", Icons.description_rounded, maxLines: 4),
+                _buildLargeField(context, AppLocalizations.of(context)!.descriptionOfEventHint, Icons.description_rounded, maxLines: 4),
                 const SizedBox(height: 32),
                 SizedBox(
                   width: double.infinity,
@@ -405,7 +423,7 @@ class _IncidentCenterScreenState extends ConsumerState<IncidentCenterScreen> {
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
                       elevation: 0,
                     ),
-                    child: Text("Transmit report", style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 14)),
+                    child: Text(AppLocalizations.of(context)!.transmitReportButton, style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 14)),
                   ),
                 ),
               ],

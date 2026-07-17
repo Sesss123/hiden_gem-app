@@ -6,6 +6,7 @@ import '../../data/models/broadcast_message.dart';
 import '../../data/repositories/broadcast_repository.dart';
 import '../../data/datasources/auth_service.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import '../../l10n/app_localizations.dart';
 
 class GuideBroadcastScreen extends StatefulWidget {
   final String sessionId;
@@ -55,13 +56,14 @@ class _GuideBroadcastScreenState extends State<GuideBroadcastScreen> {
     
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Broadcast sent successfully")),
+        SnackBar(content: Text(AppLocalizations.of(context)!.broadcastSentSuccessMessage)),
       );
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: CustomScrollView(
@@ -70,7 +72,7 @@ class _GuideBroadcastScreenState extends State<GuideBroadcastScreen> {
             backgroundColor: Theme.of(context).scaffoldBackgroundColor,
             elevation: 0,
             title: Text(
-              "Broadcast",
+              l10n.broadcastTitle,
               style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.w800, letterSpacing: -0.5, color: AppTheme.textPrimary(context)),
             ),
             leading: IconButton(
@@ -82,14 +84,14 @@ class _GuideBroadcastScreenState extends State<GuideBroadcastScreen> {
             padding: const EdgeInsets.all(20),
             sliver: SliverList(
               delegate: SliverChildListDelegate([
-                _buildMessageInput(),
+                _buildMessageInput(l10n),
                 const SizedBox(height: 28),
                 Text(
-                  "Active broadcasts",
+                  l10n.activeBroadcastsTitle,
                   style: GoogleFonts.outfit(fontSize: 15, fontWeight: FontWeight.w700, letterSpacing: -0.2, color: AppTheme.textPrimary(context)),
                 ),
                 const SizedBox(height: 16),
-                _buildBroadcastStream(),
+                _buildBroadcastStream(l10n),
               ]),
             ),
           ),
@@ -98,7 +100,7 @@ class _GuideBroadcastScreenState extends State<GuideBroadcastScreen> {
     );
   }
 
-  Widget _buildMessageInput() {
+  Widget _buildMessageInput(AppLocalizations l10n) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -108,14 +110,14 @@ class _GuideBroadcastScreenState extends State<GuideBroadcastScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("Message to travelers", style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w700, color: AppTheme.textPrimary(context))),
+          Text(l10n.messageToTravelersLabel, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w700, color: AppTheme.textPrimary(context))),
           const SizedBox(height: 12),
           TextField(
             controller: _messageController,
             maxLines: 3,
             style: TextStyle(color: AppTheme.textPrimary(context)),
             decoration: InputDecoration(
-              hintText: "Enter your message to travelers...",
+              hintText: l10n.messageToTravelersHint,
               hintStyle: GoogleFonts.inter(color: AppTheme.textSecondary(context)),
               border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
               filled: true,
@@ -123,9 +125,9 @@ class _GuideBroadcastScreenState extends State<GuideBroadcastScreen> {
             ),
           ),
           const SizedBox(height: 16),
-          _buildTypeSelector(),
+          _buildTypeSelector(l10n),
           const SizedBox(height: 20),
-          _buildPrioritySelector(),
+          _buildPrioritySelector(l10n),
           const SizedBox(height: 20),
           SizedBox(
             width: double.infinity,
@@ -139,7 +141,7 @@ class _GuideBroadcastScreenState extends State<GuideBroadcastScreen> {
               onPressed: _isSending ? null : _sendBroadcast,
               child: _isSending
                 ? SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2, color: AppTheme.colors.white))
-                : Text("Send to all travelers", style: GoogleFonts.inter(fontWeight: FontWeight.w700, color: AppTheme.colors.white)),
+                : Text(l10n.sendToAllTravelersButton, style: GoogleFonts.inter(fontWeight: FontWeight.w700, color: AppTheme.colors.white)),
             ),
           ),
         ],
@@ -147,7 +149,7 @@ class _GuideBroadcastScreenState extends State<GuideBroadcastScreen> {
     );
   }
 
-  Widget _buildTypeSelector() {
+  Widget _buildTypeSelector(AppLocalizations l10n) {
     return Wrap(
       spacing: 8,
       runSpacing: 8,
@@ -162,7 +164,7 @@ class _GuideBroadcastScreenState extends State<GuideBroadcastScreen> {
               borderRadius: BorderRadius.circular(100),
             ),
             child: Text(
-              _capitalize(type.name),
+              _typeLabel(type, l10n),
               style: GoogleFonts.inter(
                 fontSize: 11,
                 color: isSelected ? AppTheme.colors.white : AppTheme.textSecondary(context),
@@ -175,10 +177,10 @@ class _GuideBroadcastScreenState extends State<GuideBroadcastScreen> {
     );
   }
 
-  Widget _buildPrioritySelector() {
+  Widget _buildPrioritySelector(AppLocalizations l10n) {
     return Row(
       children: [
-        Text("Priority", style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: AppTheme.textSecondary(context))),
+        Text(l10n.priorityLabel, style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: AppTheme.textSecondary(context))),
         const SizedBox(width: 8),
         ...BroadcastPriority.values.map((p) {
           final isSelected = _selectedPriority == p;
@@ -193,7 +195,7 @@ class _GuideBroadcastScreenState extends State<GuideBroadcastScreen> {
                   borderRadius: BorderRadius.circular(100),
                 ),
                 child: Text(
-                  _capitalize(p.name),
+                  _priorityLabel(p, l10n),
                   style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.w600, color: isSelected ? _getPriorityColor(p) : AppTheme.textSecondary(context)),
                 ),
               ),
@@ -204,7 +206,26 @@ class _GuideBroadcastScreenState extends State<GuideBroadcastScreen> {
     );
   }
 
-  String _capitalize(String s) => s.isEmpty ? s : s[0].toUpperCase() + s.substring(1);
+  String _typeLabel(BroadcastType type, AppLocalizations l10n) {
+    switch (type) {
+      case BroadcastType.general: return l10n.broadcastTypeGeneral;
+      case BroadcastType.weather: return l10n.broadcastTypeWeather;
+      case BroadcastType.meetingPoint: return l10n.broadcastTypeMeetingPoint;
+      case BroadcastType.delay: return l10n.broadcastTypeDelay;
+      case BroadcastType.departure: return l10n.broadcastTypeDeparture;
+      case BroadcastType.vehicleChange: return l10n.broadcastTypeVehicleChange;
+      case BroadcastType.safety: return l10n.broadcastTypeSafety;
+    }
+  }
+
+  String _priorityLabel(BroadcastPriority p, AppLocalizations l10n) {
+    switch (p) {
+      case BroadcastPriority.low: return l10n.broadcastPriorityLow;
+      case BroadcastPriority.normal: return l10n.broadcastPriorityNormal;
+      case BroadcastPriority.high: return l10n.broadcastPriorityHigh;
+      case BroadcastPriority.critical: return l10n.broadcastPriorityCritical;
+    }
+  }
 
   Color _getPriorityColor(BroadcastPriority p) {
     switch (p) {
@@ -215,16 +236,16 @@ class _GuideBroadcastScreenState extends State<GuideBroadcastScreen> {
     }
   }
 
-  Widget _buildBroadcastStream() {
+  Widget _buildBroadcastStream(AppLocalizations l10n) {
     return StreamBuilder<List<BroadcastMessage>>(
       stream: _broadcastRepo.getActiveBroadcasts(widget.sessionId),
       builder: (context, snapshot) {
         if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
         final messages = snapshot.data!;
-        
+
         if (messages.isEmpty) {
           return Center(
-            child: Text("No active broadcasts", style: GoogleFonts.inter(color: AppTheme.textSecondary(context))),
+            child: Text(l10n.noActiveBroadcastsMessage, style: GoogleFonts.inter(color: AppTheme.textSecondary(context))),
           );
         }
 
@@ -251,7 +272,7 @@ class _GuideBroadcastScreenState extends State<GuideBroadcastScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        _capitalize(msg.type.name),
+                        _typeLabel(msg.type, l10n),
                         style: GoogleFonts.outfit(
                           fontSize: 11,
                           fontWeight: FontWeight.w700,
@@ -259,7 +280,7 @@ class _GuideBroadcastScreenState extends State<GuideBroadcastScreen> {
                         ),
                       ),
                       Text(
-                        "${msg.acknowledgedBy.length} acks",
+                        l10n.acksCountLabel(msg.acknowledgedBy.length),
                         style: GoogleFonts.inter(fontSize: 11, color: AppTheme.textSecondary(context)),
                       ),
                     ],
@@ -276,7 +297,7 @@ class _GuideBroadcastScreenState extends State<GuideBroadcastScreen> {
                       ),
                       TextButton(
                         onPressed: () => _broadcastRepo.deactivateBroadcast(widget.sessionId, msg.messageId),
-                        child: Text("Expire", style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: AppTheme.colors.redAccent)),
+                        child: Text(l10n.expireButtonLabel, style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: AppTheme.colors.redAccent)),
                       ),
                     ],
                   ),

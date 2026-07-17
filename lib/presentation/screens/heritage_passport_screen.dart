@@ -5,6 +5,7 @@ import '../../core/theme/app_theme.dart';
 import '../../core/services/web3_passport_service.dart';
 import '../../data/models/passport_model.dart';
 import '../widgets/skeleton_loaders.dart';
+import '../../l10n/app_localizations.dart';
 
 class HeritagePassportScreen extends StatefulWidget {
   const HeritagePassportScreen({super.key});
@@ -70,7 +71,7 @@ class _HeritagePassportScreenState extends State<HeritagePassportScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Passport",
+                  AppLocalizations.of(context)!.passportTitle,
                   style: GoogleFonts.outfit(
                     color: AppTheme.textPrimary(context),
                     fontWeight: FontWeight.w800,
@@ -80,7 +81,7 @@ class _HeritagePassportScreenState extends State<HeritagePassportScreen> {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  "Your verified visit collection",
+                  AppLocalizations.of(context)!.verifiedVisitCollectionSubtitle,
                   style: GoogleFonts.inter(
                     color: AppTheme.textSecondary(context),
                     fontWeight: FontWeight.w600,
@@ -115,12 +116,12 @@ class _HeritagePassportScreenState extends State<HeritagePassportScreen> {
           ),
           SizedBox(height: 32),
           Text(
-            "Passport is empty",
+            AppLocalizations.of(context)!.passportIsEmptyTitle,
             style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontSize: 20, fontWeight: FontWeight.w700, letterSpacing: -0.3),
           ),
           SizedBox(height: 12),
           Text(
-            "Explore historical gems to\nclaim your unique digital stamps.",
+            AppLocalizations.of(context)!.exploreHistoricalGemsMessage,
             textAlign: TextAlign.center,
             style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 13, height: 1.5, fontWeight: FontWeight.w600),
           ),
@@ -189,7 +190,7 @@ class _HeritagePassportScreenState extends State<HeritagePassportScreen> {
                         borderRadius: BorderRadius.circular(100),
                       ),
                       child: Text(
-                        stamp.rarity,
+                        _rarityLabel(stamp.rarity, AppLocalizations.of(context)!),
                         style: GoogleFonts.inter(color: AppTheme.colors.white, fontSize: 9, fontWeight: FontWeight.w700),
                       ),
                     ),
@@ -210,6 +211,17 @@ class _HeritagePassportScreenState extends State<HeritagePassportScreen> {
         ),
       ).animate().fadeIn(duration: 400.ms).scale(begin: const Offset(0.95, 0.95)),
     );
+  }
+
+  String _rarityLabel(String rarity, AppLocalizations l10n) {
+    switch (rarity) {
+      case 'Rare':
+        return l10n.stampRarityRare;
+      case 'Mythic':
+        return l10n.stampRarityMythic;
+      default:
+        return l10n.stampRarityCommon;
+    }
   }
 
   void _showStampDetail(HeritageStamp stamp) {
@@ -259,12 +271,12 @@ class _HeritagePassportScreenState extends State<HeritagePassportScreen> {
             Text(stamp.placeName, style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontSize: 24, fontWeight: FontWeight.w700, letterSpacing: -0.5)),
             SizedBox(height: 8),
             Text(
-              "Claimed on ${stamp.claimDate.toString().split(' ')[0]}",
+              AppLocalizations.of(context)!.claimedOnLabel(stamp.claimDate.toString().split(' ')[0]),
               style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 12, fontWeight: FontWeight.w600)
             ),
             Divider(color: AppTheme.secondaryBorder(context), height: 48),
             Text(
-              "Verifiable hash",
+              AppLocalizations.of(context)!.verifiableHashLabel,
               style: GoogleFonts.outfit(color: rarityColor, fontSize: 12, fontWeight: FontWeight.w700, letterSpacing: -0.2)
             ),
             SizedBox(height: 12),
@@ -300,7 +312,7 @@ class _HeritagePassportScreenState extends State<HeritagePassportScreen> {
                     Icon(Icons.share_rounded, size: 18),
                     SizedBox(width: 10),
                     Text(
-                      "Share collectible",
+                      AppLocalizations.of(context)!.shareCollectibleButton,
                       style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 14),
                     ),
                   ],

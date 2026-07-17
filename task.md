@@ -1,3 +1,11 @@
+## Active Milestone: Guide Verification & Booking System - Phase 1
+- [ ] Update Firestore data model (users, guides, bookings) and rules
+- [ ] Set up Firebase Storage rules for certificates and ID documents
+- [ ] Create Laravel backend endpoint for draft-save application
+- [ ] Create Laravel backend endpoints for verification and tracking
+- [ ] Create Laravel backend endpoints for booking management
+- [ ] Setup notifications (Email/Push) for verification and summary
+
 ## Active Milestone: Enterprise Audit Bug Remediation
 - [x] Phase 1: Automated Remediation (Flutter Frontend - Null checks, empty catch, UI hardcoded colors) — Completed 2026-07-11
 - [ ] Phase 2: Manual Remediation (Laravel & Python Backend - security, code smells)

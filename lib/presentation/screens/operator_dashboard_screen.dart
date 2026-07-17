@@ -11,6 +11,7 @@ import '../../data/repositories/operator_repository.dart';
 import '../../data/repositories/marketplace_repository.dart';
 import '../widgets/cached_image.dart';
 import 'package:hidden_gems_sl/core/utils/secure_logger.dart';
+import '../../l10n/app_localizations.dart';
 
 /// Elite-tier "Manage team" screen — Team Management + Operator Dashboard +
 /// White-label Branding folded into one screen with three tabs, reusing the
@@ -87,13 +88,13 @@ class _OperatorDashboardScreenState extends ConsumerState<OperatorDashboardScree
         setState(() => _operator = refreshed);
         _inviteController.clear();
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Guide added to your team'), backgroundColor: AppTheme.colors.green),
+          SnackBar(content: Text(AppLocalizations.of(context)!.guideAddedToTeamMessage), backgroundColor: AppTheme.colors.green),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to invite guide: $e'), backgroundColor: Theme.of(context).colorScheme.error),
+          SnackBar(content: Text(AppLocalizations.of(context)!.failedToInviteGuideMessage(e.toString())), backgroundColor: Theme.of(context).colorScheme.error),
         );
       }
     } finally {
@@ -111,7 +112,7 @@ class _OperatorDashboardScreenState extends ConsumerState<OperatorDashboardScree
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to remove guide: $e'), backgroundColor: Theme.of(context).colorScheme.error),
+          SnackBar(content: Text(AppLocalizations.of(context)!.failedToRemoveGuideMessage(e.toString())), backgroundColor: Theme.of(context).colorScheme.error),
         );
       }
     } finally {
@@ -135,7 +136,7 @@ class _OperatorDashboardScreenState extends ConsumerState<OperatorDashboardScree
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to upload logo: $e'), backgroundColor: Theme.of(context).colorScheme.error),
+          SnackBar(content: Text(AppLocalizations.of(context)!.failedToUploadLogoMessage(e.toString())), backgroundColor: Theme.of(context).colorScheme.error),
         );
       }
     } finally {
@@ -186,8 +187,8 @@ class _OperatorDashboardScreenState extends ConsumerState<OperatorDashboardScree
     if (_operator == null) {
       return Scaffold(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        appBar: AppBar(title: const Text('Manage team')),
-        body: Center(child: Text('Sign in to manage your team.', style: TextStyle(color: AppTheme.textSecondary(context)))),
+        appBar: AppBar(title: Text(AppLocalizations.of(context)!.manageTeamTitle)),
+        body: Center(child: Text(AppLocalizations.of(context)!.signInToManageTeamMessage, style: TextStyle(color: AppTheme.textSecondary(context)))),
       );
     }
 
@@ -201,7 +202,7 @@ class _OperatorDashboardScreenState extends ConsumerState<OperatorDashboardScree
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          'Manage team',
+          AppLocalizations.of(context)!.manageTeamTitle,
           style: GoogleFonts.outfit(fontWeight: FontWeight.w800, letterSpacing: -0.5, fontSize: 20, color: AppTheme.textPrimary(context)),
         ),
         centerTitle: false,
@@ -227,7 +228,8 @@ class _OperatorDashboardScreenState extends ConsumerState<OperatorDashboardScree
   }
 
   Widget _buildTabBar() {
-    final tabs = ['Overview', 'Team', 'Branding'];
+    final l10n = AppLocalizations.of(context)!;
+    final tabs = [l10n.tabOverview, l10n.tabTeam, l10n.tabBranding];
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
       child: Row(
@@ -265,6 +267,7 @@ class _OperatorDashboardScreenState extends ConsumerState<OperatorDashboardScree
 
   Widget _buildOverviewTab() {
     final op = _operator!;
+    final l10n = AppLocalizations.of(context)!;
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 8, 20, 40),
       physics: const BouncingScrollPhysics(),
@@ -284,13 +287,13 @@ class _OperatorDashboardScreenState extends ConsumerState<OperatorDashboardScree
             children: [
               Text(op.companyName, style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.w800, color: AppTheme.colors.white)),
               const SizedBox(height: 4),
-              Text('Elite operator account', style: GoogleFonts.inter(fontSize: 12, color: AppTheme.colors.white.withValues(alpha: 0.85))),
+              Text(l10n.eliteOperatorAccountLabel, style: GoogleFonts.inter(fontSize: 12, color: AppTheme.colors.white.withValues(alpha: 0.85))),
               const SizedBox(height: 20),
               Row(
                 children: [
-                  Expanded(child: _buildOverviewStat('Team size', '${op.teamGuideIds.length}')),
-                  Expanded(child: _buildOverviewStat('Missions', '${op.totalMissionsCompleted}')),
-                  Expanded(child: _buildOverviewStat('Avg. rating', op.averageTeamRating.toStringAsFixed(1))),
+                  Expanded(child: _buildOverviewStat(l10n.overviewStatTeamSize, '${op.teamGuideIds.length}')),
+                  Expanded(child: _buildOverviewStat(l10n.overviewStatMissions, '${op.totalMissionsCompleted}')),
+                  Expanded(child: _buildOverviewStat(l10n.overviewStatAvgRating, op.averageTeamRating.toStringAsFixed(1))),
                 ],
               ),
             ],
@@ -312,6 +315,7 @@ class _OperatorDashboardScreenState extends ConsumerState<OperatorDashboardScree
 
   Widget _buildTeamTab() {
     final op = _operator!;
+    final l10n = AppLocalizations.of(context)!;
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 8, 20, 40),
       physics: const BouncingScrollPhysics(),
@@ -326,7 +330,7 @@ class _OperatorDashboardScreenState extends ConsumerState<OperatorDashboardScree
                   controller: _inviteController,
                   style: GoogleFonts.inter(color: AppTheme.textPrimary(context)),
                   decoration: InputDecoration(
-                    hintText: 'Guide user ID to invite',
+                    hintText: l10n.guideUserIdToInviteHint,
                     hintStyle: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 13),
                     border: InputBorder.none,
                   ),
@@ -340,9 +344,9 @@ class _OperatorDashboardScreenState extends ConsumerState<OperatorDashboardScree
           ),
         ),
         const SizedBox(height: 20),
-        Text('Team members (${op.teamGuideIds.length})', style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.w700, color: AppTheme.textPrimary(context))),
+        Text(l10n.teamMembersCountTitle(op.teamGuideIds.length), style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.w700, color: AppTheme.textPrimary(context))),
         const SizedBox(height: 12),
-        ...op.teamGuideIds.map((guideId) => _buildTeamMemberTile(guideId, op.teamRoles[guideId] ?? 'member')),
+        ...op.teamGuideIds.map((guideId) => _buildTeamMemberTile(guideId, op.teamRoles[guideId] ?? l10n.roleMember)),
       ],
     );
   }
@@ -384,11 +388,12 @@ class _OperatorDashboardScreenState extends ConsumerState<OperatorDashboardScree
     final op = _operator!;
     final swatches = [AppPalette.rust, AppPalette.earth, AppPalette.heroOchre, AppPalette.success, const Color(0xFF3B82F6)];
 
+    final l10n = AppLocalizations.of(context)!;
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 8, 20, 40),
       physics: const BouncingScrollPhysics(),
       children: [
-        Text('Logo', style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.w700, color: AppTheme.textPrimary(context))),
+        Text(l10n.logoLabel, style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.w700, color: AppTheme.textPrimary(context))),
         const SizedBox(height: 12),
         GestureDetector(
           onTap: _isSaving ? null : _pickAndUploadLogo,
@@ -406,7 +411,7 @@ class _OperatorDashboardScreenState extends ConsumerState<OperatorDashboardScree
           ),
         ),
         const SizedBox(height: 28),
-        Text('Brand color', style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.w700, color: AppTheme.textPrimary(context))),
+        Text(l10n.brandColorLabel, style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.w700, color: AppTheme.textPrimary(context))),
         const SizedBox(height: 12),
         Wrap(
           spacing: 12,
@@ -429,7 +434,7 @@ class _OperatorDashboardScreenState extends ConsumerState<OperatorDashboardScree
         ),
         const SizedBox(height: 12),
         Text(
-          'Your brand color is applied across this team dashboard for your organization.',
+          l10n.brandColorAppliedMessage,
           style: GoogleFonts.inter(fontSize: 11, color: AppTheme.textSecondary(context)),
         ),
       ],

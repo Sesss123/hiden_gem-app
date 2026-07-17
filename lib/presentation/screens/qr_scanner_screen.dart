@@ -13,6 +13,7 @@ import 'dart:ui';
 import 'dart:convert';
 import 'package:flutter/services.dart';
 import './tourist_companion_hub.dart';
+import '../../l10n/app_localizations.dart';
 
 class QRScannerScreen extends StatefulWidget {
   const QRScannerScreen({super.key});
@@ -34,7 +35,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
     try {
       final Map<String, dynamic> data = jsonDecode(code);
       if (data['v'] != 1 || data['t'] != 'join' || data['token'] == null) {
-        _showError("Invalid QR code format");
+        _showError(AppLocalizations.of(context)!.invalidQrCodeFormatMessage);
         return;
       }
 
@@ -49,7 +50,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
       HapticFeedback.mediumImpact();
       _fetchPreview(token);
     } catch (e) {
-      _showError("Unrecognized QR code");
+      _showError(AppLocalizations.of(context)!.unrecognizedQrCodeMessage);
     }
   }
 
@@ -63,19 +64,21 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
           .get();
 
       if (query.docs.isEmpty) {
-        _showError("Session not found or closed");
-        if (mounted) setState(() => _isProcessing = false);
+        if (!mounted) return;
+        _showError(AppLocalizations.of(context)!.sessionNotFoundClosedMessage);
+        setState(() => _isProcessing = false);
         return;
       }
 
       final session = TourSession.fromJson(query.docs.first.data());
       final guideDoc = await FirebaseFirestore.instance.collection('users').doc(session.guideId).get();
-      
+
       if (mounted) {
         _showJoinSheet(session, guideDoc.data() ?? {});
       }
     } catch (e) {
-      _showError("Connection error");
+      if (!mounted) return;
+      _showError(AppLocalizations.of(context)!.connectionErrorMessage);
     } finally {
       if (mounted) setState(() => _isProcessing = false);
     }
@@ -99,7 +102,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text("Tour verification", style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.w700, letterSpacing: -0.3, color: AppTheme.colors.white)),
+                Text(AppLocalizations.of(context)!.tourVerificationTitle, style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.w700, letterSpacing: -0.3, color: AppTheme.colors.white)),
                 const SizedBox(height: 24),
 
                 // Guide Info Card
@@ -122,7 +125,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(guideData['displayName'] ?? "Local guide", style: GoogleFonts.outfit(fontWeight: FontWeight.w700, color: AppTheme.colors.white)),
+                            Text(guideData['displayName'] ?? AppLocalizations.of(context)!.localGuideFallback, style: GoogleFonts.outfit(fontWeight: FontWeight.w700, color: AppTheme.colors.white)),
                             Text(session.meetingPointName, style: GoogleFonts.inter(fontSize: 12, color: AppTheme.colors.white54), overflow: TextOverflow.ellipsis),
                           ],
                         ),
@@ -138,7 +141,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                     children: [
                       Icon(Icons.garage_rounded, color: AppTheme.colors.orangeAccent, size: 16),
                       const SizedBox(width: 8),
-                      Text("Vehicle: ${session.vehicleNumber}", style: GoogleFonts.inter(fontSize: 12, color: AppTheme.colors.white70)),
+                      Text(AppLocalizations.of(context)!.vehicleNumberLabel(session.vehicleNumber!), style: GoogleFonts.inter(fontSize: 12, color: AppTheme.colors.white70)),
                     ],
                   ),
                 const SizedBox(height: 32),
@@ -161,7 +164,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                       ),
                       Expanded(
                         child: Text(
-                          "I consent to live location tracking and safety monitoring for this tour session.",
+                          AppLocalizations.of(context)!.consentTrackingMessage,
                           style: GoogleFonts.inter(fontSize: 11, color: AppTheme.colors.white54),
                         ),
                       ),
@@ -180,7 +183,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                       elevation: 0,
                     ),
                     onPressed: _hasConsent ? () => _finalJoin(session) : null,
-                    child: Text("Connect & sync", style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 14, color: _hasConsent ? Theme.of(context).colorScheme.onPrimary : AppTheme.colors.white24)),
+                    child: Text(AppLocalizations.of(context)!.connectSyncButton, style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 14, color: _hasConsent ? Theme.of(context).colorScheme.onPrimary : AppTheme.colors.white24)),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -241,9 +244,9 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                 Icon(Icons.link_rounded, color: AppTheme.colors.greenAccent, size: 64)
                     .animate().scale(duration: 600.ms, curve: Curves.elasticOut),
                 const SizedBox(height: 24),
-                Text("Reality synced", style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.w800, letterSpacing: -0.3, color: AppTheme.colors.white)),
+                Text(AppLocalizations.of(context)!.realitySyncedTitle, style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.w800, letterSpacing: -0.3, color: AppTheme.colors.white)),
                 const SizedBox(height: 16),
-                Text("Global safety protocols and live tracking active.", textAlign: TextAlign.center, style: TextStyle(color: AppTheme.colors.white70)),
+                Text(AppLocalizations.of(context)!.safetyProtocolsActiveMessage, textAlign: TextAlign.center, style: TextStyle(color: AppTheme.colors.white70)),
                 const SizedBox(height: 32),
                 ElevatedButton(
                   onPressed: () {
@@ -253,7 +256,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                       MaterialPageRoute(builder: (context) => TouristCompanionHub(sessionId: sessionId)),
                     );
                   },
-                  child: const Text("Enter hub"),
+                  child: Text(AppLocalizations.of(context)!.enterHubButton),
                 ),
               ],
             ),
@@ -321,7 +324,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                 if (_isProcessing)
                   Padding(
                     padding: const EdgeInsets.only(top: 24),
-                    child: Text("Decrypting token…", style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: AppTheme.colors.white)),
+                    child: Text(AppLocalizations.of(context)!.decryptingTokenMessage, style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: AppTheme.colors.white)),
                   ),
               ],
             ),
@@ -347,7 +350,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                   borderRadius: BorderRadius.circular(100),
                 ),
                 child: Text(
-                  "Scan your guide's tour code",
+                  AppLocalizations.of(context)!.scanGuideTourCodeMessage,
                   style: GoogleFonts.inter(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,

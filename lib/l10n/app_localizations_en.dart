@@ -1343,7 +1343,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Point your camera at any site to reveal its hidden history.';
 
   @override
-  String get upgradeToPremiumButton => 'Upgrade to premium';
+  String get upgradeToPremiumButton => 'Upgrade to Premium';
 
   @override
   String get oracleVerifiedLabel => 'Oracle verified';
@@ -2902,4 +2902,1923 @@ class AppLocalizationsEn extends AppLocalizations {
   String errorSavingAvailabilityMessage(String error) {
     return 'Error saving availability: $error';
   }
+
+  @override
+  String get broadcastSentSuccessMessage => 'Broadcast sent successfully';
+
+  @override
+  String get broadcastTitle => 'Broadcast';
+
+  @override
+  String get activeBroadcastsTitle => 'Active broadcasts';
+
+  @override
+  String get messageToTravelersLabel => 'Message to travelers';
+
+  @override
+  String get messageToTravelersHint => 'Enter your message to travelers...';
+
+  @override
+  String get sendToAllTravelersButton => 'Send to all travelers';
+
+  @override
+  String get priorityLabel => 'Priority';
+
+  @override
+  String get noActiveBroadcastsMessage => 'No active broadcasts';
+
+  @override
+  String acksCountLabel(int count) {
+    return '$count acks';
+  }
+
+  @override
+  String get expireButtonLabel => 'Expire';
+
+  @override
+  String get broadcastTypeGeneral => 'General';
+
+  @override
+  String get broadcastTypeWeather => 'Weather';
+
+  @override
+  String get broadcastTypeMeetingPoint => 'Meeting point';
+
+  @override
+  String get broadcastTypeDelay => 'Delay';
+
+  @override
+  String get broadcastTypeDeparture => 'Departure';
+
+  @override
+  String get broadcastTypeVehicleChange => 'Vehicle change';
+
+  @override
+  String get broadcastTypeSafety => 'Safety';
+
+  @override
+  String get broadcastPriorityLow => 'Low';
+
+  @override
+  String get broadcastPriorityNormal => 'Normal';
+
+  @override
+  String get broadcastPriorityHigh => 'High';
+
+  @override
+  String get broadcastPriorityCritical => 'Critical';
+
+  @override
+  String get writeReviewButton => 'WRITE REVIEW';
+
+  @override
+  String get reviewsTitle => 'Reviews';
+
+  @override
+  String get failedToLoadReviewsMessage =>
+      'Failed to load reviews. Please try again.';
+
+  @override
+  String get premiumAnalyticsLockedTitle => 'PREMIUM ANALYTICS LOCKED';
+
+  @override
+  String get premiumAnalyticsLockedMessage =>
+      'Upgrade to PRO or ELITE to unlock deep insights into your performance, trust score, and tourist feedback.';
+
+  @override
+  String get upgradeNowButton => 'UPGRADE NOW';
+
+  @override
+  String get trustScoreLabel => 'Trust score';
+
+  @override
+  String get tierBronze => 'Bronze tier';
+
+  @override
+  String get tierDiamond => 'Diamond tier';
+
+  @override
+  String get tierGold => 'Gold tier';
+
+  @override
+  String get tierSilver => 'Silver tier';
+
+  @override
+  String get miniStatTrips => 'Trips';
+
+  @override
+  String get miniStatRating => 'Rating';
+
+  @override
+  String get miniStatIncidents => 'Incidents';
+
+  @override
+  String get verifiedTripBadge => 'Verified trip';
+
+  @override
+  String touristShortIdLabel(String shortId) {
+    return 'Tourist $shortId';
+  }
+
+  @override
+  String get noReviewsYetTitle => 'No reviews yet';
+
+  @override
+  String get noReviewsYetSubtitle =>
+      'Verified participants can leave feedback after session completion.';
+
+  @override
+  String get guideProfileNotFoundMessage => 'Guide profile not found';
+
+  @override
+  String get aboutSectionTitle => 'About';
+
+  @override
+  String get noBioProvidedMessage => 'No bio provided.';
+
+  @override
+  String get vehicleSectionTitle => 'Vehicle';
+
+  @override
+  String get vehicleDetailsNotProvidedMessage => 'Vehicle details not provided';
+
+  @override
+  String get vehicleProvidedByGuideMessage => 'Provided by the guide for tours';
+
+  @override
+  String get packagesSectionTitle => 'Packages';
+
+  @override
+  String get tapPackageToBookMessage => 'Tap a package to book it directly';
+
+  @override
+  String get standardPackageLabel => 'Standard package';
+
+  @override
+  String durationHoursShortLabel(String hours) {
+    return '${hours}h';
+  }
+
+  @override
+  String guestsCountShortLabel(String count) {
+    return '$count guests';
+  }
+
+  @override
+  String get totalLabel => 'Total';
+
+  @override
+  String get requestThisGuideButton => 'Request this guide';
+
+  @override
+  String get experienceStatLabel => 'Experience';
+
+  @override
+  String yearsExperienceLabel(String years) {
+    return '$years years';
+  }
+
+  @override
+  String get ratingStatLabel => 'Rating';
+
+  @override
+  String get rankStatLabel => 'Rank';
+
+  @override
+  String licensedGuideLabel(String licenseNumber) {
+    return 'Licensed guide • $licenseNumber';
+  }
+
+  @override
+  String get platformVerifiedInsuredLabel => 'Platform verified & insured';
+
+  @override
+  String get yourListingTitle => 'Your listing';
+
+  @override
+  String get basicInformationTitle => 'Basic information';
+
+  @override
+  String get displayNameLabel => 'Display Name';
+
+  @override
+  String get displayNameHint => 'e.g. Kasun Perera';
+
+  @override
+  String get aboutMeBioLabel => 'About Me (Bio)';
+
+  @override
+  String get aboutMeBioHint =>
+      'Tell tourists about your passion, experience, and favorite spots...';
+
+  @override
+  String get categorySpecialtiesTitle => 'Category & specialties';
+
+  @override
+  String get primaryCategoryLabel => 'Primary Category';
+
+  @override
+  String get languagesCommaLabel => 'Languages (comma separated)';
+
+  @override
+  String get languagesCommaHint => 'e.g. English, Sinhala, German';
+
+  @override
+  String get specializationsCommaLabel => 'Specializations (comma separated)';
+
+  @override
+  String get specializationsCommaHint => 'e.g. Heritage, Wildlife, Photography';
+
+  @override
+  String get serviceRegionsLabel => 'Service Regions (comma separated)';
+
+  @override
+  String get serviceRegionsHint => 'e.g. Central, Southern, Western';
+
+  @override
+  String get pricingVehicleTitle => 'Pricing & vehicle';
+
+  @override
+  String get hourlyRateFieldLabel => 'Hourly Rate';
+
+  @override
+  String get hourlyRateHint => 'e.g. 25';
+
+  @override
+  String get vehicleAvailableForToursLabel => 'Vehicle available for tours';
+
+  @override
+  String get provideTransportationLabel => 'Do you provide transportation?';
+
+  @override
+  String get vehicleTypeModelLabel => 'Vehicle Type & Model';
+
+  @override
+  String get vehicleTypeModelHint => 'e.g. Toyota Prius Hybrid / Luxury Van';
+
+  @override
+  String coverPhotosCountTitle(int count) {
+    return 'Cover photos ($count)';
+  }
+
+  @override
+  String get availabilityCalendarTitle => 'Availability calendar';
+
+  @override
+  String get visibilityBoostTitle => 'Visibility boost';
+
+  @override
+  String get saveDraftButton => 'Save draft';
+
+  @override
+  String get publishListingButton => 'Publish listing';
+
+  @override
+  String get uploadingPhotoMessage => 'Uploading photo...';
+
+  @override
+  String get photoUploadedSuccessMessage => 'Photo uploaded successfully!';
+
+  @override
+  String get failedToUploadPhotoMessage => 'Failed to upload photo.';
+
+  @override
+  String get uploadingVehiclePhotoMessage => 'Uploading vehicle photo...';
+
+  @override
+  String get vehiclePhotoUploadedMessage => 'Vehicle photo uploaded!';
+
+  @override
+  String get listingPublishedMessage => '🎉 Listing Published to Marketplace!';
+
+  @override
+  String get draftSavedMessage => '💾 Draft Saved Successfully';
+
+  @override
+  String failedToSaveListingMessage(String error) {
+    return 'Failed to save listing: $error';
+  }
+
+  @override
+  String get addPhotoLabel => 'Add photo';
+
+  @override
+  String get verifiedLicenseLabel => 'Verified license';
+
+  @override
+  String get addVehiclePhotoLabel => 'Add vehicle photo';
+
+  @override
+  String get manageAvailabilityTitle => 'Manage Availability';
+
+  @override
+  String get manageAvailabilitySubtitle =>
+      'Set blackout dates & recurring working hours';
+
+  @override
+  String get featureThisListingLabel => 'Feature this listing';
+
+  @override
+  String get currentlyFeaturedMessage =>
+      'Currently featured in the marketplace';
+
+  @override
+  String get featureRequestedMessage =>
+      'Requested — an admin will review and enable this shortly';
+
+  @override
+  String get featureRequestPromptMessage =>
+      'Request to be featured in the marketplace (subject to admin review)';
+
+  @override
+  String get upgradeToProFeatureMessage =>
+      'Upgrade to Pro to boost your visibility in the marketplace';
+
+  @override
+  String get safetyConsoleTitle => 'Safety console';
+
+  @override
+  String offlineErrorMessage(String error) {
+    return 'Offline Error: $error';
+  }
+
+  @override
+  String get secureOperationsTitle => 'Secure operations';
+
+  @override
+  String get allIncidentsLoggedMessage =>
+      'All incidents logged with audit trail';
+
+  @override
+  String get filterActive => 'Active';
+
+  @override
+  String get filterResolved => 'Resolved';
+
+  @override
+  String get filterMyReports => 'My Reports';
+
+  @override
+  String get priorityBadgeText => 'PRIORITY';
+
+  @override
+  String updatesCountLabel(int count) {
+    return '$count updates';
+  }
+
+  @override
+  String get noCriticalIncidentsTitle => 'No critical incidents';
+
+  @override
+  String get sessionWithinSafetyParamsMessage =>
+      'Session operations are within safety parameters.';
+
+  @override
+  String get reportIncidentButton => 'Report incident';
+
+  @override
+  String get fileAnIncidentTitle => 'File an incident';
+
+  @override
+  String get incidentAuditTrailMessage =>
+      'Provide accurate details, this is logged with an audit trail.';
+
+  @override
+  String get incidentTitleHint => 'Incident title';
+
+  @override
+  String get descriptionOfEventHint => 'Description of event';
+
+  @override
+  String get transmitReportButton => 'Transmit report';
+
+  @override
+  String get incidentStatusOpen => 'Open';
+
+  @override
+  String get incidentStatusInvestigating => 'Investigating';
+
+  @override
+  String get incidentStatusResolved => 'Resolved';
+
+  @override
+  String get incidentStatusClosed => 'Closed';
+
+  @override
+  String get manageTeamTitle => 'Manage team';
+
+  @override
+  String get signInToManageTeamMessage => 'Sign in to manage your team.';
+
+  @override
+  String get guideAddedToTeamMessage => 'Guide added to your team';
+
+  @override
+  String failedToInviteGuideMessage(String error) {
+    return 'Failed to invite guide: $error';
+  }
+
+  @override
+  String failedToRemoveGuideMessage(String error) {
+    return 'Failed to remove guide: $error';
+  }
+
+  @override
+  String failedToUploadLogoMessage(String error) {
+    return 'Failed to upload logo: $error';
+  }
+
+  @override
+  String get tabOverview => 'Overview';
+
+  @override
+  String get tabTeam => 'Team';
+
+  @override
+  String get tabBranding => 'Branding';
+
+  @override
+  String get eliteOperatorAccountLabel => 'Elite operator account';
+
+  @override
+  String get overviewStatTeamSize => 'Team size';
+
+  @override
+  String get overviewStatMissions => 'Missions';
+
+  @override
+  String get overviewStatAvgRating => 'Avg. rating';
+
+  @override
+  String get guideUserIdToInviteHint => 'Guide user ID to invite';
+
+  @override
+  String teamMembersCountTitle(int count) {
+    return 'Team members ($count)';
+  }
+
+  @override
+  String get roleMember => 'member';
+
+  @override
+  String get logoLabel => 'Logo';
+
+  @override
+  String get brandColorLabel => 'Brand color';
+
+  @override
+  String get brandColorAppliedMessage =>
+      'Your brand color is applied across this team dashboard for your organization.';
+
+  @override
+  String get incidentNotFoundTitle => 'Incident Not Found';
+
+  @override
+  String get incidentNotFoundDescription => 'Record was sanitized or moved.';
+
+  @override
+  String get statusLabel => 'Status';
+
+  @override
+  String get severityLabel => 'Severity';
+
+  @override
+  String get timelineLabel => 'Timeline';
+
+  @override
+  String get encryptedLogLabel => 'Encrypted log';
+
+  @override
+  String get noTimelineActiveMessage => 'No timeline active.';
+
+  @override
+  String minutesAgoLabel(int minutes) {
+    return '${minutes}m ago';
+  }
+
+  @override
+  String get verifiedAuditLogLabel => 'Verified audit log';
+
+  @override
+  String get forensicIntegrityLockedMessage =>
+      'This report is locked for forensic integrity. Only authorized admins can modify status.';
+
+  @override
+  String get addEvidenceButton => 'Add evidence';
+
+  @override
+  String get escalateButton => 'Escalate';
+
+  @override
+  String get timelineTypeSosTriggered => 'Sos triggered';
+
+  @override
+  String get invalidQrCodeFormatMessage => 'Invalid QR code format';
+
+  @override
+  String get unrecognizedQrCodeMessage => 'Unrecognized QR code';
+
+  @override
+  String get sessionNotFoundClosedMessage => 'Session not found or closed';
+
+  @override
+  String get connectionErrorMessage => 'Connection error';
+
+  @override
+  String get tourVerificationTitle => 'Tour verification';
+
+  @override
+  String get localGuideFallback => 'Local guide';
+
+  @override
+  String vehicleNumberLabel(String vehicleNumber) {
+    return 'Vehicle: $vehicleNumber';
+  }
+
+  @override
+  String get consentTrackingMessage =>
+      'I consent to live location tracking and safety monitoring for this tour session.';
+
+  @override
+  String get connectSyncButton => 'Connect & sync';
+
+  @override
+  String get realitySyncedTitle => 'Reality synced';
+
+  @override
+  String get safetyProtocolsActiveMessage =>
+      'Global safety protocols and live tracking active.';
+
+  @override
+  String get enterHubButton => 'Enter hub';
+
+  @override
+  String get decryptingTokenMessage => 'Decrypting token…';
+
+  @override
+  String get scanGuideTourCodeMessage => 'Scan your guide\'s tour code';
+
+  @override
+  String get emergencyTranslatorTitle => 'Emergency Translator';
+
+  @override
+  String get showScreenToBystanderMessage =>
+      'Show this screen to a bystander, police officer, or hospital staff — it\'s speaking Sinhala for you.';
+
+  @override
+  String locationCoordinatesTapMapsLabel(String lat, String lng) {
+    return '$lat, $lng — tap to open in Maps';
+  }
+
+  @override
+  String get locationUnavailableMessage => 'Location unavailable';
+
+  @override
+  String get speakingEllipsisMessage => 'Speaking…';
+
+  @override
+  String get playAgainButton => 'Play again';
+
+  @override
+  String get emergencyTitle => 'Emergency';
+
+  @override
+  String get criticalContactsTitle => 'Critical contacts';
+
+  @override
+  String get medicalFacilitiesNearbyTitle => 'Medical facilities nearby';
+
+  @override
+  String get emergencyProtocolLabel => 'EMERGENCY PROTOCOL';
+
+  @override
+  String get sendingAlertMessage => 'Sending alert…';
+
+  @override
+  String get keepHoldingToConfirmMessage => 'Keep holding to confirm…';
+
+  @override
+  String get pressHoldTwoSecondsMessage =>
+      'Press and hold for 2 seconds to alert';
+
+  @override
+  String get preventsAccidentalTriggersMessage =>
+      'Prevents accidental triggers';
+
+  @override
+  String get sosLabel => 'SOS';
+
+  @override
+  String get contactNamePolice => 'Police';
+
+  @override
+  String get contactNameAmbulance => 'Ambulance';
+
+  @override
+  String get contactNameTouristPolice => 'Tourist Police';
+
+  @override
+  String get contactNameFireDept => 'Fire Dept';
+
+  @override
+  String get privateGuardiansTitle => 'Private guardians';
+
+  @override
+  String get noGuardiansAssignedMessage =>
+      'No guardians assigned. Signals will default to emergency services.';
+
+  @override
+  String get nearestHospitalTitle => 'Nearest hospital, wherever you are';
+
+  @override
+  String get checkingLocationAccessMessage => 'Checking location access…';
+
+  @override
+  String get locationAccessDeniedGeneralMessage =>
+      'Location access denied — will search generally instead.';
+
+  @override
+  String get hospitalMapsExplanationMessage =>
+      'Opens Google Maps using your live GPS — shows every government and private hospital nearby, no matter where you are in Sri Lanka.';
+
+  @override
+  String get findNearestHospitalButton => 'Find nearest hospital on Maps';
+
+  @override
+  String get addGuardianTitle => 'Add guardian';
+
+  @override
+  String get guardianPhoneNumberHint => 'Guardian phone number';
+
+  @override
+  String get addGuardianButton => 'Add guardian';
+
+  @override
+  String get sosAlertsPreparedLoggedMessage =>
+      'SOS Alerts Prepared & Logged in Secure Vault!';
+
+  @override
+  String get sosCriticalAlertTitle => 'CRITICAL SOS ALERT';
+
+  @override
+  String get sosDistressSignalDescription =>
+      'Emergency distress signal triggered from Guardian System.';
+
+  @override
+  String get locationPermissionsPermanentlyDeniedMessage =>
+      'Location permissions are permanently denied.';
+
+  @override
+  String get emergencyTranslatorPremiumMessage =>
+      'Instantly explain your situation to Sri Lankan police or hospital staff in spoken Sinhala — a Premium safety feature.';
+
+  @override
+  String get notNowButton => 'Not now';
+
+  @override
+  String get viewPlansButton => 'View Plans';
+
+  @override
+  String get monsoonHazardAlertTitle => 'MONSOON HAZARD ALERT';
+
+  @override
+  String districtLabel(String district) {
+    return 'District: $district';
+  }
+
+  @override
+  String get districtGeneralFallback => 'General';
+
+  @override
+  String get severeMonsoonWeatherDetectedMessage =>
+      'Severe monsoon weather detected.';
+
+  @override
+  String get acknowledgeButton => 'ACKNOWLEDGE';
+
+  @override
+  String offlineErrorGenericMessage(String error) {
+    return 'Offline Error: $error';
+  }
+
+  @override
+  String get sessionNotFoundMessage => 'Session not found';
+
+  @override
+  String get yourTourTitle => 'Your tour';
+
+  @override
+  String get tourActiveTitle => 'Tour active';
+
+  @override
+  String get preparingTourTitle => 'Preparing tour';
+
+  @override
+  String get everythingOnTrackMessage => 'Everything\'s on track';
+
+  @override
+  String statusColonValueLabel(String status) {
+    return 'Status: $status';
+  }
+
+  @override
+  String get phaseAssemblingGroup => 'Assembling group';
+
+  @override
+  String get phaseEnRoute => 'En route';
+
+  @override
+  String get phaseAtDestination => 'At destination';
+
+  @override
+  String get phaseFreeTimeBreak => 'Free time / break';
+
+  @override
+  String get phaseReturningToBase => 'Returning to base';
+
+  @override
+  String get liveNavigationTitle => 'Live navigation';
+
+  @override
+  String get findGuideLabel => 'Find guide';
+
+  @override
+  String get liveTrackingLabel => 'Live tracking';
+
+  @override
+  String get findVehicleLabel => 'Find vehicle';
+
+  @override
+  String get parkedSpotLabel => 'Parked spot';
+
+  @override
+  String get meetingPointLabel => 'Meeting point';
+
+  @override
+  String get returnHereIfLostMessage =>
+      'Return here if lost or separated from group.';
+
+  @override
+  String get navigateToPointButton => 'Navigate to point';
+
+  @override
+  String get guideAnnouncementLabel => 'Guide announcement';
+
+  @override
+  String get justNowLabel => 'Just now';
+
+  @override
+  String get acknowledgedLabel => 'Acknowledged';
+
+  @override
+  String get iAcknowledgeButton => 'I acknowledge';
+
+  @override
+  String get moreLabel => 'More';
+
+  @override
+  String get shareLiveLabel => 'Share live';
+
+  @override
+  String get familyAccessLabel => 'Family access';
+
+  @override
+  String get rateTourLabel => 'Rate tour';
+
+  @override
+  String get buildReputationLabel => 'Build reputation';
+
+  @override
+  String get helpImLostButton => 'Help, I\'m lost';
+
+  @override
+  String get emergencySosButton => 'Emergency SOS';
+
+  @override
+  String get instantAlertAdminPoliceMessage =>
+      'Instant alert to admin, police, and hub.';
+
+  @override
+  String get signalSentStayMessage => 'SIGNAL SENT! STAY WHERE YOU ARE.';
+
+  @override
+  String get travelerLostBroadcastTitle => 'TRAVELER LOST';
+
+  @override
+  String get travelerLostBroadcastBody =>
+      'A traveler has signaled they are lost! Location shared on map.';
+
+  @override
+  String sosCooledDownMessage(int seconds) {
+    return 'SOS cooled down. Wait $seconds seconds.';
+  }
+
+  @override
+  String get sosBroadcastedAuthoritiesMessage =>
+      'SOS ALERT BROADCASTED TO ALL AUTHORITIES!';
+
+  @override
+  String get tourCompletedTitle => 'Tour Completed!';
+
+  @override
+  String get tourCompletedRateMessage =>
+      'We hope you had an amazing experience! Would you like to rate your guide now? Your feedback helps guides maintain high standards.';
+
+  @override
+  String get remindLaterButton => 'Remind later';
+
+  @override
+  String get reminderSetMessage =>
+      '⏰ Reminder set! We\'ll send a notification tomorrow.';
+
+  @override
+  String get rateNowButton => 'Rate now ⭐';
+
+  @override
+  String get eventsTitle => 'Events';
+
+  @override
+  String get topPicksForYouTitle => 'Top picks for you';
+
+  @override
+  String get categoryAllFilter => 'All';
+
+  @override
+  String get categoryBeach => 'Beach';
+
+  @override
+  String get categoryCultural => 'Cultural';
+
+  @override
+  String get categoryReligious => 'Religious';
+
+  @override
+  String get categorySports => 'Sports';
+
+  @override
+  String get categorySeasonal => 'Seasonal';
+
+  @override
+  String get categoryFestival => 'Festival';
+
+  @override
+  String get categoryParty => 'Party';
+
+  @override
+  String get availableEventsTitle => 'Available events';
+
+  @override
+  String get temporalDataLabel => 'TEMPORAL DATA';
+
+  @override
+  String get acquirePassButton => 'ACQUIRE PASS';
+
+  @override
+  String get unpinButton => 'UNPIN';
+
+  @override
+  String get pinToHudButton => 'PIN TO HUD';
+
+  @override
+  String get noEventsOnDayMessage => 'No events on this day';
+
+  @override
+  String get musicPreferencesTitle => 'Music preferences';
+
+  @override
+  String get fineTuneOracleMessage =>
+      'Fine-tune the temporal oracle with your stylistic preferences.';
+
+  @override
+  String get syncPreferencesButton => 'Sync preferences';
+
+  @override
+  String failedToShareTimelineMessage(String error) {
+    return 'Failed to share timeline: $error';
+  }
+
+  @override
+  String hazardWarningMessage(String message) {
+    return '🚨 HAZARD WARNING: $message';
+  }
+
+  @override
+  String get extremeWeatherAlertFallback => 'Extreme weather alert!';
+
+  @override
+  String get recommendedForYouLabel => 'Recommended for you';
+
+  @override
+  String eventLocationCategoryLabel(String location, String category) {
+    return '$location · $category';
+  }
+
+  @override
+  String get budgetTitle => 'Budget';
+
+  @override
+  String get addExpenseTitle => 'Add expense';
+
+  @override
+  String get resourceDescriptionLabel => 'Resource Description';
+
+  @override
+  String get amountLkrLabel => 'Amount (LKR)';
+
+  @override
+  String get categoryLabel => 'Category';
+
+  @override
+  String get saveExpenseButton => 'Save expense';
+
+  @override
+  String get planLimitLabel => 'Plan limit';
+
+  @override
+  String get spentLabel => 'Spent';
+
+  @override
+  String get expenseLedgerTitle => 'Expense ledger';
+
+  @override
+  String entriesCountLabel(int count) {
+    return '$count entries';
+  }
+
+  @override
+  String get noEntriesYetMessage => 'No entries yet';
+
+  @override
+  String get addFirstEntryButton => 'Add first entry';
+
+  @override
+  String get expenseCategoryFood => 'Food';
+
+  @override
+  String get expenseCategoryTransport => 'Transport';
+
+  @override
+  String get expenseCategoryTickets => 'Tickets';
+
+  @override
+  String get expenseCategoryMisc => 'Misc';
+
+  @override
+  String get budgetConciergeTitle => 'Budget concierge';
+
+  @override
+  String get analyzingSpendingPatternsMessage =>
+      'Analyzing your spending patterns...';
+
+  @override
+  String get localAdviceMessage =>
+      'Your spending pace aligns well with island travel standards. We recommend utilizing PickMe or Uber for transparent transport fares, and sampling local eateries to maximize your value.';
+
+  @override
+  String get recentTransactionsTitle => 'Recent transactions';
+
+  @override
+  String get totalSpentSoFarLabel => 'Total spent so far';
+
+  @override
+  String approxUsdLabel(String amount) {
+    return '≈ US\$ $amount';
+  }
+
+  @override
+  String get oracleAdviceLabel => 'Oracle advice';
+
+  @override
+  String get logTransactionTitle => 'Log transaction';
+
+  @override
+  String get whatWasThePurposeHint => 'What was the purpose?';
+
+  @override
+  String get amountLkrHint => 'Amount (LKR)';
+
+  @override
+  String get expenseCategoryAttraction => 'Attraction';
+
+  @override
+  String get expenseCategoryLodging => 'Lodging';
+
+  @override
+  String get expenseCategoryOther => 'Other';
+
+  @override
+  String get billingHistoryTitle => 'BILLING HISTORY';
+
+  @override
+  String errorGenericColonMessage(String error) {
+    return 'Error: $error';
+  }
+
+  @override
+  String get noBillingHistoryFoundMessage => 'No billing history found.';
+
+  @override
+  String planLabel(String planId) {
+    return 'PLAN: $planId';
+  }
+
+  @override
+  String get startedLabel => 'STARTED';
+
+  @override
+  String get expiresLabel => 'EXPIRES';
+
+  @override
+  String idLabel(String subscriptionId) {
+    return 'ID: $subscriptionId';
+  }
+
+  @override
+  String get subscriptionStatusCancelled => 'CANCELLED';
+
+  @override
+  String get subscriptionStatusExpired => 'EXPIRED';
+
+  @override
+  String get subscriptionStatusActive => 'ACTIVE';
+
+  @override
+  String get accessDeniedMessage => 'Access Denied';
+
+  @override
+  String subscribedToPlanMessage(String planId) {
+    return '✅ Subscribed to \"$planId\" plan!';
+  }
+
+  @override
+  String subscriptionFailedMessage(String error) {
+    return 'Subscription failed: $error';
+  }
+
+  @override
+  String get purchasesRestoredMessage => '✅ Purchases restored successfully.';
+
+  @override
+  String restoreFailedMessage(String error) {
+    return 'Restore failed: $error';
+  }
+
+  @override
+  String get serviceTiersTitle => 'Service tiers';
+
+  @override
+  String get freeTierTitle => 'Free tier';
+
+  @override
+  String get freeTierDescription => 'Essential tour tools for verified guides.';
+
+  @override
+  String get featureBasicOperations => 'Basic Operations';
+
+  @override
+  String get featureVerifiedBadge => 'Verified Badge';
+
+  @override
+  String get featureStandardSos => 'Standard SOS';
+
+  @override
+  String get proCommanderTitle => 'Pro Commander';
+
+  @override
+  String get proCommanderDescription => 'Elevate your visibility and tools.';
+
+  @override
+  String get featureFeaturedListings => 'Featured Listings';
+
+  @override
+  String get featureAdvancedAnalytics => 'Advanced Analytics';
+
+  @override
+  String get featureClientAnalytics => 'Client Analytics';
+
+  @override
+  String get featurePrioritySos => 'Priority SOS';
+
+  @override
+  String get eliteAgencyTitle => 'Elite Agency';
+
+  @override
+  String get eliteAgencyDescription => 'Full fleet and company management.';
+
+  @override
+  String get featureTeamManagement => 'Team Management';
+
+  @override
+  String get featureOperatorDashboard => 'Operator Dashboard';
+
+  @override
+  String get featureWhiteLabelBranding => 'White-label Branding';
+
+  @override
+  String get fleetPlansTitle => 'Fleet plans';
+
+  @override
+  String get restoreButton => 'Restore';
+
+  @override
+  String get currentPlanLabel => 'Current plan';
+
+  @override
+  String get freeTierLabel => 'Free tier';
+
+  @override
+  String expiresColonDateLabel(String date) {
+    return 'Expires: $date';
+  }
+
+  @override
+  String get upgradeButton => 'Upgrade';
+
+  @override
+  String get manageButton => 'Manage';
+
+  @override
+  String get mostPopularLabel => 'Most popular';
+
+  @override
+  String get perMonthSlashLabel => '/month';
+
+  @override
+  String get currentPlanButton => 'Current plan';
+
+  @override
+  String get selectThisPlanButton => 'Select this plan';
+
+  @override
+  String get goPremiumTitle => 'Go Premium';
+
+  @override
+  String get fullArUnlimitedAiTripsMessage => 'Full AR & unlimited AI trips';
+
+  @override
+  String get heritageArModeTitle => 'Heritage AR Mode';
+
+  @override
+  String get heritageArModeDescription =>
+      'See ancient ruins reconstructed in 1:1 scale with historical audio guides.';
+
+  @override
+  String get oracleAiTripIntelligenceTitle => 'Oracle AI Trip Intelligence';
+
+  @override
+  String get oracleAiTripIntelligenceDescription =>
+      'Unlimited hyper-personalized itineraries powered by the Oracle engine.';
+
+  @override
+  String get offlineDigitalTwinsTitle => 'Offline Digital Twins';
+
+  @override
+  String get offlineDigitalTwinsDescription =>
+      'Download high-res maps and 100+ points of interest for low-signal areas.';
+
+  @override
+  String get exclusiveCuratorDealsTitle => 'Exclusive Curator Deals';
+
+  @override
+  String get exclusiveCuratorDealsDescription =>
+      'Access to member-only discounts at handpicked boutique stays.';
+
+  @override
+  String get guardianEmergencyTranslatorTitle =>
+      'Guardian Emergency Translator';
+
+  @override
+  String get guardianEmergencyTranslatorDescription =>
+      'Instantly explain your situation to Sri Lankan police or hospital staff in spoken Sinhala during an SOS.';
+
+  @override
+  String premiumActiveLabel(String plan) {
+    return '$plan active';
+  }
+
+  @override
+  String get premiumFallback => 'Premium';
+
+  @override
+  String renewingOnLabel(String date) {
+    return 'Renewing on $date';
+  }
+
+  @override
+  String viaSourceLabel(String source) {
+    return 'Via $source';
+  }
+
+  @override
+  String get storeFallback => 'store';
+
+  @override
+  String get resetPremiumDevButton => 'RESET PREMIUM (DEV ONLY)';
+
+  @override
+  String get premiumResetMessage => 'Premium reset. Pricing tiers are back.';
+
+  @override
+  String get smartTravelerTitle => 'Smart Traveler';
+
+  @override
+  String get billedMonthlyLabel => 'Billed monthly';
+
+  @override
+  String get featureAiItineraries20 => '20 AI Itineraries/mo';
+
+  @override
+  String get featureSelectedArPlaces => 'Selected AR Places';
+
+  @override
+  String get featureOfflineMapsBasic => 'Offline Maps (Basic)';
+
+  @override
+  String get heritagePremiumTitle => 'Heritage Premium';
+
+  @override
+  String get billedYearlySaveLabel => 'Billed yearly · save ~17%';
+
+  @override
+  String get featureUnlimitedAiItineraries => 'Unlimited AI Itineraries';
+
+  @override
+  String get featureFullHeritageArAccess => 'Full Heritage AR Access';
+
+  @override
+  String get featureAllOfflineFeatures => 'All Offline Features';
+
+  @override
+  String get ultraExplorerTitle => 'Ultra Explorer';
+
+  @override
+  String get waitlistLabel => 'Waitlist';
+
+  @override
+  String get nextGenExperienceLabel => 'Next-Gen Experience';
+
+  @override
+  String get featureVrModeSupport => 'VR Mode Support';
+
+  @override
+  String get featureHistoricalTimelines => 'Historical Timelines';
+
+  @override
+  String get featurePersonalAiCurator => 'Personal AI Curator';
+
+  @override
+  String get ultraExplorerWaitlistMessage =>
+      '🚀 Ultra Explorer is on the waitlist! We\'ll notify you when it launches.';
+
+  @override
+  String get restorePreviousPurchasesButton => 'Restore previous purchases';
+
+  @override
+  String get termsPrivacyLabel => 'Terms of Service  •  Privacy Policy';
+
+  @override
+  String get testBuyDevButton => 'TEST BUY (DEV ONLY)';
+
+  @override
+  String get mockPurchaseSimulatedMessage =>
+      '🚀 Mock Purchase Simulated. Refreshing...';
+
+  @override
+  String get monthlyLabel => 'Monthly';
+
+  @override
+  String get yearlySaveLabel => 'Yearly · Save 17%';
+
+  @override
+  String get lockedLabelShort => 'Locked';
+
+  @override
+  String get perMonthLabel => '/ month';
+
+  @override
+  String get comingSoonButton => 'Coming soon';
+
+  @override
+  String get upgradeNowLongButton => 'Upgrade now';
+
+  @override
+  String trialDaysLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count days',
+      one: '1 day',
+    );
+    return '$_temp0 free trial';
+  }
+
+  @override
+  String trialWeeksLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count weeks',
+      one: '1 week',
+    );
+    return '$_temp0 free trial';
+  }
+
+  @override
+  String trialMonthsLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count months',
+      one: '1 month',
+    );
+    return '$_temp0 free trial';
+  }
+
+  @override
+  String trialYearsLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count years',
+      one: '1 year',
+    );
+    return '$_temp0 free trial';
+  }
+
+  @override
+  String trialPeriodLabel(int count) {
+    return '$count period free trial';
+  }
+
+  @override
+  String oracleLostFocusMessage(String error) {
+    return 'Oracle lost focus: $error';
+  }
+
+  @override
+  String get savorLankaAiTitle => 'SAVORLANKA AI';
+
+  @override
+  String get culinaryVisionEngineLabel => 'CULINARY VISION ENGINE V2';
+
+  @override
+  String get liveRealTimeScannerLabel => 'LIVE REAL-TIME SCANNER';
+
+  @override
+  String nutritionReliabilityLabel(String reliability) {
+    return 'NUTRITION RELIABILITY: $reliability';
+  }
+
+  @override
+  String get neuralReasoningLabel => 'NEURAL REASONING';
+
+  @override
+  String aiVisualMarkersFallback(String label) {
+    return 'AI identified visual culinary markers consistent with $label.';
+  }
+
+  @override
+  String get authenticityIntelligenceTitle => 'AUTHENTICITY INTELLIGENCE';
+
+  @override
+  String get ingredientCertaintyTitle => 'INGREDIENT CERTAINTY';
+
+  @override
+  String get manualCulinaryOverrideTitle => 'MANUAL CULINARY OVERRIDE';
+
+  @override
+  String get refineIngredientsHint => 'Refine ingredients (comma separated)...';
+
+  @override
+  String get cancelButtonUppercaseAlt => 'CANCEL';
+
+  @override
+  String get applyOverrideButton => 'APPLY OVERRIDE';
+
+  @override
+  String get ingredientTierConfirmed => 'CONFIRMED';
+
+  @override
+  String get ingredientTierLikely => 'LIKELY';
+
+  @override
+  String get ingredientTierOptional => 'OPTIONAL / SIDES';
+
+  @override
+  String mealContextLabel(String context) {
+    return 'MEAL CONTEXT: $context';
+  }
+
+  @override
+  String get supportingElementsLabel => 'SUPPORTING ELEMENTS:';
+
+  @override
+  String influencesLabel(String influences) {
+    return 'INFLUENCES: $influences';
+  }
+
+  @override
+  String get visualFreshnessQualityLabel => 'VISUAL FRESHNESS & QUALITY';
+
+  @override
+  String qualityColonLabel(String quality) {
+    return 'QUALITY: $quality';
+  }
+
+  @override
+  String textureColonLabel(String texture) {
+    return 'TEXTURE: $texture';
+  }
+
+  @override
+  String get heritageNarrativeEngineTitle => 'HERITAGE NARRATIVE ENGINE';
+
+  @override
+  String get verifiedLegacyTitle => 'VERIFIED LEGACY';
+
+  @override
+  String get regionalTraditionTitle => 'REGIONAL TRADITION';
+
+  @override
+  String get folkloreNarrativeTitle => 'FOLKLORE NARRATIVE';
+
+  @override
+  String get culinaryGapPairingEngineTitle => 'CULINARY GAP & PAIRING ENGINE';
+
+  @override
+  String get missingCompanionsLabel => 'MISSING COMPANIONS:';
+
+  @override
+  String get engineNotesLabel => 'ENGINE NOTES:';
+
+  @override
+  String get recipeRefactorEngineTitle => 'RECIPE REFACTOR ENGINE';
+
+  @override
+  String get refactoredStepsForYouLabel => 'REFACTORED STEPS FOR YOU:';
+
+  @override
+  String get prepMetricLabel => 'PREP';
+
+  @override
+  String get cookMetricLabel => 'COOK';
+
+  @override
+  String get levelMetricLabel => 'LEVEL';
+
+  @override
+  String get calMetricLabel => 'CAL';
+
+  @override
+  String get proteinLabel => 'Protein';
+
+  @override
+  String get carbsLabel => 'Carbs';
+
+  @override
+  String get fatLabel => 'Fat';
+
+  @override
+  String get fiberLabel => 'Fiber';
+
+  @override
+  String get healthRatingLabel => 'HEALTH RATING';
+
+  @override
+  String healthRatingValueLabel(int rating) {
+    return '$rating/10';
+  }
+
+  @override
+  String get sinhalaLabel => 'SINHALA';
+
+  @override
+  String get englishLabel => 'ENGLISH';
+
+  @override
+  String get backLabel => 'BACK';
+
+  @override
+  String get nextLabel => 'NEXT';
+
+  @override
+  String get rescanLabel => 'RESCAN';
+
+  @override
+  String get oracleInsightsTitle => 'ORACLE INSIGHTS';
+
+  @override
+  String get globalSubstitutionsTitle => 'GLOBAL SUBSTITUTIONS';
+
+  @override
+  String get aiEstimatedValuesDisclaimer =>
+      'AI-estimated values. Traditional variations may differ.';
+
+  @override
+  String get savedLabel => 'SAVED';
+
+  @override
+  String get saveToCookbookLabel => 'SAVE TO COOKBOOK';
+
+  @override
+  String get voiceGuideLabel => 'VOICE GUIDE';
+
+  @override
+  String savorLankaShareText(String name, String score) {
+    return 'Check out this $name recipe I found on Hidden Gems SL.ai! It\'s an authentic Sri Lankan delicacy. \n\nOracle Score: $score%';
+  }
+
+  @override
+  String get savorLankaShareSubject => 'Hidden Gems SL.ai - Savor Lanka Recipe';
+
+  @override
+  String get phase3CrossMatchTitle => 'PHASE 3: CROSS-MATCH SUBSTITUTION';
+
+  @override
+  String get visuallySimilarAlternativesLabel =>
+      'VISUALLY SIMILAR ALTERNATIVES';
+
+  @override
+  String get aiCrossMatchReasoningLabel => 'AI CROSS-MATCH REASONING:';
+
+  @override
+  String get phase6HygienePresentationTitle =>
+      'PHASE 6: HYGIENE & PRESENTATION';
+
+  @override
+  String get presentationLabel => 'PRESENTATION';
+
+  @override
+  String get integrityLabel => 'INTEGRITY';
+
+  @override
+  String get popularLabel => 'Popular';
+
+  @override
+  String get curatorDealsTitle => 'Curator deals';
+
+  @override
+  String get noDealsRightNowTitle => 'No deals right now';
+
+  @override
+  String get newPartnerDiscountsMessage =>
+      'New partner discounts are added regularly — check back soon.';
+
+  @override
+  String percentOffLabel(int percent) {
+    return '$percent% OFF';
+  }
+
+  @override
+  String validUntilLabel(String date) {
+    return 'Valid until $date';
+  }
+
+  @override
+  String get claimDealButton => 'Claim deal';
+
+  @override
+  String get passportTitle => 'Passport';
+
+  @override
+  String get verifiedVisitCollectionSubtitle =>
+      'Your verified visit collection';
+
+  @override
+  String get passportIsEmptyTitle => 'Passport is empty';
+
+  @override
+  String get exploreHistoricalGemsMessage =>
+      'Explore historical gems to\nclaim your unique digital stamps.';
+
+  @override
+  String claimedOnLabel(String date) {
+    return 'Claimed on $date';
+  }
+
+  @override
+  String get verifiableHashLabel => 'Verifiable hash';
+
+  @override
+  String get shareCollectibleButton => 'Share collectible';
+
+  @override
+  String get stampRarityCommon => 'Common';
+
+  @override
+  String get stampRarityRare => 'Rare';
+
+  @override
+  String get stampRarityMythic => 'Mythic';
+
+  @override
+  String get audioGuideLabel => 'Audio guide';
+
+  @override
+  String get sinhalaShortLabel => 'සිංහල';
+
+  @override
+  String get englishShortLabel => 'English';
+
+  @override
+  String get joinGroupTourTitle => 'Join Group Tour';
+
+  @override
+  String get enterSixDigitCodeMessage =>
+      'Enter the 6-digit code provided by your guide.';
+
+  @override
+  String get cancelButtonUppercaseThird => 'CANCEL';
+
+  @override
+  String get joinButtonUppercase => 'JOIN';
+
+  @override
+  String get tapFlatSurfaceMessage =>
+      '👆 Tap a flat surface to place the model';
+
+  @override
+  String groupTourStartedCodeLabel(String code) {
+    return 'Group Tour Started! Code: $code';
+  }
+
+  @override
+  String get invalidSessionCodeMessage => 'Invalid Session Code';
+
+  @override
+  String get couldNotLoadAudioMessage => 'Could not load audio narration.';
+
+  @override
+  String get galleryPermissionDeniedMessage => 'Gallery permission denied';
+
+  @override
+  String failedToCapturePhotoMessage(String error) {
+    return 'Failed to capture photo: $error';
+  }
+
+  @override
+  String codeColonLabel(String code) {
+    return 'CODE: $code';
+  }
+
+  @override
+  String get thenLabel => 'THEN';
+
+  @override
+  String get nowLabel => 'NOW';
+
+  @override
+  String get resetLabel => 'Reset';
+
+  @override
+  String get scalePlusLabel => 'Scale+';
+
+  @override
+  String get scaleMinusLabel => 'Scale-';
+
+  @override
+  String get memoryLabel => 'Memory';
+
+  @override
+  String get removeLabel => 'Remove';
+
+  @override
+  String get placeLabel => 'Place';
+
+  @override
+  String get historicalInfoComingSoonMessage =>
+      'Historical information coming soon.';
+
+  @override
+  String get preparingHeritageAssetsMessage => 'Preparing Heritage Assets...';
+
+  @override
+  String progressSizeLabel(int progress, String size) {
+    return '$progress% • $size MB';
+  }
+
+  @override
+  String modelColonNameLabel(String name) {
+    return 'Model: $name';
+  }
+
+  @override
+  String authorColonNameLabel(String name) {
+    return 'Author: $name';
+  }
+
+  @override
+  String get moveSlowlyToScanMessage =>
+      'Move your phone slowly\nto scan a flat surface';
+
+  @override
+  String get tapPlaceToPlaceModelMessage =>
+      '👇 Tap \"Place\" then tap a flat surface';
+
+  @override
+  String demoModeSecondsRemainingLabel(int seconds) {
+    return 'DEMO MODE: $seconds REMAINING';
+  }
+
+  @override
+  String get premiumHeritageSessionLabel => 'PREMIUM HERITAGE SESSION';
+
+  @override
+  String get artifactDiscoveredLabel => 'ARTIFACT DISCOVERED!';
+
+  @override
+  String ptsRarityLabel(int points, String rarity) {
+    return '+$points PTS • $rarity';
+  }
+
+  @override
+  String get hiddenGemsSlWatermark => 'HIDDEN GEMS SL';
+
+  @override
+  String get heritageArWatermark => 'HERITAGE AR';
+
+  @override
+  String get captureSuccessfulTitle => 'Capture Successful!';
+
+  @override
+  String get shareDiscoveryMessage =>
+      'Share your historical discovery with the world';
+
+  @override
+  String get instagramLabel => 'Instagram';
+
+  @override
+  String get tiktokLabel => 'TikTok';
+
+  @override
+  String get savedLabelShort => 'Saved';
+
+  @override
+  String sharePlatformCaptionInstagram(String placeName) {
+    return 'Exploring $placeName in AR with #HiddenGemsSL';
+  }
+
+  @override
+  String get sharePlatformCaptionTiktok =>
+      'History comes alive! #HiddenGemsSL #HeritageAR';
+
+  @override
+  String get photoSavedGalleryMessage => 'Photo saved to your gallery!';
+
+  @override
+  String get backToArButton => 'Back to AR';
+
+  @override
+  String distanceToTargetLabel(String distance, String placeName) {
+    return '${distance}m to $placeName';
+  }
+
+  @override
+  String get recommendedLabel => 'RECOMMENDED';
+
+  @override
+  String categoryRatingLabel(String category, String rating) {
+    return '$category • $rating ★';
+  }
+
+  @override
+  String get viewButtonUppercase => 'VIEW';
+
+  @override
+  String get loginToLeaveMemoryMessage => 'Login to leave an AR memory!';
+
+  @override
+  String get leaveArMemoryTitle => 'Leave an AR Memory';
+
+  @override
+  String get whatDoYouSeeHereHint => 'What do you see here?';
+
+  @override
+  String get cancelButton2 => 'Cancel';
+
+  @override
+  String get dropButton => 'Drop';
+
+  @override
+  String get memoryDroppedMessage => 'Memory dropped into the AR universe!';
+
+  @override
+  String get explorerFallback => 'Explorer';
+
+  @override
+  String signalPercentLabel(int percent) {
+    return 'SIGNAL: $percent%';
+  }
+
+  @override
+  String get searchingLabel => 'SEARCHING...';
+
+  @override
+  String get cameraAccessNeededTitle => 'Camera access needed';
+
+  @override
+  String get arNotAvailableDeviceTitle => 'AR isn\'t available on this device';
+
+  @override
+  String get arCouldntLoadTitle => 'AR couldn\'t load this time';
+
+  @override
+  String get cameraAccessNeededMessage =>
+      'Camera access is needed for AR features. Here\'s a cinematic reconstruction instead.';
+
+  @override
+  String get arNotAvailableMessage =>
+      'Here\'s a cinematic 360° view of the same era instead.';
+
+  @override
+  String get arCouldntLoadMessage =>
+      'We couldn\'t load the historical 3D model. Here\'s the cinematic fallback view instead.';
+
+  @override
+  String get closeButtonLabel => 'Close';
+
+  @override
+  String get watchAdToUnlockButton => 'Watch ad to unlock';
+
+  @override
+  String get oracleRewardFallbackMessage =>
+      '✨ Oracle reward active! Fallback modes and premium content unlocked.';
+
+  @override
+  String get arNotAvailableInfoBarMessage =>
+      'AR isn\'t available on this device · Showing 360° view';
+
+  @override
+  String get cinematicPreviewUnavailableMessage =>
+      'Cinematic preview unavailable';
+
+  @override
+  String get interactive3dViewTitle => 'Interactive 3D View';
+
+  @override
+  String get touchToRotateMonumentMessage => 'Touch to rotate monument';
+
+  @override
+  String get historicalStoryLabel => 'Historical story';
+
+  @override
+  String unveilingEraTitle(String era) {
+    return 'Unveiling the $era';
+  }
+
+  @override
+  String heritageStoryBody(String era) {
+    return 'Sri Lanka\'s heritage runs deep into the fabric of time. This site, dating back to the $era, was once the center of a thriving civilization that pioneered hydraulic engineering and spiritual architecture.\n\nThe stupa we see today was constructed using over 100 million sun-baked bricks, standing as a testament to the engineering marvels of ancient kings...';
+  }
+
+  @override
+  String get listenToNarrationLabel => 'Listen to narration';
+
+  @override
+  String get sinhalaEnglishAvailableLabel => 'Sinhala & English available';
+
+  @override
+  String get illustrationCaptionLabel =>
+      'Illustration: Ancient Engineering (Concept Art)';
+
+  @override
+  String get mode360Label => '360°';
+
+  @override
+  String get mode3dLabel => '3D';
+
+  @override
+  String get modeStoryLabel => 'Story';
+
+  @override
+  String get unlockArHeritageModeTitle => 'Unlock AR Heritage Mode';
+
+  @override
+  String get arHeritageModeSubtitle =>
+      'Experience Sri Lanka as it looked thousands of years ago.';
+
+  @override
+  String get featureAncient3dReconstruction => 'Ancient 3D Reconstruction';
+
+  @override
+  String get featureAudioNarrationBilingual =>
+      'Audio Narration (සිංහල / English)';
+
+  @override
+  String get featureArPhotoCapture => 'AR Photo Capture & Social Share';
+
+  @override
+  String get pricingTrialLabel => 'From Rs. 299/month  ·  7-day free trial';
+
+  @override
+  String get watch10SecPreviewButton => 'Watch 10-sec Preview';
+
+  @override
+  String get watchAdUnlockSessionButton => 'Watch Ad to Unlock Session';
+
+  @override
+  String get notNowButtonLabel => 'Not Now';
+
+  @override
+  String get ancientArtifactsLabel => 'ANCIENT ARTIFACTS';
 }

@@ -2563,7 +2563,7 @@ abstract class AppLocalizations {
   /// No description provided for @upgradeToPremiumButton.
   ///
   /// In en, this message translates to:
-  /// **'Upgrade to premium'**
+  /// **'Upgrade to Premium'**
   String get upgradeToPremiumButton;
 
   /// No description provided for @oracleVerifiedLabel.
@@ -5229,6 +5229,3396 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Error saving availability: {error}'**
   String errorSavingAvailabilityMessage(String error);
+
+  /// No description provided for @broadcastSentSuccessMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Broadcast sent successfully'**
+  String get broadcastSentSuccessMessage;
+
+  /// No description provided for @broadcastTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Broadcast'**
+  String get broadcastTitle;
+
+  /// No description provided for @activeBroadcastsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Active broadcasts'**
+  String get activeBroadcastsTitle;
+
+  /// No description provided for @messageToTravelersLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Message to travelers'**
+  String get messageToTravelersLabel;
+
+  /// No description provided for @messageToTravelersHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your message to travelers...'**
+  String get messageToTravelersHint;
+
+  /// No description provided for @sendToAllTravelersButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Send to all travelers'**
+  String get sendToAllTravelersButton;
+
+  /// No description provided for @priorityLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Priority'**
+  String get priorityLabel;
+
+  /// No description provided for @noActiveBroadcastsMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'No active broadcasts'**
+  String get noActiveBroadcastsMessage;
+
+  /// No description provided for @acksCountLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} acks'**
+  String acksCountLabel(int count);
+
+  /// No description provided for @expireButtonLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Expire'**
+  String get expireButtonLabel;
+
+  /// No description provided for @broadcastTypeGeneral.
+  ///
+  /// In en, this message translates to:
+  /// **'General'**
+  String get broadcastTypeGeneral;
+
+  /// No description provided for @broadcastTypeWeather.
+  ///
+  /// In en, this message translates to:
+  /// **'Weather'**
+  String get broadcastTypeWeather;
+
+  /// No description provided for @broadcastTypeMeetingPoint.
+  ///
+  /// In en, this message translates to:
+  /// **'Meeting point'**
+  String get broadcastTypeMeetingPoint;
+
+  /// No description provided for @broadcastTypeDelay.
+  ///
+  /// In en, this message translates to:
+  /// **'Delay'**
+  String get broadcastTypeDelay;
+
+  /// No description provided for @broadcastTypeDeparture.
+  ///
+  /// In en, this message translates to:
+  /// **'Departure'**
+  String get broadcastTypeDeparture;
+
+  /// No description provided for @broadcastTypeVehicleChange.
+  ///
+  /// In en, this message translates to:
+  /// **'Vehicle change'**
+  String get broadcastTypeVehicleChange;
+
+  /// No description provided for @broadcastTypeSafety.
+  ///
+  /// In en, this message translates to:
+  /// **'Safety'**
+  String get broadcastTypeSafety;
+
+  /// No description provided for @broadcastPriorityLow.
+  ///
+  /// In en, this message translates to:
+  /// **'Low'**
+  String get broadcastPriorityLow;
+
+  /// No description provided for @broadcastPriorityNormal.
+  ///
+  /// In en, this message translates to:
+  /// **'Normal'**
+  String get broadcastPriorityNormal;
+
+  /// No description provided for @broadcastPriorityHigh.
+  ///
+  /// In en, this message translates to:
+  /// **'High'**
+  String get broadcastPriorityHigh;
+
+  /// No description provided for @broadcastPriorityCritical.
+  ///
+  /// In en, this message translates to:
+  /// **'Critical'**
+  String get broadcastPriorityCritical;
+
+  /// No description provided for @writeReviewButton.
+  ///
+  /// In en, this message translates to:
+  /// **'WRITE REVIEW'**
+  String get writeReviewButton;
+
+  /// No description provided for @reviewsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reviews'**
+  String get reviewsTitle;
+
+  /// No description provided for @failedToLoadReviewsMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load reviews. Please try again.'**
+  String get failedToLoadReviewsMessage;
+
+  /// No description provided for @premiumAnalyticsLockedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'PREMIUM ANALYTICS LOCKED'**
+  String get premiumAnalyticsLockedTitle;
+
+  /// No description provided for @premiumAnalyticsLockedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Upgrade to PRO or ELITE to unlock deep insights into your performance, trust score, and tourist feedback.'**
+  String get premiumAnalyticsLockedMessage;
+
+  /// No description provided for @upgradeNowButton.
+  ///
+  /// In en, this message translates to:
+  /// **'UPGRADE NOW'**
+  String get upgradeNowButton;
+
+  /// No description provided for @trustScoreLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Trust score'**
+  String get trustScoreLabel;
+
+  /// No description provided for @tierBronze.
+  ///
+  /// In en, this message translates to:
+  /// **'Bronze tier'**
+  String get tierBronze;
+
+  /// No description provided for @tierDiamond.
+  ///
+  /// In en, this message translates to:
+  /// **'Diamond tier'**
+  String get tierDiamond;
+
+  /// No description provided for @tierGold.
+  ///
+  /// In en, this message translates to:
+  /// **'Gold tier'**
+  String get tierGold;
+
+  /// No description provided for @tierSilver.
+  ///
+  /// In en, this message translates to:
+  /// **'Silver tier'**
+  String get tierSilver;
+
+  /// No description provided for @miniStatTrips.
+  ///
+  /// In en, this message translates to:
+  /// **'Trips'**
+  String get miniStatTrips;
+
+  /// No description provided for @miniStatRating.
+  ///
+  /// In en, this message translates to:
+  /// **'Rating'**
+  String get miniStatRating;
+
+  /// No description provided for @miniStatIncidents.
+  ///
+  /// In en, this message translates to:
+  /// **'Incidents'**
+  String get miniStatIncidents;
+
+  /// No description provided for @verifiedTripBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Verified trip'**
+  String get verifiedTripBadge;
+
+  /// No description provided for @touristShortIdLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Tourist {shortId}'**
+  String touristShortIdLabel(String shortId);
+
+  /// No description provided for @noReviewsYetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No reviews yet'**
+  String get noReviewsYetTitle;
+
+  /// No description provided for @noReviewsYetSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Verified participants can leave feedback after session completion.'**
+  String get noReviewsYetSubtitle;
+
+  /// No description provided for @guideProfileNotFoundMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Guide profile not found'**
+  String get guideProfileNotFoundMessage;
+
+  /// No description provided for @aboutSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'About'**
+  String get aboutSectionTitle;
+
+  /// No description provided for @noBioProvidedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'No bio provided.'**
+  String get noBioProvidedMessage;
+
+  /// No description provided for @vehicleSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Vehicle'**
+  String get vehicleSectionTitle;
+
+  /// No description provided for @vehicleDetailsNotProvidedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Vehicle details not provided'**
+  String get vehicleDetailsNotProvidedMessage;
+
+  /// No description provided for @vehicleProvidedByGuideMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Provided by the guide for tours'**
+  String get vehicleProvidedByGuideMessage;
+
+  /// No description provided for @packagesSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Packages'**
+  String get packagesSectionTitle;
+
+  /// No description provided for @tapPackageToBookMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap a package to book it directly'**
+  String get tapPackageToBookMessage;
+
+  /// No description provided for @standardPackageLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Standard package'**
+  String get standardPackageLabel;
+
+  /// No description provided for @durationHoursShortLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{hours}h'**
+  String durationHoursShortLabel(String hours);
+
+  /// No description provided for @guestsCountShortLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} guests'**
+  String guestsCountShortLabel(String count);
+
+  /// No description provided for @totalLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Total'**
+  String get totalLabel;
+
+  /// No description provided for @requestThisGuideButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Request this guide'**
+  String get requestThisGuideButton;
+
+  /// No description provided for @experienceStatLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Experience'**
+  String get experienceStatLabel;
+
+  /// No description provided for @yearsExperienceLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{years} years'**
+  String yearsExperienceLabel(String years);
+
+  /// No description provided for @ratingStatLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Rating'**
+  String get ratingStatLabel;
+
+  /// No description provided for @rankStatLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Rank'**
+  String get rankStatLabel;
+
+  /// No description provided for @licensedGuideLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Licensed guide • {licenseNumber}'**
+  String licensedGuideLabel(String licenseNumber);
+
+  /// No description provided for @platformVerifiedInsuredLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Platform verified & insured'**
+  String get platformVerifiedInsuredLabel;
+
+  /// No description provided for @yourListingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your listing'**
+  String get yourListingTitle;
+
+  /// No description provided for @basicInformationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Basic information'**
+  String get basicInformationTitle;
+
+  /// No description provided for @displayNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Display Name'**
+  String get displayNameLabel;
+
+  /// No description provided for @displayNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Kasun Perera'**
+  String get displayNameHint;
+
+  /// No description provided for @aboutMeBioLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'About Me (Bio)'**
+  String get aboutMeBioLabel;
+
+  /// No description provided for @aboutMeBioHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tell tourists about your passion, experience, and favorite spots...'**
+  String get aboutMeBioHint;
+
+  /// No description provided for @categorySpecialtiesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Category & specialties'**
+  String get categorySpecialtiesTitle;
+
+  /// No description provided for @primaryCategoryLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Primary Category'**
+  String get primaryCategoryLabel;
+
+  /// No description provided for @languagesCommaLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Languages (comma separated)'**
+  String get languagesCommaLabel;
+
+  /// No description provided for @languagesCommaHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. English, Sinhala, German'**
+  String get languagesCommaHint;
+
+  /// No description provided for @specializationsCommaLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Specializations (comma separated)'**
+  String get specializationsCommaLabel;
+
+  /// No description provided for @specializationsCommaHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Heritage, Wildlife, Photography'**
+  String get specializationsCommaHint;
+
+  /// No description provided for @serviceRegionsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Service Regions (comma separated)'**
+  String get serviceRegionsLabel;
+
+  /// No description provided for @serviceRegionsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Central, Southern, Western'**
+  String get serviceRegionsHint;
+
+  /// No description provided for @pricingVehicleTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pricing & vehicle'**
+  String get pricingVehicleTitle;
+
+  /// No description provided for @hourlyRateFieldLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Hourly Rate'**
+  String get hourlyRateFieldLabel;
+
+  /// No description provided for @hourlyRateHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. 25'**
+  String get hourlyRateHint;
+
+  /// No description provided for @vehicleAvailableForToursLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Vehicle available for tours'**
+  String get vehicleAvailableForToursLabel;
+
+  /// No description provided for @provideTransportationLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Do you provide transportation?'**
+  String get provideTransportationLabel;
+
+  /// No description provided for @vehicleTypeModelLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Vehicle Type & Model'**
+  String get vehicleTypeModelLabel;
+
+  /// No description provided for @vehicleTypeModelHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Toyota Prius Hybrid / Luxury Van'**
+  String get vehicleTypeModelHint;
+
+  /// No description provided for @coverPhotosCountTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Cover photos ({count})'**
+  String coverPhotosCountTitle(int count);
+
+  /// No description provided for @availabilityCalendarTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Availability calendar'**
+  String get availabilityCalendarTitle;
+
+  /// No description provided for @visibilityBoostTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Visibility boost'**
+  String get visibilityBoostTitle;
+
+  /// No description provided for @saveDraftButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Save draft'**
+  String get saveDraftButton;
+
+  /// No description provided for @publishListingButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Publish listing'**
+  String get publishListingButton;
+
+  /// No description provided for @uploadingPhotoMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Uploading photo...'**
+  String get uploadingPhotoMessage;
+
+  /// No description provided for @photoUploadedSuccessMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo uploaded successfully!'**
+  String get photoUploadedSuccessMessage;
+
+  /// No description provided for @failedToUploadPhotoMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to upload photo.'**
+  String get failedToUploadPhotoMessage;
+
+  /// No description provided for @uploadingVehiclePhotoMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Uploading vehicle photo...'**
+  String get uploadingVehiclePhotoMessage;
+
+  /// No description provided for @vehiclePhotoUploadedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Vehicle photo uploaded!'**
+  String get vehiclePhotoUploadedMessage;
+
+  /// No description provided for @listingPublishedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'🎉 Listing Published to Marketplace!'**
+  String get listingPublishedMessage;
+
+  /// No description provided for @draftSavedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'💾 Draft Saved Successfully'**
+  String get draftSavedMessage;
+
+  /// No description provided for @failedToSaveListingMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to save listing: {error}'**
+  String failedToSaveListingMessage(String error);
+
+  /// No description provided for @addPhotoLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Add photo'**
+  String get addPhotoLabel;
+
+  /// No description provided for @verifiedLicenseLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Verified license'**
+  String get verifiedLicenseLabel;
+
+  /// No description provided for @addVehiclePhotoLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Add vehicle photo'**
+  String get addVehiclePhotoLabel;
+
+  /// No description provided for @manageAvailabilityTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage Availability'**
+  String get manageAvailabilityTitle;
+
+  /// No description provided for @manageAvailabilitySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Set blackout dates & recurring working hours'**
+  String get manageAvailabilitySubtitle;
+
+  /// No description provided for @featureThisListingLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Feature this listing'**
+  String get featureThisListingLabel;
+
+  /// No description provided for @currentlyFeaturedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Currently featured in the marketplace'**
+  String get currentlyFeaturedMessage;
+
+  /// No description provided for @featureRequestedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Requested — an admin will review and enable this shortly'**
+  String get featureRequestedMessage;
+
+  /// No description provided for @featureRequestPromptMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Request to be featured in the marketplace (subject to admin review)'**
+  String get featureRequestPromptMessage;
+
+  /// No description provided for @upgradeToProFeatureMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Upgrade to Pro to boost your visibility in the marketplace'**
+  String get upgradeToProFeatureMessage;
+
+  /// No description provided for @safetyConsoleTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Safety console'**
+  String get safetyConsoleTitle;
+
+  /// No description provided for @offlineErrorMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Offline Error: {error}'**
+  String offlineErrorMessage(String error);
+
+  /// No description provided for @secureOperationsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Secure operations'**
+  String get secureOperationsTitle;
+
+  /// No description provided for @allIncidentsLoggedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'All incidents logged with audit trail'**
+  String get allIncidentsLoggedMessage;
+
+  /// No description provided for @filterActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get filterActive;
+
+  /// No description provided for @filterResolved.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolved'**
+  String get filterResolved;
+
+  /// No description provided for @filterMyReports.
+  ///
+  /// In en, this message translates to:
+  /// **'My Reports'**
+  String get filterMyReports;
+
+  /// No description provided for @priorityBadgeText.
+  ///
+  /// In en, this message translates to:
+  /// **'PRIORITY'**
+  String get priorityBadgeText;
+
+  /// No description provided for @updatesCountLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} updates'**
+  String updatesCountLabel(int count);
+
+  /// No description provided for @noCriticalIncidentsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No critical incidents'**
+  String get noCriticalIncidentsTitle;
+
+  /// No description provided for @sessionWithinSafetyParamsMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Session operations are within safety parameters.'**
+  String get sessionWithinSafetyParamsMessage;
+
+  /// No description provided for @reportIncidentButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Report incident'**
+  String get reportIncidentButton;
+
+  /// No description provided for @fileAnIncidentTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'File an incident'**
+  String get fileAnIncidentTitle;
+
+  /// No description provided for @incidentAuditTrailMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Provide accurate details, this is logged with an audit trail.'**
+  String get incidentAuditTrailMessage;
+
+  /// No description provided for @incidentTitleHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Incident title'**
+  String get incidentTitleHint;
+
+  /// No description provided for @descriptionOfEventHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Description of event'**
+  String get descriptionOfEventHint;
+
+  /// No description provided for @transmitReportButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Transmit report'**
+  String get transmitReportButton;
+
+  /// No description provided for @incidentStatusOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get incidentStatusOpen;
+
+  /// No description provided for @incidentStatusInvestigating.
+  ///
+  /// In en, this message translates to:
+  /// **'Investigating'**
+  String get incidentStatusInvestigating;
+
+  /// No description provided for @incidentStatusResolved.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolved'**
+  String get incidentStatusResolved;
+
+  /// No description provided for @incidentStatusClosed.
+  ///
+  /// In en, this message translates to:
+  /// **'Closed'**
+  String get incidentStatusClosed;
+
+  /// No description provided for @manageTeamTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage team'**
+  String get manageTeamTitle;
+
+  /// No description provided for @signInToManageTeamMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to manage your team.'**
+  String get signInToManageTeamMessage;
+
+  /// No description provided for @guideAddedToTeamMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Guide added to your team'**
+  String get guideAddedToTeamMessage;
+
+  /// No description provided for @failedToInviteGuideMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to invite guide: {error}'**
+  String failedToInviteGuideMessage(String error);
+
+  /// No description provided for @failedToRemoveGuideMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to remove guide: {error}'**
+  String failedToRemoveGuideMessage(String error);
+
+  /// No description provided for @failedToUploadLogoMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to upload logo: {error}'**
+  String failedToUploadLogoMessage(String error);
+
+  /// No description provided for @tabOverview.
+  ///
+  /// In en, this message translates to:
+  /// **'Overview'**
+  String get tabOverview;
+
+  /// No description provided for @tabTeam.
+  ///
+  /// In en, this message translates to:
+  /// **'Team'**
+  String get tabTeam;
+
+  /// No description provided for @tabBranding.
+  ///
+  /// In en, this message translates to:
+  /// **'Branding'**
+  String get tabBranding;
+
+  /// No description provided for @eliteOperatorAccountLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Elite operator account'**
+  String get eliteOperatorAccountLabel;
+
+  /// No description provided for @overviewStatTeamSize.
+  ///
+  /// In en, this message translates to:
+  /// **'Team size'**
+  String get overviewStatTeamSize;
+
+  /// No description provided for @overviewStatMissions.
+  ///
+  /// In en, this message translates to:
+  /// **'Missions'**
+  String get overviewStatMissions;
+
+  /// No description provided for @overviewStatAvgRating.
+  ///
+  /// In en, this message translates to:
+  /// **'Avg. rating'**
+  String get overviewStatAvgRating;
+
+  /// No description provided for @guideUserIdToInviteHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Guide user ID to invite'**
+  String get guideUserIdToInviteHint;
+
+  /// No description provided for @teamMembersCountTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Team members ({count})'**
+  String teamMembersCountTitle(int count);
+
+  /// No description provided for @roleMember.
+  ///
+  /// In en, this message translates to:
+  /// **'member'**
+  String get roleMember;
+
+  /// No description provided for @logoLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Logo'**
+  String get logoLabel;
+
+  /// No description provided for @brandColorLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Brand color'**
+  String get brandColorLabel;
+
+  /// No description provided for @brandColorAppliedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Your brand color is applied across this team dashboard for your organization.'**
+  String get brandColorAppliedMessage;
+
+  /// No description provided for @incidentNotFoundTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Incident Not Found'**
+  String get incidentNotFoundTitle;
+
+  /// No description provided for @incidentNotFoundDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Record was sanitized or moved.'**
+  String get incidentNotFoundDescription;
+
+  /// No description provided for @statusLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get statusLabel;
+
+  /// No description provided for @severityLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Severity'**
+  String get severityLabel;
+
+  /// No description provided for @timelineLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Timeline'**
+  String get timelineLabel;
+
+  /// No description provided for @encryptedLogLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Encrypted log'**
+  String get encryptedLogLabel;
+
+  /// No description provided for @noTimelineActiveMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'No timeline active.'**
+  String get noTimelineActiveMessage;
+
+  /// No description provided for @minutesAgoLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes}m ago'**
+  String minutesAgoLabel(int minutes);
+
+  /// No description provided for @verifiedAuditLogLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Verified audit log'**
+  String get verifiedAuditLogLabel;
+
+  /// No description provided for @forensicIntegrityLockedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This report is locked for forensic integrity. Only authorized admins can modify status.'**
+  String get forensicIntegrityLockedMessage;
+
+  /// No description provided for @addEvidenceButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Add evidence'**
+  String get addEvidenceButton;
+
+  /// No description provided for @escalateButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Escalate'**
+  String get escalateButton;
+
+  /// No description provided for @timelineTypeSosTriggered.
+  ///
+  /// In en, this message translates to:
+  /// **'Sos triggered'**
+  String get timelineTypeSosTriggered;
+
+  /// No description provided for @invalidQrCodeFormatMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid QR code format'**
+  String get invalidQrCodeFormatMessage;
+
+  /// No description provided for @unrecognizedQrCodeMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Unrecognized QR code'**
+  String get unrecognizedQrCodeMessage;
+
+  /// No description provided for @sessionNotFoundClosedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Session not found or closed'**
+  String get sessionNotFoundClosedMessage;
+
+  /// No description provided for @connectionErrorMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Connection error'**
+  String get connectionErrorMessage;
+
+  /// No description provided for @tourVerificationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Tour verification'**
+  String get tourVerificationTitle;
+
+  /// No description provided for @localGuideFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'Local guide'**
+  String get localGuideFallback;
+
+  /// No description provided for @vehicleNumberLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Vehicle: {vehicleNumber}'**
+  String vehicleNumberLabel(String vehicleNumber);
+
+  /// No description provided for @consentTrackingMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'I consent to live location tracking and safety monitoring for this tour session.'**
+  String get consentTrackingMessage;
+
+  /// No description provided for @connectSyncButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect & sync'**
+  String get connectSyncButton;
+
+  /// No description provided for @realitySyncedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reality synced'**
+  String get realitySyncedTitle;
+
+  /// No description provided for @safetyProtocolsActiveMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Global safety protocols and live tracking active.'**
+  String get safetyProtocolsActiveMessage;
+
+  /// No description provided for @enterHubButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter hub'**
+  String get enterHubButton;
+
+  /// No description provided for @decryptingTokenMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Decrypting token…'**
+  String get decryptingTokenMessage;
+
+  /// No description provided for @scanGuideTourCodeMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan your guide\'s tour code'**
+  String get scanGuideTourCodeMessage;
+
+  /// No description provided for @emergencyTranslatorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Emergency Translator'**
+  String get emergencyTranslatorTitle;
+
+  /// No description provided for @showScreenToBystanderMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Show this screen to a bystander, police officer, or hospital staff — it\'s speaking Sinhala for you.'**
+  String get showScreenToBystanderMessage;
+
+  /// No description provided for @locationCoordinatesTapMapsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{lat}, {lng} — tap to open in Maps'**
+  String locationCoordinatesTapMapsLabel(String lat, String lng);
+
+  /// No description provided for @locationUnavailableMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Location unavailable'**
+  String get locationUnavailableMessage;
+
+  /// No description provided for @speakingEllipsisMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Speaking…'**
+  String get speakingEllipsisMessage;
+
+  /// No description provided for @playAgainButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Play again'**
+  String get playAgainButton;
+
+  /// No description provided for @emergencyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Emergency'**
+  String get emergencyTitle;
+
+  /// No description provided for @criticalContactsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Critical contacts'**
+  String get criticalContactsTitle;
+
+  /// No description provided for @medicalFacilitiesNearbyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Medical facilities nearby'**
+  String get medicalFacilitiesNearbyTitle;
+
+  /// No description provided for @emergencyProtocolLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'EMERGENCY PROTOCOL'**
+  String get emergencyProtocolLabel;
+
+  /// No description provided for @sendingAlertMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Sending alert…'**
+  String get sendingAlertMessage;
+
+  /// No description provided for @keepHoldingToConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep holding to confirm…'**
+  String get keepHoldingToConfirmMessage;
+
+  /// No description provided for @pressHoldTwoSecondsMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Press and hold for 2 seconds to alert'**
+  String get pressHoldTwoSecondsMessage;
+
+  /// No description provided for @preventsAccidentalTriggersMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Prevents accidental triggers'**
+  String get preventsAccidentalTriggersMessage;
+
+  /// No description provided for @sosLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'SOS'**
+  String get sosLabel;
+
+  /// No description provided for @contactNamePolice.
+  ///
+  /// In en, this message translates to:
+  /// **'Police'**
+  String get contactNamePolice;
+
+  /// No description provided for @contactNameAmbulance.
+  ///
+  /// In en, this message translates to:
+  /// **'Ambulance'**
+  String get contactNameAmbulance;
+
+  /// No description provided for @contactNameTouristPolice.
+  ///
+  /// In en, this message translates to:
+  /// **'Tourist Police'**
+  String get contactNameTouristPolice;
+
+  /// No description provided for @contactNameFireDept.
+  ///
+  /// In en, this message translates to:
+  /// **'Fire Dept'**
+  String get contactNameFireDept;
+
+  /// No description provided for @privateGuardiansTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Private guardians'**
+  String get privateGuardiansTitle;
+
+  /// No description provided for @noGuardiansAssignedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'No guardians assigned. Signals will default to emergency services.'**
+  String get noGuardiansAssignedMessage;
+
+  /// No description provided for @nearestHospitalTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Nearest hospital, wherever you are'**
+  String get nearestHospitalTitle;
+
+  /// No description provided for @checkingLocationAccessMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Checking location access…'**
+  String get checkingLocationAccessMessage;
+
+  /// No description provided for @locationAccessDeniedGeneralMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Location access denied — will search generally instead.'**
+  String get locationAccessDeniedGeneralMessage;
+
+  /// No description provided for @hospitalMapsExplanationMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Opens Google Maps using your live GPS — shows every government and private hospital nearby, no matter where you are in Sri Lanka.'**
+  String get hospitalMapsExplanationMessage;
+
+  /// No description provided for @findNearestHospitalButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Find nearest hospital on Maps'**
+  String get findNearestHospitalButton;
+
+  /// No description provided for @addGuardianTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add guardian'**
+  String get addGuardianTitle;
+
+  /// No description provided for @guardianPhoneNumberHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Guardian phone number'**
+  String get guardianPhoneNumberHint;
+
+  /// No description provided for @addGuardianButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Add guardian'**
+  String get addGuardianButton;
+
+  /// No description provided for @sosAlertsPreparedLoggedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'SOS Alerts Prepared & Logged in Secure Vault!'**
+  String get sosAlertsPreparedLoggedMessage;
+
+  /// No description provided for @sosCriticalAlertTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'CRITICAL SOS ALERT'**
+  String get sosCriticalAlertTitle;
+
+  /// No description provided for @sosDistressSignalDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Emergency distress signal triggered from Guardian System.'**
+  String get sosDistressSignalDescription;
+
+  /// No description provided for @locationPermissionsPermanentlyDeniedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Location permissions are permanently denied.'**
+  String get locationPermissionsPermanentlyDeniedMessage;
+
+  /// No description provided for @emergencyTranslatorPremiumMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Instantly explain your situation to Sri Lankan police or hospital staff in spoken Sinhala — a Premium safety feature.'**
+  String get emergencyTranslatorPremiumMessage;
+
+  /// No description provided for @notNowButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Not now'**
+  String get notNowButton;
+
+  /// No description provided for @viewPlansButton.
+  ///
+  /// In en, this message translates to:
+  /// **'View Plans'**
+  String get viewPlansButton;
+
+  /// No description provided for @monsoonHazardAlertTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'MONSOON HAZARD ALERT'**
+  String get monsoonHazardAlertTitle;
+
+  /// No description provided for @districtLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'District: {district}'**
+  String districtLabel(String district);
+
+  /// No description provided for @districtGeneralFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'General'**
+  String get districtGeneralFallback;
+
+  /// No description provided for @severeMonsoonWeatherDetectedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Severe monsoon weather detected.'**
+  String get severeMonsoonWeatherDetectedMessage;
+
+  /// No description provided for @acknowledgeButton.
+  ///
+  /// In en, this message translates to:
+  /// **'ACKNOWLEDGE'**
+  String get acknowledgeButton;
+
+  /// No description provided for @offlineErrorGenericMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Offline Error: {error}'**
+  String offlineErrorGenericMessage(String error);
+
+  /// No description provided for @sessionNotFoundMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Session not found'**
+  String get sessionNotFoundMessage;
+
+  /// No description provided for @yourTourTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your tour'**
+  String get yourTourTitle;
+
+  /// No description provided for @tourActiveTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Tour active'**
+  String get tourActiveTitle;
+
+  /// No description provided for @preparingTourTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Preparing tour'**
+  String get preparingTourTitle;
+
+  /// No description provided for @everythingOnTrackMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Everything\'s on track'**
+  String get everythingOnTrackMessage;
+
+  /// No description provided for @statusColonValueLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Status: {status}'**
+  String statusColonValueLabel(String status);
+
+  /// No description provided for @phaseAssemblingGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Assembling group'**
+  String get phaseAssemblingGroup;
+
+  /// No description provided for @phaseEnRoute.
+  ///
+  /// In en, this message translates to:
+  /// **'En route'**
+  String get phaseEnRoute;
+
+  /// No description provided for @phaseAtDestination.
+  ///
+  /// In en, this message translates to:
+  /// **'At destination'**
+  String get phaseAtDestination;
+
+  /// No description provided for @phaseFreeTimeBreak.
+  ///
+  /// In en, this message translates to:
+  /// **'Free time / break'**
+  String get phaseFreeTimeBreak;
+
+  /// No description provided for @phaseReturningToBase.
+  ///
+  /// In en, this message translates to:
+  /// **'Returning to base'**
+  String get phaseReturningToBase;
+
+  /// No description provided for @liveNavigationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Live navigation'**
+  String get liveNavigationTitle;
+
+  /// No description provided for @findGuideLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Find guide'**
+  String get findGuideLabel;
+
+  /// No description provided for @liveTrackingLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Live tracking'**
+  String get liveTrackingLabel;
+
+  /// No description provided for @findVehicleLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Find vehicle'**
+  String get findVehicleLabel;
+
+  /// No description provided for @parkedSpotLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Parked spot'**
+  String get parkedSpotLabel;
+
+  /// No description provided for @meetingPointLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Meeting point'**
+  String get meetingPointLabel;
+
+  /// No description provided for @returnHereIfLostMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Return here if lost or separated from group.'**
+  String get returnHereIfLostMessage;
+
+  /// No description provided for @navigateToPointButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Navigate to point'**
+  String get navigateToPointButton;
+
+  /// No description provided for @guideAnnouncementLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Guide announcement'**
+  String get guideAnnouncementLabel;
+
+  /// No description provided for @justNowLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Just now'**
+  String get justNowLabel;
+
+  /// No description provided for @acknowledgedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Acknowledged'**
+  String get acknowledgedLabel;
+
+  /// No description provided for @iAcknowledgeButton.
+  ///
+  /// In en, this message translates to:
+  /// **'I acknowledge'**
+  String get iAcknowledgeButton;
+
+  /// No description provided for @moreLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'More'**
+  String get moreLabel;
+
+  /// No description provided for @shareLiveLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Share live'**
+  String get shareLiveLabel;
+
+  /// No description provided for @familyAccessLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Family access'**
+  String get familyAccessLabel;
+
+  /// No description provided for @rateTourLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate tour'**
+  String get rateTourLabel;
+
+  /// No description provided for @buildReputationLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Build reputation'**
+  String get buildReputationLabel;
+
+  /// No description provided for @helpImLostButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Help, I\'m lost'**
+  String get helpImLostButton;
+
+  /// No description provided for @emergencySosButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Emergency SOS'**
+  String get emergencySosButton;
+
+  /// No description provided for @instantAlertAdminPoliceMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Instant alert to admin, police, and hub.'**
+  String get instantAlertAdminPoliceMessage;
+
+  /// No description provided for @signalSentStayMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'SIGNAL SENT! STAY WHERE YOU ARE.'**
+  String get signalSentStayMessage;
+
+  /// No description provided for @travelerLostBroadcastTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'TRAVELER LOST'**
+  String get travelerLostBroadcastTitle;
+
+  /// No description provided for @travelerLostBroadcastBody.
+  ///
+  /// In en, this message translates to:
+  /// **'A traveler has signaled they are lost! Location shared on map.'**
+  String get travelerLostBroadcastBody;
+
+  /// No description provided for @sosCooledDownMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'SOS cooled down. Wait {seconds} seconds.'**
+  String sosCooledDownMessage(int seconds);
+
+  /// No description provided for @sosBroadcastedAuthoritiesMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'SOS ALERT BROADCASTED TO ALL AUTHORITIES!'**
+  String get sosBroadcastedAuthoritiesMessage;
+
+  /// No description provided for @tourCompletedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Tour Completed!'**
+  String get tourCompletedTitle;
+
+  /// No description provided for @tourCompletedRateMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'We hope you had an amazing experience! Would you like to rate your guide now? Your feedback helps guides maintain high standards.'**
+  String get tourCompletedRateMessage;
+
+  /// No description provided for @remindLaterButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Remind later'**
+  String get remindLaterButton;
+
+  /// No description provided for @reminderSetMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'⏰ Reminder set! We\'ll send a notification tomorrow.'**
+  String get reminderSetMessage;
+
+  /// No description provided for @rateNowButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate now ⭐'**
+  String get rateNowButton;
+
+  /// No description provided for @eventsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Events'**
+  String get eventsTitle;
+
+  /// No description provided for @topPicksForYouTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Top picks for you'**
+  String get topPicksForYouTitle;
+
+  /// No description provided for @categoryAllFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get categoryAllFilter;
+
+  /// No description provided for @categoryBeach.
+  ///
+  /// In en, this message translates to:
+  /// **'Beach'**
+  String get categoryBeach;
+
+  /// No description provided for @categoryCultural.
+  ///
+  /// In en, this message translates to:
+  /// **'Cultural'**
+  String get categoryCultural;
+
+  /// No description provided for @categoryReligious.
+  ///
+  /// In en, this message translates to:
+  /// **'Religious'**
+  String get categoryReligious;
+
+  /// No description provided for @categorySports.
+  ///
+  /// In en, this message translates to:
+  /// **'Sports'**
+  String get categorySports;
+
+  /// No description provided for @categorySeasonal.
+  ///
+  /// In en, this message translates to:
+  /// **'Seasonal'**
+  String get categorySeasonal;
+
+  /// No description provided for @categoryFestival.
+  ///
+  /// In en, this message translates to:
+  /// **'Festival'**
+  String get categoryFestival;
+
+  /// No description provided for @categoryParty.
+  ///
+  /// In en, this message translates to:
+  /// **'Party'**
+  String get categoryParty;
+
+  /// No description provided for @availableEventsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Available events'**
+  String get availableEventsTitle;
+
+  /// No description provided for @temporalDataLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'TEMPORAL DATA'**
+  String get temporalDataLabel;
+
+  /// No description provided for @acquirePassButton.
+  ///
+  /// In en, this message translates to:
+  /// **'ACQUIRE PASS'**
+  String get acquirePassButton;
+
+  /// No description provided for @unpinButton.
+  ///
+  /// In en, this message translates to:
+  /// **'UNPIN'**
+  String get unpinButton;
+
+  /// No description provided for @pinToHudButton.
+  ///
+  /// In en, this message translates to:
+  /// **'PIN TO HUD'**
+  String get pinToHudButton;
+
+  /// No description provided for @noEventsOnDayMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'No events on this day'**
+  String get noEventsOnDayMessage;
+
+  /// No description provided for @musicPreferencesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Music preferences'**
+  String get musicPreferencesTitle;
+
+  /// No description provided for @fineTuneOracleMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Fine-tune the temporal oracle with your stylistic preferences.'**
+  String get fineTuneOracleMessage;
+
+  /// No description provided for @syncPreferencesButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync preferences'**
+  String get syncPreferencesButton;
+
+  /// No description provided for @failedToShareTimelineMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to share timeline: {error}'**
+  String failedToShareTimelineMessage(String error);
+
+  /// No description provided for @hazardWarningMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'🚨 HAZARD WARNING: {message}'**
+  String hazardWarningMessage(String message);
+
+  /// No description provided for @extremeWeatherAlertFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'Extreme weather alert!'**
+  String get extremeWeatherAlertFallback;
+
+  /// No description provided for @recommendedForYouLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Recommended for you'**
+  String get recommendedForYouLabel;
+
+  /// No description provided for @eventLocationCategoryLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{location} · {category}'**
+  String eventLocationCategoryLabel(String location, String category);
+
+  /// No description provided for @budgetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Budget'**
+  String get budgetTitle;
+
+  /// No description provided for @addExpenseTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add expense'**
+  String get addExpenseTitle;
+
+  /// No description provided for @resourceDescriptionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Resource Description'**
+  String get resourceDescriptionLabel;
+
+  /// No description provided for @amountLkrLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount (LKR)'**
+  String get amountLkrLabel;
+
+  /// No description provided for @categoryLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Category'**
+  String get categoryLabel;
+
+  /// No description provided for @saveExpenseButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Save expense'**
+  String get saveExpenseButton;
+
+  /// No description provided for @planLimitLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan limit'**
+  String get planLimitLabel;
+
+  /// No description provided for @spentLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Spent'**
+  String get spentLabel;
+
+  /// No description provided for @expenseLedgerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Expense ledger'**
+  String get expenseLedgerTitle;
+
+  /// No description provided for @entriesCountLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} entries'**
+  String entriesCountLabel(int count);
+
+  /// No description provided for @noEntriesYetMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'No entries yet'**
+  String get noEntriesYetMessage;
+
+  /// No description provided for @addFirstEntryButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Add first entry'**
+  String get addFirstEntryButton;
+
+  /// No description provided for @expenseCategoryFood.
+  ///
+  /// In en, this message translates to:
+  /// **'Food'**
+  String get expenseCategoryFood;
+
+  /// No description provided for @expenseCategoryTransport.
+  ///
+  /// In en, this message translates to:
+  /// **'Transport'**
+  String get expenseCategoryTransport;
+
+  /// No description provided for @expenseCategoryTickets.
+  ///
+  /// In en, this message translates to:
+  /// **'Tickets'**
+  String get expenseCategoryTickets;
+
+  /// No description provided for @expenseCategoryMisc.
+  ///
+  /// In en, this message translates to:
+  /// **'Misc'**
+  String get expenseCategoryMisc;
+
+  /// No description provided for @budgetConciergeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Budget concierge'**
+  String get budgetConciergeTitle;
+
+  /// No description provided for @analyzingSpendingPatternsMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Analyzing your spending patterns...'**
+  String get analyzingSpendingPatternsMessage;
+
+  /// No description provided for @localAdviceMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Your spending pace aligns well with island travel standards. We recommend utilizing PickMe or Uber for transparent transport fares, and sampling local eateries to maximize your value.'**
+  String get localAdviceMessage;
+
+  /// No description provided for @recentTransactionsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent transactions'**
+  String get recentTransactionsTitle;
+
+  /// No description provided for @totalSpentSoFarLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Total spent so far'**
+  String get totalSpentSoFarLabel;
+
+  /// No description provided for @approxUsdLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'≈ US\$ {amount}'**
+  String approxUsdLabel(String amount);
+
+  /// No description provided for @oracleAdviceLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Oracle advice'**
+  String get oracleAdviceLabel;
+
+  /// No description provided for @logTransactionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Log transaction'**
+  String get logTransactionTitle;
+
+  /// No description provided for @whatWasThePurposeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'What was the purpose?'**
+  String get whatWasThePurposeHint;
+
+  /// No description provided for @amountLkrHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount (LKR)'**
+  String get amountLkrHint;
+
+  /// No description provided for @expenseCategoryAttraction.
+  ///
+  /// In en, this message translates to:
+  /// **'Attraction'**
+  String get expenseCategoryAttraction;
+
+  /// No description provided for @expenseCategoryLodging.
+  ///
+  /// In en, this message translates to:
+  /// **'Lodging'**
+  String get expenseCategoryLodging;
+
+  /// No description provided for @expenseCategoryOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get expenseCategoryOther;
+
+  /// No description provided for @billingHistoryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'BILLING HISTORY'**
+  String get billingHistoryTitle;
+
+  /// No description provided for @errorGenericColonMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Error: {error}'**
+  String errorGenericColonMessage(String error);
+
+  /// No description provided for @noBillingHistoryFoundMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'No billing history found.'**
+  String get noBillingHistoryFoundMessage;
+
+  /// No description provided for @planLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'PLAN: {planId}'**
+  String planLabel(String planId);
+
+  /// No description provided for @startedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'STARTED'**
+  String get startedLabel;
+
+  /// No description provided for @expiresLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'EXPIRES'**
+  String get expiresLabel;
+
+  /// No description provided for @idLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'ID: {subscriptionId}'**
+  String idLabel(String subscriptionId);
+
+  /// No description provided for @subscriptionStatusCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'CANCELLED'**
+  String get subscriptionStatusCancelled;
+
+  /// No description provided for @subscriptionStatusExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'EXPIRED'**
+  String get subscriptionStatusExpired;
+
+  /// No description provided for @subscriptionStatusActive.
+  ///
+  /// In en, this message translates to:
+  /// **'ACTIVE'**
+  String get subscriptionStatusActive;
+
+  /// No description provided for @accessDeniedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Access Denied'**
+  String get accessDeniedMessage;
+
+  /// No description provided for @subscribedToPlanMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'✅ Subscribed to \"{planId}\" plan!'**
+  String subscribedToPlanMessage(String planId);
+
+  /// No description provided for @subscriptionFailedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Subscription failed: {error}'**
+  String subscriptionFailedMessage(String error);
+
+  /// No description provided for @purchasesRestoredMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'✅ Purchases restored successfully.'**
+  String get purchasesRestoredMessage;
+
+  /// No description provided for @restoreFailedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore failed: {error}'**
+  String restoreFailedMessage(String error);
+
+  /// No description provided for @serviceTiersTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Service tiers'**
+  String get serviceTiersTitle;
+
+  /// No description provided for @freeTierTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Free tier'**
+  String get freeTierTitle;
+
+  /// No description provided for @freeTierDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Essential tour tools for verified guides.'**
+  String get freeTierDescription;
+
+  /// No description provided for @featureBasicOperations.
+  ///
+  /// In en, this message translates to:
+  /// **'Basic Operations'**
+  String get featureBasicOperations;
+
+  /// No description provided for @featureVerifiedBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Verified Badge'**
+  String get featureVerifiedBadge;
+
+  /// No description provided for @featureStandardSos.
+  ///
+  /// In en, this message translates to:
+  /// **'Standard SOS'**
+  String get featureStandardSos;
+
+  /// No description provided for @proCommanderTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pro Commander'**
+  String get proCommanderTitle;
+
+  /// No description provided for @proCommanderDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Elevate your visibility and tools.'**
+  String get proCommanderDescription;
+
+  /// No description provided for @featureFeaturedListings.
+  ///
+  /// In en, this message translates to:
+  /// **'Featured Listings'**
+  String get featureFeaturedListings;
+
+  /// No description provided for @featureAdvancedAnalytics.
+  ///
+  /// In en, this message translates to:
+  /// **'Advanced Analytics'**
+  String get featureAdvancedAnalytics;
+
+  /// No description provided for @featureClientAnalytics.
+  ///
+  /// In en, this message translates to:
+  /// **'Client Analytics'**
+  String get featureClientAnalytics;
+
+  /// No description provided for @featurePrioritySos.
+  ///
+  /// In en, this message translates to:
+  /// **'Priority SOS'**
+  String get featurePrioritySos;
+
+  /// No description provided for @eliteAgencyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Elite Agency'**
+  String get eliteAgencyTitle;
+
+  /// No description provided for @eliteAgencyDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Full fleet and company management.'**
+  String get eliteAgencyDescription;
+
+  /// No description provided for @featureTeamManagement.
+  ///
+  /// In en, this message translates to:
+  /// **'Team Management'**
+  String get featureTeamManagement;
+
+  /// No description provided for @featureOperatorDashboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Operator Dashboard'**
+  String get featureOperatorDashboard;
+
+  /// No description provided for @featureWhiteLabelBranding.
+  ///
+  /// In en, this message translates to:
+  /// **'White-label Branding'**
+  String get featureWhiteLabelBranding;
+
+  /// No description provided for @fleetPlansTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Fleet plans'**
+  String get fleetPlansTitle;
+
+  /// No description provided for @restoreButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore'**
+  String get restoreButton;
+
+  /// No description provided for @currentPlanLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Current plan'**
+  String get currentPlanLabel;
+
+  /// No description provided for @freeTierLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Free tier'**
+  String get freeTierLabel;
+
+  /// No description provided for @expiresColonDateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Expires: {date}'**
+  String expiresColonDateLabel(String date);
+
+  /// No description provided for @upgradeButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Upgrade'**
+  String get upgradeButton;
+
+  /// No description provided for @manageButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage'**
+  String get manageButton;
+
+  /// No description provided for @mostPopularLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Most popular'**
+  String get mostPopularLabel;
+
+  /// No description provided for @perMonthSlashLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'/month'**
+  String get perMonthSlashLabel;
+
+  /// No description provided for @currentPlanButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Current plan'**
+  String get currentPlanButton;
+
+  /// No description provided for @selectThisPlanButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Select this plan'**
+  String get selectThisPlanButton;
+
+  /// No description provided for @goPremiumTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Go Premium'**
+  String get goPremiumTitle;
+
+  /// No description provided for @fullArUnlimitedAiTripsMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Full AR & unlimited AI trips'**
+  String get fullArUnlimitedAiTripsMessage;
+
+  /// No description provided for @heritageArModeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Heritage AR Mode'**
+  String get heritageArModeTitle;
+
+  /// No description provided for @heritageArModeDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'See ancient ruins reconstructed in 1:1 scale with historical audio guides.'**
+  String get heritageArModeDescription;
+
+  /// No description provided for @oracleAiTripIntelligenceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Oracle AI Trip Intelligence'**
+  String get oracleAiTripIntelligenceTitle;
+
+  /// No description provided for @oracleAiTripIntelligenceDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlimited hyper-personalized itineraries powered by the Oracle engine.'**
+  String get oracleAiTripIntelligenceDescription;
+
+  /// No description provided for @offlineDigitalTwinsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Offline Digital Twins'**
+  String get offlineDigitalTwinsTitle;
+
+  /// No description provided for @offlineDigitalTwinsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Download high-res maps and 100+ points of interest for low-signal areas.'**
+  String get offlineDigitalTwinsDescription;
+
+  /// No description provided for @exclusiveCuratorDealsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Exclusive Curator Deals'**
+  String get exclusiveCuratorDealsTitle;
+
+  /// No description provided for @exclusiveCuratorDealsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Access to member-only discounts at handpicked boutique stays.'**
+  String get exclusiveCuratorDealsDescription;
+
+  /// No description provided for @guardianEmergencyTranslatorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Guardian Emergency Translator'**
+  String get guardianEmergencyTranslatorTitle;
+
+  /// No description provided for @guardianEmergencyTranslatorDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Instantly explain your situation to Sri Lankan police or hospital staff in spoken Sinhala during an SOS.'**
+  String get guardianEmergencyTranslatorDescription;
+
+  /// No description provided for @premiumActiveLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{plan} active'**
+  String premiumActiveLabel(String plan);
+
+  /// No description provided for @premiumFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'Premium'**
+  String get premiumFallback;
+
+  /// No description provided for @renewingOnLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Renewing on {date}'**
+  String renewingOnLabel(String date);
+
+  /// No description provided for @viaSourceLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Via {source}'**
+  String viaSourceLabel(String source);
+
+  /// No description provided for @storeFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'store'**
+  String get storeFallback;
+
+  /// No description provided for @resetPremiumDevButton.
+  ///
+  /// In en, this message translates to:
+  /// **'RESET PREMIUM (DEV ONLY)'**
+  String get resetPremiumDevButton;
+
+  /// No description provided for @premiumResetMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Premium reset. Pricing tiers are back.'**
+  String get premiumResetMessage;
+
+  /// No description provided for @smartTravelerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Smart Traveler'**
+  String get smartTravelerTitle;
+
+  /// No description provided for @billedMonthlyLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Billed monthly'**
+  String get billedMonthlyLabel;
+
+  /// No description provided for @featureAiItineraries20.
+  ///
+  /// In en, this message translates to:
+  /// **'20 AI Itineraries/mo'**
+  String get featureAiItineraries20;
+
+  /// No description provided for @featureSelectedArPlaces.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected AR Places'**
+  String get featureSelectedArPlaces;
+
+  /// No description provided for @featureOfflineMapsBasic.
+  ///
+  /// In en, this message translates to:
+  /// **'Offline Maps (Basic)'**
+  String get featureOfflineMapsBasic;
+
+  /// No description provided for @heritagePremiumTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Heritage Premium'**
+  String get heritagePremiumTitle;
+
+  /// No description provided for @billedYearlySaveLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Billed yearly · save ~17%'**
+  String get billedYearlySaveLabel;
+
+  /// No description provided for @featureUnlimitedAiItineraries.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlimited AI Itineraries'**
+  String get featureUnlimitedAiItineraries;
+
+  /// No description provided for @featureFullHeritageArAccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Full Heritage AR Access'**
+  String get featureFullHeritageArAccess;
+
+  /// No description provided for @featureAllOfflineFeatures.
+  ///
+  /// In en, this message translates to:
+  /// **'All Offline Features'**
+  String get featureAllOfflineFeatures;
+
+  /// No description provided for @ultraExplorerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Ultra Explorer'**
+  String get ultraExplorerTitle;
+
+  /// No description provided for @waitlistLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Waitlist'**
+  String get waitlistLabel;
+
+  /// No description provided for @nextGenExperienceLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Next-Gen Experience'**
+  String get nextGenExperienceLabel;
+
+  /// No description provided for @featureVrModeSupport.
+  ///
+  /// In en, this message translates to:
+  /// **'VR Mode Support'**
+  String get featureVrModeSupport;
+
+  /// No description provided for @featureHistoricalTimelines.
+  ///
+  /// In en, this message translates to:
+  /// **'Historical Timelines'**
+  String get featureHistoricalTimelines;
+
+  /// No description provided for @featurePersonalAiCurator.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal AI Curator'**
+  String get featurePersonalAiCurator;
+
+  /// No description provided for @ultraExplorerWaitlistMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'🚀 Ultra Explorer is on the waitlist! We\'ll notify you when it launches.'**
+  String get ultraExplorerWaitlistMessage;
+
+  /// No description provided for @restorePreviousPurchasesButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore previous purchases'**
+  String get restorePreviousPurchasesButton;
+
+  /// No description provided for @termsPrivacyLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Terms of Service  •  Privacy Policy'**
+  String get termsPrivacyLabel;
+
+  /// No description provided for @testBuyDevButton.
+  ///
+  /// In en, this message translates to:
+  /// **'TEST BUY (DEV ONLY)'**
+  String get testBuyDevButton;
+
+  /// No description provided for @mockPurchaseSimulatedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'🚀 Mock Purchase Simulated. Refreshing...'**
+  String get mockPurchaseSimulatedMessage;
+
+  /// No description provided for @monthlyLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly'**
+  String get monthlyLabel;
+
+  /// No description provided for @yearlySaveLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Yearly · Save 17%'**
+  String get yearlySaveLabel;
+
+  /// No description provided for @lockedLabelShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Locked'**
+  String get lockedLabelShort;
+
+  /// No description provided for @perMonthLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'/ month'**
+  String get perMonthLabel;
+
+  /// No description provided for @comingSoonButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Coming soon'**
+  String get comingSoonButton;
+
+  /// No description provided for @upgradeNowLongButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Upgrade now'**
+  String get upgradeNowLongButton;
+
+  /// No description provided for @trialDaysLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{1 day} other{{count} days}} free trial'**
+  String trialDaysLabel(int count);
+
+  /// No description provided for @trialWeeksLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{1 week} other{{count} weeks}} free trial'**
+  String trialWeeksLabel(int count);
+
+  /// No description provided for @trialMonthsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{1 month} other{{count} months}} free trial'**
+  String trialMonthsLabel(int count);
+
+  /// No description provided for @trialYearsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{1 year} other{{count} years}} free trial'**
+  String trialYearsLabel(int count);
+
+  /// No description provided for @trialPeriodLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} period free trial'**
+  String trialPeriodLabel(int count);
+
+  /// No description provided for @oracleLostFocusMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Oracle lost focus: {error}'**
+  String oracleLostFocusMessage(String error);
+
+  /// No description provided for @savorLankaAiTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'SAVORLANKA AI'**
+  String get savorLankaAiTitle;
+
+  /// No description provided for @culinaryVisionEngineLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'CULINARY VISION ENGINE V2'**
+  String get culinaryVisionEngineLabel;
+
+  /// No description provided for @liveRealTimeScannerLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'LIVE REAL-TIME SCANNER'**
+  String get liveRealTimeScannerLabel;
+
+  /// No description provided for @nutritionReliabilityLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'NUTRITION RELIABILITY: {reliability}'**
+  String nutritionReliabilityLabel(String reliability);
+
+  /// No description provided for @neuralReasoningLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'NEURAL REASONING'**
+  String get neuralReasoningLabel;
+
+  /// No description provided for @aiVisualMarkersFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'AI identified visual culinary markers consistent with {label}.'**
+  String aiVisualMarkersFallback(String label);
+
+  /// No description provided for @authenticityIntelligenceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'AUTHENTICITY INTELLIGENCE'**
+  String get authenticityIntelligenceTitle;
+
+  /// No description provided for @ingredientCertaintyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'INGREDIENT CERTAINTY'**
+  String get ingredientCertaintyTitle;
+
+  /// No description provided for @manualCulinaryOverrideTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'MANUAL CULINARY OVERRIDE'**
+  String get manualCulinaryOverrideTitle;
+
+  /// No description provided for @refineIngredientsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Refine ingredients (comma separated)...'**
+  String get refineIngredientsHint;
+
+  /// No description provided for @cancelButtonUppercaseAlt.
+  ///
+  /// In en, this message translates to:
+  /// **'CANCEL'**
+  String get cancelButtonUppercaseAlt;
+
+  /// No description provided for @applyOverrideButton.
+  ///
+  /// In en, this message translates to:
+  /// **'APPLY OVERRIDE'**
+  String get applyOverrideButton;
+
+  /// No description provided for @ingredientTierConfirmed.
+  ///
+  /// In en, this message translates to:
+  /// **'CONFIRMED'**
+  String get ingredientTierConfirmed;
+
+  /// No description provided for @ingredientTierLikely.
+  ///
+  /// In en, this message translates to:
+  /// **'LIKELY'**
+  String get ingredientTierLikely;
+
+  /// No description provided for @ingredientTierOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'OPTIONAL / SIDES'**
+  String get ingredientTierOptional;
+
+  /// No description provided for @mealContextLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'MEAL CONTEXT: {context}'**
+  String mealContextLabel(String context);
+
+  /// No description provided for @supportingElementsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'SUPPORTING ELEMENTS:'**
+  String get supportingElementsLabel;
+
+  /// No description provided for @influencesLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'INFLUENCES: {influences}'**
+  String influencesLabel(String influences);
+
+  /// No description provided for @visualFreshnessQualityLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'VISUAL FRESHNESS & QUALITY'**
+  String get visualFreshnessQualityLabel;
+
+  /// No description provided for @qualityColonLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'QUALITY: {quality}'**
+  String qualityColonLabel(String quality);
+
+  /// No description provided for @textureColonLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'TEXTURE: {texture}'**
+  String textureColonLabel(String texture);
+
+  /// No description provided for @heritageNarrativeEngineTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'HERITAGE NARRATIVE ENGINE'**
+  String get heritageNarrativeEngineTitle;
+
+  /// No description provided for @verifiedLegacyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'VERIFIED LEGACY'**
+  String get verifiedLegacyTitle;
+
+  /// No description provided for @regionalTraditionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'REGIONAL TRADITION'**
+  String get regionalTraditionTitle;
+
+  /// No description provided for @folkloreNarrativeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'FOLKLORE NARRATIVE'**
+  String get folkloreNarrativeTitle;
+
+  /// No description provided for @culinaryGapPairingEngineTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'CULINARY GAP & PAIRING ENGINE'**
+  String get culinaryGapPairingEngineTitle;
+
+  /// No description provided for @missingCompanionsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'MISSING COMPANIONS:'**
+  String get missingCompanionsLabel;
+
+  /// No description provided for @engineNotesLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'ENGINE NOTES:'**
+  String get engineNotesLabel;
+
+  /// No description provided for @recipeRefactorEngineTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'RECIPE REFACTOR ENGINE'**
+  String get recipeRefactorEngineTitle;
+
+  /// No description provided for @refactoredStepsForYouLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'REFACTORED STEPS FOR YOU:'**
+  String get refactoredStepsForYouLabel;
+
+  /// No description provided for @prepMetricLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'PREP'**
+  String get prepMetricLabel;
+
+  /// No description provided for @cookMetricLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'COOK'**
+  String get cookMetricLabel;
+
+  /// No description provided for @levelMetricLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'LEVEL'**
+  String get levelMetricLabel;
+
+  /// No description provided for @calMetricLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'CAL'**
+  String get calMetricLabel;
+
+  /// No description provided for @proteinLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Protein'**
+  String get proteinLabel;
+
+  /// No description provided for @carbsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Carbs'**
+  String get carbsLabel;
+
+  /// No description provided for @fatLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Fat'**
+  String get fatLabel;
+
+  /// No description provided for @fiberLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Fiber'**
+  String get fiberLabel;
+
+  /// No description provided for @healthRatingLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'HEALTH RATING'**
+  String get healthRatingLabel;
+
+  /// No description provided for @healthRatingValueLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{rating}/10'**
+  String healthRatingValueLabel(int rating);
+
+  /// No description provided for @sinhalaLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'SINHALA'**
+  String get sinhalaLabel;
+
+  /// No description provided for @englishLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'ENGLISH'**
+  String get englishLabel;
+
+  /// No description provided for @backLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'BACK'**
+  String get backLabel;
+
+  /// No description provided for @nextLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'NEXT'**
+  String get nextLabel;
+
+  /// No description provided for @rescanLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'RESCAN'**
+  String get rescanLabel;
+
+  /// No description provided for @oracleInsightsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'ORACLE INSIGHTS'**
+  String get oracleInsightsTitle;
+
+  /// No description provided for @globalSubstitutionsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'GLOBAL SUBSTITUTIONS'**
+  String get globalSubstitutionsTitle;
+
+  /// No description provided for @aiEstimatedValuesDisclaimer.
+  ///
+  /// In en, this message translates to:
+  /// **'AI-estimated values. Traditional variations may differ.'**
+  String get aiEstimatedValuesDisclaimer;
+
+  /// No description provided for @savedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'SAVED'**
+  String get savedLabel;
+
+  /// No description provided for @saveToCookbookLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'SAVE TO COOKBOOK'**
+  String get saveToCookbookLabel;
+
+  /// No description provided for @voiceGuideLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'VOICE GUIDE'**
+  String get voiceGuideLabel;
+
+  /// No description provided for @savorLankaShareText.
+  ///
+  /// In en, this message translates to:
+  /// **'Check out this {name} recipe I found on Hidden Gems SL.ai! It\'s an authentic Sri Lankan delicacy. \n\nOracle Score: {score}%'**
+  String savorLankaShareText(String name, String score);
+
+  /// No description provided for @savorLankaShareSubject.
+  ///
+  /// In en, this message translates to:
+  /// **'Hidden Gems SL.ai - Savor Lanka Recipe'**
+  String get savorLankaShareSubject;
+
+  /// No description provided for @phase3CrossMatchTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'PHASE 3: CROSS-MATCH SUBSTITUTION'**
+  String get phase3CrossMatchTitle;
+
+  /// No description provided for @visuallySimilarAlternativesLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'VISUALLY SIMILAR ALTERNATIVES'**
+  String get visuallySimilarAlternativesLabel;
+
+  /// No description provided for @aiCrossMatchReasoningLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'AI CROSS-MATCH REASONING:'**
+  String get aiCrossMatchReasoningLabel;
+
+  /// No description provided for @phase6HygienePresentationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'PHASE 6: HYGIENE & PRESENTATION'**
+  String get phase6HygienePresentationTitle;
+
+  /// No description provided for @presentationLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'PRESENTATION'**
+  String get presentationLabel;
+
+  /// No description provided for @integrityLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'INTEGRITY'**
+  String get integrityLabel;
+
+  /// No description provided for @popularLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Popular'**
+  String get popularLabel;
+
+  /// No description provided for @curatorDealsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Curator deals'**
+  String get curatorDealsTitle;
+
+  /// No description provided for @noDealsRightNowTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No deals right now'**
+  String get noDealsRightNowTitle;
+
+  /// No description provided for @newPartnerDiscountsMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'New partner discounts are added regularly — check back soon.'**
+  String get newPartnerDiscountsMessage;
+
+  /// No description provided for @percentOffLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent}% OFF'**
+  String percentOffLabel(int percent);
+
+  /// No description provided for @validUntilLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Valid until {date}'**
+  String validUntilLabel(String date);
+
+  /// No description provided for @claimDealButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Claim deal'**
+  String get claimDealButton;
+
+  /// No description provided for @passportTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Passport'**
+  String get passportTitle;
+
+  /// No description provided for @verifiedVisitCollectionSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your verified visit collection'**
+  String get verifiedVisitCollectionSubtitle;
+
+  /// No description provided for @passportIsEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Passport is empty'**
+  String get passportIsEmptyTitle;
+
+  /// No description provided for @exploreHistoricalGemsMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Explore historical gems to\nclaim your unique digital stamps.'**
+  String get exploreHistoricalGemsMessage;
+
+  /// No description provided for @claimedOnLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Claimed on {date}'**
+  String claimedOnLabel(String date);
+
+  /// No description provided for @verifiableHashLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Verifiable hash'**
+  String get verifiableHashLabel;
+
+  /// No description provided for @shareCollectibleButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Share collectible'**
+  String get shareCollectibleButton;
+
+  /// No description provided for @stampRarityCommon.
+  ///
+  /// In en, this message translates to:
+  /// **'Common'**
+  String get stampRarityCommon;
+
+  /// No description provided for @stampRarityRare.
+  ///
+  /// In en, this message translates to:
+  /// **'Rare'**
+  String get stampRarityRare;
+
+  /// No description provided for @stampRarityMythic.
+  ///
+  /// In en, this message translates to:
+  /// **'Mythic'**
+  String get stampRarityMythic;
+
+  /// No description provided for @audioGuideLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Audio guide'**
+  String get audioGuideLabel;
+
+  /// No description provided for @sinhalaShortLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'සිංහල'**
+  String get sinhalaShortLabel;
+
+  /// No description provided for @englishShortLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'English'**
+  String get englishShortLabel;
+
+  /// No description provided for @joinGroupTourTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Join Group Tour'**
+  String get joinGroupTourTitle;
+
+  /// No description provided for @enterSixDigitCodeMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the 6-digit code provided by your guide.'**
+  String get enterSixDigitCodeMessage;
+
+  /// No description provided for @cancelButtonUppercaseThird.
+  ///
+  /// In en, this message translates to:
+  /// **'CANCEL'**
+  String get cancelButtonUppercaseThird;
+
+  /// No description provided for @joinButtonUppercase.
+  ///
+  /// In en, this message translates to:
+  /// **'JOIN'**
+  String get joinButtonUppercase;
+
+  /// No description provided for @tapFlatSurfaceMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'👆 Tap a flat surface to place the model'**
+  String get tapFlatSurfaceMessage;
+
+  /// No description provided for @groupTourStartedCodeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Group Tour Started! Code: {code}'**
+  String groupTourStartedCodeLabel(String code);
+
+  /// No description provided for @invalidSessionCodeMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid Session Code'**
+  String get invalidSessionCodeMessage;
+
+  /// No description provided for @couldNotLoadAudioMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load audio narration.'**
+  String get couldNotLoadAudioMessage;
+
+  /// No description provided for @galleryPermissionDeniedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Gallery permission denied'**
+  String get galleryPermissionDeniedMessage;
+
+  /// No description provided for @failedToCapturePhotoMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to capture photo: {error}'**
+  String failedToCapturePhotoMessage(String error);
+
+  /// No description provided for @codeColonLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'CODE: {code}'**
+  String codeColonLabel(String code);
+
+  /// No description provided for @thenLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'THEN'**
+  String get thenLabel;
+
+  /// No description provided for @nowLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'NOW'**
+  String get nowLabel;
+
+  /// No description provided for @resetLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset'**
+  String get resetLabel;
+
+  /// No description provided for @scalePlusLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Scale+'**
+  String get scalePlusLabel;
+
+  /// No description provided for @scaleMinusLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Scale-'**
+  String get scaleMinusLabel;
+
+  /// No description provided for @memoryLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Memory'**
+  String get memoryLabel;
+
+  /// No description provided for @removeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get removeLabel;
+
+  /// No description provided for @placeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Place'**
+  String get placeLabel;
+
+  /// No description provided for @historicalInfoComingSoonMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Historical information coming soon.'**
+  String get historicalInfoComingSoonMessage;
+
+  /// No description provided for @preparingHeritageAssetsMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Preparing Heritage Assets...'**
+  String get preparingHeritageAssetsMessage;
+
+  /// No description provided for @progressSizeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{progress}% • {size} MB'**
+  String progressSizeLabel(int progress, String size);
+
+  /// No description provided for @modelColonNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Model: {name}'**
+  String modelColonNameLabel(String name);
+
+  /// No description provided for @authorColonNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Author: {name}'**
+  String authorColonNameLabel(String name);
+
+  /// No description provided for @moveSlowlyToScanMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Move your phone slowly\nto scan a flat surface'**
+  String get moveSlowlyToScanMessage;
+
+  /// No description provided for @tapPlaceToPlaceModelMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'👇 Tap \"Place\" then tap a flat surface'**
+  String get tapPlaceToPlaceModelMessage;
+
+  /// No description provided for @demoModeSecondsRemainingLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'DEMO MODE: {seconds} REMAINING'**
+  String demoModeSecondsRemainingLabel(int seconds);
+
+  /// No description provided for @premiumHeritageSessionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'PREMIUM HERITAGE SESSION'**
+  String get premiumHeritageSessionLabel;
+
+  /// No description provided for @artifactDiscoveredLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'ARTIFACT DISCOVERED!'**
+  String get artifactDiscoveredLabel;
+
+  /// No description provided for @ptsRarityLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'+{points} PTS • {rarity}'**
+  String ptsRarityLabel(int points, String rarity);
+
+  /// No description provided for @hiddenGemsSlWatermark.
+  ///
+  /// In en, this message translates to:
+  /// **'HIDDEN GEMS SL'**
+  String get hiddenGemsSlWatermark;
+
+  /// No description provided for @heritageArWatermark.
+  ///
+  /// In en, this message translates to:
+  /// **'HERITAGE AR'**
+  String get heritageArWatermark;
+
+  /// No description provided for @captureSuccessfulTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Capture Successful!'**
+  String get captureSuccessfulTitle;
+
+  /// No description provided for @shareDiscoveryMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Share your historical discovery with the world'**
+  String get shareDiscoveryMessage;
+
+  /// No description provided for @instagramLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Instagram'**
+  String get instagramLabel;
+
+  /// No description provided for @tiktokLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'TikTok'**
+  String get tiktokLabel;
+
+  /// No description provided for @savedLabelShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved'**
+  String get savedLabelShort;
+
+  /// No description provided for @sharePlatformCaptionInstagram.
+  ///
+  /// In en, this message translates to:
+  /// **'Exploring {placeName} in AR with #HiddenGemsSL'**
+  String sharePlatformCaptionInstagram(String placeName);
+
+  /// No description provided for @sharePlatformCaptionTiktok.
+  ///
+  /// In en, this message translates to:
+  /// **'History comes alive! #HiddenGemsSL #HeritageAR'**
+  String get sharePlatformCaptionTiktok;
+
+  /// No description provided for @photoSavedGalleryMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo saved to your gallery!'**
+  String get photoSavedGalleryMessage;
+
+  /// No description provided for @backToArButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to AR'**
+  String get backToArButton;
+
+  /// No description provided for @distanceToTargetLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{distance}m to {placeName}'**
+  String distanceToTargetLabel(String distance, String placeName);
+
+  /// No description provided for @recommendedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'RECOMMENDED'**
+  String get recommendedLabel;
+
+  /// No description provided for @categoryRatingLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{category} • {rating} ★'**
+  String categoryRatingLabel(String category, String rating);
+
+  /// No description provided for @viewButtonUppercase.
+  ///
+  /// In en, this message translates to:
+  /// **'VIEW'**
+  String get viewButtonUppercase;
+
+  /// No description provided for @loginToLeaveMemoryMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Login to leave an AR memory!'**
+  String get loginToLeaveMemoryMessage;
+
+  /// No description provided for @leaveArMemoryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave an AR Memory'**
+  String get leaveArMemoryTitle;
+
+  /// No description provided for @whatDoYouSeeHereHint.
+  ///
+  /// In en, this message translates to:
+  /// **'What do you see here?'**
+  String get whatDoYouSeeHereHint;
+
+  /// No description provided for @cancelButton2.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancelButton2;
+
+  /// No description provided for @dropButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Drop'**
+  String get dropButton;
+
+  /// No description provided for @memoryDroppedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Memory dropped into the AR universe!'**
+  String get memoryDroppedMessage;
+
+  /// No description provided for @explorerFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'Explorer'**
+  String get explorerFallback;
+
+  /// No description provided for @signalPercentLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'SIGNAL: {percent}%'**
+  String signalPercentLabel(int percent);
+
+  /// No description provided for @searchingLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'SEARCHING...'**
+  String get searchingLabel;
+
+  /// No description provided for @cameraAccessNeededTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Camera access needed'**
+  String get cameraAccessNeededTitle;
+
+  /// No description provided for @arNotAvailableDeviceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'AR isn\'t available on this device'**
+  String get arNotAvailableDeviceTitle;
+
+  /// No description provided for @arCouldntLoadTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'AR couldn\'t load this time'**
+  String get arCouldntLoadTitle;
+
+  /// No description provided for @cameraAccessNeededMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Camera access is needed for AR features. Here\'s a cinematic reconstruction instead.'**
+  String get cameraAccessNeededMessage;
+
+  /// No description provided for @arNotAvailableMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Here\'s a cinematic 360° view of the same era instead.'**
+  String get arNotAvailableMessage;
+
+  /// No description provided for @arCouldntLoadMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t load the historical 3D model. Here\'s the cinematic fallback view instead.'**
+  String get arCouldntLoadMessage;
+
+  /// No description provided for @closeButtonLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get closeButtonLabel;
+
+  /// No description provided for @watchAdToUnlockButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Watch ad to unlock'**
+  String get watchAdToUnlockButton;
+
+  /// No description provided for @oracleRewardFallbackMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'✨ Oracle reward active! Fallback modes and premium content unlocked.'**
+  String get oracleRewardFallbackMessage;
+
+  /// No description provided for @arNotAvailableInfoBarMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'AR isn\'t available on this device · Showing 360° view'**
+  String get arNotAvailableInfoBarMessage;
+
+  /// No description provided for @cinematicPreviewUnavailableMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Cinematic preview unavailable'**
+  String get cinematicPreviewUnavailableMessage;
+
+  /// No description provided for @interactive3dViewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Interactive 3D View'**
+  String get interactive3dViewTitle;
+
+  /// No description provided for @touchToRotateMonumentMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Touch to rotate monument'**
+  String get touchToRotateMonumentMessage;
+
+  /// No description provided for @historicalStoryLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Historical story'**
+  String get historicalStoryLabel;
+
+  /// No description provided for @unveilingEraTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Unveiling the {era}'**
+  String unveilingEraTitle(String era);
+
+  /// No description provided for @heritageStoryBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Sri Lanka\'s heritage runs deep into the fabric of time. This site, dating back to the {era}, was once the center of a thriving civilization that pioneered hydraulic engineering and spiritual architecture.\n\nThe stupa we see today was constructed using over 100 million sun-baked bricks, standing as a testament to the engineering marvels of ancient kings...'**
+  String heritageStoryBody(String era);
+
+  /// No description provided for @listenToNarrationLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Listen to narration'**
+  String get listenToNarrationLabel;
+
+  /// No description provided for @sinhalaEnglishAvailableLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Sinhala & English available'**
+  String get sinhalaEnglishAvailableLabel;
+
+  /// No description provided for @illustrationCaptionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Illustration: Ancient Engineering (Concept Art)'**
+  String get illustrationCaptionLabel;
+
+  /// No description provided for @mode360Label.
+  ///
+  /// In en, this message translates to:
+  /// **'360°'**
+  String get mode360Label;
+
+  /// No description provided for @mode3dLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'3D'**
+  String get mode3dLabel;
+
+  /// No description provided for @modeStoryLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Story'**
+  String get modeStoryLabel;
+
+  /// No description provided for @unlockArHeritageModeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock AR Heritage Mode'**
+  String get unlockArHeritageModeTitle;
+
+  /// No description provided for @arHeritageModeSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Experience Sri Lanka as it looked thousands of years ago.'**
+  String get arHeritageModeSubtitle;
+
+  /// No description provided for @featureAncient3dReconstruction.
+  ///
+  /// In en, this message translates to:
+  /// **'Ancient 3D Reconstruction'**
+  String get featureAncient3dReconstruction;
+
+  /// No description provided for @featureAudioNarrationBilingual.
+  ///
+  /// In en, this message translates to:
+  /// **'Audio Narration (සිංහල / English)'**
+  String get featureAudioNarrationBilingual;
+
+  /// No description provided for @featureArPhotoCapture.
+  ///
+  /// In en, this message translates to:
+  /// **'AR Photo Capture & Social Share'**
+  String get featureArPhotoCapture;
+
+  /// No description provided for @pricingTrialLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'From Rs. 299/month  ·  7-day free trial'**
+  String get pricingTrialLabel;
+
+  /// No description provided for @watch10SecPreviewButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Watch 10-sec Preview'**
+  String get watch10SecPreviewButton;
+
+  /// No description provided for @watchAdUnlockSessionButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Watch Ad to Unlock Session'**
+  String get watchAdUnlockSessionButton;
+
+  /// No description provided for @notNowButtonLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Not Now'**
+  String get notNowButtonLabel;
+
+  /// No description provided for @ancientArtifactsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'ANCIENT ARTIFACTS'**
+  String get ancientArtifactsLabel;
 }
 
 class _AppLocalizationsDelegate

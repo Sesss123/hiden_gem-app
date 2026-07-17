@@ -9,6 +9,7 @@ import '../../data/models/guide_listing.dart';
 import 'booking_request_screen.dart';
 import 'package:flutter/services.dart';
 import '../widgets/cached_image.dart';
+import '../../l10n/app_localizations.dart';
 
 class GuidePublicProfileScreen extends ConsumerStatefulWidget {
   final String guideId;
@@ -38,7 +39,7 @@ class _GuidePublicProfileScreenState extends ConsumerState<GuidePublicProfileScr
             }
             final guide = snapshot.data;
             if (guide == null) {
-              return Center(child: Text("Guide profile not found", style: TextStyle(color: AppTheme.textSecondary(context))));
+              return Center(child: Text(AppLocalizations.of(context)!.guideProfileNotFoundMessage, style: TextStyle(color: AppTheme.textSecondary(context))));
             }
 
             if (!_viewTracked) {
@@ -190,7 +191,7 @@ class _GuidePublicProfileScreenState extends ConsumerState<GuidePublicProfileScr
               Icon(Icons.verified_rounded, color: AppTheme.colors.greenAccent, size: 15),
               const SizedBox(width: 6),
               Text(
-                "Licensed guide • ${guide.licenseNumber}",
+                AppLocalizations.of(context)!.licensedGuideLabel(guide.licenseNumber!),
                 style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 12, fontWeight: FontWeight.w600),
               ),
             ],
@@ -203,7 +204,7 @@ class _GuidePublicProfileScreenState extends ConsumerState<GuidePublicProfileScr
               Icon(Icons.shield_rounded, color: AppTheme.colors.greenAccent, size: 15),
               const SizedBox(width: 6),
               Text(
-                "Platform verified & insured",
+                AppLocalizations.of(context)!.platformVerifiedInsuredLabel,
                 style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 12, fontWeight: FontWeight.w600),
               ),
             ],
@@ -214,13 +215,14 @@ class _GuidePublicProfileScreenState extends ConsumerState<GuidePublicProfileScr
   }
 
   Widget _buildTrustCard(BuildContext context, GuideListing guide) {
+    final l10n = AppLocalizations.of(context)!;
     return Row(
       children: [
-        Expanded(child: _buildStatTile(context, "Experience", "${guide.yearsExperience} years")),
+        Expanded(child: _buildStatTile(context, l10n.experienceStatLabel, l10n.yearsExperienceLabel(guide.yearsExperience.toString()))),
         const SizedBox(width: 12),
-        Expanded(child: _buildStatTile(context, "Rating", "★ ${guide.ratingAverage.toStringAsFixed(1)}")),
+        Expanded(child: _buildStatTile(context, l10n.ratingStatLabel, "★ ${guide.ratingAverage.toStringAsFixed(1)}")),
         const SizedBox(width: 12),
-        Expanded(child: _buildStatTile(context, "Rank", guide.trustTierPublic)),
+        Expanded(child: _buildStatTile(context, l10n.rankStatLabel, guide.trustTierPublic)),
       ],
     ).animate().fadeIn(delay: 200.ms).slideY(begin: 0.1);
   }
@@ -248,12 +250,12 @@ class _GuidePublicProfileScreenState extends ConsumerState<GuidePublicProfileScr
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "About",
+          AppLocalizations.of(context)!.aboutSectionTitle,
           style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontSize: 16, fontWeight: FontWeight.w700, letterSpacing: -0.2),
         ),
         const SizedBox(height: 12),
         Text(
-          guide.bio ?? "No bio provided.",
+          guide.bio ?? AppLocalizations.of(context)!.noBioProvidedMessage,
           style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 15, height: 1.6),
         ),
         const SizedBox(height: 20),
@@ -277,7 +279,7 @@ class _GuidePublicProfileScreenState extends ConsumerState<GuidePublicProfileScr
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "Vehicle",
+          AppLocalizations.of(context)!.vehicleSectionTitle,
           style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontSize: 16, fontWeight: FontWeight.w700, letterSpacing: -0.2),
         ),
         const SizedBox(height: 12),
@@ -310,12 +312,12 @@ class _GuidePublicProfileScreenState extends ConsumerState<GuidePublicProfileScr
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      guide.vehicleType?.isNotEmpty == true ? guide.vehicleType! : "Vehicle details not provided",
+                      guide.vehicleType?.isNotEmpty == true ? guide.vehicleType! : AppLocalizations.of(context)!.vehicleDetailsNotProvidedMessage,
                       style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontSize: 14, fontWeight: FontWeight.w700),
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      "Provided by the guide for tours",
+                      AppLocalizations.of(context)!.vehicleProvidedByGuideMessage,
                       style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 12),
                     ),
                   ],
@@ -338,12 +340,12 @@ class _GuidePublicProfileScreenState extends ConsumerState<GuidePublicProfileScr
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "Packages",
+              AppLocalizations.of(context)!.packagesSectionTitle,
               style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontSize: 16, fontWeight: FontWeight.w700, letterSpacing: -0.2),
             ),
             const SizedBox(height: 4),
             Text(
-              "Tap a package to book it directly",
+              AppLocalizations.of(context)!.tapPackageToBookMessage,
               style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 11),
             ),
             const SizedBox(height: 16),
@@ -382,7 +384,7 @@ class _GuidePublicProfileScreenState extends ConsumerState<GuidePublicProfileScr
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  data['title'] ?? 'Standard package',
+                  data['title'] ?? AppLocalizations.of(context)!.standardPackageLabel,
                   style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontSize: 15, fontWeight: FontWeight.w700, letterSpacing: -0.2),
                 ),
                 const SizedBox(height: 6),
@@ -396,11 +398,11 @@ class _GuidePublicProfileScreenState extends ConsumerState<GuidePublicProfileScr
                   children: [
                     Icon(Icons.schedule_rounded, color: AppTheme.textSecondary(context), size: 14),
                     const SizedBox(width: 6),
-                    Text("${data['durationHours']}h", style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 12)),
+                    Text(AppLocalizations.of(context)!.durationHoursShortLabel(data['durationHours'].toString()), style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 12)),
                     const SizedBox(width: 16),
                     Icon(Icons.group_rounded, color: AppTheme.textSecondary(context), size: 14),
                     const SizedBox(width: 6),
-                    Text("${data['maxGuests']} guests", style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 12)),
+                    Text(AppLocalizations.of(context)!.guestsCountShortLabel(data['maxGuests'].toString()), style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 12)),
                   ],
                 ),
               ],
@@ -414,7 +416,7 @@ class _GuidePublicProfileScreenState extends ConsumerState<GuidePublicProfileScr
                 "\$${data['price']}",
                 style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.w800, fontSize: 18),
               ),
-              Text("Total", style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 10, fontWeight: FontWeight.w600)),
+              Text(AppLocalizations.of(context)!.totalLabel, style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 10, fontWeight: FontWeight.w600)),
             ],
           ),
         ],
@@ -471,7 +473,7 @@ class _GuidePublicProfileScreenState extends ConsumerState<GuidePublicProfileScr
                     elevation: 0,
                   ),
                   child: Text(
-                    "Request this guide",
+                    AppLocalizations.of(context)!.requestThisGuideButton,
                     style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 14, color: AppTheme.colors.white),
                   ),
                 ),

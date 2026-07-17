@@ -8,6 +8,7 @@ import '../../core/services/secure_entitlements.dart';
 import '../../data/models/business_partner.dart';
 import '../widgets/cached_image.dart';
 import 'premium_hub_screen.dart';
+import '../../l10n/app_localizations.dart';
 
 /// Premium-only benefit: member discounts at handpicked boutique
 /// stays/cafes. Backed by the Firestore `partners` collection (managed via
@@ -65,7 +66,7 @@ class _CuratorDealsScreenState extends State<CuratorDealsScreen> {
           icon: Icon(Icons.arrow_back_ios_new, size: 20, color: AppTheme.textPrimary(context)),
           onPressed: () => Navigator.pop(context),
         ),
-        title: Text('Curator deals', style: GoogleFonts.outfit(fontWeight: FontWeight.w800, fontSize: 18, color: AppTheme.textPrimary(context))),
+        title: Text(AppLocalizations.of(context)!.curatorDealsTitle, style: GoogleFonts.outfit(fontWeight: FontWeight.w800, fontSize: 18, color: AppTheme.textPrimary(context))),
       ),
       body: _isLoading
           ? Center(child: CircularProgressIndicator(color: Theme.of(context).colorScheme.primary))
@@ -93,10 +94,10 @@ class _CuratorDealsScreenState extends State<CuratorDealsScreen> {
           children: [
             Icon(Icons.local_offer_outlined, size: 56, color: AppTheme.textSecondary(context).withValues(alpha: 0.3)),
             const SizedBox(height: 16),
-            Text('No deals right now', style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.w700, color: AppTheme.textPrimary(context))),
+            Text(AppLocalizations.of(context)!.noDealsRightNowTitle, style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.w700, color: AppTheme.textPrimary(context))),
             const SizedBox(height: 8),
             Text(
-              'New partner discounts are added regularly — check back soon.',
+              AppLocalizations.of(context)!.newPartnerDiscountsMessage,
               textAlign: TextAlign.center,
               style: GoogleFonts.inter(fontSize: 13, color: AppTheme.textSecondary(context)),
             ),
@@ -129,7 +130,7 @@ class _CuratorDealsScreenState extends State<CuratorDealsScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                   decoration: BoxDecoration(color: AppPalette.rust, borderRadius: BorderRadius.circular(100)),
                   child: Text(
-                    '${partner.discountPercent}% OFF',
+                    AppLocalizations.of(context)!.percentOffLabel(partner.discountPercent),
                     style: GoogleFonts.outfit(color: AppTheme.colors.white, fontSize: 12, fontWeight: FontWeight.w800),
                   ),
                 ),
@@ -159,7 +160,7 @@ class _CuratorDealsScreenState extends State<CuratorDealsScreen> {
                 if (partner.dealValidUntil != null) ...[
                   const SizedBox(height: 8),
                   Text(
-                    'Valid until ${partner.dealValidUntil!.day}/${partner.dealValidUntil!.month}/${partner.dealValidUntil!.year}',
+                    AppLocalizations.of(context)!.validUntilLabel('${partner.dealValidUntil!.day}/${partner.dealValidUntil!.month}/${partner.dealValidUntil!.year}'),
                     style: GoogleFonts.inter(fontSize: 11, color: AppTheme.textSecondary(context).withValues(alpha: 0.7), fontWeight: FontWeight.w600),
                   ),
                 ],
@@ -174,7 +175,7 @@ class _CuratorDealsScreenState extends State<CuratorDealsScreen> {
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
                       elevation: 0,
                     ),
-                    child: Text('Claim deal', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 13)),
+                    child: Text(AppLocalizations.of(context)!.claimDealButton, style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 13)),
                   ),
                 ),
               ],

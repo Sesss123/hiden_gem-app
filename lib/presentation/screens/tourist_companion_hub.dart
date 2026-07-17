@@ -26,6 +26,7 @@ import '../../core/services/secure_entitlements.dart';
 import '../../core/services/emergency_translator_service.dart';
 import 'emergency_translator_screen.dart';
 import 'premium_hub_screen.dart';
+import '../../l10n/app_localizations.dart';
 
 class TouristCompanionHub extends StatefulWidget {
   final String sessionId;
@@ -54,6 +55,7 @@ class _TouristCompanionHubState extends State<TouristCompanionHub> {
   void _initMonsoonListener() {
     _broadcastSub = MonsoonBroadcastService().broadcastStream.listen((alert) {
       if (!mounted) return;
+      final l10n = AppLocalizations.of(context)!;
       showDialog(
         context: context,
         barrierDismissible: false,
@@ -64,22 +66,22 @@ class _TouristCompanionHubState extends State<TouristCompanionHub> {
             children: [
               Icon(Icons.warning_amber_rounded, color: AppTheme.colors.redAccent, size: 28),
               const SizedBox(width: 10),
-              Expanded(child: Text("MONSOON HAZARD ALERT", style: GoogleFonts.outfit(color: AppTheme.colors.white, fontWeight: FontWeight.bold, fontSize: 18))),
+              Expanded(child: Text(l10n.monsoonHazardAlertTitle, style: GoogleFonts.outfit(color: AppTheme.colors.white, fontWeight: FontWeight.bold, fontSize: 18))),
             ],
           ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("District: ${alert['district'] ?? 'General'}", style: GoogleFonts.inter(color: AppTheme.colors.redAccent, fontWeight: FontWeight.w600)),
+              Text(l10n.districtLabel(alert['district'] ?? l10n.districtGeneralFallback), style: GoogleFonts.inter(color: AppTheme.colors.redAccent, fontWeight: FontWeight.w600)),
               const SizedBox(height: 10),
-              Text(alert['message']?.toString() ?? "Severe monsoon weather detected.", style: GoogleFonts.inter(color: AppTheme.colors.white70, fontSize: 14)),
+              Text(alert['message']?.toString() ?? l10n.severeMonsoonWeatherDetectedMessage, style: GoogleFonts.inter(color: AppTheme.colors.white70, fontSize: 14)),
             ],
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(ctx).pop(),
-              child: Text("ACKNOWLEDGE", style: GoogleFonts.outfit(color: AppTheme.colors.amberAccent, fontWeight: FontWeight.bold)),
+              child: Text(l10n.acknowledgeButton, style: GoogleFonts.outfit(color: AppTheme.colors.amberAccent, fontWeight: FontWeight.bold)),
             ),
           ],
         ),
@@ -128,7 +130,7 @@ class _TouristCompanionHubState extends State<TouristCompanionHub> {
                 }
                 if (snapshot.hasError) {
                   return Center(
-                    child: Text("Offline Error: ${snapshot.error}", style: TextStyle(color: AppTheme.colors.redAccent)),
+                    child: Text(AppLocalizations.of(context)!.offlineErrorGenericMessage(snapshot.error.toString()), style: TextStyle(color: AppTheme.colors.redAccent)),
                   );
                 }
 
@@ -158,6 +160,7 @@ class _TouristCompanionHubState extends State<TouristCompanionHub> {
       _reviewPromptShown = true;
       Future.delayed(const Duration(seconds: 30), () {
         if (!mounted) return;
+        final l10n = AppLocalizations.of(context)!;
         showDialog(
           context: context,
           barrierDismissible: true,
@@ -168,18 +171,18 @@ class _TouristCompanionHubState extends State<TouristCompanionHub> {
               children: [
                 Icon(Icons.star_rounded, color: AppTheme.colors.amber, size: 28),
                 const SizedBox(width: 8),
-                Text("Tour Completed!", style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: AppTheme.textPrimary(context))),
+                Text(l10n.tourCompletedTitle, style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: AppTheme.textPrimary(context))),
               ],
             ),
-            content: Text("We hope you had an amazing experience! Would you like to rate your guide now? Your feedback helps guides maintain high standards.",
+            content: Text(l10n.tourCompletedRateMessage,
               style: GoogleFonts.inter(color: AppTheme.textSecondary(context))),
             actions: [
               TextButton(
                 onPressed: () {
                   Navigator.pop(ctx);
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("⏰ Reminder set! We'll send a notification tomorrow.")));
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.reminderSetMessage)));
                 },
-                child: Text("Remind later", style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontWeight: FontWeight.w600)),
+                child: Text(l10n.remindLaterButton, style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontWeight: FontWeight.w600)),
               ),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(backgroundColor: AppTheme.colors.amber, foregroundColor: AppTheme.colors.black, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100))),
@@ -196,7 +199,7 @@ class _TouristCompanionHubState extends State<TouristCompanionHub> {
                     ),
                   );
                 },
-                child: Text("Rate now ⭐", style: GoogleFonts.inter(fontWeight: FontWeight.w700)),
+                child: Text(l10n.rateNowButton, style: GoogleFonts.inter(fontWeight: FontWeight.w700)),
               ),
             ],
           ),
@@ -242,7 +245,7 @@ class _TouristCompanionHubState extends State<TouristCompanionHub> {
         children: [
           Icon(Icons.error_outline, color: AppTheme.textSecondary(context).withValues(alpha: 0.4), size: 64),
           const SizedBox(height: 16),
-          Text("Session not found", style: GoogleFonts.outfit(color: AppTheme.textSecondary(context), fontWeight: FontWeight.w600)),
+          Text(AppLocalizations.of(context)!.sessionNotFoundMessage, style: GoogleFonts.outfit(color: AppTheme.textSecondary(context), fontWeight: FontWeight.w600)),
         ],
       ),
     );
@@ -260,7 +263,7 @@ class _TouristCompanionHubState extends State<TouristCompanionHub> {
       flexibleSpace: FlexibleSpaceBar(
         centerTitle: true,
         title: Text(
-          "Your tour",
+          AppLocalizations.of(context)!.yourTourTitle,
           style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.w800, letterSpacing: -0.5, color: AppTheme.textPrimary(context)),
         ),
       ),
@@ -268,6 +271,7 @@ class _TouristCompanionHubState extends State<TouristCompanionHub> {
   }
 
   Widget _buildStatusCard(TourSession session) {
+    final l10n = AppLocalizations.of(context)!;
     final isActive = session.status == 'active';
     final successColor = Theme.of(context).brightness == Brightness.dark ? const Color(0xFF5EC98A) : const Color(0xFF256029);
     final successFill = Theme.of(context).brightness == Brightness.dark ? const Color(0xFF1A3328) : const Color(0xFFE8F3E9);
@@ -292,11 +296,11 @@ class _TouristCompanionHubState extends State<TouristCompanionHub> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  isActive ? "Tour active" : "Preparing tour",
+                  isActive ? l10n.tourActiveTitle : l10n.preparingTourTitle,
                   style: GoogleFonts.outfit(color: isActive ? successColor : AppTheme.textPrimary(context), fontWeight: FontWeight.w700, fontSize: 15),
                 ),
                 Text(
-                  isActive ? "Everything's on track" : "Status: ${session.status}",
+                  isActive ? l10n.everythingOnTrackMessage : l10n.statusColonValueLabel(session.status),
                   style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 12, fontWeight: FontWeight.w500),
                 ),
               ],
@@ -308,12 +312,13 @@ class _TouristCompanionHubState extends State<TouristCompanionHub> {
   }
 
   Widget _buildPhaseIndicator(TourSession session) {
+    final l10n = AppLocalizations.of(context)!;
     final phaseMap = {
-      'assembling': {'label': 'Assembling group', 'icon': Icons.group_add_outlined, 'color': AppTheme.colors.blueAccent},
-      'en_route': {'label': 'En route', 'icon': Icons.directions_bus_filled_outlined, 'color': AppTheme.colors.orangeAccent},
-      'at_site': {'label': 'At destination', 'icon': Icons.museum_outlined, 'color': AppTheme.colors.greenAccent},
-      'break_time': {'label': 'Free time / break', 'icon': Icons.coffee_outlined, 'color': AppTheme.colors.purpleAccent},
-      'returning': {'label': 'Returning to base', 'icon': Icons.keyboard_return_rounded, 'color': AppTheme.colors.cyanAccent},
+      'assembling': {'label': l10n.phaseAssemblingGroup, 'icon': Icons.group_add_outlined, 'color': AppTheme.colors.blueAccent},
+      'en_route': {'label': l10n.phaseEnRoute, 'icon': Icons.directions_bus_filled_outlined, 'color': AppTheme.colors.orangeAccent},
+      'at_site': {'label': l10n.phaseAtDestination, 'icon': Icons.museum_outlined, 'color': AppTheme.colors.greenAccent},
+      'break_time': {'label': l10n.phaseFreeTimeBreak, 'icon': Icons.coffee_outlined, 'color': AppTheme.colors.purpleAccent},
+      'returning': {'label': l10n.phaseReturningToBase, 'icon': Icons.keyboard_return_rounded, 'color': AppTheme.colors.cyanAccent},
     };
 
     final current = phaseMap[session.currentPhase] ?? phaseMap['assembling']!;
@@ -349,11 +354,12 @@ class _TouristCompanionHubState extends State<TouristCompanionHub> {
   }
 
   Widget _buildNavigationTools(TourSession session) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "Live navigation",
+          l10n.liveNavigationTitle,
           style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.w700, color: AppTheme.textPrimary(context)),
         ),
         const SizedBox(height: 12),
@@ -362,8 +368,8 @@ class _TouristCompanionHubState extends State<TouristCompanionHub> {
             Expanded(
               child: _buildNavCard(
                 icon: Icons.person_pin_circle_outlined,
-                title: "Find guide",
-                subtitle: "Live tracking",
+                title: l10n.findGuideLabel,
+                subtitle: l10n.liveTrackingLabel,
                 color: AppTheme.colors.blueAccent,
                 onTap: () => _openMap(session, 'guide'),
               ),
@@ -372,8 +378,8 @@ class _TouristCompanionHubState extends State<TouristCompanionHub> {
             Expanded(
               child: _buildNavCard(
                 icon: Icons.location_searching_rounded,
-                title: "Find vehicle",
-                subtitle: "Parked spot",
+                title: l10n.findVehicleLabel,
+                subtitle: l10n.parkedSpotLabel,
                 color: AppTheme.colors.orangeAccent,
                 onTap: () => _openMap(session, 'vehicle'),
               ),
@@ -419,7 +425,7 @@ class _TouristCompanionHubState extends State<TouristCompanionHub> {
             children: [
               Icon(Icons.flag_rounded, color: AppTheme.colors.greenAccent, size: 18),
               const SizedBox(width: 8),
-              Text("Meeting point", style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w700, color: AppTheme.textSecondary(context))),
+              Text(AppLocalizations.of(context)!.meetingPointLabel, style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w700, color: AppTheme.textSecondary(context))),
             ],
           ),
           const SizedBox(height: 12),
@@ -429,7 +435,7 @@ class _TouristCompanionHubState extends State<TouristCompanionHub> {
           ),
           const SizedBox(height: 4),
           Text(
-            "Return here if lost or separated from group.",
+            AppLocalizations.of(context)!.returnHereIfLostMessage,
             style: GoogleFonts.inter(fontSize: 12, color: AppTheme.textSecondary(context)),
           ),
           const SizedBox(height: 16),
@@ -437,7 +443,7 @@ class _TouristCompanionHubState extends State<TouristCompanionHub> {
             width: double.infinity,
             child: TextButton.icon(
               icon: const Icon(Icons.near_me_outlined, size: 16),
-              label: const Text("Navigate to point"),
+              label: Text(AppLocalizations.of(context)!.navigateToPointButton),
               onPressed: () => _openMap(session, 'meeting'),
               style: TextButton.styleFrom(
                 foregroundColor: AppTheme.colors.greenAccent,
@@ -457,7 +463,8 @@ class _TouristCompanionHubState extends State<TouristCompanionHub> {
       stream: _broadcastRepo.getActiveBroadcasts(widget.sessionId),
       builder: (context, snapshot) {
         if (!snapshot.hasData || snapshot.data!.isEmpty) return const SizedBox.shrink();
-        
+
+        final l10n = AppLocalizations.of(context)!;
         final latest = snapshot.data!.first;
         // Only show if it was sent in the last 2 minutes
         if (DateTime.now().difference(latest.createdAt).inMinutes > 2) return const SizedBox.shrink();
@@ -479,12 +486,12 @@ class _TouristCompanionHubState extends State<TouristCompanionHub> {
                     Icon(Icons.campaign_rounded, color: AppTheme.colors.redAccent, size: 20),
                     const SizedBox(width: 8),
                     Text(
-                      "Guide announcement",
+                      l10n.guideAnnouncementLabel,
                       style: GoogleFonts.outfit(fontSize: 11, fontWeight: FontWeight.w700, color: AppTheme.colors.redAccent),
                     ),
                     const Spacer(),
                     Text(
-                      "Just now",
+                      l10n.justNowLabel,
                       style: GoogleFonts.inter(fontSize: 9, color: AppTheme.textSecondary(context)),
                     ),
                   ],
@@ -517,7 +524,7 @@ class _TouristCompanionHubState extends State<TouristCompanionHub> {
                               }
                             },
                       child: Text(
-                        alreadyAcked ? "Acknowledged" : "I acknowledge",
+                        alreadyAcked ? l10n.acknowledgedLabel : l10n.iAcknowledgeButton,
                         style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w700, color: AppTheme.colors.black),
                       ),
                     ),
@@ -532,11 +539,12 @@ class _TouristCompanionHubState extends State<TouristCompanionHub> {
 
 
   Widget _buildPhaseDSafetyInfo(TourSession session) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "More",
+          l10n.moreLabel,
           style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.w700, color: AppTheme.textPrimary(context)),
         ),
         const SizedBox(height: 12),
@@ -545,8 +553,8 @@ class _TouristCompanionHubState extends State<TouristCompanionHub> {
             Expanded(
               child: _buildActionCard(
                 icon: Icons.family_restroom_rounded,
-                title: "Share live",
-                subtitle: "Family access",
+                title: l10n.shareLiveLabel,
+                subtitle: l10n.familyAccessLabel,
                 onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => FamilyShareScreen(sessionId: widget.sessionId))),
               ),
             ),
@@ -554,8 +562,8 @@ class _TouristCompanionHubState extends State<TouristCompanionHub> {
             Expanded(
               child: _buildActionCard(
                 icon: Icons.star_rate_rounded,
-                title: "Rate tour",
-                subtitle: "Build reputation",
+                title: l10n.rateTourLabel,
+                subtitle: l10n.buildReputationLabel,
                 onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => GuideReviewsScreen(guideId: session.guideId))),
               ),
             ),
@@ -589,6 +597,7 @@ class _TouristCompanionHubState extends State<TouristCompanionHub> {
   }
 
   Widget _buildEmergencySection(TourSession session) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       children: [
         SizedBox(
@@ -596,7 +605,7 @@ class _TouristCompanionHubState extends State<TouristCompanionHub> {
           height: 56,
           child: OutlinedButton.icon(
             icon: Icon(Icons.person_search_rounded, color: AppTheme.colors.orangeAccent),
-            label: Text("Help, I'm lost", style: GoogleFonts.inter(color: AppTheme.colors.orangeAccent, fontWeight: FontWeight.w700)),
+            label: Text(l10n.helpImLostButton, style: GoogleFonts.inter(color: AppTheme.colors.orangeAccent, fontWeight: FontWeight.w700)),
             style: OutlinedButton.styleFrom(
               side: BorderSide(color: AppTheme.colors.orangeAccent, width: 1.5),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
@@ -623,7 +632,7 @@ class _TouristCompanionHubState extends State<TouristCompanionHub> {
                 Icon(Icons.warning_amber_rounded, color: AppTheme.colors.white, size: 22),
                 const SizedBox(width: 10),
                 Text(
-                  "Emergency SOS",
+                  l10n.emergencySosButton,
                   style: GoogleFonts.inter(
                     color: AppTheme.colors.white,
                     fontSize: 15,
@@ -636,7 +645,7 @@ class _TouristCompanionHubState extends State<TouristCompanionHub> {
         ).animate().shimmer(duration: 2.seconds, color: AppTheme.colors.white.withValues(alpha: 0.2)),
         const SizedBox(height: 16),
         Text(
-          "Instant alert to admin, police, and hub.",
+          l10n.instantAlertAdminPoliceMessage,
           style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 11),
         ),
       ],
@@ -645,6 +654,7 @@ class _TouristCompanionHubState extends State<TouristCompanionHub> {
 
   Future<void> _triggerImLost(TourSession session) async {
     HapticFeedback.heavyImpact();
+    final l10n = AppLocalizations.of(context)!;
     try {
       final pos = await Geolocator.getCurrentPosition(locationSettings: const LocationSettings(accuracy: LocationAccuracy.high));
 
@@ -668,18 +678,18 @@ class _TouristCompanionHubState extends State<TouristCompanionHub> {
         sessionId: session.sessionId,
         guideId: session.guideId,
         type: BroadcastType.safety,
-        title: "TRAVELER LOST",
-        body: "A traveler has signaled they are lost! Location shared on map.",
+        title: l10n.travelerLostBroadcastTitle,
+        body: l10n.travelerLostBroadcastBody,
         priority: BroadcastPriority.critical,
         createdAt: DateTime.now(),
         expiresAt: DateTime.now().add(const Duration(minutes: 30)),
       );
 
       await _broadcastRepo.sendBroadcast(msg);
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("SIGNAL SENT! STAY WHERE YOU ARE."), backgroundColor: AppTheme.colors.orangeAccent),
+          SnackBar(content: Text(l10n.signalSentStayMessage), backgroundColor: AppTheme.colors.orangeAccent),
         );
       }
     } catch (e, st) {
@@ -689,23 +699,24 @@ class _TouristCompanionHubState extends State<TouristCompanionHub> {
 
   Future<void> _triggerSos(TourSession session) async {
     final now = DateTime.now();
+    final l10n = AppLocalizations.of(context)!;
     if (_lastSosTime != null && now.difference(_lastSosTime!) < const Duration(seconds: 30)) {
       final remaining = 30 - now.difference(_lastSosTime!).inSeconds;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("SOS cooled down. Wait $remaining seconds.")),
+        SnackBar(content: Text(l10n.sosCooledDownMessage(remaining))),
       );
       return;
     }
 
     HapticFeedback.vibrate();
     _lastSosTime = now;
-    
+
     await _sessionRepo.triggerSos(session.sessionId, true);
-    
+
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text("SOS ALERT BROADCASTED TO ALL AUTHORITIES!"),
+          content: Text(l10n.sosBroadcastedAuthoritiesMessage),
           backgroundColor: AppTheme.colors.redAccent,
         ),
       );
@@ -734,15 +745,15 @@ class _TouristCompanionHubState extends State<TouristCompanionHub> {
       builder: (ctx) => AlertDialog(
         backgroundColor: Theme.of(context).cardColor,
         icon: Icon(Icons.translate_rounded, color: AppTheme.colors.redAccent, size: 32),
-        title: Text("Emergency Translator", style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: AppTheme.textPrimary(context))),
+        title: Text(AppLocalizations.of(context)!.emergencyTranslatorTitle, style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: AppTheme.textPrimary(context))),
         content: Text(
-          "Instantly explain your situation to Sri Lankan police or hospital staff in spoken Sinhala — a Premium safety feature.",
+          AppLocalizations.of(context)!.emergencyTranslatorPremiumMessage,
           style: GoogleFonts.inter(fontSize: 13, color: AppTheme.textSecondary(context), height: 1.5),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: Text("Not now", style: TextStyle(color: AppTheme.textSecondary(context))),
+            child: Text(AppLocalizations.of(context)!.notNowButton, style: TextStyle(color: AppTheme.textSecondary(context))),
           ),
           ElevatedButton(
             onPressed: () {
@@ -750,7 +761,7 @@ class _TouristCompanionHubState extends State<TouristCompanionHub> {
               Navigator.push(context, MaterialPageRoute(builder: (_) => const PremiumHubScreen()));
             },
             style: ElevatedButton.styleFrom(backgroundColor: AppTheme.colors.redAccent, foregroundColor: AppTheme.colors.white),
-            child: const Text("View Plans"),
+            child: Text(AppLocalizations.of(context)!.viewPlansButton),
           ),
         ],
       ),

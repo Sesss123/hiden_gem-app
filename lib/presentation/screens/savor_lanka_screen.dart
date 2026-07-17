@@ -14,6 +14,7 @@ import '../../core/services/voice_recipe_service.dart';
 import '../../data/repositories/food_repository.dart';
 import '../../core/theme/app_theme.dart';
 import 'real_time_food_scanner_screen.dart';
+import '../../l10n/app_localizations.dart';
 
 class SavorLankaScreen extends ConsumerStatefulWidget {
   const SavorLankaScreen({super.key});
@@ -149,7 +150,7 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
       if (!mounted) return;
       setState(() => _isAnalyzing = false);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Oracle lost focus: $e"), backgroundColor: AppTheme.colors.redAccent),
+        SnackBar(content: Text(AppLocalizations.of(context)!.oracleLostFocusMessage(e.toString())), backgroundColor: AppTheme.colors.redAccent),
       );
     }
   }
@@ -219,7 +220,7 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
           Column(
             children: [
               OracleUI.neonText(
-                "SAVORLANKA AI",
+                AppLocalizations.of(context)!.savorLankaAiTitle,
                 style: GoogleFonts.outfit(
                   color: AppTheme.colors.white, fontWeight: FontWeight.w900,
                   letterSpacing: 4, fontSize: 13,
@@ -227,7 +228,7 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
               ),
               SizedBox(height: 6),
               Text(
-                "CULINARY VISION ENGINE V2",
+                AppLocalizations.of(context)!.culinaryVisionEngineLabel,
                 style: GoogleFonts.inter(
                   color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.w900,
                   fontSize: 9, letterSpacing: 3,
@@ -268,7 +269,7 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
             Icon(Icons.bolt_rounded, color: AppTheme.colors.cyanAccent, size: 20),
             const SizedBox(width: 8),
             Text(
-              "LIVE REAL-TIME SCANNER",
+              AppLocalizations.of(context)!.liveRealTimeScannerLabel,
               style: GoogleFonts.outfit(
                 color: AppTheme.colors.cyanAccent,
                 fontWeight: FontWeight.w900,
@@ -435,7 +436,7 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
         if (influences.isNotEmpty) ...[
           SizedBox(height: 4),
           Text(
-            "INFLUENCES: ${influences.join(', ')}",
+            AppLocalizations.of(context)!.influencesLabel(influences.join(', ')),
             style: GoogleFonts.inter(color: AppTheme.colors.white38, fontSize: 8, fontWeight: FontWeight.w700),
           ),
         ],
@@ -480,7 +481,7 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("NUTRITION RELIABILITY: $reliability", style: GoogleFonts.outfit(color: color, fontSize: 9, fontWeight: FontWeight.w900)),
+                Text(AppLocalizations.of(context)!.nutritionReliabilityLabel(reliability), style: GoogleFonts.outfit(color: color, fontSize: 9, fontWeight: FontWeight.w900)),
                 if (reason.isNotEmpty) Text(reason, style: GoogleFonts.inter(color: AppTheme.colors.white38, fontSize: 8)),
               ],
             ),
@@ -505,12 +506,12 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
             children: [
               Icon(Icons.psychology_rounded, color: Theme.of(context).colorScheme.primary, size: 18),
               SizedBox(width: 10),
-              OracleUI.neonText("NEURAL REASONING", style: GoogleFonts.outfit(color: Theme.of(context).colorScheme.primary, fontSize: 11, fontWeight: FontWeight.w900, letterSpacing: 2)),
+              OracleUI.neonText(AppLocalizations.of(context)!.neuralReasoningLabel, style: GoogleFonts.outfit(color: Theme.of(context).colorScheme.primary, fontSize: 11, fontWeight: FontWeight.w900, letterSpacing: 2)),
             ],
           ),
           SizedBox(height: 12),
           Text(
-            basis.isEmpty ? "AI identified visual culinary markers consistent with $label." : basis,
+            basis.isEmpty ? AppLocalizations.of(context)!.aiVisualMarkersFallback(label) : basis,
             style: GoogleFonts.inter(color: AppTheme.colors.white70, fontSize: 13, height: 1.5),
           ),
         ],
@@ -522,7 +523,7 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildSectionTitle("AUTHENTICITY INTELLIGENCE"),
+        _buildSectionTitle(AppLocalizations.of(context)!.authenticityIntelligenceTitle),
         SizedBox(height: 16),
         Row(
           children: [
@@ -560,7 +561,7 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            _buildSectionTitle("INGREDIENT CERTAINTY"),
+            _buildSectionTitle(AppLocalizations.of(context)!.ingredientCertaintyTitle),
             IconButton(
               onPressed: () => _showEditIngredientsDialog(res.confirmedIngredients, onEdit),
               icon: Icon(Icons.edit_note_rounded, color: Theme.of(context).colorScheme.primary, size: 22),
@@ -569,12 +570,12 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
           ],
         ),
         SizedBox(height: 16),
-        _ingredientTier("CONFIRMED", res.confirmedIngredients, AppTheme.colors.greenAccent),
+        _ingredientTier(AppLocalizations.of(context)!.ingredientTierConfirmed, res.confirmedIngredients, AppTheme.colors.greenAccent),
         SizedBox(height: 12),
-        _ingredientTier("LIKELY", res.likelyIngredients, AppTheme.colors.orangeAccent),
+        _ingredientTier(AppLocalizations.of(context)!.ingredientTierLikely, res.likelyIngredients, AppTheme.colors.orangeAccent),
         if (res.optionalIngredients.isNotEmpty) ...[
           SizedBox(height: 12),
-          _ingredientTier("OPTIONAL / SIDES", res.optionalIngredients, AppTheme.colors.blueAccent),
+          _ingredientTier(AppLocalizations.of(context)!.ingredientTierOptional, res.optionalIngredients, AppTheme.colors.blueAccent),
         ],
       ],
     );
@@ -588,7 +589,7 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
         backgroundColor: AppTheme.colors.black,
         surfaceTintColor: AppTheme.colors.transparent,
         title: Text(
-          "MANUAL CULINARY OVERRIDE", 
+          AppLocalizations.of(context)!.manualCulinaryOverrideTitle,
           style: GoogleFonts.outfit(color: AppTheme.colors.white, fontWeight: FontWeight.w900, fontSize: 16, letterSpacing: 1)
         ),
         content: TextField(
@@ -596,7 +597,7 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
           maxLines: 5,
           style: GoogleFonts.inter(color: AppTheme.colors.white70),
           decoration: InputDecoration(
-            hintText: "Refine ingredients (comma separated)...",
+            hintText: AppLocalizations.of(context)!.refineIngredientsHint,
             hintStyle: TextStyle(color: AppTheme.colors.white24),
             enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: AppTheme.colors.white12), borderRadius: BorderRadius.circular(15)),
             focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Theme.of(context).colorScheme.primary), borderRadius: BorderRadius.circular(15)),
@@ -606,8 +607,8 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context), 
-            child: Text("CANCEL", style: GoogleFonts.inter(color: AppTheme.colors.white38, fontWeight: FontWeight.bold))
+            onPressed: () => Navigator.pop(context),
+            child: Text(AppLocalizations.of(context)!.cancelButtonUppercaseAlt, style: GoogleFonts.inter(color: AppTheme.colors.white38, fontWeight: FontWeight.bold))
           ),
           ElevatedButton(
             onPressed: () {
@@ -624,7 +625,7 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
               foregroundColor: AppTheme.colors.black,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
             ),
-            child: Text("APPLY OVERRIDE", style: GoogleFonts.outfit(fontWeight: FontWeight.w900)),
+            child: Text(AppLocalizations.of(context)!.applyOverrideButton, style: GoogleFonts.outfit(fontWeight: FontWeight.w900)),
           ),
         ],
       ),
@@ -654,7 +655,7 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
     );
   }
 
-  Widget _buildMealContext(String context, List<String> supporting) {
+  Widget _buildMealContext(String mealContext, List<String> supporting) {
     return Container(
       padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -669,12 +670,12 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
             children: [
               Icon(Icons.layers_rounded, color: AppTheme.colors.blueAccent, size: 18),
               SizedBox(width: 10),
-              Text("MEAL CONTEXT: $context", style: GoogleFonts.outfit(color: AppTheme.colors.blueAccent, fontSize: 11, fontWeight: FontWeight.w900)),
+              Text(AppLocalizations.of(context)!.mealContextLabel(mealContext), style: GoogleFonts.outfit(color: AppTheme.colors.blueAccent, fontSize: 11, fontWeight: FontWeight.w900)),
             ],
           ),
           if (supporting.isNotEmpty) ...[
             SizedBox(height: 12),
-            Text("SUPPORTING ELEMENTS:", style: GoogleFonts.inter(color: AppTheme.colors.white38, fontSize: 9, fontWeight: FontWeight.w900)),
+            Text(AppLocalizations.of(context)!.supportingElementsLabel, style: GoogleFonts.inter(color: AppTheme.colors.white38, fontSize: 9, fontWeight: FontWeight.w900)),
             SizedBox(height: 8),
             Text(supporting.join(" • "), style: GoogleFonts.inter(color: AppTheme.colors.white70, fontSize: 12)),
           ],
@@ -702,7 +703,7 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
                 children: [
                   Icon(Icons.auto_awesome_rounded, color: color, size: 20),
                   SizedBox(width: 12),
-                  Text("VISUAL FRESHNESS & QUALITY", style: GoogleFonts.outfit(color: color, fontSize: 11, fontWeight: FontWeight.w900, letterSpacing: 1.2)),
+                  Text(AppLocalizations.of(context)!.visualFreshnessQualityLabel, style: GoogleFonts.outfit(color: color, fontSize: 11, fontWeight: FontWeight.w900, letterSpacing: 1.2)),
                 ],
               ),
               Container(
@@ -715,9 +716,9 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
           SizedBox(height: 20),
           Row(
             children: [
-              _buildQualityChip("QUALITY: ${res.visualQuality}", color),
+              _buildQualityChip(AppLocalizations.of(context)!.qualityColonLabel(res.visualQuality), color),
               SizedBox(width: 8),
-              _buildQualityChip("TEXTURE: ${res.visualTextureStatus}", color),
+              _buildQualityChip(AppLocalizations.of(context)!.textureColonLabel(res.visualTextureStatus), color),
             ],
           ),
           SizedBox(height: 16),
@@ -762,16 +763,16 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
           children: [
             Icon(Icons.history_edu_rounded, color: AppTheme.accentOchre(context), size: 20),
             SizedBox(width: 12),
-            OracleUI.neonText("HERITAGE NARRATIVE ENGINE", style: GoogleFonts.outfit(color: AppTheme.accentOchre(context), fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: 4)),
+            OracleUI.neonText(AppLocalizations.of(context)!.heritageNarrativeEngineTitle, style: GoogleFonts.outfit(color: AppTheme.accentOchre(context), fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: 4)),
           ],
         ),
         SizedBox(height: 20),
         if (res.verifiedHeritage.isNotEmpty)
-          _buildHeritageSection("VERIFIED LEGACY", res.verifiedHeritage, Icons.verified_user_rounded, AppTheme.colors.blueAccent),
+          _buildHeritageSection(AppLocalizations.of(context)!.verifiedLegacyTitle, res.verifiedHeritage, Icons.verified_user_rounded, AppTheme.colors.blueAccent),
         if (res.regionalTradition.isNotEmpty)
-          _buildHeritageSection("REGIONAL TRADITION", res.regionalTradition, Icons.place_rounded, AppTheme.colors.greenAccent),
+          _buildHeritageSection(AppLocalizations.of(context)!.regionalTraditionTitle, res.regionalTradition, Icons.place_rounded, AppTheme.colors.greenAccent),
         if (res.folkloreNarrative.isNotEmpty)
-          _buildHeritageSection("FOLKLORE NARRATIVE", res.folkloreNarrative, Icons.auto_stories_rounded, AppTheme.colors.purpleAccent),
+          _buildHeritageSection(AppLocalizations.of(context)!.folkloreNarrativeTitle, res.folkloreNarrative, Icons.auto_stories_rounded, AppTheme.colors.purpleAccent),
       ],
     );
   }
@@ -820,11 +821,11 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
             children: [
               Icon(Icons.extension_rounded, color: AppTheme.colors.cyanAccent, size: 20),
               SizedBox(width: 12),
-              OracleUI.neonText("CULINARY GAP & PAIRING ENGINE", style: GoogleFonts.outfit(color: AppTheme.colors.cyanAccent, fontSize: 11, fontWeight: FontWeight.w900, letterSpacing: 3)),
+              OracleUI.neonText(AppLocalizations.of(context)!.culinaryGapPairingEngineTitle, style: GoogleFonts.outfit(color: AppTheme.colors.cyanAccent, fontSize: 11, fontWeight: FontWeight.w900, letterSpacing: 3)),
             ],
           ),
           SizedBox(height: 20),
-          Text("MISSING COMPANIONS:", style: GoogleFonts.inter(color: AppTheme.colors.white38, fontSize: 9, fontWeight: FontWeight.w900)),
+          Text(AppLocalizations.of(context)!.missingCompanionsLabel, style: GoogleFonts.inter(color: AppTheme.colors.white38, fontSize: 9, fontWeight: FontWeight.w900)),
           SizedBox(height: 8),
           Wrap(
             spacing: 8, runSpacing: 8,
@@ -836,7 +837,7 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
           ),
           if (res.pairingNotes.isNotEmpty) ...[
             SizedBox(height: 20),
-            Text("ENGINE NOTES:", style: GoogleFonts.inter(color: AppTheme.colors.white38, fontSize: 9, fontWeight: FontWeight.w900)),
+            Text(AppLocalizations.of(context)!.engineNotesLabel, style: GoogleFonts.inter(color: AppTheme.colors.white38, fontSize: 9, fontWeight: FontWeight.w900)),
             SizedBox(height: 8),
             Text(res.pairingNotes, style: GoogleFonts.inter(color: AppTheme.colors.white.withValues(alpha: 0.9), fontSize: 13, height: 1.5)),
           ],
@@ -863,7 +864,7 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
             children: [
               Icon(Icons.settings_suggest_rounded, color: AppTheme.colors.orangeAccent, size: 22),
               SizedBox(width: 12),
-              OracleUI.neonText("RECIPE REFACTOR ENGINE", style: GoogleFonts.outfit(color: AppTheme.colors.orangeAccent, fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: 3)),
+              OracleUI.neonText(AppLocalizations.of(context)!.recipeRefactorEngineTitle, style: GoogleFonts.outfit(color: AppTheme.colors.orangeAccent, fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: 3)),
             ],
           ),
           SizedBox(height: 16),
@@ -885,7 +886,7 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
           ),
           if (res.personalizedSteps.isNotEmpty) ...[
             SizedBox(height: 20),
-            Text("REFACTORED STEPS FOR YOU:", style: GoogleFonts.inter(color: AppTheme.colors.white38, fontSize: 9, fontWeight: FontWeight.w900)),
+            Text(AppLocalizations.of(context)!.refactoredStepsForYouLabel, style: GoogleFonts.inter(color: AppTheme.colors.white38, fontSize: 9, fontWeight: FontWeight.w900)),
             SizedBox(height: 12),
             ...res.personalizedSteps.map((step) => Padding(
               padding: const EdgeInsets.only(bottom: 12),
@@ -905,13 +906,14 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
   }
 
   Widget _buildMetricsDashboard(FoodModel res) {
+    final l10n = AppLocalizations.of(context)!;
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        _metricTile(Icons.schedule_rounded, "${res.prepTimeMinutes}m", "PREP"),
-        _metricTile(Icons.restaurant_menu_rounded, "${res.cookTimeMinutes}m", "COOK"),
-        _metricTile(Icons.bolt_rounded, res.difficultyLevel, "LEVEL"),
-        _metricTile(Icons.local_fire_department_rounded, "${res.estimatedCalories}", "CAL"),
+        _metricTile(Icons.schedule_rounded, "${res.prepTimeMinutes}m", l10n.prepMetricLabel),
+        _metricTile(Icons.restaurant_menu_rounded, "${res.cookTimeMinutes}m", l10n.cookMetricLabel),
+        _metricTile(Icons.bolt_rounded, res.difficultyLevel, l10n.levelMetricLabel),
+        _metricTile(Icons.local_fire_department_rounded, "${res.estimatedCalories}", l10n.calMetricLabel),
       ],
     );
   }
@@ -930,14 +932,15 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
   }
 
   Widget _buildNutritionHub(FoodModel res) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       children: [
         Row(
           children: [
-            Expanded(child: _macroBadge("P", "${res.protein}g", "Protein")),
-            Expanded(child: _macroBadge("C", "${res.carbs}g", "Carbs")),
-            Expanded(child: _macroBadge("F", "${res.fat}g", "Fat")),
-            Expanded(child: _macroBadge("Fi", "${res.fiber}g", "Fiber")),
+            Expanded(child: _macroBadge("P", "${res.protein}g", l10n.proteinLabel)),
+            Expanded(child: _macroBadge("C", "${res.carbs}g", l10n.carbsLabel)),
+            Expanded(child: _macroBadge("F", "${res.fat}g", l10n.fatLabel)),
+            Expanded(child: _macroBadge("Fi", "${res.fiber}g", l10n.fiberLabel)),
           ],
         ),
         SizedBox(height: 20),
@@ -971,8 +974,8 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text("HEALTH RATING", style: GoogleFonts.outfit(color: AppTheme.colors.white38, fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 1)),
-            Text("$rating/10", style: GoogleFonts.outfit(color: Theme.of(context).colorScheme.primary, fontSize: 14, fontWeight: FontWeight.w900)),
+            Text(AppLocalizations.of(context)!.healthRatingLabel, style: GoogleFonts.outfit(color: AppTheme.colors.white38, fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 1)),
+            Text(AppLocalizations.of(context)!.healthRatingValueLabel(rating), style: GoogleFonts.outfit(color: Theme.of(context).colorScheme.primary, fontSize: 14, fontWeight: FontWeight.w900)),
           ],
         ),
         SizedBox(height: 8),
@@ -1079,7 +1082,7 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        OracleUI.neonText("ORACLE INSIGHTS", style: GoogleFonts.outfit(color: AppTheme.accentOchre(context), fontSize: 11, fontWeight: FontWeight.w900, letterSpacing: 2)),
+        OracleUI.neonText(AppLocalizations.of(context)!.oracleInsightsTitle, style: GoogleFonts.outfit(color: AppTheme.accentOchre(context), fontSize: 11, fontWeight: FontWeight.w900, letterSpacing: 2)),
         SizedBox(height: 16),
         ...tips.map((tip) => Container(
           margin: EdgeInsets.only(bottom: 12),
@@ -1105,7 +1108,7 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildSectionTitle("GLOBAL SUBSTITUTIONS"),
+        _buildSectionTitle(AppLocalizations.of(context)!.globalSubstitutionsTitle),
         SizedBox(height: 16),
         SizedBox(
           height: 60,
@@ -1157,6 +1160,7 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
       builder: (context, _) {
         final isPlaying = _voiceRecipeService.isPlaying;
         final isSi = _voiceRecipeService.isSinhala;
+        final l10n = AppLocalizations.of(context)!;
 
         return Container(
           margin: EdgeInsets.symmetric(horizontal: 24),
@@ -1179,7 +1183,7 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
               _neuralActionBtn(
                 onTap: _voiceRecipeService.toggleLanguage,
                 icon: Icons.translate_rounded,
-                label: isSi ? "SINHALA" : "ENGLISH",
+                label: isSi ? l10n.sinhalaLabel : l10n.englishLabel,
                 isActive: isSi,
               ),
               const Spacer(),
@@ -1187,7 +1191,7 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
               _neuralActionBtn(
                 onTap: _voiceRecipeService.previousStep,
                 icon: Icons.fast_rewind_rounded,
-                label: "BACK",
+                label: l10n.backLabel,
               ),
               const SizedBox(width: 8),
               GestureDetector(
@@ -1215,14 +1219,14 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
               _neuralActionBtn(
                 onTap: _voiceRecipeService.nextStep,
                 icon: Icons.fast_forward_rounded,
-                label: "NEXT",
+                label: l10n.nextLabel,
               ),
               const Spacer(),
               // Scan New
               _neuralActionBtn(
                 onTap: () => setState(() => _result = null),
                 icon: Icons.camera_alt_rounded,
-                label: "RESCAN",
+                label: l10n.rescanLabel,
               ),
             ],
           ),
@@ -1275,7 +1279,7 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
 
   Widget _buildAIInformationDisclaimer() {
     return Text(
-      "AI-estimated values. Traditional variations may differ.",
+      AppLocalizations.of(context)!.aiEstimatedValuesDisclaimer,
       style: GoogleFonts.inter(color: AppTheme.colors.white24, fontSize: 10, fontStyle: FontStyle.italic),
     );
   }
@@ -1338,7 +1342,7 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildSectionTitle("PHASE 3: CROSS-MATCH SUBSTITUTION"),
+        _buildSectionTitle(AppLocalizations.of(context)!.phase3CrossMatchTitle),
         const SizedBox(height: 16),
         Container(
           padding: const EdgeInsets.all(20),
@@ -1351,7 +1355,7 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "VISUALLY SIMILAR ALTERNATIVES",
+                AppLocalizations.of(context)!.visuallySimilarAlternativesLabel,
                 style: GoogleFonts.inter(color: AppTheme.colors.deepPurpleAccent, fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 1),
               ),
               const SizedBox(height: 12),
@@ -1369,7 +1373,7 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
               if (res.substitutionReasoning.isNotEmpty) ...[
                 const SizedBox(height: 20),
                 Text(
-                  "AI CROSS-MATCH REASONING:",
+                  AppLocalizations.of(context)!.aiCrossMatchReasoningLabel,
                   style: GoogleFonts.inter(color: AppTheme.colors.white38, fontSize: 9, fontWeight: FontWeight.w900),
                 ),
                 const SizedBox(height: 8),
@@ -1402,7 +1406,7 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
             children: [
               Icon(Icons.health_and_safety_rounded, color: color, size: 20),
               const SizedBox(width: 12),
-              Text("PHASE 6: HYGIENE & PRESENTATION", style: GoogleFonts.outfit(color: color, fontSize: 11, fontWeight: FontWeight.w900, letterSpacing: 1.2)),
+              Text(AppLocalizations.of(context)!.phase6HygienePresentationTitle, style: GoogleFonts.outfit(color: color, fontSize: 11, fontWeight: FontWeight.w900, letterSpacing: 1.2)),
               const Spacer(),
               Text("${res.hygieneScore}%", style: GoogleFonts.outfit(color: color, fontSize: 16, fontWeight: FontWeight.w900)),
             ],
@@ -1417,11 +1421,11 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
           Row(
             children: [
               Expanded(
-                child: _buildPresentationMiniMetric("PRESENTATION", res.presentationScore, AppTheme.colors.blueAccent),
+                child: _buildPresentationMiniMetric(AppLocalizations.of(context)!.presentationLabel, res.presentationScore, AppTheme.colors.blueAccent),
               ),
               const SizedBox(width: 8),
               Expanded(
-                child: _buildPresentationMiniMetric("INTEGRITY", res.hygieneScore, AppTheme.colors.greenAccent),
+                child: _buildPresentationMiniMetric(AppLocalizations.of(context)!.integrityLabel, res.hygieneScore, AppTheme.colors.greenAccent),
               ),
             ],
           ),
@@ -1450,11 +1454,12 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
   // End of Result UI
 
   Widget _buildActionBar(FoodModel res) {
+    final l10n = AppLocalizations.of(context)!;
     return Row(
       children: [
         Expanded(
           child: _buildAssistantAction(
-            label: _isSaved ? "SAVED" : "SAVE TO COOKBOOK",
+            label: _isSaved ? l10n.savedLabel : l10n.saveToCookbookLabel,
             icon: _isSaved ? Icons.bookmark_rounded : Icons.bookmark_border_rounded,
             color: _isSaved ? AppTheme.colors.primary : AppTheme.colors.white24,
             onTap: _toggleSave,
@@ -1463,7 +1468,7 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
         SizedBox(width: 12),
         Expanded(
           child: _buildAssistantAction(
-            label: "VOICE GUIDE",
+            label: l10n.voiceGuideLabel,
             icon: Icons.graphic_eq_rounded,
             color: AppTheme.colors.blueAccent,
             onTap: () => _voiceRecipeService.startCooking(res),
@@ -1477,8 +1482,8 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
           onTap: () {
             SharePlus.instance.share(
               ShareParams(
-                text: "Check out this ${res.name} recipe I found on Hidden Gems SL.ai! It's an authentic Sri Lankan delicacy. \n\nOracle Score: ${res.hygieneScore}%",
-                subject: "Hidden Gems SL.ai - Savor Lanka Recipe",
+                text: l10n.savorLankaShareText(res.name, res.hygieneScore.toString()),
+                subject: l10n.savorLankaShareSubject,
               ),
             );
           },

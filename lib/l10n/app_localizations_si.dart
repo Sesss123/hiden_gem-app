@@ -1356,7 +1356,7 @@ class AppLocalizationsSi extends AppLocalizations {
       'ඕනෑම ස්ථානයක සැඟවුණු ඉතිහාසය හෙළිදරව් කිරීමට ඔබේ කැමරාව යොමු කරන්න.';
 
   @override
-  String get upgradeToPremiumButton => 'ප්‍රීමියම් වෙත උසස් කරන්න';
+  String get upgradeToPremiumButton => 'වාරික වෙත උසස් කරන්න';
 
   @override
   String get oracleVerifiedLabel => 'ඔරකල් තහවුරු කළේය';
@@ -2933,4 +2933,1942 @@ class AppLocalizationsSi extends AppLocalizations {
   String errorSavingAvailabilityMessage(String error) {
     return 'ලබාගත හැකි බව සුරැකීමේ දෝෂයක්: $error';
   }
+
+  @override
+  String get broadcastSentSuccessMessage => 'විකාශනය සාර්ථකව යවන ලදී';
+
+  @override
+  String get broadcastTitle => 'විකාශනය';
+
+  @override
+  String get activeBroadcastsTitle => 'සක්‍රීය විකාශන';
+
+  @override
+  String get messageToTravelersLabel => 'සංචාරකයින්ට පණිවිඩය';
+
+  @override
+  String get messageToTravelersHint =>
+      'සංචාරකයින්ට ඔබේ පණිවිඩය ඇතුළත් කරන්න...';
+
+  @override
+  String get sendToAllTravelersButton => 'සියලුම සංචාරකයින්ට යවන්න';
+
+  @override
+  String get priorityLabel => 'ප්‍රමුඛතාව';
+
+  @override
+  String get noActiveBroadcastsMessage => 'සක්‍රීය විකාශන නැත';
+
+  @override
+  String acksCountLabel(int count) {
+    return 'පිළිගැනීම් $count';
+  }
+
+  @override
+  String get expireButtonLabel => 'කල් ඉකුත් කරන්න';
+
+  @override
+  String get broadcastTypeGeneral => 'සාමාන්‍ය';
+
+  @override
+  String get broadcastTypeWeather => 'කාලගුණය';
+
+  @override
+  String get broadcastTypeMeetingPoint => 'හමුවීමේ ස්ථානය';
+
+  @override
+  String get broadcastTypeDelay => 'ප්‍රමාදය';
+
+  @override
+  String get broadcastTypeDeparture => 'පිටත්වීම';
+
+  @override
+  String get broadcastTypeVehicleChange => 'වාහන වෙනස';
+
+  @override
+  String get broadcastTypeSafety => 'ආරක්ෂාව';
+
+  @override
+  String get broadcastPriorityLow => 'අඩු';
+
+  @override
+  String get broadcastPriorityNormal => 'සාමාන්‍ය';
+
+  @override
+  String get broadcastPriorityHigh => 'ඉහළ';
+
+  @override
+  String get broadcastPriorityCritical => 'විවේචනාත්මක';
+
+  @override
+  String get writeReviewButton => 'සමාලෝචනයක් ලියන්න';
+
+  @override
+  String get reviewsTitle => 'සමාලෝචන';
+
+  @override
+  String get failedToLoadReviewsMessage =>
+      'සමාලෝචන පූරණය කිරීමට අසමත් විය. නැවත උත්සාහ කරන්න.';
+
+  @override
+  String get premiumAnalyticsLockedTitle => 'වාරික විශ්ලේෂණ අගුළු දමා ඇත';
+
+  @override
+  String get premiumAnalyticsLockedMessage =>
+      'ඔබේ කාර්යසාධනය, විශ්වාස ලකුණු, සහ සංචාරක ප්‍රතිපෝෂණ පිළිබඳ ගැඹුරු තීක්ෂණයන් අගුළු හැරීමට PRO හෝ ELITE වෙත උසස් කරන්න.';
+
+  @override
+  String get upgradeNowButton => 'දැන් උසස් කරන්න';
+
+  @override
+  String get trustScoreLabel => 'විශ්වාස ලකුණු';
+
+  @override
+  String get tierBronze => 'ලෝකඩ මට්ටම';
+
+  @override
+  String get tierDiamond => 'දියමන්ති මට්ටම';
+
+  @override
+  String get tierGold => 'රන් මට්ටම';
+
+  @override
+  String get tierSilver => 'රිදී මට්ටම';
+
+  @override
+  String get miniStatTrips => 'සංචාර';
+
+  @override
+  String get miniStatRating => 'ශ්‍රේණිගත කිරීම';
+
+  @override
+  String get miniStatIncidents => 'සිද්ධීන්';
+
+  @override
+  String get verifiedTripBadge => 'තහවුරු කළ සංචාරය';
+
+  @override
+  String touristShortIdLabel(String shortId) {
+    return 'සංචාරක $shortId';
+  }
+
+  @override
+  String get noReviewsYetTitle => 'තවම සමාලෝචන නැත';
+
+  @override
+  String get noReviewsYetSubtitle =>
+      'සැසිය අවසන් වූ පසු තහවුරු කළ සහභාගිවන්නන්ට ප්‍රතිපෝෂණ තැබිය හැක.';
+
+  @override
+  String get guideProfileNotFoundMessage => 'මාර්ගෝපදේශක පැතිකඩ හමු නොවීය';
+
+  @override
+  String get aboutSectionTitle => 'පිළිබඳව';
+
+  @override
+  String get noBioProvidedMessage => 'ජීවදත්ත සපයා නැත.';
+
+  @override
+  String get vehicleSectionTitle => 'වාහනය';
+
+  @override
+  String get vehicleDetailsNotProvidedMessage => 'වාහන විස්තර සපයා නැත';
+
+  @override
+  String get vehicleProvidedByGuideMessage =>
+      'සංචාර සඳහා මාර්ගෝපදේශකයා විසින් සපයනු ලැබේ';
+
+  @override
+  String get packagesSectionTitle => 'පැකේජ';
+
+  @override
+  String get tapPackageToBookMessage =>
+      'පැකේජයක් සෘජුව වෙන්කරගැනීමට තට්ටු කරන්න';
+
+  @override
+  String get standardPackageLabel => 'සම්මත පැකේජය';
+
+  @override
+  String durationHoursShortLabel(String hours) {
+    return 'පැය $hours';
+  }
+
+  @override
+  String guestsCountShortLabel(String count) {
+    return 'අමුත්තන් $count';
+  }
+
+  @override
+  String get totalLabel => 'එකතුව';
+
+  @override
+  String get requestThisGuideButton => 'මෙම මාර්ගෝපදේශකයා ඉල්ලන්න';
+
+  @override
+  String get experienceStatLabel => 'පළපුරුද්ද';
+
+  @override
+  String yearsExperienceLabel(String years) {
+    return 'අවුරුදු $years';
+  }
+
+  @override
+  String get ratingStatLabel => 'ශ්‍රේණිගත කිරීම';
+
+  @override
+  String get rankStatLabel => 'ශ්‍රේණිය';
+
+  @override
+  String licensedGuideLabel(String licenseNumber) {
+    return 'බලපත්‍රලාභී මාර්ගෝපදේශකයා • $licenseNumber';
+  }
+
+  @override
+  String get platformVerifiedInsuredLabel =>
+      'වේදිකාව මගින් තහවුරු කර රක්ෂණය කර ඇත';
+
+  @override
+  String get yourListingTitle => 'ඔබේ ලැයිස්තුව';
+
+  @override
+  String get basicInformationTitle => 'මූලික තොරතුරු';
+
+  @override
+  String get displayNameLabel => 'ප්‍රදර්ශන නාමය';
+
+  @override
+  String get displayNameHint => 'උදා: කසුන් පෙරේරා';
+
+  @override
+  String get aboutMeBioLabel => 'මා ගැන (ජීවදත්ත)';
+
+  @override
+  String get aboutMeBioHint =>
+      'ඔබේ උනන්දුව, පළපුරුද්ද, සහ ප්‍රියතම ස්ථාන ගැන සංචාරකයින්ට කියන්න...';
+
+  @override
+  String get categorySpecialtiesTitle => 'ප්‍රවර්ගය සහ විශේෂත්ව';
+
+  @override
+  String get primaryCategoryLabel => 'ප්‍රධාන ප්‍රවර්ගය';
+
+  @override
+  String get languagesCommaLabel => 'භාෂා (කොමා වලින් වෙන් කර)';
+
+  @override
+  String get languagesCommaHint => 'උදා: ඉංග්‍රීසි, සිංහල, ජර්මන්';
+
+  @override
+  String get specializationsCommaLabel => 'විශේෂත්ව (කොමා වලින් වෙන් කර)';
+
+  @override
+  String get specializationsCommaHint => 'උදා: උරුමය, වන්‍ය සතුන්, ඡායාරූප';
+
+  @override
+  String get serviceRegionsLabel => 'සේවා කලාප (කොමා වලින් වෙන් කර)';
+
+  @override
+  String get serviceRegionsHint => 'උදා: මධ්‍යම, දකුණු, බස්නාහිර';
+
+  @override
+  String get pricingVehicleTitle => 'මිල ගණන් සහ වාහනය';
+
+  @override
+  String get hourlyRateFieldLabel => 'පැයට ගාස්තුව';
+
+  @override
+  String get hourlyRateHint => 'උදා: 25';
+
+  @override
+  String get vehicleAvailableForToursLabel => 'සංචාර සඳහා වාහනය ලබාගත හැක';
+
+  @override
+  String get provideTransportationLabel => 'ඔබ ප්‍රවාහන සේවා සපයනවාද?';
+
+  @override
+  String get vehicleTypeModelLabel => 'වාහන වර්ගය සහ මාදිලිය';
+
+  @override
+  String get vehicleTypeModelHint =>
+      'උදා: Toyota Prius Hybrid / සුඛෝපභෝගී වෑන් රථය';
+
+  @override
+  String coverPhotosCountTitle(int count) {
+    return 'කවර ඡායාරූප ($count)';
+  }
+
+  @override
+  String get availabilityCalendarTitle => 'ලබාගත හැකි දින දර්ශනය';
+
+  @override
+  String get visibilityBoostTitle => 'දෘශ්‍යතා වර්ධනය';
+
+  @override
+  String get saveDraftButton => 'කෙටුම්පත සුරකින්න';
+
+  @override
+  String get publishListingButton => 'ලැයිස්තුව ප්‍රකාශයට පත් කරන්න';
+
+  @override
+  String get uploadingPhotoMessage => 'ඡායාරූපය උඩුගත කරමින්...';
+
+  @override
+  String get photoUploadedSuccessMessage => 'ඡායාරූපය සාර්ථකව උඩුගත විය!';
+
+  @override
+  String get failedToUploadPhotoMessage => 'ඡායාරූපය උඩුගත කිරීමට අසමත් විය.';
+
+  @override
+  String get uploadingVehiclePhotoMessage => 'වාහන ඡායාරූපය උඩුගත කරමින්...';
+
+  @override
+  String get vehiclePhotoUploadedMessage => 'වාහන ඡායාරූපය උඩුගත විය!';
+
+  @override
+  String get listingPublishedMessage =>
+      '🎉 ලැයිස්තුව වෙළඳපොළට ප්‍රකාශයට පත් කරන ලදී!';
+
+  @override
+  String get draftSavedMessage => '💾 කෙටුම්පත සාර්ථකව සුරැකිණි';
+
+  @override
+  String failedToSaveListingMessage(String error) {
+    return 'ලැයිස්තුව සුරැකීමට අසමත් විය: $error';
+  }
+
+  @override
+  String get addPhotoLabel => 'ඡායාරූපය එකතු කරන්න';
+
+  @override
+  String get verifiedLicenseLabel => 'තහවුරු කළ බලපත්‍රය';
+
+  @override
+  String get addVehiclePhotoLabel => 'වාහන ඡායාරූපය එකතු කරන්න';
+
+  @override
+  String get manageAvailabilityTitle => 'ලබාගත හැකි බව කළමනාකරණය කරන්න';
+
+  @override
+  String get manageAvailabilitySubtitle =>
+      'නිවාඩු දින සහ පුනරාවර්තන වැඩ කරන වේලාවන් සකසන්න';
+
+  @override
+  String get featureThisListingLabel => 'මෙම ලැයිස්තුව විශේෂාංගගත කරන්න';
+
+  @override
+  String get currentlyFeaturedMessage => 'දැනට වෙළඳපොළේ විශේෂාංගගත කර ඇත';
+
+  @override
+  String get featureRequestedMessage =>
+      'ඉල්ලා ඇත — පරිපාලකයෙකු මෙය සමාලෝචනය කර ඉක්මනින් සක්‍රීය කරනු ඇත';
+
+  @override
+  String get featureRequestPromptMessage =>
+      'වෙළඳපොළේ විශේෂාංගගත වීමට ඉල්ලන්න (පරිපාලක සමාලෝචනයට යටත්ව)';
+
+  @override
+  String get upgradeToProFeatureMessage =>
+      'වෙළඳපොළේ ඔබේ දෘශ්‍යතාව වර්ධනය කිරීමට Pro වෙත උසස් කරන්න';
+
+  @override
+  String get safetyConsoleTitle => 'ආරක්ෂක කවුන්සලය';
+
+  @override
+  String offlineErrorMessage(String error) {
+    return 'නොබැඳි දෝෂය: $error';
+  }
+
+  @override
+  String get secureOperationsTitle => 'ආරක්ෂිත මෙහෙයුම්';
+
+  @override
+  String get allIncidentsLoggedMessage =>
+      'සියලුම සිද්ධීන් විගණන මාර්ගයක් සමඟ වාර්තා කර ඇත';
+
+  @override
+  String get filterActive => 'සක්‍රීය';
+
+  @override
+  String get filterResolved => 'විසඳන ලද';
+
+  @override
+  String get filterMyReports => 'මගේ වාර්තා';
+
+  @override
+  String get priorityBadgeText => 'ප්‍රමුඛතාව';
+
+  @override
+  String updatesCountLabel(int count) {
+    return 'යාවත්කාලීන $count';
+  }
+
+  @override
+  String get noCriticalIncidentsTitle => 'විවේචනාත්මක සිද්ධීන් නැත';
+
+  @override
+  String get sessionWithinSafetyParamsMessage =>
+      'සැසි මෙහෙයුම් ආරක්ෂක පරාමිතීන් තුළ පවතී.';
+
+  @override
+  String get reportIncidentButton => 'සිද්ධියක් වාර්තා කරන්න';
+
+  @override
+  String get fileAnIncidentTitle => 'සිද්ධියක් ගොනු කරන්න';
+
+  @override
+  String get incidentAuditTrailMessage =>
+      'නිවැරදි විස්තර සපයන්න, මෙය විගණන මාර්ගයක් සමඟ වාර්තා කර ඇත.';
+
+  @override
+  String get incidentTitleHint => 'සිද්ධියේ මාතෘකාව';
+
+  @override
+  String get descriptionOfEventHint => 'සිදුවීමේ විස්තරය';
+
+  @override
+  String get transmitReportButton => 'වාර්තාව යවන්න';
+
+  @override
+  String get incidentStatusOpen => 'විවෘත';
+
+  @override
+  String get incidentStatusInvestigating => 'විමර්ශනය කරමින්';
+
+  @override
+  String get incidentStatusResolved => 'විසඳන ලද';
+
+  @override
+  String get incidentStatusClosed => 'වසා ඇත';
+
+  @override
+  String get manageTeamTitle => 'කණ්ඩායම කළමනාකරණය කරන්න';
+
+  @override
+  String get signInToManageTeamMessage =>
+      'ඔබේ කණ්ඩායම කළමනාකරණය කිරීමට පුරන්න.';
+
+  @override
+  String get guideAddedToTeamMessage =>
+      'මාර්ගෝපදේශකයා ඔබේ කණ්ඩායමට එකතු කරන ලදී';
+
+  @override
+  String failedToInviteGuideMessage(String error) {
+    return 'මාර්ගෝපදේශකයා ආරාධනා කිරීමට අසමත් විය: $error';
+  }
+
+  @override
+  String failedToRemoveGuideMessage(String error) {
+    return 'මාර්ගෝපදේශකයා ඉවත් කිරීමට අසමත් විය: $error';
+  }
+
+  @override
+  String failedToUploadLogoMessage(String error) {
+    return 'ලාංඡනය උඩුගත කිරීමට අසමත් විය: $error';
+  }
+
+  @override
+  String get tabOverview => 'දළ විශ්ලේෂණය';
+
+  @override
+  String get tabTeam => 'කණ්ඩායම';
+
+  @override
+  String get tabBranding => 'වෙළඳ නාමකරණය';
+
+  @override
+  String get eliteOperatorAccountLabel => 'එලයිට් ක්‍රියාකරු ගිණුම';
+
+  @override
+  String get overviewStatTeamSize => 'කණ්ඩායමේ ප්‍රමාණය';
+
+  @override
+  String get overviewStatMissions => 'මෙහෙයුම්';
+
+  @override
+  String get overviewStatAvgRating => 'සාමාන්‍ය ශ්‍රේණිගත කිරීම';
+
+  @override
+  String get guideUserIdToInviteHint =>
+      'ආරාධනා කිරීමට මාර්ගෝපදේශක පරිශීලක හැඳුනුම්පත';
+
+  @override
+  String teamMembersCountTitle(int count) {
+    return 'කණ්ඩායම් සාමාජිකයන් ($count)';
+  }
+
+  @override
+  String get roleMember => 'සාමාජිකයා';
+
+  @override
+  String get logoLabel => 'ලාංඡනය';
+
+  @override
+  String get brandColorLabel => 'වෙළඳ නාම වර්ණය';
+
+  @override
+  String get brandColorAppliedMessage =>
+      'ඔබේ ආයතනය සඳහා මෙම කණ්ඩායම් උපකරණ පුවරුව පුරා ඔබේ වෙළඳ නාම වර්ණය යොදා ඇත.';
+
+  @override
+  String get incidentNotFoundTitle => 'සිද්ධිය හමු නොවීය';
+
+  @override
+  String get incidentNotFoundDescription =>
+      'වාර්තාව පවිත්‍ර කර ඇත හෝ ගෙන ගොස් ඇත.';
+
+  @override
+  String get statusLabel => 'තත්ත්වය';
+
+  @override
+  String get severityLabel => 'බරපතලකම';
+
+  @override
+  String get timelineLabel => 'කාල රේඛාව';
+
+  @override
+  String get encryptedLogLabel => 'සංකේතාත්මක ලඝු-සටහන';
+
+  @override
+  String get noTimelineActiveMessage => 'සක්‍රීය කාල රේඛාවක් නැත.';
+
+  @override
+  String minutesAgoLabel(int minutes) {
+    return 'මිනිත්තු $minutes කට පෙර';
+  }
+
+  @override
+  String get verifiedAuditLogLabel => 'තහවුරු කළ විගණන ලඝු-සටහන';
+
+  @override
+  String get forensicIntegrityLockedMessage =>
+      'අධිකරණ අඛණ්ඩතාව සඳහා මෙම වාර්තාව අගුළු දමා ඇත. අනුමත පරිපාලකයින්ට පමණක් තත්ත්වය වෙනස් කළ හැක.';
+
+  @override
+  String get addEvidenceButton => 'සාක්ෂි එකතු කරන්න';
+
+  @override
+  String get escalateButton => 'උත්සන්න කරන්න';
+
+  @override
+  String get timelineTypeSosTriggered => 'SOS අවුලුවන ලදී';
+
+  @override
+  String get invalidQrCodeFormatMessage => 'වලංගු නොවන QR කේත ආකෘතිය';
+
+  @override
+  String get unrecognizedQrCodeMessage => 'හඳුනාගත නොහැකි QR කේතය';
+
+  @override
+  String get sessionNotFoundClosedMessage => 'සැසිය හමු නොවීය හෝ වසා ඇත';
+
+  @override
+  String get connectionErrorMessage => 'සම්බන්ධතා දෝෂයක්';
+
+  @override
+  String get tourVerificationTitle => 'සංචාර සත්‍යාපනය';
+
+  @override
+  String get localGuideFallback => 'ප්‍රාදේශීය මාර්ගෝපදේශකයා';
+
+  @override
+  String vehicleNumberLabel(String vehicleNumber) {
+    return 'වාහනය: $vehicleNumber';
+  }
+
+  @override
+  String get consentTrackingMessage =>
+      'මෙම සංචාර සැසිය සඳහා සජීවී ස්ථාන ලුහුබැඳීමට සහ ආරක්ෂක අධීක්ෂණයට මම කැමැත්ත දක්වමි.';
+
+  @override
+  String get connectSyncButton => 'සම්බන්ධ කර සමමුහුර්ත කරන්න';
+
+  @override
+  String get realitySyncedTitle => 'යථාර්ථය සමමුහුර්ත විය';
+
+  @override
+  String get safetyProtocolsActiveMessage =>
+      'ගෝලීය ආරක්ෂක ප්‍රොටෝකෝල සහ සජීවී ලුහුබැඳීම සක්‍රීයයි.';
+
+  @override
+  String get enterHubButton => 'කේන්ද්‍රස්ථානයට ඇතුළු වන්න';
+
+  @override
+  String get decryptingTokenMessage => 'ටෝකනය විකේතනය කරමින්…';
+
+  @override
+  String get scanGuideTourCodeMessage =>
+      'ඔබේ මාර්ගෝපදේශකයාගේ සංචාර කේතය ස්කෑන් කරන්න';
+
+  @override
+  String get emergencyTranslatorTitle => 'හදිසි පරිවර්තකය';
+
+  @override
+  String get showScreenToBystanderMessage =>
+      'මෙම තිරය නරඹන්නෙකුට, පොලිස් නිලධාරියෙකුට, හෝ රෝහල් සේවකයෙකුට පෙන්වන්න — එය ඔබ වෙනුවෙන් සිංහලෙන් කථා කරයි.';
+
+  @override
+  String locationCoordinatesTapMapsLabel(String lat, String lng) {
+    return '$lat, $lng — සිතියම් වල විවෘත කිරීමට තට්ටු කරන්න';
+  }
+
+  @override
+  String get locationUnavailableMessage => 'ස්ථානය නොමැත';
+
+  @override
+  String get speakingEllipsisMessage => 'කථා කරමින්…';
+
+  @override
+  String get playAgainButton => 'නැවත වාදනය කරන්න';
+
+  @override
+  String get emergencyTitle => 'හදිසි';
+
+  @override
+  String get criticalContactsTitle => 'තීරණාත්මක සම්බන්ධතා';
+
+  @override
+  String get medicalFacilitiesNearbyTitle => 'අවට වෛද්‍ය පහසුකම්';
+
+  @override
+  String get emergencyProtocolLabel => 'හදිසි ප්‍රොටෝකෝලය';
+
+  @override
+  String get sendingAlertMessage => 'අනතුරු ඇඟවීම යවමින්…';
+
+  @override
+  String get keepHoldingToConfirmMessage =>
+      'තහවුරු කිරීමට දිගටම අල්ලාගෙන සිටින්න…';
+
+  @override
+  String get pressHoldTwoSecondsMessage =>
+      'අනතුරු ඇඟවීමට තත්පර 2ක් තද කර අල්ලාගෙන සිටින්න';
+
+  @override
+  String get preventsAccidentalTriggersMessage => 'අනපේක්ෂිත අවුලුවීම් වළක්වයි';
+
+  @override
+  String get sosLabel => 'SOS';
+
+  @override
+  String get contactNamePolice => 'පොලීසිය';
+
+  @override
+  String get contactNameAmbulance => 'ගිලන් රථය';
+
+  @override
+  String get contactNameTouristPolice => 'සංචාරක පොලීසිය';
+
+  @override
+  String get contactNameFireDept => 'ගිනි නිවීමේ දෙපාර්තමේන්තුව';
+
+  @override
+  String get privateGuardiansTitle => 'පුද්ගලික භාරකරුවන්';
+
+  @override
+  String get noGuardiansAssignedMessage =>
+      'භාරකරුවන් පවරා නැත. සංඥා පෙරනිමියෙන් හදිසි සේවාවන්ට යොමු වේ.';
+
+  @override
+  String get nearestHospitalTitle => 'ඔබ කොහේ සිටියත් ආසන්නතම රෝහල';
+
+  @override
+  String get checkingLocationAccessMessage => 'ස්ථාන ප්‍රවේශය පරීක්ෂා කරමින්…';
+
+  @override
+  String get locationAccessDeniedGeneralMessage =>
+      'ස්ථාන ප්‍රවේශය ප්‍රතික්ෂේප විය — ඒ වෙනුවට සාමාන්‍යයෙන් සොයනු ඇත.';
+
+  @override
+  String get hospitalMapsExplanationMessage =>
+      'ඔබේ සජීවී GPS භාවිතයෙන් Google සිතියම් විවෘත කරයි — ඔබ ශ්‍රී ලංකාවේ කොහේ සිටියත්, අවට සියලුම රාජ්‍ය සහ පෞද්ගලික රෝහල් පෙන්වයි.';
+
+  @override
+  String get findNearestHospitalButton => 'සිතියම් වල ආසන්නතම රෝහල සොයන්න';
+
+  @override
+  String get addGuardianTitle => 'භාරකරුවෙකු එකතු කරන්න';
+
+  @override
+  String get guardianPhoneNumberHint => 'භාරකරුගේ දුරකථන අංකය';
+
+  @override
+  String get addGuardianButton => 'භාරකරු එකතු කරන්න';
+
+  @override
+  String get sosAlertsPreparedLoggedMessage =>
+      'SOS අනතුරු ඇඟවීම් සූදානම් කර ආරක්ෂිත ගබඩාවේ වාර්තා කරන ලදී!';
+
+  @override
+  String get sosCriticalAlertTitle => 'විවේචනාත්මක SOS අනතුරු ඇඟවීම';
+
+  @override
+  String get sosDistressSignalDescription =>
+      'Guardian පද්ධතියෙන් හදිසි විපත් සංඥාවක් අවුලුවන ලදී.';
+
+  @override
+  String get locationPermissionsPermanentlyDeniedMessage =>
+      'ස්ථාන අවසර ස්ථිරවම ප්‍රතික්ෂේප කර ඇත.';
+
+  @override
+  String get emergencyTranslatorPremiumMessage =>
+      'ශ්‍රී ලාංකික පොලිසියට හෝ රෝහල් සේවකයින්ට ඔබේ තත්ත්වය කථන සිංහලෙන් ක්ෂණිකව පැහැදිලි කරන්න — වාරික ආරක්ෂක විශේෂාංගයකි.';
+
+  @override
+  String get notNowButton => 'දැන් නොවේ';
+
+  @override
+  String get viewPlansButton => 'සැලසුම් බලන්න';
+
+  @override
+  String get monsoonHazardAlertTitle => 'මෝසම් අනතුරු ඇඟවීම';
+
+  @override
+  String districtLabel(String district) {
+    return 'දිස්ත්‍රික්කය: $district';
+  }
+
+  @override
+  String get districtGeneralFallback => 'සාමාන්‍ය';
+
+  @override
+  String get severeMonsoonWeatherDetectedMessage =>
+      'දරුණු මෝසම් කාලගුණය අනාවරණය විය.';
+
+  @override
+  String get acknowledgeButton => 'පිළිගන්නවා';
+
+  @override
+  String offlineErrorGenericMessage(String error) {
+    return 'නොබැඳි දෝෂය: $error';
+  }
+
+  @override
+  String get sessionNotFoundMessage => 'සැසිය හමු නොවීය';
+
+  @override
+  String get yourTourTitle => 'ඔබේ සංචාරය';
+
+  @override
+  String get tourActiveTitle => 'සංචාරය සක්‍රීයයි';
+
+  @override
+  String get preparingTourTitle => 'සංචාරය සූදානම් කරමින්';
+
+  @override
+  String get everythingOnTrackMessage => 'සියල්ල නිසි පරිදි සිදුවෙමින් පවතී';
+
+  @override
+  String statusColonValueLabel(String status) {
+    return 'තත්ත්වය: $status';
+  }
+
+  @override
+  String get phaseAssemblingGroup => 'කණ්ඩායම එකතු වෙමින්';
+
+  @override
+  String get phaseEnRoute => 'මාර්ගයේ';
+
+  @override
+  String get phaseAtDestination => 'ගමනාන්තයේ';
+
+  @override
+  String get phaseFreeTimeBreak => 'නිදහස් වේලාව / විවේකය';
+
+  @override
+  String get phaseReturningToBase => 'පදනමට ආපසු';
+
+  @override
+  String get liveNavigationTitle => 'සජීවී මාර්ගගත කිරීම';
+
+  @override
+  String get findGuideLabel => 'මාර්ගෝපදේශකයා සොයන්න';
+
+  @override
+  String get liveTrackingLabel => 'සජීවී ලුහුබැඳීම';
+
+  @override
+  String get findVehicleLabel => 'වාහනය සොයන්න';
+
+  @override
+  String get parkedSpotLabel => 'නවතා ඇති ස්ථානය';
+
+  @override
+  String get meetingPointLabel => 'හමුවීමේ ස්ථානය';
+
+  @override
+  String get returnHereIfLostMessage =>
+      'නැති වුවහොත් හෝ කණ්ඩායමෙන් වෙන් වුවහොත් මෙහි ආපසු එන්න.';
+
+  @override
+  String get navigateToPointButton => 'ස්ථානයට මාර්ගගත කරන්න';
+
+  @override
+  String get guideAnnouncementLabel => 'මාර්ගෝපදේශක නිවේදනය';
+
+  @override
+  String get justNowLabel => 'දැන් මොහොතේ';
+
+  @override
+  String get acknowledgedLabel => 'පිළිගන්නා ලදී';
+
+  @override
+  String get iAcknowledgeButton => 'මම පිළිගනිමි';
+
+  @override
+  String get moreLabel => 'තවත්';
+
+  @override
+  String get shareLiveLabel => 'සජීවීව බෙදාගන්න';
+
+  @override
+  String get familyAccessLabel => 'පවුල් ප්‍රවේශය';
+
+  @override
+  String get rateTourLabel => 'සංචාරය ශ්‍රේණිගත කරන්න';
+
+  @override
+  String get buildReputationLabel => 'කීර්තිය ගොඩනඟන්න';
+
+  @override
+  String get helpImLostButton => 'උදව්, මම නැති වී සිටිමි';
+
+  @override
+  String get emergencySosButton => 'හදිසි SOS';
+
+  @override
+  String get instantAlertAdminPoliceMessage =>
+      'පරිපාලක, පොලීසිය, සහ කේන්ද්‍රස්ථානයට ක්ෂණික අනතුරු ඇඟවීම.';
+
+  @override
+  String get signalSentStayMessage =>
+      'සංඥාව යවන ලදී! ඔබ සිටින තැනම රැඳී සිටින්න.';
+
+  @override
+  String get travelerLostBroadcastTitle => 'සංචාරකයා නැති විය';
+
+  @override
+  String get travelerLostBroadcastBody =>
+      'සංචාරකයෙක් තමන් නැති වී ඇති බව සංඥා කර ඇත! ස්ථානය සිතියමේ බෙදාගෙන ඇත.';
+
+  @override
+  String sosCooledDownMessage(int seconds) {
+    return 'SOS සිසිල් වෙමින් පවතී. තත්පර $secondsක් රැඳී සිටින්න.';
+  }
+
+  @override
+  String get sosBroadcastedAuthoritiesMessage =>
+      'SOS අනතුරු ඇඟවීම සියලුම බලධාරීන්ට විකාශනය කරන ලදී!';
+
+  @override
+  String get tourCompletedTitle => 'සංචාරය සම්පූර්ණයි!';
+
+  @override
+  String get tourCompletedRateMessage =>
+      'ඔබට අපූරු අත්දැකීමක් ලැබුණා යැයි අපි බලාපොරොත්තු වෙමු! දැන් ඔබේ මාර්ගෝපදේශකයා ශ්‍රේණිගත කිරීමට කැමතිද? ඔබේ ප්‍රතිපෝෂණය මාර්ගෝපදේශකයින්ට ඉහළ ප්‍රමිතීන් පවත්වා ගැනීමට උපකාරී වේ.';
+
+  @override
+  String get remindLaterButton => 'පසුව මතක් කරන්න';
+
+  @override
+  String get reminderSetMessage =>
+      '⏰ මතක් කිරීමක් සකසන ලදී! අපි හෙට දැනුම්දීමක් යවන්නෙමු.';
+
+  @override
+  String get rateNowButton => 'දැන් ශ්‍රේණිගත කරන්න ⭐';
+
+  @override
+  String get eventsTitle => 'සිදුවීම්';
+
+  @override
+  String get topPicksForYouTitle => 'ඔබ සඳහා විශිෂ්ට තේරීම්';
+
+  @override
+  String get categoryAllFilter => 'සියල්ල';
+
+  @override
+  String get categoryBeach => 'වෙරළ';
+
+  @override
+  String get categoryCultural => 'සංස්කෘතික';
+
+  @override
+  String get categoryReligious => 'ආගමික';
+
+  @override
+  String get categorySports => 'ක්‍රීඩා';
+
+  @override
+  String get categorySeasonal => 'සමයානුකූල';
+
+  @override
+  String get categoryFestival => 'උත්සව';
+
+  @override
+  String get categoryParty => 'සාදය';
+
+  @override
+  String get availableEventsTitle => 'ලබාගත හැකි සිදුවීම්';
+
+  @override
+  String get temporalDataLabel => 'කාලීන දත්ත';
+
+  @override
+  String get acquirePassButton => 'ප්‍රවේශපත්‍රය ලබාගන්න';
+
+  @override
+  String get unpinButton => 'ඉවත් කරන්න';
+
+  @override
+  String get pinToHudButton => 'HUD වෙත ඇමිණීම';
+
+  @override
+  String get noEventsOnDayMessage => 'මෙම දිනයේ සිදුවීම් නැත';
+
+  @override
+  String get musicPreferencesTitle => 'සංගීත මනාපයන්';
+
+  @override
+  String get fineTuneOracleMessage =>
+      'ඔබේ විලාසිතාමය මනාපයන් සමඟ කාලීන අනාවැකිකරු සියුම්ව සකසන්න.';
+
+  @override
+  String get syncPreferencesButton => 'මනාපයන් සමමුහුර්ත කරන්න';
+
+  @override
+  String failedToShareTimelineMessage(String error) {
+    return 'කාල රේඛාව බෙදාගැනීමට අසමත් විය: $error';
+  }
+
+  @override
+  String hazardWarningMessage(String message) {
+    return '🚨 අනතුරු ඇඟවීම: $message';
+  }
+
+  @override
+  String get extremeWeatherAlertFallback => 'අන්ත කාලගුණ අනතුරු ඇඟවීමක්!';
+
+  @override
+  String get recommendedForYouLabel => 'ඔබ සඳහා නිර්දේශිතයි';
+
+  @override
+  String eventLocationCategoryLabel(String location, String category) {
+    return '$location · $category';
+  }
+
+  @override
+  String get budgetTitle => 'අයවැය';
+
+  @override
+  String get addExpenseTitle => 'වියදමක් එකතු කරන්න';
+
+  @override
+  String get resourceDescriptionLabel => 'සම්පත් විස්තරය';
+
+  @override
+  String get amountLkrLabel => 'මුදල (රු.)';
+
+  @override
+  String get categoryLabel => 'ප්‍රවර්ගය';
+
+  @override
+  String get saveExpenseButton => 'වියදම සුරකින්න';
+
+  @override
+  String get planLimitLabel => 'සැලසුම් සීමාව';
+
+  @override
+  String get spentLabel => 'වියදම් කළ';
+
+  @override
+  String get expenseLedgerTitle => 'වියදම් ලේඛනය';
+
+  @override
+  String entriesCountLabel(int count) {
+    return 'ඇතුළත් කිරීම් $count';
+  }
+
+  @override
+  String get noEntriesYetMessage => 'තවම ඇතුළත් කිරීම් නැත';
+
+  @override
+  String get addFirstEntryButton => 'පළමු ඇතුළත් කිරීම එකතු කරන්න';
+
+  @override
+  String get expenseCategoryFood => 'ආහාර';
+
+  @override
+  String get expenseCategoryTransport => 'ප්‍රවාහනය';
+
+  @override
+  String get expenseCategoryTickets => 'ප්‍රවේශ පත්‍ර';
+
+  @override
+  String get expenseCategoryMisc => 'විවිධ';
+
+  @override
+  String get budgetConciergeTitle => 'අයවැය උපදේශකයා';
+
+  @override
+  String get analyzingSpendingPatternsMessage =>
+      'ඔබේ වියදම් රටා විශ්ලේෂණය කරමින්...';
+
+  @override
+  String get localAdviceMessage =>
+      'ඔබේ වියදම් වේගය දූපත් සංචාරක ප්‍රමිතීන් සමඟ හොඳින් සමපාත වේ. විනිවිද පෙනෙන ප්‍රවාහන ගාස්තු සඳහා PickMe හෝ Uber භාවිතා කිරීමට, සහ ඔබේ වටිනාකම උපරිම කිරීමට දේශීය අවන්හල් සාම්පල කිරීමට අපි නිර්දේශ කරමු.';
+
+  @override
+  String get recentTransactionsTitle => 'මෑත ගනුදෙනු';
+
+  @override
+  String get totalSpentSoFarLabel => 'මෙතෙක් වියදම් කළ මුළු මුදල';
+
+  @override
+  String approxUsdLabel(String amount) {
+    return '≈ US\$ $amount';
+  }
+
+  @override
+  String get oracleAdviceLabel => 'Oracle උපදෙස්';
+
+  @override
+  String get logTransactionTitle => 'ගනුදෙනුව ලේඛනගත කරන්න';
+
+  @override
+  String get whatWasThePurposeHint => 'අරමුණ කුමක්ද?';
+
+  @override
+  String get amountLkrHint => 'මුදල (රු.)';
+
+  @override
+  String get expenseCategoryAttraction => 'ආකර්ෂණීය ස්ථානය';
+
+  @override
+  String get expenseCategoryLodging => 'නවාතැන්';
+
+  @override
+  String get expenseCategoryOther => 'වෙනත්';
+
+  @override
+  String get billingHistoryTitle => 'බිල්පත් ඉතිහාසය';
+
+  @override
+  String errorGenericColonMessage(String error) {
+    return 'දෝෂය: $error';
+  }
+
+  @override
+  String get noBillingHistoryFoundMessage => 'බිල්පත් ඉතිහාසයක් හමු නොවීය.';
+
+  @override
+  String planLabel(String planId) {
+    return 'සැලසුම: $planId';
+  }
+
+  @override
+  String get startedLabel => 'ආරම්භ විය';
+
+  @override
+  String get expiresLabel => 'කල් ඉකුත් වේ';
+
+  @override
+  String idLabel(String subscriptionId) {
+    return 'හැඳුනුම්පත: $subscriptionId';
+  }
+
+  @override
+  String get subscriptionStatusCancelled => 'අවලංගු කරන ලදී';
+
+  @override
+  String get subscriptionStatusExpired => 'කල් ඉකුත් විය';
+
+  @override
+  String get subscriptionStatusActive => 'සක්‍රීයයි';
+
+  @override
+  String get accessDeniedMessage => 'ප්‍රවේශය ප්‍රතික්ෂේප විය';
+
+  @override
+  String subscribedToPlanMessage(String planId) {
+    return '✅ \"$planId\" සැලසුමට දායක විය!';
+  }
+
+  @override
+  String subscriptionFailedMessage(String error) {
+    return 'දායකත්වය අසාර්ථක විය: $error';
+  }
+
+  @override
+  String get purchasesRestoredMessage =>
+      '✅ මිලදී ගැනීම් සාර්ථකව ප්‍රතිසාධනය විය.';
+
+  @override
+  String restoreFailedMessage(String error) {
+    return 'ප්‍රතිසාධනය අසාර්ථක විය: $error';
+  }
+
+  @override
+  String get serviceTiersTitle => 'සේවා මට්ටම්';
+
+  @override
+  String get freeTierTitle => 'නොමිලේ මට්ටම';
+
+  @override
+  String get freeTierDescription =>
+      'තහවුරු කළ මාර්ගෝපදේශකයින් සඳහා අත්‍යවශ්‍ය සංචාර මෙවලම්.';
+
+  @override
+  String get featureBasicOperations => 'මූලික මෙහෙයුම්';
+
+  @override
+  String get featureVerifiedBadge => 'තහවුරු කළ බැජ්';
+
+  @override
+  String get featureStandardSos => 'සම්මත SOS';
+
+  @override
+  String get proCommanderTitle => 'Pro Commander';
+
+  @override
+  String get proCommanderDescription => 'ඔබේ දෘශ්‍යතාව සහ මෙවලම් උසස් කරන්න.';
+
+  @override
+  String get featureFeaturedListings => 'විශේෂාංගගත ලැයිස්තු';
+
+  @override
+  String get featureAdvancedAnalytics => 'උසස් විශ්ලේෂණ';
+
+  @override
+  String get featureClientAnalytics => 'ගනුදෙනුකරු විශ්ලේෂණ';
+
+  @override
+  String get featurePrioritySos => 'ප්‍රමුඛතා SOS';
+
+  @override
+  String get eliteAgencyTitle => 'Elite Agency';
+
+  @override
+  String get eliteAgencyDescription => 'සම්පූර්ණ රථ වාහන සහ සමාගම් කළමනාකරණය.';
+
+  @override
+  String get featureTeamManagement => 'කණ්ඩායම් කළමනාකරණය';
+
+  @override
+  String get featureOperatorDashboard => 'ක්‍රියාකරු උපකරණ පුවරුව';
+
+  @override
+  String get featureWhiteLabelBranding => 'White-label වෙළඳ නාමකරණය';
+
+  @override
+  String get fleetPlansTitle => 'රථ වාහන සැලසුම්';
+
+  @override
+  String get restoreButton => 'ප්‍රතිසාධනය කරන්න';
+
+  @override
+  String get currentPlanLabel => 'වත්මන් සැලසුම';
+
+  @override
+  String get freeTierLabel => 'නොමිලේ මට්ටම';
+
+  @override
+  String expiresColonDateLabel(String date) {
+    return 'කල් ඉකුත් වේ: $date';
+  }
+
+  @override
+  String get upgradeButton => 'උසස් කරන්න';
+
+  @override
+  String get manageButton => 'කළමනාකරණය කරන්න';
+
+  @override
+  String get mostPopularLabel => 'වඩාත් ජනප්‍රිය';
+
+  @override
+  String get perMonthSlashLabel => '/මාසයට';
+
+  @override
+  String get currentPlanButton => 'වත්මන් සැලසුම';
+
+  @override
+  String get selectThisPlanButton => 'මෙම සැලසුම තෝරන්න';
+
+  @override
+  String get goPremiumTitle => 'වාරික වෙත යන්න';
+
+  @override
+  String get fullArUnlimitedAiTripsMessage => 'සම්පූර්ණ AR සහ අසීමිත AI සංචාර';
+
+  @override
+  String get heritageArModeTitle => 'උරුම AR මාදිලිය';
+
+  @override
+  String get heritageArModeDescription =>
+      'ඓතිහාසික ශ්‍රව්‍ය මාර්ගෝපදේශ සමඟ 1:1 පරිමාණයෙන් ප්‍රතිනිර්මාණය කළ පුරාණ නටබුන් බලන්න.';
+
+  @override
+  String get oracleAiTripIntelligenceTitle => 'Oracle AI සංචාර බුද්ධිය';
+
+  @override
+  String get oracleAiTripIntelligenceDescription =>
+      'Oracle එන්ජිම මගින් බලගැන්වූ අසීමිත අධි-පුද්ගලීකරණය කළ සංචාර සැලසුම්.';
+
+  @override
+  String get offlineDigitalTwinsTitle => 'නොබැඳි ඩිජිටල් නිරූපණ';
+
+  @override
+  String get offlineDigitalTwinsDescription =>
+      'අඩු සංඥා ප්‍රදේශ සඳහා අධි-විභේදන සිතියම් සහ උනන්දුවක් දක්වන ස්ථාන 100+ බාගන්න.';
+
+  @override
+  String get exclusiveCuratorDealsTitle => 'සුවිශේෂී පරිපාලක ගණුදෙනු';
+
+  @override
+  String get exclusiveCuratorDealsDescription =>
+      'තෝරාගත් බුටික් නවාතැන් වල සාමාජික-පමණක් වට්ටම් වෙත ප්‍රවේශය.';
+
+  @override
+  String get guardianEmergencyTranslatorTitle => 'Guardian හදිසි පරිවර්තකය';
+
+  @override
+  String get guardianEmergencyTranslatorDescription =>
+      'SOS අතරතුර ශ්‍රී ලාංකික පොලිසියට හෝ රෝහල් සේවකයින්ට ඔබේ තත්ත්වය කථන සිංහලෙන් ක්ෂණිකව පැහැදිලි කරන්න.';
+
+  @override
+  String premiumActiveLabel(String plan) {
+    return '$plan සක්‍රීයයි';
+  }
+
+  @override
+  String get premiumFallback => 'වාරික';
+
+  @override
+  String renewingOnLabel(String date) {
+    return '$date දින අලුත් කරනු ලැබේ';
+  }
+
+  @override
+  String viaSourceLabel(String source) {
+    return '$source හරහා';
+  }
+
+  @override
+  String get storeFallback => 'වෙළඳසැල';
+
+  @override
+  String get resetPremiumDevButton => 'වාරික නැවත සකසන්න (සංවර්ධන පමණි)';
+
+  @override
+  String get premiumResetMessage =>
+      'වාරික නැවත සකසන ලදී. මිල මට්ටම් ආපසු ලැබී ඇත.';
+
+  @override
+  String get smartTravelerTitle => 'දක්ෂ සංචාරකයා';
+
+  @override
+  String get billedMonthlyLabel => 'මාසිකව බිල් කරනු ලැබේ';
+
+  @override
+  String get featureAiItineraries20 => 'මසකට AI සංචාර සැලසුම් 20';
+
+  @override
+  String get featureSelectedArPlaces => 'තෝරාගත් AR ස්ථාන';
+
+  @override
+  String get featureOfflineMapsBasic => 'නොබැඳි සිතියම් (මූලික)';
+
+  @override
+  String get heritagePremiumTitle => 'උරුම වාරිකය';
+
+  @override
+  String get billedYearlySaveLabel =>
+      'වාර්ෂිකව බිල් කරනු ලැබේ · ~17% ඉතිරි කරන්න';
+
+  @override
+  String get featureUnlimitedAiItineraries => 'අසීමිත AI සංචාර සැලසුම්';
+
+  @override
+  String get featureFullHeritageArAccess => 'සම්පූර්ණ උරුම AR ප්‍රවේශය';
+
+  @override
+  String get featureAllOfflineFeatures => 'සියලුම නොබැඳි විශේෂාංග';
+
+  @override
+  String get ultraExplorerTitle => 'Ultra Explorer';
+
+  @override
+  String get waitlistLabel => 'රැඳී සිටින ලැයිස්තුව';
+
+  @override
+  String get nextGenExperienceLabel => 'ඊළඟ පරම්පරාවේ අත්දැකීම';
+
+  @override
+  String get featureVrModeSupport => 'VR මාදිලි සහාය';
+
+  @override
+  String get featureHistoricalTimelines => 'ඓතිහාසික කාල රේඛා';
+
+  @override
+  String get featurePersonalAiCurator => 'පුද්ගලික AI පරිපාලක';
+
+  @override
+  String get ultraExplorerWaitlistMessage =>
+      '🚀 Ultra Explorer රැඳී සිටින ලැයිස්තුවේ ඇත! එය දියත් වූ විට අපි ඔබට දන්වන්නෙමු.';
+
+  @override
+  String get restorePreviousPurchasesButton =>
+      'පෙර මිලදී ගැනීම් ප්‍රතිසාධනය කරන්න';
+
+  @override
+  String get termsPrivacyLabel => 'සේවා නියම  •  රහස්‍යතා ප්‍රතිපත්තිය';
+
+  @override
+  String get testBuyDevButton => 'පරීක්ෂණ මිලදී ගැනීම (සංවර්ධන පමණි)';
+
+  @override
+  String get mockPurchaseSimulatedMessage =>
+      '🚀 ව්‍යාජ මිලදී ගැනීම අනුකරණය කරන ලදී. නැවුම් කරමින්...';
+
+  @override
+  String get monthlyLabel => 'මාසිකව';
+
+  @override
+  String get yearlySaveLabel => 'වාර්ෂිකව · 17% ඉතිරි කරන්න';
+
+  @override
+  String get lockedLabelShort => 'අගුළු දමා ඇත';
+
+  @override
+  String get perMonthLabel => '/ මාසයට';
+
+  @override
+  String get comingSoonButton => 'ළඟදීම';
+
+  @override
+  String get upgradeNowLongButton => 'දැන් උසස් කරන්න';
+
+  @override
+  String trialDaysLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'දින $count',
+      one: 'දින 1',
+    );
+    return '$_temp0 නොමිලේ අත්හදා බැලීම';
+  }
+
+  @override
+  String trialWeeksLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'සති $count',
+      one: 'සතියක්',
+    );
+    return '$_temp0 නොමිලේ අත්හදා බැලීම';
+  }
+
+  @override
+  String trialMonthsLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'මාස $count',
+      one: 'මාසයක්',
+    );
+    return '$_temp0 නොමිලේ අත්හදා බැලීම';
+  }
+
+  @override
+  String trialYearsLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'වසර $count',
+      one: 'වසරක්',
+    );
+    return '$_temp0 නොමිලේ අත්හදා බැලීම';
+  }
+
+  @override
+  String trialPeriodLabel(int count) {
+    return 'කාල පරිච්ඡේද $countක් නොමිලේ අත්හදා බැලීම';
+  }
+
+  @override
+  String oracleLostFocusMessage(String error) {
+    return 'Oracle අවධානය නැති විය: $error';
+  }
+
+  @override
+  String get savorLankaAiTitle => 'SAVORLANKA AI';
+
+  @override
+  String get culinaryVisionEngineLabel => 'ආහාරපාන දෘශ්‍ය එන්ජිම V2';
+
+  @override
+  String get liveRealTimeScannerLabel => 'සජීවී තථ්‍ය-කාලීන ස්කෑනරය';
+
+  @override
+  String nutritionReliabilityLabel(String reliability) {
+    return 'පෝෂණ විශ්වසනීයත්වය: $reliability';
+  }
+
+  @override
+  String get neuralReasoningLabel => 'ස්නායු තර්කනය';
+
+  @override
+  String aiVisualMarkersFallback(String label) {
+    return 'AI විසින් $label සමඟ අනුකූල දෘශ්‍ය ආහාරපාන සලකුණු හඳුනාගෙන ඇත.';
+  }
+
+  @override
+  String get authenticityIntelligenceTitle => 'සත්‍යතා බුද්ධිය';
+
+  @override
+  String get ingredientCertaintyTitle => 'අමුද්‍රව්‍ය විශ්වාසනීයත්වය';
+
+  @override
+  String get manualCulinaryOverrideTitle => 'අතින් ආහාරපාන අභිබවා යාම';
+
+  @override
+  String get refineIngredientsHint =>
+      'අමුද්‍රව්‍ය සකසන්න (කොමා වලින් වෙන් කර)...';
+
+  @override
+  String get cancelButtonUppercaseAlt => 'අවලංගු කරන්න';
+
+  @override
+  String get applyOverrideButton => 'අභිබවා යාම යොදන්න';
+
+  @override
+  String get ingredientTierConfirmed => 'තහවුරු කළ';
+
+  @override
+  String get ingredientTierLikely => 'විය හැකි';
+
+  @override
+  String get ingredientTierOptional => 'විකල්ප / අතුරු කෑම්';
+
+  @override
+  String mealContextLabel(String context) {
+    return 'ආහාර සන්දර්භය: $context';
+  }
+
+  @override
+  String get supportingElementsLabel => 'සහායක අංග:';
+
+  @override
+  String influencesLabel(String influences) {
+    return 'බලපෑම්: $influences';
+  }
+
+  @override
+  String get visualFreshnessQualityLabel => 'දෘශ්‍ය නැවුම්බව සහ ගුණාත්මකභාවය';
+
+  @override
+  String qualityColonLabel(String quality) {
+    return 'ගුණාත්මකභාවය: $quality';
+  }
+
+  @override
+  String textureColonLabel(String texture) {
+    return 'වයනය: $texture';
+  }
+
+  @override
+  String get heritageNarrativeEngineTitle => 'උරුම කථා එන්ජිම';
+
+  @override
+  String get verifiedLegacyTitle => 'තහවුරු කළ උරුමය';
+
+  @override
+  String get regionalTraditionTitle => 'ප්‍රාදේශීය සම්ප්‍රදාය';
+
+  @override
+  String get folkloreNarrativeTitle => 'ජනශ්‍රැති කථාව';
+
+  @override
+  String get culinaryGapPairingEngineTitle => 'ආහාරපාන හිඩැස් සහ යුගල එන්ජිම';
+
+  @override
+  String get missingCompanionsLabel => 'අස්ථානගත සහායක ආහාර:';
+
+  @override
+  String get engineNotesLabel => 'එන්ජින් සටහන්:';
+
+  @override
+  String get recipeRefactorEngineTitle => 'වට්ටෝරු වෙනස් කිරීමේ එන්ජිම';
+
+  @override
+  String get refactoredStepsForYouLabel => 'ඔබ සඳහා වෙනස් කළ පියවර:';
+
+  @override
+  String get prepMetricLabel => 'සකස් කිරීම';
+
+  @override
+  String get cookMetricLabel => 'පිසීම';
+
+  @override
+  String get levelMetricLabel => 'මට්ටම';
+
+  @override
+  String get calMetricLabel => 'කැලරි';
+
+  @override
+  String get proteinLabel => 'ප්‍රෝටීන්';
+
+  @override
+  String get carbsLabel => 'කාබෝහයිඩ්‍රේට්';
+
+  @override
+  String get fatLabel => 'මේදය';
+
+  @override
+  String get fiberLabel => 'තන්තු';
+
+  @override
+  String get healthRatingLabel => 'සෞඛ්‍ය ශ්‍රේණිගත කිරීම';
+
+  @override
+  String healthRatingValueLabel(int rating) {
+    return '$rating/10';
+  }
+
+  @override
+  String get sinhalaLabel => 'සිංහල';
+
+  @override
+  String get englishLabel => 'ඉංග්‍රීසි';
+
+  @override
+  String get backLabel => 'ආපසු';
+
+  @override
+  String get nextLabel => 'ඊළඟ';
+
+  @override
+  String get rescanLabel => 'නැවත ස්කෑන් කරන්න';
+
+  @override
+  String get oracleInsightsTitle => 'Oracle තීක්ෂණයන්';
+
+  @override
+  String get globalSubstitutionsTitle => 'ගෝලීය ආදේශන';
+
+  @override
+  String get aiEstimatedValuesDisclaimer =>
+      'AI-ඇස්තමේන්තුගත අගයන්. සාම්ප්‍රදායික විචලනයන් වෙනස් විය හැක.';
+
+  @override
+  String get savedLabel => 'සුරැකිණි';
+
+  @override
+  String get saveToCookbookLabel => 'වට්ටෝරු පොතට සුරකින්න';
+
+  @override
+  String get voiceGuideLabel => 'හඬ මාර්ගෝපදේශය';
+
+  @override
+  String savorLankaShareText(String name, String score) {
+    return 'Hidden Gems SL.ai හි මට හමු වූ මෙම $name වට්ටෝරුව බලන්න! එය සත්‍ය ශ්‍රී ලාංකික රසවත් ආහාරයකි. \n\nOracle ලකුණු: $score%';
+  }
+
+  @override
+  String get savorLankaShareSubject =>
+      'Hidden Gems SL.ai - Savor Lanka වට්ටෝරුව';
+
+  @override
+  String get phase3CrossMatchTitle => 'අදියර 3: හරස්-ගැලපුම් ආදේශනය';
+
+  @override
+  String get visuallySimilarAlternativesLabel => 'දෘශ්‍යමය වශයෙන් සමාන විකල්ප';
+
+  @override
+  String get aiCrossMatchReasoningLabel => 'AI හරස්-ගැලපුම් තර්කනය:';
+
+  @override
+  String get phase6HygienePresentationTitle =>
+      'අදියර 6: සනීපාරක්ෂාව සහ ඉදිරිපත් කිරීම';
+
+  @override
+  String get presentationLabel => 'ඉදිරිපත් කිරීම';
+
+  @override
+  String get integrityLabel => 'අඛණ්ඩතාව';
+
+  @override
+  String get popularLabel => 'ජනප්‍රිය';
+
+  @override
+  String get curatorDealsTitle => 'පරිපාලක ගණුදෙනු';
+
+  @override
+  String get noDealsRightNowTitle => 'දැනට ගණුදෙනු නැත';
+
+  @override
+  String get newPartnerDiscountsMessage =>
+      'නව හවුල්කරු වට්ටම් නිතිපතා එකතු කෙරේ — ඉක්මනින් නැවත පරීක්ෂා කරන්න.';
+
+  @override
+  String percentOffLabel(int percent) {
+    return '$percent% වට්ටම්';
+  }
+
+  @override
+  String validUntilLabel(String date) {
+    return '$date දක්වා වලංගුයි';
+  }
+
+  @override
+  String get claimDealButton => 'ගණුදෙනුව ලබාගන්න';
+
+  @override
+  String get passportTitle => 'පාස්පෝර්ට්';
+
+  @override
+  String get verifiedVisitCollectionSubtitle => 'ඔබේ තහවුරු කළ සංචාර එකතුව';
+
+  @override
+  String get passportIsEmptyTitle => 'පාස්පෝර්ට් හිස් ය';
+
+  @override
+  String get exploreHistoricalGemsMessage =>
+      'ඔබේ අනන්‍ය ඩිජිටල් මුද්‍රා ලබාගැනීමට\nඓතිහාසික මැණික් ගවේෂණය කරන්න.';
+
+  @override
+  String claimedOnLabel(String date) {
+    return '$date දින ලබාගන්නා ලදී';
+  }
+
+  @override
+  String get verifiableHashLabel => 'සත්‍යාපනය කළ හැකි හැෂ්';
+
+  @override
+  String get shareCollectibleButton => 'එකතුව බෙදාගන්න';
+
+  @override
+  String get stampRarityCommon => 'සාමාන්‍ය';
+
+  @override
+  String get stampRarityRare => 'දුර්ලභ';
+
+  @override
+  String get stampRarityMythic => 'පුරාණෝක්ති';
+
+  @override
+  String get audioGuideLabel => 'ශ්‍රව්‍ය මාර්ගෝපදේශය';
+
+  @override
+  String get sinhalaShortLabel => 'සිංහල';
+
+  @override
+  String get englishShortLabel => 'English';
+
+  @override
+  String get joinGroupTourTitle => 'සමූහ සංචාරයට එකතු වන්න';
+
+  @override
+  String get enterSixDigitCodeMessage =>
+      'ඔබේ මාර්ගෝපදේශකයා විසින් සපයන ලද අංක 6 කේතය ඇතුළත් කරන්න.';
+
+  @override
+  String get cancelButtonUppercaseThird => 'අවලංගු කරන්න';
+
+  @override
+  String get joinButtonUppercase => 'එකතු වන්න';
+
+  @override
+  String get tapFlatSurfaceMessage =>
+      '👆 සමතලා මතුපිටක් ස්ථානගත කිරීමට තට්ටු කරන්න';
+
+  @override
+  String groupTourStartedCodeLabel(String code) {
+    return 'සමූහ සංචාරය ආරම්භ විය! කේතය: $code';
+  }
+
+  @override
+  String get invalidSessionCodeMessage => 'වලංගු නොවන සැසි කේතය';
+
+  @override
+  String get couldNotLoadAudioMessage =>
+      'ශ්‍රව්‍ය විස්තරය පූරණය කළ නොහැකි විය.';
+
+  @override
+  String get galleryPermissionDeniedMessage => 'ගැලරි අවසරය ප්‍රතික්ෂේප විය';
+
+  @override
+  String failedToCapturePhotoMessage(String error) {
+    return 'ඡායාරූපය ග්‍රහණය කිරීමට අසමත් විය: $error';
+  }
+
+  @override
+  String codeColonLabel(String code) {
+    return 'කේතය: $code';
+  }
+
+  @override
+  String get thenLabel => 'එවිට';
+
+  @override
+  String get nowLabel => 'දැන්';
+
+  @override
+  String get resetLabel => 'යළි සකසන්න';
+
+  @override
+  String get scalePlusLabel => 'විශාල+';
+
+  @override
+  String get scaleMinusLabel => 'කුඩා-';
+
+  @override
+  String get memoryLabel => 'මතකය';
+
+  @override
+  String get removeLabel => 'ඉවත් කරන්න';
+
+  @override
+  String get placeLabel => 'ස්ථානගත කරන්න';
+
+  @override
+  String get historicalInfoComingSoonMessage =>
+      'ඓතිහාසික තොරතුරු ළඟදීම එනු ඇත.';
+
+  @override
+  String get preparingHeritageAssetsMessage => 'උරුම වත්කම් සූදානම් කරමින්...';
+
+  @override
+  String progressSizeLabel(int progress, String size) {
+    return '$progress% • $size MB';
+  }
+
+  @override
+  String modelColonNameLabel(String name) {
+    return 'ආකෘතිය: $name';
+  }
+
+  @override
+  String authorColonNameLabel(String name) {
+    return 'කර්තෘ: $name';
+  }
+
+  @override
+  String get moveSlowlyToScanMessage =>
+      'සමතලා මතුපිටක් ස්කෑන් කිරීමට\nඔබේ දුරකථනය සෙමින් ගෙන යන්න';
+
+  @override
+  String get tapPlaceToPlaceModelMessage =>
+      '👇 \"ස්ථානගත කරන්න\" තට්ටු කර පසුව සමතලා මතුපිටක තට්ටු කරන්න';
+
+  @override
+  String demoModeSecondsRemainingLabel(int seconds) {
+    return 'පෙළපුවත් මාදිලිය: තත්පර $seconds ඉතිරිය';
+  }
+
+  @override
+  String get premiumHeritageSessionLabel => 'වාරික උරුම සැසිය';
+
+  @override
+  String get artifactDiscoveredLabel => 'පුරාවස්තුවක් සොයාගන්නා ලදී!';
+
+  @override
+  String ptsRarityLabel(int points, String rarity) {
+    return '+ලකුණු $points • $rarity';
+  }
+
+  @override
+  String get hiddenGemsSlWatermark => 'HIDDEN GEMS SL';
+
+  @override
+  String get heritageArWatermark => 'HERITAGE AR';
+
+  @override
+  String get captureSuccessfulTitle => 'ග්‍රහණය සාර්ථකයි!';
+
+  @override
+  String get shareDiscoveryMessage =>
+      'ඔබේ ඓතිහාසික සොයාගැනීම ලෝකය සමඟ බෙදාගන්න';
+
+  @override
+  String get instagramLabel => 'Instagram';
+
+  @override
+  String get tiktokLabel => 'TikTok';
+
+  @override
+  String get savedLabelShort => 'සුරැකිණි';
+
+  @override
+  String sharePlatformCaptionInstagram(String placeName) {
+    return 'AR හි $placeName ගවේෂණය කරමින් #HiddenGemsSL සමඟ';
+  }
+
+  @override
+  String get sharePlatformCaptionTiktok =>
+      'ඉතිහාසය ජීවමාන වේ! #HiddenGemsSL #HeritageAR';
+
+  @override
+  String get photoSavedGalleryMessage => 'ඡායාරූපය ඔබේ ගැලරියට සුරැකිණි!';
+
+  @override
+  String get backToArButton => 'AR වෙත ආපසු';
+
+  @override
+  String distanceToTargetLabel(String distance, String placeName) {
+    return '$placeName වෙත මීටර් $distance';
+  }
+
+  @override
+  String get recommendedLabel => 'නිර්දේශිතයි';
+
+  @override
+  String categoryRatingLabel(String category, String rating) {
+    return '$category • $rating ★';
+  }
+
+  @override
+  String get viewButtonUppercase => 'බලන්න';
+
+  @override
+  String get loginToLeaveMemoryMessage => 'AR මතකයක් තැබීමට පුරන්න!';
+
+  @override
+  String get leaveArMemoryTitle => 'AR මතකයක් තබන්න';
+
+  @override
+  String get whatDoYouSeeHereHint => 'ඔබ මෙහි දකින්නේ කුමක්ද?';
+
+  @override
+  String get cancelButton2 => 'අවලංගු කරන්න';
+
+  @override
+  String get dropButton => 'තබන්න';
+
+  @override
+  String get memoryDroppedMessage => 'මතකය AR විශ්වයට තැබිණි!';
+
+  @override
+  String get explorerFallback => 'ගවේෂකයා';
+
+  @override
+  String signalPercentLabel(int percent) {
+    return 'සංඥාව: $percent%';
+  }
+
+  @override
+  String get searchingLabel => 'සොයමින්...';
+
+  @override
+  String get cameraAccessNeededTitle => 'කැමරා ප්‍රවේශය අවශ්‍යයි';
+
+  @override
+  String get arNotAvailableDeviceTitle => 'මෙම උපාංගයේ AR ලබාගත නොහැක';
+
+  @override
+  String get arCouldntLoadTitle => 'මෙවර AR පූරණය කළ නොහැක';
+
+  @override
+  String get cameraAccessNeededMessage =>
+      'AR විශේෂාංග සඳහා කැමරා ප්‍රවේශය අවශ්‍යයි. ඒ වෙනුවට මෙන්න සිනමාපටමය ප්‍රතිනිර්මාණයක්.';
+
+  @override
+  String get arNotAvailableMessage =>
+      'ඒ වෙනුවට එම යුගයේම සිනමාපටමය 360° දර්ශනයක් මෙන්න.';
+
+  @override
+  String get arCouldntLoadMessage =>
+      'ඓතිහාසික 3D ආකෘතිය පූරණය කළ නොහැකි විය. ඒ වෙනුවට සිනමාපටමය විකල්ප දර්ශනය මෙන්න.';
+
+  @override
+  String get closeButtonLabel => 'වසන්න';
+
+  @override
+  String get watchAdToUnlockButton => 'අගුළු හැරීමට දැන්වීමක් නරඹන්න';
+
+  @override
+  String get oracleRewardFallbackMessage =>
+      '✨ Oracle ත්‍යාගය සක්‍රීයයි! විකල්ප මාදිලි සහ වාරික අන්තර්ගතය අගුළු හැරී ඇත.';
+
+  @override
+  String get arNotAvailableInfoBarMessage =>
+      'මෙම උපාංගයේ AR ලබාගත නොහැක · 360° දර්ශනය පෙන්වමින්';
+
+  @override
+  String get cinematicPreviewUnavailableMessage =>
+      'සිනමාපටමය පෙරදසුන ලබාගත නොහැක';
+
+  @override
+  String get interactive3dViewTitle => 'අන්තර්ක්‍රියාකාරී 3D දර්ශනය';
+
+  @override
+  String get touchToRotateMonumentMessage =>
+      'ස්මාරකය භ්‍රමණය කිරීමට ස්පර්ශ කරන්න';
+
+  @override
+  String get historicalStoryLabel => 'ඓතිහාසික කථාව';
+
+  @override
+  String unveilingEraTitle(String era) {
+    return '$era හෙළිදරව් කරමින්';
+  }
+
+  @override
+  String heritageStoryBody(String era) {
+    return 'ශ්‍රී ලංකාවේ උරුමය කාලයේ රටාව තුළ ගැඹුරින් විහිදේ. $era වකවානුවේ සිට පැවතෙන මෙම ස්ථානය, ජල ඉංජිනේරු විද්‍යාව සහ අධ්‍යාත්මික ගෘහ නිර්මාණ ශිල්පය පුරෝගාමී වූ සශ්‍රීක ශිෂ්ටාචාරයක කේන්ද්‍රස්ථානය වරෙක විය.\n\nඅද අප දකින ස්තූපය මිලියන 100කට වැඩි අව්වේ පුළුස්සන ලද ගඩොල් භාවිතයෙන් ඉදිකරන ලද අතර, එය පුරාණ රජවරුන්ගේ ඉංජිනේරු විස්මයන්ට සාක්ෂියක් ලෙස පවතී...';
+  }
+
+  @override
+  String get listenToNarrationLabel => 'විස්තරය අසන්න';
+
+  @override
+  String get sinhalaEnglishAvailableLabel => 'සිංහල සහ ඉංග්‍රීසි ලබාගත හැක';
+
+  @override
+  String get illustrationCaptionLabel =>
+      'නිදර්ශනය: පුරාණ ඉංජිනේරු විද්‍යාව (සංකල්ප කලාව)';
+
+  @override
+  String get mode360Label => '360°';
+
+  @override
+  String get mode3dLabel => '3D';
+
+  @override
+  String get modeStoryLabel => 'කථාව';
+
+  @override
+  String get unlockArHeritageModeTitle => 'AR උරුම මාදිලිය අගුළු හරින්න';
+
+  @override
+  String get arHeritageModeSubtitle =>
+      'දහස් ගණන් වසර පෙර ශ්‍රී ලංකාව පෙනී සිටි ආකාරයම අත්විඳින්න.';
+
+  @override
+  String get featureAncient3dReconstruction => 'පුරාණ 3D ප්‍රතිනිර්මාණය';
+
+  @override
+  String get featureAudioNarrationBilingual =>
+      'ශ්‍රව්‍ය විස්තරය (සිංහල / English)';
+
+  @override
+  String get featureArPhotoCapture => 'AR ඡායාරූප ග්‍රහණය සහ සමාජ බෙදාගැනීම';
+
+  @override
+  String get pricingTrialLabel =>
+      'රු. 299/මාසයේ සිට  ·  දින 7ක නොමිලේ අත්හදා බැලීම';
+
+  @override
+  String get watch10SecPreviewButton => 'තත්පර 10ක පෙරදසුන නරඹන්න';
+
+  @override
+  String get watchAdUnlockSessionButton =>
+      'සැසිය අගුළු හැරීමට දැන්වීමක් නරඹන්න';
+
+  @override
+  String get notNowButtonLabel => 'දැන් නොවේ';
+
+  @override
+  String get ancientArtifactsLabel => 'පුරාණ පුරාවස්තු';
 }

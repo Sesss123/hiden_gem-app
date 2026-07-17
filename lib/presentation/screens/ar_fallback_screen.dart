@@ -7,6 +7,7 @@ import '../../core/theme/app_theme.dart';
 import '../../core/services/usage_limiter_service.dart';
 import '../../data/datasources/monetization_service.dart';
 import 'package:hidden_gems_sl/core/utils/secure_logger.dart';
+import '../../l10n/app_localizations.dart';
 
 class ARFallbackScreen extends StatefulWidget {
   final ARPlaceData arData;
@@ -187,7 +188,7 @@ class _ARFallbackScreenState extends State<ARFallbackScreen> {
                                 foregroundColor: AppTheme.colors.white,
                                 padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
                               ),
-                              child: const Text("Close"),
+                              child: Text(AppLocalizations.of(context)!.closeButtonLabel),
                             ),
                             const SizedBox(width: 12),
                             ElevatedButton(
@@ -199,7 +200,7 @@ class _ARFallbackScreenState extends State<ARFallbackScreen> {
                                     if (context.mounted) {
                                       ScaffoldMessenger.of(context).showSnackBar(
                                         SnackBar(
-                                          content: Text('✨ Oracle reward active! Fallback modes and premium content unlocked.'),
+                                          content: Text(AppLocalizations.of(context)!.oracleRewardFallbackMessage),
                                           backgroundColor: AppTheme.colors.green,
                                         ),
                                       );
@@ -214,7 +215,7 @@ class _ARFallbackScreenState extends State<ARFallbackScreen> {
                                 elevation: 0,
                                 padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
                               ),
-                              child: const Text("Watch ad to unlock"),
+                              child: Text(AppLocalizations.of(context)!.watchAdToUnlockButton),
                             ),
                           ],
                         ),
@@ -253,7 +254,7 @@ class _ARFallbackScreenState extends State<ARFallbackScreen> {
           Icon(Icons.info_outline, color: Theme.of(context).colorScheme.primary, size: 16),
           const SizedBox(width: 12),
           Text(
-            "AR isn't available on this device · Showing 360° view",
+            AppLocalizations.of(context)!.arNotAvailableInfoBarMessage,
             style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 11, fontWeight: FontWeight.w500),
           ),
         ],
@@ -272,7 +273,7 @@ class _ARFallbackScreenState extends State<ARFallbackScreen> {
               Icon(Icons.video_library_outlined, color: AppTheme.colors.white24, size: 48),
               const SizedBox(height: 16),
               Text(
-                "Cinematic preview unavailable",
+                AppLocalizations.of(context)!.cinematicPreviewUnavailableMessage,
                 style: GoogleFonts.inter(color: AppTheme.colors.white38, fontSize: 13),
               ),
             ],
@@ -300,11 +301,11 @@ class _ARFallbackScreenState extends State<ARFallbackScreen> {
         Icon(Icons.threed_rotation, color: AppTheme.colors.primary, size: 80),
         const SizedBox(height: 24),
         Text(
-          "Interactive 3D View",
+          AppLocalizations.of(context)!.interactive3dViewTitle,
           style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontSize: 20, fontWeight: FontWeight.bold),
         ),
         Text(
-          "Touch to rotate monument",
+          AppLocalizations.of(context)!.touchToRotateMonumentMessage,
           style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 13),
         ),
       ],
@@ -317,17 +318,17 @@ class _ARFallbackScreenState extends State<ARFallbackScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "Historical story",
+          AppLocalizations.of(context)!.historicalStoryLabel,
           style: GoogleFonts.inter(color: Theme.of(context).colorScheme.primary, fontSize: 12, fontWeight: FontWeight.w700, letterSpacing: 0.5),
         ),
         const SizedBox(height: 16),
         Text(
-          "Unveiling the ${widget.arData.historicalPeriod}",
+          AppLocalizations.of(context)!.unveilingEraTitle(widget.arData.historicalPeriod),
           style: GoogleFonts.outfit(color: AppTheme.colors.white, fontSize: 30, fontWeight: FontWeight.w700, letterSpacing: -0.5),
         ),
         const SizedBox(height: 24),
         Text(
-          "Sri Lanka's heritage runs deep into the fabric of time. This site, dating back to the ${widget.arData.historicalPeriod}, was once the center of a thriving civilization that pioneered hydraulic engineering and spiritual architecture.\n\nThe stupa we see today was constructed using over 100 million sun-baked bricks, standing as a testament to the engineering marvels of ancient kings...",
+          AppLocalizations.of(context)!.heritageStoryBody(widget.arData.historicalPeriod),
           style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 16, height: 1.8),
         ),
         const SizedBox(height: 32),
@@ -352,7 +353,7 @@ class _ARFallbackScreenState extends State<ARFallbackScreen> {
         ),
         const SizedBox(height: 8),
         Text(
-          "Illustration: Ancient Engineering (Concept Art)",
+          AppLocalizations.of(context)!.illustrationCaptionLabel,
           style: GoogleFonts.inter(color: AppTheme.colors.white38, fontSize: 12, fontStyle: FontStyle.italic),
         ),
       ],
@@ -380,8 +381,8 @@ class _ARFallbackScreenState extends State<ARFallbackScreen> {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("Listen to narration", style: GoogleFonts.inter(color: Theme.of(context).colorScheme.primary, fontSize: 11, fontWeight: FontWeight.w700)),
-            Text("Sinhala & English available", style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 10)),
+            Text(AppLocalizations.of(context)!.listenToNarrationLabel, style: GoogleFonts.inter(color: Theme.of(context).colorScheme.primary, fontSize: 11, fontWeight: FontWeight.w700)),
+            Text(AppLocalizations.of(context)!.sinhalaEnglishAvailableLabel, style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 10)),
           ],
         ),
       ],
@@ -396,9 +397,9 @@ class _ARFallbackScreenState extends State<ARFallbackScreen> {
     ),
     child: Row(
       children: [
-        _modeBtn("video", Icons.videocam, "360°"),
-        _modeBtn("3d", Icons.view_in_ar, "3D"),
-        _modeBtn("story", Icons.menu_book, "Story"),
+        _modeBtn("video", Icons.videocam, AppLocalizations.of(context)!.mode360Label),
+        _modeBtn("3d", Icons.view_in_ar, AppLocalizations.of(context)!.mode3dLabel),
+        _modeBtn("story", Icons.menu_book, AppLocalizations.of(context)!.modeStoryLabel),
       ],
     ),
   );
@@ -426,17 +427,19 @@ class _ARFallbackScreenState extends State<ARFallbackScreen> {
   }
 
   String _getTitle() {
+    final l10n = AppLocalizations.of(context)!;
     if (_activeMode != "video") return "";
-    if (widget.reason == "denied") return "Camera access needed";
-    if (widget.reason == "unsupported") return "AR isn't available on this device";
-    return "AR couldn't load this time";
+    if (widget.reason == "denied") return l10n.cameraAccessNeededTitle;
+    if (widget.reason == "unsupported") return l10n.arNotAvailableDeviceTitle;
+    return l10n.arCouldntLoadTitle;
   }
 
   String _getMessage() {
+    final l10n = AppLocalizations.of(context)!;
     if (_activeMode != "video") return "";
-    if (widget.reason == "denied") return "Camera access is needed for AR features. Here's a cinematic reconstruction instead.";
-    if (widget.reason == "unsupported") return "Here's a cinematic 360° view of the same era instead.";
-    return "We couldn't load the historical 3D model. Here's the cinematic fallback view instead.";
+    if (widget.reason == "denied") return l10n.cameraAccessNeededMessage;
+    if (widget.reason == "unsupported") return l10n.arNotAvailableMessage;
+    return l10n.arCouldntLoadMessage;
   }
 
   Widget _circleBtn(IconData icon, VoidCallback onTap) => GestureDetector(

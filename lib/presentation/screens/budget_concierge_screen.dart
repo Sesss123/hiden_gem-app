@@ -6,6 +6,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../../core/theme/oracle_ui_system.dart';
 import '../../core/services/expense_service.dart';
 import '../../data/models/expense_model.dart';
+import '../../l10n/app_localizations.dart';
 
 class BudgetConciergeScreen extends ConsumerStatefulWidget {
   const BudgetConciergeScreen({super.key});
@@ -18,7 +19,7 @@ class BudgetConciergeScreen extends ConsumerStatefulWidget {
 class _BudgetConciergeScreenState extends ConsumerState<BudgetConciergeScreen> {
   List<Expense> _expenses = [];
   double _totalSpent = 0.0;
-  String _aiAdvice = "Analyzing your spending patterns...";
+  String? _aiAdvice;
   bool _isLoading = true;
 
   @override
@@ -45,14 +46,8 @@ class _BudgetConciergeScreenState extends ConsumerState<BudgetConciergeScreen> {
     // served entirely by the local rule-based generator below. When the
     // self-hosted LLM is ready, this is the single place to route through it.
     if (mounted) {
-      setState(() => _aiAdvice = _buildLocalAdvice());
+      setState(() => _aiAdvice = AppLocalizations.of(context)!.localAdviceMessage);
     }
-  }
-
-  String _buildLocalAdvice() {
-    return "Your spending pace aligns well with island travel standards. "
-        "We recommend utilizing PickMe or Uber for transparent transport "
-        "fares, and sampling local eateries to maximize your value.";
   }
 
   @override
@@ -77,7 +72,7 @@ class _BudgetConciergeScreenState extends ConsumerState<BudgetConciergeScreen> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text("Recent transactions",
+                              Text(AppLocalizations.of(context)!.recentTransactionsTitle,
                                   style: GoogleFonts.outfit(
                                       color: AppTheme.textPrimary(context),
                                       fontWeight: FontWeight.w700,
@@ -120,7 +115,7 @@ class _BudgetConciergeScreenState extends ConsumerState<BudgetConciergeScreen> {
             onPressed: () => Navigator.pop(context),
           ),
           Text(
-            "Budget concierge",
+            AppLocalizations.of(context)!.budgetConciergeTitle,
             style: GoogleFonts.outfit(
               color: AppTheme.textPrimary(context),
               fontWeight: FontWeight.w800,
@@ -142,7 +137,7 @@ class _BudgetConciergeScreenState extends ConsumerState<BudgetConciergeScreen> {
       ),
       child: Column(
         children: [
-          Text("Total spent so far",
+          Text(AppLocalizations.of(context)!.totalSpentSoFarLabel,
               style: GoogleFonts.inter(
                   color: AppTheme.textSecondary(context),
                   fontSize: 12,
@@ -156,7 +151,7 @@ class _BudgetConciergeScreenState extends ConsumerState<BudgetConciergeScreen> {
                 fontWeight: FontWeight.w800),
           ),
           SizedBox(height: 4),
-          Text("≈ \$${(_totalSpent / 320).toStringAsFixed(2)} USD",
+          Text(AppLocalizations.of(context)!.approxUsdLabel((_totalSpent / 320).toStringAsFixed(2)),
               style: GoogleFonts.inter(
                   color: AppTheme.textSecondary(context),
                   fontSize: 12,
@@ -194,7 +189,7 @@ class _BudgetConciergeScreenState extends ConsumerState<BudgetConciergeScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Oracle advice",
+                  AppLocalizations.of(context)!.oracleAdviceLabel,
                   style: GoogleFonts.inter(
                       color: AppPalette.heroOchre,
                       fontSize: 11,
@@ -202,7 +197,7 @@ class _BudgetConciergeScreenState extends ConsumerState<BudgetConciergeScreen> {
                 ),
                 SizedBox(height: 6),
                 Text(
-                  _aiAdvice,
+                  _aiAdvice ?? AppLocalizations.of(context)!.analyzingSpendingPatternsMessage,
                   style: GoogleFonts.inter(
                       color: AppTheme.colors.white.withValues(alpha: 0.8),
                       fontSize: 12,
@@ -337,7 +332,7 @@ class _BudgetConciergeScreenState extends ConsumerState<BudgetConciergeScreen> {
                     borderRadius: BorderRadius.circular(2)),
               ),
               SizedBox(height: 32),
-              Text("Log transaction",
+              Text(AppLocalizations.of(context)!.logTransactionTitle,
                   style: GoogleFonts.outfit(
                       color: AppTheme.textPrimary(context),
                       fontWeight: FontWeight.w700,
@@ -349,7 +344,7 @@ class _BudgetConciergeScreenState extends ConsumerState<BudgetConciergeScreen> {
                     color: Theme.of(context).colorScheme.onSurface,
                     fontWeight: FontWeight.w600),
                 decoration: InputDecoration(
-                  hintText: "What was the purpose?",
+                  hintText: AppLocalizations.of(context)!.whatWasThePurposeHint,
                   hintStyle: GoogleFonts.inter(
                       color: Theme.of(context)
                           .colorScheme
@@ -399,7 +394,7 @@ class _BudgetConciergeScreenState extends ConsumerState<BudgetConciergeScreen> {
                     fontWeight: FontWeight.w900,
                     fontSize: 18),
                 decoration: InputDecoration(
-                  hintText: "Amount (LKR)",
+                  hintText: AppLocalizations.of(context)!.amountLkrHint,
                   hintStyle: GoogleFonts.inter(
                       color: Theme.of(context)
                           .colorScheme
@@ -479,7 +474,7 @@ class _BudgetConciergeScreenState extends ConsumerState<BudgetConciergeScreen> {
                     elevation: 0,
                   ),
                   child: Text(
-                    "Save expense",
+                    AppLocalizations.of(context)!.saveExpenseButton,
                     style: AppTheme.buttonLabelStyle(context),
                   ),
                 ),

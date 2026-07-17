@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../core/theme/oracle_ui_system.dart';
 import '../../data/models/portal_model.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import '../../l10n/app_localizations.dart';
 
 class AncestralPortalScreen extends StatefulWidget {
   final AncestralPortal portal;
@@ -153,7 +154,7 @@ class _AncestralPortalScreenState extends State<AncestralPortalScreen> {
                   ),
                   SizedBox(height: 16),
                   OracleUI.neonText(
-                    "ANCIENT ARTIFACTS",
+                    AppLocalizations.of(context)!.ancientArtifactsLabel,
                     style: GoogleFonts.outfit(
                       color: AppTheme.colors.white24, 
                       fontSize: 10, 

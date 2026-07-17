@@ -22,6 +22,7 @@ import '../../data/models/event_model.dart';
 import '../widgets/cached_image.dart';
 import '../widgets/skeleton_loaders.dart';
 import '../widgets/custom_buttons.dart';
+import '../../l10n/app_localizations.dart';
 
 class EventCalendarScreen extends StatefulWidget {
   const EventCalendarScreen({super.key});
@@ -58,9 +59,10 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> with Automati
     _loadData();
     _broadcastSub = MonsoonBroadcastService().broadcastStream.listen((alert) {
       if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text("🚨 HAZARD WARNING: ${alert['message'] ?? 'Extreme weather alert!'}"),
+            content: Text(l10n.hazardWarningMessage(alert['message'] ?? l10n.extremeWeatherAlertFallback)),
             backgroundColor: AppTheme.colors.redAccent,
           ),
         );
@@ -133,7 +135,7 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> with Automati
             const SizedBox(width: 20),
           ],
           title: Text(
-            "Events",
+            AppLocalizations.of(context)!.eventsTitle,
             style: GoogleFonts.outfit(
               fontSize: 20,
               fontWeight: FontWeight.w800,
@@ -158,7 +160,7 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> with Automati
                 
                 SizedBox(height: 48),
                 Text(
-                  "Top picks for you",
+                  AppLocalizations.of(context)!.topPicksForYouTitle,
                   style: GoogleFonts.outfit(
                     fontSize: 15,
                     fontWeight: FontWeight.w700,
@@ -262,14 +264,15 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> with Automati
   }
 
   Widget _buildCategoryFilters() {
+    final l10n = AppLocalizations.of(context)!;
     return SizedBox(
       height: 46,
       child: ListView(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 24),
         children: [
-          _filterChip("All", null, Icons.auto_awesome_mosaic_rounded),
-          ...EventCategory.values.map((cat) => _filterChip(_sentenceCase(cat.name), cat, _getCategoryIcon(cat))),
+          _filterChip(l10n.categoryAllFilter, null, Icons.auto_awesome_mosaic_rounded),
+          ...EventCategory.values.map((cat) => _filterChip(_categoryLabel(cat, l10n), cat, _getCategoryIcon(cat))),
         ],
       ),
     );
@@ -307,9 +310,16 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> with Automati
     );
   }
 
-  String _sentenceCase(String label) {
-    if (label.isEmpty) return label;
-    return label[0].toUpperCase() + label.substring(1).toLowerCase();
+  String _categoryLabel(EventCategory category, AppLocalizations l10n) {
+    switch (category) {
+      case EventCategory.beach: return l10n.categoryBeach;
+      case EventCategory.cultural: return l10n.categoryCultural;
+      case EventCategory.religious: return l10n.categoryReligious;
+      case EventCategory.sports: return l10n.categorySports;
+      case EventCategory.seasonal: return l10n.categorySeasonal;
+      case EventCategory.festival: return l10n.categoryFestival;
+      case EventCategory.party: return l10n.categoryParty;
+    }
   }
 
   Widget _buildEventList() {
@@ -320,7 +330,7 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> with Automati
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "Available events",
+          AppLocalizations.of(context)!.availableEventsTitle,
           style: GoogleFonts.outfit(
             fontSize: 15,
             fontWeight: FontWeight.w700,
@@ -382,7 +392,7 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> with Automati
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    "${event.location} · ${_sentenceCase(event.category.name)}",
+                    AppLocalizations.of(context)!.eventLocationCategoryLabel(event.location ?? '', _categoryLabel(event.category, AppLocalizations.of(context)!)),
                     style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 11, fontWeight: FontWeight.w500)
                   ),
                 ],
@@ -443,7 +453,7 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> with Automati
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            OracleUI.glassChip(context: context, label: event.category.name.toUpperCase(), isSelected: true),
+                            OracleUI.glassChip(context: context, label: _categoryLabel(event.category, AppLocalizations.of(context)!).toUpperCase(), isSelected: true),
                             SizedBox(height: 12),
                             OracleUI.neonText(event.name.toUpperCase(), style: GoogleFonts.outfit(fontSize: 24, fontWeight: FontWeight.w900, color: AppTheme.colors.white)),
                           ],
@@ -455,7 +465,7 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> with Automati
               ),
               SizedBox(height: 32),
               Text(
-                "TEMPORAL DATA", 
+                AppLocalizations.of(context)!.temporalDataLabel,
                 style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 11, fontWeight: FontWeight.w900, letterSpacing: 2)
               ),
               SizedBox(height: 12),
@@ -470,7 +480,7 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> with Automati
                   child: ElevatedButton.icon(
                     onPressed: () => LiveEventsService.launchTicketUrl(event.ticketUrl!),
                     icon: Icon(Icons.confirmation_num_outlined, size: 18),
-                    label: Text("ACQUIRE PASS", style: TextStyle(fontWeight: FontWeight.w900, letterSpacing: 1)),
+                    label: Text(AppLocalizations.of(context)!.acquirePassButton, style: const TextStyle(fontWeight: FontWeight.w900, letterSpacing: 1)),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Theme.of(context).colorScheme.primary,
                       foregroundColor: AppTheme.colors.black,
@@ -487,7 +497,7 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> with Automati
                     child: OutlinedButton.icon(
                       onPressed: () => _togglePin(event),
                       icon: Icon(isPinned ? Icons.bookmark_rounded : Icons.bookmark_border_rounded, size: 18),
-                      label: Text(isPinned ? "UNPIN" : "PIN TO HUD"),
+                      label: Text(isPinned ? AppLocalizations.of(context)!.unpinButton : AppLocalizations.of(context)!.pinToHudButton),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: AppTheme.textPrimary(context),
                         side: BorderSide(color: Theme.of(context).dividerColor.withValues(alpha: 0.1)),
@@ -560,7 +570,7 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> with Automati
                           ),
                           SizedBox(height: 4),
                           Text(
-                            "Recommended for you",
+                            AppLocalizations.of(context)!.recommendedForYouLabel,
                             style: GoogleFonts.inter(color: Theme.of(context).colorScheme.primary, fontSize: 10, fontWeight: FontWeight.w600)
                           ),
                         ],
@@ -620,7 +630,7 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> with Automati
           Icon(Icons.event_busy, color: AppTheme.textSecondary(context).withValues(alpha: 0.3), size: 40),
           SizedBox(height: 16),
           Text(
-            "No events on this day",
+            AppLocalizations.of(context)!.noEventsOnDayMessage,
             style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 12, fontWeight: FontWeight.w600)
           ),
         ],
@@ -653,12 +663,12 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> with Automati
                 ),
                 SizedBox(height: 24),
                 Text(
-                  "Music preferences",
+                  AppLocalizations.of(context)!.musicPreferencesTitle,
                   style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.w800, color: AppTheme.textPrimary(context), letterSpacing: -0.3),
                 ),
                 SizedBox(height: 6),
                 Text(
-                  "Fine-tune the temporal oracle with your stylistic preferences.",
+                  AppLocalizations.of(context)!.fineTuneOracleMessage,
                   style: GoogleFonts.inter(fontSize: 13, color: AppTheme.textSecondary(context)),
                 ),
                 SizedBox(height: 24),
@@ -685,7 +695,7 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> with Automati
                 ).animate().fadeIn(duration: 400.ms).slideY(begin: 0.1),
                 SizedBox(height: 32),
                 PrimaryButton(
-                  label: "Sync preferences",
+                  label: AppLocalizations.of(context)!.syncPreferencesButton,
                   onPressed: () { _loadData(); Navigator.pop(context); },
                 ),
                 SizedBox(height: 16),
@@ -721,7 +731,7 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> with Automati
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text("Failed to share timeline: ${e.toString()}"),
+            content: Text(AppLocalizations.of(context)!.failedToShareTimelineMessage(e.toString())),
             backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );

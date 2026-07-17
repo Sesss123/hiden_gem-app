@@ -39,6 +39,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/services/usage_limiter_service.dart';
 import '../../data/datasources/monetization_service.dart';
+import '../../l10n/app_localizations.dart';
 
 // ignore_for_file: unused_import
 class ARViewerScreen extends StatefulWidget {
@@ -319,7 +320,7 @@ class _ARViewerScreenState extends State<ARViewerScreen>
               if (!mounted) return;
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text('✨ Oracle reward active! AR session unlocked.'),
+                  content: Text(AppLocalizations.of(context)!.oracleRewardActiveSnackbar),
                   backgroundColor: AppTheme.colors.green,
                 ),
               );
@@ -384,7 +385,7 @@ class _ARViewerScreenState extends State<ARViewerScreen>
     setState(() => _modelRequested = true);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('👆 Tap a flat surface to place the model',
+        content: Text(AppLocalizations.of(context)!.tapFlatSurfaceMessage,
             style: GoogleFonts.inter()),
         backgroundColor: AppTheme.cardColor(context).withValues(alpha: 0.9),
         duration: const Duration(seconds: 3),
@@ -426,7 +427,8 @@ class _ARViewerScreenState extends State<ARViewerScreen>
         }
         await _audioPlayer.play();
       } catch (_) {
-        _showError('Could not load audio narration.');
+        if (!mounted) return;
+        _showError(AppLocalizations.of(context)!.couldNotLoadAudioMessage);
         return;
       }
     }
@@ -471,7 +473,8 @@ class _ARViewerScreenState extends State<ARViewerScreen>
     }
 
     if (status.isDenied && !status.isLimited && !status.isGranted) {
-      _showError("Gallery permission denied");
+      if (!mounted) return;
+      _showError(AppLocalizations.of(context)!.galleryPermissionDeniedMessage);
       return;
     }
 
@@ -504,7 +507,8 @@ class _ARViewerScreenState extends State<ARViewerScreen>
         }
       }
     } catch (e) {
-      _showError("Failed to capture photo: $e");
+      if (!mounted) return;
+      _showError(AppLocalizations.of(context)!.failedToCapturePhotoMessage(e.toString()));
     } finally {
       if (mounted) {
         setState(() => _isCapturing = false);
@@ -530,11 +534,11 @@ class _ARViewerScreenState extends State<ARViewerScreen>
       builder: (context) => AlertDialog(
         backgroundColor: AppTheme.colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24), side: BorderSide(color: AppPalette.rust.withValues(alpha: 0.3))),
-        title: Text("Join Group Tour", style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.bold)),
+        title: Text(AppLocalizations.of(context)!.joinGroupTourTitle, style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.bold)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text("Enter the 6-digit code provided by your guide.", 
+            Text(AppLocalizations.of(context)!.enterSixDigitCodeMessage,
               style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 13)),
             const SizedBox(height: 20),
             TextField(
@@ -553,14 +557,14 @@ class _ARViewerScreenState extends State<ARViewerScreen>
           ],
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: Text("CANCEL", style: TextStyle(color: AppTheme.textSecondary(context)))),
+          TextButton(onPressed: () => Navigator.pop(context), child: Text(AppLocalizations.of(context)!.cancelButtonUppercaseThird, style: TextStyle(color: AppTheme.textSecondary(context)))),
           ElevatedButton(
             onPressed: () {
               Navigator.pop(context);
               _joinSession(controller.text);
             },
             style: ElevatedButton.styleFrom(backgroundColor: AppPalette.rust),
-            child: Text("JOIN", style: TextStyle(color: AppTheme.colors.white)),
+            child: Text(AppLocalizations.of(context)!.joinButtonUppercase, style: TextStyle(color: AppTheme.colors.white)),
           ),
         ],
       ),
@@ -589,7 +593,7 @@ class _ARViewerScreenState extends State<ARViewerScreen>
       
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text("Group Tour Started! Code: ${session.id}"),
+          content: Text(AppLocalizations.of(context)!.groupTourStartedCodeLabel(session.id)),
           backgroundColor: AppTheme.warningAmber,
           duration: const Duration(seconds: 10),
         ),
@@ -613,7 +617,7 @@ class _ARViewerScreenState extends State<ARViewerScreen>
     } else if (mounted) {
       setState(() => _isJoining = false);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Invalid Session Code")),
+        SnackBar(content: Text(AppLocalizations.of(context)!.invalidSessionCodeMessage)),
       );
     }
   }
@@ -802,7 +806,7 @@ class _ARViewerScreenState extends State<ARViewerScreen>
         const Icon(Icons.group, color: AppPalette.rust, size: 14),
         const SizedBox(width: 6),
         Text(
-          "CODE: ${_currentSession?.id}",
+          AppLocalizations.of(context)!.codeColonLabel(_currentSession?.id ?? ''),
           style: GoogleFonts.inter(color: AppTheme.colors.white, fontSize: 10, fontWeight: FontWeight.bold),
         ),
         const SizedBox(width: 8),
@@ -828,8 +832,8 @@ class _ARViewerScreenState extends State<ARViewerScreen>
           border: Border.all(color: AppTheme.colors.white24),
         ),
         child: Row(mainAxisSize: MainAxisSize.min, children: [
-          _tab('THEN', _isThenMode, AppPalette.rust),
-          _tab('NOW', !_isThenMode, AppTheme.colors.white),
+          _tab(AppLocalizations.of(context)!.thenLabel, _isThenMode, AppPalette.rust),
+          _tab(AppLocalizations.of(context)!.nowLabel, !_isThenMode, AppTheme.colors.white),
         ]),
       ),
     ),
@@ -931,19 +935,19 @@ class _ARViewerScreenState extends State<ARViewerScreen>
         ),
       ),
       child: Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-        _ctrlBtn(Icons.refresh_rounded, 'Reset', () => _arService.removeModel()),
-        _ctrlBtn(Icons.add_circle_outline, 'Scale+',
+        _ctrlBtn(Icons.refresh_rounded, AppLocalizations.of(context)!.resetLabel, () => _arService.removeModel()),
+        _ctrlBtn(Icons.add_circle_outline, AppLocalizations.of(context)!.scalePlusLabel,
                 () => _arService.scaleModel(1.2)),
-        _ctrlBtn(Icons.remove_circle_outline, 'Scale-',
+        _ctrlBtn(Icons.remove_circle_outline, AppLocalizations.of(context)!.scaleMinusLabel,
                 () => _arService.scaleModel(0.8)),
-        _ctrlBtn(Icons.chat_bubble_outline, 'Memory', _showMemoryDropDialog, 
+        _ctrlBtn(Icons.chat_bubble_outline, AppLocalizations.of(context)!.memoryLabel, _showMemoryDropDialog,
                 color: AppTheme.modernGreen(context)),
         _modelRequested
-            ? _ctrlBtn(Icons.delete_outline, 'Remove', () {
+            ? _ctrlBtn(Icons.delete_outline, AppLocalizations.of(context)!.removeLabel, () {
                 _arService.removeModel();
                 setState(() => _modelRequested = false);
               })
-            : _ctrlBtn(Icons.touch_app_rounded, 'Place', _requestPlaceModel,
+            : _ctrlBtn(Icons.touch_app_rounded, AppLocalizations.of(context)!.placeLabel, _requestPlaceModel,
                 color: AppPalette.rust),
       ]),
     ),
@@ -1009,7 +1013,7 @@ class _ARViewerScreenState extends State<ARViewerScreen>
       ]),
       const SizedBox(height: 12),
       Text(h.description.isNotEmpty ? h.description
-          : 'Historical information coming soon.',
+          : AppLocalizations.of(context)!.historicalInfoComingSoonMessage,
           style: GoogleFonts.inter(color: AppTheme.textSecondary(context),
               fontSize: 14, height: 1.6)),
       const SizedBox(height: 20),
@@ -1027,7 +1031,7 @@ class _ARViewerScreenState extends State<ARViewerScreen>
             const CircularProgressIndicator(color: AppPalette.rust),
             const SizedBox(height: 24),
             Text(
-              "Preparing Heritage Assets...",
+              AppLocalizations.of(context)!.preparingHeritageAssetsMessage,
               style: GoogleFonts.outfit(color: AppTheme.colors.white, fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
@@ -1048,7 +1052,7 @@ class _ARViewerScreenState extends State<ARViewerScreen>
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    "${(progress * 100).toInt()}% • ${widget.arData.modelFileSizeMb} MB",
+                    AppLocalizations.of(context)!.progressSizeLabel((progress * 100).toInt(), widget.arData.modelFileSizeMb.toString()),
                     style: GoogleFonts.inter(color: AppTheme.colors.white38, fontSize: 12),
                   ),
                 ],
@@ -1056,11 +1060,11 @@ class _ARViewerScreenState extends State<ARViewerScreen>
             ),
             const SizedBox(height: 40),
             Text(
-              "Model: ${widget.placeName}",
+              AppLocalizations.of(context)!.modelColonNameLabel(widget.placeName),
               style: GoogleFonts.inter(color: AppTheme.colors.white54, fontSize: 13),
             ),
             Text(
-              "Author: ${widget.arData.authorName}",
+              AppLocalizations.of(context)!.authorColonNameLabel(widget.arData.authorName),
               style: GoogleFonts.inter(color: AppTheme.colors.white38, fontSize: 11),
             ),
           ],
@@ -1087,7 +1091,7 @@ class _ARViewerScreenState extends State<ARViewerScreen>
           ),
         ),
         const SizedBox(height: 20),
-        Text('Move your phone slowly\nto scan a flat surface',
+        Text(AppLocalizations.of(context)!.moveSlowlyToScanMessage,
           textAlign: TextAlign.center,
           style: GoogleFonts.outfit(color: AppTheme.colors.white, fontSize: 16)),
       ])),
@@ -1097,7 +1101,7 @@ class _ARViewerScreenState extends State<ARViewerScreen>
   Widget _scanHint() => Positioned(
     bottom: 180, left: 0, right: 0,
     child: Center(child: _pill(child: Text(
-      '👇 Tap "Place" then tap a flat surface',
+      AppLocalizations.of(context)!.tapPlaceToPlaceModelMessage,
       style: GoogleFonts.inter(color: AppTheme.colors.white70, fontSize: 12)))),
   );
 
@@ -1115,7 +1119,7 @@ class _ARViewerScreenState extends State<ARViewerScreen>
                 Icon(Icons.timer_outlined, color: AppTheme.colors.redAccent, size: 14),
                 const SizedBox(width: 8),
                 Text(
-                  "DEMO MODE: $seconds REMAINING",
+                  AppLocalizations.of(context)!.demoModeSecondsRemainingLabel(seconds),
                   style: GoogleFonts.outfit(
                     color: AppTheme.colors.white,
                     fontWeight: FontWeight.bold,
@@ -1141,7 +1145,7 @@ class _ARViewerScreenState extends State<ARViewerScreen>
           const Icon(Icons.verified, color: AppPalette.rust, size: 14),
           const SizedBox(width: 6),
           Text(
-            "PREMIUM HERITAGE SESSION",
+            AppLocalizations.of(context)!.premiumHeritageSessionLabel,
             style: GoogleFonts.outfit(
               color: AppPalette.rust,
               fontWeight: FontWeight.w900,
@@ -1214,7 +1218,7 @@ class _ARViewerScreenState extends State<ARViewerScreen>
             _pill(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               child: Text(
-                (intensity * 100).toInt() > 0 ? "SIGNAL: ${(intensity * 100).toInt()}%" : "SEARCHING...",
+                (intensity * 100).toInt() > 0 ? AppLocalizations.of(context)!.signalPercentLabel((intensity * 100).toInt()) : AppLocalizations.of(context)!.searchingLabel,
                 style: GoogleFonts.inter(color: AppTheme.colors.white, fontSize: 8, fontWeight: FontWeight.bold),
               ),
             ),
@@ -1262,11 +1266,11 @@ class _ARViewerScreenState extends State<ARViewerScreen>
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text("ARTIFACT DISCOVERED!", style: GoogleFonts.outfit(color: AppPalette.rust, fontWeight: FontWeight.w900, fontSize: 12, letterSpacing: 1.5)),
+                        Text(AppLocalizations.of(context)!.artifactDiscoveredLabel, style: GoogleFonts.outfit(color: AppPalette.rust, fontWeight: FontWeight.w900, fontSize: 12, letterSpacing: 1.5)),
                         const SizedBox(height: 4),
                         Text(artifact.name, style: GoogleFonts.outfit(color: AppTheme.colors.white, fontWeight: FontWeight.bold, fontSize: 18)),
                         const SizedBox(height: 4),
-                        Text("+${artifact.points} PTS • ${artifact.rarity.toUpperCase()}", style: GoogleFonts.inter(color: AppTheme.colors.white70, fontSize: 11, fontWeight: FontWeight.bold)),
+                        Text(AppLocalizations.of(context)!.ptsRarityLabel(artifact.points, artifact.rarity.toUpperCase()), style: GoogleFonts.inter(color: AppTheme.colors.white70, fontSize: 11, fontWeight: FontWeight.bold)),
                       ],
                     ),
                   ),
@@ -1288,7 +1292,7 @@ class _ARViewerScreenState extends State<ARViewerScreen>
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           Text(
-            "HIDDEN GEMS SL",
+            AppLocalizations.of(context)!.hiddenGemsSlWatermark,
             style: GoogleFonts.outfit(
               color: AppTheme.colors.white,
               fontWeight: FontWeight.w900,
@@ -1297,7 +1301,7 @@ class _ARViewerScreenState extends State<ARViewerScreen>
             ),
           ),
           Text(
-            "HERITAGE AR",
+            AppLocalizations.of(context)!.heritageArWatermark,
             style: GoogleFonts.inter(
               color: AppPalette.rust,
               fontWeight: FontWeight.bold,
@@ -1325,9 +1329,9 @@ class _ARViewerScreenState extends State<ARViewerScreen>
       children: [
         Container(width: 40, height: 4, decoration: BoxDecoration(color: AppTheme.colors.black12, borderRadius: BorderRadius.circular(2))),
         const SizedBox(height: 24),
-        Text("Capture Successful!", style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontSize: 22, fontWeight: FontWeight.bold)),
+        Text(AppLocalizations.of(context)!.captureSuccessfulTitle, style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontSize: 22, fontWeight: FontWeight.bold)),
         const SizedBox(height: 8),
-        Text("Share your historical discovery with the world", style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 14)),
+        Text(AppLocalizations.of(context)!.shareDiscoveryMessage, style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 14)),
         const SizedBox(height: 32),
         ClipRRect(
           borderRadius: BorderRadius.circular(16),
@@ -1339,20 +1343,20 @@ class _ARViewerScreenState extends State<ARViewerScreen>
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            _shareOption(Icons.camera, "Instagram", AppTheme.colors.primary, () {
+            _shareOption(Icons.camera, AppLocalizations.of(context)!.instagramLabel, AppTheme.colors.primary, () {
               AnalyticsService().logARPhotoShared(
                   placeName: widget.placeName, platform: "instagram");
-              SharePlus.instance.share(ShareParams(files: [XFile(path)], text: "Exploring ${widget.placeName} in AR with #HiddenGemsSL"));
+              SharePlus.instance.share(ShareParams(files: [XFile(path)], text: AppLocalizations.of(context)!.sharePlatformCaptionInstagram(widget.placeName)));
             }),
-            _shareOption(Icons.music_note, "TikTok", AppTheme.colors.black, () {
+            _shareOption(Icons.music_note, AppLocalizations.of(context)!.tiktokLabel, AppTheme.colors.black, () {
               AnalyticsService().logARPhotoShared(
                   placeName: widget.placeName, platform: "tiktok");
-              SharePlus.instance.share(ShareParams(files: [XFile(path)], text: "History comes alive! #HiddenGemsSL #HeritageAR"));
+              SharePlus.instance.share(ShareParams(files: [XFile(path)], text: AppLocalizations.of(context)!.sharePlatformCaptionTiktok));
             }),
-            _shareOption(Icons.check_circle_outline, "Saved", AppTheme.colors.green, () {
+            _shareOption(Icons.check_circle_outline, AppLocalizations.of(context)!.savedLabelShort, AppTheme.colors.green, () {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: const Text("Photo saved to your gallery!"),
+                  content: Text(AppLocalizations.of(context)!.photoSavedGalleryMessage),
                   backgroundColor: AppTheme.modernGreen(context),
                   behavior: SnackBarBehavior.floating,
                 ),
@@ -1369,7 +1373,7 @@ class _ARViewerScreenState extends State<ARViewerScreen>
             minimumSize: const Size(double.infinity, 56),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           ),
-          child: Text("Back to AR", style: GoogleFonts.outfit(color: AppTheme.textPrimary(context))),
+          child: Text(AppLocalizations.of(context)!.backToArButton, style: GoogleFonts.outfit(color: AppTheme.textPrimary(context))),
         ),
         const SizedBox(height: 12),
       ],
@@ -1415,7 +1419,7 @@ class _ARViewerScreenState extends State<ARViewerScreen>
                 Icon(Icons.location_on, color: AppTheme.colors.green, size: 14),
                 const SizedBox(width: 8),
                 Text(
-                  "${_distanceToTarget.toStringAsFixed(0)}m to ${widget.placeName}",
+                  AppLocalizations.of(context)!.distanceToTargetLabel(_distanceToTarget.toStringAsFixed(0), widget.placeName),
                   style: GoogleFonts.inter(color: AppTheme.colors.white, fontSize: 12, fontWeight: FontWeight.bold),
                 ),
               ],
@@ -1477,13 +1481,13 @@ class _ARViewerScreenState extends State<ARViewerScreen>
                                   color: AppPalette.rust.withValues(alpha: 0.1),
                                   borderRadius: BorderRadius.circular(4),
                                 ),
-                                child: Text("RECOMMENDED", style: GoogleFonts.inter(color: AppPalette.rust, fontSize: 8, fontWeight: FontWeight.bold)),
+                                child: Text(AppLocalizations.of(context)!.recommendedLabel, style: GoogleFonts.inter(color: AppPalette.rust, fontSize: 8, fontWeight: FontWeight.bold)),
                               ),
                             ],
                           ),
                           const SizedBox(height: 4),
                           Text(partner.name, style: GoogleFonts.outfit(color: AppTheme.colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
-                          Text("${partner.category.toUpperCase()} • ${partner.rating} ★", style: GoogleFonts.inter(color: AppTheme.colors.white70, fontSize: 10)),
+                          Text(AppLocalizations.of(context)!.categoryRatingLabel(partner.category.toUpperCase(), partner.rating.toString()), style: GoogleFonts.inter(color: AppTheme.colors.white70, fontSize: 10)),
                         ],
                       ),
                     ),
@@ -1495,7 +1499,7 @@ class _ARViewerScreenState extends State<ARViewerScreen>
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                       ),
-                      child: Text("VIEW", style: GoogleFonts.outfit(fontWeight: FontWeight.bold)),
+                      child: Text(AppLocalizations.of(context)!.viewButtonUppercase, style: GoogleFonts.outfit(fontWeight: FontWeight.bold)),
                     ),
                   ],
                 ),
@@ -1510,7 +1514,7 @@ class _ARViewerScreenState extends State<ARViewerScreen>
   void _showMemoryDropDialog() {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Login to leave an AR memory!")));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.loginToLeaveMemoryMessage)));
       return;
     }
 
@@ -1520,26 +1524,27 @@ class _ARViewerScreenState extends State<ARViewerScreen>
       builder: (context) => AlertDialog(
         backgroundColor: AppTheme.colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24), side: BorderSide(color: AppPalette.rust.withValues(alpha: 0.3))),
-        title: Text("Leave an AR Memory", style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.bold)),
+        title: Text(AppLocalizations.of(context)!.leaveArMemoryTitle, style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.bold)),
         content: TextField(
           controller: controller,
           maxLines: 3,
           style: TextStyle(color: AppTheme.textPrimary(context)),
           decoration: InputDecoration(
-            hintText: "What do you see here?",
+            hintText: AppLocalizations.of(context)!.whatDoYouSeeHereHint,
             hintStyle: TextStyle(color: AppTheme.textSecondary(context).withValues(alpha: 0.5)),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: AppPalette.rust.withValues(alpha: 0.3))),
             focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppPalette.rust)),
           ),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: Text("Cancel", style: TextStyle(color: AppTheme.textSecondary(context)))),
+          TextButton(onPressed: () => Navigator.pop(context), child: Text(AppLocalizations.of(context)!.cancelButton2, style: TextStyle(color: AppTheme.textSecondary(context)))),
           ElevatedButton(
             onPressed: () async {
               if (controller.text.isEmpty) return;
+              final memoryDroppedMessage = AppLocalizations.of(context)!.memoryDroppedMessage;
               await MemoryService.dropMemory(
                 userId: user.uid,
-                userName: user.displayName ?? "Explorer",
+                userName: user.displayName ?? AppLocalizations.of(context)!.explorerFallback,
                 userPhotoUrl: user.photoURL ?? "",
                 message: controller.text,
                 lat: widget.arData.targetLat,
@@ -1547,10 +1552,10 @@ class _ARViewerScreenState extends State<ARViewerScreen>
               );
               if (!context.mounted) return;
               Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Memory dropped into the AR universe!")));
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(memoryDroppedMessage)));
             },
             style: ElevatedButton.styleFrom(backgroundColor: AppPalette.rust),
-            child: Text("Drop", style: TextStyle(color: AppTheme.colors.white)),
+            child: Text(AppLocalizations.of(context)!.dropButton, style: TextStyle(color: AppTheme.colors.white)),
           ),
         ],
       ),

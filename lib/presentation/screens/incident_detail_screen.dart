@@ -6,6 +6,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../../core/theme/oracle_ui_system.dart';
 import '../../data/models/incident_report.dart';
 import '../../data/repositories/incident_repository.dart';
+import '../../l10n/app_localizations.dart';
 
 class IncidentDetailScreen extends ConsumerStatefulWidget {
   final String incidentId;
@@ -29,23 +30,24 @@ class _IncidentDetailScreenState extends ConsumerState<IncidentDetailScreen> {
               return const Center(child: CircularProgressIndicator());
             }
             
+            final l10n = AppLocalizations.of(context)!;
             final incident = (snapshot.data ?? []).firstWhere(
               (element) => element.incidentId == widget.incidentId,
               orElse: () => IncidentReport(
-                incidentId: '404', 
-                incidentNumber: 'INV-404', 
+                incidentId: '404',
+                incidentNumber: 'INV-404',
                 sessionId: 'none',
                 guideId: 'none',
                 touristId: 'none',
-                reportedBy: 'sys', 
-                reportedByRole: 'system', 
-                type: 'error', 
-                severity: 'low', 
-                title: 'Incident Not Found', 
-                description: 'Record was sanitized or moved.', 
-                status: 'closed', 
-                createdAt: DateTime.now(), 
-                updatedAt: DateTime.now(), 
+                reportedBy: 'sys',
+                reportedByRole: 'system',
+                type: 'error',
+                severity: 'low',
+                title: l10n.incidentNotFoundTitle,
+                description: l10n.incidentNotFoundDescription,
+                status: 'closed',
+                createdAt: DateTime.now(),
+                updatedAt: DateTime.now(),
               ),
             );
 
@@ -103,6 +105,7 @@ class _IncidentDetailScreenState extends ConsumerState<IncidentDetailScreen> {
 
   Widget _buildMainInfo(IncidentReport incident) {
     return Builder(builder: (context) {
+      final l10n = AppLocalizations.of(context)!;
       final severityColor = incident.severity == 'critical' ? AppTheme.colors.redAccent : AppTheme.colors.orangeAccent;
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -119,12 +122,12 @@ class _IncidentDetailScreenState extends ConsumerState<IncidentDetailScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "Status",
+                    l10n.statusLabel,
                     style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 11, fontWeight: FontWeight.w600),
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    _sentenceCase(incident.status),
+                    _incidentStatusLabel(incident.status, l10n),
                     style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.bold, fontSize: 13),
                   ),
                 ],
@@ -133,7 +136,7 @@ class _IncidentDetailScreenState extends ConsumerState<IncidentDetailScreen> {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
-                    "Severity",
+                    l10n.severityLabel,
                     style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 11, fontWeight: FontWeight.w600),
                   ),
                   const SizedBox(height: 4),
@@ -144,7 +147,7 @@ class _IncidentDetailScreenState extends ConsumerState<IncidentDetailScreen> {
                       borderRadius: BorderRadius.circular(100),
                     ),
                     child: Text(
-                      _sentenceCase(incident.severity),
+                      _severityLabel(incident.severity, l10n),
                       style: GoogleFonts.inter(
                         color: severityColor,
                         fontSize: 10,
@@ -171,9 +174,44 @@ class _IncidentDetailScreenState extends ConsumerState<IncidentDetailScreen> {
     });
   }
 
-  String _sentenceCase(String value) {
-    if (value.isEmpty) return value;
-    return value[0].toUpperCase() + value.substring(1).toLowerCase();
+  String _timelineEventTypeLabel(String type, AppLocalizations l10n) {
+    switch (type) {
+      case 'sos_triggered':
+        return l10n.timelineTypeSosTriggered;
+      default:
+        return type.replaceAll('_', ' ');
+    }
+  }
+
+  String _incidentStatusLabel(String status, AppLocalizations l10n) {
+    switch (status.toLowerCase()) {
+      case 'open':
+        return l10n.incidentStatusOpen;
+      case 'investigating':
+        return l10n.incidentStatusInvestigating;
+      case 'resolved':
+        return l10n.incidentStatusResolved;
+      case 'closed':
+        return l10n.incidentStatusClosed;
+      default:
+        return status;
+    }
+  }
+
+  String _severityLabel(String severity, AppLocalizations l10n) {
+    switch (severity.toLowerCase()) {
+      case 'low':
+        return l10n.broadcastPriorityLow;
+      case 'normal':
+      case 'medium':
+        return l10n.broadcastPriorityNormal;
+      case 'high':
+        return l10n.broadcastPriorityHigh;
+      case 'critical':
+        return l10n.broadcastPriorityCritical;
+      default:
+        return severity;
+    }
   }
 
   Widget _buildTimelineHeader() {
@@ -182,11 +220,11 @@ class _IncidentDetailScreenState extends ConsumerState<IncidentDetailScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
-            "Timeline",
+            AppLocalizations.of(context)!.timelineLabel,
             style: GoogleFonts.inter(color: AppTheme.textPrimary(context), fontSize: 12, fontWeight: FontWeight.bold),
           ),
           Text(
-            "Encrypted log",
+            AppLocalizations.of(context)!.encryptedLogLabel,
             style: GoogleFonts.inter(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.6), fontSize: 10, fontWeight: FontWeight.bold),
           ),
         ],
@@ -197,7 +235,7 @@ class _IncidentDetailScreenState extends ConsumerState<IncidentDetailScreen> {
   List<Widget> _buildTimeline(IncidentReport incident) {
     if (incident.timelineEvents.isEmpty) {
       return [
-        Builder(builder: (context) => Text("No timeline active.", style: TextStyle(color: AppTheme.textSecondary(context)))),
+        Builder(builder: (context) => Text(AppLocalizations.of(context)!.noTimelineActiveMessage, style: TextStyle(color: AppTheme.textSecondary(context)))),
       ];
     }
 
@@ -236,11 +274,11 @@ class _IncidentDetailScreenState extends ConsumerState<IncidentDetailScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            _sentenceCase((e['type'] as String).replaceAll('_', ' ')),
+                            _timelineEventTypeLabel(e['type'] as String, AppLocalizations.of(context)!),
                             style: GoogleFonts.inter(color: AppTheme.textPrimary(context), fontWeight: FontWeight.bold, fontSize: 12),
                           ),
                           Text(
-                            "2m ago", // In reality, format the timestamp
+                            AppLocalizations.of(context)!.minutesAgoLabel(2), // In reality, format the timestamp
                             style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 10),
                           ),
                         ],
@@ -279,14 +317,14 @@ class _IncidentDetailScreenState extends ConsumerState<IncidentDetailScreen> {
                 Icon(Icons.verified_user_rounded, color: AppTheme.colors.teal, size: 20),
                 const SizedBox(width: 12),
                 Text(
-                  "Verified audit log",
+                  AppLocalizations.of(context)!.verifiedAuditLogLabel,
                   style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.w700, fontSize: 13),
                 ),
               ],
             ),
             const SizedBox(height: 16),
             Text(
-              "This report is locked for forensic integrity. Only authorized admins can modify status.",
+              AppLocalizations.of(context)!.forensicIntegrityLockedMessage,
               style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 12),
             ),
             const SizedBox(height: 24),
@@ -300,7 +338,7 @@ class _IncidentDetailScreenState extends ConsumerState<IncidentDetailScreen> {
                       side: BorderSide(color: AppTheme.borderColor(context)),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
                     ),
-                    child: const Text("Add evidence"),
+                    child: Text(AppLocalizations.of(context)!.addEvidenceButton),
                   ),
                 ),
                 const SizedBox(width: 16),
@@ -312,7 +350,7 @@ class _IncidentDetailScreenState extends ConsumerState<IncidentDetailScreen> {
                       foregroundColor: Theme.of(context).colorScheme.onPrimary,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
                     ),
-                    child: const Text("Escalate", style: TextStyle(fontWeight: FontWeight.bold)),
+                    child: Text(AppLocalizations.of(context)!.escalateButton, style: const TextStyle(fontWeight: FontWeight.bold)),
                   ),
                 ),
               ],

@@ -15,6 +15,7 @@ import 'subscription_screen.dart';
 import '../widgets/cached_image.dart';
 import 'guide_availability_screen.dart';
 import 'package:hidden_gems_sl/core/utils/secure_logger.dart';
+import '../../l10n/app_localizations.dart';
 
 class GuideListingEditorScreen extends ConsumerStatefulWidget {
   final bool embedded;
@@ -135,8 +136,9 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
 
       if (!mounted) return;
       setState(() => _isSaving = true);
+      final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Uploading photo...'), backgroundColor: Theme.of(context).colorScheme.primary),
+        SnackBar(content: Text(l10n.uploadingPhotoMessage), backgroundColor: Theme.of(context).colorScheme.primary),
       );
 
       final repo = ref.read(marketplaceRepositoryProvider);
@@ -150,17 +152,17 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
           _coverPhotos.add(url);
         });
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Photo uploaded successfully!'), backgroundColor: AppTheme.colors.green),
+          SnackBar(content: Text(l10n.photoUploadedSuccessMessage), backgroundColor: AppTheme.colors.green),
         );
       } else if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to upload photo.'), backgroundColor: AppTheme.colors.redAccent),
+          SnackBar(content: Text(l10n.failedToUploadPhotoMessage), backgroundColor: AppTheme.colors.redAccent),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e'), backgroundColor: AppTheme.colors.redAccent),
+          SnackBar(content: Text(AppLocalizations.of(context)!.errorGenericMessage(e.toString())), backgroundColor: AppTheme.colors.redAccent),
         );
       }
     } finally {
@@ -175,8 +177,9 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
 
       if (!mounted) return;
       setState(() => _isSaving = true);
+      final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Uploading vehicle photo...'), backgroundColor: Theme.of(context).colorScheme.primary),
+        SnackBar(content: Text(l10n.uploadingVehiclePhotoMessage), backgroundColor: Theme.of(context).colorScheme.primary),
       );
 
       final repo = ref.read(marketplaceRepositoryProvider);
@@ -185,17 +188,17 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
       if (url != null && mounted) {
         setState(() => _vehicleImageUrl = url);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Vehicle photo uploaded!'), backgroundColor: AppTheme.colors.green),
+          SnackBar(content: Text(l10n.vehiclePhotoUploadedMessage), backgroundColor: AppTheme.colors.green),
         );
       } else if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to upload photo.'), backgroundColor: AppTheme.colors.redAccent),
+          SnackBar(content: Text(l10n.failedToUploadPhotoMessage), backgroundColor: AppTheme.colors.redAccent),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e'), backgroundColor: AppTheme.colors.redAccent),
+          SnackBar(content: Text(AppLocalizations.of(context)!.errorGenericMessage(e.toString())), backgroundColor: AppTheme.colors.redAccent),
         );
       }
     } finally {
@@ -278,9 +281,10 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
       _existingListing = updatedListing;
 
       if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(status == 'published' ? '🎉 Listing Published to Marketplace!' : '💾 Draft Saved Successfully'),
+            content: Text(status == 'published' ? l10n.listingPublishedMessage : l10n.draftSavedMessage),
             backgroundColor: status == 'published' ? AppTheme.colors.green : AppTheme.colors.blueAccent,
           ),
         );
@@ -291,7 +295,7 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to save listing: $e'), backgroundColor: AppTheme.colors.redAccent),
+          SnackBar(content: Text(AppLocalizations.of(context)!.failedToSaveListingMessage(e.toString())), backgroundColor: AppTheme.colors.redAccent),
         );
       }
     } finally {
@@ -320,13 +324,14 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
       );
     }
 
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: AppTheme.colors.transparent,
         elevation: 0,
         title: Text(
-          'Your listing',
+          l10n.yourListingTitle,
           style: GoogleFonts.outfit(fontWeight: FontWeight.w800, letterSpacing: -0.5, fontSize: 20, color: AppTheme.textPrimary(context)),
         ),
         centerTitle: false,
@@ -339,7 +344,7 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
               padding: const EdgeInsets.all(20),
               physics: const BouncingScrollPhysics(),
               children: [
-                _buildSectionTitle('Basic information'),
+                _buildSectionTitle(l10n.basicInformationTitle),
                 const SizedBox(height: 12),
                 if (_licenseNumber != null && _licenseNumber!.isNotEmpty) ...[
                   _buildVerifiedLicenseTile(),
@@ -347,26 +352,26 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
                 ],
                 _buildTextField(
                   controller: _displayNameController,
-                  label: 'Display Name',
-                  hint: 'e.g. Kasun Perera',
+                  label: l10n.displayNameLabel,
+                  hint: l10n.displayNameHint,
                   icon: Icons.person_outline,
-                  validator: (v) => v == null || v.isEmpty ? 'Required' : null,
+                  validator: (v) => v == null || v.isEmpty ? l10n.requiredFieldMessage : null,
                 ),
                 const SizedBox(height: 16),
                 _buildTextField(
                   controller: _bioController,
-                  label: 'About Me (Bio)',
-                  hint: 'Tell tourists about your passion, experience, and favorite spots...',
+                  label: l10n.aboutMeBioLabel,
+                  hint: l10n.aboutMeBioHint,
                   icon: Icons.info_outline,
                   maxLines: 4,
-                  validator: (v) => v == null || v.isEmpty ? 'Required' : null,
+                  validator: (v) => v == null || v.isEmpty ? l10n.requiredFieldMessage : null,
                 ),
                 const SizedBox(height: 24),
 
-                _buildSectionTitle('Category & specialties'),
+                _buildSectionTitle(l10n.categorySpecialtiesTitle),
                 const SizedBox(height: 12),
                 _buildDropdown(
-                  label: 'Primary Category',
+                  label: l10n.primaryCategoryLabel,
                   value: _guideCategory,
                   items: _categories,
                   onChanged: (val) => setState(() => _guideCategory = val!),
@@ -374,27 +379,27 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
                 const SizedBox(height: 16),
                 _buildTextField(
                   controller: _languagesController,
-                  label: 'Languages (comma separated)',
-                  hint: 'e.g. English, Sinhala, German',
+                  label: l10n.languagesCommaLabel,
+                  hint: l10n.languagesCommaHint,
                   icon: Icons.language,
                 ),
                 const SizedBox(height: 16),
                 _buildTextField(
                   controller: _specializationsController,
-                  label: 'Specializations (comma separated)',
-                  hint: 'e.g. Heritage, Wildlife, Photography',
+                  label: l10n.specializationsCommaLabel,
+                  hint: l10n.specializationsCommaHint,
                   icon: Icons.star_border,
                 ),
                 const SizedBox(height: 16),
                 _buildTextField(
                   controller: _regionsController,
-                  label: 'Service Regions (comma separated)',
-                  hint: 'e.g. Central, Southern, Western',
+                  label: l10n.serviceRegionsLabel,
+                  hint: l10n.serviceRegionsHint,
                   icon: Icons.map_outlined,
                 ),
                 const SizedBox(height: 24),
 
-                _buildSectionTitle('Pricing & vehicle'),
+                _buildSectionTitle(l10n.pricingVehicleTitle),
                 const SizedBox(height: 12),
                 Row(
                   children: [
@@ -402,18 +407,18 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
                       flex: 2,
                       child: _buildTextField(
                         controller: _hourlyRateController,
-                        label: 'Hourly Rate',
-                        hint: 'e.g. 25',
+                        label: l10n.hourlyRateFieldLabel,
+                        hint: l10n.hourlyRateHint,
                         icon: Icons.attach_money,
                         keyboardType: TextInputType.number,
-                        validator: (v) => v == null || v.isEmpty ? 'Required' : null,
+                        validator: (v) => v == null || v.isEmpty ? l10n.requiredFieldMessage : null,
                       ),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
                       flex: 1,
                       child: _buildDropdown(
-                        label: 'Currency',
+                        label: l10n.currencyLabel,
                         value: _currency,
                         items: _currencies,
                         onChanged: (val) => setState(() => _currency = val!),
@@ -429,8 +434,8 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: SwitchListTile(
-                    title: Text('Vehicle available for tours', style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.w600)),
-                    subtitle: Text('Do you provide transportation?', style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 12)),
+                    title: Text(l10n.vehicleAvailableForToursLabel, style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.w600)),
+                    subtitle: Text(l10n.provideTransportationLabel, style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 12)),
                     value: _vehicleAvailable,
                     activeThumbColor: Theme.of(context).colorScheme.primary,
                     contentPadding: EdgeInsets.zero,
@@ -441,8 +446,8 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
                   const SizedBox(height: 16),
                   _buildTextField(
                     controller: _vehicleTypeController,
-                    label: 'Vehicle Type & Model',
-                    hint: 'e.g. Toyota Prius Hybrid / Luxury Van',
+                    label: l10n.vehicleTypeModelLabel,
+                    hint: l10n.vehicleTypeModelHint,
                     icon: Icons.directions_car_outlined,
                   ),
                   const SizedBox(height: 16),
@@ -450,17 +455,17 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
                 ],
                 const SizedBox(height: 24),
 
-                _buildSectionTitle('Cover photos (${_coverPhotos.length})'),
+                _buildSectionTitle(l10n.coverPhotosCountTitle(_coverPhotos.length)),
                 const SizedBox(height: 12),
                 _buildCoverPhotosSection(),
                 const SizedBox(height: 24),
 
-                _buildSectionTitle('Availability calendar'),
+                _buildSectionTitle(l10n.availabilityCalendarTitle),
                 const SizedBox(height: 12),
                 _buildAvailabilityButton(context),
                 const SizedBox(height: 24),
 
-                _buildSectionTitle('Visibility boost'),
+                _buildSectionTitle(l10n.visibilityBoostTitle),
                 const SizedBox(height: 12),
                 _buildFeaturedToggle(),
                 const SizedBox(height: 36),
@@ -476,7 +481,7 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
                         ),
                         child: Text(
-                          'Save draft',
+                          l10n.saveDraftButton,
                           style: GoogleFonts.inter(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.w700, fontSize: 14),
                         ),
                       ),
@@ -496,7 +501,7 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
                         child: _isSaving
                             ? SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Theme.of(context).colorScheme.onPrimary))
                             : Text(
-                                'Publish listing',
+                                l10n.publishListingButton,
                                 style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 14),
                               ),
                       ),
@@ -607,7 +612,7 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
                       children: [
                         Icon(Icons.add_a_photo_outlined, color: Theme.of(context).colorScheme.primary, size: 28),
                         const SizedBox(height: 6),
-                        Text('Add photo', style: GoogleFonts.inter(color: Theme.of(context).colorScheme.primary, fontSize: 11, fontWeight: FontWeight.w700)),
+                        Text(AppLocalizations.of(context)!.addPhotoLabel, style: GoogleFonts.inter(color: Theme.of(context).colorScheme.primary, fontSize: 11, fontWeight: FontWeight.w700)),
                       ],
                     ),
                   ),
@@ -666,7 +671,7 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Verified license', style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 11, fontWeight: FontWeight.w600)),
+                Text(AppLocalizations.of(context)!.verifiedLicenseLabel, style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 11, fontWeight: FontWeight.w600)),
                 const SizedBox(height: 2),
                 Text(_licenseNumber!, style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.w700, fontSize: 14)),
               ],
@@ -695,7 +700,7 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
                 children: [
                   Icon(Icons.add_a_photo_outlined, color: Theme.of(context).colorScheme.primary, size: 28),
                   const SizedBox(height: 8),
-                  Text('Add vehicle photo', style: GoogleFonts.inter(color: Theme.of(context).colorScheme.primary, fontSize: 12, fontWeight: FontWeight.w700)),
+                  Text(AppLocalizations.of(context)!.addVehiclePhotoLabel, style: GoogleFonts.inter(color: Theme.of(context).colorScheme.primary, fontSize: 12, fontWeight: FontWeight.w700)),
                 ],
               )
             : Stack(
@@ -755,9 +760,9 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Manage Availability', style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.bold, fontSize: 16)),
+                  Text(AppLocalizations.of(context)!.manageAvailabilityTitle, style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.bold, fontSize: 16)),
                   const SizedBox(height: 4),
-                  Text('Set blackout dates & recurring working hours', style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 12)),
+                  Text(AppLocalizations.of(context)!.manageAvailabilitySubtitle, style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 12)),
                 ],
               ),
             ),
@@ -769,6 +774,7 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
   }
 
   Widget _buildFeaturedToggle() {
+    final l10n = AppLocalizations.of(context)!;
     final isLiveFeatured = _existingListing?.isFeatured == true;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -779,13 +785,13 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
       ),
       child: _canFeature
           ? SwitchListTile(
-              title: Text('Feature this listing', style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.w600)),
+              title: Text(l10n.featureThisListingLabel, style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.w600)),
               subtitle: Text(
                 isLiveFeatured
-                    ? 'Currently featured in the marketplace'
+                    ? l10n.currentlyFeaturedMessage
                     : (_isFeaturedRequested
-                        ? 'Requested — an admin will review and enable this shortly'
-                        : 'Request to be featured in the marketplace (subject to admin review)'),
+                        ? l10n.featureRequestedMessage
+                        : l10n.featureRequestPromptMessage),
                 style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 12),
               ),
               // isFeatured itself is admin-granted (server-side, via
@@ -800,11 +806,11 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
           : ListTile(
               contentPadding: EdgeInsets.zero,
               leading: Icon(Icons.lock_outline_rounded, color: Theme.of(context).colorScheme.primary, size: 20),
-              title: Text('Feature this listing', style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.w600)),
-              subtitle: Text('Upgrade to Pro to boost your visibility in the marketplace', style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 12)),
+              title: Text(l10n.featureThisListingLabel, style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.w600)),
+              subtitle: Text(l10n.upgradeToProFeatureMessage, style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 12)),
               trailing: TextButton(
                 onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SubscriptionScreen())),
-                child: Text('Upgrade', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 12, color: Theme.of(context).colorScheme.primary)),
+                child: Text(l10n.upgradeButtonLabel, style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 12, color: Theme.of(context).colorScheme.primary)),
               ),
             ),
     );

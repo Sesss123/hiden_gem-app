@@ -1173,7 +1173,9 @@
   "broadcastTypeWeather": "Weather",
   "broadcastTypeMeetingPoint": "Meeting point",
   "broadcastTypeDelay": "Delay",
-  "broadcastTypeEmergency": "Emergency",
+  "broadcastTypeDeparture": "Departure",
+  "broadcastTypeVehicleChange": "Vehicle change",
+  "broadcastTypeSafety": "Safety",
   "broadcastPriorityLow": "Low",
   "broadcastPriorityNormal": "Normal",
   "broadcastPriorityHigh": "High",
@@ -1342,5 +1344,606 @@
   "roleMember": "member",
   "logoLabel": "Logo",
   "brandColorLabel": "Brand color",
-  "brandColorAppliedMessage": "Your brand color is applied across this team dashboard for your organization."
+  "brandColorAppliedMessage": "Your brand color is applied across this team dashboard for your organization.",
+
+  "incidentNotFoundTitle": "Incident Not Found",
+  "incidentNotFoundDescription": "Record was sanitized or moved.",
+  "statusLabel": "Status",
+  "severityLabel": "Severity",
+  "timelineLabel": "Timeline",
+  "encryptedLogLabel": "Encrypted log",
+  "noTimelineActiveMessage": "No timeline active.",
+  "minutesAgoLabel": "{minutes}m ago",
+  "@minutesAgoLabel": {
+    "placeholders": { "minutes": { "type": "int" } }
+  },
+  "verifiedAuditLogLabel": "Verified audit log",
+  "forensicIntegrityLockedMessage": "This report is locked for forensic integrity. Only authorized admins can modify status.",
+  "addEvidenceButton": "Add evidence",
+  "escalateButton": "Escalate",
+  "timelineTypeSosTriggered": "Sos triggered",
+
+  "invalidQrCodeFormatMessage": "Invalid QR code format",
+  "unrecognizedQrCodeMessage": "Unrecognized QR code",
+  "sessionNotFoundClosedMessage": "Session not found or closed",
+  "connectionErrorMessage": "Connection error",
+  "tourVerificationTitle": "Tour verification",
+  "localGuideFallback": "Local guide",
+  "vehicleNumberLabel": "Vehicle: {vehicleNumber}",
+  "@vehicleNumberLabel": {
+    "placeholders": { "vehicleNumber": { "type": "String" } }
+  },
+  "consentTrackingMessage": "I consent to live location tracking and safety monitoring for this tour session.",
+  "connectSyncButton": "Connect & sync",
+  "realitySyncedTitle": "Reality synced",
+  "safetyProtocolsActiveMessage": "Global safety protocols and live tracking active.",
+  "enterHubButton": "Enter hub",
+  "decryptingTokenMessage": "Decrypting token…",
+  "scanGuideTourCodeMessage": "Scan your guide's tour code",
+
+  "emergencyTranslatorTitle": "Emergency Translator",
+  "showScreenToBystanderMessage": "Show this screen to a bystander, police officer, or hospital staff — it's speaking Sinhala for you.",
+  "locationCoordinatesTapMapsLabel": "{lat}, {lng} — tap to open in Maps",
+  "@locationCoordinatesTapMapsLabel": {
+    "placeholders": { "lat": { "type": "String" }, "lng": { "type": "String" } }
+  },
+  "locationUnavailableMessage": "Location unavailable",
+  "speakingEllipsisMessage": "Speaking…",
+  "playAgainButton": "Play again",
+
+  "emergencyTitle": "Emergency",
+  "criticalContactsTitle": "Critical contacts",
+  "medicalFacilitiesNearbyTitle": "Medical facilities nearby",
+  "emergencyProtocolLabel": "EMERGENCY PROTOCOL",
+  "sendingAlertMessage": "Sending alert…",
+  "keepHoldingToConfirmMessage": "Keep holding to confirm…",
+  "pressHoldTwoSecondsMessage": "Press and hold for 2 seconds to alert",
+  "preventsAccidentalTriggersMessage": "Prevents accidental triggers",
+  "sosLabel": "SOS",
+  "contactNamePolice": "Police",
+  "contactNameAmbulance": "Ambulance",
+  "contactNameTouristPolice": "Tourist Police",
+  "contactNameFireDept": "Fire Dept",
+  "privateGuardiansTitle": "Private guardians",
+  "noGuardiansAssignedMessage": "No guardians assigned. Signals will default to emergency services.",
+  "nearestHospitalTitle": "Nearest hospital, wherever you are",
+  "checkingLocationAccessMessage": "Checking location access…",
+  "locationAccessDeniedGeneralMessage": "Location access denied — will search generally instead.",
+  "hospitalMapsExplanationMessage": "Opens Google Maps using your live GPS — shows every government and private hospital nearby, no matter where you are in Sri Lanka.",
+  "findNearestHospitalButton": "Find nearest hospital on Maps",
+  "addGuardianTitle": "Add guardian",
+  "guardianPhoneNumberHint": "Guardian phone number",
+  "addGuardianButton": "Add guardian",
+  "sosAlertsPreparedLoggedMessage": "SOS Alerts Prepared & Logged in Secure Vault!",
+  "sosCriticalAlertTitle": "CRITICAL SOS ALERT",
+  "sosDistressSignalDescription": "Emergency distress signal triggered from Guardian System.",
+  "locationPermissionsPermanentlyDeniedMessage": "Location permissions are permanently denied.",
+  "emergencyTranslatorPremiumMessage": "Instantly explain your situation to Sri Lankan police or hospital staff in spoken Sinhala — a Premium safety feature.",
+  "notNowButton": "Not now",
+  "viewPlansButton": "View Plans",
+
+  "monsoonHazardAlertTitle": "MONSOON HAZARD ALERT",
+  "districtLabel": "District: {district}",
+  "@districtLabel": {
+    "placeholders": { "district": { "type": "String" } }
+  },
+  "districtGeneralFallback": "General",
+  "severeMonsoonWeatherDetectedMessage": "Severe monsoon weather detected.",
+  "acknowledgeButton": "ACKNOWLEDGE",
+  "offlineErrorGenericMessage": "Offline Error: {error}",
+  "@offlineErrorGenericMessage": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "sessionNotFoundMessage": "Session not found",
+  "yourTourTitle": "Your tour",
+  "tourActiveTitle": "Tour active",
+  "preparingTourTitle": "Preparing tour",
+  "everythingOnTrackMessage": "Everything's on track",
+  "statusColonValueLabel": "Status: {status}",
+  "@statusColonValueLabel": {
+    "placeholders": { "status": { "type": "String" } }
+  },
+  "phaseAssemblingGroup": "Assembling group",
+  "phaseEnRoute": "En route",
+  "phaseAtDestination": "At destination",
+  "phaseFreeTimeBreak": "Free time / break",
+  "phaseReturningToBase": "Returning to base",
+  "liveNavigationTitle": "Live navigation",
+  "findGuideLabel": "Find guide",
+  "liveTrackingLabel": "Live tracking",
+  "findVehicleLabel": "Find vehicle",
+  "parkedSpotLabel": "Parked spot",
+  "meetingPointLabel": "Meeting point",
+  "returnHereIfLostMessage": "Return here if lost or separated from group.",
+  "navigateToPointButton": "Navigate to point",
+  "guideAnnouncementLabel": "Guide announcement",
+  "justNowLabel": "Just now",
+  "acknowledgedLabel": "Acknowledged",
+  "iAcknowledgeButton": "I acknowledge",
+  "moreLabel": "More",
+  "shareLiveLabel": "Share live",
+  "familyAccessLabel": "Family access",
+  "rateTourLabel": "Rate tour",
+  "buildReputationLabel": "Build reputation",
+  "helpImLostButton": "Help, I'm lost",
+  "emergencySosButton": "Emergency SOS",
+  "instantAlertAdminPoliceMessage": "Instant alert to admin, police, and hub.",
+  "signalSentStayMessage": "SIGNAL SENT! STAY WHERE YOU ARE.",
+  "travelerLostBroadcastTitle": "TRAVELER LOST",
+  "travelerLostBroadcastBody": "A traveler has signaled they are lost! Location shared on map.",
+  "sosCooledDownMessage": "SOS cooled down. Wait {seconds} seconds.",
+  "@sosCooledDownMessage": {
+    "placeholders": { "seconds": { "type": "int" } }
+  },
+  "sosBroadcastedAuthoritiesMessage": "SOS ALERT BROADCASTED TO ALL AUTHORITIES!",
+  "tourCompletedTitle": "Tour Completed!",
+  "tourCompletedRateMessage": "We hope you had an amazing experience! Would you like to rate your guide now? Your feedback helps guides maintain high standards.",
+  "remindLaterButton": "Remind later",
+  "reminderSetMessage": "⏰ Reminder set! We'll send a notification tomorrow.",
+  "rateNowButton": "Rate now ⭐",
+
+  "eventsTitle": "Events",
+  "topPicksForYouTitle": "Top picks for you",
+  "categoryAllFilter": "All",
+  "categoryBeach": "Beach",
+  "categoryCultural": "Cultural",
+  "categoryReligious": "Religious",
+  "categorySports": "Sports",
+  "categorySeasonal": "Seasonal",
+  "categoryFestival": "Festival",
+  "categoryParty": "Party",
+  "availableEventsTitle": "Available events",
+  "temporalDataLabel": "TEMPORAL DATA",
+  "acquirePassButton": "ACQUIRE PASS",
+  "unpinButton": "UNPIN",
+  "pinToHudButton": "PIN TO HUD",
+  "noEventsOnDayMessage": "No events on this day",
+  "musicPreferencesTitle": "Music preferences",
+  "fineTuneOracleMessage": "Fine-tune the temporal oracle with your stylistic preferences.",
+  "syncPreferencesButton": "Sync preferences",
+  "failedToShareTimelineMessage": "Failed to share timeline: {error}",
+  "@failedToShareTimelineMessage": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "hazardWarningMessage": "🚨 HAZARD WARNING: {message}",
+  "@hazardWarningMessage": {
+    "placeholders": { "message": { "type": "String" } }
+  },
+  "extremeWeatherAlertFallback": "Extreme weather alert!",
+  "recommendedForYouLabel": "Recommended for you",
+  "eventLocationCategoryLabel": "{location} · {category}",
+  "@eventLocationCategoryLabel": {
+    "placeholders": { "location": { "type": "String" }, "category": { "type": "String" } }
+  },
+
+  "budgetTitle": "Budget",
+  "addExpenseTitle": "Add expense",
+  "resourceDescriptionLabel": "Resource Description",
+  "amountLkrLabel": "Amount (LKR)",
+  "categoryLabel": "Category",
+  "saveExpenseButton": "Save expense",
+  "planLimitLabel": "Plan limit",
+  "spentLabel": "Spent",
+  "expenseLedgerTitle": "Expense ledger",
+  "entriesCountLabel": "{count} entries",
+  "@entriesCountLabel": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "noEntriesYetMessage": "No entries yet",
+  "addFirstEntryButton": "Add first entry",
+  "expenseCategoryFood": "Food",
+  "expenseCategoryTransport": "Transport",
+  "expenseCategoryTickets": "Tickets",
+  "expenseCategoryMisc": "Misc",
+
+  "budgetConciergeTitle": "Budget concierge",
+  "analyzingSpendingPatternsMessage": "Analyzing your spending patterns...",
+  "localAdviceMessage": "Your spending pace aligns well with island travel standards. We recommend utilizing PickMe or Uber for transparent transport fares, and sampling local eateries to maximize your value.",
+  "recentTransactionsTitle": "Recent transactions",
+  "totalSpentSoFarLabel": "Total spent so far",
+  "approxUsdLabel": "≈ US$ {amount}",
+  "@approxUsdLabel": {
+    "placeholders": { "amount": { "type": "String" } }
+  },
+  "oracleAdviceLabel": "Oracle advice",
+  "logTransactionTitle": "Log transaction",
+  "whatWasThePurposeHint": "What was the purpose?",
+  "amountLkrHint": "Amount (LKR)",
+  "expenseCategoryAttraction": "Attraction",
+  "expenseCategoryLodging": "Lodging",
+  "expenseCategoryOther": "Other",
+
+  "billingHistoryTitle": "BILLING HISTORY",
+  "errorGenericColonMessage": "Error: {error}",
+  "@errorGenericColonMessage": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "noBillingHistoryFoundMessage": "No billing history found.",
+  "planLabel": "PLAN: {planId}",
+  "@planLabel": {
+    "placeholders": { "planId": { "type": "String" } }
+  },
+  "startedLabel": "STARTED",
+  "expiresLabel": "EXPIRES",
+  "idLabel": "ID: {subscriptionId}",
+  "@idLabel": {
+    "placeholders": { "subscriptionId": { "type": "String" } }
+  },
+  "subscriptionStatusCancelled": "CANCELLED",
+  "subscriptionStatusExpired": "EXPIRED",
+  "subscriptionStatusActive": "ACTIVE",
+
+  "accessDeniedMessage": "Access Denied",
+  "subscribedToPlanMessage": "✅ Subscribed to \"{planId}\" plan!",
+  "@subscribedToPlanMessage": {
+    "placeholders": { "planId": { "type": "String" } }
+  },
+  "subscriptionFailedMessage": "Subscription failed: {error}",
+  "@subscriptionFailedMessage": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "purchasesRestoredMessage": "✅ Purchases restored successfully.",
+  "restoreFailedMessage": "Restore failed: {error}",
+  "@restoreFailedMessage": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "serviceTiersTitle": "Service tiers",
+  "freeTierTitle": "Free tier",
+  "freeTierDescription": "Essential tour tools for verified guides.",
+  "featureBasicOperations": "Basic Operations",
+  "featureVerifiedBadge": "Verified Badge",
+  "featureStandardSos": "Standard SOS",
+  "proCommanderTitle": "Pro Commander",
+  "proCommanderDescription": "Elevate your visibility and tools.",
+  "featureFeaturedListings": "Featured Listings",
+  "featureAdvancedAnalytics": "Advanced Analytics",
+  "featureClientAnalytics": "Client Analytics",
+  "featurePrioritySos": "Priority SOS",
+  "eliteAgencyTitle": "Elite Agency",
+  "eliteAgencyDescription": "Full fleet and company management.",
+  "featureTeamManagement": "Team Management",
+  "featureOperatorDashboard": "Operator Dashboard",
+  "featureWhiteLabelBranding": "White-label Branding",
+  "fleetPlansTitle": "Fleet plans",
+  "restoreButton": "Restore",
+  "currentPlanLabel": "Current plan",
+  "freeTierLabel": "Free tier",
+  "expiresColonDateLabel": "Expires: {date}",
+  "@expiresColonDateLabel": {
+    "placeholders": { "date": { "type": "String" } }
+  },
+  "upgradeButton": "Upgrade",
+  "manageButton": "Manage",
+  "mostPopularLabel": "Most popular",
+  "perMonthSlashLabel": "/month",
+  "currentPlanButton": "Current plan",
+  "selectThisPlanButton": "Select this plan",
+
+  "goPremiumTitle": "Go Premium",
+  "fullArUnlimitedAiTripsMessage": "Full AR & unlimited AI trips",
+  "heritageArModeTitle": "Heritage AR Mode",
+  "heritageArModeDescription": "See ancient ruins reconstructed in 1:1 scale with historical audio guides.",
+  "oracleAiTripIntelligenceTitle": "Oracle AI Trip Intelligence",
+  "oracleAiTripIntelligenceDescription": "Unlimited hyper-personalized itineraries powered by the Oracle engine.",
+  "offlineDigitalTwinsTitle": "Offline Digital Twins",
+  "offlineDigitalTwinsDescription": "Download high-res maps and 100+ points of interest for low-signal areas.",
+  "exclusiveCuratorDealsTitle": "Exclusive Curator Deals",
+  "exclusiveCuratorDealsDescription": "Access to member-only discounts at handpicked boutique stays.",
+  "guardianEmergencyTranslatorTitle": "Guardian Emergency Translator",
+  "guardianEmergencyTranslatorDescription": "Instantly explain your situation to Sri Lankan police or hospital staff in spoken Sinhala during an SOS.",
+  "premiumActiveLabel": "{plan} active",
+  "@premiumActiveLabel": {
+    "placeholders": { "plan": { "type": "String" } }
+  },
+  "premiumFallback": "Premium",
+  "renewingOnLabel": "Renewing on {date}",
+  "@renewingOnLabel": {
+    "placeholders": { "date": { "type": "String" } }
+  },
+  "viaSourceLabel": "Via {source}",
+  "@viaSourceLabel": {
+    "placeholders": { "source": { "type": "String" } }
+  },
+  "storeFallback": "store",
+  "resetPremiumDevButton": "RESET PREMIUM (DEV ONLY)",
+  "premiumResetMessage": "Premium reset. Pricing tiers are back.",
+  "smartTravelerTitle": "Smart Traveler",
+  "billedMonthlyLabel": "Billed monthly",
+  "featureAiItineraries20": "20 AI Itineraries/mo",
+  "featureSelectedArPlaces": "Selected AR Places",
+  "featureOfflineMapsBasic": "Offline Maps (Basic)",
+  "heritagePremiumTitle": "Heritage Premium",
+  "billedYearlySaveLabel": "Billed yearly · save ~17%",
+  "featureUnlimitedAiItineraries": "Unlimited AI Itineraries",
+  "featureFullHeritageArAccess": "Full Heritage AR Access",
+  "featureAllOfflineFeatures": "All Offline Features",
+  "ultraExplorerTitle": "Ultra Explorer",
+  "waitlistLabel": "Waitlist",
+  "nextGenExperienceLabel": "Next-Gen Experience",
+  "featureVrModeSupport": "VR Mode Support",
+  "featureHistoricalTimelines": "Historical Timelines",
+  "featurePersonalAiCurator": "Personal AI Curator",
+  "ultraExplorerWaitlistMessage": "🚀 Ultra Explorer is on the waitlist! We'll notify you when it launches.",
+  "restorePreviousPurchasesButton": "Restore previous purchases",
+  "termsPrivacyLabel": "Terms of Service  •  Privacy Policy",
+  "testBuyDevButton": "TEST BUY (DEV ONLY)",
+  "mockPurchaseSimulatedMessage": "🚀 Mock Purchase Simulated. Refreshing...",
+  "monthlyLabel": "Monthly",
+  "yearlySaveLabel": "Yearly · Save 17%",
+  "lockedLabelShort": "Locked",
+  "perMonthLabel": "/ month",
+  "comingSoonButton": "Coming soon",
+  "upgradeNowLongButton": "Upgrade now",
+  "trialDaysLabel": "{count, plural, one{1 day} other{{count} days}} free trial",
+  "@trialDaysLabel": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "trialWeeksLabel": "{count, plural, one{1 week} other{{count} weeks}} free trial",
+  "@trialWeeksLabel": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "trialMonthsLabel": "{count, plural, one{1 month} other{{count} months}} free trial",
+  "@trialMonthsLabel": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "trialYearsLabel": "{count, plural, one{1 year} other{{count} years}} free trial",
+  "@trialYearsLabel": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "trialPeriodLabel": "{count} period free trial",
+  "@trialPeriodLabel": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+
+  "oracleLostFocusMessage": "Oracle lost focus: {error}",
+  "@oracleLostFocusMessage": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "savorLankaAiTitle": "SAVORLANKA AI",
+  "culinaryVisionEngineLabel": "CULINARY VISION ENGINE V2",
+  "liveRealTimeScannerLabel": "LIVE REAL-TIME SCANNER",
+  "nutritionReliabilityLabel": "NUTRITION RELIABILITY: {reliability}",
+  "@nutritionReliabilityLabel": {
+    "placeholders": { "reliability": { "type": "String" } }
+  },
+  "neuralReasoningLabel": "NEURAL REASONING",
+  "aiVisualMarkersFallback": "AI identified visual culinary markers consistent with {label}.",
+  "@aiVisualMarkersFallback": {
+    "placeholders": { "label": { "type": "String" } }
+  },
+  "authenticityIntelligenceTitle": "AUTHENTICITY INTELLIGENCE",
+  "ingredientCertaintyTitle": "INGREDIENT CERTAINTY",
+  "manualCulinaryOverrideTitle": "MANUAL CULINARY OVERRIDE",
+  "refineIngredientsHint": "Refine ingredients (comma separated)...",
+  "cancelButtonUppercaseAlt": "CANCEL",
+  "applyOverrideButton": "APPLY OVERRIDE",
+  "ingredientTierConfirmed": "CONFIRMED",
+  "ingredientTierLikely": "LIKELY",
+  "ingredientTierOptional": "OPTIONAL / SIDES",
+  "mealContextLabel": "MEAL CONTEXT: {context}",
+  "@mealContextLabel": {
+    "placeholders": { "context": { "type": "String" } }
+  },
+  "supportingElementsLabel": "SUPPORTING ELEMENTS:",
+  "influencesLabel": "INFLUENCES: {influences}",
+  "@influencesLabel": {
+    "placeholders": { "influences": { "type": "String" } }
+  },
+  "visualFreshnessQualityLabel": "VISUAL FRESHNESS & QUALITY",
+  "qualityColonLabel": "QUALITY: {quality}",
+  "@qualityColonLabel": {
+    "placeholders": { "quality": { "type": "String" } }
+  },
+  "textureColonLabel": "TEXTURE: {texture}",
+  "@textureColonLabel": {
+    "placeholders": { "texture": { "type": "String" } }
+  },
+  "heritageNarrativeEngineTitle": "HERITAGE NARRATIVE ENGINE",
+  "verifiedLegacyTitle": "VERIFIED LEGACY",
+  "regionalTraditionTitle": "REGIONAL TRADITION",
+  "folkloreNarrativeTitle": "FOLKLORE NARRATIVE",
+  "culinaryGapPairingEngineTitle": "CULINARY GAP & PAIRING ENGINE",
+  "missingCompanionsLabel": "MISSING COMPANIONS:",
+  "engineNotesLabel": "ENGINE NOTES:",
+  "recipeRefactorEngineTitle": "RECIPE REFACTOR ENGINE",
+  "refactoredStepsForYouLabel": "REFACTORED STEPS FOR YOU:",
+  "prepMetricLabel": "PREP",
+  "cookMetricLabel": "COOK",
+  "levelMetricLabel": "LEVEL",
+  "calMetricLabel": "CAL",
+  "proteinLabel": "Protein",
+  "carbsLabel": "Carbs",
+  "fatLabel": "Fat",
+  "fiberLabel": "Fiber",
+  "healthRatingLabel": "HEALTH RATING",
+  "healthRatingValueLabel": "{rating}/10",
+  "@healthRatingValueLabel": {
+    "placeholders": { "rating": { "type": "int" } }
+  },
+  "sinhalaLabel": "SINHALA",
+  "englishLabel": "ENGLISH",
+  "backLabel": "BACK",
+  "nextLabel": "NEXT",
+  "rescanLabel": "RESCAN",
+  "oracleInsightsTitle": "ORACLE INSIGHTS",
+  "globalSubstitutionsTitle": "GLOBAL SUBSTITUTIONS",
+  "aiEstimatedValuesDisclaimer": "AI-estimated values. Traditional variations may differ.",
+  "savedLabel": "SAVED",
+  "saveToCookbookLabel": "SAVE TO COOKBOOK",
+  "voiceGuideLabel": "VOICE GUIDE",
+  "savorLankaShareText": "Check out this {name} recipe I found on Hidden Gems SL.ai! It's an authentic Sri Lankan delicacy. \n\nOracle Score: {score}%",
+  "@savorLankaShareText": {
+    "placeholders": { "name": { "type": "String" }, "score": { "type": "String" } }
+  },
+  "savorLankaShareSubject": "Hidden Gems SL.ai - Savor Lanka Recipe",
+  "phase3CrossMatchTitle": "PHASE 3: CROSS-MATCH SUBSTITUTION",
+  "visuallySimilarAlternativesLabel": "VISUALLY SIMILAR ALTERNATIVES",
+  "aiCrossMatchReasoningLabel": "AI CROSS-MATCH REASONING:",
+  "phase6HygienePresentationTitle": "PHASE 6: HYGIENE & PRESENTATION",
+  "presentationLabel": "PRESENTATION",
+  "integrityLabel": "INTEGRITY",
+  "popularLabel": "Popular",
+
+  "curatorDealsTitle": "Curator deals",
+  "noDealsRightNowTitle": "No deals right now",
+  "newPartnerDiscountsMessage": "New partner discounts are added regularly — check back soon.",
+  "percentOffLabel": "{percent}% OFF",
+  "@percentOffLabel": {
+    "placeholders": { "percent": { "type": "int" } }
+  },
+  "validUntilLabel": "Valid until {date}",
+  "@validUntilLabel": {
+    "placeholders": { "date": { "type": "String" } }
+  },
+  "claimDealButton": "Claim deal",
+
+  "passportTitle": "Passport",
+  "verifiedVisitCollectionSubtitle": "Your verified visit collection",
+  "passportIsEmptyTitle": "Passport is empty",
+  "exploreHistoricalGemsMessage": "Explore historical gems to\nclaim your unique digital stamps.",
+  "claimedOnLabel": "Claimed on {date}",
+  "@claimedOnLabel": {
+    "placeholders": { "date": { "type": "String" } }
+  },
+  "verifiableHashLabel": "Verifiable hash",
+  "shareCollectibleButton": "Share collectible",
+  "stampRarityCommon": "Common",
+  "stampRarityRare": "Rare",
+  "stampRarityMythic": "Mythic",
+
+  "audioGuideLabel": "Audio guide",
+  "sinhalaShortLabel": "සිංහල",
+  "englishShortLabel": "English",
+
+  "joinGroupTourTitle": "Join Group Tour",
+  "enterSixDigitCodeMessage": "Enter the 6-digit code provided by your guide.",
+  "cancelButtonUppercaseThird": "CANCEL",
+  "joinButtonUppercase": "JOIN",
+  "tapFlatSurfaceMessage": "👆 Tap a flat surface to place the model",
+  "groupTourStartedCodeLabel": "Group Tour Started! Code: {code}",
+  "@groupTourStartedCodeLabel": {
+    "placeholders": { "code": { "type": "String" } }
+  },
+  "invalidSessionCodeMessage": "Invalid Session Code",
+  "couldNotLoadAudioMessage": "Could not load audio narration.",
+  "galleryPermissionDeniedMessage": "Gallery permission denied",
+  "failedToCapturePhotoMessage": "Failed to capture photo: {error}",
+  "@failedToCapturePhotoMessage": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "codeColonLabel": "CODE: {code}",
+  "@codeColonLabel": {
+    "placeholders": { "code": { "type": "String" } }
+  },
+  "thenLabel": "THEN",
+  "nowLabel": "NOW",
+  "resetLabel": "Reset",
+  "scalePlusLabel": "Scale+",
+  "scaleMinusLabel": "Scale-",
+  "memoryLabel": "Memory",
+  "removeLabel": "Remove",
+  "placeLabel": "Place",
+  "historicalInfoComingSoonMessage": "Historical information coming soon.",
+  "preparingHeritageAssetsMessage": "Preparing Heritage Assets...",
+  "progressSizeLabel": "{progress}% • {size} MB",
+  "@progressSizeLabel": {
+    "placeholders": { "progress": { "type": "int" }, "size": { "type": "String" } }
+  },
+  "modelColonNameLabel": "Model: {name}",
+  "@modelColonNameLabel": {
+    "placeholders": { "name": { "type": "String" } }
+  },
+  "authorColonNameLabel": "Author: {name}",
+  "@authorColonNameLabel": {
+    "placeholders": { "name": { "type": "String" } }
+  },
+  "moveSlowlyToScanMessage": "Move your phone slowly\nto scan a flat surface",
+  "tapPlaceToPlaceModelMessage": "👇 Tap \"Place\" then tap a flat surface",
+  "demoModeSecondsRemainingLabel": "DEMO MODE: {seconds} REMAINING",
+  "@demoModeSecondsRemainingLabel": {
+    "placeholders": { "seconds": { "type": "int" } }
+  },
+  "premiumHeritageSessionLabel": "PREMIUM HERITAGE SESSION",
+  "artifactDiscoveredLabel": "ARTIFACT DISCOVERED!",
+  "ptsRarityLabel": "+{points} PTS • {rarity}",
+  "@ptsRarityLabel": {
+    "placeholders": { "points": { "type": "int" }, "rarity": { "type": "String" } }
+  },
+  "hiddenGemsSlWatermark": "HIDDEN GEMS SL",
+  "heritageArWatermark": "HERITAGE AR",
+  "captureSuccessfulTitle": "Capture Successful!",
+  "shareDiscoveryMessage": "Share your historical discovery with the world",
+  "instagramLabel": "Instagram",
+  "tiktokLabel": "TikTok",
+  "savedLabelShort": "Saved",
+  "sharePlatformCaptionInstagram": "Exploring {placeName} in AR with #HiddenGemsSL",
+  "@sharePlatformCaptionInstagram": {
+    "placeholders": { "placeName": { "type": "String" } }
+  },
+  "sharePlatformCaptionTiktok": "History comes alive! #HiddenGemsSL #HeritageAR",
+  "photoSavedGalleryMessage": "Photo saved to your gallery!",
+  "backToArButton": "Back to AR",
+  "distanceToTargetLabel": "{distance}m to {placeName}",
+  "@distanceToTargetLabel": {
+    "placeholders": { "distance": { "type": "String" }, "placeName": { "type": "String" } }
+  },
+  "recommendedLabel": "RECOMMENDED",
+  "categoryRatingLabel": "{category} • {rating} ★",
+  "@categoryRatingLabel": {
+    "placeholders": { "category": { "type": "String" }, "rating": { "type": "String" } }
+  },
+  "viewButtonUppercase": "VIEW",
+  "loginToLeaveMemoryMessage": "Login to leave an AR memory!",
+  "leaveArMemoryTitle": "Leave an AR Memory",
+  "whatDoYouSeeHereHint": "What do you see here?",
+  "cancelButton2": "Cancel",
+  "dropButton": "Drop",
+  "memoryDroppedMessage": "Memory dropped into the AR universe!",
+  "explorerFallback": "Explorer",
+  "signalPercentLabel": "SIGNAL: {percent}%",
+  "@signalPercentLabel": {
+    "placeholders": { "percent": { "type": "int" } }
+  },
+  "searchingLabel": "SEARCHING...",
+
+  "cameraAccessNeededTitle": "Camera access needed",
+  "arNotAvailableDeviceTitle": "AR isn't available on this device",
+  "arCouldntLoadTitle": "AR couldn't load this time",
+  "cameraAccessNeededMessage": "Camera access is needed for AR features. Here's a cinematic reconstruction instead.",
+  "arNotAvailableMessage": "Here's a cinematic 360° view of the same era instead.",
+  "arCouldntLoadMessage": "We couldn't load the historical 3D model. Here's the cinematic fallback view instead.",
+  "closeButtonLabel": "Close",
+  "watchAdToUnlockButton": "Watch ad to unlock",
+  "oracleRewardFallbackMessage": "✨ Oracle reward active! Fallback modes and premium content unlocked.",
+  "arNotAvailableInfoBarMessage": "AR isn't available on this device · Showing 360° view",
+  "cinematicPreviewUnavailableMessage": "Cinematic preview unavailable",
+  "interactive3dViewTitle": "Interactive 3D View",
+  "touchToRotateMonumentMessage": "Touch to rotate monument",
+  "historicalStoryLabel": "Historical story",
+  "unveilingEraTitle": "Unveiling the {era}",
+  "@unveilingEraTitle": {
+    "placeholders": { "era": { "type": "String" } }
+  },
+  "heritageStoryBody": "Sri Lanka's heritage runs deep into the fabric of time. This site, dating back to the {era}, was once the center of a thriving civilization that pioneered hydraulic engineering and spiritual architecture.\n\nThe stupa we see today was constructed using over 100 million sun-baked bricks, standing as a testament to the engineering marvels of ancient kings...",
+  "@heritageStoryBody": {
+    "placeholders": { "era": { "type": "String" } }
+  },
+  "listenToNarrationLabel": "Listen to narration",
+  "sinhalaEnglishAvailableLabel": "Sinhala & English available",
+  "illustrationCaptionLabel": "Illustration: Ancient Engineering (Concept Art)",
+  "mode360Label": "360°",
+  "mode3dLabel": "3D",
+  "modeStoryLabel": "Story",
+
+  "unlockArHeritageModeTitle": "Unlock AR Heritage Mode",
+  "arHeritageModeSubtitle": "Experience Sri Lanka as it looked thousands of years ago.",
+  "featureAncient3dReconstruction": "Ancient 3D Reconstruction",
+  "featureAudioNarrationBilingual": "Audio Narration (සිංහල / English)",
+  "featureArPhotoCapture": "AR Photo Capture & Social Share",
+  "pricingTrialLabel": "From Rs. 299/month  ·  7-day free trial",
+  "upgradeToPremiumButton": "Upgrade to Premium",
+  "watch10SecPreviewButton": "Watch 10-sec Preview",
+  "watchAdUnlockSessionButton": "Watch Ad to Unlock Session",
+  "notNowButtonLabel": "Not Now",
+  "ancientArtifactsLabel": "ANCIENT ARTIFACTS"
 }

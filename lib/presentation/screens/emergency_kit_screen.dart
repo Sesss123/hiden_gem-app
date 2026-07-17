@@ -15,6 +15,7 @@ import '../../core/services/secure_entitlements.dart';
 import '../../core/services/emergency_translator_service.dart';
 import 'emergency_translator_screen.dart';
 import 'premium_hub_screen.dart';
+import '../../l10n/app_localizations.dart';
 
 class EmergencyKitScreen extends ConsumerStatefulWidget {
   const EmergencyKitScreen({super.key});
@@ -121,7 +122,8 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> with Si
 
   Future<void> _handleSOS() async {
     setState(() => _isSendingSOS = true);
-    
+    final l10n = AppLocalizations.of(context)!;
+
     try {
       LocationPermission permission = await Geolocator.checkPermission();
       if (permission == LocationPermission.denied) {
@@ -129,7 +131,7 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> with Si
       }
 
       if (permission == LocationPermission.deniedForever) {
-        throw 'Location permissions are permanently denied.';
+        throw l10n.locationPermissionsPermanentlyDeniedMessage;
       }
 
       Position position = await Geolocator.getCurrentPosition(
@@ -154,8 +156,8 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> with Si
         reportedByRole: profile.role,
         type: 'sos_alert',
         severity: 'critical',
-        title: "CRITICAL SOS ALERT",
-        description: "Emergency distress signal triggered from Guardian System.",
+        title: l10n.sosCriticalAlertTitle,
+        description: l10n.sosDistressSignalDescription,
         status: 'investigating',
         lat: position.latitude,
         lng: position.longitude,
@@ -190,14 +192,14 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> with Si
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("SOS Alerts Prepared & Logged in Secure Vault!")),
+        SnackBar(content: Text(l10n.sosAlertsPreparedLoggedMessage)),
       );
 
       await _offerEmergencyTranslator();
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error: $e"), backgroundColor: AppTheme.colors.red),
+        SnackBar(content: Text(AppLocalizations.of(context)!.errorGenericMessage(e.toString())), backgroundColor: AppTheme.colors.red),
       );
     } finally {
       if (mounted) setState(() => _isSendingSOS = false);
@@ -227,15 +229,15 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> with Si
       builder: (ctx) => AlertDialog(
         backgroundColor: Theme.of(context).cardColor,
         icon: Icon(Icons.translate_rounded, color: AppPalette.rust, size: 32),
-        title: Text("Emergency Translator", style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: AppTheme.textPrimary(context))),
+        title: Text(AppLocalizations.of(context)!.emergencyTranslatorTitle, style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: AppTheme.textPrimary(context))),
         content: Text(
-          "Instantly explain your situation to Sri Lankan police or hospital staff in spoken Sinhala — a Premium safety feature.",
+          AppLocalizations.of(context)!.emergencyTranslatorPremiumMessage,
           style: GoogleFonts.inter(fontSize: 13, color: AppTheme.textSecondary(context), height: 1.5),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: Text("Not now", style: TextStyle(color: AppTheme.textSecondary(context))),
+            child: Text(AppLocalizations.of(context)!.notNowButton, style: TextStyle(color: AppTheme.textSecondary(context))),
           ),
           ElevatedButton(
             onPressed: () {
@@ -243,7 +245,7 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> with Si
               Navigator.push(context, MaterialPageRoute(builder: (_) => const PremiumHubScreen()));
             },
             style: ElevatedButton.styleFrom(backgroundColor: AppPalette.rust, foregroundColor: AppTheme.colors.white),
-            child: const Text("View Plans"),
+            child: Text(AppLocalizations.of(context)!.viewPlansButton),
           ),
         ],
       ),
@@ -275,7 +277,7 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> with Si
             onPressed: () => Navigator.pop(context),
           ),
           title: Text(
-            "Emergency",
+            AppLocalizations.of(context)!.emergencyTitle,
             style: GoogleFonts.outfit(
               fontSize: 20,
               fontWeight: FontWeight.w800,
@@ -293,7 +295,7 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> with Si
               SizedBox(height: 32),
 
               Text(
-                "Critical contacts",
+                AppLocalizations.of(context)!.criticalContactsTitle,
                 style: GoogleFonts.outfit(
                   fontSize: 15,
                   fontWeight: FontWeight.w700,
@@ -309,7 +311,7 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> with Si
 
               SizedBox(height: 32),
               Text(
-                "Medical facilities nearby",
+                AppLocalizations.of(context)!.medicalFacilitiesNearbyTitle,
                 style: GoogleFonts.outfit(
                   fontSize: 15,
                   fontWeight: FontWeight.w700,
@@ -328,6 +330,7 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> with Si
   }
 
   Widget _buildSOSSection() {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 28),
@@ -347,7 +350,7 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> with Si
               Icon(Icons.shield_moon_rounded, color: AppTheme.colors.white.withValues(alpha: 0.85), size: 16),
               const SizedBox(width: 8),
               Text(
-                "EMERGENCY PROTOCOL",
+                l10n.emergencyProtocolLabel,
                 style: GoogleFonts.inter(
                   color: AppTheme.colors.white.withValues(alpha: 0.85),
                   fontSize: 11,
@@ -414,7 +417,7 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> with Si
                                   Icon(Icons.emergency_share_rounded, color: AppTheme.colors.white, size: 26),
                                   const SizedBox(height: 4),
                                   Text(
-                                    "SOS",
+                                    l10n.sosLabel,
                                     style: TextStyle(color: AppTheme.colors.white, fontWeight: FontWeight.w800, fontSize: 15, letterSpacing: 0.5),
                                   ),
                                 ],
@@ -430,16 +433,16 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> with Si
           const SizedBox(height: 24),
           Text(
             _isSendingSOS
-                ? "Sending alert…"
+                ? l10n.sendingAlertMessage
                 : _isHolding
-                    ? "Keep holding to confirm…"
-                    : "Press and hold for 2 seconds to alert",
+                    ? l10n.keepHoldingToConfirmMessage
+                    : l10n.pressHoldTwoSecondsMessage,
             textAlign: TextAlign.center,
             style: GoogleFonts.inter(color: AppTheme.colors.white.withValues(alpha: 0.85), fontSize: 13, fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 4),
           Text(
-            "Prevents accidental triggers",
+            l10n.preventsAccidentalTriggersMessage,
             textAlign: TextAlign.center,
             style: GoogleFonts.inter(color: AppTheme.colors.white.withValues(alpha: 0.5), fontSize: 11, fontWeight: FontWeight.w500),
           ),
@@ -449,11 +452,12 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> with Si
   }
 
   Widget _buildContactGrid() {
+    final l10n = AppLocalizations.of(context)!;
     final List<Map<String, dynamic>> contacts = [
-      {"name": "Police", "phone": "119", "icon": Icons.local_police_rounded, "color": AppPalette.earth},
-      {"name": "Ambulance", "phone": "1990", "icon": Icons.medical_services_rounded, "color": AppPalette.rust},
-      {"name": "Tourist Police", "phone": "0112421451", "icon": Icons.beach_access_rounded, "color": AppPalette.heroOchre},
-      {"name": "Fire Dept", "phone": "110", "icon": Icons.fire_truck_rounded, "color": AppTheme.errorRed},
+      {"name": l10n.contactNamePolice, "phone": "119", "icon": Icons.local_police_rounded, "color": AppPalette.earth},
+      {"name": l10n.contactNameAmbulance, "phone": "1990", "icon": Icons.medical_services_rounded, "color": AppPalette.rust},
+      {"name": l10n.contactNameTouristPolice, "phone": "0112421451", "icon": Icons.beach_access_rounded, "color": AppPalette.heroOchre},
+      {"name": l10n.contactNameFireDept, "phone": "110", "icon": Icons.fire_truck_rounded, "color": AppTheme.errorRed},
     ];
 
     return LayoutBuilder(
@@ -551,6 +555,7 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> with Si
 
   Widget _buildSOSContactManager() {
     final profile = UserPreferenceService.getProfile();
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -567,7 +572,7 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> with Si
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                "Private guardians",
+                l10n.privateGuardiansTitle,
                 style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontSize: 14, fontWeight: FontWeight.w700, letterSpacing: -0.2)
               ),
               IconButton(
@@ -579,7 +584,7 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> with Si
           SizedBox(height: 8),
           if (profile.sosContacts.isEmpty)
             Text(
-              "No guardians assigned. Signals will default to emergency services.",
+              l10n.noGuardiansAssignedMessage,
               style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 12)
             )
           else
@@ -617,6 +622,7 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> with Si
   }
 
   Widget _buildHospitalsList() {
+    final l10n = AppLocalizations.of(context)!;
     final deniedForever = _locationPermission == LocationPermission.deniedForever;
 
     return Container(
@@ -648,16 +654,16 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> with Si
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Nearest hospital, wherever you are",
+                      l10n.nearestHospitalTitle,
                       style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.w700, fontSize: 14, letterSpacing: -0.2),
                     ),
                     const SizedBox(height: 3),
                     Text(
                       _checkingLocation
-                          ? "Checking location access…"
+                          ? l10n.checkingLocationAccessMessage
                           : deniedForever
-                              ? "Location access denied — will search generally instead."
-                              : "Opens Google Maps using your live GPS — shows every government and private hospital nearby, no matter where you are in Sri Lanka.",
+                              ? l10n.locationAccessDeniedGeneralMessage
+                              : l10n.hospitalMapsExplanationMessage,
                       style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 12, fontWeight: FontWeight.w500, height: 1.4),
                     ),
                   ],
@@ -671,7 +677,7 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> with Si
             height: 50,
             child: ElevatedButton.icon(
               icon: const Icon(Icons.near_me_rounded, size: 17),
-              label: Text('Find nearest hospital on Maps', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 13)),
+              label: Text(l10n.findNearestHospitalButton, style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 13)),
               onPressed: _openNearbyHospitals,
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppPalette.rust,
@@ -705,7 +711,7 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> with Si
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                "Add guardian",
+                AppLocalizations.of(context)!.addGuardianTitle,
                 style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.w700, letterSpacing: -0.3, color: AppTheme.textPrimary(context))
               ),
               SizedBox(height: 20),
@@ -718,7 +724,7 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> with Si
                 child: TextField(
                   style: TextStyle(color: AppTheme.textPrimary(context)),
                   decoration: InputDecoration(
-                    hintText: "Guardian phone number",
+                    hintText: AppLocalizations.of(context)!.guardianPhoneNumberHint,
                     hintStyle: TextStyle(color: AppTheme.textSecondary(context), fontSize: 13),
                     border: InputBorder.none,
                   ),
@@ -737,7 +743,7 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> with Si
                         final p = UserPreferenceService.getProfile();
                         p.sosContacts.add(phone);
                         await UserPreferenceService.saveProfile(p);
-                        if (!mounted) return;
+                        if (!mounted || !buttonContext.mounted) return;
                         setState(() {});
                         // BUG-11 FIX: Pop the dialog context specifically.
                         // Previously this was popping `context` which might
@@ -752,7 +758,7 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> with Si
                       elevation: 0,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
                     ),
-                    child: Text("Add guardian", style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 14)),
+                    child: Text(AppLocalizations.of(context)!.addGuardianButton, style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 14)),
                   ),
                 ),
               ),

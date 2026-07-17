@@ -10,6 +10,7 @@ import '../../data/datasources/user_preference_service.dart';
 import 'curator_deals_screen.dart';
 import 'emergency_translator_screen.dart';
 import '../../core/services/emergency_translator_service.dart';
+import '../../l10n/app_localizations.dart';
 
 class PremiumHubScreen extends ConsumerStatefulWidget {
   const PremiumHubScreen({super.key});
@@ -62,17 +63,16 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
 
   /// A human "7-day free trial" style string if the store product actually
   /// has a zero-cost introductory offer configured, else null.
-  String? _trialLabel(Package? pkg) {
+  String? _trialLabel(Package? pkg, AppLocalizations l10n) {
     final intro = pkg?.storeProduct.introductoryPrice;
     if (intro == null || intro.price != 0) return null;
-    final unit = switch (intro.periodUnit) {
-      PeriodUnit.day => intro.periodNumberOfUnits == 1 ? 'day' : 'days',
-      PeriodUnit.week => intro.periodNumberOfUnits == 1 ? 'week' : 'weeks',
-      PeriodUnit.month => intro.periodNumberOfUnits == 1 ? 'month' : 'months',
-      PeriodUnit.year => intro.periodNumberOfUnits == 1 ? 'year' : 'years',
-      _ => 'period',
+    return switch (intro.periodUnit) {
+      PeriodUnit.day => l10n.trialDaysLabel(intro.periodNumberOfUnits),
+      PeriodUnit.week => l10n.trialWeeksLabel(intro.periodNumberOfUnits),
+      PeriodUnit.month => l10n.trialMonthsLabel(intro.periodNumberOfUnits),
+      PeriodUnit.year => l10n.trialYearsLabel(intro.periodNumberOfUnits),
+      _ => l10n.trialPeriodLabel(intro.periodNumberOfUnits),
     };
-    return '${intro.periodNumberOfUnits}-$unit free trial';
   }
 
   @override
@@ -152,7 +152,7 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
               if (isPremium) SizedBox(width: 10),
               Flexible(
                 child: Text(
-                  "Go Premium",
+                  AppLocalizations.of(context)!.goPremiumTitle,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: GoogleFonts.outfit(
@@ -166,7 +166,7 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
           ),
           SizedBox(height: 8),
           Text(
-            "Full AR & unlimited AI trips",
+            AppLocalizations.of(context)!.fullArUnlimitedAiTripsMessage,
             style: GoogleFonts.inter(
               fontSize: 13,
               color: AppTheme.colors.white.withValues(alpha: 0.7),
@@ -180,37 +180,38 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
 
   Widget _buildBenefitList() {
     final isPremium = ref.watch(premiumProvider);
+    final l10n = AppLocalizations.of(context)!;
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 24),
       child: Column(
         children: [
           _benefitRow(
             Icons.view_in_ar_rounded,
-            "Heritage AR Mode",
-            "See ancient ruins reconstructed in 1:1 scale with historical audio guides.",
+            l10n.heritageArModeTitle,
+            l10n.heritageArModeDescription,
           ),
           _benefitRow(
             Icons.auto_awesome_rounded,
-            "Oracle AI Trip Intelligence",
-            "Unlimited hyper-personalized itineraries powered by the Oracle engine.",
+            l10n.oracleAiTripIntelligenceTitle,
+            l10n.oracleAiTripIntelligenceDescription,
           ),
           _benefitRow(
             Icons.map_outlined,
-            "Offline Digital Twins",
-            "Download high-res maps and 100+ points of interest for low-signal areas.",
+            l10n.offlineDigitalTwinsTitle,
+            l10n.offlineDigitalTwinsDescription,
           ),
           _benefitRow(
             Icons.local_offer_outlined,
-            "Exclusive Curator Deals",
-            "Access to member-only discounts at handpicked boutique stays.",
+            l10n.exclusiveCuratorDealsTitle,
+            l10n.exclusiveCuratorDealsDescription,
             onTap: isPremium
                 ? () => Navigator.push(context, MaterialPageRoute(builder: (_) => const CuratorDealsScreen()))
                 : null,
           ),
           _benefitRow(
             Icons.translate_rounded,
-            "Guardian Emergency Translator",
-            "Instantly explain your situation to Sri Lankan police or hospital staff in spoken Sinhala during an SOS.",
+            l10n.guardianEmergencyTranslatorTitle,
+            l10n.guardianEmergencyTranslatorDescription,
             onTap: isPremium
                 ? () => Navigator.push(context, MaterialPageRoute(builder: (_) => const EmergencyTranslatorScreen(initialType: EmergencySituationType.other)))
                 : null,
@@ -281,6 +282,7 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
 
   Widget _buildPricingCard(bool isPremium) {
     final profile = ref.watch(premiumProvider.select((_) => UserPreferenceService.getProfile()));
+    final l10n = AppLocalizations.of(context)!;
     const goldColor = AppPalette.rust;
 
     return Column(
@@ -299,7 +301,7 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
                     .shimmer(duration: 4.seconds),
                 SizedBox(height: 20),
                 Text(
-                  "${profile.premiumPlan ?? 'Premium'} active",
+                  l10n.premiumActiveLabel(profile.premiumPlan ?? l10n.premiumFallback),
                   style: GoogleFonts.outfit(
                     fontSize: 17,
                     fontWeight: FontWeight.w700,
@@ -310,7 +312,7 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
                   Padding(
                     padding: EdgeInsets.only(top: 10),
                     child: Text(
-                      "Renewing on ${profile.premiumExpiresAt!.day}/${profile.premiumExpiresAt!.month}/${profile.premiumExpiresAt!.year}",
+                      l10n.renewingOnLabel('${profile.premiumExpiresAt!.day}/${profile.premiumExpiresAt!.month}/${profile.premiumExpiresAt!.year}'),
                       style: GoogleFonts.inter(fontSize: 12, color: AppTheme.textSecondary(context), fontWeight: FontWeight.w600),
                     ),
                   ),
@@ -322,7 +324,7 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
                     borderRadius: BorderRadius.circular(100),
                   ),
                   child: Text(
-                    "Via ${profile.premiumSource?.replaceAll('_', ' ') ?? 'store'}",
+                    l10n.viaSourceLabel(profile.premiumSource?.replaceAll('_', ' ') ?? l10n.storeFallback),
                     style: GoogleFonts.inter(fontSize: 10, color: AppTheme.textSecondary(context), fontWeight: FontWeight.w600),
                   ),
                 ),
@@ -333,12 +335,12 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
             SizedBox(height: 16),
             TextButton.icon(
               icon: Icon(Icons.restart_alt_rounded, color: AppTheme.colors.redAccent, size: 16),
-              label: Text("RESET PREMIUM (DEV ONLY)",
+              label: Text(l10n.resetPremiumDevButton,
                 style: GoogleFonts.inter(color: AppTheme.colors.redAccent, fontSize: 11, fontWeight: FontWeight.bold)),
               onPressed: () {
                 ref.read(premiumProvider.notifier).simulateMockCancel();
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text("Premium reset. Pricing tiers are back.")),
+                  SnackBar(content: Text(l10n.premiumResetMessage)),
                 );
               },
             ),
@@ -346,10 +348,10 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
         ] else ...[
           _buildTierOption(
             context: context,
-            title: "Smart Traveler",
+            title: l10n.smartTravelerTitle,
             priceStr: "Rs. 499",
-            billingCycle: "Billed monthly",
-            features: ["20 AI Itineraries/mo", "Selected AR Places", "Offline Maps (Basic)"],
+            billingCycle: l10n.billedMonthlyLabel,
+            features: [l10n.featureAiItineraries20, l10n.featureSelectedArPlaces, l10n.featureOfflineMapsBasic],
             color: AppTheme.colors.primary,
             onPressed: () => ref.read(premiumProvider.notifier).buyPremium(productId: PremiumNotifier.explorerId),
           ),
@@ -357,21 +359,22 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
           _buildBillingToggle(context, goldColor),
           SizedBox(height: 16),
           Builder(builder: (context) {
+            final l10n = AppLocalizations.of(context)!;
             // Real store price if RevenueCat is configured, else the static
             // fallback so pricing is never blank in dev/example-key builds.
             final annualPrice = _annualPackage?.storeProduct.priceString ?? "Rs. 9,999";
             final monthlyPrice = _monthlyPackage?.storeProduct.priceString ?? "Rs. 999";
-            final trialLabel = _trialLabel(_isAnnual ? _annualPackage : _monthlyPackage);
+            final trialLabel = _trialLabel(_isAnnual ? _annualPackage : _monthlyPackage, l10n);
 
             return _buildTierOption(
               context: context,
-              title: "Heritage Premium",
+              title: l10n.heritagePremiumTitle,
               priceStr: _isAnnual ? annualPrice : monthlyPrice,
-              billingCycle: _isAnnual ? "Billed yearly · save ~17%" : "Billed monthly",
+              billingCycle: _isAnnual ? l10n.billedYearlySaveLabel : l10n.billedMonthlyLabel,
               features: [
-                "Unlimited AI Itineraries",
-                "Full Heritage AR Access",
-                "All Offline Features",
+                l10n.featureUnlimitedAiItineraries,
+                l10n.featureFullHeritageArAccess,
+                l10n.featureAllOfflineFeatures,
                 if (trialLabel != null) trialLabel,
               ],
               color: goldColor,
@@ -384,16 +387,16 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
           SizedBox(height: 20),
           _buildTierOption(
             context: context,
-            title: "Ultra Explorer",
-            priceStr: "Waitlist",
-            billingCycle: "Next-Gen Experience",
-            features: ["VR Mode Support", "Historical Timelines", "Personal AI Curator"],
+            title: l10n.ultraExplorerTitle,
+            priceStr: l10n.waitlistLabel,
+            billingCycle: l10n.nextGenExperienceLabel,
+            features: [l10n.featureVrModeSupport, l10n.featureHistoricalTimelines, l10n.featurePersonalAiCurator],
             color: AppTheme.colors.primary,
             isLocked: true,
             onPressed: () {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: const Text("🚀 Ultra Explorer is on the waitlist! We'll notify you when it launches."),
+                  content: Text(l10n.ultraExplorerWaitlistMessage),
                   behavior: SnackBarBehavior.floating,
                   backgroundColor: AppTheme.colors.primary.withValues(alpha: 0.15),
                 ),
@@ -404,7 +407,7 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
           TextButton(
             onPressed: () => ref.read(premiumProvider.notifier).restorePurchases(),
             child: Text(
-              "Restore previous purchases",
+              l10n.restorePreviousPurchasesButton,
               style: GoogleFonts.inter(
                 fontSize: 13,
                 color: Theme.of(context).colorScheme.primary,
@@ -414,7 +417,7 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
           ),
           SizedBox(height: 8),
           Text(
-            "Terms of Service  •  Privacy Policy",
+            l10n.termsPrivacyLabel,
             style: GoogleFonts.inter(fontSize: 11, color: AppTheme.textSecondary(context).withValues(alpha: 0.7), fontWeight: FontWeight.w600),
           ),
           SizedBox(height: 24),
@@ -435,12 +438,12 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
       ),
       child: TextButton.icon(
         icon: Icon(Icons.bug_report, color: AppTheme.colors.redAccent, size: 16),
-        label: Text("TEST BUY (DEV ONLY)", 
+        label: Text(AppLocalizations.of(context)!.testBuyDevButton,
           style: GoogleFonts.inter(color: AppTheme.colors.redAccent, fontSize: 11, fontWeight: FontWeight.bold)),
         onPressed: () {
           ref.read(premiumProvider.notifier).simulateMockPurchase();
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("🚀 Mock Purchase Simulated. Refreshing...")),
+            SnackBar(content: Text(AppLocalizations.of(context)!.mockPurchaseSimulatedMessage)),
           );
         },
       ),
@@ -485,8 +488,8 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
       ),
       child: Row(
         children: [
-          segment("Monthly", !_isAnnual, () => setState(() => _isAnnual = false)),
-          segment("Yearly · Save 17%", _isAnnual, () => setState(() => _isAnnual = true)),
+          segment(AppLocalizations.of(context)!.monthlyLabel, !_isAnnual, () => setState(() => _isAnnual = false)),
+          segment(AppLocalizations.of(context)!.yearlySaveLabel, _isAnnual, () => setState(() => _isAnnual = true)),
         ],
       ),
     );
@@ -547,14 +550,14 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
                     borderRadius: BorderRadius.circular(100),
                   ),
                   child: Text(
-                    "Popular",
+                    AppLocalizations.of(context)!.popularLabel,
                     style: GoogleFonts.inter(fontSize: 9, fontWeight: FontWeight.w700, color: AppPalette.ink),
                   ),
                 ),
               ],
               if (isLocked)
                 Text(
-                   "Locked",
+                   AppLocalizations.of(context)!.lockedLabelShort,
                   style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.w600, color: AppTheme.textSecondary(context).withValues(alpha: 0.6)),
                 ),
             ],
@@ -575,7 +578,7 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
               Padding(
                 padding: EdgeInsets.only(bottom: 5),
                 child: Text(
-                  "/ month",
+                  AppLocalizations.of(context)!.perMonthLabel,
                   style: GoogleFonts.inter(color: featureTextColor, fontSize: 12, fontWeight: FontWeight.w600),
                 ),
               ),
@@ -609,7 +612,7 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
                 elevation: 0,
               ),
               child: Text(
-                isLocked ? "Coming soon" : "Upgrade now",
+                isLocked ? AppLocalizations.of(context)!.comingSoonButton : AppLocalizations.of(context)!.upgradeNowLongButton,
                 style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 13),
               ),
             ),

@@ -11,6 +11,7 @@ import 'billing_history_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:hidden_gems_sl/core/utils/secure_logger.dart';
+import '../../l10n/app_localizations.dart';
 
 
 class SubscriptionScreen extends ConsumerStatefulWidget {
@@ -34,7 +35,7 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
       
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text("✅ Subscribed to \"${planId.toUpperCase()}\" plan!"),
+          content: Text(AppLocalizations.of(context)!.subscribedToPlanMessage(planId.toUpperCase())),
           backgroundColor: AppPalette.rust,
           behavior: SnackBarBehavior.floating,
         ));
@@ -42,7 +43,7 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text("Subscription failed: $e"),
+          content: Text(AppLocalizations.of(context)!.subscriptionFailedMessage(e.toString())),
           backgroundColor: AppPalette.error.withValues(alpha: 0.9),
           behavior: SnackBarBehavior.floating,
         ));
@@ -58,7 +59,7 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
       await Purchases.restorePurchases();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: const Text("✅ Purchases restored successfully."),
+          content: Text(AppLocalizations.of(context)!.purchasesRestoredMessage),
           backgroundColor: AppPalette.rust,
           behavior: SnackBarBehavior.floating,
         ));
@@ -66,7 +67,7 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
     } catch (e) {
        if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text("Restore failed: $e"),
+          content: Text(AppLocalizations.of(context)!.restoreFailedMessage(e.toString())),
           backgroundColor: AppPalette.error.withValues(alpha: 0.9),
           behavior: SnackBarBehavior.floating,
         ));
@@ -79,7 +80,7 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
-    if (user == null) return const Scaffold(body: Center(child: Text("Access Denied")));
+    if (user == null) return Scaffold(body: Center(child: Text(AppLocalizations.of(context)!.accessDeniedMessage)));
 
     final activeSubFuture = ref.watch(subscriptionServiceProvider).getActiveSubscription(user.uid);
 
@@ -99,33 +100,33 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
                     _buildCurrentStatusSection(activeSubFuture),
                     const SizedBox(height: 32),
                     Text(
-                      "Service tiers",
+                      AppLocalizations.of(context)!.serviceTiersTitle,
                       style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w700, color: AppTheme.textPrimary(context)),
                     ),
                     const SizedBox(height: 16),
                     _buildPlanCard(
-                      title: "Free tier",
+                      title: AppLocalizations.of(context)!.freeTierTitle,
                       price: "0",
                       planId: "free",
-                      description: "Essential tour tools for verified guides.",
-                      features: ["Basic Operations", "Verified Badge", "Standard SOS"],
+                      description: AppLocalizations.of(context)!.freeTierDescription,
+                      features: [AppLocalizations.of(context)!.featureBasicOperations, AppLocalizations.of(context)!.featureVerifiedBadge, AppLocalizations.of(context)!.featureStandardSos],
                       isPopular: false,
                     ),
                     _buildPlanCard(
-                      title: "Pro Commander",
+                      title: AppLocalizations.of(context)!.proCommanderTitle,
                       price: "29",
                       planId: "pro",
-                      description: "Elevate your visibility and tools.",
-                      features: ["Featured Listings", "Advanced Analytics", "Client Analytics", "Priority SOS"],
+                      description: AppLocalizations.of(context)!.proCommanderDescription,
+                      features: [AppLocalizations.of(context)!.featureFeaturedListings, AppLocalizations.of(context)!.featureAdvancedAnalytics, AppLocalizations.of(context)!.featureClientAnalytics, AppLocalizations.of(context)!.featurePrioritySos],
                       isPopular: true,
                       color: Theme.of(context).colorScheme.primary,
                     ),
                     _buildPlanCard(
-                      title: "Elite Agency",
+                      title: AppLocalizations.of(context)!.eliteAgencyTitle,
                       price: "89",
                       planId: "elite",
-                      description: "Full fleet and company management.",
-                      features: ["Team Management", "Operator Dashboard", "White-label Branding"],
+                      description: AppLocalizations.of(context)!.eliteAgencyDescription,
+                      features: [AppLocalizations.of(context)!.featureTeamManagement, AppLocalizations.of(context)!.featureOperatorDashboard, AppLocalizations.of(context)!.featureWhiteLabelBranding],
                       isPopular: false,
                       color: AppPalette.earth,
                     ),
@@ -146,7 +147,7 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
       backgroundColor: AppTheme.colors.transparent,
       elevation: 0,
       title: Text(
-        "Fleet plans",
+        AppLocalizations.of(context)!.fleetPlansTitle,
         style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.w800, color: AppTheme.textPrimary(context)),
       ),
       actions: [
@@ -159,7 +160,7 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
         TextButton.icon(
           onPressed: _isProcessing ? null : _restorePurchases,
           icon: Icon(Icons.restore, color: AppTheme.textSecondary(context), size: 16),
-          label: Text("Restore", style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 12, fontWeight: FontWeight.w600)),
+          label: Text(AppLocalizations.of(context)!.restoreButton, style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 12, fontWeight: FontWeight.w600)),
         ),
       ],
     );
@@ -170,6 +171,7 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
       future: future,
       builder: (context, snapshot) {
         final sub = snapshot.data;
+        final l10n = AppLocalizations.of(context)!;
         return Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
@@ -188,13 +190,13 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("Current plan", style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 10, fontWeight: FontWeight.w600)),
+                    Text(l10n.currentPlanLabel, style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 10, fontWeight: FontWeight.w600)),
                     Text(
-                      sub?.planId != null ? _sentenceCase(sub!.planId) : "Free tier",
+                      sub?.planId != null ? _planTierLabel(sub!.planId, l10n) : l10n.freeTierLabel,
                       style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontSize: 15, fontWeight: FontWeight.w700),
                     ),
                     if (sub != null)
-                      Text("Expires: ${sub.expiresAt.day}/${sub.expiresAt.month}/${sub.expiresAt.year}", style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 11)),
+                      Text(l10n.expiresColonDateLabel('${sub.expiresAt.day}/${sub.expiresAt.month}/${sub.expiresAt.year}'), style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 11)),
                   ],
                 ),
               ),
@@ -207,12 +209,12 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
                   child: TextButton(
                     onPressed: _isProcessing ? null : () => _subscribe('pro', '29'),
                     style: TextButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6)),
-                    child: Text("Upgrade", style: GoogleFonts.inter(color: Theme.of(context).colorScheme.onPrimary, fontWeight: FontWeight.w700, fontSize: 12)))
+                    child: Text(l10n.upgradeButton, style: GoogleFonts.inter(color: Theme.of(context).colorScheme.onPrimary, fontWeight: FontWeight.w700, fontSize: 12)))
                 )
               else
                 TextButton(
                   onPressed: () => _manageSubscription(context),
-                  child: Text("Manage", style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontWeight: FontWeight.w600))),
+                  child: Text(l10n.manageButton, style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontWeight: FontWeight.w600))),
             ],
           ),
         );
@@ -236,9 +238,17 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
     }
   }
 
-  String _sentenceCase(String label) {
-    if (label.isEmpty) return label;
-    return label[0].toUpperCase() + label.substring(1).toLowerCase();
+  String _planTierLabel(String planId, AppLocalizations l10n) {
+    switch (planId) {
+      case 'free':
+        return l10n.freeTierTitle;
+      case 'pro':
+        return l10n.proCommanderTitle;
+      case 'elite':
+        return l10n.eliteAgencyTitle;
+      default:
+        return planId;
+    }
   }
 
   Widget _buildPlanCard({
@@ -280,7 +290,7 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 margin: const EdgeInsets.only(bottom: 10),
                 decoration: BoxDecoration(color: AppTheme.colors.white.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(100)),
-                child: Text("Most popular", style: GoogleFonts.inter(fontSize: 9, fontWeight: FontWeight.w700, color: AppTheme.colors.white)),
+                child: Text(AppLocalizations.of(context)!.mostPopularLabel, style: GoogleFonts.inter(fontSize: 9, fontWeight: FontWeight.w700, color: AppTheme.colors.white)),
               ),
             Text(title, style: GoogleFonts.outfit(color: titleColor, fontSize: 14, fontWeight: FontWeight.w700)),
             const SizedBox(height: 6),
@@ -290,7 +300,7 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
               children: [
                 Text("\$$price", style: GoogleFonts.outfit(color: priceColor, fontSize: 28, fontWeight: FontWeight.w800)),
                 const SizedBox(width: 4),
-                Text("/month", style: GoogleFonts.inter(color: descColor, fontSize: 11, fontWeight: FontWeight.w600)),
+                Text(AppLocalizations.of(context)!.perMonthSlashLabel, style: GoogleFonts.inter(color: descColor, fontSize: 11, fontWeight: FontWeight.w600)),
               ],
             ),
             const SizedBox(height: 12),
@@ -321,7 +331,7 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
                 child: _isProcessing
                     ? SizedBox(height: 18, width: 18, child: CircularProgressIndicator(strokeWidth: 2, color: primary))
                     : Text(
-                        planId == 'free' ? "Current plan" : "Select this plan",
+                        planId == 'free' ? AppLocalizations.of(context)!.currentPlanButton : AppLocalizations.of(context)!.selectThisPlanButton,
                         style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 12)),
               ),
             ),

@@ -1366,7 +1366,7 @@ class AppLocalizationsRu extends AppLocalizations {
       'Наведите камеру на любое место, чтобы раскрыть его скрытую историю.';
 
   @override
-  String get upgradeToPremiumButton => 'Перейти на Premium';
+  String get upgradeToPremiumButton => 'Перейти на Премиум';
 
   @override
   String get oracleVerifiedLabel => 'Проверено Оракулом';
@@ -2954,4 +2954,1960 @@ class AppLocalizationsRu extends AppLocalizations {
   String errorSavingAvailabilityMessage(String error) {
     return 'Ошибка сохранения доступности: $error';
   }
+
+  @override
+  String get broadcastSentSuccessMessage => 'Рассылка успешно отправлена';
+
+  @override
+  String get broadcastTitle => 'Рассылка';
+
+  @override
+  String get activeBroadcastsTitle => 'Активные рассылки';
+
+  @override
+  String get messageToTravelersLabel => 'Сообщение туристам';
+
+  @override
+  String get messageToTravelersHint => 'Введите сообщение для туристов...';
+
+  @override
+  String get sendToAllTravelersButton => 'Отправить всем туристам';
+
+  @override
+  String get priorityLabel => 'Приоритет';
+
+  @override
+  String get noActiveBroadcastsMessage => 'Нет активных рассылок';
+
+  @override
+  String acksCountLabel(int count) {
+    return 'Подтверждений: $count';
+  }
+
+  @override
+  String get expireButtonLabel => 'Завершить';
+
+  @override
+  String get broadcastTypeGeneral => 'Общее';
+
+  @override
+  String get broadcastTypeWeather => 'Погода';
+
+  @override
+  String get broadcastTypeMeetingPoint => 'Место встречи';
+
+  @override
+  String get broadcastTypeDelay => 'Задержка';
+
+  @override
+  String get broadcastTypeDeparture => 'Отправление';
+
+  @override
+  String get broadcastTypeVehicleChange => 'Смена транспорта';
+
+  @override
+  String get broadcastTypeSafety => 'Безопасность';
+
+  @override
+  String get broadcastPriorityLow => 'Низкий';
+
+  @override
+  String get broadcastPriorityNormal => 'Обычный';
+
+  @override
+  String get broadcastPriorityHigh => 'Высокий';
+
+  @override
+  String get broadcastPriorityCritical => 'Критический';
+
+  @override
+  String get writeReviewButton => 'НАПИСАТЬ ОТЗЫВ';
+
+  @override
+  String get reviewsTitle => 'Отзывы';
+
+  @override
+  String get failedToLoadReviewsMessage =>
+      'Не удалось загрузить отзывы. Попробуйте снова.';
+
+  @override
+  String get premiumAnalyticsLockedTitle => 'ПРЕМИУМ-АНАЛИТИКА ЗАБЛОКИРОВАНА';
+
+  @override
+  String get premiumAnalyticsLockedMessage =>
+      'Перейдите на PRO или ELITE, чтобы получить глубокую аналитику по вашей эффективности, рейтингу доверия и отзывам туристов.';
+
+  @override
+  String get upgradeNowButton => 'ПЕРЕЙТИ СЕЙЧАС';
+
+  @override
+  String get trustScoreLabel => 'Рейтинг доверия';
+
+  @override
+  String get tierBronze => 'Бронзовый уровень';
+
+  @override
+  String get tierDiamond => 'Алмазный уровень';
+
+  @override
+  String get tierGold => 'Золотой уровень';
+
+  @override
+  String get tierSilver => 'Серебряный уровень';
+
+  @override
+  String get miniStatTrips => 'Туры';
+
+  @override
+  String get miniStatRating => 'Рейтинг';
+
+  @override
+  String get miniStatIncidents => 'Инциденты';
+
+  @override
+  String get verifiedTripBadge => 'Подтверждённая поездка';
+
+  @override
+  String touristShortIdLabel(String shortId) {
+    return 'Турист $shortId';
+  }
+
+  @override
+  String get noReviewsYetTitle => 'Пока нет отзывов';
+
+  @override
+  String get noReviewsYetSubtitle =>
+      'Подтверждённые участники смогут оставить отзыв после завершения сессии.';
+
+  @override
+  String get guideProfileNotFoundMessage => 'Профиль гида не найден';
+
+  @override
+  String get aboutSectionTitle => 'О гиде';
+
+  @override
+  String get noBioProvidedMessage => 'Биография не указана.';
+
+  @override
+  String get vehicleSectionTitle => 'Транспорт';
+
+  @override
+  String get vehicleDetailsNotProvidedMessage =>
+      'Информация о транспорте не указана';
+
+  @override
+  String get vehicleProvidedByGuideMessage => 'Предоставляется гидом для туров';
+
+  @override
+  String get packagesSectionTitle => 'Пакеты';
+
+  @override
+  String get tapPackageToBookMessage =>
+      'Нажмите на пакет, чтобы забронировать его напрямую';
+
+  @override
+  String get standardPackageLabel => 'Стандартный пакет';
+
+  @override
+  String durationHoursShortLabel(String hours) {
+    return '$hours ч';
+  }
+
+  @override
+  String guestsCountShortLabel(String count) {
+    return '$count гостей';
+  }
+
+  @override
+  String get totalLabel => 'Итого';
+
+  @override
+  String get requestThisGuideButton => 'Запросить этого гида';
+
+  @override
+  String get experienceStatLabel => 'Опыт';
+
+  @override
+  String yearsExperienceLabel(String years) {
+    return '$years лет';
+  }
+
+  @override
+  String get ratingStatLabel => 'Рейтинг';
+
+  @override
+  String get rankStatLabel => 'Ранг';
+
+  @override
+  String licensedGuideLabel(String licenseNumber) {
+    return 'Лицензированный гид • $licenseNumber';
+  }
+
+  @override
+  String get platformVerifiedInsuredLabel =>
+      'Проверено платформой и застраховано';
+
+  @override
+  String get yourListingTitle => 'Ваше объявление';
+
+  @override
+  String get basicInformationTitle => 'Основная информация';
+
+  @override
+  String get displayNameLabel => 'Отображаемое имя';
+
+  @override
+  String get displayNameHint => 'напр. Касун Перера';
+
+  @override
+  String get aboutMeBioLabel => 'Обо мне (биография)';
+
+  @override
+  String get aboutMeBioHint =>
+      'Расскажите туристам о своей страсти, опыте и любимых местах...';
+
+  @override
+  String get categorySpecialtiesTitle => 'Категория и специализации';
+
+  @override
+  String get primaryCategoryLabel => 'Основная категория';
+
+  @override
+  String get languagesCommaLabel => 'Языки (через запятую)';
+
+  @override
+  String get languagesCommaHint => 'напр. английский, сингальский, немецкий';
+
+  @override
+  String get specializationsCommaLabel => 'Специализации (через запятую)';
+
+  @override
+  String get specializationsCommaHint =>
+      'напр. наследие, дикая природа, фотография';
+
+  @override
+  String get serviceRegionsLabel => 'Регионы обслуживания (через запятую)';
+
+  @override
+  String get serviceRegionsHint =>
+      'напр. Центральная, Южная, Западная провинции';
+
+  @override
+  String get pricingVehicleTitle => 'Цены и транспорт';
+
+  @override
+  String get hourlyRateFieldLabel => 'Почасовая ставка';
+
+  @override
+  String get hourlyRateHint => 'напр. 25';
+
+  @override
+  String get vehicleAvailableForToursLabel => 'Транспорт доступен для туров';
+
+  @override
+  String get provideTransportationLabel => 'Вы предоставляете транспорт?';
+
+  @override
+  String get vehicleTypeModelLabel => 'Тип и модель транспорта';
+
+  @override
+  String get vehicleTypeModelHint =>
+      'напр. Toyota Prius Hybrid / Люксовый минивэн';
+
+  @override
+  String coverPhotosCountTitle(int count) {
+    return 'Обложки ($count)';
+  }
+
+  @override
+  String get availabilityCalendarTitle => 'Календарь доступности';
+
+  @override
+  String get visibilityBoostTitle => 'Повышение видимости';
+
+  @override
+  String get saveDraftButton => 'Сохранить черновик';
+
+  @override
+  String get publishListingButton => 'Опубликовать объявление';
+
+  @override
+  String get uploadingPhotoMessage => 'Загрузка фото...';
+
+  @override
+  String get photoUploadedSuccessMessage => 'Фото успешно загружено!';
+
+  @override
+  String get failedToUploadPhotoMessage => 'Не удалось загрузить фото.';
+
+  @override
+  String get uploadingVehiclePhotoMessage => 'Загрузка фото транспорта...';
+
+  @override
+  String get vehiclePhotoUploadedMessage => 'Фото транспорта загружено!';
+
+  @override
+  String get listingPublishedMessage =>
+      '🎉 Объявление опубликовано на платформе!';
+
+  @override
+  String get draftSavedMessage => '💾 Черновик успешно сохранён';
+
+  @override
+  String failedToSaveListingMessage(String error) {
+    return 'Не удалось сохранить объявление: $error';
+  }
+
+  @override
+  String get addPhotoLabel => 'Добавить фото';
+
+  @override
+  String get verifiedLicenseLabel => 'Подтверждённая лицензия';
+
+  @override
+  String get addVehiclePhotoLabel => 'Добавить фото транспорта';
+
+  @override
+  String get manageAvailabilityTitle => 'Управление доступностью';
+
+  @override
+  String get manageAvailabilitySubtitle =>
+      'Настройте нерабочие дни и регулярные рабочие часы';
+
+  @override
+  String get featureThisListingLabel => 'Продвигать это объявление';
+
+  @override
+  String get currentlyFeaturedMessage => 'Сейчас продвигается на платформе';
+
+  @override
+  String get featureRequestedMessage =>
+      'Запрошено — администратор рассмотрит и вскоре активирует';
+
+  @override
+  String get featureRequestPromptMessage =>
+      'Запросить продвижение на платформе (требуется проверка администратором)';
+
+  @override
+  String get upgradeToProFeatureMessage =>
+      'Перейдите на Pro, чтобы повысить видимость на платформе';
+
+  @override
+  String get safetyConsoleTitle => 'Консоль безопасности';
+
+  @override
+  String offlineErrorMessage(String error) {
+    return 'Ошибка соединения: $error';
+  }
+
+  @override
+  String get secureOperationsTitle => 'Безопасные операции';
+
+  @override
+  String get allIncidentsLoggedMessage =>
+      'Все инциденты фиксируются с аудиторским следом';
+
+  @override
+  String get filterActive => 'Активные';
+
+  @override
+  String get filterResolved => 'Решённые';
+
+  @override
+  String get filterMyReports => 'Мои отчёты';
+
+  @override
+  String get priorityBadgeText => 'ПРИОРИТЕТ';
+
+  @override
+  String updatesCountLabel(int count) {
+    return 'Обновлений: $count';
+  }
+
+  @override
+  String get noCriticalIncidentsTitle => 'Критических инцидентов нет';
+
+  @override
+  String get sessionWithinSafetyParamsMessage =>
+      'Работа сессии находится в пределах параметров безопасности.';
+
+  @override
+  String get reportIncidentButton => 'Сообщить об инциденте';
+
+  @override
+  String get fileAnIncidentTitle => 'Зарегистрировать инцидент';
+
+  @override
+  String get incidentAuditTrailMessage =>
+      'Укажите точные данные — они будут зафиксированы с аудиторским следом.';
+
+  @override
+  String get incidentTitleHint => 'Заголовок инцидента';
+
+  @override
+  String get descriptionOfEventHint => 'Описание события';
+
+  @override
+  String get transmitReportButton => 'Отправить отчёт';
+
+  @override
+  String get incidentStatusOpen => 'Открыт';
+
+  @override
+  String get incidentStatusInvestigating => 'Расследуется';
+
+  @override
+  String get incidentStatusResolved => 'Решён';
+
+  @override
+  String get incidentStatusClosed => 'Закрыт';
+
+  @override
+  String get manageTeamTitle => 'Управление командой';
+
+  @override
+  String get signInToManageTeamMessage =>
+      'Войдите, чтобы управлять своей командой.';
+
+  @override
+  String get guideAddedToTeamMessage => 'Гид добавлен в вашу команду';
+
+  @override
+  String failedToInviteGuideMessage(String error) {
+    return 'Не удалось пригласить гида: $error';
+  }
+
+  @override
+  String failedToRemoveGuideMessage(String error) {
+    return 'Не удалось удалить гида: $error';
+  }
+
+  @override
+  String failedToUploadLogoMessage(String error) {
+    return 'Не удалось загрузить логотип: $error';
+  }
+
+  @override
+  String get tabOverview => 'Обзор';
+
+  @override
+  String get tabTeam => 'Команда';
+
+  @override
+  String get tabBranding => 'Брендинг';
+
+  @override
+  String get eliteOperatorAccountLabel => 'Элитный аккаунт оператора';
+
+  @override
+  String get overviewStatTeamSize => 'Размер команды';
+
+  @override
+  String get overviewStatMissions => 'Миссии';
+
+  @override
+  String get overviewStatAvgRating => 'Средний рейтинг';
+
+  @override
+  String get guideUserIdToInviteHint => 'ID пользователя гида для приглашения';
+
+  @override
+  String teamMembersCountTitle(int count) {
+    return 'Участники команды ($count)';
+  }
+
+  @override
+  String get roleMember => 'участник';
+
+  @override
+  String get logoLabel => 'Логотип';
+
+  @override
+  String get brandColorLabel => 'Цвет бренда';
+
+  @override
+  String get brandColorAppliedMessage =>
+      'Цвет вашего бренда применяется на этой панели управления командой вашей организации.';
+
+  @override
+  String get incidentNotFoundTitle => 'Инцидент не найден';
+
+  @override
+  String get incidentNotFoundDescription =>
+      'Запись была очищена или перемещена.';
+
+  @override
+  String get statusLabel => 'Статус';
+
+  @override
+  String get severityLabel => 'Серьёзность';
+
+  @override
+  String get timelineLabel => 'Хронология';
+
+  @override
+  String get encryptedLogLabel => 'Зашифрованный журнал';
+
+  @override
+  String get noTimelineActiveMessage => 'Активная хронология отсутствует.';
+
+  @override
+  String minutesAgoLabel(int minutes) {
+    return '$minutes мин. назад';
+  }
+
+  @override
+  String get verifiedAuditLogLabel => 'Проверенный журнал аудита';
+
+  @override
+  String get forensicIntegrityLockedMessage =>
+      'Этот отчёт заблокирован для сохранения криминалистической целостности. Изменять статус могут только уполномоченные администраторы.';
+
+  @override
+  String get addEvidenceButton => 'Добавить доказательства';
+
+  @override
+  String get escalateButton => 'Эскалировать';
+
+  @override
+  String get timelineTypeSosTriggered => 'Сигнал SOS активирован';
+
+  @override
+  String get invalidQrCodeFormatMessage => 'Неверный формат QR-кода';
+
+  @override
+  String get unrecognizedQrCodeMessage => 'Нераспознанный QR-код';
+
+  @override
+  String get sessionNotFoundClosedMessage => 'Сессия не найдена или закрыта';
+
+  @override
+  String get connectionErrorMessage => 'Ошибка соединения';
+
+  @override
+  String get tourVerificationTitle => 'Проверка тура';
+
+  @override
+  String get localGuideFallback => 'Местный гид';
+
+  @override
+  String vehicleNumberLabel(String vehicleNumber) {
+    return 'Транспорт: $vehicleNumber';
+  }
+
+  @override
+  String get consentTrackingMessage =>
+      'Я согласен(на) на отслеживание местоположения в реальном времени и мониторинг безопасности во время этого тура.';
+
+  @override
+  String get connectSyncButton => 'Подключить и синхронизировать';
+
+  @override
+  String get realitySyncedTitle => 'Синхронизация завершена';
+
+  @override
+  String get safetyProtocolsActiveMessage =>
+      'Глобальные протоколы безопасности и отслеживание в реальном времени активны.';
+
+  @override
+  String get enterHubButton => 'Войти в хаб';
+
+  @override
+  String get decryptingTokenMessage => 'Расшифровка токена…';
+
+  @override
+  String get scanGuideTourCodeMessage => 'Отсканируйте код тура вашего гида';
+
+  @override
+  String get emergencyTranslatorTitle => 'Экстренный переводчик';
+
+  @override
+  String get showScreenToBystanderMessage =>
+      'Покажите этот экран прохожему, полицейскому или персоналу больницы — он говорит за вас на сингальском.';
+
+  @override
+  String locationCoordinatesTapMapsLabel(String lat, String lng) {
+    return '$lat, $lng — нажмите, чтобы открыть в Картах';
+  }
+
+  @override
+  String get locationUnavailableMessage => 'Местоположение недоступно';
+
+  @override
+  String get speakingEllipsisMessage => 'Говорю…';
+
+  @override
+  String get playAgainButton => 'Воспроизвести снова';
+
+  @override
+  String get emergencyTitle => 'Экстренная помощь';
+
+  @override
+  String get criticalContactsTitle => 'Важные контакты';
+
+  @override
+  String get medicalFacilitiesNearbyTitle =>
+      'Медицинские учреждения поблизости';
+
+  @override
+  String get emergencyProtocolLabel => 'ЭКСТРЕННЫЙ ПРОТОКОЛ';
+
+  @override
+  String get sendingAlertMessage => 'Отправка сигнала…';
+
+  @override
+  String get keepHoldingToConfirmMessage =>
+      'Продолжайте удерживать для подтверждения…';
+
+  @override
+  String get pressHoldTwoSecondsMessage =>
+      'Нажмите и удерживайте 2 секунды для сигнала тревоги';
+
+  @override
+  String get preventsAccidentalTriggersMessage =>
+      'Предотвращает случайные срабатывания';
+
+  @override
+  String get sosLabel => 'SOS';
+
+  @override
+  String get contactNamePolice => 'Полиция';
+
+  @override
+  String get contactNameAmbulance => 'Скорая помощь';
+
+  @override
+  String get contactNameTouristPolice => 'Туристическая полиция';
+
+  @override
+  String get contactNameFireDept => 'Пожарная служба';
+
+  @override
+  String get privateGuardiansTitle => 'Личные опекуны';
+
+  @override
+  String get noGuardiansAssignedMessage =>
+      'Опекуны не назначены. Сигналы будут по умолчанию направляться в экстренные службы.';
+
+  @override
+  String get nearestHospitalTitle =>
+      'Ближайшая больница, где бы вы ни находились';
+
+  @override
+  String get checkingLocationAccessMessage =>
+      'Проверка доступа к местоположению…';
+
+  @override
+  String get locationAccessDeniedGeneralMessage =>
+      'Доступ к местоположению запрещён — вместо этого будет выполнен общий поиск.';
+
+  @override
+  String get hospitalMapsExplanationMessage =>
+      'Открывает Google Карты с использованием вашего GPS в реальном времени — показывает все государственные и частные больницы поблизости, где бы вы ни находились в Шри-Ланке.';
+
+  @override
+  String get findNearestHospitalButton => 'Найти ближайшую больницу на карте';
+
+  @override
+  String get addGuardianTitle => 'Добавить опекуна';
+
+  @override
+  String get guardianPhoneNumberHint => 'Номер телефона опекуна';
+
+  @override
+  String get addGuardianButton => 'Добавить опекуна';
+
+  @override
+  String get sosAlertsPreparedLoggedMessage =>
+      'Сигналы SOS подготовлены и записаны в защищённом хранилище!';
+
+  @override
+  String get sosCriticalAlertTitle => 'КРИТИЧЕСКИЙ СИГНАЛ SOS';
+
+  @override
+  String get sosDistressSignalDescription =>
+      'Сигнал бедствия активирован системой опекунов.';
+
+  @override
+  String get locationPermissionsPermanentlyDeniedMessage =>
+      'Разрешения на использование местоположения запрещены навсегда.';
+
+  @override
+  String get emergencyTranslatorPremiumMessage =>
+      'Мгновенно объясните вашу ситуацию шри-ланкийской полиции или персоналу больницы на сингальском языке — эксклюзивная функция Premium.';
+
+  @override
+  String get notNowButton => 'Не сейчас';
+
+  @override
+  String get viewPlansButton => 'Посмотреть тарифы';
+
+  @override
+  String get monsoonHazardAlertTitle => 'ПРЕДУПРЕЖДЕНИЕ О МУССОННОЙ ОПАСНОСТИ';
+
+  @override
+  String districtLabel(String district) {
+    return 'Округ: $district';
+  }
+
+  @override
+  String get districtGeneralFallback => 'Общий';
+
+  @override
+  String get severeMonsoonWeatherDetectedMessage =>
+      'Обнаружена сильная муссонная погода.';
+
+  @override
+  String get acknowledgeButton => 'ПОДТВЕРДИТЬ';
+
+  @override
+  String offlineErrorGenericMessage(String error) {
+    return 'Ошибка офлайн-режима: $error';
+  }
+
+  @override
+  String get sessionNotFoundMessage => 'Сессия не найдена';
+
+  @override
+  String get yourTourTitle => 'Ваш тур';
+
+  @override
+  String get tourActiveTitle => 'Тур активен';
+
+  @override
+  String get preparingTourTitle => 'Подготовка тура';
+
+  @override
+  String get everythingOnTrackMessage => 'Всё идёт по плану';
+
+  @override
+  String statusColonValueLabel(String status) {
+    return 'Статус: $status';
+  }
+
+  @override
+  String get phaseAssemblingGroup => 'Сбор группы';
+
+  @override
+  String get phaseEnRoute => 'В пути';
+
+  @override
+  String get phaseAtDestination => 'На месте назначения';
+
+  @override
+  String get phaseFreeTimeBreak => 'Свободное время / перерыв';
+
+  @override
+  String get phaseReturningToBase => 'Возвращение на базу';
+
+  @override
+  String get liveNavigationTitle => 'Навигация в реальном времени';
+
+  @override
+  String get findGuideLabel => 'Найти гида';
+
+  @override
+  String get liveTrackingLabel => 'Отслеживание в реальном времени';
+
+  @override
+  String get findVehicleLabel => 'Найти транспорт';
+
+  @override
+  String get parkedSpotLabel => 'Место парковки';
+
+  @override
+  String get meetingPointLabel => 'Место встречи';
+
+  @override
+  String get returnHereIfLostMessage =>
+      'Возвращайтесь сюда, если потеряетесь или отстанете от группы.';
+
+  @override
+  String get navigateToPointButton => 'Проложить маршрут до точки';
+
+  @override
+  String get guideAnnouncementLabel => 'Объявление гида';
+
+  @override
+  String get justNowLabel => 'Только что';
+
+  @override
+  String get acknowledgedLabel => 'Подтверждено';
+
+  @override
+  String get iAcknowledgeButton => 'Подтверждаю';
+
+  @override
+  String get moreLabel => 'Ещё';
+
+  @override
+  String get shareLiveLabel => 'Поделиться в реальном времени';
+
+  @override
+  String get familyAccessLabel => 'Доступ для семьи';
+
+  @override
+  String get rateTourLabel => 'Оценить тур';
+
+  @override
+  String get buildReputationLabel => 'Повысить репутацию';
+
+  @override
+  String get helpImLostButton => 'Помогите, я потерялся';
+
+  @override
+  String get emergencySosButton => 'Экстренный SOS';
+
+  @override
+  String get instantAlertAdminPoliceMessage =>
+      'Мгновенный сигнал администратору, полиции и хабу.';
+
+  @override
+  String get signalSentStayMessage => 'СИГНАЛ ОТПРАВЛЕН! ОСТАВАЙТЕСЬ НА МЕСТЕ.';
+
+  @override
+  String get travelerLostBroadcastTitle => 'ПУТЕШЕСТВЕННИК ПОТЕРЯЛСЯ';
+
+  @override
+  String get travelerLostBroadcastBody =>
+      'Путешественник сообщил, что потерялся! Местоположение показано на карте.';
+
+  @override
+  String sosCooledDownMessage(int seconds) {
+    return 'SOS на перезарядке. Подождите $seconds сек.';
+  }
+
+  @override
+  String get sosBroadcastedAuthoritiesMessage =>
+      'СИГНАЛ SOS ОТПРАВЛЕН ВСЕМ СЛУЖБАМ!';
+
+  @override
+  String get tourCompletedTitle => 'Тур завершён!';
+
+  @override
+  String get tourCompletedRateMessage =>
+      'Надеемся, вы получили незабываемые впечатления! Хотите оценить своего гида прямо сейчас? Ваш отзыв помогает гидам поддерживать высокий уровень качества.';
+
+  @override
+  String get remindLaterButton => 'Напомнить позже';
+
+  @override
+  String get reminderSetMessage =>
+      '⏰ Напоминание установлено! Мы отправим уведомление завтра.';
+
+  @override
+  String get rateNowButton => 'Оценить сейчас ⭐';
+
+  @override
+  String get eventsTitle => 'События';
+
+  @override
+  String get topPicksForYouTitle => 'Лучший выбор для вас';
+
+  @override
+  String get categoryAllFilter => 'Все';
+
+  @override
+  String get categoryBeach => 'Пляж';
+
+  @override
+  String get categoryCultural => 'Культура';
+
+  @override
+  String get categoryReligious => 'Религия';
+
+  @override
+  String get categorySports => 'Спорт';
+
+  @override
+  String get categorySeasonal => 'Сезонное';
+
+  @override
+  String get categoryFestival => 'Фестиваль';
+
+  @override
+  String get categoryParty => 'Вечеринка';
+
+  @override
+  String get availableEventsTitle => 'Доступные события';
+
+  @override
+  String get temporalDataLabel => 'ВРЕМЕННЫЕ ДАННЫЕ';
+
+  @override
+  String get acquirePassButton => 'ПОЛУЧИТЬ ПРОПУСК';
+
+  @override
+  String get unpinButton => 'ОТКРЕПИТЬ';
+
+  @override
+  String get pinToHudButton => 'ЗАКРЕПИТЬ НА ЭКРАНЕ';
+
+  @override
+  String get noEventsOnDayMessage => 'В этот день событий нет';
+
+  @override
+  String get musicPreferencesTitle => 'Музыкальные предпочтения';
+
+  @override
+  String get fineTuneOracleMessage =>
+      'Настройте временной оракул в соответствии с вашими стилистическими предпочтениями.';
+
+  @override
+  String get syncPreferencesButton => 'Синхронизировать предпочтения';
+
+  @override
+  String failedToShareTimelineMessage(String error) {
+    return 'Не удалось поделиться хронологией: $error';
+  }
+
+  @override
+  String hazardWarningMessage(String message) {
+    return '🚨 ПРЕДУПРЕЖДЕНИЕ ОБ ОПАСНОСТИ: $message';
+  }
+
+  @override
+  String get extremeWeatherAlertFallback =>
+      'Предупреждение об экстремальной погоде!';
+
+  @override
+  String get recommendedForYouLabel => 'Рекомендовано для вас';
+
+  @override
+  String eventLocationCategoryLabel(String location, String category) {
+    return '$location · $category';
+  }
+
+  @override
+  String get budgetTitle => 'Бюджет';
+
+  @override
+  String get addExpenseTitle => 'Добавить расход';
+
+  @override
+  String get resourceDescriptionLabel => 'Описание расхода';
+
+  @override
+  String get amountLkrLabel => 'Сумма (LKR)';
+
+  @override
+  String get categoryLabel => 'Категория';
+
+  @override
+  String get saveExpenseButton => 'Сохранить расход';
+
+  @override
+  String get planLimitLabel => 'Лимит плана';
+
+  @override
+  String get spentLabel => 'Потрачено';
+
+  @override
+  String get expenseLedgerTitle => 'Журнал расходов';
+
+  @override
+  String entriesCountLabel(int count) {
+    return '$count записей';
+  }
+
+  @override
+  String get noEntriesYetMessage => 'Записей пока нет';
+
+  @override
+  String get addFirstEntryButton => 'Добавить первую запись';
+
+  @override
+  String get expenseCategoryFood => 'Еда';
+
+  @override
+  String get expenseCategoryTransport => 'Транспорт';
+
+  @override
+  String get expenseCategoryTickets => 'Билеты';
+
+  @override
+  String get expenseCategoryMisc => 'Разное';
+
+  @override
+  String get budgetConciergeTitle => 'Бюджетный консьерж';
+
+  @override
+  String get analyzingSpendingPatternsMessage => 'Анализируем ваши траты...';
+
+  @override
+  String get localAdviceMessage =>
+      'Темп ваших расходов хорошо соответствует стандартам путешествий по острову. Рекомендуем пользоваться PickMe или Uber для прозрачных тарифов на транспорт и пробовать местные закусочные, чтобы получить максимум пользы.';
+
+  @override
+  String get recentTransactionsTitle => 'Недавние транзакции';
+
+  @override
+  String get totalSpentSoFarLabel => 'Всего потрачено на данный момент';
+
+  @override
+  String approxUsdLabel(String amount) {
+    return '≈ US\$ $amount';
+  }
+
+  @override
+  String get oracleAdviceLabel => 'Совет оракула';
+
+  @override
+  String get logTransactionTitle => 'Записать транзакцию';
+
+  @override
+  String get whatWasThePurposeHint => 'На что были потрачены средства?';
+
+  @override
+  String get amountLkrHint => 'Сумма (LKR)';
+
+  @override
+  String get expenseCategoryAttraction => 'Достопримечательности';
+
+  @override
+  String get expenseCategoryLodging => 'Проживание';
+
+  @override
+  String get expenseCategoryOther => 'Другое';
+
+  @override
+  String get billingHistoryTitle => 'ИСТОРИЯ ПЛАТЕЖЕЙ';
+
+  @override
+  String errorGenericColonMessage(String error) {
+    return 'Ошибка: $error';
+  }
+
+  @override
+  String get noBillingHistoryFoundMessage => 'История платежей не найдена.';
+
+  @override
+  String planLabel(String planId) {
+    return 'ПЛАН: $planId';
+  }
+
+  @override
+  String get startedLabel => 'НАЧАЛО';
+
+  @override
+  String get expiresLabel => 'ОКОНЧАНИЕ';
+
+  @override
+  String idLabel(String subscriptionId) {
+    return 'ID: $subscriptionId';
+  }
+
+  @override
+  String get subscriptionStatusCancelled => 'ОТМЕНЕНО';
+
+  @override
+  String get subscriptionStatusExpired => 'ИСТЕКЛО';
+
+  @override
+  String get subscriptionStatusActive => 'АКТИВНО';
+
+  @override
+  String get accessDeniedMessage => 'Доступ запрещён';
+
+  @override
+  String subscribedToPlanMessage(String planId) {
+    return '✅ Вы подписались на план «$planId»!';
+  }
+
+  @override
+  String subscriptionFailedMessage(String error) {
+    return 'Ошибка подписки: $error';
+  }
+
+  @override
+  String get purchasesRestoredMessage => '✅ Покупки успешно восстановлены.';
+
+  @override
+  String restoreFailedMessage(String error) {
+    return 'Ошибка восстановления: $error';
+  }
+
+  @override
+  String get serviceTiersTitle => 'Уровни обслуживания';
+
+  @override
+  String get freeTierTitle => 'Бесплатный уровень';
+
+  @override
+  String get freeTierDescription =>
+      'Основные инструменты для проверенных гидов.';
+
+  @override
+  String get featureBasicOperations => 'Базовые операции';
+
+  @override
+  String get featureVerifiedBadge => 'Значок проверенного гида';
+
+  @override
+  String get featureStandardSos => 'Стандартный SOS';
+
+  @override
+  String get proCommanderTitle => 'Pro Commander';
+
+  @override
+  String get proCommanderDescription =>
+      'Повысьте свою узнаваемость и расширьте инструментарий.';
+
+  @override
+  String get featureFeaturedListings => 'Рекомендуемые объявления';
+
+  @override
+  String get featureAdvancedAnalytics => 'Расширенная аналитика';
+
+  @override
+  String get featureClientAnalytics => 'Аналитика по клиентам';
+
+  @override
+  String get featurePrioritySos => 'Приоритетный SOS';
+
+  @override
+  String get eliteAgencyTitle => 'Elite Agency';
+
+  @override
+  String get eliteAgencyDescription =>
+      'Полное управление автопарком и компанией.';
+
+  @override
+  String get featureTeamManagement => 'Управление командой';
+
+  @override
+  String get featureOperatorDashboard => 'Панель оператора';
+
+  @override
+  String get featureWhiteLabelBranding => 'Брендинг White-label';
+
+  @override
+  String get fleetPlansTitle => 'Тарифы для автопарка';
+
+  @override
+  String get restoreButton => 'Восстановить';
+
+  @override
+  String get currentPlanLabel => 'Текущий план';
+
+  @override
+  String get freeTierLabel => 'Бесплатный уровень';
+
+  @override
+  String expiresColonDateLabel(String date) {
+    return 'Истекает: $date';
+  }
+
+  @override
+  String get upgradeButton => 'Улучшить';
+
+  @override
+  String get manageButton => 'Управлять';
+
+  @override
+  String get mostPopularLabel => 'Самый популярный';
+
+  @override
+  String get perMonthSlashLabel => '/месяц';
+
+  @override
+  String get currentPlanButton => 'Текущий план';
+
+  @override
+  String get selectThisPlanButton => 'Выбрать этот план';
+
+  @override
+  String get goPremiumTitle => 'Перейти на Premium';
+
+  @override
+  String get fullArUnlimitedAiTripsMessage =>
+      'Полный AR и неограниченные AI-поездки';
+
+  @override
+  String get heritageArModeTitle => 'Режим AR «Наследие»';
+
+  @override
+  String get heritageArModeDescription =>
+      'Смотрите на древние руины, восстановленные в масштабе 1:1, с историческими аудиогидами.';
+
+  @override
+  String get oracleAiTripIntelligenceTitle => 'Oracle AI — интеллект поездок';
+
+  @override
+  String get oracleAiTripIntelligenceDescription =>
+      'Неограниченное число гиперперсонализированных маршрутов на основе движка Oracle.';
+
+  @override
+  String get offlineDigitalTwinsTitle => 'Офлайн цифровые двойники';
+
+  @override
+  String get offlineDigitalTwinsDescription =>
+      'Скачивайте карты высокого разрешения и более 100 точек интереса для зон с плохим сигналом.';
+
+  @override
+  String get exclusiveCuratorDealsTitle => 'Эксклюзивные предложения кураторов';
+
+  @override
+  String get exclusiveCuratorDealsDescription =>
+      'Доступ к скидкам только для участников в отобранных бутик-отелях.';
+
+  @override
+  String get guardianEmergencyTranslatorTitle =>
+      'Guardian — переводчик для экстренных ситуаций';
+
+  @override
+  String get guardianEmergencyTranslatorDescription =>
+      'Мгновенно объясните вашу ситуацию шри-ланкийской полиции или персоналу больницы на разговорном сингальском во время SOS.';
+
+  @override
+  String premiumActiveLabel(String plan) {
+    return '$plan активен';
+  }
+
+  @override
+  String get premiumFallback => 'Premium';
+
+  @override
+  String renewingOnLabel(String date) {
+    return 'Продление $date';
+  }
+
+  @override
+  String viaSourceLabel(String source) {
+    return 'Через $source';
+  }
+
+  @override
+  String get storeFallback => 'магазин';
+
+  @override
+  String get resetPremiumDevButton =>
+      'СБРОСИТЬ PREMIUM (ТОЛЬКО ДЛЯ РАЗРАБОТКИ)';
+
+  @override
+  String get premiumResetMessage =>
+      'Premium сброшен. Тарифные планы снова доступны.';
+
+  @override
+  String get smartTravelerTitle => 'Smart Traveler';
+
+  @override
+  String get billedMonthlyLabel => 'Оплата ежемесячно';
+
+  @override
+  String get featureAiItineraries20 => '20 AI-маршрутов в месяц';
+
+  @override
+  String get featureSelectedArPlaces => 'Отдельные AR-места';
+
+  @override
+  String get featureOfflineMapsBasic => 'Офлайн-карты (базовые)';
+
+  @override
+  String get heritagePremiumTitle => 'Heritage Premium';
+
+  @override
+  String get billedYearlySaveLabel => 'Оплата ежегодно · экономия ~17%';
+
+  @override
+  String get featureUnlimitedAiItineraries => 'Неограниченные AI-маршруты';
+
+  @override
+  String get featureFullHeritageArAccess => 'Полный доступ к AR «Наследие»';
+
+  @override
+  String get featureAllOfflineFeatures => 'Все офлайн-функции';
+
+  @override
+  String get ultraExplorerTitle => 'Ultra Explorer';
+
+  @override
+  String get waitlistLabel => 'Список ожидания';
+
+  @override
+  String get nextGenExperienceLabel => 'Опыт нового поколения';
+
+  @override
+  String get featureVrModeSupport => 'Поддержка VR-режима';
+
+  @override
+  String get featureHistoricalTimelines => 'Исторические хронологии';
+
+  @override
+  String get featurePersonalAiCurator => 'Персональный AI-куратор';
+
+  @override
+  String get ultraExplorerWaitlistMessage =>
+      '🚀 Ultra Explorer в списке ожидания! Мы уведомим вас о запуске.';
+
+  @override
+  String get restorePreviousPurchasesButton =>
+      'Восстановить предыдущие покупки';
+
+  @override
+  String get termsPrivacyLabel =>
+      'Условия использования  •  Политика конфиденциальности';
+
+  @override
+  String get testBuyDevButton => 'ТЕСТОВАЯ ПОКУПКА (ТОЛЬКО ДЛЯ РАЗРАБОТКИ)';
+
+  @override
+  String get mockPurchaseSimulatedMessage =>
+      '🚀 Тестовая покупка смоделирована. Обновляем...';
+
+  @override
+  String get monthlyLabel => 'Ежемесячно';
+
+  @override
+  String get yearlySaveLabel => 'Ежегодно · Экономия 17%';
+
+  @override
+  String get lockedLabelShort => 'Заблокировано';
+
+  @override
+  String get perMonthLabel => '/ месяц';
+
+  @override
+  String get comingSoonButton => 'Скоро';
+
+  @override
+  String get upgradeNowLongButton => 'Улучшить сейчас';
+
+  @override
+  String trialDaysLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Бесплатная пробная версия на $count дня',
+      many: 'Бесплатная пробная версия на $count дней',
+      few: 'Бесплатная пробная версия на $count дня',
+      one: 'Бесплатная пробная версия на 1 день',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String trialWeeksLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Бесплатная пробная версия на $count недели',
+      many: 'Бесплатная пробная версия на $count недель',
+      few: 'Бесплатная пробная версия на $count недели',
+      one: 'Бесплатная пробная версия на 1 неделю',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String trialMonthsLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Бесплатная пробная версия на $count месяца',
+      many: 'Бесплатная пробная версия на $count месяцев',
+      few: 'Бесплатная пробная версия на $count месяца',
+      one: 'Бесплатная пробная версия на 1 месяц',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String trialYearsLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Бесплатная пробная версия на $count года',
+      many: 'Бесплатная пробная версия на $count лет',
+      few: 'Бесплатная пробная версия на $count года',
+      one: 'Бесплатная пробная версия на 1 год',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String trialPeriodLabel(int count) {
+    return 'Бесплатная пробная версия на $count период';
+  }
+
+  @override
+  String oracleLostFocusMessage(String error) {
+    return 'Оракул потерял фокус: $error';
+  }
+
+  @override
+  String get savorLankaAiTitle => 'SAVORLANKA AI';
+
+  @override
+  String get culinaryVisionEngineLabel => 'КУЛИНАРНЫЙ ВИЖН-ДВИЖОК V2';
+
+  @override
+  String get liveRealTimeScannerLabel => 'СКАНЕР В РЕАЛЬНОМ ВРЕМЕНИ';
+
+  @override
+  String nutritionReliabilityLabel(String reliability) {
+    return 'ДОСТОВЕРНОСТЬ ПИЩЕВОЙ ЦЕННОСТИ: $reliability';
+  }
+
+  @override
+  String get neuralReasoningLabel => 'НЕЙРОННЫЕ РАССУЖДЕНИЯ';
+
+  @override
+  String aiVisualMarkersFallback(String label) {
+    return 'ИИ определил визуальные кулинарные признаки, соответствующие $label.';
+  }
+
+  @override
+  String get authenticityIntelligenceTitle => 'ИНТЕЛЛЕКТ ПОДЛИННОСТИ';
+
+  @override
+  String get ingredientCertaintyTitle => 'ТОЧНОСТЬ ИНГРЕДИЕНТОВ';
+
+  @override
+  String get manualCulinaryOverrideTitle => 'РУЧНАЯ КУЛИНАРНАЯ КОРРЕКТИРОВКА';
+
+  @override
+  String get refineIngredientsHint => 'Уточните ингредиенты (через запятую)...';
+
+  @override
+  String get cancelButtonUppercaseAlt => 'ОТМЕНА';
+
+  @override
+  String get applyOverrideButton => 'ПРИМЕНИТЬ КОРРЕКТИРОВКУ';
+
+  @override
+  String get ingredientTierConfirmed => 'ПОДТВЕРЖДЕНО';
+
+  @override
+  String get ingredientTierLikely => 'ВЕРОЯТНО';
+
+  @override
+  String get ingredientTierOptional => 'НЕОБЯЗАТЕЛЬНО / ДОПОЛНЕНИЯ';
+
+  @override
+  String mealContextLabel(String context) {
+    return 'КОНТЕКСТ БЛЮДА: $context';
+  }
+
+  @override
+  String get supportingElementsLabel => 'СОПУТСТВУЮЩИЕ ЭЛЕМЕНТЫ:';
+
+  @override
+  String influencesLabel(String influences) {
+    return 'ВЛИЯНИЯ: $influences';
+  }
+
+  @override
+  String get visualFreshnessQualityLabel => 'ВИЗУАЛЬНАЯ СВЕЖЕСТЬ И КАЧЕСТВО';
+
+  @override
+  String qualityColonLabel(String quality) {
+    return 'КАЧЕСТВО: $quality';
+  }
+
+  @override
+  String textureColonLabel(String texture) {
+    return 'ТЕКСТУРА: $texture';
+  }
+
+  @override
+  String get heritageNarrativeEngineTitle =>
+      'ДВИЖОК ИСТОРИЧЕСКОГО ПОВЕСТВОВАНИЯ';
+
+  @override
+  String get verifiedLegacyTitle => 'ПОДТВЕРЖДЁННОЕ НАСЛЕДИЕ';
+
+  @override
+  String get regionalTraditionTitle => 'РЕГИОНАЛЬНАЯ ТРАДИЦИЯ';
+
+  @override
+  String get folkloreNarrativeTitle => 'ФОЛЬКЛОРНОЕ ПОВЕСТВОВАНИЕ';
+
+  @override
+  String get culinaryGapPairingEngineTitle =>
+      'ДВИЖОК СОЧЕТАНИЙ И НЕДОСТАЮЩИХ БЛЮД';
+
+  @override
+  String get missingCompanionsLabel => 'НЕДОСТАЮЩИЕ ДОПОЛНЕНИЯ:';
+
+  @override
+  String get engineNotesLabel => 'ЗАМЕТКИ ДВИЖКА:';
+
+  @override
+  String get recipeRefactorEngineTitle => 'ДВИЖОК ПЕРЕРАБОТКИ РЕЦЕПТА';
+
+  @override
+  String get refactoredStepsForYouLabel => 'ПЕРЕРАБОТАННЫЕ ШАГИ ДЛЯ ВАС:';
+
+  @override
+  String get prepMetricLabel => 'ПОДГОТОВКА';
+
+  @override
+  String get cookMetricLabel => 'ГОТОВКА';
+
+  @override
+  String get levelMetricLabel => 'УРОВЕНЬ';
+
+  @override
+  String get calMetricLabel => 'КАЛ';
+
+  @override
+  String get proteinLabel => 'Белки';
+
+  @override
+  String get carbsLabel => 'Углеводы';
+
+  @override
+  String get fatLabel => 'Жиры';
+
+  @override
+  String get fiberLabel => 'Клетчатка';
+
+  @override
+  String get healthRatingLabel => 'ОЦЕНКА ПОЛЬЗЫ ДЛЯ ЗДОРОВЬЯ';
+
+  @override
+  String healthRatingValueLabel(int rating) {
+    return '$rating/10';
+  }
+
+  @override
+  String get sinhalaLabel => 'СИНГАЛЬСКИЙ';
+
+  @override
+  String get englishLabel => 'АНГЛИЙСКИЙ';
+
+  @override
+  String get backLabel => 'НАЗАД';
+
+  @override
+  String get nextLabel => 'ДАЛЕЕ';
+
+  @override
+  String get rescanLabel => 'ПЕРЕСКАНИРОВАТЬ';
+
+  @override
+  String get oracleInsightsTitle => 'АНАЛИТИКА ОРАКУЛА';
+
+  @override
+  String get globalSubstitutionsTitle => 'ГЛОБАЛЬНЫЕ ЗАМЕНЫ';
+
+  @override
+  String get aiEstimatedValuesDisclaimer =>
+      'Значения оценены ИИ. Традиционные варианты могут отличаться.';
+
+  @override
+  String get savedLabel => 'СОХРАНЕНО';
+
+  @override
+  String get saveToCookbookLabel => 'СОХРАНИТЬ В КУЛИНАРНУЮ КНИГУ';
+
+  @override
+  String get voiceGuideLabel => 'ГОЛОСОВОЙ ГИД';
+
+  @override
+  String savorLankaShareText(String name, String score) {
+    return 'Посмотрите рецепт $name, который я нашёл в Hidden Gems SL.ai! Это настоящий шри-ланкийский деликатес. \n\nОценка оракула: $score%';
+  }
+
+  @override
+  String get savorLankaShareSubject => 'Hidden Gems SL.ai — рецепт Savor Lanka';
+
+  @override
+  String get phase3CrossMatchTitle => 'ЭТАП 3: ПЕРЕКРЁСТНАЯ ЗАМЕНА ПО СХОДСТВУ';
+
+  @override
+  String get visuallySimilarAlternativesLabel =>
+      'ВИЗУАЛЬНО ПОХОЖИЕ АЛЬТЕРНАТИВЫ';
+
+  @override
+  String get aiCrossMatchReasoningLabel =>
+      'ОБОСНОВАНИЕ ИИ ПРИ ПЕРЕКРЁСТНОМ СОПОСТАВЛЕНИИ:';
+
+  @override
+  String get phase6HygienePresentationTitle => 'ЭТАП 6: ГИГИЕНА И ПОДАЧА';
+
+  @override
+  String get presentationLabel => 'ПОДАЧА';
+
+  @override
+  String get integrityLabel => 'ЦЕЛОСТНОСТЬ';
+
+  @override
+  String get popularLabel => 'Популярный';
+
+  @override
+  String get curatorDealsTitle => 'Предложения куратора';
+
+  @override
+  String get noDealsRightNowTitle => 'Сейчас нет предложений';
+
+  @override
+  String get newPartnerDiscountsMessage =>
+      'Новые скидки от партнёров добавляются регулярно — загляните позже.';
+
+  @override
+  String percentOffLabel(int percent) {
+    return '-$percent%';
+  }
+
+  @override
+  String validUntilLabel(String date) {
+    return 'Действительно до $date';
+  }
+
+  @override
+  String get claimDealButton => 'Получить предложение';
+
+  @override
+  String get passportTitle => 'Паспорт';
+
+  @override
+  String get verifiedVisitCollectionSubtitle =>
+      'Ваша коллекция подтверждённых визитов';
+
+  @override
+  String get passportIsEmptyTitle => 'Паспорт пуст';
+
+  @override
+  String get exploreHistoricalGemsMessage =>
+      'Исследуйте исторические жемчужины,\nчтобы получить уникальные цифровые штампы.';
+
+  @override
+  String claimedOnLabel(String date) {
+    return 'Получено $date';
+  }
+
+  @override
+  String get verifiableHashLabel => 'Проверяемый хеш';
+
+  @override
+  String get shareCollectibleButton => 'Поделиться коллекционным предметом';
+
+  @override
+  String get stampRarityCommon => 'Обычный';
+
+  @override
+  String get stampRarityRare => 'Редкий';
+
+  @override
+  String get stampRarityMythic => 'Мифический';
+
+  @override
+  String get audioGuideLabel => 'Аудиогид';
+
+  @override
+  String get sinhalaShortLabel => 'සිංහල';
+
+  @override
+  String get englishShortLabel => 'Английский';
+
+  @override
+  String get joinGroupTourTitle => 'Присоединиться к групповому туру';
+
+  @override
+  String get enterSixDigitCodeMessage =>
+      'Введите 6-значный код, предоставленный вашим гидом.';
+
+  @override
+  String get cancelButtonUppercaseThird => 'ОТМЕНА';
+
+  @override
+  String get joinButtonUppercase => 'ПРИСОЕДИНИТЬСЯ';
+
+  @override
+  String get tapFlatSurfaceMessage =>
+      '👆 Коснитесь ровной поверхности, чтобы разместить модель';
+
+  @override
+  String groupTourStartedCodeLabel(String code) {
+    return 'Групповой тур начался! Код: $code';
+  }
+
+  @override
+  String get invalidSessionCodeMessage => 'Неверный код сессии';
+
+  @override
+  String get couldNotLoadAudioMessage => 'Не удалось загрузить аудионарратив.';
+
+  @override
+  String get galleryPermissionDeniedMessage => 'Доступ к галерее запрещён';
+
+  @override
+  String failedToCapturePhotoMessage(String error) {
+    return 'Не удалось сделать снимок: $error';
+  }
+
+  @override
+  String codeColonLabel(String code) {
+    return 'КОД: $code';
+  }
+
+  @override
+  String get thenLabel => 'ТОГДА';
+
+  @override
+  String get nowLabel => 'СЕЙЧАС';
+
+  @override
+  String get resetLabel => 'Сбросить';
+
+  @override
+  String get scalePlusLabel => 'Масштаб+';
+
+  @override
+  String get scaleMinusLabel => 'Масштаб-';
+
+  @override
+  String get memoryLabel => 'Воспоминание';
+
+  @override
+  String get removeLabel => 'Удалить';
+
+  @override
+  String get placeLabel => 'Разместить';
+
+  @override
+  String get historicalInfoComingSoonMessage =>
+      'Историческая информация появится скоро.';
+
+  @override
+  String get preparingHeritageAssetsMessage =>
+      'Подготовка объектов наследия...';
+
+  @override
+  String progressSizeLabel(int progress, String size) {
+    return '$progress% • $size МБ';
+  }
+
+  @override
+  String modelColonNameLabel(String name) {
+    return 'Модель: $name';
+  }
+
+  @override
+  String authorColonNameLabel(String name) {
+    return 'Автор: $name';
+  }
+
+  @override
+  String get moveSlowlyToScanMessage =>
+      'Медленно двигайте телефоном,\nчтобы отсканировать ровную поверхность';
+
+  @override
+  String get tapPlaceToPlaceModelMessage =>
+      '👇 Нажмите «Разместить», затем коснитесь ровной поверхности';
+
+  @override
+  String demoModeSecondsRemainingLabel(int seconds) {
+    return 'ДЕМО-РЕЖИМ: ОСТАЛОСЬ $seconds';
+  }
+
+  @override
+  String get premiumHeritageSessionLabel => 'ПРЕМИУМ-СЕССИЯ НАСЛЕДИЯ';
+
+  @override
+  String get artifactDiscoveredLabel => 'АРТЕФАКТ ОБНАРУЖЕН!';
+
+  @override
+  String ptsRarityLabel(int points, String rarity) {
+    return '+$points ОЧК • $rarity';
+  }
+
+  @override
+  String get hiddenGemsSlWatermark => 'HIDDEN GEMS SL';
+
+  @override
+  String get heritageArWatermark => 'HERITAGE AR';
+
+  @override
+  String get captureSuccessfulTitle => 'Снимок успешно сделан!';
+
+  @override
+  String get shareDiscoveryMessage =>
+      'Поделитесь своим историческим открытием с миром';
+
+  @override
+  String get instagramLabel => 'Instagram';
+
+  @override
+  String get tiktokLabel => 'TikTok';
+
+  @override
+  String get savedLabelShort => 'Сохранено';
+
+  @override
+  String sharePlatformCaptionInstagram(String placeName) {
+    return 'Исследую $placeName в AR с #HiddenGemsSL';
+  }
+
+  @override
+  String get sharePlatformCaptionTiktok =>
+      'История оживает! #HiddenGemsSL #HeritageAR';
+
+  @override
+  String get photoSavedGalleryMessage => 'Фото сохранено в вашу галерею!';
+
+  @override
+  String get backToArButton => 'Назад к AR';
+
+  @override
+  String distanceToTargetLabel(String distance, String placeName) {
+    return '$distance м до $placeName';
+  }
+
+  @override
+  String get recommendedLabel => 'РЕКОМЕНДУЕТСЯ';
+
+  @override
+  String categoryRatingLabel(String category, String rating) {
+    return '$category • $rating ★';
+  }
+
+  @override
+  String get viewButtonUppercase => 'СМОТРЕТЬ';
+
+  @override
+  String get loginToLeaveMemoryMessage =>
+      'Войдите, чтобы оставить AR-воспоминание!';
+
+  @override
+  String get leaveArMemoryTitle => 'Оставить AR-воспоминание';
+
+  @override
+  String get whatDoYouSeeHereHint => 'Что вы здесь видите?';
+
+  @override
+  String get cancelButton2 => 'Отмена';
+
+  @override
+  String get dropButton => 'Оставить';
+
+  @override
+  String get memoryDroppedMessage => 'Воспоминание оставлено в AR-вселенной!';
+
+  @override
+  String get explorerFallback => 'Исследователь';
+
+  @override
+  String signalPercentLabel(int percent) {
+    return 'СИГНАЛ: $percent%';
+  }
+
+  @override
+  String get searchingLabel => 'ПОИСК...';
+
+  @override
+  String get cameraAccessNeededTitle => 'Требуется доступ к камере';
+
+  @override
+  String get arNotAvailableDeviceTitle => 'AR недоступен на этом устройстве';
+
+  @override
+  String get arCouldntLoadTitle => 'На этот раз AR не загрузился';
+
+  @override
+  String get cameraAccessNeededMessage =>
+      'Для функций AR требуется доступ к камере. Вместо этого — кинематографичная реконструкция.';
+
+  @override
+  String get arNotAvailableMessage =>
+      'Вместо этого — кинематографичный 360°-обзор той же эпохи.';
+
+  @override
+  String get arCouldntLoadMessage =>
+      'Не удалось загрузить историческую 3D-модель. Вместо этого — кинематографичный резервный просмотр.';
+
+  @override
+  String get closeButtonLabel => 'Закрыть';
+
+  @override
+  String get watchAdToUnlockButton =>
+      'Посмотреть рекламу, чтобы разблокировать';
+
+  @override
+  String get oracleRewardFallbackMessage =>
+      '✨ Награда оракула активна! Резервные режимы и премиум-контент разблокированы.';
+
+  @override
+  String get arNotAvailableInfoBarMessage =>
+      'AR недоступен на этом устройстве · Показан 360°-обзор';
+
+  @override
+  String get cinematicPreviewUnavailableMessage =>
+      'Кинематографичный предпросмотр недоступен';
+
+  @override
+  String get interactive3dViewTitle => 'Интерактивный 3D-просмотр';
+
+  @override
+  String get touchToRotateMonumentMessage =>
+      'Коснитесь, чтобы повернуть памятник';
+
+  @override
+  String get historicalStoryLabel => 'Историческая история';
+
+  @override
+  String unveilingEraTitle(String era) {
+    return 'Открывая $era';
+  }
+
+  @override
+  String heritageStoryBody(String era) {
+    return 'Наследие Шри-Ланки уходит глубоко в ткань времени. Это место, датируемое $era, было когда-то центром процветающей цивилизации, которая стала пионером в гидротехнике и духовной архитектуре.\n\nСтупа, которую мы видим сегодня, была построена из более чем 100 миллионов кирпичей высушенных на солнце, свидетельствуя об инженерных чудесах древних царей...';
+  }
+
+  @override
+  String get listenToNarrationLabel => 'Слушать нарратив';
+
+  @override
+  String get sinhalaEnglishAvailableLabel =>
+      'Доступны сингальский и английский';
+
+  @override
+  String get illustrationCaptionLabel =>
+      'Иллюстрация: Древняя инженерия (концепт-арт)';
+
+  @override
+  String get mode360Label => '360°';
+
+  @override
+  String get mode3dLabel => '3D';
+
+  @override
+  String get modeStoryLabel => 'История';
+
+  @override
+  String get unlockArHeritageModeTitle => 'Разблокировать режим AR-наследия';
+
+  @override
+  String get arHeritageModeSubtitle =>
+      'Ощутите Шри-Ланку такой, какой она выглядела тысячи лет назад.';
+
+  @override
+  String get featureAncient3dReconstruction => 'Древняя 3D-реконструкция';
+
+  @override
+  String get featureAudioNarrationBilingual =>
+      'Аудионарратив (සිංහල / English)';
+
+  @override
+  String get featureArPhotoCapture => 'AR-фотосъёмка и обмен в соцсетях';
+
+  @override
+  String get pricingTrialLabel =>
+      'От 299 рупий/месяц  ·  7-дневная бесплатная пробная версия';
+
+  @override
+  String get watch10SecPreviewButton => 'Посмотреть 10-секундный превью';
+
+  @override
+  String get watchAdUnlockSessionButton =>
+      'Посмотреть рекламу, чтобы разблокировать сессию';
+
+  @override
+  String get notNowButtonLabel => 'Не сейчас';
+
+  @override
+  String get ancientArtifactsLabel => 'ДРЕВНИЕ АРТЕФАКТЫ';
 }

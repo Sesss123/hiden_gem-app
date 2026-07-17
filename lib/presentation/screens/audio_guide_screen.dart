@@ -9,6 +9,7 @@ import '../../core/theme/oracle_ui_system.dart';
 import '../../core/services/asset_cache_service.dart';
 import '../widgets/cached_image.dart';
 import 'package:hidden_gems_sl/core/utils/secure_logger.dart';
+import '../../l10n/app_localizations.dart';
 
 class AudioGuideScreen extends StatefulWidget {
   final DiscoveryPlace place;
@@ -186,7 +187,7 @@ class _AudioGuideScreenState extends State<AudioGuideScreen> with SingleTickerPr
         ),
         SizedBox(height: 8),
         Text(
-          "${widget.place.district} · Audio guide",
+          "${widget.place.district} · ${AppLocalizations.of(context)!.audioGuideLabel}",
           style: GoogleFonts.inter(
             fontSize: 12,
             color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
@@ -252,8 +253,8 @@ class _AudioGuideScreenState extends State<AudioGuideScreen> with SingleTickerPr
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          _langTab("සිංහල", "si"),
-          _langTab("English", "en"),
+          _langTab(AppLocalizations.of(context)!.sinhalaShortLabel, "si"),
+          _langTab(AppLocalizations.of(context)!.englishShortLabel, "en"),
         ],
       ),
     );

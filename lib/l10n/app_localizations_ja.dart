@@ -2824,4 +2824,1879 @@ class AppLocalizationsJa extends AppLocalizations {
   String errorSavingAvailabilityMessage(String error) {
     return '空き状況の保存エラー: $error';
   }
+
+  @override
+  String get broadcastSentSuccessMessage => '配信を送信しました';
+
+  @override
+  String get broadcastTitle => '配信';
+
+  @override
+  String get activeBroadcastsTitle => '配信中のお知らせ';
+
+  @override
+  String get messageToTravelersLabel => '旅行者へのメッセージ';
+
+  @override
+  String get messageToTravelersHint => '旅行者へのメッセージを入力してください...';
+
+  @override
+  String get sendToAllTravelersButton => '全旅行者に送信';
+
+  @override
+  String get priorityLabel => '優先度';
+
+  @override
+  String get noActiveBroadcastsMessage => '配信中のお知らせはありません';
+
+  @override
+  String acksCountLabel(int count) {
+    return '確認 $count件';
+  }
+
+  @override
+  String get expireButtonLabel => '終了';
+
+  @override
+  String get broadcastTypeGeneral => '一般';
+
+  @override
+  String get broadcastTypeWeather => '天候';
+
+  @override
+  String get broadcastTypeMeetingPoint => '集合場所';
+
+  @override
+  String get broadcastTypeDelay => '遅延';
+
+  @override
+  String get broadcastTypeDeparture => '出発';
+
+  @override
+  String get broadcastTypeVehicleChange => '車両変更';
+
+  @override
+  String get broadcastTypeSafety => '安全';
+
+  @override
+  String get broadcastPriorityLow => '低';
+
+  @override
+  String get broadcastPriorityNormal => '通常';
+
+  @override
+  String get broadcastPriorityHigh => '高';
+
+  @override
+  String get broadcastPriorityCritical => '重大';
+
+  @override
+  String get writeReviewButton => 'レビューを書く';
+
+  @override
+  String get reviewsTitle => 'レビュー';
+
+  @override
+  String get failedToLoadReviewsMessage => 'レビューの読み込みに失敗しました。もう一度お試しください。';
+
+  @override
+  String get premiumAnalyticsLockedTitle => 'プレミアム分析はロックされています';
+
+  @override
+  String get premiumAnalyticsLockedMessage =>
+      'パフォーマンス、信頼スコア、旅行者のフィードバックに関する詳細なインサイトを利用するには、PROまたはELITEにアップグレードしてください。';
+
+  @override
+  String get upgradeNowButton => '今すぐアップグレード';
+
+  @override
+  String get trustScoreLabel => '信頼スコア';
+
+  @override
+  String get tierBronze => 'ブロンズ階級';
+
+  @override
+  String get tierDiamond => 'ダイヤモンド階級';
+
+  @override
+  String get tierGold => 'ゴールド階級';
+
+  @override
+  String get tierSilver => 'シルバー階級';
+
+  @override
+  String get miniStatTrips => 'ツアー数';
+
+  @override
+  String get miniStatRating => '評価';
+
+  @override
+  String get miniStatIncidents => 'インシデント数';
+
+  @override
+  String get verifiedTripBadge => '確認済みツアー';
+
+  @override
+  String touristShortIdLabel(String shortId) {
+    return '旅行者 $shortId';
+  }
+
+  @override
+  String get noReviewsYetTitle => 'まだレビューがありません';
+
+  @override
+  String get noReviewsYetSubtitle => 'セッション完了後、確認済みの参加者がフィードバックを残すことができます。';
+
+  @override
+  String get guideProfileNotFoundMessage => 'ガイドのプロフィールが見つかりません';
+
+  @override
+  String get aboutSectionTitle => '概要';
+
+  @override
+  String get noBioProvidedMessage => '自己紹介が登録されていません。';
+
+  @override
+  String get vehicleSectionTitle => '車両';
+
+  @override
+  String get vehicleDetailsNotProvidedMessage => '車両の詳細が登録されていません';
+
+  @override
+  String get vehicleProvidedByGuideMessage => 'ツアー用にガイドが提供します';
+
+  @override
+  String get packagesSectionTitle => 'パッケージ';
+
+  @override
+  String get tapPackageToBookMessage => 'パッケージをタップして直接予約';
+
+  @override
+  String get standardPackageLabel => '標準パッケージ';
+
+  @override
+  String durationHoursShortLabel(String hours) {
+    return '$hours時間';
+  }
+
+  @override
+  String guestsCountShortLabel(String count) {
+    return '$count名';
+  }
+
+  @override
+  String get totalLabel => '合計';
+
+  @override
+  String get requestThisGuideButton => 'このガイドをリクエスト';
+
+  @override
+  String get experienceStatLabel => '経験年数';
+
+  @override
+  String yearsExperienceLabel(String years) {
+    return '$years年';
+  }
+
+  @override
+  String get ratingStatLabel => '評価';
+
+  @override
+  String get rankStatLabel => 'ランク';
+
+  @override
+  String licensedGuideLabel(String licenseNumber) {
+    return '免許保有ガイド • $licenseNumber';
+  }
+
+  @override
+  String get platformVerifiedInsuredLabel => 'プラットフォーム認証・保険加入済み';
+
+  @override
+  String get yourListingTitle => 'あなたの掲載情報';
+
+  @override
+  String get basicInformationTitle => '基本情報';
+
+  @override
+  String get displayNameLabel => '表示名';
+
+  @override
+  String get displayNameHint => '例：カスン・ペレラ';
+
+  @override
+  String get aboutMeBioLabel => '自己紹介';
+
+  @override
+  String get aboutMeBioHint => 'あなたの情熱、経験、お気に入りのスポットについて旅行者に伝えましょう...';
+
+  @override
+  String get categorySpecialtiesTitle => 'カテゴリーと専門分野';
+
+  @override
+  String get primaryCategoryLabel => '主なカテゴリー';
+
+  @override
+  String get languagesCommaLabel => '対応言語（カンマ区切り）';
+
+  @override
+  String get languagesCommaHint => '例：英語、シンハラ語、ドイツ語';
+
+  @override
+  String get specializationsCommaLabel => '専門分野（カンマ区切り）';
+
+  @override
+  String get specializationsCommaHint => '例：史跡、野生動物、写真撮影';
+
+  @override
+  String get serviceRegionsLabel => '対応エリア（カンマ区切り）';
+
+  @override
+  String get serviceRegionsHint => '例：中央州、南部州、西部州';
+
+  @override
+  String get pricingVehicleTitle => '料金と車両';
+
+  @override
+  String get hourlyRateFieldLabel => '時給';
+
+  @override
+  String get hourlyRateHint => '例：25';
+
+  @override
+  String get vehicleAvailableForToursLabel => 'ツアー用車両あり';
+
+  @override
+  String get provideTransportationLabel => '送迎を提供しますか？';
+
+  @override
+  String get vehicleTypeModelLabel => '車両タイプ・モデル';
+
+  @override
+  String get vehicleTypeModelHint => '例：トヨタ プリウス ハイブリッド／高級バン';
+
+  @override
+  String coverPhotosCountTitle(int count) {
+    return 'カバー写真（$count枚）';
+  }
+
+  @override
+  String get availabilityCalendarTitle => '空き状況カレンダー';
+
+  @override
+  String get visibilityBoostTitle => '表示アップ';
+
+  @override
+  String get saveDraftButton => '下書きを保存';
+
+  @override
+  String get publishListingButton => '掲載する';
+
+  @override
+  String get uploadingPhotoMessage => '写真をアップロード中...';
+
+  @override
+  String get photoUploadedSuccessMessage => '写真のアップロードに成功しました！';
+
+  @override
+  String get failedToUploadPhotoMessage => '写真のアップロードに失敗しました。';
+
+  @override
+  String get uploadingVehiclePhotoMessage => '車両写真をアップロード中...';
+
+  @override
+  String get vehiclePhotoUploadedMessage => '車両写真をアップロードしました！';
+
+  @override
+  String get listingPublishedMessage => '🎉 マーケットプレイスに掲載されました！';
+
+  @override
+  String get draftSavedMessage => '💾 下書きを保存しました';
+
+  @override
+  String failedToSaveListingMessage(String error) {
+    return '掲載情報の保存に失敗しました: $error';
+  }
+
+  @override
+  String get addPhotoLabel => '写真を追加';
+
+  @override
+  String get verifiedLicenseLabel => '認証済み免許';
+
+  @override
+  String get addVehiclePhotoLabel => '車両写真を追加';
+
+  @override
+  String get manageAvailabilityTitle => '空き状況を管理';
+
+  @override
+  String get manageAvailabilitySubtitle => '休業日と定期的な勤務時間を設定';
+
+  @override
+  String get featureThisListingLabel => 'この掲載情報を注目表示にする';
+
+  @override
+  String get currentlyFeaturedMessage => '現在マーケットプレイスで注目表示中です';
+
+  @override
+  String get featureRequestedMessage => 'リクエスト済み — 管理者が確認後、間もなく有効になります';
+
+  @override
+  String get featureRequestPromptMessage =>
+      'マーケットプレイスでの注目表示をリクエスト（管理者の審査が必要です）';
+
+  @override
+  String get upgradeToProFeatureMessage => 'マーケットプレイスでの表示を強化するにはProにアップグレード';
+
+  @override
+  String get safetyConsoleTitle => 'セーフティコンソール';
+
+  @override
+  String offlineErrorMessage(String error) {
+    return 'オフラインエラー: $error';
+  }
+
+  @override
+  String get secureOperationsTitle => '安全な運用';
+
+  @override
+  String get allIncidentsLoggedMessage => 'すべてのインシデントは監査証跡付きで記録されます';
+
+  @override
+  String get filterActive => '対応中';
+
+  @override
+  String get filterResolved => '解決済み';
+
+  @override
+  String get filterMyReports => '自分の報告';
+
+  @override
+  String get priorityBadgeText => '優先';
+
+  @override
+  String updatesCountLabel(int count) {
+    return '更新 $count件';
+  }
+
+  @override
+  String get noCriticalIncidentsTitle => '重大なインシデントはありません';
+
+  @override
+  String get sessionWithinSafetyParamsMessage => 'セッションの運用は安全基準の範囲内です。';
+
+  @override
+  String get reportIncidentButton => 'インシデントを報告';
+
+  @override
+  String get fileAnIncidentTitle => 'インシデントを報告する';
+
+  @override
+  String get incidentAuditTrailMessage => '正確な詳細を入力してください。監査証跡として記録されます。';
+
+  @override
+  String get incidentTitleHint => 'インシデントのタイトル';
+
+  @override
+  String get descriptionOfEventHint => '事象の説明';
+
+  @override
+  String get transmitReportButton => '報告を送信';
+
+  @override
+  String get incidentStatusOpen => '対応待ち';
+
+  @override
+  String get incidentStatusInvestigating => '調査中';
+
+  @override
+  String get incidentStatusResolved => '解決済み';
+
+  @override
+  String get incidentStatusClosed => '終了';
+
+  @override
+  String get manageTeamTitle => 'チームを管理';
+
+  @override
+  String get signInToManageTeamMessage => 'チームを管理するにはサインインしてください。';
+
+  @override
+  String get guideAddedToTeamMessage => 'ガイドがチームに追加されました';
+
+  @override
+  String failedToInviteGuideMessage(String error) {
+    return 'ガイドの招待に失敗しました: $error';
+  }
+
+  @override
+  String failedToRemoveGuideMessage(String error) {
+    return 'ガイドの削除に失敗しました: $error';
+  }
+
+  @override
+  String failedToUploadLogoMessage(String error) {
+    return 'ロゴのアップロードに失敗しました: $error';
+  }
+
+  @override
+  String get tabOverview => '概要';
+
+  @override
+  String get tabTeam => 'チーム';
+
+  @override
+  String get tabBranding => 'ブランディング';
+
+  @override
+  String get eliteOperatorAccountLabel => 'エリートオペレーターアカウント';
+
+  @override
+  String get overviewStatTeamSize => 'チーム人数';
+
+  @override
+  String get overviewStatMissions => '実施ミッション数';
+
+  @override
+  String get overviewStatAvgRating => '平均評価';
+
+  @override
+  String get guideUserIdToInviteHint => '招待するガイドのユーザーID';
+
+  @override
+  String teamMembersCountTitle(int count) {
+    return 'チームメンバー（$count名）';
+  }
+
+  @override
+  String get roleMember => 'メンバー';
+
+  @override
+  String get logoLabel => 'ロゴ';
+
+  @override
+  String get brandColorLabel => 'ブランドカラー';
+
+  @override
+  String get brandColorAppliedMessage =>
+      'あなたのブランドカラーが、組織のこのチームダッシュボード全体に適用されています。';
+
+  @override
+  String get incidentNotFoundTitle => 'インシデントが見つかりません';
+
+  @override
+  String get incidentNotFoundDescription => '記録は消去または移動されました。';
+
+  @override
+  String get statusLabel => 'ステータス';
+
+  @override
+  String get severityLabel => '重大度';
+
+  @override
+  String get timelineLabel => 'タイムライン';
+
+  @override
+  String get encryptedLogLabel => '暗号化ログ';
+
+  @override
+  String get noTimelineActiveMessage => '有効なタイムラインはありません。';
+
+  @override
+  String minutesAgoLabel(int minutes) {
+    return '$minutes分前';
+  }
+
+  @override
+  String get verifiedAuditLogLabel => '検証済み監査ログ';
+
+  @override
+  String get forensicIntegrityLockedMessage =>
+      'このレポートはフォレンジックの整合性のためロックされています。ステータスを変更できるのは権限を持つ管理者のみです。';
+
+  @override
+  String get addEvidenceButton => '証拠を追加';
+
+  @override
+  String get escalateButton => 'エスカレーション';
+
+  @override
+  String get timelineTypeSosTriggered => 'SOSが発動されました';
+
+  @override
+  String get invalidQrCodeFormatMessage => '無効なQRコード形式です';
+
+  @override
+  String get unrecognizedQrCodeMessage => '認識できないQRコードです';
+
+  @override
+  String get sessionNotFoundClosedMessage => 'セッションが見つからないか、終了しています';
+
+  @override
+  String get connectionErrorMessage => '接続エラー';
+
+  @override
+  String get tourVerificationTitle => 'ツアー認証';
+
+  @override
+  String get localGuideFallback => '現地ガイド';
+
+  @override
+  String vehicleNumberLabel(String vehicleNumber) {
+    return '車両番号: $vehicleNumber';
+  }
+
+  @override
+  String get consentTrackingMessage => 'このツアーセッション中のライブ位置情報の追跡と安全モニタリングに同意します。';
+
+  @override
+  String get connectSyncButton => '接続して同期';
+
+  @override
+  String get realitySyncedTitle => '同期完了';
+
+  @override
+  String get safetyProtocolsActiveMessage => 'グローバル安全プロトコルとライブトラッキングが有効です。';
+
+  @override
+  String get enterHubButton => 'ハブに入る';
+
+  @override
+  String get decryptingTokenMessage => 'トークンを復号中…';
+
+  @override
+  String get scanGuideTourCodeMessage => 'ガイドのツアーコードをスキャンしてください';
+
+  @override
+  String get emergencyTranslatorTitle => '緊急翻訳機';
+
+  @override
+  String get showScreenToBystanderMessage =>
+      'この画面を周囲の人、警察官、または病院スタッフに見せてください — あなたに代わってシンハラ語で話します。';
+
+  @override
+  String locationCoordinatesTapMapsLabel(String lat, String lng) {
+    return '$lat, $lng — タップして地図アプリで開く';
+  }
+
+  @override
+  String get locationUnavailableMessage => '位置情報が利用できません';
+
+  @override
+  String get speakingEllipsisMessage => '再生中…';
+
+  @override
+  String get playAgainButton => 'もう一度再生';
+
+  @override
+  String get emergencyTitle => '緊急';
+
+  @override
+  String get criticalContactsTitle => '重要連絡先';
+
+  @override
+  String get medicalFacilitiesNearbyTitle => '近くの医療施設';
+
+  @override
+  String get emergencyProtocolLabel => '緊急プロトコル';
+
+  @override
+  String get sendingAlertMessage => 'アラートを送信中…';
+
+  @override
+  String get keepHoldingToConfirmMessage => '確定するには押し続けてください…';
+
+  @override
+  String get pressHoldTwoSecondsMessage => 'アラートを発するには2秒間長押ししてください';
+
+  @override
+  String get preventsAccidentalTriggersMessage => '誤操作による誤作動を防止します';
+
+  @override
+  String get sosLabel => 'SOS';
+
+  @override
+  String get contactNamePolice => '警察';
+
+  @override
+  String get contactNameAmbulance => '救急車';
+
+  @override
+  String get contactNameTouristPolice => '観光警察';
+
+  @override
+  String get contactNameFireDept => '消防署';
+
+  @override
+  String get privateGuardiansTitle => 'プライベート保護者';
+
+  @override
+  String get noGuardiansAssignedMessage => '保護者が設定されていません。信号は緊急サービスに自動送信されます。';
+
+  @override
+  String get nearestHospitalTitle => 'どこにいても最寄りの病院';
+
+  @override
+  String get checkingLocationAccessMessage => '位置情報へのアクセスを確認中…';
+
+  @override
+  String get locationAccessDeniedGeneralMessage =>
+      '位置情報へのアクセスが拒否されました — 代わりに一般検索を行います。';
+
+  @override
+  String get hospitalMapsExplanationMessage =>
+      'ライブGPSを使用してGoogleマップを開きます — スリランカ国内のどこにいても、近隣のすべての公立・私立病院を表示します。';
+
+  @override
+  String get findNearestHospitalButton => '地図で最寄りの病院を探す';
+
+  @override
+  String get addGuardianTitle => '保護者を追加';
+
+  @override
+  String get guardianPhoneNumberHint => '保護者の電話番号';
+
+  @override
+  String get addGuardianButton => '保護者を追加';
+
+  @override
+  String get sosAlertsPreparedLoggedMessage => 'SOSアラートが準備され、セキュアボルトに記録されました！';
+
+  @override
+  String get sosCriticalAlertTitle => '緊急SOSアラート';
+
+  @override
+  String get sosDistressSignalDescription => 'ガーディアンシステムから緊急遭難信号が発信されました。';
+
+  @override
+  String get locationPermissionsPermanentlyDeniedMessage =>
+      '位置情報の許可が完全に拒否されています。';
+
+  @override
+  String get emergencyTranslatorPremiumMessage =>
+      'あなたの状況をスリランカの警察や病院スタッフに、話し言葉のシンハラ語で即座に説明します — プレミアム安全機能です。';
+
+  @override
+  String get notNowButton => '後で';
+
+  @override
+  String get viewPlansButton => 'プランを見る';
+
+  @override
+  String get monsoonHazardAlertTitle => 'モンスーン警報';
+
+  @override
+  String districtLabel(String district) {
+    return '地区: $district';
+  }
+
+  @override
+  String get districtGeneralFallback => '全般';
+
+  @override
+  String get severeMonsoonWeatherDetectedMessage => '深刻なモンスーン気象が検出されました。';
+
+  @override
+  String get acknowledgeButton => '了解';
+
+  @override
+  String offlineErrorGenericMessage(String error) {
+    return 'オフラインエラー: $error';
+  }
+
+  @override
+  String get sessionNotFoundMessage => 'セッションが見つかりません';
+
+  @override
+  String get yourTourTitle => 'あなたのツアー';
+
+  @override
+  String get tourActiveTitle => 'ツアー進行中';
+
+  @override
+  String get preparingTourTitle => 'ツアー準備中';
+
+  @override
+  String get everythingOnTrackMessage => 'すべて順調です';
+
+  @override
+  String statusColonValueLabel(String status) {
+    return 'ステータス: $status';
+  }
+
+  @override
+  String get phaseAssemblingGroup => '集合中';
+
+  @override
+  String get phaseEnRoute => '移動中';
+
+  @override
+  String get phaseAtDestination => '目的地に到着';
+
+  @override
+  String get phaseFreeTimeBreak => '自由時間・休憩';
+
+  @override
+  String get phaseReturningToBase => '拠点へ戻る';
+
+  @override
+  String get liveNavigationTitle => 'ライブナビゲーション';
+
+  @override
+  String get findGuideLabel => 'ガイドを探す';
+
+  @override
+  String get liveTrackingLabel => 'ライブトラッキング';
+
+  @override
+  String get findVehicleLabel => '車両を探す';
+
+  @override
+  String get parkedSpotLabel => '駐車位置';
+
+  @override
+  String get meetingPointLabel => '集合場所';
+
+  @override
+  String get returnHereIfLostMessage => '迷った場合やグループとはぐれた場合はここに戻ってください。';
+
+  @override
+  String get navigateToPointButton => 'この地点へ移動';
+
+  @override
+  String get guideAnnouncementLabel => 'ガイドからのお知らせ';
+
+  @override
+  String get justNowLabel => 'たった今';
+
+  @override
+  String get acknowledgedLabel => '確認済み';
+
+  @override
+  String get iAcknowledgeButton => '確認しました';
+
+  @override
+  String get moreLabel => 'もっと見る';
+
+  @override
+  String get shareLiveLabel => 'ライブ共有';
+
+  @override
+  String get familyAccessLabel => '家族アクセス';
+
+  @override
+  String get rateTourLabel => 'ツアーを評価';
+
+  @override
+  String get buildReputationLabel => '評判を築く';
+
+  @override
+  String get helpImLostButton => '助けて、迷子です';
+
+  @override
+  String get emergencySosButton => '緊急SOS';
+
+  @override
+  String get instantAlertAdminPoliceMessage => '管理者、警察、ハブに即座にアラートを送信します。';
+
+  @override
+  String get signalSentStayMessage => '信号を送信しました！その場から動かないでください。';
+
+  @override
+  String get travelerLostBroadcastTitle => '旅行者が迷子です';
+
+  @override
+  String get travelerLostBroadcastBody =>
+      '旅行者が迷子であることを通知しました！位置情報が地図上で共有されています。';
+
+  @override
+  String sosCooledDownMessage(int seconds) {
+    return 'SOSはクールダウン中です。$seconds秒お待ちください。';
+  }
+
+  @override
+  String get sosBroadcastedAuthoritiesMessage => 'SOSアラートがすべての関係当局に送信されました！';
+
+  @override
+  String get tourCompletedTitle => 'ツアー完了！';
+
+  @override
+  String get tourCompletedRateMessage =>
+      '素晴らしい体験になりましたか？今すぐガイドを評価しませんか？あなたのフィードバックはガイドの高い水準を維持する助けになります。';
+
+  @override
+  String get remindLaterButton => '後で通知';
+
+  @override
+  String get reminderSetMessage => '⏰ リマインダーを設定しました！明日通知をお送りします。';
+
+  @override
+  String get rateNowButton => '今すぐ評価する ⭐';
+
+  @override
+  String get eventsTitle => 'イベント';
+
+  @override
+  String get topPicksForYouTitle => 'あなたへのおすすめ';
+
+  @override
+  String get categoryAllFilter => 'すべて';
+
+  @override
+  String get categoryBeach => 'ビーチ';
+
+  @override
+  String get categoryCultural => '文化';
+
+  @override
+  String get categoryReligious => '宗教';
+
+  @override
+  String get categorySports => 'スポーツ';
+
+  @override
+  String get categorySeasonal => '季節';
+
+  @override
+  String get categoryFestival => 'フェスティバル';
+
+  @override
+  String get categoryParty => 'パーティー';
+
+  @override
+  String get availableEventsTitle => '開催中のイベント';
+
+  @override
+  String get temporalDataLabel => '日時データ';
+
+  @override
+  String get acquirePassButton => 'パスを取得';
+
+  @override
+  String get unpinButton => 'ピン解除';
+
+  @override
+  String get pinToHudButton => 'HUDにピン留め';
+
+  @override
+  String get noEventsOnDayMessage => 'この日のイベントはありません';
+
+  @override
+  String get musicPreferencesTitle => '音楽の好み';
+
+  @override
+  String get fineTuneOracleMessage => 'あなたの好みに合わせて、タイムライン予測を微調整します。';
+
+  @override
+  String get syncPreferencesButton => '好みを同期';
+
+  @override
+  String failedToShareTimelineMessage(String error) {
+    return 'タイムラインの共有に失敗しました: $error';
+  }
+
+  @override
+  String hazardWarningMessage(String message) {
+    return '🚨 危険警報: $message';
+  }
+
+  @override
+  String get extremeWeatherAlertFallback => '異常気象警報！';
+
+  @override
+  String get recommendedForYouLabel => 'あなたへのおすすめ';
+
+  @override
+  String eventLocationCategoryLabel(String location, String category) {
+    return '$location ・ $category';
+  }
+
+  @override
+  String get budgetTitle => '予算';
+
+  @override
+  String get addExpenseTitle => '支出を追加';
+
+  @override
+  String get resourceDescriptionLabel => '内容の説明';
+
+  @override
+  String get amountLkrLabel => '金額（LKR）';
+
+  @override
+  String get categoryLabel => 'カテゴリー';
+
+  @override
+  String get saveExpenseButton => '支出を保存';
+
+  @override
+  String get planLimitLabel => 'プラン上限';
+
+  @override
+  String get spentLabel => '使用額';
+
+  @override
+  String get expenseLedgerTitle => '支出台帳';
+
+  @override
+  String entriesCountLabel(int count) {
+    return '$count 件の記録';
+  }
+
+  @override
+  String get noEntriesYetMessage => 'まだ記録がありません';
+
+  @override
+  String get addFirstEntryButton => '最初の記録を追加';
+
+  @override
+  String get expenseCategoryFood => '食費';
+
+  @override
+  String get expenseCategoryTransport => '交通費';
+
+  @override
+  String get expenseCategoryTickets => 'チケット';
+
+  @override
+  String get expenseCategoryMisc => 'その他';
+
+  @override
+  String get budgetConciergeTitle => '予算コンシェルジュ';
+
+  @override
+  String get analyzingSpendingPatternsMessage => '支出パターンを分析しています...';
+
+  @override
+  String get localAdviceMessage =>
+      'あなたの支出ペースはスリランカ旅行の標準的な水準に合っています。透明性のある運賃のPickMeやUberの利用、そして地元の食堂を利用してお得に楽しむことをおすすめします。';
+
+  @override
+  String get recentTransactionsTitle => '最近の取引';
+
+  @override
+  String get totalSpentSoFarLabel => '現在までの合計支出';
+
+  @override
+  String approxUsdLabel(String amount) {
+    return '≈ US\$ $amount';
+  }
+
+  @override
+  String get oracleAdviceLabel => 'オラクルのアドバイス';
+
+  @override
+  String get logTransactionTitle => '取引を記録';
+
+  @override
+  String get whatWasThePurposeHint => '目的は何でしたか？';
+
+  @override
+  String get amountLkrHint => '金額（LKR）';
+
+  @override
+  String get expenseCategoryAttraction => '観光';
+
+  @override
+  String get expenseCategoryLodging => '宿泊';
+
+  @override
+  String get expenseCategoryOther => 'その他';
+
+  @override
+  String get billingHistoryTitle => '請求履歴';
+
+  @override
+  String errorGenericColonMessage(String error) {
+    return 'エラー: $error';
+  }
+
+  @override
+  String get noBillingHistoryFoundMessage => '請求履歴が見つかりません。';
+
+  @override
+  String planLabel(String planId) {
+    return 'プラン: $planId';
+  }
+
+  @override
+  String get startedLabel => '開始日';
+
+  @override
+  String get expiresLabel => '有効期限';
+
+  @override
+  String idLabel(String subscriptionId) {
+    return 'ID: $subscriptionId';
+  }
+
+  @override
+  String get subscriptionStatusCancelled => '解約済み';
+
+  @override
+  String get subscriptionStatusExpired => '期限切れ';
+
+  @override
+  String get subscriptionStatusActive => '有効';
+
+  @override
+  String get accessDeniedMessage => 'アクセスが拒否されました';
+
+  @override
+  String subscribedToPlanMessage(String planId) {
+    return '✅ 「$planId」プランに登録しました！';
+  }
+
+  @override
+  String subscriptionFailedMessage(String error) {
+    return 'サブスクリプションに失敗しました: $error';
+  }
+
+  @override
+  String get purchasesRestoredMessage => '✅ 購入が正常に復元されました。';
+
+  @override
+  String restoreFailedMessage(String error) {
+    return '復元に失敗しました: $error';
+  }
+
+  @override
+  String get serviceTiersTitle => 'サービスティア';
+
+  @override
+  String get freeTierTitle => '無料ティア';
+
+  @override
+  String get freeTierDescription => '認証済みガイドのための基本ツール。';
+
+  @override
+  String get featureBasicOperations => '基本操作';
+
+  @override
+  String get featureVerifiedBadge => '認証済みバッジ';
+
+  @override
+  String get featureStandardSos => '標準SOS';
+
+  @override
+  String get proCommanderTitle => 'プロコマンダー';
+
+  @override
+  String get proCommanderDescription => 'あなたの露出度とツールを強化します。';
+
+  @override
+  String get featureFeaturedListings => '注目リスティング';
+
+  @override
+  String get featureAdvancedAnalytics => '高度な分析';
+
+  @override
+  String get featureClientAnalytics => '顧客分析';
+
+  @override
+  String get featurePrioritySos => '優先SOS';
+
+  @override
+  String get eliteAgencyTitle => 'エリートエージェンシー';
+
+  @override
+  String get eliteAgencyDescription => 'フリート全体と企業管理機能。';
+
+  @override
+  String get featureTeamManagement => 'チーム管理';
+
+  @override
+  String get featureOperatorDashboard => 'オペレーターダッシュボード';
+
+  @override
+  String get featureWhiteLabelBranding => 'ホワイトラベルブランディング';
+
+  @override
+  String get fleetPlansTitle => 'フリートプラン';
+
+  @override
+  String get restoreButton => '復元';
+
+  @override
+  String get currentPlanLabel => '現在のプラン';
+
+  @override
+  String get freeTierLabel => '無料ティア';
+
+  @override
+  String expiresColonDateLabel(String date) {
+    return '有効期限: $date';
+  }
+
+  @override
+  String get upgradeButton => 'アップグレード';
+
+  @override
+  String get manageButton => '管理';
+
+  @override
+  String get mostPopularLabel => '人気No.1';
+
+  @override
+  String get perMonthSlashLabel => '/月';
+
+  @override
+  String get currentPlanButton => '現在のプラン';
+
+  @override
+  String get selectThisPlanButton => 'このプランを選択';
+
+  @override
+  String get goPremiumTitle => 'プレミアムへ';
+
+  @override
+  String get fullArUnlimitedAiTripsMessage => 'フルAR体験と無制限のAI旅行プラン';
+
+  @override
+  String get heritageArModeTitle => '遺産ARモード';
+
+  @override
+  String get heritageArModeDescription => '歴史音声ガイド付きで、古代遺跡を実物大で再現して見ることができます。';
+
+  @override
+  String get oracleAiTripIntelligenceTitle => 'オラクルAI旅行インテリジェンス';
+
+  @override
+  String get oracleAiTripIntelligenceDescription =>
+      'オラクルエンジンによる、無制限の超パーソナライズ旅程。';
+
+  @override
+  String get offlineDigitalTwinsTitle => 'オフラインデジタルツイン';
+
+  @override
+  String get offlineDigitalTwinsDescription =>
+      '電波の弱いエリア向けに、高解像度の地図と100以上のスポット情報をダウンロード。';
+
+  @override
+  String get exclusiveCuratorDealsTitle => '限定キュレーター特典';
+
+  @override
+  String get exclusiveCuratorDealsDescription =>
+      '厳選されたブティック宿泊施設での会員限定割引を利用できます。';
+
+  @override
+  String get guardianEmergencyTranslatorTitle => 'ガーディアン緊急翻訳';
+
+  @override
+  String get guardianEmergencyTranslatorDescription =>
+      'SOS発信時、スリランカの警察や病院スタッフに、話し言葉のシンハラ語で瞬時に状況を説明します。';
+
+  @override
+  String premiumActiveLabel(String plan) {
+    return '$plan 有効';
+  }
+
+  @override
+  String get premiumFallback => 'プレミアム';
+
+  @override
+  String renewingOnLabel(String date) {
+    return '$date に更新';
+  }
+
+  @override
+  String viaSourceLabel(String source) {
+    return '経由: $source';
+  }
+
+  @override
+  String get storeFallback => 'ストア';
+
+  @override
+  String get resetPremiumDevButton => 'プレミアムをリセット（開発用）';
+
+  @override
+  String get premiumResetMessage => 'プレミアムをリセットしました。料金プランが再表示されます。';
+
+  @override
+  String get smartTravelerTitle => 'スマートトラベラー';
+
+  @override
+  String get billedMonthlyLabel => '月払い';
+
+  @override
+  String get featureAiItineraries20 => 'AI旅程 20回/月';
+
+  @override
+  String get featureSelectedArPlaces => '選択されたARスポット';
+
+  @override
+  String get featureOfflineMapsBasic => 'オフラインマップ（ベーシック）';
+
+  @override
+  String get heritagePremiumTitle => 'ヘリテージプレミアム';
+
+  @override
+  String get billedYearlySaveLabel => '年払い ・ 約17%お得';
+
+  @override
+  String get featureUnlimitedAiItineraries => '無制限のAI旅程';
+
+  @override
+  String get featureFullHeritageArAccess => '遺産ARへのフルアクセス';
+
+  @override
+  String get featureAllOfflineFeatures => 'すべてのオフライン機能';
+
+  @override
+  String get ultraExplorerTitle => 'ウルトラエクスプローラー';
+
+  @override
+  String get waitlistLabel => 'ウェイトリスト';
+
+  @override
+  String get nextGenExperienceLabel => '次世代の体験';
+
+  @override
+  String get featureVrModeSupport => 'VRモード対応';
+
+  @override
+  String get featureHistoricalTimelines => '歴史タイムライン';
+
+  @override
+  String get featurePersonalAiCurator => 'パーソナルAIキュレーター';
+
+  @override
+  String get ultraExplorerWaitlistMessage =>
+      '🚀 ウルトラエクスプローラーはウェイトリスト受付中です！公開時にお知らせします。';
+
+  @override
+  String get restorePreviousPurchasesButton => '以前の購入を復元';
+
+  @override
+  String get termsPrivacyLabel => '利用規約  •  プライバシーポリシー';
+
+  @override
+  String get testBuyDevButton => 'テスト購入（開発用）';
+
+  @override
+  String get mockPurchaseSimulatedMessage => '🚀 模擬購入をシミュレートしました。更新しています...';
+
+  @override
+  String get monthlyLabel => '月払い';
+
+  @override
+  String get yearlySaveLabel => '年払い ・ 17%お得';
+
+  @override
+  String get lockedLabelShort => 'ロック中';
+
+  @override
+  String get perMonthLabel => '/ 月';
+
+  @override
+  String get comingSoonButton => '近日公開';
+
+  @override
+  String get upgradeNowLongButton => '今すぐアップグレード';
+
+  @override
+  String trialDaysLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count日間',
+      one: '1日間',
+    );
+    return '$_temp0の無料トライアル';
+  }
+
+  @override
+  String trialWeeksLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count週間',
+      one: '1週間',
+    );
+    return '$_temp0の無料トライアル';
+  }
+
+  @override
+  String trialMonthsLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countか月間',
+      one: '1か月間',
+    );
+    return '$_temp0の無料トライアル';
+  }
+
+  @override
+  String trialYearsLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count年間',
+      one: '1年間',
+    );
+    return '$_temp0の無料トライアル';
+  }
+
+  @override
+  String trialPeriodLabel(int count) {
+    return '$count 期間分の無料トライアル';
+  }
+
+  @override
+  String oracleLostFocusMessage(String error) {
+    return 'オラクルのフォーカスが外れました: $error';
+  }
+
+  @override
+  String get savorLankaAiTitle => 'サヴォールランカAI';
+
+  @override
+  String get culinaryVisionEngineLabel => 'カリナリービジョンエンジン V2';
+
+  @override
+  String get liveRealTimeScannerLabel => 'リアルタイムライブスキャナー';
+
+  @override
+  String nutritionReliabilityLabel(String reliability) {
+    return '栄養信頼度: $reliability';
+  }
+
+  @override
+  String get neuralReasoningLabel => 'ニューラル推論';
+
+  @override
+  String aiVisualMarkersFallback(String label) {
+    return 'AIは$labelと一致する視覚的な料理の特徴を識別しました。';
+  }
+
+  @override
+  String get authenticityIntelligenceTitle => 'オーセンティシティ・インテリジェンス';
+
+  @override
+  String get ingredientCertaintyTitle => '食材確度';
+
+  @override
+  String get manualCulinaryOverrideTitle => '手動料理オーバーライド';
+
+  @override
+  String get refineIngredientsHint => '食材を調整（カンマ区切り）...';
+
+  @override
+  String get cancelButtonUppercaseAlt => 'キャンセル';
+
+  @override
+  String get applyOverrideButton => 'オーバーライドを適用';
+
+  @override
+  String get ingredientTierConfirmed => '確認済み';
+
+  @override
+  String get ingredientTierLikely => '可能性あり';
+
+  @override
+  String get ingredientTierOptional => '任意 / 付け合わせ';
+
+  @override
+  String mealContextLabel(String context) {
+    return '食事シーン: $context';
+  }
+
+  @override
+  String get supportingElementsLabel => '副材料:';
+
+  @override
+  String influencesLabel(String influences) {
+    return '影響: $influences';
+  }
+
+  @override
+  String get visualFreshnessQualityLabel => '見た目の鮮度と品質';
+
+  @override
+  String qualityColonLabel(String quality) {
+    return '品質: $quality';
+  }
+
+  @override
+  String textureColonLabel(String texture) {
+    return '食感: $texture';
+  }
+
+  @override
+  String get heritageNarrativeEngineTitle => 'ヘリテージ・ナラティブ・エンジン';
+
+  @override
+  String get verifiedLegacyTitle => '検証済みの由来';
+
+  @override
+  String get regionalTraditionTitle => '地域の伝統';
+
+  @override
+  String get folkloreNarrativeTitle => '民間伝承の物語';
+
+  @override
+  String get culinaryGapPairingEngineTitle => '料理ギャップ＆ペアリングエンジン';
+
+  @override
+  String get missingCompanionsLabel => '不足している副菜:';
+
+  @override
+  String get engineNotesLabel => 'エンジンノート:';
+
+  @override
+  String get recipeRefactorEngineTitle => 'レシピ再構成エンジン';
+
+  @override
+  String get refactoredStepsForYouLabel => 'あなた向けに再構成された手順:';
+
+  @override
+  String get prepMetricLabel => '下準備';
+
+  @override
+  String get cookMetricLabel => '調理';
+
+  @override
+  String get levelMetricLabel => '難易度';
+
+  @override
+  String get calMetricLabel => 'カロリー';
+
+  @override
+  String get proteinLabel => 'タンパク質';
+
+  @override
+  String get carbsLabel => '炭水化物';
+
+  @override
+  String get fatLabel => '脂質';
+
+  @override
+  String get fiberLabel => '食物繊維';
+
+  @override
+  String get healthRatingLabel => '健康評価';
+
+  @override
+  String healthRatingValueLabel(int rating) {
+    return '$rating/10';
+  }
+
+  @override
+  String get sinhalaLabel => 'シンハラ語';
+
+  @override
+  String get englishLabel => '英語';
+
+  @override
+  String get backLabel => '戻る';
+
+  @override
+  String get nextLabel => '次へ';
+
+  @override
+  String get rescanLabel => '再スキャン';
+
+  @override
+  String get oracleInsightsTitle => 'オラクルインサイト';
+
+  @override
+  String get globalSubstitutionsTitle => '世界の代替食材';
+
+  @override
+  String get aiEstimatedValuesDisclaimer =>
+      'AIによる推定値です。伝統的な作り方により差が生じる場合があります。';
+
+  @override
+  String get savedLabel => '保存済み';
+
+  @override
+  String get saveToCookbookLabel => 'レシピ帳に保存';
+
+  @override
+  String get voiceGuideLabel => '音声ガイド';
+
+  @override
+  String savorLankaShareText(String name, String score) {
+    return 'Hidden Gems SL.aiで見つけたこの$nameのレシピをチェックしてください。本場スリランカの逸品です。 \n\nオラクルスコア: $score%';
+  }
+
+  @override
+  String get savorLankaShareSubject => 'Hidden Gems SL.ai - サヴォールランカのレシピ';
+
+  @override
+  String get phase3CrossMatchTitle => 'フェーズ3: クロスマッチ代替提案';
+
+  @override
+  String get visuallySimilarAlternativesLabel => '見た目が似ている代替品';
+
+  @override
+  String get aiCrossMatchReasoningLabel => 'AIクロスマッチ推論:';
+
+  @override
+  String get phase6HygienePresentationTitle => 'フェーズ6: 衛生と盛り付け';
+
+  @override
+  String get presentationLabel => '盛り付け';
+
+  @override
+  String get integrityLabel => '総合信頼度';
+
+  @override
+  String get popularLabel => '人気';
+
+  @override
+  String get curatorDealsTitle => 'キュレーター特典';
+
+  @override
+  String get noDealsRightNowTitle => '現在お得な情報はありません';
+
+  @override
+  String get newPartnerDiscountsMessage => '新しいパートナー割引は随時追加されます。またチェックしてください。';
+
+  @override
+  String percentOffLabel(int percent) {
+    return '$percent% OFF';
+  }
+
+  @override
+  String validUntilLabel(String date) {
+    return '有効期限: $date';
+  }
+
+  @override
+  String get claimDealButton => '特典を受け取る';
+
+  @override
+  String get passportTitle => 'パスポート';
+
+  @override
+  String get verifiedVisitCollectionSubtitle => 'あなたの認証済み訪問コレクション';
+
+  @override
+  String get passportIsEmptyTitle => 'パスポートは空です';
+
+  @override
+  String get exploreHistoricalGemsMessage =>
+      '史跡の隠れた名所を巡って\nあなただけのデジタルスタンプを手に入れましょう。';
+
+  @override
+  String claimedOnLabel(String date) {
+    return '$date に取得';
+  }
+
+  @override
+  String get verifiableHashLabel => '検証可能なハッシュ';
+
+  @override
+  String get shareCollectibleButton => 'コレクションを共有';
+
+  @override
+  String get stampRarityCommon => 'コモン';
+
+  @override
+  String get stampRarityRare => 'レア';
+
+  @override
+  String get stampRarityMythic => 'ミシック';
+
+  @override
+  String get audioGuideLabel => '音声ガイド';
+
+  @override
+  String get sinhalaShortLabel => 'සිංහල';
+
+  @override
+  String get englishShortLabel => 'English';
+
+  @override
+  String get joinGroupTourTitle => 'グループツアーに参加';
+
+  @override
+  String get enterSixDigitCodeMessage => 'ガイドから提供された6桁のコードを入力してください。';
+
+  @override
+  String get cancelButtonUppercaseThird => 'キャンセル';
+
+  @override
+  String get joinButtonUppercase => '参加';
+
+  @override
+  String get tapFlatSurfaceMessage => '👆 平らな面をタップしてモデルを配置';
+
+  @override
+  String groupTourStartedCodeLabel(String code) {
+    return 'グループツアーが開始されました！コード: $code';
+  }
+
+  @override
+  String get invalidSessionCodeMessage => '無効なセッションコードです';
+
+  @override
+  String get couldNotLoadAudioMessage => '音声ナレーションを読み込めませんでした。';
+
+  @override
+  String get galleryPermissionDeniedMessage => 'ギャラリーへのアクセスが拒否されました';
+
+  @override
+  String failedToCapturePhotoMessage(String error) {
+    return '写真の撮影に失敗しました: $error';
+  }
+
+  @override
+  String codeColonLabel(String code) {
+    return 'コード: $code';
+  }
+
+  @override
+  String get thenLabel => '変更前';
+
+  @override
+  String get nowLabel => '変更後';
+
+  @override
+  String get resetLabel => 'リセット';
+
+  @override
+  String get scalePlusLabel => '拡大+';
+
+  @override
+  String get scaleMinusLabel => '縮小-';
+
+  @override
+  String get memoryLabel => 'メモリー';
+
+  @override
+  String get removeLabel => '削除';
+
+  @override
+  String get placeLabel => '配置';
+
+  @override
+  String get historicalInfoComingSoonMessage => '史跡情報は近日公開予定です。';
+
+  @override
+  String get preparingHeritageAssetsMessage => '文化遺産アセットを準備中...';
+
+  @override
+  String progressSizeLabel(int progress, String size) {
+    return '$progress% • $size MB';
+  }
+
+  @override
+  String modelColonNameLabel(String name) {
+    return 'モデル: $name';
+  }
+
+  @override
+  String authorColonNameLabel(String name) {
+    return '作者: $name';
+  }
+
+  @override
+  String get moveSlowlyToScanMessage => 'スマートフォンをゆっくり動かして\n平らな面をスキャンしてください';
+
+  @override
+  String get tapPlaceToPlaceModelMessage => '👇「配置」をタップしてから平らな面をタップ';
+
+  @override
+  String demoModeSecondsRemainingLabel(int seconds) {
+    return 'デモモード: 残り$seconds秒';
+  }
+
+  @override
+  String get premiumHeritageSessionLabel => 'プレミアム文化遺産セッション';
+
+  @override
+  String get artifactDiscoveredLabel => '遺物を発見しました！';
+
+  @override
+  String ptsRarityLabel(int points, String rarity) {
+    return '+$points PTS • $rarity';
+  }
+
+  @override
+  String get hiddenGemsSlWatermark => 'HIDDEN GEMS SL';
+
+  @override
+  String get heritageArWatermark => 'HERITAGE AR';
+
+  @override
+  String get captureSuccessfulTitle => '撮影に成功しました！';
+
+  @override
+  String get shareDiscoveryMessage => 'あなたの歴史的発見を世界とシェアしよう';
+
+  @override
+  String get instagramLabel => 'Instagram';
+
+  @override
+  String get tiktokLabel => 'TikTok';
+
+  @override
+  String get savedLabelShort => '保存済み';
+
+  @override
+  String sharePlatformCaptionInstagram(String placeName) {
+    return '$placeName をARで探索中 #HiddenGemsSL';
+  }
+
+  @override
+  String get sharePlatformCaptionTiktok => '歴史が蘇る！ #HiddenGemsSL #HeritageAR';
+
+  @override
+  String get photoSavedGalleryMessage => '写真をギャラリーに保存しました！';
+
+  @override
+  String get backToArButton => 'ARに戻る';
+
+  @override
+  String distanceToTargetLabel(String distance, String placeName) {
+    return '$placeName まで ${distance}m';
+  }
+
+  @override
+  String get recommendedLabel => 'おすすめ';
+
+  @override
+  String categoryRatingLabel(String category, String rating) {
+    return '$category • $rating ★';
+  }
+
+  @override
+  String get viewButtonUppercase => '表示';
+
+  @override
+  String get loginToLeaveMemoryMessage => 'ARメモリーを残すにはログインしてください！';
+
+  @override
+  String get leaveArMemoryTitle => 'ARメモリーを残す';
+
+  @override
+  String get whatDoYouSeeHereHint => 'ここで何が見えますか？';
+
+  @override
+  String get cancelButton2 => 'キャンセル';
+
+  @override
+  String get dropButton => 'ドロップ';
+
+  @override
+  String get memoryDroppedMessage => 'メモリーがAR空間にドロップされました！';
+
+  @override
+  String get explorerFallback => '探検者';
+
+  @override
+  String signalPercentLabel(int percent) {
+    return '信号強度: $percent%';
+  }
+
+  @override
+  String get searchingLabel => '検索中...';
+
+  @override
+  String get cameraAccessNeededTitle => 'カメラへのアクセスが必要です';
+
+  @override
+  String get arNotAvailableDeviceTitle => 'このデバイスではARを利用できません';
+
+  @override
+  String get arCouldntLoadTitle => '今回はARを読み込めませんでした';
+
+  @override
+  String get cameraAccessNeededMessage =>
+      'AR機能にはカメラへのアクセスが必要です。代わりにシネマティックな再現映像をご覧ください。';
+
+  @override
+  String get arNotAvailableMessage => '代わりに同じ時代のシネマティックな360°ビューをご覧ください。';
+
+  @override
+  String get arCouldntLoadMessage =>
+      '史跡の3Dモデルを読み込めませんでした。代わりにシネマティックなフォールバックビューをご覧ください。';
+
+  @override
+  String get closeButtonLabel => '閉じる';
+
+  @override
+  String get watchAdToUnlockButton => '広告を見てアンロック';
+
+  @override
+  String get oracleRewardFallbackMessage =>
+      '✨ オラクル報酬が有効です！フォールバックモードとプレミアムコンテンツがアンロックされました。';
+
+  @override
+  String get arNotAvailableInfoBarMessage => 'このデバイスではARを利用できません・360°ビューを表示中';
+
+  @override
+  String get cinematicPreviewUnavailableMessage => 'シネマティックプレビューは利用できません';
+
+  @override
+  String get interactive3dViewTitle => 'インタラクティブ3Dビュー';
+
+  @override
+  String get touchToRotateMonumentMessage => 'タッチしてモニュメントを回転';
+
+  @override
+  String get historicalStoryLabel => '歴史的な物語';
+
+  @override
+  String unveilingEraTitle(String era) {
+    return '$eraの幕開け';
+  }
+
+  @override
+  String heritageStoryBody(String era) {
+    return 'スリランカの文化遺産は、時の織物の奥深くまで根付いています。$eraに遡るこの遺跡は、かつて水利工学と宗教建築の先駆けとなった繁栄した文明の中心地でした。\n\n現在私たちが目にするストゥーパは、1億個を超える日干しレンガを用いて建造され、古代の王たちが成し遂げた工学の驚異を今に伝えています…';
+  }
+
+  @override
+  String get listenToNarrationLabel => 'ナレーションを聴く';
+
+  @override
+  String get sinhalaEnglishAvailableLabel => 'シンハラ語・英語対応';
+
+  @override
+  String get illustrationCaptionLabel => 'イラスト: 古代の工学技術（コンセプトアート）';
+
+  @override
+  String get mode360Label => '360°';
+
+  @override
+  String get mode3dLabel => '3D';
+
+  @override
+  String get modeStoryLabel => 'ストーリー';
+
+  @override
+  String get unlockArHeritageModeTitle => 'AR文化遺産モードをアンロック';
+
+  @override
+  String get arHeritageModeSubtitle => '数千年前のスリランカの姿を体験しよう。';
+
+  @override
+  String get featureAncient3dReconstruction => '古代の3D再現';
+
+  @override
+  String get featureAudioNarrationBilingual => '音声ナレーション (සිංහල / English)';
+
+  @override
+  String get featureArPhotoCapture => 'AR写真撮影とSNSシェア';
+
+  @override
+  String get pricingTrialLabel => '月額 Rs. 299から　・　7日間無料トライアル';
+
+  @override
+  String get watch10SecPreviewButton => '10秒プレビューを見る';
+
+  @override
+  String get watchAdUnlockSessionButton => '広告を見てセッションをアンロック';
+
+  @override
+  String get notNowButtonLabel => '今はしない';
+
+  @override
+  String get ancientArtifactsLabel => '古代の遺物';
 }

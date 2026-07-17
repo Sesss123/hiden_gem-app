@@ -8,6 +8,7 @@ import '../../core/theme/app_theme.dart';
 import '../../data/models/trip_plan_model.dart';
 import '../../data/datasources/trip_cache_service.dart';
 import 'budget_concierge_screen.dart';
+import '../../l10n/app_localizations.dart';
 
 class BudgetTrackerScreen extends StatefulWidget {
   final TripPlan plan;
@@ -65,7 +66,7 @@ class _BudgetTrackerScreenState extends State<BudgetTrackerScreen> {
               ),
               const SizedBox(height: 32),
               Text(
-                "Add expense",
+                AppLocalizations.of(context)!.addExpenseTitle,
                 style: GoogleFonts.outfit(
                   fontSize: 17,
                   fontWeight: FontWeight.w700,
@@ -73,9 +74,9 @@ class _BudgetTrackerScreenState extends State<BudgetTrackerScreen> {
                 ),
               ),
               const SizedBox(height: 32),
-              _buildModernInput("Resource Description", (v) => title = v),
+              _buildModernInput(AppLocalizations.of(context)!.resourceDescriptionLabel, (v) => title = v),
               const SizedBox(height: 20),
-              _buildModernInput("Amount (LKR)", (v) => amount = int.tryParse(v) ?? 0, isNumber: true),
+              _buildModernInput(AppLocalizations.of(context)!.amountLkrLabel, (v) => amount = int.tryParse(v) ?? 0, isNumber: true),
               const SizedBox(height: 20),
               _buildModernDropdown(category, (v) => setModalState(() => category = v!)),
               const SizedBox(height: 48),
@@ -121,7 +122,7 @@ class _BudgetTrackerScreenState extends State<BudgetTrackerScreen> {
                     elevation: 0,
                   ),
                   child: Text(
-                    "Save expense",
+                    AppLocalizations.of(context)!.saveExpenseButton,
                     style: AppTheme.buttonLabelStyle(context),
                   ),
                 ),
@@ -156,6 +157,7 @@ class _BudgetTrackerScreenState extends State<BudgetTrackerScreen> {
   }
 
   Widget _buildModernDropdown(String current, Function(String?) onChanged) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
       decoration: BoxDecoration(
@@ -168,18 +170,27 @@ class _BudgetTrackerScreenState extends State<BudgetTrackerScreen> {
         dropdownColor: AppTheme.colors.white,
         style: GoogleFonts.inter(color: AppTheme.textPrimary(context), fontSize: 14, fontWeight: FontWeight.w600),
         decoration: InputDecoration(
-          labelText: "Category",
+          labelText: l10n.categoryLabel,
           labelStyle: GoogleFonts.inter(color: AppTheme.textSecondary(context).withValues(alpha: 0.6), fontSize: 12),
           border: InputBorder.none,
           floatingLabelStyle: TextStyle(color: Theme.of(context).colorScheme.primary),
         ),
         items: ["food", "transport", "tickets", "misc"].map((c) => DropdownMenuItem(
           value: c,
-          child: Text(c.toUpperCase(), style: TextStyle(fontSize: 12, color: AppTheme.textPrimary(context))),
+          child: Text(_expenseCategoryLabel(c, l10n).toUpperCase(), style: TextStyle(fontSize: 12, color: AppTheme.textPrimary(context))),
         )).toList(),
         onChanged: onChanged,
       ),
     );
+  }
+
+  String _expenseCategoryLabel(String category, AppLocalizations l10n) {
+    switch (category) {
+      case 'food': return l10n.expenseCategoryFood;
+      case 'transport': return l10n.expenseCategoryTransport;
+      case 'tickets': return l10n.expenseCategoryTickets;
+      default: return l10n.expenseCategoryMisc;
+    }
   }
 
   @override
@@ -197,7 +208,7 @@ class _BudgetTrackerScreenState extends State<BudgetTrackerScreen> {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          "Budget",
+          AppLocalizations.of(context)!.budgetTitle,
           style: GoogleFonts.outfit(
             fontSize: 20,
             fontWeight: FontWeight.w800,
@@ -270,9 +281,9 @@ class _BudgetTrackerScreenState extends State<BudgetTrackerScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Expanded(child: _statItem("Plan limit", _currencyFormat.format(_budget), AppTheme.colors.white)),
+                      Expanded(child: _statItem(AppLocalizations.of(context)!.planLimitLabel, _currencyFormat.format(_budget), AppTheme.colors.white)),
                       const SizedBox(width: 16),
-                      Expanded(child: _statItem("Spent", _currencyFormat.format(_totalSpent), AppTheme.colors.white)),
+                      Expanded(child: _statItem(AppLocalizations.of(context)!.spentLabel, _currencyFormat.format(_totalSpent), AppTheme.colors.white)),
                     ],
                   ),
                 ],
@@ -284,7 +295,7 @@ class _BudgetTrackerScreenState extends State<BudgetTrackerScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  "Expense ledger",
+                  AppLocalizations.of(context)!.expenseLedgerTitle,
                   style: GoogleFonts.outfit(
                     fontSize: 15,
                     fontWeight: FontWeight.w700,
@@ -292,7 +303,7 @@ class _BudgetTrackerScreenState extends State<BudgetTrackerScreen> {
                   ),
                 ),
                 Text(
-                  "${widget.plan.realizedExpenses.length} entries",
+                  AppLocalizations.of(context)!.entriesCountLabel(widget.plan.realizedExpenses.length),
                   style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 11, fontWeight: FontWeight.w600)
                 ),
               ],
@@ -333,14 +344,14 @@ class _BudgetTrackerScreenState extends State<BudgetTrackerScreen> {
           Icon(Icons.receipt_long_outlined, size: 40, color: AppTheme.textSecondary(context).withValues(alpha: 0.4)),
           const SizedBox(height: 20),
           Text(
-            "No entries yet",
+            AppLocalizations.of(context)!.noEntriesYetMessage,
             style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 13, fontWeight: FontWeight.w600)
           ),
           const SizedBox(height: 20),
           TextButton(
             onPressed: _addExpense,
             child: Text(
-              "Add first entry",
+              AppLocalizations.of(context)!.addFirstEntryButton,
               style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w700, color: Theme.of(context).colorScheme.primary),
             )
           ),
