@@ -183,4 +183,19 @@ class GuideListing {
     createdAt: DateTime.parse(json['createdAt']),
     updatedAt: DateTime.parse(json['updatedAt']),
   );
+
+  /// Reads a tour-type boolean by its field key (e.g. 'doesBoatSafari').
+  /// Single place that maps TourType.fieldKey -> the actual field, so
+  /// screens/repositories don't each hand-roll their own switch statement
+  /// that has to be kept in sync with the 5 boolean fields above.
+  bool hasTourType(String fieldKey) {
+    switch (fieldKey) {
+      case 'doesBoatSafari': return doesBoatSafari;
+      case 'doesWildlifeSafari': return doesWildlifeSafari;
+      case 'doesHiking': return doesHiking;
+      case 'doesDiving': return doesDiving;
+      case 'doesCulturalTours': return doesCulturalTours;
+      default: return false;
+    }
+  }
 }

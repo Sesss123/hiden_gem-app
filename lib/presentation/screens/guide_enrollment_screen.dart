@@ -76,16 +76,9 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
       });
       final currentProfile = UserPreferenceService.getProfile();
       bool changed = false;
-      if (app.status == GuideStatus.approved && currentProfile.guideStatus != GuideStatus.approved) {
-        currentProfile.guideStatus = GuideStatus.approved;
-        currentProfile.role = 'guide_approved';
-        currentProfile.isGuideApproved = true;
-        changed = true;
-      } else if (app.status == GuideStatus.rejected && currentProfile.guideStatus != GuideStatus.rejected) {
-        currentProfile.guideStatus = GuideStatus.rejected;
-        changed = true;
-      } else if (app.status == GuideStatus.pending && currentProfile.guideStatus != GuideStatus.pending) {
-        currentProfile.guideStatus = GuideStatus.pending;
+      if (app.status != currentProfile.guideStatus &&
+          (app.status == GuideStatus.approved || app.status == GuideStatus.rejected || app.status == GuideStatus.pending)) {
+        currentProfile.applyGuideStatus(app.status);
         changed = true;
       }
       if (changed) {
@@ -276,8 +269,7 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
       guardian.secureLog("Transitioned state to $obfuscatedStatus");
 
       final profile = UserPreferenceService.getProfile();
-      profile.role = 'guide_pending';
-      profile.guideStatus = GuideStatus.pending;
+      profile.applyGuideStatus(GuideStatus.pending);
       await UserPreferenceService.saveProfile(profile);
 
       _showNotification(l10n.applicationSubmittedSuccessMessage);

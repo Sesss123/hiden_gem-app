@@ -89,12 +89,9 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
         _languagesController.text = listing.languages.join(', ');
         _specializationsController.text = listing.specializations.join(', ');
         _regionsController.text = listing.regions.join(', ');
-        _selectedTourTypes.clear();
-        if (listing.doesBoatSafari) _selectedTourTypes.add('doesBoatSafari');
-        if (listing.doesWildlifeSafari) _selectedTourTypes.add('doesWildlifeSafari');
-        if (listing.doesHiking) _selectedTourTypes.add('doesHiking');
-        if (listing.doesDiving) _selectedTourTypes.add('doesDiving');
-        if (listing.doesCulturalTours) _selectedTourTypes.add('doesCulturalTours');
+        _selectedTourTypes
+          ..clear()
+          ..addAll(kTourTypes.map((t) => t.fieldKey).where(listing.hasTourType));
       } else if (mounted) {
         // Set defaults from auth user if available
         final user = FirebaseAuth.instance.currentUser;

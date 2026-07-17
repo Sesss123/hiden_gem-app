@@ -127,6 +127,7 @@ Route::prefix('v1')->group(function () {
     // Booking Routes (Protected by Sanctum Auth, API Key & Rate Limiting)
     Route::prefix('bookings')->middleware(['auth:sanctum', VerifyApiKey::class, 'zenith', 'throttle:30,1'])->group(function () {
         Route::get('/quota-check', [BookingController::class, 'quotaCheck']);
+        Route::get('/priority-check', [BookingController::class, 'priorityCheck']);
         Route::post('/{bookingId}/notify-guide', [BookingController::class, 'notifyGuide']);
     });
 

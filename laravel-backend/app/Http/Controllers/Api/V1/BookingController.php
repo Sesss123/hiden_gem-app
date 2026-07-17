@@ -51,6 +51,43 @@ class BookingController extends Controller
     }
 
     /**
+     * GET /v1/bookings/priority-check?guideId=...
+     *
+     * Returns whether the given guide's active subscription grants the
+     * 'priorityLeads' capability. Runs server-side because firestore.rules
+     * only allows a subscriptions/{subId} doc to be read by its own
+     * accountId — a tourist submitting a booking can never read the guide's
+     * subscription directly to compute this client-side. Mirrors
+     * SubscriptionService._planCapabilities (Flutter).
+     */
+    public function priorityCheck(Request $request, FirestoreService $firestore)
+    {
+        $guideId = $request->query('guideId');
+        if (!$guideId) {
+            return response()->json(['error' => 'guideId is required'], 422);
+        }
+
+        $planCapabilities = [
+            'pro' => ['priorityLeads'],
+            'elite' => ['priorityLeads'],
+        ];
+
+        try {
+            $sub = $firestore->findSubscriptionByAccountId($guideId);
+            $planId = ($sub && ($sub['status'] ?? null) === 'active') ? ($sub['planId'] ?? 'free') : 'free';
+            $isPriority = in_array('priorityLeads', $planCapabilities[$planId] ?? [], true);
+
+            return response()->json(['isPriority' => $isPriority]);
+        } catch (\Exception $e) {
+            Log::error('Booking priority-check failed', ['guide_id' => $guideId, 'error' => $e->getMessage()]);
+            // Fail closed — a booking should never be blocked by this check,
+            // and understating priority is safe (worst case: a priority lead
+            // isn't highlighted), unlike overstating it.
+            return response()->json(['isPriority' => false]);
+        }
+    }
+
+    /**
      * POST /v1/bookings/{bookingId}/notify-guide
      *
      * Increments the guide's guide_listings.bookingRequestsCount after a

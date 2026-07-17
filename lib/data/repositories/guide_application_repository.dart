@@ -167,26 +167,30 @@ class GuideApplicationRepository {
       SecureLogger.error("Failed to review application on Laravel Backend: $e");
     }
 
-    // 2. Update Firestore as well
+    // 2. Update Firestore as well. Unlike the Laravel call above (best-effort
+    // logged-only), failures here are NOT swallowed — they propagate to the
+    // caller so admin_guide_verification_detail_screen.dart's error handling
+    // can actually fire instead of showing a false "approved"/"rejected"
+    // success message while the applicant's records are unchanged.
     await _firestore.collection('guide_applications').doc(userId).update({
       'status': status.name,
       'adminComment': adminComment,
       'reviewedAt': DateTime.now().toIso8601String(),
-    }).catchError((_) {});
+    });
 
     if (status == GuideStatus.approved) {
       await _firestore.collection('users').doc(userId).update({
         'role': 'guide_approved',
         'guideStatus': GuideStatus.approved.name,
         'isGuideApproved': true,
-      }).catchError((_) {});
+      });
     } else if (status == GuideStatus.rejected) {
       await _firestore.collection('users').doc(userId).update({
         'role': 'user',
         'guideStatus': GuideStatus.rejected.name,
         'isGuideApproved': false,
         'guideRejectionReason': adminComment ?? "Documents incomplete or unclear. Please reapply.",
-      }).catchError((_) {});
+      });
     }
   }
 }

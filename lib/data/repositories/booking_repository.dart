@@ -6,7 +6,6 @@ import '../models/booking_request.dart';
 import '../../core/utils/secure_logger.dart';
 import '../../core/config/app_config.dart';
 import '../../core/network/secure_http_client.dart';
-import '../services/subscription_service.dart';
 
 final bookingRepositoryProvider = Provider((ref) => BookingRepository());
 
@@ -41,19 +40,15 @@ class BookingRepository {
     // Priority Leads: a Pro/Elite guide's incoming bookings are flagged so
     // their own inbox can surface them first — see SubscriptionService.
     //
-    // This check reads the GUIDE's own subscriptions doc, but submitRequest()
-    // is called by the TOURIST — firestore.rules only allows an account to
-    // read its own subscription (accountId == request.auth.uid), so this
-    // query is always denied for the tourist's client. Never let that abort
-    // the booking itself; the priority flag is a nice-to-have, not a
-    // precondition for the booking existing.
+    // This can't be checked via the GUIDE's own subscriptions doc from the
+    // TOURIST's client — firestore.rules only allows an account to read its
+    // own subscription (accountId == request.auth.uid) — so it's resolved
+    // server-side via Laravel, which has elevated Firestore access. Never
+    // let a failure here abort the booking itself; the priority flag is a
+    // nice-to-have, not a precondition for the booking existing.
     bool isPriority = false;
     if (request.guideId != null) {
-      try {
-        isPriority = await SubscriptionService().hasEntitlement(request.guideId!, 'priorityLeads');
-      } catch (e) {
-        SecureLogger.warning("Priority-lead check failed (expected for tourist callers): $e", tag: "Booking");
-      }
+      isPriority = await _checkPriorityLeads(request.guideId!);
     }
 
     final newRequest = BookingRequest(
@@ -97,6 +92,28 @@ class BookingRepository {
     }
 
     return doc.id;
+  }
+
+  Future<bool> _checkPriorityLeads(String guideId) async {
+    try {
+      final client = SecureHttpClient(http.Client());
+      final uri = Uri.parse('${AppConfig.laravelUrl}/bookings/priority-check?guideId=$guideId');
+      final response = await client.get(
+        uri,
+        headers: {
+          'Accept': 'application/json',
+          'X-API-KEY': AppConfig.hiddenGemsApiKey,
+        },
+      ).timeout(const Duration(seconds: 8));
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body) as Map<String, dynamic>;
+        return data['isPriority'] == true;
+      }
+    } catch (e) {
+      SecureLogger.warning("Priority-lead check failed: $e", tag: "Booking");
+    }
+    return false;
   }
 
   Future<void> _notifyBackendOfNewBooking(String bookingId, String guideId) async {
@@ -220,9 +237,14 @@ class BookingRepository {
     final now = DateTime.now();
     final startOfMonth = DateTime(now.year, now.month, 1);
 
+    // createdAt is stored as an ISO8601 string (BookingRequest.toJson()),
+    // not a Firestore Timestamp — a DateTime range filter here would never
+    // match, since Firestore inequality filters require matching types.
+    // ISO8601 strings sort correctly lexicographically, so a string bound
+    // works the same as a Timestamp bound would.
     final query = await _bookingRef
         .where('guideId', isEqualTo: guideId)
-        .where('createdAt', isGreaterThanOrEqualTo: startOfMonth)
+        .where('createdAt', isGreaterThanOrEqualTo: startOfMonth.toIso8601String())
         .count()
         .get();
 

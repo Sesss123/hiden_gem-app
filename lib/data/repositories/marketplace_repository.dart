@@ -8,6 +8,7 @@ import 'package:image_picker/image_picker.dart';
 import '../models/guide_listing.dart';
 import '../models/guide_availability.dart';
 import '../../core/config/app_config.dart';
+import '../../core/constants/tour_types.dart';
 import '../../core/network/secure_http_client.dart';
 import '../../core/services/reverb_channel_service.dart';
 import '../../core/utils/secure_logger.dart';
@@ -127,14 +128,9 @@ class MarketplaceRepository {
   // Fixed tour-type boolean field names — mirrors kTourTypes in
   // lib/core/constants/tour_types.dart. Validated against this set before
   // being used as a dynamic Firestore field name so `tourType` can never
-  // reach _buildSearchQuery with an arbitrary/unindexed field.
-  static const Set<String> _validTourTypeFields = {
-    'doesBoatSafari',
-    'doesWildlifeSafari',
-    'doesHiking',
-    'doesDiving',
-    'doesCulturalTours',
-  };
+  // reach _buildSearchQuery with an arbitrary/unindexed field. Derived from
+  // kTourTypes (tour_types.dart) — the single source of truth for the
+  // fixed tour-type taxonomy — rather than a hand-copied literal Set.
 
   /// First page of a marketplace search. Returns a [MarketplacePage].
   Future<MarketplacePage> searchMarketplace({
@@ -156,7 +152,7 @@ class MarketplaceRepository {
         .limit(_pageSize)
         .get(const GetOptions(source: Source.serverAndCache));
 
-    return MarketplacePage._fromSnapshot(snapshot);
+    return MarketplacePage._fromSnapshot(snapshot, _pageSize);
   }
 
   /// Loads the next page of results using a cursor from the previous page.
@@ -181,7 +177,7 @@ class MarketplaceRepository {
         .limit(_pageSize)
         .get(const GetOptions(source: Source.serverAndCache));
 
-    return MarketplacePage._fromSnapshot(snapshot);
+    return MarketplacePage._fromSnapshot(snapshot, _pageSize);
   }
 
   Query _buildSearchQuery({
@@ -205,7 +201,7 @@ class MarketplaceRepository {
     if (vehicleRequired == true) {
       query = query.where('vehicleAvailable', isEqualTo: true);
     }
-    if (tourType != null && _validTourTypeFields.contains(tourType)) {
+    if (tourType != null && kTourTypeFieldKeys.contains(tourType)) {
       query = query.where(tourType, isEqualTo: true);
     }
 
@@ -327,14 +323,14 @@ class MarketplacePage {
     this.lastDocument,
   });
 
-  factory MarketplacePage._fromSnapshot(QuerySnapshot snapshot) {
+  factory MarketplacePage._fromSnapshot(QuerySnapshot snapshot, int pageSize) {
     final listings = snapshot.docs
         .map((doc) => GuideListing.fromJson(doc.data() as Map<String, dynamic>))
         .toList();
 
     return MarketplacePage(
       listings: listings,
-      hasMore: listings.length >= 20,
+      hasMore: listings.length >= pageSize,
       lastDocument: snapshot.docs.isNotEmpty ? snapshot.docs.last : null,
     );
   }

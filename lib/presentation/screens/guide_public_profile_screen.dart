@@ -22,18 +22,26 @@ class GuidePublicProfileScreen extends ConsumerStatefulWidget {
 
 class _GuidePublicProfileScreenState extends ConsumerState<GuidePublicProfileScreen> {
   bool _viewTracked = false;
+  late Future<GuideListing?> _listingFuture;
+  late Future<List<Map<String, dynamic>>> _packageFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    final marketplaceRepo = ref.read(marketplaceRepositoryProvider);
+    _listingFuture = marketplaceRepo.getListing(widget.guideId);
+    _packageFuture = marketplaceRepo.getGuidePackages(widget.guideId);
+  }
 
   @override
   Widget build(BuildContext context) {
-    final marketplaceRepo = ref.watch(marketplaceRepositoryProvider);
-    final listingFuture = marketplaceRepo.getListing(widget.guideId);
-    final packageFuture = marketplaceRepo.getGuidePackages(widget.guideId);
+    final marketplaceRepo = ref.read(marketplaceRepositoryProvider);
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: OracleUI.auraBackground(
         child: FutureBuilder<GuideListing?>(
-          future: listingFuture,
+          future: _listingFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return Center(child: CircularProgressIndicator(color: Theme.of(context).colorScheme.primary));
@@ -50,7 +58,7 @@ class _GuidePublicProfileScreenState extends ConsumerState<GuidePublicProfileScr
 
             return Stack(
               children: [
-                _buildScrollableContent(context, guide, packageFuture),
+                _buildScrollableContent(context, guide, _packageFuture),
                 _buildActionButtons(context, guide),
                 _buildAppBar(context),
               ],
@@ -315,18 +323,7 @@ class _GuidePublicProfileScreenState extends ConsumerState<GuidePublicProfileScr
   }
 
   List<TourType> _activeTourTypes(GuideListing guide) {
-    return kTourTypes.where((t) => _tourTypeFlag(guide, t.fieldKey)).toList();
-  }
-
-  bool _tourTypeFlag(GuideListing guide, String fieldKey) {
-    switch (fieldKey) {
-      case 'doesBoatSafari': return guide.doesBoatSafari;
-      case 'doesWildlifeSafari': return guide.doesWildlifeSafari;
-      case 'doesHiking': return guide.doesHiking;
-      case 'doesDiving': return guide.doesDiving;
-      case 'doesCulturalTours': return guide.doesCulturalTours;
-      default: return false;
-    }
+    return kTourTypes.where((t) => guide.hasTourType(t.fieldKey)).toList();
   }
 
   Widget _buildTourTypesSection(BuildContext context, GuideListing guide) {

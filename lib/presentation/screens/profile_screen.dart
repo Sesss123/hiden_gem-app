@@ -110,16 +110,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
       final app = await GuideApplicationRepository().getMyApplication().catchError((_) => null);
       if (app != null && mounted) {
         bool changed = false;
-        if (app.status == GuideStatus.approved && profile.guideStatus != GuideStatus.approved) {
-          profile.guideStatus = GuideStatus.approved;
-          profile.role = 'guide_approved';
-          profile.isGuideApproved = true;
-          changed = true;
-        } else if (app.status == GuideStatus.rejected && profile.guideStatus != GuideStatus.rejected) {
-          profile.guideStatus = GuideStatus.rejected;
-          changed = true;
-        } else if (app.status == GuideStatus.pending && profile.guideStatus != GuideStatus.pending) {
-          profile.guideStatus = GuideStatus.pending;
+        if (app.status != profile.guideStatus &&
+            (app.status == GuideStatus.approved || app.status == GuideStatus.rejected || app.status == GuideStatus.pending)) {
+          profile.applyGuideStatus(app.status);
           changed = true;
         }
         if (changed) {
@@ -200,12 +193,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
 
       bool changed = false;
       if (app.status == GuideStatus.approved && profile.guideStatus != GuideStatus.approved) {
-        profile.guideStatus = GuideStatus.approved;
-        profile.role = 'guide_approved';
-        profile.isGuideApproved = true;
+        profile.applyGuideStatus(GuideStatus.approved);
         changed = true;
       } else if (app.status == GuideStatus.rejected && profile.guideStatus != GuideStatus.rejected) {
-        profile.guideStatus = GuideStatus.rejected;
+        profile.applyGuideStatus(GuideStatus.rejected);
         changed = true;
         // Stop polling once a terminal state is reached.
         _pendingGuideStatusPoll?.cancel();

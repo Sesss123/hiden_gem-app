@@ -196,6 +196,54 @@ class _MarketplaceResultsScreenState extends ConsumerState<MarketplaceResultsScr
                       );
                     }).toList(),
                   ),
+                  const SizedBox(height: 20),
+                  Text(l10n.filterRegionLabel, style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.w700, color: AppTheme.textPrimary(sheetContext))),
+                  const SizedBox(height: 12),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: kSriLankaRegions.map((region) {
+                      final isSelected = sheetRegion == region;
+                      return GestureDetector(
+                        onTap: () => setSheetState(() => sheetRegion = isSelected ? null : region),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                          decoration: BoxDecoration(
+                            color: isSelected ? Theme.of(sheetContext).colorScheme.primary : AppTheme.surfaceMuted(sheetContext),
+                            borderRadius: BorderRadius.circular(100),
+                          ),
+                          child: Text(
+                            region,
+                            style: GoogleFonts.inter(color: isSelected ? AppTheme.colors.white : AppTheme.textSecondary(sheetContext), fontWeight: FontWeight.w600, fontSize: 13),
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                  const SizedBox(height: 20),
+                  Text(l10n.filterLanguageLabel, style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.w700, color: AppTheme.textPrimary(sheetContext))),
+                  const SizedBox(height: 12),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: kSpokenLanguages.map((language) {
+                      final isSelected = sheetLanguage == language;
+                      return GestureDetector(
+                        onTap: () => setSheetState(() => sheetLanguage = isSelected ? null : language),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                          decoration: BoxDecoration(
+                            color: isSelected ? Theme.of(sheetContext).colorScheme.primary : AppTheme.surfaceMuted(sheetContext),
+                            borderRadius: BorderRadius.circular(100),
+                          ),
+                          child: Text(
+                            language,
+                            style: GoogleFonts.inter(color: isSelected ? AppTheme.colors.white : AppTheme.textSecondary(sheetContext), fontWeight: FontWeight.w600, fontSize: 13),
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
                   const SizedBox(height: 24),
                   Row(
                     children: [
@@ -658,7 +706,7 @@ class _MarketplaceResultsScreenState extends ConsumerState<MarketplaceResultsScr
   }
 
   Widget _buildTourTypeBadgeRow(BuildContext context, GuideListing listing) {
-    final active = kTourTypes.where((t) => _tourTypeFlag(listing, t.fieldKey)).toList();
+    final active = kTourTypes.where((t) => listing.hasTourType(t.fieldKey)).toList();
     if (active.isEmpty) return const SizedBox.shrink();
     return Padding(
       padding: const EdgeInsets.only(top: 6),
@@ -674,16 +722,5 @@ class _MarketplaceResultsScreenState extends ConsumerState<MarketplaceResultsScr
             .toList(),
       ),
     );
-  }
-
-  bool _tourTypeFlag(GuideListing listing, String fieldKey) {
-    switch (fieldKey) {
-      case 'doesBoatSafari': return listing.doesBoatSafari;
-      case 'doesWildlifeSafari': return listing.doesWildlifeSafari;
-      case 'doesHiking': return listing.doesHiking;
-      case 'doesDiving': return listing.doesDiving;
-      case 'doesCulturalTours': return listing.doesCulturalTours;
-      default: return false;
-    }
   }
 }

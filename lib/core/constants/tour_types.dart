@@ -17,6 +17,11 @@ const List<TourType> kTourTypes = [
   TourType(fieldKey: 'doesCulturalTours', icon: Icons.temple_buddhist_rounded, label: _culturalTours),
 ];
 
+/// Derived from kTourTypes so callers that need to validate a fieldKey
+/// (e.g. before using it as a dynamic Firestore field name) have one
+/// source of truth instead of hand-copying the 5 field names again.
+final Set<String> kTourTypeFieldKeys = kTourTypes.map((t) => t.fieldKey).toSet();
+
 String _boatSafari(AppLocalizations l10n) => l10n.tourTypeBoatSafari;
 String _wildlifeSafari(AppLocalizations l10n) => l10n.tourTypeWildlifeSafari;
 String _hiking(AppLocalizations l10n) => l10n.tourTypeHiking;
@@ -33,4 +38,31 @@ const List<String> kGuideCategories = [
   'Wildlife',
   'Heritage',
   'Photography',
+];
+
+/// Sri Lanka's 9 provinces — used for the marketplace region filter.
+/// GuideListing.regions itself stays freeform (a guide can type any
+/// region string in the listing editor), so this is a curated subset for
+/// filtering, not a hard constraint on what a guide can enter.
+const List<String> kSriLankaRegions = [
+  'Western',
+  'Central',
+  'Southern',
+  'Northern',
+  'Eastern',
+  'North Western',
+  'North Central',
+  'Uva',
+  'Sabaragamuwa',
+];
+
+/// Languages surfaced in the marketplace language filter — mirrors the
+/// app's own supportedLocales in main.dart.
+const List<String> kSpokenLanguages = [
+  'English',
+  'Sinhala',
+  'Tamil',
+  'Japanese',
+  'Korean',
+  'Russian',
 ];

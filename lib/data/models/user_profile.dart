@@ -210,4 +210,28 @@ class UserProfile {
   /// comparing role directly for guide checks - role is only authoritative
   /// for admin/banned/premium-tier distinctions.
   bool get isGuideApprovedEffective => guideStatus == GuideStatus.approved;
+
+  /// Applies a guide-status transition, keeping guideStatus/role/
+  /// isGuideApproved in sync in one place instead of each call site
+  /// hand-writing its own subset of the three fields (which is how they
+  /// drift out of sync - see guide_application_repository.dart's
+  /// reviewApplication() for the equivalent server-side sync). Only touches
+  /// role when the transition implies a role change; other role values
+  /// ('admin', 'banned', 'premium_user') are left alone.
+  void applyGuideStatus(GuideStatus status) {
+    guideStatus = status;
+    switch (status) {
+      case GuideStatus.approved:
+        role = 'guide_approved';
+        isGuideApproved = true;
+      case GuideStatus.pending:
+        role = 'guide_pending';
+        isGuideApproved = false;
+      case GuideStatus.rejected:
+      case GuideStatus.suspended:
+      case GuideStatus.none:
+        if (role == 'guide_pending' || role == 'guide_approved') role = 'user';
+        isGuideApproved = false;
+    }
+  }
 }
