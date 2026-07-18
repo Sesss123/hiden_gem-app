@@ -213,8 +213,16 @@ class AppInitState {
 
 // Global initialization future provider to replace the logic passed into HiddenGemsApp
 final appInitializationProvider = FutureProvider<AppInitState>((ref) async {
+  // 35s (not 20s): on a slow/unreliable network, runtime Google Fonts
+  // fetches (several, ~10s each on a timeout) plus the delta-sync's own
+  // internal cap can together approach 20s even though Firebase Auth itself
+  // already succeeded quickly. A timeout here unconditionally reports
+  // firebaseSuccess: false, which routes every user — not just ones with
+  // network trouble — around the onboarding/terms/login gate into offline
+  // home mode. 35s gives real slow-network cases enough headroom while
+  // still bounding worst-case startup.
   final result = await performInitialization().timeout(
-    const Duration(seconds: 20),
+    const Duration(seconds: 35),
     onTimeout: () {
       SecureLogger.warning("Initialization timed out. Proceeding in fallback mode.");
       return InitializationResult(hiveSuccess: true, firebaseSuccess: false);
@@ -397,15 +405,27 @@ Future<InitializationResult> performInitialization() async {
     SecureLogger.warning("Firebase optional init error: $e", tag: "Firebase", isBackground: true);
   }
 
-  // Option A: Zero-Bundle Server-Driven Sync Engine (2.5s Timeout enforced inside service)
+  // Option A: Zero-Bundle Server-Driven Sync Engine. Explicitly capped well
+  // under the outer 20s appInitializationProvider timeout — this is a soft,
+  // non-critical background concern (falls back to existing RAM/SQLite data
+  // on failure), and must never be allowed to run long enough to blow the
+  // outer budget. Previously each retry attempt inside DeltaSyncService
+  // could itself wait up to 15s with backoff between attempts, so 2-3
+  // retries against an unreachable backend could exceed 20s on their own —
+  // which caused the outer timeout to fire and report firebaseSuccess:
+  // false even when Firebase Auth had already initialized successfully,
+  // silently routing every user (not just fresh installs) around the
+  // onboarding/terms/login gate into offline home mode.
   try {
     SecureLogger.storage("Starting Option A Delta Sync & SQLite Hydration...", tag: "DeltaSync", isBackground: true);
     final deltaSync = DeltaSyncService();
-    final bool hasUpdates = await deltaSync.checkForUpdates();
-    if (hasUpdates) {
-      await deltaSync.performDeltaSync();
-    }
-    await deltaSync.hydrateMemoryCache();
+    await () async {
+      final bool hasUpdates = await deltaSync.checkForUpdates();
+      if (hasUpdates) {
+        await deltaSync.performDeltaSync();
+      }
+      await deltaSync.hydrateMemoryCache();
+    }().timeout(const Duration(seconds: 8));
     SecureLogger.storage("Option A Delta Sync & Hydration Complete.", tag: "DeltaSync", isBackground: true);
   } catch (e) {
     SecureLogger.warning("Option A Delta Sync failed (offline/timeout): $e. Proceeding with existing RAM/SQLite data.", tag: "DeltaSync", isBackground: true);
@@ -710,11 +730,26 @@ class _HiddenGemsAppState extends ConsumerState<HiddenGemsApp> with WidgetsBindi
 
         final user = snapshot.data;
         if (user != null) {
+          final currentProfile = UserPreferenceService.getProfile();
+
+          // Firebase Auth's own session can outlive an app uninstall on
+          // Android (it isn't purely scoped to this app's storage), while
+          // our local encrypted profile genuinely is wiped on uninstall.
+          // uid == 'NEW_USER' means _loadFromDisk() found nothing on disk —
+          // i.e. this is a real fresh install. Without this check, a stale
+          // Firebase session would skip onboarding/terms/login entirely and
+          // silently mark terms as agreed on a device the user never saw
+          // them on. Sign the stale session out and fall through to the
+          // normal new-user flow below.
+          if (currentProfile.uid == 'NEW_USER') {
+            FirebaseAuth.instance.signOut();
+            return const OnboardingScreen();
+          }
+
           // User is ALREADY logged in via Firebase / Gmail / Email!
           SecurityOrchestrator().init(user.uid);
-          
+
           // Auto-repair local profile if needed so we don't prompt them again
-          final currentProfile = UserPreferenceService.getProfile();
           if (!currentProfile.hasCompletedOnboarding || !currentProfile.hasAgreedToTerms) {
             UserPreferenceService.updateOnboardingCompletion(true);
             UserPreferenceService.updateTermsAgreement(true);

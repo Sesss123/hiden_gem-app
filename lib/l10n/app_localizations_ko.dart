@@ -3227,6 +3227,12 @@ class AppLocalizationsKo extends AppLocalizations {
   String get transmitReportButton => '신고서 전송';
 
   @override
+  String get incidentReportFieldsRequiredMessage => '제목과 설명을 모두 입력해 주세요.';
+
+  @override
+  String get incidentReportSubmittedMessage => '사건 신고가 접수되었습니다.';
+
+  @override
   String get incidentStatusOpen => '접수';
 
   @override

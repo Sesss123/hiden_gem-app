@@ -226,23 +226,28 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
     showModalBottomSheet(
       context: context,
       backgroundColor: AppTheme.colors.transparent,
+      constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.8),
       builder: (context) => _BottomSheet(
         title: AppLocalizations.of(context)!.selectLanguage.toUpperCase(),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: languages.map((lang) {
-            return ListTile(
-              leading: Text(lang['flag']!, style: const TextStyle(fontSize: 24)),
-              title: Text(
-                lang['name']!,
-                style: GoogleFonts.inter(color: Theme.of(context).colorScheme.onSurface),
-              ),
-              onTap: () {
-                ref.read(localeProvider.notifier).setLocale(Locale(lang['code']!));
-                Navigator.pop(context);
-              },
-            );
-          }).toList(),
+        child: Flexible(
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: languages.map((lang) {
+                return ListTile(
+                  leading: Text(lang['flag']!, style: const TextStyle(fontSize: 24)),
+                  title: Text(
+                    lang['name']!,
+                    style: GoogleFonts.inter(color: Theme.of(context).colorScheme.onSurface),
+                  ),
+                  onTap: () {
+                    ref.read(localeProvider.notifier).setLocale(Locale(lang['code']!));
+                    Navigator.pop(context);
+                  },
+                );
+              }).toList(),
+            ),
+          ),
         ),
       ),
     );
@@ -839,7 +844,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
       isScrollControlled: true,
       backgroundColor: AppTheme.colors.transparent,
       builder: (context) => Container(
-        padding: const EdgeInsets.all(28),
+        constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.88),
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surface,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(36)),
@@ -852,9 +857,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
             ),
           ],
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
+        child: SafeArea(
+          top: false,
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(28),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
             Container(
               width: 40, height: 4,
               decoration: BoxDecoration(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(2)),
@@ -950,7 +959,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
               ),
             ),
             const SizedBox(height: 12),
-          ],
+              ],
+            ),
+          ),
         ),
       ),
     );
@@ -1677,32 +1688,37 @@ class _BottomSheet extends StatelessWidget {
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(28),
         clipBehavior: Clip.antiAlias,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-        children: [
-          // Handle
-          Container(
-            width: 36,
-            height: 4,
-            decoration: BoxDecoration(
-              color: AppTheme.borderColor(context),
-              borderRadius: BorderRadius.circular(2),
+        child: SafeArea(
+          top: false,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Handle
+                Container(
+                  width: 36,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: AppTheme.borderColor(context),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                const SizedBox(height: 18),
+                Text(title,
+                    style: GoogleFonts.outfit(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: AppPalette.rust,
+                        letterSpacing: 1.5)),
+                const SizedBox(height: 20),
+                child,
+              ],
             ),
           ),
-          const SizedBox(height: 18),
-          Text(title,
-              style: GoogleFonts.outfit(
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                  color: AppPalette.rust,
-                  letterSpacing: 1.5)),
-          const SizedBox(height: 20),
-          child,
-        ],
+        ),
       ),
-    )));
+    );
   }
 }
 

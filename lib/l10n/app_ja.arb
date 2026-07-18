@@ -1324,6 +1324,8 @@
   "incidentTitleHint": "インシデントのタイトル",
   "descriptionOfEventHint": "事象の説明",
   "transmitReportButton": "報告を送信",
+  "incidentReportFieldsRequiredMessage": "タイトルと説明の両方を入力してください。",
+  "incidentReportSubmittedMessage": "インシデント報告を送信しました。",
   "incidentStatusOpen": "対応待ち",
   "incidentStatusInvestigating": "調査中",
   "incidentStatusResolved": "解決済み",

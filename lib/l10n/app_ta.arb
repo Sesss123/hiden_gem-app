@@ -1322,6 +1322,8 @@
   "incidentTitleHint": "சம்பவத் தலைப்பு",
   "descriptionOfEventHint": "நிகழ்வின் விளக்கம்",
   "transmitReportButton": "அறிக்கையை அனுப்பு",
+  "incidentReportFieldsRequiredMessage": "தயவுசெய்து தலைப்பு மற்றும் விளக்கம் இரண்டையும் நிரப்பவும்.",
+  "incidentReportSubmittedMessage": "சம்பவ அறிக்கை சமர்ப்பிக்கப்பட்டது.",
   "incidentStatusOpen": "திறந்துள்ளது",
   "incidentStatusInvestigating": "விசாரிக்கப்படுகிறது",
   "incidentStatusResolved": "தீர்க்கப்பட்டது",

@@ -3371,6 +3371,14 @@ class AppLocalizationsTa extends AppLocalizations {
   String get transmitReportButton => 'அறிக்கையை அனுப்பு';
 
   @override
+  String get incidentReportFieldsRequiredMessage =>
+      'தயவுசெய்து தலைப்பு மற்றும் விளக்கம் இரண்டையும் நிரப்பவும்.';
+
+  @override
+  String get incidentReportSubmittedMessage =>
+      'சம்பவ அறிக்கை சமர்ப்பிக்கப்பட்டது.';
+
+  @override
   String get incidentStatusOpen => 'திறந்துள்ளது';
 
   @override

@@ -1320,6 +1320,8 @@
   "incidentTitleHint": "සිද්ධියේ මාතෘකාව",
   "descriptionOfEventHint": "සිදුවීමේ විස්තරය",
   "transmitReportButton": "වාර්තාව යවන්න",
+  "incidentReportFieldsRequiredMessage": "කරුණාකර මාතෘකාව සහ විස්තරය යන දෙකම පුරවන්න.",
+  "incidentReportSubmittedMessage": "සිද්ධි වාර්තාව යවා ඇත.",
   "incidentStatusOpen": "විවෘත",
   "incidentStatusInvestigating": "විමර්ශනය කරමින්",
   "incidentStatusResolved": "විසඳන ලද",

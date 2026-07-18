@@ -47,6 +47,30 @@ class AppConfig {
     }
   }
 
+  // Android has no native "Sign in with Apple" UI — the sign_in_with_apple
+  // package instead opens a web-based OAuth redirect (Custom Tab) through
+  // these two values, both created in Apple Developer Console:
+  //  1. appleServiceId — a "Services ID" (distinct from the app's Bundle ID),
+  //     registered with this app's associated domain.
+  //  2. appleRedirectUri — an endpoint on YOUR OWN backend/web domain that
+  //     Apple redirects back to after sign-in; it must be registered as a
+  //     "Return URL" for the Services ID above, and must relay the auth
+  //     result back to the app (deep link / postMessage) for
+  //     SignInWithApple.getAppleIDCredential to pick up.
+  // REPLACE_WITH_REAL_VALUE placeholders — Apple Sign-In on Android will not
+  // work until both are set via --dart-define, e.g.:
+  //   --dart-define=APPLE_SERVICE_ID=com.hidden.gems.web
+  //   --dart-define=APPLE_REDIRECT_URI=https://hiddengems.lk/callback/apple
+  static const String appleServiceId = String.fromEnvironment(
+    'APPLE_SERVICE_ID',
+    defaultValue: 'REPLACE_WITH_REAL_VALUE.apple.service.id',
+  );
+
+  static const String appleRedirectUri = String.fromEnvironment(
+    'APPLE_REDIRECT_URI',
+    defaultValue: 'REPLACE_WITH_REAL_VALUE/callback/apple',
+  );
+
   static bool isPlaceholder(String value) {
     if (value.isEmpty) return true;
     final lower = value.toLowerCase();

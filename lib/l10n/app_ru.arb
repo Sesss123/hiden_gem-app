@@ -1323,6 +1323,8 @@
   "incidentTitleHint": "Заголовок инцидента",
   "descriptionOfEventHint": "Описание события",
   "transmitReportButton": "Отправить отчёт",
+  "incidentReportFieldsRequiredMessage": "Пожалуйста, заполните и заголовок, и описание.",
+  "incidentReportSubmittedMessage": "Отчёт об инциденте отправлен.",
   "incidentStatusOpen": "Открыт",
   "incidentStatusInvestigating": "Расследуется",
   "incidentStatusResolved": "Решён",

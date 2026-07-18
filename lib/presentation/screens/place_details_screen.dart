@@ -832,7 +832,7 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
               crossAxisCount: 2,
               crossAxisSpacing: 12,
               mainAxisSpacing: 12,
-              childAspectRatio: 1.55,
+              childAspectRatio: 1.15,
             ),
             itemBuilder: (context, i) => _fieldNoteTile(context, compact[i].$1, compact[i].$2, compact[i].$3),
           ),
@@ -880,20 +880,20 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, size: 18, color: Theme.of(context).colorScheme.primary),
-          const SizedBox(width: 12),
+          Icon(icon, size: 20, color: Theme.of(context).colorScheme.primary),
+          const SizedBox(width: 14),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   label.toUpperCase(),
-                  style: GoogleFonts.inter(fontSize: 9, fontWeight: FontWeight.w700, color: AppTheme.textSecondary(context), letterSpacing: 0.3),
+                  style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w700, color: AppTheme.textSecondary(context), letterSpacing: 0.3),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 5),
                 Text(
                   value,
-                  style: GoogleFonts.outfit(fontSize: 13.5, fontWeight: FontWeight.w600, color: AppTheme.textPrimary(context), height: 1.4),
+                  style: GoogleFonts.outfit(fontSize: 15, fontWeight: FontWeight.w600, color: AppTheme.textPrimary(context), height: 1.4),
                 ),
               ],
             ),
@@ -905,7 +905,7 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
 
   Widget _fieldNoteTile(BuildContext context, IconData icon, String label, String value) {
     return Container(
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: AppTheme.surfaceMuted(context),
         borderRadius: BorderRadius.circular(16),
@@ -914,18 +914,18 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, size: 18, color: Theme.of(context).colorScheme.primary),
-          const SizedBox(height: 8),
+          Icon(icon, size: 22, color: Theme.of(context).colorScheme.primary),
+          const SizedBox(height: 10),
           Text(
             label.toUpperCase(),
-            style: GoogleFonts.inter(fontSize: 9, fontWeight: FontWeight.w700, color: AppTheme.textSecondary(context), letterSpacing: 0.3),
-            maxLines: 1,
+            style: GoogleFonts.inter(fontSize: 10.5, fontWeight: FontWeight.w700, color: AppTheme.textSecondary(context), letterSpacing: 0.2),
+            maxLines: 2,
             overflow: TextOverflow.ellipsis,
           ),
-          const SizedBox(height: 3),
+          const SizedBox(height: 4),
           Text(
             value,
-            style: GoogleFonts.outfit(fontSize: 13, fontWeight: FontWeight.w700, color: AppTheme.textPrimary(context)),
+            style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w700, color: AppTheme.textPrimary(context)),
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
           ),

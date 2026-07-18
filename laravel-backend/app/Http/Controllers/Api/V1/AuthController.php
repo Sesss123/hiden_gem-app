@@ -150,9 +150,12 @@ class AuthController extends Controller
             // Find by firebase_uid first; fall back to matching by email so a
             // Firebase account that was deleted and re-created (new uid, same
             // email) re-links to its existing Laravel row instead of hitting
-            // the email unique constraint on insert.
+            // the email unique constraint on insert. This fallback link is
+            // gated on email_verified: without that check, anyone could
+            // create a new Firebase account using a victim's (unverified)
+            // email and hijack the victim's existing Laravel account/token.
             $user = User::where('firebase_uid', $uid)->first();
-            if (!$user && $email) {
+            if (!$user && $email && $emailVerified) {
                 $user = User::where('email', $email)->first();
                 if ($user && !$user->firebase_uid) {
                     $user->update(['firebase_uid' => $uid]);

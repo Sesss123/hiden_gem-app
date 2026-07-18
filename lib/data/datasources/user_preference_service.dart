@@ -94,6 +94,19 @@ class UserPreferenceService {
     await _flushToDisk(force: true); // Full replacement — always flush immediately
   }
 
+  /// Stamps the local profile with the just-authenticated user's real uid.
+  /// Must be called as the very first step of any successful sign-in —
+  /// main.dart's post-login routing treats uid == 'NEW_USER' as "this is a
+  /// genuinely fresh install with no prior local profile" and force-signs
+  /// the Firebase session back out to route to onboarding. Without this
+  /// call, that same check would fire immediately after a real sign-in
+  /// (whose local profile is still the 'NEW_USER' default because nothing
+  /// else updates it), undoing the sign-in in a loop.
+  static Future<void> stampSignedInUid(String uid) async {
+    _mutate((p) => p.uid = uid);
+    await _flushToDisk(force: true);
+  }
+
   static Future<void> clearProfile() async {
     _cachedProfile = null;
     _isDirty = false;

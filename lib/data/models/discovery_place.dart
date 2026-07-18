@@ -193,15 +193,32 @@ class DiscoveryPlace {
       }
     }
 
+    // Backend (MySQL `places` table, see System Architecture.md) sends
+    // `district_id`/`category_id` (plain readable names like "Kandy" and
+    // "Plunge", not numeric foreign keys) and `ticket_price` as an integer
+    // rather than the legacy `district`/`category`/`ticketRange` string
+    // fields — fall back through all three naming conventions so the app
+    // reads correctly regardless of which backend produced the payload.
+    String ticketRangeFromPrice() {
+      final price = json['ticket_price'];
+      if (price == null) return '';
+      final numPrice = price is num ? price : num.tryParse(price.toString());
+      if (numPrice == null || numPrice == 0) return 'Free';
+      return 'LKR ${numPrice.toStringAsFixed(0)}';
+    }
+
     return DiscoveryPlace(
       id: json['id'].toString(),
       name: json['name'] as String? ?? '',
-      district: json['district'] as String? ?? '',
-      category: json['category'] as String? ?? '',
+      district: json['district'] as String? ?? json['district_id'] as String? ?? '',
+      category: json['category'] as String? ?? json['category_id'] as String? ?? '',
       lat: parseCoord(json['lat']),
       lng: parseCoord(json['lng']),
       rating: (json['rating'] as num?)?.toDouble() ?? 0.0,
-      ticketRange: json['ticketRange'] as String? ?? json['ticket_range'] as String? ?? 'Free',
+      ticketRange: json['ticketRange'] as String? ??
+          json['ticket_range'] as String? ??
+          (json['ticket_price'] != null ? ticketRangeFromPrice() : null) ??
+          'Free',
       roadType: json['roadType'] as String? ?? json['road_type'] as String? ?? '',
       vehicleAccess: json['vehicleAccess'] as String? ?? json['vehicle_access'] as String? ?? '',
       riskTags: List<String>.from(json['riskTags'] ?? json['risk_tags'] ?? []),

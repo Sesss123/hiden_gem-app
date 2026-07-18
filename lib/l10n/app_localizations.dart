@@ -5968,6 +5968,18 @@ abstract class AppLocalizations {
   /// **'Transmit report'**
   String get transmitReportButton;
 
+  /// No description provided for @incidentReportFieldsRequiredMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Please fill in both the title and description.'**
+  String get incidentReportFieldsRequiredMessage;
+
+  /// No description provided for @incidentReportSubmittedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Incident report submitted.'**
+  String get incidentReportSubmittedMessage;
+
   /// No description provided for @incidentStatusOpen.
   ///
   /// In en, this message translates to:

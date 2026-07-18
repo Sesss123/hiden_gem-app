@@ -1323,6 +1323,8 @@
   "incidentTitleHint": "Incident title",
   "descriptionOfEventHint": "Description of event",
   "transmitReportButton": "Transmit report",
+  "incidentReportFieldsRequiredMessage": "Please fill in both the title and description.",
+  "incidentReportSubmittedMessage": "Incident report submitted.",
   "incidentStatusOpen": "Open",
   "incidentStatusInvestigating": "Investigating",
   "incidentStatusResolved": "Resolved",

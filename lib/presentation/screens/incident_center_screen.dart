@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../../core/theme/oracle_ui_system.dart';
+import '../../data/datasources/user_preference_service.dart';
 import '../../data/models/incident_report.dart';
 import '../../data/repositories/incident_repository.dart';
 import 'incident_detail_screen.dart';
@@ -373,7 +375,10 @@ class _IncidentCenterScreenState extends ConsumerState<IncidentCenterScreen> {
   }
 
   void _showReportDialog() {
-    // Simplified for now, in reality a multi-step form
+    final titleController = TextEditingController();
+    final descriptionController = TextEditingController();
+    bool isSubmitting = false;
+
     showModalBottomSheet(
       context: context,
       backgroundColor: AppTheme.colors.transparent,
@@ -381,7 +386,53 @@ class _IncidentCenterScreenState extends ConsumerState<IncidentCenterScreen> {
       builder: (context) => DraggableScrollableSheet(
         initialChildSize: 0.7,
         maxChildSize: 0.9,
-        builder: (_, controller) => Builder(builder: (context) {
+        builder: (_, controller) => StatefulBuilder(builder: (context, setSheetState) {
+          Future<void> submit() async {
+            final l10n = AppLocalizations.of(context)!;
+            if (titleController.text.trim().isEmpty || descriptionController.text.trim().isEmpty) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(l10n.incidentReportFieldsRequiredMessage)),
+              );
+              return;
+            }
+
+            setSheetState(() => isSubmitting = true);
+            final profile = UserPreferenceService.getProfile();
+            final userId = FirebaseAuth.instance.currentUser?.uid ?? 'anonymous';
+            final now = DateTime.now();
+
+            try {
+              await ref.read(incidentRepositoryProvider).createIncident(IncidentReport(
+                    incidentId: '',
+                    incidentNumber: 'INC-UNK',
+                    sessionId: widget.sessionId ?? 'GLOBAL',
+                    guideId: 'GLOBAL',
+                    touristId: userId,
+                    reportedBy: userId,
+                    reportedByRole: profile.role,
+                    type: 'manual_report',
+                    severity: 'medium',
+                    title: titleController.text.trim(),
+                    description: descriptionController.text.trim(),
+                    status: 'open',
+                    createdAt: now,
+                    updatedAt: now,
+                  ));
+              if (!context.mounted) return;
+              Navigator.pop(context);
+              if (!mounted) return;
+              ScaffoldMessenger.of(this.context).showSnackBar(
+                SnackBar(content: Text(l10n.incidentReportSubmittedMessage)),
+              );
+            } catch (e) {
+              if (!context.mounted) return;
+              setSheetState(() => isSubmitting = false);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(l10n.errorGenericMessage(e.toString())), backgroundColor: AppTheme.colors.red),
+              );
+            }
+          }
+
           return Container(
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.surface,
@@ -408,22 +459,27 @@ class _IncidentCenterScreenState extends ConsumerState<IncidentCenterScreen> {
                   style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 12),
                 ),
                 const SizedBox(height: 32),
-                _buildLargeField(context, AppLocalizations.of(context)!.incidentTitleHint, Icons.title_rounded),
+                _buildLargeField(context, AppLocalizations.of(context)!.incidentTitleHint, Icons.title_rounded, controller: titleController),
                 const SizedBox(height: 20),
-                _buildLargeField(context, AppLocalizations.of(context)!.descriptionOfEventHint, Icons.description_rounded, maxLines: 4),
+                _buildLargeField(context, AppLocalizations.of(context)!.descriptionOfEventHint, Icons.description_rounded, maxLines: 4, controller: descriptionController),
                 const SizedBox(height: 32),
                 SizedBox(
                   width: double.infinity,
                   height: 52,
                   child: ElevatedButton(
-                    onPressed: () => Navigator.pop(context),
+                    onPressed: isSubmitting ? null : submit,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppTheme.colors.redAccent,
                       foregroundColor: AppTheme.colors.white,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
                       elevation: 0,
                     ),
-                    child: Text(AppLocalizations.of(context)!.transmitReportButton, style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 14)),
+                    child: isSubmitting
+                        ? SizedBox(
+                            width: 22, height: 22,
+                            child: CircularProgressIndicator(strokeWidth: 2.5, color: AppTheme.colors.white),
+                          )
+                        : Text(AppLocalizations.of(context)!.transmitReportButton, style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 14)),
                   ),
                 ),
               ],
@@ -434,7 +490,7 @@ class _IncidentCenterScreenState extends ConsumerState<IncidentCenterScreen> {
     );
   }
 
-  Widget _buildLargeField(BuildContext context, String hint, IconData icon, {int maxLines = 1}) {
+  Widget _buildLargeField(BuildContext context, String hint, IconData icon, {int maxLines = 1, TextEditingController? controller}) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
@@ -442,6 +498,7 @@ class _IncidentCenterScreenState extends ConsumerState<IncidentCenterScreen> {
         borderRadius: BorderRadius.circular(16),
       ),
       child: TextField(
+        controller: controller,
         maxLines: maxLines,
         style: TextStyle(color: AppTheme.textPrimary(context)),
         decoration: InputDecoration(

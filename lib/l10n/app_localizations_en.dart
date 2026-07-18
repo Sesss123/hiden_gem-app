@@ -3309,6 +3309,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get transmitReportButton => 'Transmit report';
 
   @override
+  String get incidentReportFieldsRequiredMessage =>
+      'Please fill in both the title and description.';
+
+  @override
+  String get incidentReportSubmittedMessage => 'Incident report submitted.';
+
+  @override
   String get incidentStatusOpen => 'Open';
 
   @override

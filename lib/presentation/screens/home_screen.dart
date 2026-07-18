@@ -161,7 +161,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   fit: BoxFit.cover,
                   memCacheWidth: 600,
                   memCacheHeight: 400,
-                  errorWidget: (c, u, e) => Image.asset("assets/images/sigiriya_sunset_bg.jpg", fit: BoxFit.cover),
+                  errorWidget: (c, u, e) => Container(
+                    color: AppPalette.earth,
+                    child: Icon(Icons.terrain_rounded, color: AppTheme.colors.white24, size: 48),
+                  ),
                   placeholder: (c, u) => Container(color: AppTheme.colors.black26),
                 ),
               ),
@@ -294,43 +297,51 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   Widget _buildQuickActionsRow(AppLocalizations l10n) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildQuickActionItem(
-          l10n.planTripAction,
-          Icons.edit_calendar_outlined,
-          AppTheme.colors.teal,
-          () {
-            Haptics.medium();
-            Navigator.push(context, MaterialPageRoute(builder: (context) => const TripFormScreen()));
-          },
+        Expanded(
+          child: _buildQuickActionItem(
+            l10n.planTripAction,
+            Icons.edit_calendar_outlined,
+            AppTheme.colors.teal,
+            () {
+              Haptics.medium();
+              Navigator.push(context, MaterialPageRoute(builder: (context) => const TripFormScreen()));
+            },
+          ),
         ),
-        _buildQuickActionItem(
-          l10n.findGuideAction,
-          Icons.person_search_outlined,
-          AppTheme.colors.amber,
-          () {
-            Haptics.medium();
-            Navigator.push(context, MaterialPageRoute(builder: (context) => const MarketplaceResultsScreen()));
-          },
+        Expanded(
+          child: _buildQuickActionItem(
+            l10n.findGuideAction,
+            Icons.person_search_outlined,
+            AppTheme.colors.amber,
+            () {
+              Haptics.medium();
+              Navigator.push(context, MaterialPageRoute(builder: (context) => const MarketplaceResultsScreen()));
+            },
+          ),
         ),
-        _buildQuickActionItem(
-          l10n.foodAiAction,
-          Icons.restaurant_menu_outlined,
-          AppTheme.colors.orangeAccent,
-          () {
-            Haptics.medium();
-            Navigator.push(context, MaterialPageRoute(builder: (context) => const SavorLankaScreen()));
-          },
+        Expanded(
+          child: _buildQuickActionItem(
+            l10n.foodAiAction,
+            Icons.restaurant_menu_outlined,
+            AppTheme.colors.orangeAccent,
+            () {
+              Haptics.medium();
+              Navigator.push(context, MaterialPageRoute(builder: (context) => const SavorLankaScreen()));
+            },
+          ),
         ),
-        _buildQuickActionItem(
-          l10n.arPortalsAction,
-          Icons.view_in_ar_rounded,
-          AppTheme.colors.indigoAccent,
-          () {
-            Haptics.medium();
-            Navigator.push(context, MaterialPageRoute(builder: (context) => const ARVideoLibraryScreen()));
-          },
+        Expanded(
+          child: _buildQuickActionItem(
+            l10n.arPortalsAction,
+            Icons.view_in_ar_rounded,
+            AppTheme.colors.indigoAccent,
+            () {
+              Haptics.medium();
+              Navigator.push(context, MaterialPageRoute(builder: (context) => const ARVideoLibraryScreen()));
+            },
+          ),
         ),
       ],
     );
@@ -355,6 +366,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         const SizedBox(height: 8),
         Text(
           label,
+          textAlign: TextAlign.center,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
           style: GoogleFonts.inter(
             fontSize: 10,
             fontWeight: FontWeight.w600,
@@ -1067,13 +1081,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ],
           ),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _navItem(l10n.home, Icons.home_rounded, 0),
-              _navItem(l10n.exploreNavLabel, Icons.travel_explore_rounded, 1),
+              Expanded(child: _navItem(l10n.home, Icons.home_rounded, 0)),
+              Expanded(child: _navItem(l10n.exploreNavLabel, Icons.travel_explore_rounded, 1)),
               const SizedBox(width: 60),
-              _navItem(l10n.eventsNavLabel, Icons.calendar_month_rounded, 2),
-              _navItem(l10n.profile, Icons.person_rounded, 3),
+              Expanded(child: _navItem(l10n.eventsNavLabel, Icons.calendar_month_rounded, 2)),
+              Expanded(child: _navItem(l10n.profile, Icons.person_rounded, 3)),
             ],
           ),
         ),
@@ -1090,7 +1103,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         setState(() => _selectedIndex = index);
       },
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+        padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 8.0),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -1102,6 +1115,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           const SizedBox(height: 4),
           Text(
             label,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: GoogleFonts.inter(
               color: active ? Theme.of(context).colorScheme.primary : AppTheme.textSecondary(context).withValues(alpha: 0.4),
               fontSize: 10,

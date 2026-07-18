@@ -3221,6 +3221,12 @@ class AppLocalizationsJa extends AppLocalizations {
   String get transmitReportButton => '報告を送信';
 
   @override
+  String get incidentReportFieldsRequiredMessage => 'タイトルと説明の両方を入力してください。';
+
+  @override
+  String get incidentReportSubmittedMessage => 'インシデント報告を送信しました。';
+
+  @override
   String get incidentStatusOpen => '対応待ち';
 
   @override

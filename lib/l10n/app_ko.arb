@@ -1322,6 +1322,8 @@
   "incidentTitleHint": "사건 제목",
   "descriptionOfEventHint": "사건 설명",
   "transmitReportButton": "신고서 전송",
+  "incidentReportFieldsRequiredMessage": "제목과 설명을 모두 입력해 주세요.",
+  "incidentReportSubmittedMessage": "사건 신고가 접수되었습니다.",
   "incidentStatusOpen": "접수",
   "incidentStatusInvestigating": "조사 중",
   "incidentStatusResolved": "해결됨",

@@ -316,15 +316,19 @@ class _ARContentPreviewScreenState extends State<ARContentPreviewScreen> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
-                              'TIMELINE HIGHLIGHTS',
-                              style: GoogleFonts.outfit(
-                                color: AppPalette.rust,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 11,
-                                letterSpacing: 2,
+                            Expanded(
+                              child: Text(
+                                'TIMELINE HIGHLIGHTS',
+                                overflow: TextOverflow.ellipsis,
+                                style: GoogleFonts.outfit(
+                                  color: AppPalette.rust,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 11,
+                                  letterSpacing: 2,
+                                ),
                               ),
                             ),
+                            const SizedBox(width: 8),
                             Container(
                               padding: const EdgeInsets.all(2),
                               decoration: BoxDecoration(

@@ -291,7 +291,7 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
           final l10n = AppLocalizations.of(context)!;
 
           return Container(
-            height: MediaQuery.of(context).size.height * 0.7,
+            constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.85),
             decoration: BoxDecoration(
               color: isDark ? AppTheme.colors.primary.withValues(alpha: 0.95) : AppTheme.colors.white.withValues(alpha: 0.95),
               borderRadius: const BorderRadius.vertical(top: Radius.circular(40)),
@@ -299,8 +299,10 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
             ),
             child: OracleUI.glassContainer(
               radius: const BorderRadius.vertical(top: Radius.circular(40)),
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
-              child: Column(
+              padding: EdgeInsets.fromLTRB(24, 32, 24, MediaQuery.of(context).viewInsets.bottom + 32),
+              child: SingleChildScrollView(
+                child: Column(
+                mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                    Center(
@@ -315,13 +317,16 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
                   ),
                   const SizedBox(height: 32),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      OracleUI.neonText(
-                        l10n.discoveryFiltersTitle,
-                        style: GoogleFonts.outfit(fontSize: 24, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.secondary),
+                      Expanded(
+                        child: OracleUI.neonText(
+                          l10n.discoveryFiltersTitle,
+                          style: GoogleFonts.outfit(fontSize: 24, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.secondary),
+                        ),
                       ),
                       TextButton(
+                        style: TextButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 8), minimumSize: Size.zero),
                         onPressed: () {
                           setModalState(() {
                             _maxDistance = 100.0;
@@ -409,26 +414,23 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
                   OracleUI.glassContainer(
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Row(
-                          children: [
-                            Icon(Icons.view_in_ar_rounded, color: Theme.of(context).colorScheme.secondary),
-                            const SizedBox(width: 12),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  l10n.heritageArSearchTitle,
-                                  style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 13, color: AppTheme.textPrimary(context)),
-                                ),
-                                Text(
-                                  l10n.onlyShowArEnabledSpots,
-                                  style: GoogleFonts.inter(fontSize: 10, color: AppTheme.textSecondary(context)),
-                                ),
-                              ],
-                            ),
-                          ],
+                        Icon(Icons.view_in_ar_rounded, color: Theme.of(context).colorScheme.secondary),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                l10n.heritageArSearchTitle,
+                                style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 13, color: AppTheme.textPrimary(context)),
+                              ),
+                              Text(
+                                l10n.onlyShowArEnabledSpots,
+                                style: GoogleFonts.inter(fontSize: 10, color: AppTheme.textSecondary(context)),
+                              ),
+                            ],
+                          ),
                         ),
                         Switch(
                           value: _onlyAR,
@@ -438,10 +440,9 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
                       ],
                     ),
                   ),
-                  const Spacer(),
+                  const SizedBox(height: 40),
                   SizedBox(
                     width: double.infinity,
-                    height: 56,
                     child: ElevatedButton(
                       onPressed: () {
                         HapticFeedback.heavyImpact();
@@ -450,15 +451,20 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Theme.of(context).colorScheme.primary,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                       ),
-                      child: Text(
-                        l10n.revealDestinies,
-                        style: GoogleFonts.outfit(color: AppTheme.colors.white, fontWeight: FontWeight.bold, letterSpacing: 2),
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          l10n.revealDestinies,
+                          style: GoogleFonts.outfit(color: AppTheme.colors.white, fontWeight: FontWeight.bold, letterSpacing: 2),
+                        ),
                       ),
                     ),
                   ),
                 ],
+                ),
               ),
             ),
           );
@@ -914,8 +920,9 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
                         Expanded(
                           flex: 2,
                           child: Padding(
-                            padding: const EdgeInsets.all(12),
+                            padding: const EdgeInsets.fromLTRB(12, 10, 12, 8),
                             child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
@@ -924,18 +931,20 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                 ),
-                                const SizedBox(height: 4),
                                 Row(
                                   children: [
                                     Icon(Icons.person_pin_rounded, size: 10, color: Theme.of(context).colorScheme.secondary),
                                     const SizedBox(width: 4),
-                                    Text(
-                                      exp.hostName.toUpperCase(),
-                                      style: GoogleFonts.inter(fontSize: 9, color: AppTheme.textSecondary(context), fontWeight: FontWeight.w600, letterSpacing: 0.5),
+                                    Expanded(
+                                      child: Text(
+                                        exp.hostName.toUpperCase(),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: GoogleFonts.inter(fontSize: 9, color: AppTheme.textSecondary(context), fontWeight: FontWeight.w600, letterSpacing: 0.5),
+                                      ),
                                     ),
                                   ],
                                 ),
-                                const Spacer(),
                                 OracleUI.neonText(
                                   "LKR ${exp.price}",
                                   style: GoogleFonts.outfit(fontSize: 11, color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.w900),
@@ -1042,14 +1051,19 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            title,
-            style: GoogleFonts.outfit(
-              fontSize: 15,
-              fontWeight: FontWeight.w700,
-              color: AppTheme.textPrimary(context),
+          Expanded(
+            child: Text(
+              title,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: GoogleFonts.outfit(
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+                color: AppTheme.textPrimary(context),
+              ),
             ),
           ),
+          const SizedBox(width: 8),
           Text(
             l10n.seeAll,
             style: GoogleFonts.inter(

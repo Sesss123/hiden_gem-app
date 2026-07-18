@@ -133,7 +133,7 @@ class _LoadingPlanScreenState extends State<LoadingPlanScreen>
 
   void _animateMessages() async {
     while (_msgIndex < _progressMessages.length - 1 && mounted) {
-      // await Future.delayed(const Duration(milliseconds: 2800));
+      await Future.delayed(const Duration(milliseconds: 2800));
       if (mounted) {
         setState(() {
           _msgIndex = (_msgIndex + 1) % _progressMessages.length;

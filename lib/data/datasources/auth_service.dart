@@ -1,3 +1,4 @@
+import 'dart:io' show Platform;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
@@ -79,7 +80,10 @@ class AuthService {
   }
 
 
-  // Sign in with Apple (App Store Guideline 4.8 — required alongside Google Sign-In)
+  // Sign in with Apple (App Store Guideline 4.8 — required alongside Google Sign-In).
+  // Also offered on Android as an additional login option, matching Google's
+  // — Android has no native Apple UI, so this goes through a web-based OAuth
+  // redirect (see AppConfig.appleServiceId/appleRedirectUri).
   Future<UserCredential?> signInWithApple() async {
     try {
       final rawNonce = _generateNonce();
@@ -91,6 +95,12 @@ class AuthService {
           AppleIDAuthorizationScopes.fullName,
         ],
         nonce: nonce,
+        webAuthenticationOptions: (!kIsWeb && Platform.isIOS)
+            ? null
+            : WebAuthenticationOptions(
+                clientId: AppConfig.appleServiceId,
+                redirectUri: Uri.parse(AppConfig.appleRedirectUri),
+              ),
       );
 
       final oauthCredential = OAuthProvider("apple.com").credential(
@@ -198,65 +208,87 @@ class AuthService {
   }
 
   // Sync user data to Firestore
+  // The Firebase Auth account (created/verified by the caller just before
+  // this runs) is the source of truth for "did sign-in succeed" — this
+  // method only mirrors that into Firestore/Laravel. A network hiccup here
+  // (e.g. a Firestore write that isn't a transient auth-propagation race,
+  // or the Laravel backend being unreachable) must never be reported to the
+  // user as a sign-in failure when the account itself is already valid, so
+  // every exception below is caught and logged rather than propagated. All
+  // 5 call sites (Google/Apple/email sign-in/sign-up) rely on this.
   Future<void> _syncUserData(User user, {String? name}) async {
-    // Force a fresh ID token before the first Firestore call after sign-in.
-    // Without this, signInWithCredential()/signInWith*() can resolve before
-    // the Firestore SDK's underlying gRPC/REST layer has actually picked up
-    // the new auth token — firestore.rules' isSignedIn() (request.auth !=
-    // null) then evaluates against a stale/absent auth context and every
-    // call here fails with permission-denied, even though sign-in itself
-    // succeeded and the rules are otherwise correct.
+    // Local-only, no network — must happen unconditionally and first, before
+    // any of the network calls below that can fail. See stampSignedInUid's
+    // doc comment for why this specifically prevents a sign-in/sign-out loop.
+    await UserPreferenceService.stampSignedInUid(user.uid);
+
     try {
-      await user.getIdToken(true);
-    } catch (e) {
-      SecureLogger.warning("ID token refresh before Firestore sync failed: $e", tag: "Auth");
-    }
-
-    final userDoc = _firestore.collection('users').doc(user.uid);
-
-    // getIdToken(true) refreshes the token Firebase Auth hands out, but the
-    // Firestore SDK's own gRPC/REST channel can still take a beat to pick up
-    // that refreshed token internally — so the very first Firestore call
-    // right after sign-in can still transiently see permission-denied even
-    // though the token is now valid. Retry a few times with backoff rather
-    // than surfacing this as a hard sign-in failure.
-    final docSnapshot = await _withPermissionRetry(() => userDoc.get());
-    
-    if (!docSnapshot.exists) {
-      // Create new user document
-      await userDoc.set({
-        'uid': user.uid,
-        'displayName': name ?? user.displayName,
-        'email': user.email,
-        'photoURL': user.photoURL,
-        'planCount': 0,
-        'isPremium': false,
-        'role': 'user',
-        'createdAt': FieldValue.serverTimestamp(),
-        'lastLogin': FieldValue.serverTimestamp(),
-      });
-    } else {
-      // Update last login
-      await userDoc.update({
-        'lastLogin': FieldValue.serverTimestamp(),
-      });
-    }
-
-    // BUG-N02 Fix: Ensure FCM token is linked to user document on login/signup
-    try {
-      final token = await FirebaseMessaging.instance.getToken();
-      if (token != null) {
-        await userDoc.set({
-          'fcmToken': token,
-          'fcmTokenUpdatedAt': FieldValue.serverTimestamp(),
-        }, SetOptions(merge: true));
+      // Force a fresh ID token before the first Firestore call after sign-in.
+      // Without this, signInWithCredential()/signInWith*() can resolve before
+      // the Firestore SDK's underlying gRPC/REST layer has actually picked up
+      // the new auth token — firestore.rules' isSignedIn() (request.auth !=
+      // null) then evaluates against a stale/absent auth context and every
+      // call here fails with permission-denied, even though sign-in itself
+      // succeeded and the rules are otherwise correct.
+      try {
+        await user.getIdToken(true);
+      } catch (e) {
+        SecureLogger.warning("ID token refresh before Firestore sync failed: $e", tag: "Auth");
       }
+
+      final userDoc = _firestore.collection('users').doc(user.uid);
+
+      // getIdToken(true) refreshes the token Firebase Auth hands out, but the
+      // Firestore SDK's own gRPC/REST channel can still take a beat to pick up
+      // that refreshed token internally — so the very first Firestore call
+      // right after sign-in can still transiently see permission-denied even
+      // though the token is now valid. Retry a few times with backoff rather
+      // than surfacing this as a hard sign-in failure.
+      final docSnapshot = await _withPermissionRetry(() => userDoc.get());
+
+      if (!docSnapshot.exists) {
+        // Create new user document. Wrapped in the same retry helper as the
+        // read above — the auth-channel propagation lag that makes the first
+        // get() transiently see permission-denied can just as easily still be
+        // in effect a few milliseconds later when this write fires, and an
+        // unprotected write here surfaces as a hard sign-in failure instead of
+        // a silently-retried one.
+        await _withPermissionRetry(() => userDoc.set({
+          'uid': user.uid,
+          'displayName': name ?? user.displayName,
+          'email': user.email,
+          'photoURL': user.photoURL,
+          'planCount': 0,
+          'isPremium': false,
+          'role': 'user',
+          'createdAt': FieldValue.serverTimestamp(),
+          'lastLogin': FieldValue.serverTimestamp(),
+        }));
+      } else {
+        // Update last login
+        await _withPermissionRetry(() => userDoc.update({
+          'lastLogin': FieldValue.serverTimestamp(),
+        }));
+      }
+
+      // BUG-N02 Fix: Ensure FCM token is linked to user document on login/signup
+      try {
+        final token = await FirebaseMessaging.instance.getToken();
+        if (token != null) {
+          await userDoc.set({
+            'fcmToken': token,
+            'fcmTokenUpdatedAt': FieldValue.serverTimestamp(),
+          }, SetOptions(merge: true));
+        }
+      } catch (e) {
+        SecureLogger.warning("Could not sync FCM token during login: $e", tag: "Auth", isBackground: true);
+      }
+
+      // BUG-QA-001 Fix: Sync Firebase Auth with Laravel Sanctum
+      await _syncWithLaravelSanctum(user);
     } catch (e) {
-      SecureLogger.warning("Could not sync FCM token during login: $e", tag: "Auth", isBackground: true);
+      SecureLogger.error("Firestore profile sync failed after successful sign-in (account is still valid): $e", null, null, "Auth");
     }
-    
-    // BUG-QA-001 Fix: Sync Firebase Auth with Laravel Sanctum
-    await _syncWithLaravelSanctum(user);
   }
 
   /// Retries [action] up to 3 times (250ms/750ms/1500ms backoff) when it

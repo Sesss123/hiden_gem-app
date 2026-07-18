@@ -3345,6 +3345,13 @@ class AppLocalizationsSi extends AppLocalizations {
   String get transmitReportButton => 'වාර්තාව යවන්න';
 
   @override
+  String get incidentReportFieldsRequiredMessage =>
+      'කරුණාකර මාතෘකාව සහ විස්තරය යන දෙකම පුරවන්න.';
+
+  @override
+  String get incidentReportSubmittedMessage => 'සිද්ධි වාර්තාව යවා ඇත.';
+
+  @override
   String get incidentStatusOpen => 'විවෘත';
 
   @override

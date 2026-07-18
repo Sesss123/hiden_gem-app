@@ -19,6 +19,10 @@ use App\Http\Controllers\Admin\EventController;
 use App\Http\Controllers\Admin\GuideController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\PartnerController;
+use App\Http\Controllers\Admin\IncidentController;
+use App\Http\Controllers\Admin\BookingController;
+use App\Http\Controllers\Admin\ReviewController;
+use App\Http\Controllers\Admin\SubscriptionController;
 use App\Http\Controllers\JoinController;
 use App\Http\Controllers\Api\V1\GuideDocumentUploadController;
 
@@ -67,5 +71,24 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         // Users CRUD
         Route::resource('users', UserController::class);
+
+        // Incident Reports (SOS alerts + manual reports) — Firestore-backed
+        Route::get('/incidents', [IncidentController::class, 'index'])->name('incidents.index');
+        Route::get('/incidents/{id}', [IncidentController::class, 'show'])->name('incidents.show');
+        Route::post('/incidents/{id}/resolve', [IncidentController::class, 'resolve'])->name('incidents.resolve');
+        Route::post('/incidents/{id}/dismiss', [IncidentController::class, 'dismiss'])->name('incidents.dismiss');
+
+        // Bookings / Tour Sessions — Firestore-backed
+        Route::get('/bookings', [BookingController::class, 'index'])->name('bookings.index');
+        Route::get('/bookings/{id}', [BookingController::class, 'show'])->name('bookings.show');
+        Route::post('/bookings/{id}/cancel', [BookingController::class, 'cancel'])->name('bookings.cancel');
+
+        // Review Moderation — Firestore-backed
+        Route::get('/reviews', [ReviewController::class, 'index'])->name('reviews.index');
+        Route::post('/reviews/{id}/hide', [ReviewController::class, 'hide'])->name('reviews.hide');
+        Route::post('/reviews/{id}/restore', [ReviewController::class, 'restore'])->name('reviews.restore');
+
+        // Premium/Subscription Overview — Firestore-backed, read-only
+        Route::get('/subscriptions', [SubscriptionController::class, 'index'])->name('subscriptions.index');
     });
 });

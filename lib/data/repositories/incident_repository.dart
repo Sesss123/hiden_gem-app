@@ -49,12 +49,20 @@ class IncidentRepository {
     );
 
     await doc.set(newIncident.toJson());
-    
-    // Increment incident counts in the session
-    await _firestore.collection('tour_sessions').doc(incident.sessionId).update({
-      'incidentCount': FieldValue.increment(1),
-      if (incident.severity == 'critical') 'criticalIncidentCount': FieldValue.increment(1),
-    });
+
+    // Increment incident counts in the session, if one exists. A solo SOS
+    // (no active guided tour) uses the 'GLOBAL' placeholder session, which
+    // has no Firestore doc — update() would throw NOT_FOUND there. The
+    // incident report itself is already saved above; this counter is a
+    // secondary side effect and must never block or fail the report.
+    try {
+      await _firestore.collection('tour_sessions').doc(incident.sessionId).update({
+        'incidentCount': FieldValue.increment(1),
+        if (incident.severity == 'critical') 'criticalIncidentCount': FieldValue.increment(1),
+      });
+    } catch (_) {
+      // No linked session (e.g. 'GLOBAL') — nothing to increment.
+    }
 
     return doc.id;
   }

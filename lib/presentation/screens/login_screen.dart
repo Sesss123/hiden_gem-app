@@ -1,4 +1,3 @@
-import 'dart:io' show Platform;
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -563,7 +562,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ),
                         ),
-                        if (!kIsWeb && Platform.isIOS) ...[
+                        if (!kIsWeb) ...[
                           const SizedBox(height: 12),
                           Container(
                             height: 52,
@@ -718,8 +717,11 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 }
 
-/// The multi-color Google "G" mark, drawn locally so the login screen
-/// doesn't need a bundled logo asset or an SVG dependency.
+/// The official Google "G" mark, traced from Google's own published
+/// "Sign in with Google" branding guidelines path data (18x18 viewBox) so
+/// the login screen doesn't need a bundled logo asset or an SVG dependency
+/// for a single icon — this is the exact shape Google's own button spec
+/// uses, not an approximation.
 class _GoogleLogo extends StatelessWidget {
   const _GoogleLogo();
 
@@ -732,38 +734,77 @@ class _GoogleLogo extends StatelessWidget {
 class _GoogleLogoPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
-    final center = Offset(size.width / 2, size.height / 2);
-    final strokeWidth = size.width * 0.42;
-    final ringRadius = size.width / 2 - strokeWidth / 2;
-    final rect = Rect.fromCircle(center: center, radius: ringRadius);
+    // Source viewBox is 18x18 — scale to the widget's actual size.
+    canvas.save();
+    canvas.scale(size.width / 18, size.height / 18);
 
-    Paint ringPaint(Color color) => Paint()
-      ..color = color
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = strokeWidth;
+    final fillPaint = Paint()..style = PaintingStyle.fill;
 
-    const degToRad = 3.14159265358979 / 180;
-    void drawArc(Color color, double startDeg, double sweepDeg) {
-      canvas.drawArc(rect, startDeg * degToRad, sweepDeg * degToRad, false, ringPaint(color));
-    }
-
-    // Four ring quadrants matching the brand mark, small gaps between.
-    drawArc(const Color(0xFF4285F4), -20, 86); // blue: top-right
-    drawArc(const Color(0xFF34A853), 70, 86); // green: bottom-right
-    drawArc(const Color(0xFFFBBC05), 160, 86); // yellow: bottom-left
-    drawArc(const Color(0xFFEA4335), 250, 86); // red: top-left
-
-    // Crossbar of the "G", from center out to the ring's right edge.
-    final barPaint = Paint()..color = const Color(0xFF4285F4);
-    canvas.drawRect(
-      Rect.fromLTWH(
-        center.dx - strokeWidth * 0.1,
-        center.dy - strokeWidth * 0.5,
-        size.width / 2 - center.dx + strokeWidth * 0.6,
-        strokeWidth,
-      ),
-      barPaint,
+    // Blue: the right-hand arc and crossbar.
+    fillPaint.color = const Color(0xFF4285F4);
+    canvas.drawPath(
+      Path()
+        ..moveTo(17.64, 9.2045)
+        ..cubicTo(17.64, 8.5664, 17.5827, 7.9527, 17.4764, 7.3636)
+        ..lineTo(9, 7.3636)
+        ..lineTo(9, 10.845)
+        ..lineTo(13.8436, 10.845)
+        ..cubicTo(13.635, 11.97, 13.0009, 12.9232, 12.0477, 13.5614)
+        ..lineTo(12.0477, 15.8195)
+        ..lineTo(14.9564, 15.8195)
+        ..cubicTo(16.6582, 14.2527, 17.64, 11.9455, 17.64, 9.2045)
+        ..close(),
+      fillPaint,
     );
+
+    // Green: the bottom arc.
+    fillPaint.color = const Color(0xFF34A853);
+    canvas.drawPath(
+      Path()
+        ..moveTo(9, 18)
+        ..cubicTo(11.43, 18, 13.4673, 17.1941, 14.9564, 15.8195)
+        ..lineTo(12.0477, 13.5614)
+        ..cubicTo(11.2418, 14.1014, 10.2109, 14.4205, 9, 14.4205)
+        ..cubicTo(6.6559, 14.4205, 4.6714, 12.8373, 3.9641, 10.71)
+        ..lineTo(0.9573, 10.71)
+        ..lineTo(0.9573, 13.0418)
+        ..cubicTo(2.4382, 15.9832, 5.4818, 18, 9, 18)
+        ..close(),
+      fillPaint,
+    );
+
+    // Yellow: the left arc.
+    fillPaint.color = const Color(0xFFFBBC05);
+    canvas.drawPath(
+      Path()
+        ..moveTo(3.9641, 10.71)
+        ..cubicTo(3.7841, 10.17, 3.6818, 9.5932, 3.6818, 9)
+        ..cubicTo(3.6818, 8.4068, 3.7841, 7.83, 3.9641, 7.29)
+        ..lineTo(3.9641, 4.9582)
+        ..lineTo(0.9573, 4.9582)
+        ..cubicTo(0.3477, 6.1732, 0, 7.5477, 0, 9)
+        ..cubicTo(0, 10.4523, 0.3477, 11.8268, 0.9573, 13.0418)
+        ..lineTo(3.9641, 10.71)
+        ..close(),
+      fillPaint,
+    );
+
+    // Red: the top arc.
+    fillPaint.color = const Color(0xFFEA4335);
+    canvas.drawPath(
+      Path()
+        ..moveTo(9, 3.5795)
+        ..cubicTo(10.3214, 3.5795, 11.5077, 4.0336, 12.4405, 4.9250)
+        ..lineTo(15.0218, 2.3436)
+        ..cubicTo(13.4632, 0.8918, 11.4259, 0, 9, 0)
+        ..cubicTo(5.4818, 0, 2.4382, 2.0168, 0.9573, 4.9582)
+        ..lineTo(3.9641, 7.29)
+        ..cubicTo(4.6714, 5.1627, 6.6559, 3.5795, 9, 3.5795)
+        ..close(),
+      fillPaint,
+    );
+
+    canvas.restore();
   }
 
   @override

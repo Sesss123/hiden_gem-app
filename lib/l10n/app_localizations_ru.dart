@@ -3367,6 +3367,13 @@ class AppLocalizationsRu extends AppLocalizations {
   String get transmitReportButton => 'Отправить отчёт';
 
   @override
+  String get incidentReportFieldsRequiredMessage =>
+      'Пожалуйста, заполните и заголовок, и описание.';
+
+  @override
+  String get incidentReportSubmittedMessage => 'Отчёт об инциденте отправлен.';
+
+  @override
   String get incidentStatusOpen => 'Открыт';
 
   @override

@@ -62,6 +62,25 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+
+        <!-- Sign in with Apple (Android web-redirect flow) — catches the
+             OAuth callback from AppConfig.appleRedirectUri. The host/path
+             below MUST exactly match that redirect URI's scheme/host/path,
+             which in turn must be registered as the Services ID's "Return
+             URL" in Apple Developer Console. Update BOTH together. -->
+        <activity
+            android:name="com.aboutyou.dart_packages.sign_in_with_apple.SignInWithAppleCallback"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data
+                    android:scheme="https"
+                    android:host="REPLACE_WITH_REAL_VALUE"
+                    android:path="/callback/apple"/>
+            </intent-filter>
+        </activity>
     </application>
     <queries>
         <intent>

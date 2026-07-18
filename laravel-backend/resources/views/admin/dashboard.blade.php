@@ -1,5 +1,9 @@
 @extends('admin.layout')
 
+@push('head')
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+@endpush
+
 @section('content')
 <div class="space-y-8 animate-fadeIn">
     <!-- Welcome Header & Quick Stats Banner -->
@@ -31,14 +35,14 @@
     </div>
 
     <!-- 4 Key Metric Stat Cards -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
         <!-- Total Places -->
         <div class="glass-card p-6 rounded-2xl border border-slate-800 hover:border-emerald-500/40 transition duration-300 relative overflow-hidden group">
             <div class="flex justify-between items-start mb-4">
                 <div class="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 group-hover:scale-110 transition duration-300">
                     <i class="fa-solid fa-map-location-dot text-2xl"></i>
                 </div>
-                <span class="text-xs font-bold text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20">
+                <span class="text-xs font-bold text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20 shrink-0 whitespace-nowrap">
                     100% Active
                 </span>
             </div>
@@ -56,7 +60,7 @@
                 <div class="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 group-hover:scale-110 transition duration-300">
                     <i class="fa-solid fa-crown text-2xl"></i>
                 </div>
-                <span class="text-xs font-bold text-amber-400 bg-amber-500/10 px-2.5 py-1 rounded-full border border-amber-500/20">
+                <span class="text-xs font-bold text-amber-400 bg-amber-500/10 px-2.5 py-1 rounded-full border border-amber-500/20 shrink-0 whitespace-nowrap">
                     Monetized
                 </span>
             </div>
@@ -74,7 +78,7 @@
                 <div class="w-12 h-12 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400 group-hover:scale-110 transition duration-300">
                     <i class="fa-solid fa-cube text-2xl"></i>
                 </div>
-                <span class="text-xs font-bold text-cyan-400 bg-cyan-500/10 px-2.5 py-1 rounded-full border border-cyan-500/20">
+                <span class="text-xs font-bold text-cyan-400 bg-cyan-500/10 px-2.5 py-1 rounded-full border border-cyan-500/20 shrink-0 whitespace-nowrap">
                     3D Ready
                 </span>
             </div>
@@ -92,7 +96,7 @@
                 <div class="w-12 h-12 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400 group-hover:scale-110 transition duration-300">
                     <i class="fa-solid fa-heart text-2xl"></i>
                 </div>
-                <span class="text-xs font-bold text-rose-400 bg-rose-500/10 px-2.5 py-1 rounded-full border border-rose-500/20">
+                <span class="text-xs font-bold text-rose-400 bg-rose-500/10 px-2.5 py-1 rounded-full border border-rose-500/20 shrink-0 whitespace-nowrap">
                     User Wishlist
                 </span>
             </div>
@@ -101,6 +105,26 @@
             <div class="mt-3 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
                 <span>👥 {{ $totalUsers }} Users</span>
                 <span>⭐ {{ $proUsers + $vipUsers }} Subscribers</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="glass-card p-6 rounded-2xl border border-slate-800 lg:col-span-1">
+            <h3 class="font-bold text-base text-white flex items-center gap-2 mb-4">
+                <i class="fa-solid fa-chart-pie text-emerald-400"></i> Access Tier Split
+            </h3>
+            <div class="h-56 relative">
+                <canvas id="tierChart"></canvas>
+            </div>
+        </div>
+        <div class="glass-card p-6 rounded-2xl border border-slate-800 lg:col-span-2">
+            <h3 class="font-bold text-base text-white flex items-center gap-2 mb-4">
+                <i class="fa-solid fa-chart-column text-teal-400"></i> Top Categories
+            </h3>
+            <div class="h-56">
+                <canvas id="categoryChart"></canvas>
             </div>
         </div>
     </div>
@@ -336,4 +360,60 @@
         </div>
     </div>
 </div>
+
+@push('scripts')
+<script>
+    Chart.defaults.color = '#94a3b8';
+    Chart.defaults.font.family = "'Inter', sans-serif";
+    Chart.defaults.font.size = 11;
+
+    new Chart(document.getElementById('tierChart'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Free (Public)', 'PRO', 'VIP Exclusive'],
+            datasets: [{
+                data: [
+                    {{ $totalPlaces - ($proPlaces + $vipPlaces) }},
+                    {{ $proPlaces }},
+                    {{ $vipPlaces }},
+                ],
+                backgroundColor: ['#10b981', '#2dd4bf', '#f59e0b'],
+                borderColor: '#1e293b',
+                borderWidth: 3,
+            }],
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '68%',
+            plugins: {
+                legend: { position: 'bottom', labels: { padding: 14, boxWidth: 10, boxHeight: 10 } },
+            },
+        },
+    });
+
+    new Chart(document.getElementById('categoryChart'), {
+        type: 'bar',
+        data: {
+            labels: {!! json_encode($byCategory->pluck('category')->map(fn($c) => $c ?: 'General')) !!},
+            datasets: [{
+                label: 'Places',
+                data: {!! json_encode($byCategory->pluck('total')) !!},
+                backgroundColor: '#2dd4bf',
+                borderRadius: 6,
+                maxBarThickness: 36,
+            }],
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                x: { grid: { display: false } },
+                y: { beginAtZero: true, grid: { color: 'rgba(51, 65, 85, 0.4)' }, ticks: { precision: 0 } },
+            },
+        },
+    });
+</script>
+@endpush
 @endsection

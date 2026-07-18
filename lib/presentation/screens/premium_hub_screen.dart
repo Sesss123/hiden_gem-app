@@ -566,20 +566,26 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Text(
-                priceStr,
-                style: GoogleFonts.outfit(
-                  fontSize: 28,
-                  fontWeight: FontWeight.w800,
-                  color: priceColor,
+              Flexible(
+                child: Text(
+                  priceStr,
+                  style: GoogleFonts.outfit(
+                    fontSize: 28,
+                    fontWeight: FontWeight.w800,
+                    color: priceColor,
+                  ),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
               SizedBox(width: 6),
-              Padding(
-                padding: EdgeInsets.only(bottom: 5),
-                child: Text(
-                  AppLocalizations.of(context)!.perMonthLabel,
-                  style: GoogleFonts.inter(color: featureTextColor, fontSize: 12, fontWeight: FontWeight.w600),
+              Flexible(
+                child: Padding(
+                  padding: EdgeInsets.only(bottom: 5),
+                  child: Text(
+                    AppLocalizations.of(context)!.perMonthLabel,
+                    style: GoogleFonts.inter(color: featureTextColor, fontSize: 12, fontWeight: FontWeight.w600),
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
               ),
             ],

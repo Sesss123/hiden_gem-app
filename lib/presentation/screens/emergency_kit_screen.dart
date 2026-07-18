@@ -140,42 +140,12 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> with Si
         ),
       );
 
-      // 1. Create Automated Incident Report
-      final incidentRepo = ref.read(incidentRepositoryProvider);
       final profile = UserPreferenceService.getProfile();
-      
       final userId = FirebaseAuth.instance.currentUser?.uid ?? 'anonymous';
-      
-      final incident = IncidentReport(
-        incidentId: '', // Generated
-        incidentNumber: 'SOS-${DateTime.now().millisecondsSinceEpoch}',
-        sessionId: 'GLOBAL', 
-        guideId: 'GLOBAL',
-        touristId: userId,
-        reportedBy: userId,
-        reportedByRole: profile.role,
-        type: 'sos_alert',
-        severity: 'critical',
-        title: l10n.sosCriticalAlertTitle,
-        description: l10n.sosDistressSignalDescription,
-        status: 'investigating',
-        lat: position.latitude,
-        lng: position.longitude,
-        createdAt: DateTime.now(),
-        updatedAt: DateTime.now(),
-        timelineEvents: [
-          {
-            'type': 'sos_triggered',
-            'timestamp': DateTime.now().toIso8601String(),
-            'description': 'SOS distress signal initiated by user.',
-            'location': {'lat': position.latitude, 'lng': position.longitude},
-          }
-        ],
-      );
 
-      await incidentRepo.createIncident(incident);
-
-      // 2. Original SMS/Call Logic
+      // 1. Actually get help: SMS/call fires first and unconditionally, so a
+      // failure in the (secondary) incident logging below can never prevent
+      // the real-world emergency contact from going out.
       final String mapLink = "https://www.google.com/maps/search/?api=1&query=${position.latitude},${position.longitude}";
       final String sosMessage = "EMERGENCY: I need help. My current location is: $mapLink (Sent via AdvanceTravel.me)";
 
@@ -188,6 +158,41 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> with Si
         if (await canLaunchUrl(smsUri)) {
           await launchUrl(smsUri);
         }
+      }
+
+      // 2. Log an automated incident report. Best-effort: if this fails, the
+      // SOS itself has already been sent above, so we only log and continue.
+      try {
+        final incidentRepo = ref.read(incidentRepositoryProvider);
+        final incident = IncidentReport(
+          incidentId: '', // Generated
+          incidentNumber: 'SOS-${DateTime.now().millisecondsSinceEpoch}',
+          sessionId: 'GLOBAL',
+          guideId: 'GLOBAL',
+          touristId: userId,
+          reportedBy: userId,
+          reportedByRole: profile.role,
+          type: 'sos_alert',
+          severity: 'critical',
+          title: l10n.sosCriticalAlertTitle,
+          description: l10n.sosDistressSignalDescription,
+          status: 'investigating',
+          lat: position.latitude,
+          lng: position.longitude,
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
+          timelineEvents: [
+            {
+              'type': 'sos_triggered',
+              'timestamp': DateTime.now().toIso8601String(),
+              'description': 'SOS distress signal initiated by user.',
+              'location': {'lat': position.latitude, 'lng': position.longitude},
+            }
+          ],
+        );
+        await incidentRepo.createIncident(incident);
+      } catch (_) {
+        // Incident logging is secondary to actually notifying help; swallow.
       }
 
       if (!mounted) return;

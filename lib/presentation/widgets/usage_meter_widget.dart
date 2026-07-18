@@ -104,13 +104,16 @@ class _UsageMeterWidgetState extends State<UsageMeterWidget> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Column(
+                Expanded(
+                  child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       'PLAN USAGE METERS',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: GoogleFonts.outfit(
                         color: AppTheme.warningAmber,
                         fontSize: 11,
@@ -120,9 +123,11 @@ class _UsageMeterWidgetState extends State<UsageMeterWidget> {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      profile.isPremium 
+                      profile.isPremium
                           ? '${(profile.premiumPlan ?? "Premium").toUpperCase()} PLAN ACTIVE'
                           : 'FREE EXPLORER TIER',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: GoogleFonts.inter(
                         color: AppTheme.textSecondary(context),
                         fontSize: 12,
@@ -130,8 +135,10 @@ class _UsageMeterWidgetState extends State<UsageMeterWidget> {
                       ),
                     ),
                   ],
+                  ),
                 ),
-                if (!profile.isPremium)
+                if (!profile.isPremium) ...[
+                  const SizedBox(width: 8),
                   GestureDetector(
                     onTap: () {
                       Navigator.push(
@@ -157,6 +164,7 @@ class _UsageMeterWidgetState extends State<UsageMeterWidget> {
                       ),
                     ),
                   ),
+                ],
               ],
             ),
             if (hasWarning) ...[
