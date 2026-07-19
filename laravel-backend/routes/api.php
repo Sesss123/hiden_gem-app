@@ -72,8 +72,15 @@ Route::prefix('v1')->group(function () {
         Route::post('/places/{id}/bookmark', [WishlistController::class, 'toggle']);
     });
 
-    // Place Sync API Routes (Protected by Sanctum Auth, API Key & Rate Limiting)
-    Route::prefix('places')->middleware(['auth:sanctum', VerifyApiKey::class, 'throttle:60,1'])->group(function () {
+    // Place Sync API Routes (API Key & Rate Limiting — intentionally NOT
+    // behind auth:sanctum: the app calls this during first-launch boot sync,
+    // before any account/token exists, and every response here is identical
+    // for any caller — PlaceSyncController's methods never read $request->user()
+    // or any per-user state, only public approved-place data. Requiring
+    // Sanctum here 401s every fresh install's initial sync, which
+    // delta_sync_service.dart silently treats as "no update" — the app is
+    // left with a permanently empty local catalog and no visible error.)
+    Route::prefix('places')->middleware([VerifyApiKey::class, 'throttle:60,1'])->group(function () {
         Route::get('/', [PlaceSyncController::class, 'allPlaces']);
         Route::get('/check-version', [PlaceSyncController::class, 'checkVersion']);
         Route::get('/delta', [PlaceSyncController::class, 'delta']);

@@ -3,11 +3,18 @@
 @section('content')
 <div class="space-y-6">
     <!-- Header -->
-    <div>
-        <h2 class="text-2xl font-bold tracking-tight text-white flex items-center gap-2">
-            <i class="fa-solid fa-users text-emerald-500"></i> User & Premium Subscription Management
-        </h2>
-        <p class="text-sm text-slate-400">List all registered tourist/guide accounts, assign roles, and manage PRO/VIP subscriptions.</p>
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+            <h2 class="text-2xl font-bold tracking-tight text-white flex items-center gap-2">
+                <i class="fa-solid fa-users text-emerald-500"></i> User & Premium Subscription Management
+            </h2>
+            <p class="text-sm text-slate-400">List all registered tourist/guide accounts, assign roles, and manage PRO/VIP subscriptions.</p>
+        </div>
+        <div>
+            <a href="{{ route('admin.users.create') }}" class="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow-md shadow-emerald-950/20 transition duration-200 flex items-center gap-2 glow-effect">
+                <i class="fa-solid fa-user-plus"></i> New Admin User
+            </a>
+        </div>
     </div>
 
     <!-- Filters & Search -->
@@ -90,6 +97,10 @@
                                 @elseif($u->role === 'banned')
                                     <span class="bg-red-500/10 text-red-400 text-xs px-2.5 py-1 rounded-full font-bold border border-red-500/20 uppercase tracking-wider">
                                         <i class="fa-solid fa-ban text-[10px] mr-1"></i> Banned
+                                    </span>
+                                @elseif($u->role === 'content_manager')
+                                    <span class="bg-amber-500/10 text-amber-400 text-xs px-2.5 py-1 rounded-full font-bold border border-amber-500/20">
+                                        <i class="fa-solid fa-pen-nib text-[10px] mr-1"></i> Content Manager
                                     </span>
                                 @else
                                     <span class="bg-slate-800 text-slate-300 text-xs px-2.5 py-1 rounded-full border border-slate-700 font-medium">

@@ -99,7 +99,19 @@ class DiscoveryPlace {
   
   final String geohash;
   final List<PlaceImageModel> images;
-  
+
+  // Prefer the cover image's 1080px webp (fullPath) over the 400px
+  // thumb `imageUrl` — for large display contexts like a details-screen
+  // hero banner, where the thumb noticeably upscales and blurs.
+  String get heroImageUrl {
+    if (images.isEmpty) return imageUrl;
+    final cover = images.firstWhere(
+      (img) => img.isCover,
+      orElse: () => images.first,
+    );
+    return cover.fullPath.isNotEmpty ? cover.fullPath : imageUrl;
+  }
+
   double distanceKm;
   String aiReason;
 

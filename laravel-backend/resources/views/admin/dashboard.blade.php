@@ -34,8 +34,8 @@
         </div>
     </div>
 
-    <!-- 4 Key Metric Stat Cards -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
+    <!-- Key Metric Stat Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
         <!-- Total Places -->
         <div class="glass-card p-6 rounded-2xl border border-slate-800 hover:border-emerald-500/40 transition duration-300 relative overflow-hidden group">
             <div class="flex justify-between items-start mb-4">
@@ -49,26 +49,8 @@
             <h3 class="text-3xl font-black text-white tracking-tight">{{ number_format($totalPlaces) }}</h3>
             <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mt-1">Total Hidden Gems</p>
             <div class="mt-3 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
-                <span>🟢 {{ $totalPlaces - ($proPlaces + $vipPlaces) }} Public</span>
-                <span>👑 {{ $proPlaces + $vipPlaces }} Premium</span>
-            </div>
-        </div>
-
-        <!-- Premium Access Gems -->
-        <div class="glass-card p-6 rounded-2xl border border-slate-800 hover:border-amber-500/40 transition duration-300 relative overflow-hidden group">
-            <div class="flex justify-between items-start mb-4">
-                <div class="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 group-hover:scale-110 transition duration-300">
-                    <i class="fa-solid fa-crown text-2xl"></i>
-                </div>
-                <span class="text-xs font-bold text-amber-400 bg-amber-500/10 px-2.5 py-1 rounded-full border border-amber-500/20 shrink-0 whitespace-nowrap">
-                    Monetized
-                </span>
-            </div>
-            <h3 class="text-3xl font-black text-amber-300 tracking-tight">{{ number_format($proPlaces + $vipPlaces) }}</h3>
-            <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mt-1">Exclusive Tier Gems</p>
-            <div class="mt-3 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
-                <span>⭐ {{ $proPlaces }} PRO</span>
-                <span>👑 {{ $vipPlaces }} VIP Exclusive</span>
+                <span>{{ $totalPlaces }} Active</span>
+                <span>{{ $arPlaces }} AR Ready</span>
             </div>
         </div>
 
@@ -110,22 +92,12 @@
     </div>
 
     <!-- Charts Row -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div class="glass-card p-6 rounded-2xl border border-slate-800 lg:col-span-1">
-            <h3 class="font-bold text-base text-white flex items-center gap-2 mb-4">
-                <i class="fa-solid fa-chart-pie text-emerald-400"></i> Access Tier Split
-            </h3>
-            <div class="h-56 relative">
-                <canvas id="tierChart"></canvas>
-            </div>
-        </div>
-        <div class="glass-card p-6 rounded-2xl border border-slate-800 lg:col-span-2">
-            <h3 class="font-bold text-base text-white flex items-center gap-2 mb-4">
-                <i class="fa-solid fa-chart-column text-teal-400"></i> Top Categories
-            </h3>
-            <div class="h-56">
-                <canvas id="categoryChart"></canvas>
-            </div>
+    <div class="glass-card p-6 rounded-2xl border border-slate-800">
+        <h3 class="font-bold text-base text-white flex items-center gap-2 mb-4">
+            <i class="fa-solid fa-chart-column text-teal-400"></i> Top Categories
+        </h3>
+        <div class="h-56">
+            <canvas id="categoryChart"></canvas>
         </div>
     </div>
 
@@ -301,7 +273,6 @@
                         <th class="py-3 px-4">Place Name</th>
                         <th class="py-3 px-4">District</th>
                         <th class="py-3 px-4">Category</th>
-                        <th class="py-3 px-4">Access Tier</th>
                         <th class="py-3 px-4">AR Supported</th>
                         <th class="py-3 px-4 text-right">Actions</th>
                     </tr>
@@ -323,21 +294,6 @@
                             <td class="py-3.5 px-4 text-slate-300 font-medium">{{ $place->district }}</td>
                             <td class="py-3.5 px-4 text-slate-400">{{ $place->category }}</td>
                             <td class="py-3.5 px-4">
-                                @if($place->access_tier === 'VIP')
-                                    <span class="inline-flex items-center gap-1 bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2.5 py-0.5 rounded-full font-bold">
-                                        👑 VIP Exclusive
-                                    </span>
-                                @elseif($place->access_tier === 'PRO')
-                                    <span class="inline-flex items-center gap-1 bg-teal-500/10 text-teal-300 border border-teal-500/20 px-2.5 py-0.5 rounded-full font-bold">
-                                        ⭐ PRO Subscriber
-                                    </span>
-                                @else
-                                    <span class="inline-flex items-center gap-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2.5 py-0.5 rounded-full font-medium">
-                                        🟢 Free (Public)
-                                    </span>
-                                @endif
-                            </td>
-                            <td class="py-3.5 px-4">
                                 @if($place->ar_supported)
                                     <span class="text-cyan-400 font-semibold flex items-center gap-1"><i class="fa-solid fa-cube"></i> Tier {{ $place->ar_tier }}</span>
                                 @else
@@ -352,7 +308,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="py-8 text-center text-slate-500">No places added yet.</td>
+                            <td colspan="5" class="py-8 text-center text-slate-500">No places added yet.</td>
                         </tr>
                     @endforelse
                 </tbody>
@@ -366,31 +322,6 @@
     Chart.defaults.color = '#94a3b8';
     Chart.defaults.font.family = "'Inter', sans-serif";
     Chart.defaults.font.size = 11;
-
-    new Chart(document.getElementById('tierChart'), {
-        type: 'doughnut',
-        data: {
-            labels: ['Free (Public)', 'PRO', 'VIP Exclusive'],
-            datasets: [{
-                data: [
-                    {{ $totalPlaces - ($proPlaces + $vipPlaces) }},
-                    {{ $proPlaces }},
-                    {{ $vipPlaces }},
-                ],
-                backgroundColor: ['#10b981', '#2dd4bf', '#f59e0b'],
-                borderColor: '#1e293b',
-                borderWidth: 3,
-            }],
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            cutout: '68%',
-            plugins: {
-                legend: { position: 'bottom', labels: { padding: 14, boxWidth: 10, boxHeight: 10 } },
-            },
-        },
-    });
 
     new Chart(document.getElementById('categoryChart'), {
         type: 'bar',

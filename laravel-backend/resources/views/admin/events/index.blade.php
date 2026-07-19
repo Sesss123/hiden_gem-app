@@ -48,6 +48,7 @@
                         <th class="px-6 py-4">Location</th>
                         <th class="px-6 py-4">Date/Duration</th>
                         <th class="px-6 py-4">Status</th>
+                        <th class="px-6 py-4">Created By</th>
                         <th class="px-6 py-4 text-right">Actions</th>
                     </tr>
                 </thead>
@@ -86,6 +87,15 @@
                                     </span>
                                 @endif
                             </td>
+                            <td class="px-6 py-5 text-slate-300 text-xs">
+                                @if($event->creator)
+                                    <span class="inline-flex items-center gap-1.5">
+                                        <i class="fa-solid fa-user-pen text-slate-500"></i> {{ $event->creator->name }}
+                                    </span>
+                                @else
+                                    <span class="text-slate-600 italic">System / Unknown</span>
+                                @endif
+                            </td>
                             <td class="px-6 py-5 text-right">
                                 <div class="flex items-center justify-end gap-2">
                                     <a href="{{ route('admin.events.edit', $event->id) }}" class="text-slate-400 hover:text-emerald-400 p-1.5 hover:bg-slate-800 rounded-lg transition" title="Edit">
@@ -103,7 +113,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="px-6 py-10 text-center text-slate-500">
+                            <td colspan="7" class="px-6 py-10 text-center text-slate-500">
                                 <div class="flex flex-col items-center justify-center gap-2">
                                     <i class="fa-solid fa-calendar-xmark text-3xl text-slate-600"></i>
                                     <span>No events registered yet.</span>

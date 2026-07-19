@@ -23,6 +23,7 @@ use App\Http\Controllers\Admin\IncidentController;
 use App\Http\Controllers\Admin\BookingController;
 use App\Http\Controllers\Admin\ReviewController;
 use App\Http\Controllers\Admin\SubscriptionController;
+use App\Http\Controllers\Admin\AuditLogController;
 use App\Http\Controllers\JoinController;
 use App\Http\Controllers\Api\V1\GuideDocumentUploadController;
 
@@ -41,54 +42,76 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:5,1');
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-    Route::middleware(['auth', 'is_admin'])->group(function () {
+    // Shared: reachable by both the restricted content_manager role and full admins.
+    // content_manager can browse/create/edit any place (editing an already-approved
+    // place resets it to pending for re-review, enforced in PlaceController::update())
+    // — destroy stays full-admin-only below since deletion has no equivalent
+    // review/undo safety net.
+    Route::middleware(['auth', 'content_manager_or_admin'])->group(function () {
+        Route::get('/search', [\App\Http\Controllers\Admin\SearchController::class, 'index'])->name('search');
+
+        Route::resource('places', PlaceController::class)->only(['index', 'create', 'edit']);
+        Route::resource('events', EventController::class)->only(['index', 'create', 'edit']);
+
+        // Mutating writes throttled (30/min) — content_manager mutates events
+        // directly with no approval gate, same abuse risk as full-admin writes.
+        Route::middleware('throttle:30,1')->group(function () {
+            Route::resource('places', PlaceController::class)->only(['store', 'update']);
+            Route::resource('events', EventController::class)->only(['store', 'update', 'destroy']);
+        });
+    });
+
+    Route::middleware(['auth', 'full_admin'])->group(function () {
         Route::get('/', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
         Route::get('/dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard.index');
-        Route::resource('places', PlaceController::class);
-        Route::delete('images/{id}', [PlaceController::class, 'deleteImage'])->name('images.delete');
-        Route::post('images/{id}/cover', [PlaceController::class, 'setCoverImage'])->name('images.cover');
 
-
-        // Events CRUD
-        Route::resource('events', EventController::class);
-
-        // Curator Partners CRUD (Firestore-backed, no MySQL table)
-        Route::resource('partners', PartnerController::class);
-
-        // Guide Moderation
-        Route::get('/guides', [GuideController::class, 'index'])->name('guides.index');
-        Route::get('/guides/{id}', [GuideController::class, 'show'])->name('guides.show');
-        Route::post('/guides/{id}/approve', [GuideController::class, 'approve'])->name('guides.approve');
-        Route::post('/guides/{id}/reject', [GuideController::class, 'reject'])->name('guides.reject');
-        Route::post('/guides/{id}/ban', [GuideController::class, 'ban'])->name('guides.ban');
-        Route::post('/guides/{id}/remove', [GuideController::class, 'remove'])->name('guides.remove');
+        Route::resource('partners', PartnerController::class)->only(['index', 'create', 'show', 'edit']);
+        Route::resource('users', UserController::class)->only(['index', 'create', 'show', 'edit']);
 
         // Guide verification document viewer — see security note on
         // GuideDocumentUploadController::upload()/download(). Session
-        // (auth + is_admin) gated, same as the rest of this route group.
+        // (auth + full_admin) gated, same as the rest of this route group.
         Route::get('/guide-documents/{uid}/{filename}', [GuideDocumentUploadController::class, 'download'])
             ->name('guide-documents.download');
 
-        // Users CRUD
-        Route::resource('users', UserController::class);
-
-        // Incident Reports (SOS alerts + manual reports) — Firestore-backed
+        // Read-only listing/detail views — never throttled, admins hit these constantly.
+        Route::get('/guides', [GuideController::class, 'index'])->name('guides.index');
+        Route::get('/guides/{id}', [GuideController::class, 'show'])->name('guides.show');
+        Route::get('/places-pending', [PlaceController::class, 'pending'])->name('places.pending');
         Route::get('/incidents', [IncidentController::class, 'index'])->name('incidents.index');
         Route::get('/incidents/{id}', [IncidentController::class, 'show'])->name('incidents.show');
-        Route::post('/incidents/{id}/resolve', [IncidentController::class, 'resolve'])->name('incidents.resolve');
-        Route::post('/incidents/{id}/dismiss', [IncidentController::class, 'dismiss'])->name('incidents.dismiss');
-
-        // Bookings / Tour Sessions — Firestore-backed
         Route::get('/bookings', [BookingController::class, 'index'])->name('bookings.index');
         Route::get('/bookings/{id}', [BookingController::class, 'show'])->name('bookings.show');
-        Route::post('/bookings/{id}/cancel', [BookingController::class, 'cancel'])->name('bookings.cancel');
-
-        // Review Moderation — Firestore-backed
         Route::get('/reviews', [ReviewController::class, 'index'])->name('reviews.index');
-        Route::post('/reviews/{id}/hide', [ReviewController::class, 'hide'])->name('reviews.hide');
-        Route::post('/reviews/{id}/restore', [ReviewController::class, 'restore'])->name('reviews.restore');
-
-        // Premium/Subscription Overview — Firestore-backed, read-only
         Route::get('/subscriptions', [SubscriptionController::class, 'index'])->name('subscriptions.index');
+        Route::get('/audit-log', [AuditLogController::class, 'index'])->name('audit-log.index');
+
+        // Mutating actions (approve/reject/destroy/ban/cancel/hide) throttled
+        // to 30/min — friction against a compromised session or scripted abuse,
+        // loose enough not to interfere with normal admin clicking.
+        Route::middleware('throttle:30,1')->group(function () {
+            Route::resource('places', PlaceController::class)->only(['destroy']);
+            Route::delete('images/{id}', [PlaceController::class, 'deleteImage'])->name('images.delete');
+            Route::post('images/{id}/cover', [PlaceController::class, 'setCoverImage'])->name('images.cover');
+            Route::post('/places/{id}/approve', [PlaceController::class, 'approve'])->name('places.approve');
+            Route::post('/places/{id}/reject', [PlaceController::class, 'reject'])->name('places.reject');
+
+            Route::resource('partners', PartnerController::class)->only(['store', 'update', 'destroy']);
+
+            Route::post('/guides/{id}/approve', [GuideController::class, 'approve'])->name('guides.approve');
+            Route::post('/guides/{id}/reject', [GuideController::class, 'reject'])->name('guides.reject');
+            Route::post('/guides/{id}/ban', [GuideController::class, 'ban'])->name('guides.ban');
+            Route::post('/guides/{id}/remove', [GuideController::class, 'remove'])->name('guides.remove');
+
+            Route::resource('users', UserController::class)->only(['store', 'update', 'destroy']);
+
+            Route::post('/incidents/{id}/resolve', [IncidentController::class, 'resolve'])->name('incidents.resolve');
+            Route::post('/incidents/{id}/dismiss', [IncidentController::class, 'dismiss'])->name('incidents.dismiss');
+
+            Route::post('/bookings/{id}/cancel', [BookingController::class, 'cancel'])->name('bookings.cancel');
+
+            Route::post('/reviews/{id}/hide', [ReviewController::class, 'hide'])->name('reviews.hide');
+            Route::post('/reviews/{id}/restore', [ReviewController::class, 'restore'])->name('reviews.restore');
+        });
     });
 });

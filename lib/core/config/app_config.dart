@@ -8,12 +8,12 @@ class AppConfig {
 
   static const String laravelUrl = String.fromEnvironment(
     'LARAVEL_BACKEND_URL',
-    defaultValue: kReleaseMode ? "https://api.hiddengemssl.com/api/v1" : "http://192.168.8.102:8888/api/v1",
+    defaultValue: kReleaseMode ? "https://api.hiddengemssl.com/api/v1" : "http://192.168.8.168:8888/api/v1",
   );
 
   static const String pythonUrl = String.fromEnvironment(
     'PYTHON_BACKEND_URL',
-    defaultValue: kReleaseMode ? "https://ai.hiddengemssl.com/api" : "http://192.168.8.102:8000/api",
+    defaultValue: kReleaseMode ? "https://ai.hiddengemssl.com/api" : "http://192.168.8.168:8000/api",
   );
 
   // Alias for backward compatibility (defaults to Laravel backend)
@@ -94,7 +94,7 @@ class AppConfig {
     } catch (_) {
       return kReleaseMode
           ? 'wss://ai.hiddengemssl.com/ws/scan'
-          : 'ws://192.168.8.102:8000/ws/scan';
+          : 'ws://192.168.8.168:8000/ws/scan';
     }
   }
 

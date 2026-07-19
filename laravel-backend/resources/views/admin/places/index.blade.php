@@ -49,6 +49,7 @@
                         <th class="py-4 px-6">Category</th>
                         <th class="py-4 px-6">AR / Rating</th>
                         <th class="py-4 px-6">Sync Version</th>
+                        <th class="py-4 px-6">Status</th>
                         <th class="py-4 px-6 text-right">Actions</th>
                     </tr>
                 </thead>
@@ -57,9 +58,15 @@
                     <tr class="hover:bg-slate-800/40 transition duration-150 group">
                         <td class="py-3 px-6">
                             @php
-                                $thumb = $place->coverImage ? $place->coverImage->thumb_path : ($place->image_url ?: 'https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?q=80&w=200&auto=format&fit=crop');
+                                $thumb = $place->coverImage ? $place->coverImage->thumb_path : $place->image_url;
                             @endphp
-                            <img src="{{ $thumb }}" alt="{{ $place->name }}" class="w-12 h-12 rounded-xl object-cover border border-slate-700 shadow-sm group-hover:scale-105 transition duration-300">
+                            @if($thumb)
+                                <img src="{{ $thumb }}" alt="{{ $place->name }}" class="w-12 h-12 rounded-xl object-cover border border-slate-700 shadow-sm group-hover:scale-105 transition duration-300">
+                            @else
+                                <div class="w-12 h-12 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-500">
+                                    <i class="fa-solid fa-image"></i>
+                                </div>
+                            @endif
                         </td>
                         <td class="py-3 px-6 font-medium text-white">
                             <div class="font-bold">{{ $place->name }}</div>
@@ -90,22 +97,31 @@
                                 v{{ $place->sync_version }}
                             </span>
                         </td>
+                        <td class="py-3 px-6">
+                            @php $pstatus = $place->status ?? 'approved'; @endphp
+                            <span class="inline-flex items-center gap-1.5 text-xs font-semibold px-2 py-0.5 rounded-md border
+                                {{ $pstatus === 'approved' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : ($pstatus === 'rejected' ? 'bg-red-500/10 text-red-400 border-red-500/20' : 'bg-amber-500/10 text-amber-400 border-amber-500/20') }}">
+                                {{ ucfirst($pstatus) }}
+                            </span>
+                        </td>
                         <td class="py-3 px-6 text-right space-x-2">
                             <a href="{{ route('admin.places.edit', $place->id) }}" class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-slate-800 hover:bg-emerald-600 text-slate-300 hover:text-white transition shadow" title="Edit">
                                 <i class="fa-solid fa-pen text-xs"></i>
                             </a>
-                            <form action="{{ route('admin.places.destroy', $place->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Move {{ $place->name }} to trash? This will soft-delete and increment sync version for mobile clients.')">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-slate-800 hover:bg-red-600 text-slate-300 hover:text-white transition shadow" title="Soft Delete">
-                                    <i class="fa-solid fa-trash text-xs"></i>
-                                </button>
-                            </form>
+                            @if(auth()->user()->isFullAdmin())
+                                <form action="{{ route('admin.places.destroy', $place->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Move {{ $place->name }} to trash? This will soft-delete and increment sync version for mobile clients.')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-slate-800 hover:bg-red-600 text-slate-300 hover:text-white transition shadow" title="Soft Delete">
+                                        <i class="fa-solid fa-trash text-xs"></i>
+                                    </button>
+                                </form>
+                            @endif
                         </td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="7" class="py-12 text-center text-slate-500">
+                        <td colspan="8" class="py-12 text-center text-slate-500">
                             <i class="fa-solid fa-compass text-3xl mb-3 block opacity-40"></i>
                             No hidden gems found. Click "Add New Gem" above to begin seeding the database.
                         </td>

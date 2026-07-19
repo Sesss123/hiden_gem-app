@@ -173,7 +173,7 @@ class _RealTimeFoodScannerScreenState extends State<RealTimeFoodScannerScreen>
   WebSocketChannel? _channel;
   StreamSubscription? _socketSubscription;
   bool _isConnected = false;
-  String _serverIp = '192.168.8.102'; // Default for physical device testing over Wi-Fi
+  String _serverIp = '192.168.8.168'; // Default for physical device testing over Wi-Fi
   String _serverPort = '8000';
 
   // Throttling timer (1 frame per second)

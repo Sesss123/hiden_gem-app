@@ -6,12 +6,15 @@ use App\Http\Controllers\Controller;
 use App\Models\GuideApplication;
 use App\Models\User;
 use App\Services\FirestoreService;
+use App\Traits\LogsAdminActivity;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class GuideController extends Controller
 {
+    use LogsAdminActivity;
+
     private FirestoreService $firestoreService;
 
     /**
@@ -90,6 +93,8 @@ class GuideController extends Controller
                 ]);
             });
 
+            $this->logAdminAction('guide.approved', 'GuideApplication', $id, ['user_id' => $userId]);
+
             return redirect()->route('admin.guides.index', ['status' => 'approved'])
                 ->with('success', "✅ Approved '{$application->user->name}'. Firestore synced — guide will see status update in app instantly.");
 
@@ -133,6 +138,8 @@ class GuideController extends Controller
                 ]);
             });
 
+            $this->logAdminAction('guide.rejected', 'GuideApplication', $id, ['user_id' => $userId, 'reason' => $adminComment]);
+
             return redirect()->route('admin.guides.index', ['status' => 'rejected'])
                 ->with('success', "❌ Rejected '{$application->user->name}'. Reason sent to app — guide can reapply.");
 
@@ -164,6 +171,8 @@ class GuideController extends Controller
             Log::warning("Firestore sync for ban failed: " . $e->getMessage());
         }
 
+        $this->logAdminAction('guide.banned', 'User', $user->id, ['application_id' => $id]);
+
         return back()->with('success', "User '{$user->name}' has been permanently banned.");
     }
 
@@ -192,6 +201,8 @@ class GuideController extends Controller
         }
 
         $application->delete();
+
+        $this->logAdminAction('guide.removed', 'GuideApplication', $id, ['user_id' => $user->id]);
 
         return redirect()->route('admin.guides.index')
             ->with('success', "Guide association for '{$user->name}' has been removed.");

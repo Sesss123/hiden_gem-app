@@ -35,9 +35,9 @@ class PlaceSyncController extends Controller
         if ($sinceVersion > 0) {
             $query->where('sync_version', '>', $sinceVersion);
         } else {
-            $query->where('is_deleted', false);
+            $query->where('is_deleted', false)->where('status', Place::STATUS_APPROVED);
         }
-        
+
         // Secondary ordering by id prevents record dropping across chunk limits (Exec #10 / Audit #23)
         // Query limit + 1 to accurately determine hasMore without an extra empty round-trip (Audit #20)
         $places = $query->orderBy('sync_version', 'asc')->orderBy('id', 'asc')->limit($limit + 1)->get();
@@ -55,7 +55,12 @@ class PlaceSyncController extends Controller
                 $maxVersion = $place->sync_version;
             }
 
-            if ($place->is_deleted) {
+            // A place that's been soft-deleted, OR is no longer approved (e.g. a
+            // content_manager submission that was rejected after already syncing
+            // once as pending — shouldn't normally happen, but defensive), should
+            // be purged from clients that already have it.
+            $noLongerVisible = $place->is_deleted || $place->status !== Place::STATUS_APPROVED;
+            if ($noLongerVisible) {
                 if ($sinceVersion > 0) {
                     $deletedIds[] = $place->id;
                 }
@@ -63,7 +68,7 @@ class PlaceSyncController extends Controller
         }
 
         // Use PlaceResource::collection to leverage optimized collection serialization (Exec #13)
-        $activePlaces = $places->where('is_deleted', false);
+        $activePlaces = $places->where('is_deleted', false)->where('status', Place::STATUS_APPROVED);
         $upsertPlaces = \App\Http\Resources\PlaceResource::collection($activePlaces)->resolve();
 
         return response()->json([
@@ -85,7 +90,8 @@ class PlaceSyncController extends Controller
         $limit = min((int) $request->query('limit', 100), 500);
 
         $query = Place::with('images')
-            ->where('is_deleted', false);
+            ->where('is_deleted', false)
+            ->where('status', Place::STATUS_APPROVED);
 
         if ($cursor > 0) {
             $query->where('sync_version', '>', $cursor);

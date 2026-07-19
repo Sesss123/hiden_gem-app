@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\Place;
 use App\Services\FirestoreService;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
@@ -42,6 +43,11 @@ class AppServiceProvider extends ServiceProvider
                 }
             });
             $view->with('openIncidentCount', $count);
+
+            $pendingPlaceCount = Cache::remember('admin_pending_place_count', 60, function () {
+                return Place::where('status', Place::STATUS_PENDING)->count();
+            });
+            $view->with('pendingPlaceCount', $pendingPlaceCount);
         });
     }
 }

@@ -142,7 +142,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final String name = hasGem ? _localGems.first.name : "Sigiriya Ancient Fortress";
     final String district = hasGem ? _localGems.first.district : "Matale";
     final String imageUrl = hasGem ? _localGems.first.imageUrl : "https://images.unsplash.com/photo-1588598130782-690a298573ec?q=80&w=600&auto=format&fit=crop";
-    final double rating = hasGem ? _localGems.first.rating : 4.9;
 
     return SizedBox(
       height: 220,
@@ -187,40 +186,21 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.secondary.withValues(alpha: 0.8),
-                            borderRadius: const BorderRadius.all(Radius.circular(12)),
-                          ),
-                          child: Text(
-                            l10n.featuredLabel,
-                            style: GoogleFonts.inter(
-                              color: AppTheme.colors.white,
-                              fontSize: 9,
-                              fontWeight: FontWeight.w700,
-                              letterSpacing: 0.5,
-                            ),
-                          ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.secondary.withValues(alpha: 0.8),
+                        borderRadius: const BorderRadius.all(Radius.circular(12)),
+                      ),
+                      child: Text(
+                        l10n.featuredLabel,
+                        style: GoogleFonts.inter(
+                          color: AppTheme.colors.white,
+                          fontSize: 9,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 0.5,
                         ),
-                        Row(
-                          children: [
-                            Icon(Icons.star_rounded, color: AppTheme.colors.orangeAccent, size: 16),
-                            const SizedBox(width: 4),
-                            Text(
-                              rating.toString(),
-                              style: GoogleFonts.inter(
-                                color: AppTheme.colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 12,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
+                      ),
                     ),
                     const Spacer(),
                     Text(
@@ -1167,13 +1147,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Icon(Icons.location_on_rounded, size: 14, color: Theme.of(context).colorScheme.primary),
-                        Text(gem.rating.toString(), style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.bold, color: AppTheme.colors.orangeAccent)),
-                      ],
-                    ),
+                    Icon(Icons.location_on_rounded, size: 14, color: Theme.of(context).colorScheme.primary),
                     const Spacer(),
                     Text(gem.name.toUpperCase(), style: GoogleFonts.outfit(fontSize: 11, fontWeight: FontWeight.bold, color: AppTheme.textPrimary(context)), maxLines: 1, overflow: TextOverflow.ellipsis),
                     Text(gem.district, style: GoogleFonts.inter(fontSize: 9, color: AppTheme.textSecondary(context))),

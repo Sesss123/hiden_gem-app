@@ -6,15 +6,12 @@ use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class IsAdmin
+class IsFullAdmin
 {
     /**
      * Handle an incoming request.
-     * Ensure the authenticated user has full admin privileges. Checking
-     * is_admin alone is not enough — the restricted content_manager role
-     * also has is_admin=true (so it can reach the web admin panel at all),
-     * but must not reach these API routes (guide/listing approval etc.),
-     * which are full-admin-only actions.
+     * Ensure the authenticated user has full admin privileges (not a restricted
+     * content_manager role, which is limited to Places/Events via a separate group).
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \Closure  $next
@@ -23,7 +20,7 @@ class IsAdmin
     public function handle(Request $request, Closure $next)
     {
         if (!Auth::check() || !Auth::user()->is_admin || !Auth::user()->isFullAdmin()) {
-            abort(403, 'Unauthorized access. Admin privileges required.');
+            abort(403, 'Unauthorized access. Full admin privileges required.');
         }
 
         return $next($request);

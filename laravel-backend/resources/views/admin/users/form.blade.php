@@ -33,6 +33,13 @@
                 <input type="email" value="{{ $user->email }}" disabled class="w-full bg-slate-950 border border-slate-900 rounded-xl py-3 px-4 text-slate-550 cursor-not-allowed">
             </div>
 
+            <!-- Password -->
+            <div class="space-y-2">
+                <label for="password" class="block text-sm font-semibold text-slate-300">New Password</label>
+                <input type="password" name="password" id="password" minlength="8" placeholder="Leave blank to keep current password" class="w-full bg-slate-900 border border-slate-800 rounded-xl py-3 px-4 text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500/50 transition">
+                <p class="text-xs text-slate-500">If setting a new password: at least 8 characters, with upper &amp; lowercase letters and a number.</p>
+            </div>
+
             <!-- Subscription Tiers Selection -->
             <div class="space-y-2 border-t border-slate-800/60 pt-6">
                 <label for="subscription_tier" class="block text-sm font-semibold text-slate-300">Subscription Tier <span class="text-red-500">*</span></label>
@@ -54,7 +61,9 @@
                     <select name="role" id="role" class="w-full bg-slate-900 border border-slate-800 rounded-xl py-3 px-4 text-white focus:outline-none focus:border-emerald-500/50 transition">
                         <option value="tourist" {{ old('role', $user->role) == 'tourist' ? 'selected' : '' }}>Tourist (Standard Account)</option>
                         <option value="guide_approved" {{ old('role', $user->role) == 'guide_approved' ? 'selected' : '' }}>Approved Guide (Live Broadcast Active)</option>
+                        <option value="content_manager" {{ old('role', $user->role) == 'content_manager' ? 'selected' : '' }}>Content Manager (Places + Events only)</option>
                         <option value="admin" {{ old('role', $user->role) == 'admin' ? 'selected' : '' }}>Administrator (Portal Access)</option>
+                        <option value="super_admin" {{ old('role', $user->role) == 'super_admin' ? 'selected' : '' }}>Super Admin (Portal Access)</option>
                         <option value="banned" {{ old('role', $user->role) == 'banned' ? 'selected' : '' }}>Banned / Suspended (Account Locked)</option>
                     </select>
                 </div>

@@ -14,10 +14,6 @@ class DashboardController extends Controller
     public function index()
     {
         $totalPlaces = Place::count();
-        
-        $hasAccessTier = Schema::hasColumn('places', 'access_tier');
-        $proPlaces = $hasAccessTier ? Place::where('access_tier', 'PRO')->count() : 0;
-        $vipPlaces = $hasAccessTier ? Place::where('access_tier', 'VIP')->count() : 0;
         $arPlaces = Place::where('ar_supported', true)->count();
 
         $totalUsers = User::count();
@@ -51,7 +47,7 @@ class DashboardController extends Controller
             ->get();
 
         return view('admin.dashboard', compact(
-            'totalPlaces', 'proPlaces', 'vipPlaces', 'arPlaces',
+            'totalPlaces', 'arPlaces',
             'totalUsers', 'proUsers', 'vipUsers',
             'totalWishlists', 'byDistrict', 'byCategory', 'recentPlaces', 'duplicates'
         ));

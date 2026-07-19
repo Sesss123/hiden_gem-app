@@ -20,6 +20,7 @@ class User extends Authenticatable implements MustVerifyEmail
     public const ROLE_BANNED = 'banned';
     public const ROLE_ADMIN = 'admin';
     public const ROLE_SUPER_ADMIN = 'super_admin';
+    public const ROLE_CONTENT_MANAGER = 'content_manager';
 
     public static function allRoles(): array
     {
@@ -30,7 +31,24 @@ class User extends Authenticatable implements MustVerifyEmail
             self::ROLE_BANNED,
             self::ROLE_ADMIN,
             self::ROLE_SUPER_ADMIN,
+            self::ROLE_CONTENT_MANAGER,
         ];
+    }
+
+    /**
+     * Full admin-panel access (dashboard, users, bookings, subscriptions, etc).
+     */
+    public function isFullAdmin(): bool
+    {
+        return in_array($this->role, [self::ROLE_ADMIN, self::ROLE_SUPER_ADMIN], true);
+    }
+
+    /**
+     * Restricted role: can submit Places (pending approval) and manage Events directly.
+     */
+    public function isContentManager(): bool
+    {
+        return $this->role === self::ROLE_CONTENT_MANAGER;
     }
 
     // BUG-C01 Fix: Enforce model-level attribute default so new users never become admins

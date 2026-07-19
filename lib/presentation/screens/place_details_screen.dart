@@ -5,7 +5,6 @@ import 'package:geolocator/geolocator.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/theme/oracle_ui_system.dart';
-import '../../core/utils/image_utils.dart';
 import '../../core/analytics/analytics_service.dart';
 import '../../core/services/ar_service.dart';
 import '../../data/models/ar_place_data.dart';
@@ -295,9 +294,7 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
           fit: StackFit.expand,
           children: [
             CachedImage(
-              url: widget.place.imageUrl.isNotEmpty
-                  ? widget.place.imageUrl
-                  : ImageUtils.getPlaceholderImage(widget.place.category, widget.place.name),
+              url: widget.place.heroImageUrl,
               fit: BoxFit.cover,
               poolType: CachePoolType.full,
             ),
@@ -495,15 +492,6 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
                       style: GoogleFonts.inter(fontSize: 11.5, color: AppTheme.textSecondary(context), fontWeight: FontWeight.w600),
                       overflow: TextOverflow.ellipsis,
                     ),
-                  ),
-                  SizedBox(width: 8),
-                  Container(width: 3, height: 3, decoration: BoxDecoration(shape: BoxShape.circle, color: AppTheme.textSecondary(context))),
-                  SizedBox(width: 8),
-                  Icon(Icons.star_rounded, color: AppTheme.sigiriyaOchre(context), size: 13),
-                  SizedBox(width: 4),
-                  Text(
-                    widget.place.rating.toString(),
-                    style: GoogleFonts.inter(fontWeight: FontWeight.w700, color: AppTheme.sigiriyaOchre(context), fontSize: 12),
                   ),
                 ],
               ),

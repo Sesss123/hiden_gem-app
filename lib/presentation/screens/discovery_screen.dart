@@ -15,7 +15,6 @@ import '../widgets/skeleton_loaders.dart';
 import 'map_explorer_screen.dart';
 import '../../data/models/village_experience.dart';
 import '../../data/datasources/village_experience_service.dart';
-import '../../core/utils/image_utils.dart';
 import '../../core/localization/l10n_utils.dart';
 import 'place_details_screen.dart';
 import 'package:shimmer/shimmer.dart';
@@ -1116,24 +1115,31 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
                             Positioned.fill(
                               child: ClipRRect(
                                 borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-                                child: CachedNetworkImage(
-                                  imageUrl: place.imageUrl.isNotEmpty ? place.imageUrl : ImageUtils.getPlaceholderImage(place.category, place.name),
-                                  width: double.infinity,
-                                  fit: BoxFit.cover,
-                                  memCacheWidth: 600,
-                                  memCacheHeight: 400,
-                                  placeholder: (context, url) => Shimmer.fromColors(
-                                    baseColor: AppTheme.colors.white.withValues(alpha: 0.05),
-                                    highlightColor: AppTheme.colors.white.withValues(alpha: 0.15),
-                                    child: Container(color: AppTheme.colors.white),
-                                  ),
-                                  errorWidget: (context, url, error) => Container(
-                                    color: AppTheme.colors.black12,
-                                    child: Center(
-                                      child: Icon(Icons.broken_image_outlined, color: AppTheme.colors.white24, size: 32),
-                                    ),
-                                  ),
-                                ),
+                                child: place.imageUrl.isEmpty
+                                    ? Container(
+                                        color: AppTheme.colors.black12,
+                                        child: Center(
+                                          child: Icon(Icons.image_outlined, color: AppTheme.colors.white24, size: 32),
+                                        ),
+                                      )
+                                    : CachedNetworkImage(
+                                        imageUrl: place.imageUrl,
+                                        width: double.infinity,
+                                        fit: BoxFit.cover,
+                                        memCacheWidth: 600,
+                                        memCacheHeight: 400,
+                                        placeholder: (context, url) => Shimmer.fromColors(
+                                          baseColor: AppTheme.colors.white.withValues(alpha: 0.05),
+                                          highlightColor: AppTheme.colors.white.withValues(alpha: 0.15),
+                                          child: Container(color: AppTheme.colors.white),
+                                        ),
+                                        errorWidget: (context, url, error) => Container(
+                                          color: AppTheme.colors.black12,
+                                          child: Center(
+                                            child: Icon(Icons.broken_image_outlined, color: AppTheme.colors.white24, size: 32),
+                                          ),
+                                        ),
+                                      ),
                               ),
                             ),
                             Positioned.fill(
@@ -1172,28 +1178,6 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
                                   ),
                                 ),
                               ),
-                            Positioned(
-                              top: 12,
-                              left: 12,
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                decoration: BoxDecoration(
-                                  color: AppTheme.colors.black54,
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(Icons.star_rounded, color: AppTheme.colors.orangeAccent, size: 12),
-                                    const SizedBox(width: 4),
-                                    Text(
-                                      place.rating.toString(),
-                                      style: GoogleFonts.inter(color: AppTheme.colors.white, fontWeight: FontWeight.bold, fontSize: 10),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
                           ],
                         ),
                       ),
@@ -1307,23 +1291,30 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
                         topLeft: Radius.circular(24),
                         bottomLeft: Radius.circular(24),
                       ),
-                      child: CachedNetworkImage(
-                        imageUrl: place.imageUrl.isNotEmpty ? place.imageUrl : ImageUtils.getPlaceholderImage(place.category, place.name),
-                        fit: BoxFit.cover,
-                        memCacheWidth: 600,
-                        memCacheHeight: 400,
-                        placeholder: (context, url) => Shimmer.fromColors(
-                          baseColor: AppTheme.colors.white.withValues(alpha: 0.05),
-                          highlightColor: AppTheme.colors.white.withValues(alpha: 0.15),
-                          child: Container(color: AppTheme.colors.white),
-                        ),
-                        errorWidget: (context, url, error) => Container(
-                          color: AppTheme.colors.black12,
-                          child: Center(
-                            child: Icon(Icons.broken_image_outlined, color: AppTheme.colors.white24, size: 32),
-                          ),
-                        ),
-                      ),
+                      child: place.imageUrl.isEmpty
+                          ? Container(
+                              color: AppTheme.colors.black12,
+                              child: Center(
+                                child: Icon(Icons.image_outlined, color: AppTheme.colors.white24, size: 32),
+                              ),
+                            )
+                          : CachedNetworkImage(
+                              imageUrl: place.imageUrl,
+                              fit: BoxFit.cover,
+                              memCacheWidth: 600,
+                              memCacheHeight: 400,
+                              placeholder: (context, url) => Shimmer.fromColors(
+                                baseColor: AppTheme.colors.white.withValues(alpha: 0.05),
+                                highlightColor: AppTheme.colors.white.withValues(alpha: 0.15),
+                                child: Container(color: AppTheme.colors.white),
+                              ),
+                              errorWidget: (context, url, error) => Container(
+                                color: AppTheme.colors.black12,
+                                child: Center(
+                                  child: Icon(Icons.broken_image_outlined, color: AppTheme.colors.white24, size: 32),
+                                ),
+                              ),
+                            ),
                     ),
                   ),
                   Positioned(
@@ -1370,22 +1361,6 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
-                          ),
-                          const SizedBox(width: 4),
-                          Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(Icons.star_rounded, color: AppTheme.colors.orangeAccent, size: 14),
-                              const SizedBox(width: 2),
-                              Text(
-                                place.rating.toString(),
-                                style: GoogleFonts.inter(
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.bold,
-                                  color: AppTheme.textPrimary(context),
-                                ),
-                              ),
-                            ],
                           ),
                         ],
                       ),

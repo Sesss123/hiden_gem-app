@@ -6,12 +6,18 @@ use App\Http\Controllers\Controller;
 use App\Models\Place;
 use App\Models\PlaceImage;
 use App\Services\ImageProcessingService;
+use App\Traits\LogsAdminActivity;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class PlaceController extends Controller
 {
+    use LogsAdminActivity;
+
     protected $imageService;
 
     public function __construct(ImageProcessingService $imageService)
@@ -22,6 +28,14 @@ class PlaceController extends Controller
     public function index(Request $request)
     {
         $query = Place::with('coverImage')->where('is_deleted', false);
+
+        // content_manager only ever sees places they personally created —
+        // no visibility into the existing catalog or other admins'/content
+        // managers' submissions. Edit access follows the same scoping (see
+        // edit()/update() below); destroy stays full_admin-only regardless.
+        if (!Auth::user()->isFullAdmin()) {
+            $query->where('created_by', Auth::id());
+        }
 
         if ($search = $request->input('search')) {
             $query->where(function ($q) use ($search) {
@@ -47,11 +61,21 @@ class PlaceController extends Controller
     public function store(Request $request)
     {
         $data = $this->validatePlace($request);
-        
+        $isContentManager = Auth::user()->isContentManager();
+
+        // Rating input was removed from the admin form (never fed by a real
+        // review system) — seed new places with the same 4.8 default the
+        // form used to prefill, instead of the raw DB column default of 0.
+        $data['rating'] = $data['rating'] ?? 4.8;
+        $data['created_by'] = Auth::id();
+        // Places submitted by a content_manager need a real admin's sign-off before
+        // going live; places created by a full admin keep today's behavior (live immediately).
+        $data['status'] = $isContentManager ? Place::STATUS_PENDING : Place::STATUS_APPROVED;
+
         $place = null;
         $maxRetries = 3;
         $retryCount = 0;
-        
+
         while ($retryCount < $maxRetries) {
             try {
                 // BUG-L004 & BUG-L006: Wrap ID generation, model creation, and image processing in a transaction
@@ -78,19 +102,41 @@ class PlaceController extends Controller
             }
         }
 
-        return redirect()->route('admin.places.index')->with('success', "Place '{$place->name}' created successfully.");
+        if ($isContentManager) {
+            Cache::forget('admin_pending_place_count');
+        }
+
+        $message = $isContentManager
+            ? "Place '{$place->name}' submitted and is awaiting admin approval."
+            : "Place '{$place->name}' created successfully.";
+
+        return redirect()->route('admin.places.index')->with('success', $message);
     }
 
     public function edit($id)
     {
         $place = Place::with('images')->findOrFail($id);
+        $this->authorizePlaceOwner($place);
         return view('admin.places.form', compact('place'));
     }
 
     public function update(Request $request, $id)
     {
         $place = Place::findOrFail($id);
+        $this->authorizePlaceOwner($place);
         $data = $this->validatePlace($request, true);
+        $isContentManager = Auth::user()->isContentManager();
+
+        // A content_manager editing an already-approved place sends it back
+        // for re-review rather than letting the edit go live unreviewed —
+        // same safety net as a brand-new submission. Editing a place that's
+        // already pending/rejected just keeps it in that state (no change).
+        if ($isContentManager && $place->status === Place::STATUS_APPROVED) {
+            $data['status'] = Place::STATUS_PENDING;
+            $data['reviewed_by'] = null;
+            $data['review_reason'] = null;
+            Cache::forget('admin_pending_place_count');
+        }
 
         // BUG-L006: Wrap model update and image processing in a transaction
         DB::transaction(function () use ($place, $data, $request) {
@@ -100,21 +146,103 @@ class PlaceController extends Controller
             $this->handleImages($request, $place);
         });
 
-        return redirect()->route('admin.places.index')->with('success', "Place '{$place->name}' updated successfully.");
+        $message = ($isContentManager && $place->status === Place::STATUS_PENDING)
+            ? "Place '{$place->name}' updated and sent back for admin re-approval."
+            : "Place '{$place->name}' updated successfully.";
+
+        return redirect()->route('admin.places.index')->with('success', $message);
     }
 
     public function destroy($id)
     {
         $place = Place::findOrFail($id);
+        $placeName = $place->name;
         // Intercepted by PlaceObserver::deleting -> soft deletes and increments sync_version!
         $place->delete();
 
-        return redirect()->route('admin.places.index')->with('success', "Place '{$place->name}' moved to trash (soft deleted).");
+        $this->logAdminAction('place.deleted', 'Place', $id, ['name' => $placeName]);
+
+        return redirect()->route('admin.places.index')->with('success', "Place '{$placeName}' moved to trash (soft deleted).");
+    }
+
+    /**
+     * content_manager may only view/edit places they created themselves —
+     * full admins can act on any place. destroy() is full_admin-only at the
+     * route level already; this check is defense-in-depth there and the
+     * actual gate for edit()/update().
+     */
+    protected function authorizePlaceOwner(Place $place): void
+    {
+        $user = Auth::user();
+        if (!$user->isFullAdmin() && $place->created_by !== $user->id) {
+            abort(403, 'You can only manage places you created.');
+        }
+    }
+
+    /**
+     * Pending places queue — submissions from content_managers awaiting review.
+     * Only reachable via the full_admin route group.
+     */
+    public function pending()
+    {
+        $places = Place::with('creator')
+            ->where('status', Place::STATUS_PENDING)
+            ->orderBy('created_at', 'asc')
+            ->paginate(15);
+
+        return view('admin.places.pending', compact('places'));
+    }
+
+    public function approve($id)
+    {
+        $place = Place::findOrFail($id);
+
+        // Re-triggers PlaceObserver::saving -> bumps sync_version, which is what
+        // makes this place actually appear in the next Flutter delta sync.
+        $place->update([
+            'status' => Place::STATUS_APPROVED,
+            'reviewed_by' => Auth::id(),
+            'review_reason' => null,
+        ]);
+
+        Cache::forget('admin_pending_place_count');
+        $this->logAdminAction('place.approved', 'Place', $id, ['name' => $place->name]);
+
+        return redirect()->route('admin.places.pending')
+            ->with('success', "Place '{$place->name}' approved and is now live.");
+    }
+
+    public function reject(Request $request, $id)
+    {
+        $request->validate(['review_reason' => 'required|string|max:1000']);
+        $place = Place::findOrFail($id);
+
+        $place->update([
+            'status' => Place::STATUS_REJECTED,
+            'reviewed_by' => Auth::id(),
+            'review_reason' => $request->input('review_reason'),
+        ]);
+
+        Cache::forget('admin_pending_place_count');
+        $this->logAdminAction('place.rejected', 'Place', $id, ['name' => $place->name, 'reason' => $request->input('review_reason')]);
+
+        return redirect()->route('admin.places.pending')
+            ->with('success', "Place '{$place->name}' rejected.");
     }
 
     public function deleteImage($imageId)
     {
         $image = PlaceImage::findOrFail($imageId);
+
+        // thumb_path/full_path are stored as "/storage/{relative path}" —
+        // strip that prefix since Storage::disk('public') paths are already
+        // relative to the public disk root.
+        foreach ([$image->thumb_path, $image->full_path] as $path) {
+            if ($path) {
+                Storage::disk('public')->delete(str_replace('/storage/', '', $path));
+            }
+        }
+
         // Deleting image touches parent place -> increments sync_version!
         $image->delete();
 
@@ -135,7 +263,7 @@ class PlaceController extends Controller
 
     protected function validatePlace(Request $request, $isUpdate = false)
     {
-        return $request->validate([
+        $data = $request->validate([
             'id' => $isUpdate ? 'nullable' : 'nullable|string|unique:places,id',
             'name' => 'required|string|max:255',
             'district' => 'required|string|max:100',
@@ -153,7 +281,9 @@ class PlaceController extends Controller
             'province' => 'nullable|string|max:100',
             'opening_hours' => 'nullable|string|max:255',
             'mobile_signal' => 'nullable|string|max:100',
-            'activities' => 'nullable|string',
+            'activities_selected' => 'nullable|array',
+            'activities_selected.*' => 'string|max:100',
+            'activities_other' => 'nullable|string|max:500',
             'tourist_popularity' => 'nullable|string|max:100',
             'family_friendly' => 'nullable|string|max:50',
             'budget_category' => 'nullable|string|max:100',
@@ -187,6 +317,15 @@ class PlaceController extends Controller
             'images' => 'nullable|array|max:5', // BUG-010 Fix: hard constraint on max files per upload
             'images.*' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
         ]);
+
+        // Activities form UI is checkboxes + a free-text "Other" field; merge
+        // both back into the single comma-separated `activities` column.
+        $selected = $data['activities_selected'] ?? [];
+        $other = array_filter(array_map('trim', explode(',', $data['activities_other'] ?? '')));
+        $data['activities'] = implode(', ', array_merge($selected, $other)) ?: null;
+        unset($data['activities_selected'], $data['activities_other']);
+
+        return $data;
     }
 
     protected function handleImages(Request $request, Place $place)

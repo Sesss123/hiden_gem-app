@@ -51,7 +51,7 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <label class="block text-xs font-semibold text-slate-300 mb-1">District *</label>
                     @php
@@ -85,19 +85,6 @@
                             @endif
                         @endforeach
                     </select>
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-amber-400 mb-1 flex items-center gap-1"><i class="fa-solid fa-crown text-amber-400"></i> Access Tier</label>
-                    <select name="access_tier" class="w-full px-3 py-2 bg-slate-900 border border-amber-500/50 rounded-xl text-xs text-amber-300 font-bold focus:outline-none focus:border-amber-400">
-                        <option value="Free" {{ old('access_tier', $place->access_tier) == 'Free' ? 'selected' : '' }}>🟢 Free (Public)</option>
-                        <option value="PRO" {{ old('access_tier', $place->access_tier) == 'PRO' ? 'selected' : '' }}>⭐ PRO (Subscribers Only)</option>
-                        <option value="VIP" {{ old('access_tier', $place->access_tier) == 'VIP' ? 'selected' : '' }}>👑 VIP Exclusive</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-300 mb-1">Initial Rating (0-5)</label>
-                    <input type="number" step="0.1" min="0" max="5" name="rating" value="{{ old('rating', $place->rating ?: 4.8) }}"
-                        class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-emerald-500">
                 </div>
             </div>
         </div>
@@ -147,24 +134,14 @@
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div>
                     <label class="block text-xs font-semibold text-slate-300 mb-1">Province</label>
-                    @php
-                        $provOpts = ['Western', 'Central', 'Southern', 'Northern', 'Eastern', 'North Western', 'North Central', 'Uva', 'Sabaragamuwa'];
-                        $currProv = old('province', $place->province);
-                    @endphp
-                    <select name="province" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-emerald-500">
-                        <option value="">Select Province</option>
-                        @foreach($provOpts as $opt)
-                            <option value="{{ $opt }}" {{ $currProv == $opt ? 'selected' : '' }}>{{ $opt }}</option>
-                        @endforeach
-                        @if($currProv && !in_array($currProv, $provOpts))
-                            <option value="{{ $currProv }}" selected>{{ $currProv }} (Custom)</option>
-                        @endif
-                    </select>
+                    <input type="text" name="province" id="province_input" value="{{ old('province', $place->province) }}" readonly
+                        placeholder="Auto-filled from District"
+                        class="w-full px-3 py-2 bg-slate-900/60 border border-slate-800 rounded-xl text-xs text-slate-400 cursor-not-allowed focus:outline-none">
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-slate-300 mb-1">Opening Hours</label>
                     @php
-                        $openOpts = ['Open daily 24/7', '6:00 AM - 6:00 PM (Daytime)', '8:00 AM - 5:00 PM (Standard)', '7:00 AM - 7:00 PM', 'Varies by season'];
+                        $openOpts = ['24 Hours', '8 AM - 5 PM', '8 AM - 6 PM', 'Varies by season'];
                         $currOpen = old('opening_hours', $place->opening_hours);
                     @endphp
                     <select name="opening_hours" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-emerald-500">
@@ -179,24 +156,14 @@
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-slate-300 mb-1">Best Time to Visit</label>
-                    @php
-                        $bestOpts = ['All year round', 'Dec to Mar (Dry Season)', 'May to Sept (East Coast Best)', 'Early Morning / Sunrise', 'Late Afternoon / Sunset'];
-                        $currBest = old('best_time_to_visit', $place->best_time_to_visit ?: $place->best_time);
-                    @endphp
-                    <select name="best_time_to_visit" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-emerald-500">
-                        <option value="">Select Best Time</option>
-                        @foreach($bestOpts as $opt)
-                            <option value="{{ $opt }}" {{ $currBest == $opt ? 'selected' : '' }}>{{ $opt }}</option>
-                        @endforeach
-                        @if($currBest && !in_array($currBest, $bestOpts))
-                            <option value="{{ $currBest }}" selected>{{ $currBest }} (Custom)</option>
-                        @endif
-                    </select>
+                    <input type="text" name="best_time_to_visit" value="{{ old('best_time_to_visit', $place->best_time_to_visit ?: $place->best_time) }}"
+                        placeholder="e.g. Dec to Apr, Apr-Sep"
+                        class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500">
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-slate-300 mb-1">Tourist Popularity</label>
                     @php
-                        $popOpts = ['High / Famous', 'Medium / Moderate Crowd', 'Low / Remote & Secluded', 'Very High (Hotspot)'];
+                        $popOpts = ['Very High', 'High', 'Medium', 'Low'];
                         $currPop = old('tourist_popularity', $place->tourist_popularity);
                     @endphp
                     <select name="tourist_popularity" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-emerald-500">
@@ -211,12 +178,78 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div>
-                    <label class="block text-xs font-semibold text-slate-300 mb-1">Activities</label>
-                    <input type="text" name="activities" value="{{ old('activities', $place->activities) }}" placeholder="e.g. Prayer, Photography, Hiking"
-                        class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white">
+            <div>
+                <label class="block text-xs font-semibold text-slate-300 mb-2">Activities</label>
+                <p class="text-[11px] text-slate-500 mb-2">Showing activities relevant to the selected category. Pick a category above to refine this list.</p>
+                @php
+                    // group => [keywords to match against category text, activity list]
+                    // keywords are matched case-insensitively as substrings, so
+                    // messy variants like "Temple/Stupa" or "Sandy Beach (Kitesurf)" still hit.
+                    $activityGroups = [
+                        'religious' => [
+                            'keywords' => ['temple', 'kovil', 'mosque', 'church', 'shrine', 'devale', 'devalaya', 'stupa', 'monastery', 'sanctuary', 'basilica', 'chapel', 'cathedral'],
+                            'activities' => ['Prayer and Meditation', 'Photography', 'Reflection', 'Cultural Tours', 'Historical Tours', 'Nature Walk'],
+                        ],
+                        'waterfall' => [
+                            'keywords' => ['cascade', 'plunge', 'waterfall', 'fall', 'horsetail', 'tiered', 'segmented', 'fan', 'block'],
+                            'activities' => ['Photography', 'Swimming', 'Hiking', 'Nature Walk', 'Picnicking', 'Relaxation'],
+                        ],
+                        'beach' => [
+                            'keywords' => ['beach', 'lagoon', 'cove', 'sandbar', 'coastal'],
+                            'activities' => ['Swimming', 'Sunbathing', 'Snorkeling', 'Surfing', 'Sightseeing', 'Picnicking', 'Relaxation', 'Photography'],
+                        ],
+                        'nature' => [
+                            'keywords' => ['national park', 'sanctuary', 'reserve', 'wildlife', 'forest', 'wetland', 'jungle'],
+                            'activities' => ['Bird Watching', 'Hiking', 'Nature Walk', 'Photography', 'Sightseeing', 'Kayaking'],
+                        ],
+                        'adventure' => [
+                            'keywords' => ['adventure', 'tea estate', 'view point', 'hiking', 'trekking'],
+                            'activities' => ['Hiking', 'Bird Watching', 'Kayaking', 'Snorkeling', 'Cycling', 'Nature Walk', 'Photography'],
+                        ],
+                        'heritage' => [
+                            'keywords' => ['fort', 'palace', 'archaeological', 'architecture', 'heritage', 'historical', 'ancient'],
+                            'activities' => ['Historical Tours', 'Cultural Tours', 'Photography', 'Sightseeing'],
+                        ],
+                    ];
+                    $activityOpts = ['Photography', 'Swimming', 'Hiking', 'Bird Watching', 'Picnicking', 'Nature Walk', 'Prayer and Meditation', 'Sightseeing', 'Snorkeling', 'Surfing', 'Kayaking', 'Cultural Tours', 'Historical Tours', 'Relaxation', 'Sunbathing', 'Cycling', 'Reflection'];
+                    // The form submits activities_selected[]/activities_other, never a
+                    // bare "activities" key — so on a validation-error redisplay, old()
+                    // must be read from those two actual field names, not a nonexistent
+                    // "activities" key (which would silently fall back to the pre-edit
+                    // DB value and discard the user's just-submitted checkbox changes).
+                    if (old('activities_selected') !== null || old('activities_other') !== null) {
+                        $selectedKnown = old('activities_selected', []);
+                        $otherActivities = old('activities_other', '');
+                    } else {
+                        $currActivitiesRaw = $place->activities;
+                        $currActivitiesList = $currActivitiesRaw ? array_map('trim', explode(',', $currActivitiesRaw)) : [];
+                        $selectedKnown = array_intersect($currActivitiesList, $activityOpts);
+                        $otherActivities = implode(', ', array_diff($currActivitiesList, $activityOpts));
+                    }
+
+                    // which groups each activity belongs to, e.g. "Photography" => "religious waterfall beach nature adventure heritage"
+                    $activityToGroups = [];
+                    foreach ($activityOpts as $opt) {
+                        $groups = [];
+                        foreach ($activityGroups as $groupName => $group) {
+                            if (in_array($opt, $group['activities'])) $groups[] = $groupName;
+                        }
+                        $activityToGroups[$opt] = implode(' ', $groups);
+                    }
+                @endphp
+                <div id="activities_grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 mb-3">
+                    @foreach($activityOpts as $opt)
+                        <label class="activity-checkbox flex items-center gap-2 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-300 cursor-pointer hover:border-emerald-500/50" data-groups="{{ $activityToGroups[$opt] }}">
+                            <input type="checkbox" name="activities_selected[]" value="{{ $opt }}" {{ in_array($opt, $selectedKnown) ? 'checked' : '' }} class="w-3.5 h-3.5 rounded text-emerald-600 focus:ring-emerald-500 shrink-0">
+                            <span class="truncate">{{ $opt }}</span>
+                        </label>
+                    @endforeach
                 </div>
+                <input type="text" name="activities_other" value="{{ old('activities_other', $otherActivities) }}" placeholder="Other activities (comma-separated)"
+                    class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500">
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                     <label class="block text-xs font-semibold text-slate-300 mb-1">Family Friendly</label>
                     <select name="family_friendly" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white">
@@ -228,7 +261,7 @@
                 <div>
                     <label class="block text-xs font-semibold text-slate-300 mb-1">Budget Category</label>
                     @php
-                        $budOpts = ['Free / No Entry Fee', 'Budget / Low Cost', 'Moderate', 'Luxury / Premium Experience'];
+                        $budOpts = ['Free', 'Budget', 'Moderate', 'Expensive', 'Premium'];
                         $currBud = old('budget_category', $place->budget_category);
                     @endphp
                     <select name="budget_category" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-emerald-500">
@@ -243,19 +276,9 @@
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-slate-300 mb-1">Ticket Price</label>
-                    @php
-                        $tktOpts = ['Free (Locals & Foreigners)', 'Free for Locals / Small Fee for Foreigners', 'LKR 100 - 500', 'LKR 500 - 1500', 'LKR 1500+ / Standard Heritage Ticket'];
-                        $currTkt = old('ticket_price', $place->ticket_price ?: $place->ticket_range);
-                    @endphp
-                    <select name="ticket_price" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-emerald-500">
-                        <option value="">Select Ticket Price</option>
-                        @foreach($tktOpts as $opt)
-                            <option value="{{ $opt }}" {{ $currTkt == $opt ? 'selected' : '' }}>{{ $opt }}</option>
-                        @endforeach
-                        @if($currTkt && !in_array($currTkt, $tktOpts))
-                            <option value="{{ $currTkt }}" selected>{{ $currTkt }} (Custom)</option>
-                        @endif
-                    </select>
+                    <input type="text" name="ticket_price" value="{{ old('ticket_price', $place->ticket_price ?: $place->ticket_range) }}"
+                        placeholder="e.g. Free, LKR 60 (local adult), USD 40 (foreign adult)"
+                        class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500">
                 </div>
             </div>
         </div>
@@ -270,7 +293,7 @@
                 <div>
                     <label class="block text-xs font-semibold text-slate-300 mb-1">Mobile Signal</label>
                     @php
-                        $sigOpts = ['Good', 'Moderate / Weak', 'None / Offline', 'Excellent / 4G/5G'];
+                        $sigOpts = ['Excellent (4G/5G)', 'Good', 'Moderate', 'Poor', 'No Signal', 'Unknown'];
                         $currSig = old('mobile_signal', $place->mobile_signal);
                     @endphp
                     <select name="mobile_signal" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-emerald-500">
@@ -286,7 +309,7 @@
                 <div>
                     <label class="block text-xs font-semibold text-slate-300 mb-1">Road Condition</label>
                     @php
-                        $roadOpts = ['Paved / Tar Road', 'Offroad / Dirt Track', '4WD Only / Rough', 'Narrow / Winding', 'Walkway / Footpath Only'];
+                        $roadOpts = ['Paved', 'Trekking', 'Forest Path', 'Rough / 4WD Recommended'];
                         $currRoad = old('road_condition', $place->road_condition ?: $place->road_type);
                     @endphp
                     <select name="road_condition" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-emerald-500">
@@ -356,7 +379,7 @@
                 <div>
                     <label class="block text-xs font-semibold text-slate-300 mb-1">Safety Level</label>
                     @php
-                        $safeOpts = ['Safe / High Security', 'Caution / Be Vigilant', 'Moderate / Slippery', 'High Risk / Dangerous', 'Guide Recommended'];
+                        $safeOpts = ['Safe', 'Moderate', 'High'];
                         $currSafe = old('safety_level', $place->safety_level);
                     @endphp
                     <select name="safety_level" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-emerald-500">
@@ -371,24 +394,14 @@
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-slate-300 mb-1">Wildlife Hazard</label>
-                    @php
-                        $wildOpts = ['None', 'Elephants / Wild Boar', 'Leeches / Ticks', 'Monkeys / Baboons', 'Snake / Reptile Hazard', 'Stinging Insects / Wasps'];
-                        $currWild = old('wildlife_hazard', $place->wildlife_hazard);
-                    @endphp
-                    <select name="wildlife_hazard" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-emerald-500">
-                        <option value="">Select Hazard</option>
-                        @foreach($wildOpts as $opt)
-                            <option value="{{ $opt }}" {{ $currWild == $opt ? 'selected' : '' }}>{{ $opt }}</option>
-                        @endforeach
-                        @if($currWild && !in_array($currWild, $wildOpts))
-                            <option value="{{ $currWild }}" selected>{{ $currWild }} (Custom)</option>
-                        @endif
-                    </select>
+                    <input type="text" name="wildlife_hazard" value="{{ old('wildlife_hazard', $place->wildlife_hazard) }}"
+                        placeholder="e.g. None, Leeches during rainy days, Beware of hornets"
+                        class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500">
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-slate-300 mb-1">Rain Sensitivity</label>
                     @php
-                        $rainOpts = ['Safe / All Weather', 'Slippery / Muddy in Rain', 'High Risk / Flash Floods', 'Impassable in Heavy Rain', 'Indoor Site'];
+                        $rainOpts = ['Safe', 'Dangerous during heavy rain', 'Generally dry, but avoid May-Sept', 'Low'];
                         $currRain = old('rain_sensitivity', $place->rain_sensitivity);
                     @endphp
                     <select name="rain_sensitivity" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-emerald-500">
@@ -403,19 +416,9 @@
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-slate-300 mb-1">Monsoon Note</label>
-                    @php
-                        $monsOpts = ['All Year Safe / No Monsoon Impact', 'Avoid South-West Monsoon (May-Sept)', 'Avoid North-East Monsoon (Oct-Jan)', 'Caution During Heavy Rains'];
-                        $currMons = old('monsoon_note', $place->monsoon_note);
-                    @endphp
-                    <select name="monsoon_note" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-emerald-500">
-                        <option value="">Select Monsoon Note</option>
-                        @foreach($monsOpts as $opt)
-                            <option value="{{ $opt }}" {{ $currMons == $opt ? 'selected' : '' }}>{{ $opt }}</option>
-                        @endforeach
-                        @if($currMons && !in_array($currMons, $monsOpts))
-                            <option value="{{ $currMons }}" selected>{{ $currMons }} (Custom)</option>
-                        @endif
-                    </select>
+                    <input type="text" name="monsoon_note" value="{{ old('monsoon_note', $place->monsoon_note) }}"
+                        placeholder="e.g. Avoid May-Sept, roads may flood Nov-Dec"
+                        class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500">
                 </div>
             </div>
 
@@ -619,4 +622,81 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 @endif
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const distInput = document.getElementById('district_input');
+    const provInput = document.getElementById('province_input');
+
+    const districtToProvince = {
+        'Colombo': 'Western', 'Gampaha': 'Western', 'Kalutara': 'Western',
+        'Kandy': 'Central', 'Matale': 'Central', 'Nuwara Eliya': 'Central',
+        'Galle': 'Southern', 'Matara': 'Southern', 'Hambantota': 'Southern',
+        'Jaffna': 'Northern', 'Kilinochchi': 'Northern', 'Mannar': 'Northern', 'Mullaitivu': 'Northern', 'Vavuniya': 'Northern',
+        'Batticaloa': 'Eastern', 'Ampara': 'Eastern', 'Trincomalee': 'Eastern',
+        'Kurunegala': 'North Western', 'Puttalam': 'North Western',
+        'Anuradhapura': 'North Central', 'Polonnaruwa': 'North Central',
+        'Badulla': 'Uva', 'Moneragala': 'Uva',
+        'Ratnapura': 'Sabaragamuwa', 'Kegalle': 'Sabaragamuwa',
+    };
+
+    function updateProvince() {
+        if (distInput && provInput) {
+            provInput.value = districtToProvince[distInput.value] || '';
+        }
+    }
+
+    if (distInput) {
+        distInput.addEventListener('change', updateProvince);
+        updateProvince(); // sync on load (edit mode: district pre-selected)
+    }
+});
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const catInput = document.getElementById('category_input');
+    const checkboxLabels = document.querySelectorAll('#activities_grid .activity-checkbox');
+
+    // Keyword groups mirrored from the PHP $activityGroups map above —
+    // matched as case-insensitive substrings against the category text so
+    // messy variants ("Temple/Stupa", "Sandy Beach (Kitesurf)") still hit.
+    const categoryKeywordGroups = {
+        religious: ['temple', 'kovil', 'mosque', 'church', 'shrine', 'devale', 'devalaya', 'stupa', 'monastery', 'sanctuary', 'basilica', 'chapel', 'cathedral'],
+        waterfall: ['cascade', 'plunge', 'waterfall', 'fall', 'horsetail', 'tiered', 'segmented', 'fan', 'block'],
+        beach: ['beach', 'lagoon', 'cove', 'sandbar', 'coastal'],
+        nature: ['national park', 'sanctuary', 'reserve', 'wildlife', 'forest', 'wetland', 'jungle'],
+        adventure: ['adventure', 'tea estate', 'view point', 'hiking', 'trekking'],
+        heritage: ['fort', 'palace', 'archaeological', 'architecture', 'heritage', 'historical', 'ancient'],
+    };
+
+    function matchingGroups(categoryText) {
+        const lower = categoryText.toLowerCase();
+        return Object.keys(categoryKeywordGroups).filter(function(group) {
+            return categoryKeywordGroups[group].some(function(kw) { return lower.includes(kw); });
+        });
+    }
+
+    function filterActivities() {
+        if (!catInput) return;
+        const groups = matchingGroups(catInput.value || '');
+
+        checkboxLabels.forEach(function(label) {
+            const checkbox = label.querySelector('input[type="checkbox"]');
+            const labelGroups = (label.dataset.groups || '').split(' ').filter(Boolean);
+            const isRelevant = groups.length === 0 || labelGroups.some(function(g) { return groups.includes(g); });
+            // Always keep a checkbox visible if it's already checked (existing
+            // data shouldn't silently disappear just because the category
+            // filter would otherwise hide it), or if no category is selected
+            // yet / no keyword group matched (show everything as a fallback).
+            label.style.display = (isRelevant || checkbox.checked) ? '' : 'none';
+        });
+    }
+
+    if (catInput) {
+        catInput.addEventListener('change', filterActivities);
+        filterActivities(); // sync on load (edit mode: category pre-selected)
+    }
+});
+</script>
 @endsection

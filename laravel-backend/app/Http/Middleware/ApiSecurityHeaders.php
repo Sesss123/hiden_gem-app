@@ -29,6 +29,25 @@ class ApiSecurityHeaders
             $response->header('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
             // Control referrer information sent with requests
             $response->header('Referrer-Policy', 'strict-origin-when-cross-origin');
+            // Content-Security-Policy — shared between api (inert on JSON) and web
+            // (admin panel HTML). Allowlists exactly the CDN hosts the admin layout
+            // loads (Tailwind, Font Awesome/cdnjs, Google Fonts, jsdelivr for Chart.js),
+            // plus 'unsafe-inline' for the layout's existing inline config/style blocks.
+            $response->header('Content-Security-Policy', implode('; ', [
+                "default-src 'self'",
+                // 'unsafe-eval' is required by cdn.tailwindcss.com's browser-side JIT
+                // compiler (it uses eval()/new Function() to compile utility classes
+                // at runtime) — without it the CDN build silently fails to apply any
+                // styling under a strict CSP.
+                "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net",
+                "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com",
+                "font-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com https://cdnjs.cloudflare.com",
+                "img-src 'self' data: https:",
+                "connect-src 'self'",
+                "frame-ancestors 'none'",
+                "base-uri 'self'",
+                "form-action 'self'",
+            ]));
         }
 
         return $response;

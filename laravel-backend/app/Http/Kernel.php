@@ -36,6 +36,7 @@ class Kernel extends HttpKernel
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
             \App\Http\Middleware\VerifyCsrfToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            \App\Http\Middleware\ApiSecurityHeaders::class,
         ],
 
         'api' => [
@@ -65,6 +66,8 @@ class Kernel extends HttpKernel
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'is_admin' => \App\Http\Middleware\IsAdmin::class,
+        'full_admin' => \App\Http\Middleware\IsFullAdmin::class,
+        'content_manager_or_admin' => \App\Http\Middleware\IsContentManagerOrAdmin::class,
         'zenith' => \App\Http\Middleware\VerifyZenithSignature::class,
     ];
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Traits\LogsAdminActivity;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
@@ -11,6 +12,8 @@ use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
+    use LogsAdminActivity;
+
     public function showLogin()
     {
         if (Auth::check() && Auth::user()->is_admin) {
@@ -41,6 +44,7 @@ class AuthController extends Controller
             $request->session()->regenerate();
 
             if (Auth::user()->is_admin) {
+                $this->logAdminAction('auth.login_success');
                 return redirect()->intended(route('admin.places.index'));
             }
 
@@ -49,6 +53,7 @@ class AuthController extends Controller
         }
 
         RateLimiter::hit($throttleKey, 60 * 15);
+        $this->logAdminAction('auth.login_failed', 'User', null, ['email' => $request->input('email')]);
 
         return back()->withErrors([
             'email' => 'The provided credentials do not match our records.',
@@ -57,6 +62,7 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
+        $this->logAdminAction('auth.logout');
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();

@@ -4,13 +4,17 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Event;
+use App\Traits\LogsAdminActivity;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class EventController extends Controller
 {
+    use LogsAdminActivity;
+
     public function index(Request $request)
     {
-        $query = Event::query();
+        $query = Event::with('creator');
 
         if ($search = $request->input('search')) {
             $query->where('name', 'like', "%{$search}%")
@@ -30,6 +34,7 @@ class EventController extends Controller
     public function store(Request $request)
     {
         $data = $this->validateEvent($request);
+        $data['created_by'] = Auth::id();
         $event = Event::create($data);
 
         return redirect()->route('admin.events.index')
@@ -39,12 +44,14 @@ class EventController extends Controller
     public function edit($id)
     {
         $event = Event::findOrFail($id);
+        $this->authorizeEventOwner($event);
         return view('admin.events.form', compact('event'));
     }
 
     public function update(Request $request, $id)
     {
         $event = Event::findOrFail($id);
+        $this->authorizeEventOwner($event);
         $data = $this->validateEvent($request);
         $event->update($data);
 
@@ -55,10 +62,28 @@ class EventController extends Controller
     public function destroy($id)
     {
         $event = Event::findOrFail($id);
+        $this->authorizeEventOwner($event);
+        $eventName = $event->name;
         $event->delete();
 
+        $this->logAdminAction('event.deleted', 'Event', $id, ['name' => $eventName]);
+
         return redirect()->route('admin.events.index')
-            ->with('success', "Event '{$event->name}' has been deleted.");
+            ->with('success', "Event '{$eventName}' has been deleted.");
+    }
+
+    /**
+     * content_manager may only edit/delete events they created themselves —
+     * full admins can act on any event. Events have no approval gate (unlike
+     * Places), so this ownership check is the only thing stopping one
+     * content_manager from editing/deleting another's events.
+     */
+    protected function authorizeEventOwner(Event $event): void
+    {
+        $user = Auth::user();
+        if (!$user->isFullAdmin() && $event->created_by !== $user->id) {
+            abort(403, 'You can only manage events you created.');
+        }
     }
 
     protected function validateEvent(Request $request)

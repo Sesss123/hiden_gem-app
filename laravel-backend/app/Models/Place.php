@@ -65,6 +65,11 @@ class Place extends Model
     public const COL_STATUS = 'status';
     public const COL_REVIEWED_BY = 'reviewed_by';
     public const COL_REVIEW_REASON = 'review_reason';
+    public const COL_CREATED_BY = 'created_by';
+
+    public const STATUS_PENDING = 'pending';
+    public const STATUS_APPROVED = 'approved';
+    public const STATUS_REJECTED = 'rejected';
 
     public $incrementing = false;
     protected $keyType = 'string';
@@ -81,7 +86,7 @@ class Place extends Model
         self::COL_AR_SUPPORTED, self::COL_AR_TIER, self::COL_AR_BRAND_NAME, self::COL_AR_MODEL_URL, self::COL_AR_HISTORICAL_MODEL_URL,
         self::COL_AR_MODEL_SCALE, self::COL_HISTORICAL_PERIOD, self::COL_AR_FILE_SIZE_MB,
         self::COL_AUDIO_GUIDE_URL_SI, self::COL_AUDIO_GUIDE_URL_EN, self::COL_GEOHASH, self::COL_IMAGE_URL,
-        self::COL_ACCESS_TIER, self::COL_STATUS, self::COL_REVIEWED_BY, self::COL_REVIEW_REASON
+        self::COL_ACCESS_TIER, self::COL_STATUS, self::COL_REVIEWED_BY, self::COL_REVIEW_REASON, self::COL_CREATED_BY
     ];
 
     protected $casts = [
@@ -113,5 +118,10 @@ class Place extends Model
     public function coverImage(): HasOne
     {
         return $this->hasOne(PlaceImage::class, 'place_id', 'id')->where('is_cover', true);
+    }
+
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
     }
 }
