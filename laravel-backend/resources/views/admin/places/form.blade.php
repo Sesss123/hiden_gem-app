@@ -532,6 +532,7 @@
                                     <span class="absolute top-3 left-3 bg-emerald-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded shadow">COVER</span>
                                 @endif
 
+                                @if(auth()->user()->isFullAdmin())
                                 <div class="absolute inset-0 bg-slate-950/80 rounded-xl opacity-0 group-hover:opacity-100 flex items-center justify-center gap-2 transition duration-200">
                                     @if(!$img->is_cover)
                                         <button type="submit" form="cover-form-{{ $img->id }}" class="p-2 rounded-lg bg-emerald-600 text-white hover:bg-emerald-500 text-xs shadow" title="Set Cover">
@@ -542,6 +543,7 @@
                                         <i class="fa-solid fa-trash"></i>
                                     </button>
                                 </div>
+                                @endif
                             </div>
                         @endforeach
                     </div>

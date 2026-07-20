@@ -185,16 +185,6 @@ class FirestoreService
     }
 
     /**
-     * Update or merge subscription/premium status into a user profile document.
-     * Used by RevenueCatWebhookController — this is the only trusted path allowed
-     * to elevate 'isPremium' and related fields (blocked for clients by firestore.rules).
-     */
-    public function updateUserSubscription($userId, array $data)
-    {
-        return $this->patchDocument('users', $userId, $data);
-    }
-
-    /**
      * Update or merge data into a subscription record document in Firestore.
      */
     public function updateSubscriptionRecord($subscriptionId, array $data)

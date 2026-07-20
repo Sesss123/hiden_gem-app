@@ -264,7 +264,12 @@ class PlaceController extends Controller
     protected function validatePlace(Request $request, $isUpdate = false)
     {
         $data = $request->validate([
-            'id' => $isUpdate ? 'nullable' : 'nullable|string|unique:places,id',
+            // Regex constrains the id to the charset generateSmartId() produces
+            // (letters/digits/hyphens only) — id is interpolated directly into
+            // storage paths in ImageProcessingService::processAndStore(), so
+            // without this a crafted id like "../../../etc" would be a path
+            // traversal into arbitrary directories under the public disk.
+            'id' => $isUpdate ? 'nullable' : 'nullable|string|max:36|regex:/^[A-Za-z0-9\-]+$/|unique:places,id',
             'name' => 'required|string|max:255',
             'district' => 'required|string|max:100',
             'category' => 'required|string|max:100',

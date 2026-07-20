@@ -75,11 +75,9 @@
                                         </span>
                                     </td>
                                     <td class="py-3 px-6 text-right">
-                                        @if(auth()->user()->isFullAdmin())
-                                            <a href="{{ route('admin.places.edit', $place->id) }}" class="text-slate-400 hover:text-emerald-400 p-1.5 hover:bg-slate-800 rounded-lg transition" title="Edit">
-                                                <i class="fa-solid fa-pen text-xs"></i>
-                                            </a>
-                                        @endif
+                                        <a href="{{ route('admin.places.edit', $place->id) }}" class="text-slate-400 hover:text-emerald-400 p-1.5 hover:bg-slate-800 rounded-lg transition" title="Edit">
+                                            <i class="fa-solid fa-pen text-xs"></i>
+                                        </a>
                                     </td>
                                 </tr>
                             @endforeach
