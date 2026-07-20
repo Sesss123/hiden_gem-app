@@ -21,7 +21,6 @@
   "uploadPhoto": "写真をアップロード",
   "camera": "カメラ",
   "gallery": "ギャラリー",
-  "removePhoto": "写真を削除",
   "discovery": "発見",
   "nearYou": "近く",
   "aiReason": "AIのおすすめ理由",
@@ -513,7 +512,6 @@
   "analyzeLandmarkButton": "ランドマークを分析",
   "unlockLandmarkScanningTitle": "ランドマークスキャンを解放",
   "unlockLandmarkScanningSubtitle": "カメラをどんな場所にかざすだけで、隠された歴史が明らかになります。",
-  "upgradeToPremiumButton": "プレミアムにアップグレード",
   "oracleVerifiedLabel": "オラクル認証済み",
 
   "mapLoadErrorMessage": "地図データの読み込みに失敗しました：{error}",

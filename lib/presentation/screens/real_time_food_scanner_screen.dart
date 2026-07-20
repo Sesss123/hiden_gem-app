@@ -356,6 +356,18 @@ class _RealTimeFoodScannerScreenState extends State<RealTimeFoodScannerScreen>
         }
         controller.dispose();
       }
+      // BUG FIX: _isCameraInitialized was never reset here, so build()'s
+      // guard (`_isCameraInitialized && _cameraController != null`) relied
+      // solely on _cameraController being null to hide the stale preview —
+      // and since this ran without setState(), the widget never actually
+      // rebuilt at pause time, leaving the last captured camera frame
+      // visible (e.g. in the OS app switcher) instead of the fallback
+      // black/loading state.
+      if (mounted) {
+        setState(() => _isCameraInitialized = false);
+      } else {
+        _isCameraInitialized = false;
+      }
     } else if (state == AppLifecycleState.resumed) {
       _initCameraAndSocket();
     }

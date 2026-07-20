@@ -109,8 +109,16 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen> with Widget
     if (controller == null || !controller.value.isInitialized) return;
 
     if (state == AppLifecycleState.inactive) {
-      _isInit = false;
+      // BUG FIX: these were bare field assignments with no setState(), so
+      // the widget never rebuilt when the app backgrounded — the last
+      // camera frame stayed on screen (e.g. visible in the OS app switcher)
+      // instead of falling back to the black placeholder container.
       _controller = null;
+      if (mounted) {
+        setState(() => _isInit = false);
+      } else {
+        _isInit = false;
+      }
       controller.dispose();
     } else if (state == AppLifecycleState.resumed) {
       _initCamera();

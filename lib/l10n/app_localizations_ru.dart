@@ -1382,9 +1382,6 @@ class AppLocalizationsRu extends AppLocalizations {
       'Наведите камеру на любое место, чтобы раскрыть его скрытую историю.';
 
   @override
-  String get upgradeToPremiumButton => 'Перейти на Премиум';
-
-  @override
   String get oracleVerifiedLabel => 'Проверено Оракулом';
 
   @override
@@ -4920,6 +4917,9 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get pricingTrialLabel =>
       'От 299 рупий/месяц  ·  7-дневная бесплатная пробная версия';
+
+  @override
+  String get upgradeToPremiumButton => 'Перейти на Премиум';
 
   @override
   String get watch10SecPreviewButton => 'Посмотреть 10-секундный превью';

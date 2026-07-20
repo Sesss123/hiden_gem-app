@@ -192,7 +192,7 @@ class _MapRouteScreenState extends State<MapRouteScreen> {
   }
 
   void _fitBounds() {
-    if (_markers.isEmpty) return;
+    if (_markers.isEmpty || !mounted || _isOfflineMapMode) return;
 
     double? minLat, maxLat, minLng, maxLng;
 

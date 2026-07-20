@@ -509,7 +509,6 @@
   "analyzeLandmarkButton": "අනාවරණය විශ්ලේෂණය කරන්න",
   "unlockLandmarkScanningTitle": "අනාවරණ ස්කෑන් කිරීම අගුළු හරින්න",
   "unlockLandmarkScanningSubtitle": "ඕනෑම ස්ථානයක සැඟවුණු ඉතිහාසය හෙළිදරව් කිරීමට ඔබේ කැමරාව යොමු කරන්න.",
-  "upgradeToPremiumButton": "ප්‍රීමියම් වෙත උසස් කරන්න",
   "oracleVerifiedLabel": "ඔරකල් තහවුරු කළේය",
 
   "mapLoadErrorMessage": "සිතියම් දත්ත පූරණය කිරීම අසාර්ථකයි: {error}",

@@ -1339,9 +1339,6 @@ class AppLocalizationsKo extends AppLocalizations {
       '카메라를 어느 장소든 비추면 숨겨진 이야기가 펼쳐집니다.';
 
   @override
-  String get upgradeToPremiumButton => '프리미엄으로 업그레이드';
-
-  @override
   String get oracleVerifiedLabel => '오라클 인증됨';
 
   @override
@@ -4718,6 +4715,9 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get pricingTrialLabel => '월 Rs. 299부터  ·  7일 무료 체험';
+
+  @override
+  String get upgradeToPremiumButton => '프리미엄으로 업그레이드';
 
   @override
   String get watch10SecPreviewButton => '10초 미리보기 보기';

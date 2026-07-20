@@ -1,4 +1,5 @@
 import 'package:hidden_gems_sl/core/theme/app_theme.dart';
+import 'dart:async';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -24,6 +25,7 @@ class _AudioGuideScreenState extends State<AudioGuideScreen> with SingleTickerPr
   bool _isPlaying = false;
   String _currentLang = 'si'; // Default to Sinhala
   late AnimationController _pulseController;
+  StreamSubscription<PlayerState>? _playerStateSubscription;
 
   @override
   void initState() {
@@ -32,6 +34,17 @@ class _AudioGuideScreenState extends State<AudioGuideScreen> with SingleTickerPr
       vsync: this,
       duration: const Duration(seconds: 2),
     )..repeat(reverse: true);
+    // Bug fix: previously registered inside _initAudio(), which is also
+    // called from _switchLanguage() on every language switch — that stacked
+    // a new playerStateStream listener each time without ever cancelling the
+    // old ones, so setState() ran multiple times per state change and the
+    // listeners accumulated for the lifetime of the screen. Register once
+    // here and cancel it in dispose().
+    _playerStateSubscription = _player.playerStateStream.listen((state) {
+      if (mounted) {
+        setState(() => _isPlaying = state.playing);
+      }
+    });
     _initAudio();
   }
 
@@ -49,12 +62,6 @@ class _AudioGuideScreenState extends State<AudioGuideScreen> with SingleTickerPr
     } catch (e, st) {
       SecureLogger.error("Audio init error", e, st, "AudioGuide");
     }
-
-    _player.playerStateStream.listen((state) {
-      if (mounted) {
-        setState(() => _isPlaying = state.playing);
-      }
-    });
   }
 
   Future<void> _togglePlayback() async {
@@ -76,6 +83,7 @@ class _AudioGuideScreenState extends State<AudioGuideScreen> with SingleTickerPr
 
   @override
   void dispose() {
+    _playerStateSubscription?.cancel();
     _player.dispose();
     _pulseController.dispose();
     super.dispose();

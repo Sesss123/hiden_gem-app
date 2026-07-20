@@ -37,6 +37,13 @@ class GeoAwareGuideService {
   }
 
 
+  /// Composite key for de-duping narration triggers. ItineraryItem has no
+  /// unique id field — using [ItineraryItem.title] alone would mean two
+  /// stops that happen to share a name (e.g. two "Rest Stop" entries) are
+  /// treated as the same place, so a real arrival at the second one would
+  /// silently never narrate. Coordinates make the key unique per location.
+  static String _placeKey(ItineraryItem item) => '${item.title}@${item.lat},${item.lng}';
+
   static void _monitorAdaptive(
     List<ItineraryItem> items, {
     required double initialFilter,
@@ -123,8 +130,8 @@ class GeoAwareGuideService {
         item.lng,
       );
 
-      if (distance < _triggerRadius && _lastTriggeredPlaceId != item.title) {
-        _lastTriggeredPlaceId = item.title;
+      if (distance < _triggerRadius && _lastTriggeredPlaceId != _placeKey(item)) {
+        _lastTriggeredPlaceId = _placeKey(item);
         _triggerAutonomousNarration(item);
         break; 
       }

@@ -1372,9 +1372,6 @@ class AppLocalizationsSi extends AppLocalizations {
       'ඕනෑම ස්ථානයක සැඟවුණු ඉතිහාසය හෙළිදරව් කිරීමට ඔබේ කැමරාව යොමු කරන්න.';
 
   @override
-  String get upgradeToPremiumButton => 'වාරික වෙත උසස් කරන්න';
-
-  @override
   String get oracleVerifiedLabel => 'ඔරකල් තහවුරු කළේය';
 
   @override
@@ -4881,6 +4878,9 @@ class AppLocalizationsSi extends AppLocalizations {
   @override
   String get pricingTrialLabel =>
       'රු. 299/මාසයේ සිට  ·  දින 7ක නොමිලේ අත්හදා බැලීම';
+
+  @override
+  String get upgradeToPremiumButton => 'වාරික වෙත උසස් කරන්න';
 
   @override
   String get watch10SecPreviewButton => 'තත්පර 10ක පෙරදසුන නරඹන්න';

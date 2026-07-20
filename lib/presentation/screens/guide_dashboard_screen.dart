@@ -90,7 +90,13 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
     _locationTimer?.cancel();
     _locationTimer = Timer(delay, () async {
       final nextDelay = await _performSync();
-      if (nextDelay != null) {
+      // Guard against re-arming the timer if the widget was disposed (or the
+      // tour was stopped) while _performSync()'s GPS/network call was still
+      // in flight — without this, dispose()'s _locationTimer?.cancel() only
+      // cancels the *current* Timer reference; a callback already past that
+      // point would otherwise create a brand-new Timer that outlives the
+      // screen, driving GPS reads and Firestore writes indefinitely.
+      if (nextDelay != null && mounted && _activeSession != null) {
         _scheduleNextSync(nextDelay);
       }
     });

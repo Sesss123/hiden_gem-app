@@ -56,7 +56,9 @@ class _ExplorerProgressCardState extends State<ExplorerProgressCard>
     widget.service.badgeCount.addListener(_listenAndAnimate);
 
     // Sync from Firestore so progress card shows real data on load
-    widget.service.init().then((_) => _listenAndAnimate());
+    widget.service.init().then((_) {
+      if (mounted) _listenAndAnimate();
+    });
   }
 
   void _listenAndAnimate() {

@@ -1,6 +1,11 @@
 import 'dart:async';
 import 'dart:math' as math;
-import '../../core/mocks/arcore_flutter_plugin.dart';
+import 'package:ar_flutter_plugin_2/widgets/ar_view.dart';
+import 'package:ar_flutter_plugin_2/datatypes/config_planedetection.dart';
+import 'package:ar_flutter_plugin_2/managers/ar_anchor_manager.dart';
+import 'package:ar_flutter_plugin_2/managers/ar_location_manager.dart';
+import 'package:ar_flutter_plugin_2/managers/ar_object_manager.dart';
+import 'package:ar_flutter_plugin_2/managers/ar_session_manager.dart';
 import 'package:vector_math/vector_math_64.dart' as vector;
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
@@ -370,8 +375,14 @@ class _ARViewerScreenState extends State<ARViewerScreen>
     super.dispose();
   }
 
-  void _onArCoreViewCreated(ArCoreController controller) {
-    _arService.onArCoreViewCreated(controller);
+  void _onARViewCreated(
+    ARSessionManager sessionManager,
+    ARObjectManager objectManager,
+    ARAnchorManager anchorManager,
+    ARLocationManager locationManager,
+  ) {
+    _arService.onARViewCreated(
+        sessionManager, objectManager, anchorManager, locationManager);
   }
 
   void _requestPlaceModel() async {
@@ -658,10 +669,9 @@ class _ARViewerScreenState extends State<ARViewerScreen>
         child: Stack(children: [
         // Camera / AR View
         RepaintBoundary(
-          child: ArCoreView(
-            onArCoreViewCreated: _onArCoreViewCreated,
-            enableTapRecognizer: true,
-            enablePlaneRenderer: true,
+          child: ARView(
+            onARViewCreated: _onARViewCreated,
+            planeDetectionConfig: PlaneDetectionConfig.horizontal,
           ),
         ),
 
@@ -1559,7 +1569,13 @@ class _ARViewerScreenState extends State<ARViewerScreen>
           ),
         ],
       ),
-    );
+    ).then((_) {
+      // Bug fix: this controller was never disposed (unlike the equivalent
+      // TextEditingController in _showJoinDialog, which correctly disposes
+      // via this same .then() pattern) — leaking a TextEditingController
+      // every time a memory-drop dialog was opened and closed.
+      controller.dispose();
+    });
   }
 
   Widget _communityMemoriesOverlay() {

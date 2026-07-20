@@ -512,7 +512,6 @@
   "analyzeLandmarkButton": "Analyze landmark",
   "unlockLandmarkScanningTitle": "Unlock landmark scanning",
   "unlockLandmarkScanningSubtitle": "Point your camera at any site to reveal its hidden history.",
-  "upgradeToPremiumButton": "Upgrade to premium",
   "oracleVerifiedLabel": "Oracle verified",
 
   "mapLoadErrorMessage": "Failed to load map data: {error}",

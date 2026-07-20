@@ -512,7 +512,6 @@
   "analyzeLandmarkButton": "랜드마크 분석",
   "unlockLandmarkScanningTitle": "랜드마크 스캔 잠금 해제",
   "unlockLandmarkScanningSubtitle": "카메라를 어느 장소든 비추면 숨겨진 이야기가 펼쳐집니다.",
-  "upgradeToPremiumButton": "프리미엄으로 업그레이드",
   "oracleVerifiedLabel": "오라클 인증됨",
 
   "mapLoadErrorMessage": "지도 데이터를 불러오지 못했습니다: {error}",

@@ -1,6 +1,7 @@
 import 'package:in_app_review/in_app_review.dart';
 import '../../data/datasources/user_preference_service.dart';
 import 'package:flutter/foundation.dart';
+import '../config/app_config.dart';
 
 class RatingService {
   static final RatingService _instance = RatingService._internal();
@@ -32,7 +33,7 @@ class RatingService {
 
   Future<void> openStore() async {
     await _inAppReview.openStoreListing(
-      appStoreId: '...', // Update with real ID after submission
+      appStoreId: AppConfig.appStoreId.isNotEmpty ? AppConfig.appStoreId : null,
     );
   }
 }

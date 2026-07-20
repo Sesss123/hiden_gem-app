@@ -59,12 +59,17 @@ class ValidatedResponse implements FileServiceResponse {
 
   @override
   Stream<List<int>> get content {
-    // Read the first chunk of stream to validate image signatures
+    // Validate the magic-number header on the FIRST non-empty chunk only.
+    // Continuation chunks of a real image are raw pixel/compressed data and
+    // do NOT start with a file-format magic number, so running this check
+    // on every chunk (as this used to) rejected every multi-chunk image
+    // download with "Invalid image header", breaking the image cache for
+    // any real photo bigger than a single stream chunk.
+    bool checked = false;
     return _inner.content.map((chunk) {
-      if (chunk.isNotEmpty) {
+      if (!checked && chunk.isNotEmpty) {
+        checked = true;
         final bytes = Uint8List.fromList(chunk);
-        // Validate if it is indeed a valid image file.
-        // We only check on first packet or headers chunk.
         if (!ValidatedHttpFileService.isValidImageBytes(bytes)) {
           throw StateError("Invalid image header: block corrupt content from entering cache.");
         }

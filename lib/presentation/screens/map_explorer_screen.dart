@@ -226,8 +226,6 @@ class _MapExplorerScreenState extends ConsumerState<MapExplorerScreen> {
               ),
             ),
 
-            Center(child: CircularProgressIndicator(color: AppPalette.rust)),
-
           // 4. SOS Overlay (Zenith Refinement)
           if (_isSosActive)
             _buildSosCinematicOverlay(),

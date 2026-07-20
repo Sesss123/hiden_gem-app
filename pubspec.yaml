@@ -99,7 +99,8 @@ dependencies:
 
 
   # AR Mode — Phase 9
-  # For Android ARCore (Mocked in lib/core/mocks):
+  # Real ARCore/ARKit integration (plane detection, node placement).
+  ar_flutter_plugin_2: ^0.0.3
   vector_math: ^2.1.4
   just_audio: ^0.10.6           # Audio narration streaming
   geoflutterfire_plus: ^0.0.32
@@ -134,6 +135,14 @@ dev_dependencies:
   riverpod_generator: ^4.0.4
   build_runner: ^2.5.4
   flutter_native_splash: ^2.4.8
+
+dependency_overrides:
+  # ar_flutter_plugin_2 pins permission_handler ^11.3.1; the app needs ^12.0.1
+  # for other packages. The two majors are API-compatible for the permissions
+  # this app actually requests (camera, location), so this override is safe.
+  permission_handler: ^12.0.1
+  # Same situation: ar_flutter_plugin_2 pins geolocator ^12.0.0, app uses ^14.0.2.
+  geolocator: ^14.0.2
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

@@ -2584,12 +2584,6 @@ abstract class AppLocalizations {
   /// **'Point your camera at any site to reveal its hidden history.'**
   String get unlockLandmarkScanningSubtitle;
 
-  /// No description provided for @upgradeToPremiumButton.
-  ///
-  /// In en, this message translates to:
-  /// **'Upgrade to Premium'**
-  String get upgradeToPremiumButton;
-
   /// No description provided for @oracleVerifiedLabel.
   ///
   /// In en, this message translates to:
@@ -8631,6 +8625,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'From Rs. 299/month  ·  7-day free trial'**
   String get pricingTrialLabel;
+
+  /// No description provided for @upgradeToPremiumButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Upgrade to Premium'**
+  String get upgradeToPremiumButton;
 
   /// No description provided for @watch10SecPreviewButton.
   ///

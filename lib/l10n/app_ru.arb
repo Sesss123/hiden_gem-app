@@ -21,7 +21,6 @@
   "uploadPhoto": "Загрузить фото",
   "camera": "Камера",
   "gallery": "Галерея",
-  "removePhoto": "Удалить фото",
   "discovery": "Открытия",
   "nearYou": "Рядом с вами",
   "aiReason": "Почему это место?",
@@ -513,7 +512,6 @@
   "analyzeLandmarkButton": "Анализировать достопримечательность",
   "unlockLandmarkScanningTitle": "Разблокировать сканирование достопримечательностей",
   "unlockLandmarkScanningSubtitle": "Наведите камеру на любое место, чтобы раскрыть его скрытую историю.",
-  "upgradeToPremiumButton": "Перейти на Premium",
   "oracleVerifiedLabel": "Проверено Оракулом",
 
   "mapLoadErrorMessage": "Не удалось загрузить данные карты: {error}",

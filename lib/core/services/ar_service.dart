@@ -1,6 +1,12 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart';
-import '../mocks/arcore_flutter_plugin.dart';
+import 'package:ar_flutter_plugin_2/datatypes/node_types.dart';
+import 'package:ar_flutter_plugin_2/managers/ar_anchor_manager.dart';
+import 'package:ar_flutter_plugin_2/managers/ar_location_manager.dart';
+import 'package:ar_flutter_plugin_2/managers/ar_object_manager.dart';
+import 'package:ar_flutter_plugin_2/managers/ar_session_manager.dart';
+import 'package:ar_flutter_plugin_2/models/ar_hittest_result.dart';
+import 'package:ar_flutter_plugin_2/models/ar_node.dart';
 import 'package:vector_math/vector_math_64.dart' as vector;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -11,7 +17,8 @@ import 'package:cloud_functions/cloud_functions.dart';
 
 /// Manages the ARCore session and 3D node placement for AR Mode.
 class ARService {
-  ArCoreController? _controller;
+  ARSessionManager? _sessionManager;
+  ARObjectManager? _objectManager;
   bool _isInitialized = false;
 
   bool get isInitialized => _isInitialized;
@@ -37,25 +44,26 @@ class ARService {
   /// Whether the server has validated this session as expired.
   bool get isSessionExpired => _sessionExpired;
 
-  /// Check if the device hardware supports ARCore.
+  /// Check if the device hardware supports ARCore. ar_flutter_plugin_2 has
+  /// no static availability check; this is a platform-level gate only —
+  /// genuine ARCore-missing devices are caught later via onError.
   static Future<bool> isSupported() async {
     if (kIsWeb || !Platform.isAndroid) return false;
-    return await ArCoreController.checkArCoreAvailability();
+    return true;
   }
 
-  /// Check if ARCore services are installed.
-  static Future<bool> isInstalled() async {
-    if (kIsWeb || !Platform.isAndroid) return false;
-    return await ArCoreController.checkIsArCoreInstalled();
-  }
-
-  /// Called when the ArCoreView is ready.
-  void onArCoreViewCreated(ArCoreController controller) {
-    _controller = controller;
-    _controller!.onPlaneTap = _handlePlaneTap;
-    // _controller!.onNodeTap is usually the property name in newer arcore_flutter_plugin
-    // Fallback or comment out if undefined in this specific version
-    // _controller!.onNodeTap = (nodeName) => _handleNodeTap(nodeName);
+  /// Called when the ARView is ready.
+  void onARViewCreated(
+    ARSessionManager sessionManager,
+    ARObjectManager objectManager,
+    ARAnchorManager anchorManager,
+    ARLocationManager locationManager,
+  ) {
+    _sessionManager = sessionManager;
+    _objectManager = objectManager;
+    _sessionManager!.onInitialize(showFeaturePoints: false, showPlanes: true);
+    _objectManager!.onInitialize();
+    _sessionManager!.onPlaneOrPointTap = _handlePlaneTap;
     _isInitialized = true;
   }
 
@@ -101,62 +109,68 @@ class ARService {
     return file?.path ?? url;
   }
 
-  vector.Vector3? _lastPlacedPosition;
-  vector.Vector4? _lastPlacedRotation;
+  ARNode? _heritageNode;
+  final Map<String, ARNode> _artifactNodes = {};
 
-  void _handlePlaneTap(List<ArCoreHitTestResult> results) {
+  /// Local cache paths (from AssetCacheService) load as fileSystemAppFolderGLB;
+  /// anything else (a raw https:// URL, or the fallback where caching failed)
+  /// loads as webGLB.
+  NodeType _nodeTypeFor(String pathOrUrl) {
+    return pathOrUrl.startsWith('http://') || pathOrUrl.startsWith('https://')
+        ? NodeType.webGLB
+        : NodeType.fileSystemAppFolderGLB;
+  }
+
+  void _handlePlaneTap(List<ARHitTestResult> results) {
     if (_pendingModelUrl == null || results.isEmpty) return;
 
     final hit = results.first;
-    _lastPlacedPosition = hit.pose.translation;
-    _lastPlacedRotation = hit.pose.rotation;
+    final position = hit.worldTransform.getTranslation();
 
     _addHeritageNode(
-      url: isHistoricalMode.value && _pendingHistoricalModelUrl != null 
-          ? _pendingHistoricalModelUrl! 
+      url: isHistoricalMode.value && _pendingHistoricalModelUrl != null
+          ? _pendingHistoricalModelUrl!
           : _pendingModelUrl!,
-      position: _lastPlacedPosition!,
-      rotation: _lastPlacedRotation!,
+      transformation: hit.worldTransform,
     );
-    
+
     // Trigger callback to spawn artifacts at this position
-    onNodePlaced?.call(_lastPlacedPosition!);
-    
+    onNodePlaced?.call(position);
+
     _pendingModelUrl = null;
     _pendingHistoricalModelUrl = null;
   }
 
   void _addHeritageNode({
-    required String url, 
-    required vector.Vector3 position, 
-    required vector.Vector4 rotation
+    required String url,
+    required vector.Matrix4 transformation,
   }) {
-    final node = ArCoreReferenceNode(
+    final node = ARNode(
+      type: _nodeTypeFor(url),
+      uri: url,
       name: 'heritage_model',
-      objectUrl: url,
-      position: position,
-      rotation: rotation,
+      transformation: transformation,
       scale: vector.Vector3(_pendingScale, _pendingScale, _pendingScale),
     );
-
-    _controller?.addArCoreNodeWithAnchor(node);
+    _heritageNode = node;
+    _objectManager?.addNode(node);
   }
 
   /// 🕰️ THEN/NOW TOGGLE: Swaps between normal ruins and reconstructed model.
   Future<void> toggleHistoricalMode() async {
-    if (_controller == null || _lastPlacedPosition == null || _lastPlacedRotation == null) return;
+    if (_objectManager == null || _heritageNode == null) return;
     if (_currentHistoricalUrl == null) return;
 
     isHistoricalMode.value = !isHistoricalMode.value;
-    
+    final transformation = _heritageNode!.transform;
+
     // Remove existing node
     await removeModel();
 
     // Add new node at same position
     _addHeritageNode(
       url: isHistoricalMode.value ? _currentHistoricalUrl! : _currentModelUrl!,
-      position: _lastPlacedPosition!,
-      rotation: _lastPlacedRotation!,
+      transformation: transformation,
     );
 
     debugPrint("[AR] Swapped model. HistoricalMode: ${isHistoricalMode.value}");
@@ -164,7 +178,7 @@ class ARService {
 
   /// Places hidden heritage artifacts relative to the placed model.
   Future<void> placeArtifacts(List<ARArtifact> artifacts, vector.Vector3 parentPosition, Set<String> foundIds) async {
-    if (_controller == null) return;
+    if (_objectManager == null) return;
 
     for (var artifact in artifacts) {
       if (foundIds.contains(artifact.id)) continue;
@@ -174,24 +188,29 @@ class ARService {
       final absY = parentPosition.y + artifact.relativePosition[1];
       final absZ = parentPosition.z + artifact.relativePosition[2];
 
-      final node = ArCoreReferenceNode(
+      final url = artifact.modelUrl.isNotEmpty
+          ? artifact.modelUrl
+          : "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Box/glTF-Binary/Box.glb";
+
+      final node = ARNode(
+        type: _nodeTypeFor(url),
+        uri: url,
         name: 'artifact_${artifact.id}',
-        // Use a generic treasure model or a specific one
-        objectUrl: artifact.modelUrl.isNotEmpty 
-          ? artifact.modelUrl 
-          : "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Box/glTF-Binary/Box.glb",
         position: vector.Vector3(absX, absY, absZ),
         // Scale artifacts to be smaller and harder to find
         scale: vector.Vector3(0.005, 0.005, 0.005),
       );
 
-      _controller?.addArCoreNode(node);
+      _artifactNodes[artifact.id] = node;
+      _objectManager?.addNode(node);
     }
   }
 
-  /// Remove the current model by name.
+  /// Remove the current model.
   Future<void> removeModel() async {
-    await _controller?.removeNode(nodeName: 'heritage_model');
+    if (_heritageNode == null) return;
+    _objectManager?.removeNode(_heritageNode!);
+    _heritageNode = null;
   }
 
   /// Adjust scale for next placement.
@@ -261,7 +280,7 @@ class ARService {
     if (_activeSessionId != null) {
       await endArSession();
     }
-    _controller?.dispose();
+    _sessionManager?.dispose();
     _isInitialized = false;
   }
 }

@@ -116,17 +116,6 @@ class PresenceRepository {
     });
   }
 
-  Stream<List<SessionPresence>> getAllParticipantsPresence(String sessionId) {
-    return _firestore
-        .collection('tour_sessions')
-        .doc(sessionId)
-        .collection('presence')
-        .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => SessionPresence.fromJson(doc.data()))
-            .toList());
-  }
-
   Stream<Map<String, double>> getPresence(String sessionId) {
     return _firestore.collection('tour_sessions').doc(sessionId).snapshots().map((doc) {
       if (!doc.exists) return {};

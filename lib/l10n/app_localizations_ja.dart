@@ -1335,9 +1335,6 @@ class AppLocalizationsJa extends AppLocalizations {
       'カメラをどんな場所にかざすだけで、隠された歴史が明らかになります。';
 
   @override
-  String get upgradeToPremiumButton => 'プレミアムにアップグレード';
-
-  @override
   String get oracleVerifiedLabel => 'オラクル認証済み';
 
   @override
@@ -4709,6 +4706,9 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get pricingTrialLabel => '月額 Rs. 299から　・　7日間無料トライアル';
+
+  @override
+  String get upgradeToPremiumButton => 'プレミアムにアップグレード';
 
   @override
   String get watch10SecPreviewButton => '10秒プレビューを見る';

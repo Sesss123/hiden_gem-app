@@ -1,7 +1,13 @@
 import 'dart:io';
 import 'dart:async';
 import 'package:flutter/foundation.dart';
-import '../../../core/mocks/arcore_flutter_plugin.dart';
+import 'package:ar_flutter_plugin_2/widgets/ar_view.dart';
+import 'package:ar_flutter_plugin_2/datatypes/config_planedetection.dart';
+import 'package:ar_flutter_plugin_2/managers/ar_anchor_manager.dart';
+import 'package:ar_flutter_plugin_2/managers/ar_location_manager.dart';
+import 'package:ar_flutter_plugin_2/managers/ar_object_manager.dart';
+import 'package:ar_flutter_plugin_2/managers/ar_session_manager.dart';
+import 'package:ar_flutter_plugin_2/models/ar_hittest_result.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -39,7 +45,8 @@ class _ARVideoScreenState extends State<ARVideoScreen>
   late SubtitleService _subtitleService;
 
   // ── AR ─────────────────────────────────────────────────────────────────────
-  ArCoreController? _arController;
+  ARSessionManager? _arSessionManager;
+  ARObjectManager? _arObjectManager;
   bool _surfaceDetected = false;
   bool _videoPlaced = false;
 
@@ -96,8 +103,13 @@ class _ARVideoScreenState extends State<ARVideoScreen>
   Future<void> _initVideo() async {
     await _videoService.init(widget.content.videoUrl);
 
+    // The widget (and _videoService/_audioPlayer) may have been disposed
+    // while init() was awaiting cache/network I/O. Bail out before wiring
+    // up listeners or touching a torn-down controller/service.
+    if (!mounted) return;
+
     if (!_videoService.isReady) {
-      if (mounted) setState(() { _hasError = true; _errorMsg = _videoService.error ?? 'Unknown error'; });
+      setState(() { _hasError = true; _errorMsg = _videoService.error ?? 'Unknown error'; });
       return;
     }
 
@@ -123,9 +135,17 @@ class _ARVideoScreenState extends State<ARVideoScreen>
   }
 
   // ── AR ─────────────────────────────────────────────────────────────────────
-  void _onArCoreViewCreated(ArCoreController controller) {
-    _arController = controller;
-    _arController!.onPlaneTap = _handlePlaneTap;
+  void _onARViewCreated(
+    ARSessionManager sessionManager,
+    ARObjectManager objectManager,
+    ARAnchorManager anchorManager,
+    ARLocationManager locationManager,
+  ) {
+    _arSessionManager = sessionManager;
+    _arObjectManager = objectManager;
+    _arSessionManager!.onInitialize(showFeaturePoints: false, showPlanes: true);
+    _arObjectManager!.onInitialize();
+    _arSessionManager!.onPlaneOrPointTap = _handlePlaneTap;
 
     // Simulate initial environment scanning feedback before showing tap
     // action hint. Cancel any prior timer first — if this callback ever
@@ -139,7 +159,7 @@ class _ARVideoScreenState extends State<ARVideoScreen>
     });
   }
 
-  void _handlePlaneTap(List<ArCoreHitTestResult> hits) async {
+  void _handlePlaneTap(List<ARHitTestResult> hits) async {
     if (_videoPlaced || !_isReady) return;
     if (hits.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -182,7 +202,7 @@ class _ARVideoScreenState extends State<ARVideoScreen>
     _videoService.controller?.removeListener(_onVideoTick);
     _syncService?.dispose();
     _videoService.dispose();
-    _arController?.dispose();
+    _arSessionManager?.dispose();
     _portalController.dispose();
     _pulseController.dispose();
     super.dispose();
@@ -197,10 +217,9 @@ class _ARVideoScreenState extends State<ARVideoScreen>
         children: [
           // AR Camera background
           if (!kIsWeb && Platform.isAndroid)
-            ArCoreView(
-              onArCoreViewCreated: _onArCoreViewCreated,
-              enableTapRecognizer: true,
-              enablePlaneRenderer: true,
+            ARView(
+              onARViewCreated: _onARViewCreated,
+              planeDetectionConfig: PlaneDetectionConfig.horizontal,
             )
           else
             Center(

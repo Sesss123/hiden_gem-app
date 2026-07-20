@@ -1376,9 +1376,6 @@ class AppLocalizationsTa extends AppLocalizations {
       'எந்த தளத்திலும் உங்கள் கேமராவை நோக்கி, அதன் மறைந்த வரலாற்றை வெளிப்படுத்துங்கள்.';
 
   @override
-  String get upgradeToPremiumButton => 'பிரீமியத்திற்கு மேம்படுத்து';
-
-  @override
   String get oracleVerifiedLabel => 'ஆரக்கிள் சரிபார்க்கப்பட்டது';
 
   @override
@@ -4920,6 +4917,9 @@ class AppLocalizationsTa extends AppLocalizations {
 
   @override
   String get pricingTrialLabel => 'ரூ. 299/மாதம் முதல்  ·  7-நாள் இலவச சோதனை';
+
+  @override
+  String get upgradeToPremiumButton => 'பிரீமியத்திற்கு மேம்படுத்து';
 
   @override
   String get watch10SecPreviewButton => '10-வினாடி முன்னோட்டத்தைப் பார்க்கவும்';

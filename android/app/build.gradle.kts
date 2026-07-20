@@ -41,7 +41,7 @@ android {
 
     defaultConfig {
         applicationId = "com.hidden.gems.hidden_gems_sl"
-        minSdk = 24
+        minSdk = 28
         targetSdk = 35
         versionCode = flutter.versionCode
         versionName = flutter.versionName

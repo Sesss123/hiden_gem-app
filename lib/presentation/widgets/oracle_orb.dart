@@ -28,7 +28,10 @@ class _OracleOrbState extends State<OracleOrb> {
       });
       
       await VoiceAssistantService.startListening(
-        onResult: (words) => setState(() => _words = words),
+        onResult: (words) {
+          if (!mounted) return;
+          setState(() => _words = words);
+        },
         onDone: () async {
           final position = await VoiceAssistantService.getCurrentPosition();
           final contextLoc = position != null 

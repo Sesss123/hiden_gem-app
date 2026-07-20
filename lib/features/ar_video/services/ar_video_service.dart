@@ -30,36 +30,45 @@ class ARVideoService extends ChangeNotifier {
       _controller = null;
     }
     _setState(ARVideoState.loading);
+    VideoPlayerController? tempController;
     try {
-      VideoPlayerController? tempController;
       try {
         final cachedFile = await VideoCacheService.getVideo(url);
-        if (_loadingUrl != url) return;
+        if (_disposed || _loadingUrl != url) {
+          return;
+        }
         tempController = VideoPlayerController.file(cachedFile);
         await tempController.initialize();
       } catch (e) {
-        if (_loadingUrl != url) return;
-        debugPrint('[ARVideoService] Cache miss or corrupted file ($e), falling back to network: $url');
         if (tempController != null) {
           await tempController.dispose();
           tempController = null;
         }
+        if (_disposed || _loadingUrl != url) return;
+        debugPrint('[ARVideoService] Cache miss or corrupted file ($e), falling back to network: $url');
         tempController = VideoPlayerController.networkUrl(Uri.parse(url));
         await tempController.initialize();
       }
 
-      if (_loadingUrl != url) {
+      if (_disposed || _loadingUrl != url) {
         await tempController.dispose();
+        tempController = null;
         return;
       }
 
       _controller = tempController;
+      tempController = null;
       _controller!.setLooping(true);
       _controller!.addListener(_onControllerUpdate);
 
       _setState(ARVideoState.paused);
     } catch (e) {
-      if (_loadingUrl != url) return;
+      // Whatever controller we were in the middle of building must not leak.
+      if (tempController != null) {
+        await tempController.dispose();
+        tempController = null;
+      }
+      if (_disposed || _loadingUrl != url) return;
       _errorMessage = e.toString();
       _setState(ARVideoState.error);
       debugPrint('[ARVideoService] Init error: $e');

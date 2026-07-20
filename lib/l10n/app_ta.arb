@@ -512,7 +512,6 @@
   "analyzeLandmarkButton": "நில அடையாளத்தை பகுப்பாய்வு செய்",
   "unlockLandmarkScanningTitle": "நில அடையாள ஸ்கேனிங்கை திறக்கவும்",
   "unlockLandmarkScanningSubtitle": "எந்த தளத்திலும் உங்கள் கேமராவை நோக்கி, அதன் மறைந்த வரலாற்றை வெளிப்படுத்துங்கள்.",
-  "upgradeToPremiumButton": "பிரீமியத்திற்கு மேம்படுத்து",
   "oracleVerifiedLabel": "ஆரக்கிள் சரிபார்க்கப்பட்டது",
 
   "mapLoadErrorMessage": "வரைபடத் தரவை ஏற்ற முடியவில்லை: {error}",

@@ -1359,9 +1359,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Point your camera at any site to reveal its hidden history.';
 
   @override
-  String get upgradeToPremiumButton => 'Upgrade to Premium';
-
-  @override
   String get oracleVerifiedLabel => 'Oracle verified';
 
   @override
@@ -4832,6 +4829,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pricingTrialLabel => 'From Rs. 299/month  ·  7-day free trial';
+
+  @override
+  String get upgradeToPremiumButton => 'Upgrade to Premium';
 
   @override
   String get watch10SecPreviewButton => 'Watch 10-sec Preview';

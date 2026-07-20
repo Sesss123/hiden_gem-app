@@ -6,12 +6,29 @@ import 'ar_content_preview_screen.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../presentation/widgets/batik_background.dart';
 
-class ARVideoLibraryScreen extends StatelessWidget {
+class ARVideoLibraryScreen extends StatefulWidget {
   const ARVideoLibraryScreen({super.key});
 
   @override
+  State<ARVideoLibraryScreen> createState() => _ARVideoLibraryScreenState();
+}
+
+class _ARVideoLibraryScreenState extends State<ARVideoLibraryScreen> {
+  // Held for the lifetime of the screen (not recreated per build) so the
+  // Reverb live-updates subscription it opens in getAllEnabled() can be
+  // torn down exactly once in dispose(), instead of leaking a new
+  // websocket subscription on every rebuild.
+  final ARVideoRepository _repository = ARVideoRepository();
+
+  @override
+  void dispose() {
+    _repository.disposeLiveUpdates();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final repository = ARVideoRepository();
+    final repository = _repository;
 
     return Scaffold(
       extendBodyBehindAppBar: true,

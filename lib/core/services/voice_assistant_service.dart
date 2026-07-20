@@ -212,7 +212,11 @@ class VoiceAssistantService {
     }
 
     // Local fallback logic (when Lumen-1 is unavailable)
-    if (userQuery.toLowerCase().contains("tired") || contextData['energy_level'] == 'Low') {
+    // NOTE: UserEnergyLevel.low.name (set in OracleContextEngine) is
+    // lowercase 'low' — this previously compared against 'Low' and could
+    // never match, silently disabling energy-based relax-plan triggering
+    // for every query except ones containing the literal word "tired".
+    if (userQuery.toLowerCase().contains("tired") || contextData['energy_level'] == 'low') {
       await DynamicItineraryService.mutatePlan('relax');
       return "I sense your vitality is low, traveler. Rest is a sacred part of the journey. I have adjusted your path to include more restorative moments.";
     }
