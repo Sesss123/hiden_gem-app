@@ -33,6 +33,14 @@ class Kernel extends ConsoleKernel
         $schedule->command('marketplace:expire-featured-listings')
                  ->daily()
                  ->withoutOverlapping();
+
+        // Cleans up expired-but-undeleted personal_access_tokens rows now
+        // that tokens actually expire (see config/sanctum.php) — otherwise
+        // they accumulate forever since Sanctum never deletes them on its
+        // own. --hours=24 gives a grace window past expiry before deleting.
+        $schedule->command('sanctum:prune-expired --hours=24')
+                 ->daily()
+                 ->withoutOverlapping();
     }
 
     /**

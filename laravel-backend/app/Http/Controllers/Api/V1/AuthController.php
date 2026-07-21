@@ -11,6 +11,20 @@ use Illuminate\Validation\ValidationException;
 class AuthController extends Controller
 {
     /**
+     * Issues a Sanctum token honoring config('sanctum.expiration') — used by
+     * all three login/register paths so a stolen token has the same bounded
+     * lifetime regardless of how it was obtained.
+     */
+    private function issueToken(User $user): string
+    {
+        $expiresAt = config('sanctum.expiration')
+            ? now()->addMinutes(config('sanctum.expiration'))
+            : null;
+
+        return $user->createToken('auth_token', ['*'], $expiresAt)->plainTextToken;
+    }
+
+    /**
      * Register a new Tourist or Local user.
      */
     public function register(Request $request)
@@ -31,7 +45,7 @@ class AuthController extends Controller
             'subscription_tier' => 'Free', // Defaults to Free tier
         ]);
 
-        $token = $user->createToken('auth_token')->plainTextToken;
+        $token = $this->issueToken($user);
 
         return response()->json([
             'status' => 'success',
@@ -69,7 +83,7 @@ class AuthController extends Controller
         if ($excessTokens->isNotEmpty()) {
             $user->tokens()->whereIn('id', $excessTokens)->delete();
         }
-        $token = $user->createToken('auth_token')->plainTextToken;
+        $token = $this->issueToken($user);
 
         return response()->json([
             'status' => 'success',
@@ -185,7 +199,7 @@ class AuthController extends Controller
                 $user->tokens()->whereIn('id', $excessTokens)->delete();
             }
 
-            $token = $user->createToken('auth_token')->plainTextToken;
+            $token = $this->issueToken($user);
 
             return response()->json([
                 'status' => 'success',
