@@ -12,7 +12,15 @@ use Illuminate\Support\Facades\Log;
  * who has no account and no app install — so this must be a plain web page,
  * resolved with admin Firestore credentials since firestore.rules only lets
  * the owning tourist (or an active-link viewer bumping viewCount) read
- * family_share_links, and only session participants read tour_sessions.
+ * family_share_links.
+ *
+ * The tour status shown on this page (phase, guide name, meeting point,
+ * SOS) is end-to-end encrypted: the tourist's device encrypts it with a
+ * per-link key that only ever travels in the share URL's fragment, which
+ * browsers never send to any server. This controller therefore no longer
+ * reads tour_sessions/users at all — it only ever sees/passes ciphertext
+ * (`encryptedStatus`), decrypted client-side in show.blade.php via
+ * WebCrypto. Laravel structurally cannot leak plaintext status.
  */
 class JoinController extends Controller
 {
@@ -31,19 +39,6 @@ class JoinController extends Controller
             return response()->view('join.invalid', ['reason' => 'expired']);
         }
 
-        $permissions = $link['permissions'] ?? [];
-        $session = null;
-        $guideName = null;
-
-        if (!empty($link['sessionId'])) {
-            $session = $firestore->getDocument('tour_sessions', $link['sessionId']);
-        }
-
-        if ($session && ($permissions['show_identity'] ?? false) && !empty($session['guideId'])) {
-            $guideUser = $firestore->getDocument('users', $session['guideId']);
-            $guideName = $guideUser['displayName'] ?? $guideUser['name'] ?? null;
-        }
-
         // Best-effort view count bump (not atomic — acceptable for a
         // display-only counter, and failure here shouldn't block the page).
         try {
@@ -55,9 +50,7 @@ class JoinController extends Controller
 
         return view('join.show', [
             'link' => $link,
-            'session' => $session,
-            'permissions' => $permissions,
-            'guideName' => $guideName,
+            'encryptedStatus' => $link['encryptedStatus'] ?? null,
         ]);
     }
 }

@@ -200,6 +200,36 @@ class EncryptionUtil {
     }
   }
 
+  /// Encrypts [plainText] with an arbitrary caller-supplied key (not the
+  /// device-bound key) — used for family-share E2EE where the key is a
+  /// per-link random secret embedded in a URL fragment, never persisted to
+  /// Firestore or known server-side. Returns "ivBase64:cipherBase64" (no
+  /// HMAC segment — GCM's own tag authenticates, and the recipient decrypts
+  /// via plain WebCrypto JS, not this class).
+  static String encryptWithKey(String plainText, String keyStr) {
+    final key = _deriveAesKey(keyStr);
+    final iv = enc.IV.fromSecureRandom(12);
+    final encrypter = enc.Encrypter(enc.AES(key, mode: enc.AESMode.gcm));
+    final encrypted = encrypter.encrypt(plainText, iv: iv);
+    return '${iv.base64}:${encrypted.base64}';
+  }
+
+  /// Decrypts a payload produced by [encryptWithKey]. Returns null on any
+  /// failure (bad key, tampered ciphertext, malformed payload) rather than
+  /// throwing — callers treat null as "cannot display".
+  static String? decryptWithKey(String payload, String keyStr) {
+    try {
+      final parts = payload.split(':');
+      if (parts.length != 2) return null;
+      final key = _deriveAesKey(keyStr);
+      final iv = enc.IV.fromBase64(parts[0]);
+      final encrypter = enc.Encrypter(enc.AES(key, mode: enc.AESMode.gcm));
+      return encrypter.decrypt64(parts[1], iv: iv);
+    } catch (e) {
+      return null;
+    }
+  }
+
   static Future<String> _handleLegacyDecryption(String payload) async {
     try {
       final parts = payload.split(':');

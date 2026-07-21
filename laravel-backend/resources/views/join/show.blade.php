@@ -1,15 +1,4 @@
 @php
-    $sosActive = ($permissions['show_emergency'] ?? false) && ($session['sosActive'] ?? false);
-    $phase = $session['currentPhase'] ?? null;
-    $phaseLabels = [
-        'assembling' => 'Getting ready to depart',
-        'en_route' => 'On the move',
-        'at_site' => 'At the destination',
-        'break_time' => 'Taking a break',
-        'returning' => 'Heading back',
-        'completed' => 'Tour finished',
-    ];
-    $phaseLabel = $phaseLabels[$phase] ?? 'Status unavailable';
     $recipientName = $link['recipientName'] ?? 'there';
     $expiresAt = isset($link['expiresAt']) ? \Carbon\Carbon::parse($link['expiresAt']) : null;
 @endphp
@@ -18,11 +7,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    @if(!$sosActive)
+    {{-- SOS refresh cadence is decided client-side now (see script below) --
+         sosActive lives inside the encrypted blob, which PHP never sees. --}}
     <meta http-equiv="refresh" content="30">
-    @else
-    <meta http-equiv="refresh" content="15">
-    @endif
     <title>Trip status — Hidden Gems SL</title>
     <style>
         :root {
@@ -69,6 +56,7 @@
             display: flex; align-items: center; gap: 12px;
             font-weight: 600;
         }
+        .sos-banner.hidden { display: none; }
         .sos-banner .dot {
             width: 10px; height: 10px; border-radius: 50%;
             background: #fff;
@@ -86,6 +74,7 @@
             padding: 20px;
             margin-bottom: 16px;
         }
+        .card.hidden { display: none; }
         .card-label {
             font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em;
             color: var(--muted); font-weight: 700; margin-bottom: 10px;
@@ -112,54 +101,48 @@
             display: flex; align-items: center; gap: 10px;
             color: var(--muted); font-size: 13px;
         }
+        .locked-card.hidden { display: none; }
     </style>
 </head>
-<body>
+<body data-encrypted="{{ $encryptedStatus }}">
     <div class="wrap">
         <div class="eyebrow">Hidden Gems SL &middot; Live trip sharing</div>
         <h1>Hi {{ $recipientName }}, here's the latest</h1>
 
-        @if($sosActive)
-        <div class="sos-banner">
+        <div id="sos-banner" class="sos-banner hidden">
             <span class="dot"></span>
             <span>Emergency alert active — the traveler has triggered SOS. This page refreshes automatically.</span>
         </div>
-        @endif
 
-        @if(!$session)
-        <div class="card">
-            <div class="card-label">Status</div>
-            <div class="locked-card">No tour session linked to this trip yet.</div>
+        <div id="no-status-card" class="card locked-card">
+            <span>Loading trip status&hellip;</span>
         </div>
-        @else
-            @if($permissions['show_status'] ?? false)
-            <div class="card">
-                <div class="card-label">Current status</div>
-                <div class="status-row">
-                    <span class="status-dot {{ $phase === 'completed' ? 'idle' : '' }}"></span>
-                    <span class="status-text">{{ $phaseLabel }}</span>
-                </div>
-            </div>
-            @endif
 
-            @if($permissions['show_identity'] ?? false)
-            <div class="card">
-                <div class="card-label">Guide</div>
-                <div class="meta-row" style="border-top:none; padding-top:0;">
-                    <span class="meta-value">{{ $guideName ?? 'Verified Hidden Gems SL guide' }}</span>
-                </div>
-            </div>
-            @endif
+        <div id="decrypt-error" class="card locked-card hidden">
+            <span>Unable to decrypt trip status — this link may be malformed or out of date.</span>
+        </div>
 
-            @if(($permissions['show_meeting_point'] ?? false) && !empty($session['meetingPointName']))
-            <div class="card">
-                <div class="card-label">Meeting point</div>
-                <div class="meta-row" style="border-top:none; padding-top:0;">
-                    <span class="meta-value">{{ $session['meetingPointName'] }}</span>
-                </div>
+        <div id="status-card" class="card hidden">
+            <div class="card-label">Current status</div>
+            <div class="status-row">
+                <span id="status-dot" class="status-dot"></span>
+                <span id="status-text" class="status-text"></span>
             </div>
-            @endif
-        @endif
+        </div>
+
+        <div id="guide-card" class="card hidden">
+            <div class="card-label">Guide</div>
+            <div class="meta-row" style="border-top:none; padding-top:0;">
+                <span id="guide-name" class="meta-value"></span>
+            </div>
+        </div>
+
+        <div id="meeting-card" class="card hidden">
+            <div class="card-label">Meeting point</div>
+            <div class="meta-row" style="border-top:none; padding-top:0;">
+                <span id="meeting-name" class="meta-value"></span>
+            </div>
+        </div>
 
         <div class="footer-note">
             @if($expiresAt)
@@ -168,5 +151,105 @@
             Shared privately by a traveler using Hidden Gems SL. This page does not require an account.
         </div>
     </div>
+
+    <script>
+        (function () {
+            var PHASE_LABELS = {
+                assembling: 'Getting ready to depart',
+                en_route: 'On the move',
+                at_site: 'At the destination',
+                break_time: 'Taking a break',
+                returning: 'Heading back',
+                completed: 'Tour finished'
+            };
+
+            function show(id) { document.getElementById(id).classList.remove('hidden'); }
+            function hide(id) { document.getElementById(id).classList.add('hidden'); }
+            function setText(id, text) { document.getElementById(id).textContent = text; }
+
+            function base64UrlToBytes(b64url) {
+                var b64 = b64url.replace(/-/g, '+').replace(/_/g, '/');
+                while (b64.length % 4) b64 += '=';
+                return base64ToBytes(b64);
+            }
+
+            function base64ToBytes(b64) {
+                var bin = atob(b64);
+                var bytes = new Uint8Array(bin.length);
+                for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+                return bytes;
+            }
+
+            function render(json) {
+                if (typeof json.sosActive === 'boolean') {
+                    if (json.sosActive) show('sos-banner'); else hide('sos-banner');
+                }
+                if (typeof json.phase === 'string') {
+                    var label = PHASE_LABELS[json.phase] || 'Status unavailable';
+                    document.getElementById('status-dot').classList.toggle('idle', json.phase === 'completed');
+                    setText('status-text', label);
+                    show('status-card');
+                }
+                if (typeof json.guideName === 'string' || json.guideName === null) {
+                    setText('guide-name', json.guideName || 'Verified Hidden Gems SL guide');
+                    show('guide-card');
+                }
+                if (typeof json.meetingPointName === 'string' && json.meetingPointName) {
+                    setText('meeting-name', json.meetingPointName);
+                    show('meeting-card');
+                }
+                hide('no-status-card');
+
+                // SOS forces a faster refresh than the default 30s meta tag.
+                // Reload preserves the URL (including the #k= fragment) since
+                // this is a normal same-URL navigation, not a server redirect.
+                if (json.sosActive === true) {
+                    setTimeout(function () { window.location.reload(); }, 15000);
+                }
+            }
+
+            async function main() {
+                var encrypted = document.body.dataset.encrypted;
+                if (!encrypted) {
+                    // Pre-migration link or a brand-new link with no status yet.
+                    return;
+                }
+
+                var match = /[#&]k=([^&]+)/.exec(window.location.hash);
+                if (!match) {
+                    hide('no-status-card');
+                    show('decrypt-error');
+                    return;
+                }
+
+                var parts = encrypted.split(':');
+                if (parts.length !== 2) {
+                    hide('no-status-card');
+                    show('decrypt-error');
+                    return;
+                }
+
+                try {
+                    var keyBytes = base64UrlToBytes(match[1]);
+                    var iv = base64ToBytes(parts[0]);
+                    var cipherBytes = base64ToBytes(parts[1]);
+
+                    var key = await window.crypto.subtle.importKey(
+                        'raw', keyBytes, { name: 'AES-GCM' }, false, ['decrypt']
+                    );
+                    var plainBuf = await window.crypto.subtle.decrypt(
+                        { name: 'AES-GCM', iv: iv }, key, cipherBytes
+                    );
+                    var json = JSON.parse(new TextDecoder().decode(plainBuf));
+                    render(json);
+                } catch (e) {
+                    hide('no-status-card');
+                    show('decrypt-error');
+                }
+            }
+
+            main();
+        })();
+    </script>
 </body>
 </html>

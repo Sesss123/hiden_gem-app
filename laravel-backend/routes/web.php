@@ -32,7 +32,9 @@ Route::get('/', function () {
 });
 
 // Public family-sharing "join" page — no auth, rate limited to blunt token
-// enumeration attempts against the 8-char share token.
+// enumeration attempts against the share token (26 chars from a 33-symbol
+// alphabet, ~131 bits — the throttle is defense-in-depth, not the primary
+// protection). Displayed status is E2E encrypted; see JoinController.
 Route::get('/join/{token}', [JoinController::class, 'show'])
     ->middleware('throttle:20,1')
     ->name('join.show');

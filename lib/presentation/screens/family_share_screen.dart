@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -6,12 +7,14 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/theme/oracle_ui_system.dart';
 import 'package:flutter/services.dart';
 import '../../data/models/family_share_link.dart';
 import '../../data/repositories/tour_session_repository.dart';
 import '../../core/config/app_config.dart';
+import '../../core/services/family_share_sync_service.dart';
 import 'package:hidden_gems_sl/core/utils/secure_logger.dart';
 import '../../l10n/app_localizations.dart';
 
@@ -127,6 +130,10 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
               .collection('family_share_links')
               .doc(link.shareId)
               .delete().catchError((_) {});
+          const FlutterSecureStorage()
+              .delete(key: 'family_share_key_${link.shareId}')
+              .catchError((_) {});
+          FamilyShareSyncService.instance.unwatchLink(link.shareId);
         }
       }
     }
@@ -142,9 +149,22 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
   }
 
   String _generateSecureToken() {
-    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // Unambiguous charset
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // Unambiguous charset, 33 symbols
     final random = Random.secure();
-    return List.generate(8, (index) => chars[random.nextInt(chars.length)]).join();
+    // 26 chars * log2(33) =~ 131 bits of entropy -- this token doubles as
+    // the Firestore doc ID and the public /join/{token} URL slug, so it
+    // must be strong enough to resist brute-force guessing/enumeration.
+    return List.generate(26, (index) => chars[random.nextInt(chars.length)]).join();
+  }
+
+  /// Per-link symmetric key for E2EE of the shared status blob (see
+  /// _generateLink). 32 raw random bytes, base64url-encoded so it survives
+  /// unescaped in a URL fragment and decodes unambiguously on both the Dart
+  /// and browser (WebCrypto) sides.
+  String _generateLinkKey() {
+    final random = Random.secure();
+    final bytes = List<int>.generate(32, (_) => random.nextInt(256));
+    return base64Url.encode(bytes);
   }
 
   // Prevents unbounded link spam (each link is a public, anonymously
@@ -153,7 +173,7 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
   // many simultaneously active links.
   static const int _maxActiveLinks = 10;
 
-  void _generateLink() {
+  void _generateLink() async {
     final l10n = AppLocalizations.of(context)!;
     final name = _nameController.text.trim();
     if (_activeLinks.where((l) => !l.isExpired).length >= _maxActiveLinks) {
@@ -185,6 +205,7 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
     final now = DateTime.now();
     final uid = FirebaseAuth.instance.currentUser?.uid ?? 'current_user';
     final shareId = token;
+    final permissions = Map<String, bool>.from(_permissions);
 
     final newLink = FamilyShareLink(
       shareId: shareId,
@@ -193,15 +214,33 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
       recipientName: name,
       shareToken: token,
       expiresAt: now.add(Duration(hours: _selectedHours)),
-      permissions: Map<String, bool>.from(_permissions),
+      permissions: permissions,
     );
+
+    // E2EE: this key is only ever kept on the tourist's device (secure
+    // storage) and embedded in the share URL's fragment -- it must never be
+    // written to Firestore or seen by the Laravel join-page backend.
+    final linkKey = _generateLinkKey();
+    await const FlutterSecureStorage().write(
+      key: 'family_share_key_$shareId',
+      value: linkKey,
+    );
+
+    final doc = newLink.toJson();
+    doc['encryptedStatus'] = await FamilyShareSyncService.instance
+        .buildEncryptedStatus(sessionId: newLink.sessionId, permissions: permissions, linkKey: linkKey);
 
     // Persist to Firestore
     FirebaseFirestore.instance
         .collection('family_share_links')
         .doc(shareId)
-        .set(newLink.toJson());
+        .set(doc);
 
+    // Make sure the live sync loop picks up this link immediately (it
+    // otherwise only re-scans on its own family_share_links listener tick).
+    FamilyShareSyncService.instance.watchLink(newLink.copyWith(permissions: permissions));
+
+    if (!mounted) return;
     setState(() {
       if (!_activeLinks.any((l) => l.shareId == newLink.shareId)) {
         _activeLinks.insert(0, newLink);
@@ -415,10 +454,19 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
               ),
               IconButton(
                 icon: Icon(Icons.copy_rounded, color: isExpired ? AppTheme.textSecondary(context).withValues(alpha: 0.3) : AppTheme.textSecondary(context)),
-                onPressed: isExpired ? null : () {
-                  Clipboard.setData(ClipboardData(
-                    text: 'Track my trip live: ${AppConfig.webBaseUrl}/join/${link.shareToken}',
-                  ));
+                onPressed: isExpired ? null : () async {
+                  // linkKey never lives on FamilyShareLink/Firestore -- it's
+                  // looked up from secure storage and only ever leaves the
+                  // device inside the URL fragment (which browsers never
+                  // send to a server), so the decryption key stays out of
+                  // reach of Firestore, Laravel, and any DB leak.
+                  final linkKey = await const FlutterSecureStorage()
+                      .read(key: 'family_share_key_${link.shareId}');
+                  final url = linkKey != null
+                      ? '${AppConfig.webBaseUrl}/join/${link.shareToken}#k=$linkKey'
+                      : '${AppConfig.webBaseUrl}/join/${link.shareToken}';
+                  Clipboard.setData(ClipboardData(text: 'Track my trip live: $url'));
+                  if (!mounted) return;
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                     content: Text(l10n.familyShareCopyLinkSnackbar),
                     behavior: SnackBarBehavior.floating,
@@ -448,6 +496,10 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
                                 .collection('family_share_links')
                                 .doc(link.shareId)
                                 .delete().catchError((_) {});
+                            const FlutterSecureStorage()
+                                .delete(key: 'family_share_key_${link.shareId}')
+                                .catchError((_) {});
+                            FamilyShareSyncService.instance.unwatchLink(link.shareId);
                             setState(() => _activeLinks.remove(link));
                             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                               content: Text(l10n.familyShareLinkRemovedSnackbar(link.recipientName)),
