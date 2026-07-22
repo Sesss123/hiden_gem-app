@@ -2,10 +2,13 @@
 
 namespace App\Http\Resources;
 
+use App\Http\Resources\Concerns\BuildsPublicStorageUrl;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class PlaceResource extends JsonResource
 {
+    use BuildsPublicStorageUrl;
+
     /**
      * Transform the resource into an array for API consumers (Flutter App).
      * Includes both snake_case and camelCase keys for 100% Flutter model compatibility.
@@ -20,10 +23,10 @@ class PlaceResource extends JsonResource
             $cover = $this->images->firstWhere('is_cover', true) ?? $this->images->first();
             if ($cover) {
                 $path = $cover->thumb_path ?: $cover->full_path;
-                $imageUrl = str_starts_with($path, 'http') ? $path : asset('storage/' . ltrim($path, '/'));
+                $imageUrl = $this->toPublicUrl($path);
             }
         } elseif ($imageUrl && !str_starts_with($imageUrl, 'http')) {
-            $imageUrl = asset('storage/' . ltrim($imageUrl, '/'));
+            $imageUrl = $this->toPublicUrl($imageUrl);
         }
 
         // Calculate standard fallback variables once at the top of toArray (Exec #17)
@@ -107,12 +110,14 @@ class PlaceResource extends JsonResource
             'image_url' => $imageUrl,
             'imageUrl' => $imageUrl,
             'images' => $this->relationLoaded('images') ? $this->images->map(function ($img) {
+                $thumb = $this->toPublicUrl($img->thumb_path);
+                $full = $this->toPublicUrl($img->full_path);
                 return [
                     'id' => $img->id,
-                    'thumb_path' => str_starts_with($img->thumb_path, 'http') ? $img->thumb_path : asset('storage/' . ltrim($img->thumb_path, '/')),
-                    'thumbPath' => str_starts_with($img->thumb_path, 'http') ? $img->thumb_path : asset('storage/' . ltrim($img->thumb_path, '/')),
-                    'full_path' => str_starts_with($img->full_path, 'http') ? $img->full_path : asset('storage/' . ltrim($img->full_path, '/')),
-                    'fullPath' => str_starts_with($img->full_path, 'http') ? $img->full_path : asset('storage/' . ltrim($img->full_path, '/')),
+                    'thumb_path' => $thumb,
+                    'thumbPath' => $thumb,
+                    'full_path' => $full,
+                    'fullPath' => $full,
                     'is_cover' => (bool) $img->is_cover,
                     'isCover' => (bool) $img->is_cover,
                 ];

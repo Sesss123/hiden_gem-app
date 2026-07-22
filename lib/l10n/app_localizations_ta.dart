@@ -4620,6 +4620,10 @@ class AppLocalizationsTa extends AppLocalizations {
   String get audioGuideLabel => 'ஆடியோ வழிகாட்டி';
 
   @override
+  String get audioGuideUnavailable =>
+      'This audio guide isn\'t available right now. Tap to retry.';
+
+  @override
   String get sinhalaShortLabel => 'සිංහල';
 
   @override

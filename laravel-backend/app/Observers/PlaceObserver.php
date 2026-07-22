@@ -9,11 +9,21 @@ class PlaceObserver
 {
     /**
      * Handle the Place "saving" event.
-     * Automatically locks sequence row and increments global sync_version on any update/insert.
+     * Automatically locks sequence row and increments global sync_version, but
+     * only when the place is (or is becoming) approved — the mobile app's
+     * delta sync only ever exposes approved places, so bumping the counter
+     * for a pending submission would waste a version number no client will
+     * ever see. A CM edit that flips an approved place back to pending
+     * intentionally does NOT bump here — the app keeps serving the last
+     * approved sync_version until a real admin re-approves it.
      * BUG-062: Uses a named savepoint via DB::transaction to correctly handle nested saves.
      */
     public function saving(Place $place)
     {
+        if ($place->status !== Place::STATUS_APPROVED) {
+            return;
+        }
+
         if (!$place->isDirty('sync_version')) {
             DB::transaction(function () use ($place) {
                 $counter = DB::table('sync_counter')->where('id', 1)->lockForUpdate()->first();

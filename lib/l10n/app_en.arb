@@ -1827,6 +1827,7 @@
   "stampRarityMythic": "Mythic",
 
   "audioGuideLabel": "Audio guide",
+  "audioGuideUnavailable": "This audio guide isn't available right now. Tap to retry.",
   "sinhalaShortLabel": "සිංහල",
   "englishShortLabel": "English",
 

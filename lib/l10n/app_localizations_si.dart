@@ -4581,6 +4581,10 @@ class AppLocalizationsSi extends AppLocalizations {
   String get audioGuideLabel => 'ශ්‍රව්‍ය මාර්ගෝපදේශය';
 
   @override
+  String get audioGuideUnavailable =>
+      'මෙම ශ්‍රව්‍ය මාර්ගෝපදේශය දැනට ලබා ගත නොහැක. නැවත උත්සාහ කිරීමට තට්ටු කරන්න.';
+
+  @override
   String get sinhalaShortLabel => 'සිංහල';
 
   @override

@@ -4425,6 +4425,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get audioGuideLabel => '音声ガイド';
 
   @override
+  String get audioGuideUnavailable =>
+      'This audio guide isn\'t available right now. Tap to retry.';
+
+  @override
   String get sinhalaShortLabel => 'සිංහල';
 
   @override

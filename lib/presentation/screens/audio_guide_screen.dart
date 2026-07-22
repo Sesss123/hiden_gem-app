@@ -23,6 +23,8 @@ class AudioGuideScreen extends StatefulWidget {
 class _AudioGuideScreenState extends State<AudioGuideScreen> with SingleTickerProviderStateMixin {
   final AudioPlayer _player = AudioPlayer();
   bool _isPlaying = false;
+  bool _isLoading = false;
+  bool _hasError = false;
   String _currentLang = 'si'; // Default to Sinhala
   late AnimationController _pulseController;
   StreamSubscription<PlayerState>? _playerStateSubscription;
@@ -50,21 +52,30 @@ class _AudioGuideScreenState extends State<AudioGuideScreen> with SingleTickerPr
 
   Future<void> _initAudio() async {
     final url = _currentLang == 'si' ? widget.place.audioUrlSi : widget.place.audioUrlEn;
-    if (url.isEmpty) return;
+    if (url.isEmpty) {
+      if (mounted) setState(() { _hasError = true; _isLoading = false; });
+      return;
+    }
+
+    setState(() { _isLoading = true; _hasError = false; });
 
     try {
       final localPath = await AssetCacheService.getLocalPath(url);
+      if (!mounted) return;
       if (localPath != null) {
         await _player.setFilePath(localPath);
       } else {
         await _player.setUrl(url);
       }
+      if (mounted) setState(() => _isLoading = false);
     } catch (e, st) {
       SecureLogger.error("Audio init error", e, st, "AudioGuide");
+      if (mounted) setState(() { _hasError = true; _isLoading = false; });
     }
   }
 
   Future<void> _togglePlayback() async {
+    if (_isLoading || _hasError) return;
     if (_player.playing) {
       await _player.pause();
     } else {
@@ -78,6 +89,7 @@ class _AudioGuideScreenState extends State<AudioGuideScreen> with SingleTickerPr
     if (!mounted) return;
     setState(() => _currentLang = lang);
     await _initAudio();
+    if (!mounted || _hasError) return;
     await _player.play();
   }
 
@@ -202,6 +214,21 @@ class _AudioGuideScreenState extends State<AudioGuideScreen> with SingleTickerPr
             fontWeight: FontWeight.w600,
           ),
         ),
+        if (_hasError) ...[
+          SizedBox(height: 12),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 32),
+            child: Text(
+              AppLocalizations.of(context)!.audioGuideUnavailable,
+              textAlign: TextAlign.center,
+              style: GoogleFonts.inter(
+                fontSize: 12,
+                color: Theme.of(context).colorScheme.error,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
       ],
     );
   }
@@ -224,20 +251,30 @@ class _AudioGuideScreenState extends State<AudioGuideScreen> with SingleTickerPr
               ),
               SizedBox(width: 40),
               GestureDetector(
-                onTap: _togglePlayback,
+                onTap: _hasError ? _initAudio : _togglePlayback,
                 child: Container(
                   width: 80,
                   height: 80,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: Theme.of(context).colorScheme.secondary,
+                    color: _hasError
+                        ? Theme.of(context).colorScheme.error
+                        : Theme.of(context).colorScheme.secondary,
                   ),
                   child: Center(
-                    child: Icon(
-                      _isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
-                      color: AppPalette.ink,
-                      size: 40,
-                    ),
+                    child: _isLoading
+                        ? SizedBox(
+                            width: 28,
+                            height: 28,
+                            child: CircularProgressIndicator(strokeWidth: 2.5, color: AppPalette.ink),
+                          )
+                        : Icon(
+                            _hasError
+                                ? Icons.refresh_rounded
+                                : (_isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded),
+                            color: AppPalette.ink,
+                            size: 40,
+                          ),
                   ),
                 ),
               ),

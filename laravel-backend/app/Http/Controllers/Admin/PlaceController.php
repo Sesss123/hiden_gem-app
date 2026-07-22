@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Place;
 use App\Models\PlaceImage;
+use App\Services\GeohashService;
 use App\Services\ImageProcessingService;
 use App\Traits\LogsAdminActivity;
 use Illuminate\Http\Request;
@@ -29,12 +30,15 @@ class PlaceController extends Controller
     {
         $query = Place::with('coverImage')->where('is_deleted', false);
 
-        // content_manager only ever sees places they personally created —
-        // no visibility into the existing catalog or other admins'/content
+        // content_manager sees places they personally created plus unclaimed
+        // drafts (created_by null — e.g. bulk-imported data awaiting first
+        // review) that anyone may pick up. No visibility into other content
         // managers' submissions. Edit access follows the same scoping (see
-        // edit()/update() below); destroy stays full_admin-only regardless.
+        // authorizePlaceOwner()); destroy stays full_admin-only regardless.
         if (!Auth::user()->isFullAdmin()) {
-            $query->where('created_by', Auth::id());
+            $query->where(function ($q) {
+                $q->where('created_by', Auth::id())->orWhereNull('created_by');
+            });
         }
 
         if ($search = $request->input('search')) {
@@ -56,6 +60,61 @@ class PlaceController extends Controller
     public function create()
     {
         return view('admin.places.form', ['place' => new Place()]);
+    }
+
+    /**
+     * Content manager's own submissions, defaulting to just the ones still
+     * awaiting admin approval — unlike index(), which full_admin also uses
+     * to browse the whole catalog, this is always scoped to the caller.
+     * The status filter tabs let the caller widen to approved/rejected/all.
+     */
+    public function mySubmissions(Request $request)
+    {
+        $query = Place::with('coverImage')
+            ->where('is_deleted', false)
+            ->where('created_by', Auth::id());
+
+        $status = $request->input('status', Place::STATUS_PENDING);
+        if ($status !== 'all') {
+            $query->where('status', $status);
+        }
+
+        $places = $query->orderBy('updated_at', 'desc')->paginate(15);
+        return view('admin.places.my-submissions', compact('places'));
+    }
+
+    /**
+     * Resolves a shortened Google Maps link (maps.app.goo.gl/...) to the
+     * full URL it redirects to, so the browser-side coordinate parser (which
+     * can't follow a cross-origin redirect itself) can run on the resolved
+     * URL. Restricted to Google's own short-link/maps domains — this fetches
+     * a user-supplied URL server-side, so an open allowlist would be an SSRF
+     * vector letting a client probe internal network addresses.
+     */
+    public function resolveMapsLink(Request $request)
+    {
+        $request->validate(['url' => 'required|url|max:500']);
+        $url = $request->input('url');
+
+        $host = parse_url($url, PHP_URL_HOST);
+        $allowedHosts = ['maps.app.goo.gl', 'goo.gl', 'maps.google.com', 'www.google.com', 'google.com'];
+        if (!$host || !in_array(strtolower($host), $allowedHosts, true)) {
+            return response()->json(['error' => 'Only Google Maps links are supported.'], 422);
+        }
+
+        try {
+            $response = \Illuminate\Support\Facades\Http::withOptions(['allow_redirects' => ['track_redirects' => true]])
+                ->timeout(6)
+                ->get($url);
+
+            // Guzzle exposes the final resolved URL after following redirects
+            // via this header when track_redirects is enabled.
+            $resolvedUrl = $response->effectiveUri() ? (string) $response->effectiveUri() : $url;
+
+            return response()->json(['resolved_url' => $resolvedUrl]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Could not reach that link.'], 502);
+        }
     }
 
     public function store(Request $request)
@@ -110,7 +169,13 @@ class PlaceController extends Controller
             ? "Place '{$place->name}' submitted and is awaiting admin approval."
             : "Place '{$place->name}' created successfully.";
 
-        return redirect()->route('admin.places.index')->with('success', $message);
+        // A content_manager's submission won't show up on the main Places
+        // list scoped view the way a full admin's would expect — send them
+        // straight to My Pending Places so they land on the page that
+        // actually shows what they just did, instead of Manage Places.
+        $redirectRoute = $isContentManager ? 'admin.places.my-submissions' : 'admin.places.index';
+
+        return redirect()->route($redirectRoute)->with('success', $message);
     }
 
     public function edit($id)
@@ -138,6 +203,13 @@ class PlaceController extends Controller
             Cache::forget('admin_pending_place_count');
         }
 
+        // Claim an unclaimed draft (created_by null — bulk-imported data
+        // awaiting first review) the moment a content_manager saves it, so
+        // it starts showing up under their own "My Pending Places".
+        if ($isContentManager && $place->created_by === null) {
+            $data['created_by'] = Auth::id();
+        }
+
         // BUG-L006: Wrap model update and image processing in a transaction
         DB::transaction(function () use ($place, $data, $request) {
             // Updating triggers PlaceObserver::saving if dirty
@@ -146,11 +218,14 @@ class PlaceController extends Controller
             $this->handleImages($request, $place);
         });
 
-        $message = ($isContentManager && $place->status === Place::STATUS_PENDING)
+        $sentBackForReview = $isContentManager && $place->status === Place::STATUS_PENDING;
+        $message = $sentBackForReview
             ? "Place '{$place->name}' updated and sent back for admin re-approval."
             : "Place '{$place->name}' updated successfully.";
 
-        return redirect()->route('admin.places.index')->with('success', $message);
+        $redirectRoute = $sentBackForReview ? 'admin.places.my-submissions' : 'admin.places.index';
+
+        return redirect()->route($redirectRoute)->with('success', $message);
     }
 
     public function destroy($id)
@@ -174,7 +249,10 @@ class PlaceController extends Controller
     protected function authorizePlaceOwner(Place $place): void
     {
         $user = Auth::user();
-        if (!$user->isFullAdmin() && $place->created_by !== $user->id) {
+        // created_by === null means an unclaimed draft (e.g. bulk-imported
+        // data awaiting first review) — any content_manager may pick it up.
+        // Saving it (see update()) stamps created_by, claiming it from then on.
+        if (!$user->isFullAdmin() && $place->created_by !== null && $place->created_by !== $user->id) {
             abort(403, 'You can only manage places you created.');
         }
     }
@@ -187,6 +265,10 @@ class PlaceController extends Controller
     {
         $places = Place::with('creator')
             ->where('status', Place::STATUS_PENDING)
+            // Unclaimed drafts (created_by null — bulk-imported data no
+            // content_manager has reviewed yet) aren't real submissions and
+            // don't belong in the admin review queue.
+            ->whereNotNull('created_by')
             ->orderBy('created_at', 'asc')
             ->paginate(15);
 
@@ -330,6 +412,11 @@ class PlaceController extends Controller
         $data['activities'] = implode(', ', array_merge($selected, $other)) ?: null;
         unset($data['activities_selected'], $data['activities_other']);
 
+        // Geohash is a pure function of lat/lng — always derive it server-side
+        // rather than trusting a manually-typed value, which drifts the
+        // moment someone edits coordinates without remembering to update it.
+        $data['geohash'] = GeohashService::encode((float) $data['lat'], (float) $data['lng']);
+
         return $data;
     }
 
@@ -380,13 +467,38 @@ class PlaceController extends Controller
         $catCode = $catMap[$catKey] ?? strtoupper(substr(preg_replace('/[^a-zA-Z]/', '', $category), 0, 3));
         if (empty($catCode)) $catCode = 'GEM';
 
-        $distCode = strtoupper(substr(preg_replace('/[^a-zA-Z]/', '', $district), 0, 3));
+        // Explicit map, not a generic first-3-letters rule: Matale and Matara
+        // both truncate to "MAT", which would silently collide two real
+        // districts onto the same ID prefix (and their sequence numbers would
+        // interleave). Every other Sri Lankan district happens to already be
+        // unique under the naive rule, but they're listed explicitly here too
+        // so the whole set stays guaranteed-unique even if a future district
+        // name is added.
+        $districtCodeMap = [
+            'ampara' => 'AMP', 'anuradhapura' => 'ANU', 'badulla' => 'BAD',
+            'batticaloa' => 'BAT', 'colombo' => 'COL', 'galle' => 'GAL',
+            'gampaha' => 'GAM', 'hambantota' => 'HAM', 'jaffna' => 'JAF',
+            'kalutara' => 'KAL', 'kandy' => 'KAN', 'kegalle' => 'KEG',
+            'kilinochchi' => 'KIL', 'kurunegala' => 'KUR', 'mannar' => 'MAN',
+            'matale' => 'MTL', 'matara' => 'MTR', 'moneragala' => 'MON',
+            'mullaitivu' => 'MUL', 'nuwara eliya' => 'NUW', 'polonnaruwa' => 'POL',
+            'puttalam' => 'PUT', 'ratnapura' => 'RAT', 'trincomalee' => 'TRI',
+            'vavuniya' => 'VAV',
+        ];
+        $distKey = strtolower(trim($district));
+        $distCode = $districtCodeMap[$distKey] ?? strtoupper(substr(preg_replace('/[^a-zA-Z]/', '', $district), 0, 3));
         if (empty($distCode)) $distCode = 'SL';
 
         $prefix = "{$catCode}-{$distCode}-";
-        
-        // BUG-L004: Lock matching ID prefix range to prevent concurrent duplicate ID generation
-        $lastPlace = Place::where('id', 'like', "{$prefix}%")
+
+        // BUG-L004: Lock matching ID prefix range to prevent concurrent duplicate ID generation.
+        // withoutGlobalScopes() is required here: Place's "active" scope hides
+        // soft-deleted rows (is_deleted=true), but the physical primary key
+        // stays occupied forever — scanning only active rows would regenerate
+        // an already-used ID and the INSERT would fail with a duplicate-key
+        // error on every subsequent attempt for that category+district.
+        $lastPlace = Place::withoutGlobalScopes()
+            ->where('id', 'like', "{$prefix}%")
             ->lockForUpdate()
             ->orderBy('id', 'desc')
             ->first();

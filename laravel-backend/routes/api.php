@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 use App\Http\Controllers\Api\PlaceSyncController;
+use App\Http\Controllers\Api\EventSyncController;
 use App\Http\Controllers\Api\AiProxyController;
 use App\Http\Controllers\Api\RevenueCatWebhookController;
 use App\Http\Controllers\Api\V1\AuthController;
@@ -157,5 +158,18 @@ Route::prefix('v1')->group(function () {
     Route::middleware(['auth:sanctum', VerifyApiKey::class, 'zenith', 'throttle:30,1'])->group(function () {
         Route::post('/ai/plan-itinerary', [AiProxyController::class, 'planItinerary']);
         Route::post('/ai/recommendations', [AiProxyController::class, 'recommendations']);
+    });
+
+    // Discovery API — public content feeds consumed by the app's discovery/
+    // content screens. Same reasoning as the Place Sync group above: called
+    // during app boot before any account/token exists, and the response is
+    // identical for any caller, so it's API-key gated rather than
+    // auth:sanctum-gated. AppConfig.baseUrl (Flutter) is laravelUrl, which
+    // already ends in "/api/v1" — DynamicContentService.fetchEvents() calls
+    // "{baseUrl}/discovery/events", so this must live under the /v1 prefix
+    // (unlike PlaceSyncController's /v1/places group, which is also under
+    // /v1 — every existing sync-style endpoint here is).
+    Route::prefix('discovery')->middleware([VerifyApiKey::class, 'throttle:60,1'])->group(function () {
+        Route::get('/events', [EventSyncController::class, 'events']);
     });
 });

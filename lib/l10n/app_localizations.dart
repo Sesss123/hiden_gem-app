@@ -8122,6 +8122,12 @@ abstract class AppLocalizations {
   /// **'Audio guide'**
   String get audioGuideLabel;
 
+  /// No description provided for @audioGuideUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'This audio guide isn\'t available right now. Tap to retry.'**
+  String get audioGuideUnavailable;
+
   /// No description provided for @sinhalaShortLabel.
   ///
   /// In en, this message translates to:

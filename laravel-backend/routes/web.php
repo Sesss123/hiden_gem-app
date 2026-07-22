@@ -52,6 +52,18 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::middleware(['auth', 'content_manager_or_admin'])->group(function () {
         Route::get('/search', [\App\Http\Controllers\Admin\SearchController::class, 'index'])->name('search');
 
+        Route::get('/my-submissions', [PlaceController::class, 'mySubmissions'])->name('places.my-submissions');
+        Route::get('/my-events', [EventController::class, 'mySubmissions'])->name('events.my-submissions');
+
+        // Resolves shortened Google Maps links (maps.app.goo.gl/...) — the
+        // coordinates only exist in the URL Google redirects to, not in the
+        // short link itself, and a browser can't follow that redirect from
+        // client-side JS (cross-origin). Throttled since it's an outbound
+        // HTTP call triggered by user input.
+        Route::get('/places/resolve-maps-link', [PlaceController::class, 'resolveMapsLink'])
+            ->name('places.resolve-maps-link')
+            ->middleware('throttle:20,1');
+
         Route::resource('places', PlaceController::class)->only(['index', 'create', 'edit']);
         Route::resource('events', EventController::class)->only(['index', 'create', 'edit']);
 
@@ -80,6 +92,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/guides', [GuideController::class, 'index'])->name('guides.index');
         Route::get('/guides/{id}', [GuideController::class, 'show'])->name('guides.show');
         Route::get('/places-pending', [PlaceController::class, 'pending'])->name('places.pending');
+        Route::get('/events-pending', [EventController::class, 'pending'])->name('events.pending');
         Route::get('/incidents', [IncidentController::class, 'index'])->name('incidents.index');
         Route::get('/incidents/{id}', [IncidentController::class, 'show'])->name('incidents.show');
         Route::get('/bookings', [BookingController::class, 'index'])->name('bookings.index');
@@ -97,6 +110,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::post('images/{id}/cover', [PlaceController::class, 'setCoverImage'])->name('images.cover');
             Route::post('/places/{id}/approve', [PlaceController::class, 'approve'])->name('places.approve');
             Route::post('/places/{id}/reject', [PlaceController::class, 'reject'])->name('places.reject');
+
+            Route::delete('event-images/{id}', [EventController::class, 'deleteImage'])->name('event-images.delete');
+            Route::post('event-images/{id}/cover', [EventController::class, 'setCoverImage'])->name('event-images.cover');
+            Route::post('/events/{id}/approve', [EventController::class, 'approve'])->name('events.approve');
+            Route::post('/events/{id}/reject', [EventController::class, 'reject'])->name('events.reject');
 
             Route::resource('partners', PartnerController::class)->only(['store', 'update', 'destroy']);
 

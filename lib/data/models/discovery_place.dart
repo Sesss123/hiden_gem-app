@@ -170,7 +170,7 @@ class DiscoveryPlace {
     this.images = const [],
     this.distanceKm = 0.0,
     this.aiReason = '',
-    this.imageUrl = 'https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?q=80&w=2078&auto=format&fit=crop',
+    this.imageUrl = '',
   });
 
   factory DiscoveryPlace.fromJson(Map<String, dynamic> json) {
@@ -276,17 +276,19 @@ class DiscoveryPlace {
           .map((a) => ARArtifact.fromMap(a as Map<String, dynamic>))
           .toList(),
       geohash: json['geohash'] as String? ?? '',
-      imageUrl: json['imageUrl'] as String? ?? json['image_url'] as String? ?? 'https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?q=80&w=2078&auto=format&fit=crop',
+      imageUrl: json['imageUrl'] as String? ?? json['image_url'] as String? ?? '',
       images: (json['images'] is List && (json['images'] as List).isNotEmpty)
           ? (json['images'] as List).map((i) => PlaceImageModel.fromJson(i as Map<String, dynamic>)).toList()
-          : [
-              PlaceImageModel(
-                id: 0,
-                thumbPath: json['imageUrl'] as String? ?? json['image_url'] as String? ?? 'https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?q=80&w=2078&auto=format&fit=crop',
-                fullPath: json['imageUrl'] as String? ?? json['image_url'] as String? ?? 'https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?q=80&w=2078&auto=format&fit=crop',
-                isCover: true,
-              )
-            ],
+          : (json['imageUrl'] != null || json['image_url'] != null)
+              ? [
+                  PlaceImageModel(
+                    id: 0,
+                    thumbPath: json['imageUrl'] as String? ?? json['image_url'] as String? ?? '',
+                    fullPath: json['imageUrl'] as String? ?? json['image_url'] as String? ?? '',
+                    isCover: true,
+                  )
+                ]
+              : const [],
     );
   }
 
@@ -360,17 +362,19 @@ class DiscoveryPlace {
       audioUrlSi: data['audio_guide_url_si'] ?? '',
       audioUrlEn: data['audio_guide_url_en'] ?? '',
       geohash: data['geohash'] ?? '',
-      imageUrl: data['imageUrl'] ?? data['image_url'] ?? 'https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?q=80&w=2078&auto=format&fit=crop',
+      imageUrl: data['imageUrl'] ?? data['image_url'] ?? '',
       images: (data['images'] is List && (data['images'] as List).isNotEmpty)
           ? (data['images'] as List).map((i) => PlaceImageModel.fromJson(i as Map<String, dynamic>)).toList()
-          : [
-              PlaceImageModel(
-                id: 0,
-                thumbPath: data['imageUrl'] ?? data['image_url'] ?? 'https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?q=80&w=2078&auto=format&fit=crop',
-                fullPath: data['imageUrl'] ?? data['image_url'] ?? 'https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?q=80&w=2078&auto=format&fit=crop',
-                isCover: true,
-              )
-            ],
+          : (data['imageUrl'] != null || data['image_url'] != null)
+              ? [
+                  PlaceImageModel(
+                    id: 0,
+                    thumbPath: data['imageUrl'] ?? data['image_url'] ?? '',
+                    fullPath: data['imageUrl'] ?? data['image_url'] ?? '',
+                    isCover: true,
+                  )
+                ]
+              : const [],
     );
   }
 

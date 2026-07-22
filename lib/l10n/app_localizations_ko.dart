@@ -4432,6 +4432,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get audioGuideLabel => '오디오 가이드';
 
   @override
+  String get audioGuideUnavailable =>
+      'This audio guide isn\'t available right now. Tap to retry.';
+
+  @override
   String get sinhalaShortLabel => 'සිංහල';
 
   @override
