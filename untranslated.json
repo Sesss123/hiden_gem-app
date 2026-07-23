@@ -1,17 +1,61 @@
 {
   "ja": [
-    "audioGuideUnavailable"
+    "noGuideListingError",
+    "sendQuoteDialogTitle",
+    "sendQuoteAmountLabel",
+    "sendQuoteConfirmButtonLabel",
+    "payNowButtonLabel",
+    "paymentUnavailableError",
+    "audioGuideUnavailable",
+    "arModelPlacementFailedMessage",
+    "arSessionErrorMessage",
+    "largeDownloadWarningTitle",
+    "largeDownloadWarningMessage",
+    "downloadAnywayButtonLabel"
   ],
 
   "ko": [
-    "audioGuideUnavailable"
+    "noGuideListingError",
+    "sendQuoteDialogTitle",
+    "sendQuoteAmountLabel",
+    "sendQuoteConfirmButtonLabel",
+    "payNowButtonLabel",
+    "paymentUnavailableError",
+    "audioGuideUnavailable",
+    "arModelPlacementFailedMessage",
+    "arSessionErrorMessage",
+    "largeDownloadWarningTitle",
+    "largeDownloadWarningMessage",
+    "downloadAnywayButtonLabel"
   ],
 
   "ru": [
-    "audioGuideUnavailable"
+    "noGuideListingError",
+    "sendQuoteDialogTitle",
+    "sendQuoteAmountLabel",
+    "sendQuoteConfirmButtonLabel",
+    "payNowButtonLabel",
+    "paymentUnavailableError",
+    "audioGuideUnavailable",
+    "arModelPlacementFailedMessage",
+    "arSessionErrorMessage",
+    "largeDownloadWarningTitle",
+    "largeDownloadWarningMessage",
+    "downloadAnywayButtonLabel"
   ],
 
   "ta": [
-    "audioGuideUnavailable"
+    "noGuideListingError",
+    "sendQuoteDialogTitle",
+    "sendQuoteAmountLabel",
+    "sendQuoteConfirmButtonLabel",
+    "payNowButtonLabel",
+    "paymentUnavailableError",
+    "audioGuideUnavailable",
+    "arModelPlacementFailedMessage",
+    "arSessionErrorMessage",
+    "largeDownloadWarningTitle",
+    "largeDownloadWarningMessage",
+    "downloadAnywayButtonLabel"
   ]
 }

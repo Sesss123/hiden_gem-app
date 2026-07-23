@@ -8,6 +8,7 @@ import '../../core/theme/app_theme.dart';
 import '../../data/models/booking_request.dart';
 import '../../data/repositories/booking_repository.dart';
 import '../../data/repositories/marketplace_repository.dart';
+import '../../data/services/payment_service.dart';
 import '../../l10n/app_localizations.dart';
 
 /// Tourist-facing booking history — lets a tourist see the status of every
@@ -25,6 +26,7 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen> {
   List<BookingRequest> _bookings = [];
   final Map<String, String> _guideNames = {};
   bool _isLoading = true;
+  String? _payingBookingId;
 
   @override
   void initState() {
@@ -162,20 +164,11 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen> {
     ).animate().fadeIn(duration: 300.ms).slideY(begin: 0.05);
   }
 
-  /// Shows the quoted price once a guide has accepted, or a "Paid" badge once
-  /// payment has cleared.
-  ///
-  /// In-app checkout via PayHere is built (see lib/data/services/
-  /// payment_service.dart + PayHereController.php) but INTENTIONALLY NOT
-  /// WIRED HERE — the owner doesn't have a PayHere merchant account yet, so
-  /// payment stays off-platform (tourist and guide settle directly, same as
-  /// before PayHere existed). isPaid will simply never be true today; the
-  /// price is shown for the tourist's reference only.
-  ///
-  /// To re-enable in-app payment once a PayHere merchant account exists:
-  /// restore the "Pay Now" ElevatedButton (see git history / session notes)
-  /// calling PaymentService.fetchQuote() + PaymentService.launchCheckout() —
-  /// no other code needs to change, the backend flow is already live.
+  /// Shows the quoted price once a guide has accepted, a "Paid" badge once
+  /// payment has cleared, or a "Pay Now" button in between. PaymentService
+  /// (checkout → PayHere → server webhook) is the full source of truth for
+  /// whether payment succeeded — this button only launches checkout, it
+  /// never marks the booking paid itself.
   Widget _buildPaymentRow(BuildContext context, AppLocalizations l10n, BookingRequest booking) {
     final hasPrice = (booking.status == 'accepted' || booking.status == 'session_ready') &&
         (booking.quotedPrice ?? 0) > 0;
@@ -185,6 +178,7 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen> {
 
     final price = booking.quotedPrice ?? 0;
     final currency = booking.currency ?? 'LKR';
+    final isPayingThis = _payingBookingId == booking.bookingId;
 
     return Padding(
       padding: const EdgeInsets.only(top: 12),
@@ -204,13 +198,46 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen> {
               ],
             )
           else
-            Text(
-              l10n.payGuideDirectlyLabel,
-              style: GoogleFonts.inter(fontSize: 11, color: AppTheme.textSecondary(context), fontWeight: FontWeight.w600),
+            SizedBox(
+              height: 32,
+              child: ElevatedButton(
+                onPressed: isPayingThis ? null : () => _handlePayNow(booking, l10n),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Theme.of(context).colorScheme.primary,
+                  foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
+                  elevation: 0,
+                ),
+                child: isPayingThis
+                    ? SizedBox(
+                        width: 14,
+                        height: 14,
+                        child: CircularProgressIndicator(strokeWidth: 2, color: Theme.of(context).colorScheme.onPrimary),
+                      )
+                    : Text(l10n.payNowButtonLabel, style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w700)),
+              ),
             ),
         ],
       ),
     );
+  }
+
+  Future<void> _handlePayNow(BookingRequest booking, AppLocalizations l10n) async {
+    setState(() => _payingBookingId = booking.bookingId);
+    try {
+      final quote = await PaymentService.fetchQuote(booking.bookingId);
+      if (!mounted) return;
+      if (quote == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.paymentUnavailableError), backgroundColor: AppPalette.error),
+        );
+        return;
+      }
+      await PaymentService.launchCheckout(booking.bookingId);
+    } finally {
+      if (mounted) setState(() => _payingBookingId = null);
+    }
   }
 }
 

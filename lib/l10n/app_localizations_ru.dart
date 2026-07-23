@@ -1868,6 +1868,26 @@ class AppLocalizationsRu extends AppLocalizations {
       'Этот гид достиг максимальной квоты бронирований на месяц. Пожалуйста, попробуйте снова в следующем месяце или выберите другого гида.';
 
   @override
+  String get noGuideListingError =>
+      'This guide hasn\'t set up their profile yet, so they can\'t accept bookings right now. Please try another guide.';
+
+  @override
+  String get sendQuoteDialogTitle => 'Set your price';
+
+  @override
+  String get sendQuoteAmountLabel => 'Amount';
+
+  @override
+  String get sendQuoteConfirmButtonLabel => 'Accept & send quote';
+
+  @override
+  String get payNowButtonLabel => 'Pay Now';
+
+  @override
+  String get paymentUnavailableError =>
+      'This booking can\'t be paid right now — it may already be paid, or the price may have changed. Pull to refresh and try again.';
+
+  @override
   String get requestSentTitle => 'Запрос отправлен';
 
   @override
@@ -4703,6 +4723,26 @@ class AppLocalizationsRu extends AppLocalizations {
   String progressSizeLabel(int progress, String size) {
     return '$progress% • $size МБ';
   }
+
+  @override
+  String get arModelPlacementFailedMessage =>
+      'This model couldn\'t be placed — it may be missing or corrupted. Try again or pick another location.';
+
+  @override
+  String arSessionErrorMessage(String message) {
+    return 'AR error: $message';
+  }
+
+  @override
+  String get largeDownloadWarningTitle => 'Large download';
+
+  @override
+  String largeDownloadWarningMessage(String size) {
+    return 'This 3D model is about $size MB. Downloading it now will use your mobile data. Continue?';
+  }
+
+  @override
+  String get downloadAnywayButtonLabel => 'Download anyway';
 
   @override
   String modelColonNameLabel(String name) {

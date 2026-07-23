@@ -1333,7 +1333,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get cameraPermissionRequiredMessage =>
-      'Please enable camera access in app settings to use the scanner.';
+      'Camera access is required for the AR experience. Please enable it in Settings.';
 
   @override
   String get openSettings => 'Open Settings';
@@ -1834,6 +1834,26 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get guideQuotaExceededError =>
       'This guide has reached their maximum booking quota for the month. Please try again next month or select another guide.';
+
+  @override
+  String get noGuideListingError =>
+      'This guide hasn\'t set up their profile yet, so they can\'t accept bookings right now. Please try another guide.';
+
+  @override
+  String get sendQuoteDialogTitle => 'Set your price';
+
+  @override
+  String get sendQuoteAmountLabel => 'Amount';
+
+  @override
+  String get sendQuoteConfirmButtonLabel => 'Accept & send quote';
+
+  @override
+  String get payNowButtonLabel => 'Pay Now';
+
+  @override
+  String get paymentUnavailableError =>
+      'This booking can\'t be paid right now — it may already be paid, or the price may have changed. Pull to refresh and try again.';
 
   @override
   String get requestSentTitle => 'Request sent';
@@ -4620,6 +4640,26 @@ class AppLocalizationsEn extends AppLocalizations {
   String progressSizeLabel(int progress, String size) {
     return '$progress% • $size MB';
   }
+
+  @override
+  String get arModelPlacementFailedMessage =>
+      'This model couldn\'t be placed — it may be missing or corrupted. Try again or pick another location.';
+
+  @override
+  String arSessionErrorMessage(String message) {
+    return 'AR error: $message';
+  }
+
+  @override
+  String get largeDownloadWarningTitle => 'Large download';
+
+  @override
+  String largeDownloadWarningMessage(String size) {
+    return 'This 3D model is about $size MB. Downloading it now will use your mobile data. Continue?';
+  }
+
+  @override
+  String get downloadAnywayButtonLabel => 'Download anyway';
 
   @override
   String modelColonNameLabel(String name) {

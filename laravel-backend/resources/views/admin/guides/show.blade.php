@@ -102,6 +102,26 @@
                             <div class="text-xs text-slate-500">Guide Category</div>
                             <div class="font-bold text-white mt-1">{{ ucfirst(str_replace('_', ' ', $application->category)) }}</div>
                         </div>
+                        <div class="bg-slate-900/50 p-3 rounded-xl border border-slate-800/40">
+                            <div class="text-xs text-slate-500">License Expiry</div>
+                            @if($application->license_expiry_date)
+                                @php
+                                    $isExpired = $application->license_expiry_date->isPast();
+                                    $isExpiringSoon = !$isExpired && now()->diffInDays($application->license_expiry_date) <= 30;
+                                @endphp
+                                <div class="font-mono font-bold mt-1 flex items-center gap-2
+                                    {{ $isExpired ? 'text-red-400' : ($isExpiringSoon ? 'text-amber-400' : 'text-white') }}">
+                                    {{ $application->license_expiry_date->format('M d, Y') }}
+                                    @if($isExpired)
+                                        <span class="text-[10px] font-sans font-bold uppercase bg-red-500/10 text-red-400 border border-red-500/20 px-1.5 py-0.5 rounded">Expired</span>
+                                    @elseif($isExpiringSoon)
+                                        <span class="text-[10px] font-sans font-bold uppercase bg-amber-500/10 text-amber-400 border border-amber-500/20 px-1.5 py-0.5 rounded">Expiring Soon</span>
+                                    @endif
+                                </div>
+                            @else
+                                <div class="text-slate-600 italic mt-1">Not provided</div>
+                            @endif
+                        </div>
                     </div>
                 </div>
 

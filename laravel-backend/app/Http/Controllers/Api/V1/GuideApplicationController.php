@@ -36,6 +36,7 @@ class GuideApplicationController extends Controller
             'email' => 'nullable|email|max:255',
             'name' => 'nullable|string|max:255',
             'license_number' => 'required|string|max:255',
+            'license_expiry_date' => 'nullable|date',
             'bio' => 'nullable|string',
             'category' => 'required|string|max:100',
             'license_doc_url' => ['nullable', 'string', 'max:500', 'url', 'regex:/^https?:\/\/(firebasestorage\.googleapis\.com\/v0\/b\/tripme-89742\.(firebasestorage\.app|appspot\.com)|cdn\.hiddengemssl\.com|[^\/]+\/storage\/guide_documents\/)/'],
@@ -141,27 +142,36 @@ class GuideApplicationController extends Controller
             }
         });
 
-        // Sync to Firestore — guide_applications & users collections
-        dispatch(function () use ($application) {
-            try {
-                $firestoreService = new FirestoreService();
-                $firestoreService->updateGuideApplication($application->user_id, [
-                    'status' => 'approved',
-                    'reviewedAt' => now()->toIso8601String(),
-                ]);
-                $firestoreService->updateGuideUser($application->user_id, [
-                    'role' => 'guide_approved',
-                    'guideStatus' => 'approved',
-                    'isGuideApproved' => true,
-                ]);
-            } catch (\Exception $e) {
-                Log::error("Firestore sync failed in API approve (queued): " . $e->getMessage());
-            }
-        });
+        // Sync to Firestore synchronously (mirrors Admin\GuideController::approve()) —
+        // the previous fire-and-forget dispatch() reported success even when this
+        // silently failed, leaving MySQL and Firestore out of sync with no signal to
+        // the caller. MySQL is already committed above and stays committed even if
+        // this fails (a real admin decision shouldn't roll back over a Firestore
+        // hiccup) — instead the failure is surfaced in the response so the calling
+        // Flutter admin screen can tell the admin the app-side sync may be delayed.
+        $firestoreSynced = true;
+        try {
+            $firestoreService = new FirestoreService();
+            $firestoreService->updateGuideApplication($application->user_id, [
+                'status' => 'approved',
+                'reviewedAt' => now()->toIso8601String(),
+            ]);
+            $firestoreService->updateGuideUser($application->user_id, [
+                'role' => 'guide_approved',
+                'guideStatus' => 'approved',
+                'isGuideApproved' => true,
+            ]);
+        } catch (\Exception $e) {
+            $firestoreSynced = false;
+            Log::error("Firestore sync failed in API approve: " . $e->getMessage());
+        }
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Guide application approved successfully.',
+            'message' => $firestoreSynced
+                ? 'Guide application approved successfully.'
+                : 'Guide application approved, but sync to the app may be delayed — retry if the guide doesn\'t see the update.',
+            'firestore_synced' => $firestoreSynced,
             'data' => $application,
         ], 200);
     }
@@ -205,27 +215,31 @@ class GuideApplicationController extends Controller
 
         $adminComment = $request->input('admin_comment');
 
-        // Sync to Firestore — guide_applications & users collections
-        dispatch(function () use ($application, $adminComment) {
-            try {
-                $firestoreService = new FirestoreService();
-                $firestoreService->updateGuideApplication($application->user_id, [
-                    'status' => 'rejected',
-                    'adminComment' => $adminComment,
-                    'reviewedAt' => now()->toIso8601String(),
-                ]);
-                $firestoreService->updateGuideUser($application->user_id, [
-                    'guideStatus' => 'rejected',
-                    'guideRejectionReason' => $adminComment,
-                ]);
-            } catch (\Exception $e) {
-                Log::error("Firestore sync failed in API reject (queued): " . $e->getMessage());
-            }
-        });
+        // Sync to Firestore synchronously — see approve() above for why this is no
+        // longer a fire-and-forget dispatch().
+        $firestoreSynced = true;
+        try {
+            $firestoreService = new FirestoreService();
+            $firestoreService->updateGuideApplication($application->user_id, [
+                'status' => 'rejected',
+                'adminComment' => $adminComment,
+                'reviewedAt' => now()->toIso8601String(),
+            ]);
+            $firestoreService->updateGuideUser($application->user_id, [
+                'guideStatus' => 'rejected',
+                'guideRejectionReason' => $adminComment,
+            ]);
+        } catch (\Exception $e) {
+            $firestoreSynced = false;
+            Log::error("Firestore sync failed in API reject: " . $e->getMessage());
+        }
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Guide application rejected.',
+            'message' => $firestoreSynced
+                ? 'Guide application rejected.'
+                : 'Guide application rejected, but sync to the app may be delayed — retry if the guide doesn\'t see the update.',
+            'firestore_synced' => $firestoreSynced,
             'data' => $application,
         ], 200);
     }

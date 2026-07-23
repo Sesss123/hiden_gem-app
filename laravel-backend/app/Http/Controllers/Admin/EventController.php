@@ -117,6 +117,8 @@ class EventController extends Controller
             Cache::forget('admin_pending_event_count');
         }
 
+        $this->logAdminAction('event.created', 'Event', $event->id, ['name' => $event->name, 'status' => $event->status]);
+
         $message = $isContentManager
             ? "Event '{$event->name}' submitted and is awaiting admin approval."
             : "Event '{$event->name}' created successfully.";
@@ -155,6 +157,8 @@ class EventController extends Controller
             $event->update($data);
             $this->handleImages($request, $event);
         });
+
+        $this->logAdminAction('event.updated', 'Event', $event->id, ['name' => $event->name, 'status' => $event->status]);
 
         $sentBackForReview = $isContentManager && $event->status === Event::STATUS_PENDING;
         $message = $sentBackForReview
@@ -218,6 +222,7 @@ class EventController extends Controller
     public function deleteImage($imageId)
     {
         $image = EventImage::findOrFail($imageId);
+        $this->authorizeEventOwner($image->event);
 
         foreach ([$image->thumb_path, $image->full_path] as $path) {
             if ($path) {
@@ -225,7 +230,10 @@ class EventController extends Controller
             }
         }
 
+        $eventId = $image->event_id;
         $image->delete();
+
+        $this->logAdminAction('event.image_deleted', 'Event', $eventId, ['image_id' => $imageId]);
 
         return back()->with('success', 'Image removed.');
     }
@@ -233,10 +241,14 @@ class EventController extends Controller
     public function setCoverImage($imageId)
     {
         $image = EventImage::findOrFail($imageId);
+        $this->authorizeEventOwner($image->event);
+
         DB::transaction(function () use ($image) {
             EventImage::where('event_id', $image->event_id)->update(['is_cover' => false]);
             $image->update(['is_cover' => true]);
         });
+
+        $this->logAdminAction('event.cover_image_changed', 'Event', $image->event_id, ['image_id' => $imageId]);
 
         return back()->with('success', 'Cover image updated.');
     }

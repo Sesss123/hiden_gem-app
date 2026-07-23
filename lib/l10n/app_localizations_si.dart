@@ -1346,7 +1346,7 @@ class AppLocalizationsSi extends AppLocalizations {
 
   @override
   String get cameraPermissionRequiredMessage =>
-      'ස්කෑනර් එක භාවිතා කිරීමට කරුණාකර යෙදුම් සැකසුම් වල කැමරා ප්‍රවේශය සක්‍රීය කරන්න.';
+      'AR අත්දැකීම සඳහා කැමරා ප්‍රවේශය අවශ්‍යයි. කරුණාකර සැකසුම් වලින් එය සක්‍රීය කරන්න.';
 
   @override
   String get openSettings => 'සැකසුම් විවෘත කරන්න';
@@ -1854,6 +1854,26 @@ class AppLocalizationsSi extends AppLocalizations {
   @override
   String get guideQuotaExceededError =>
       'මෙම මාර්ගෝපදේශකයා මාසික උපරිම වෙන්කිරීම් සීමාවට පැමිණ ඇත. කරුණාකර ඊළඟ මාසයේ නැවත උත්සාහ කරන්න හෝ වෙනත් මාර්ගෝපදේශකයෙකු තෝරන්න.';
+
+  @override
+  String get noGuideListingError =>
+      'මෙම මාර්ගෝපදේශකයා තවම ඔවුන්ගේ පැතිකඩ සකසා නැත, එබැවින් දැනට වෙන්කිරීම් පිළිගත නොහැක. කරුණාකර වෙනත් මාර්ගෝපදේශකයෙකු තෝරන්න.';
+
+  @override
+  String get sendQuoteDialogTitle => 'ඔබේ මිල ගණන් සකසන්න';
+
+  @override
+  String get sendQuoteAmountLabel => 'මුදල';
+
+  @override
+  String get sendQuoteConfirmButtonLabel => 'පිළිගෙන මිල ගණන් යවන්න';
+
+  @override
+  String get payNowButtonLabel => 'දැන් ගෙවන්න';
+
+  @override
+  String get paymentUnavailableError =>
+      'මෙම වෙන්කිරීම දැන් ගෙවිය නොහැක — එය දැනටමත් ගෙවී ඇති හෝ මිල වෙනස් වී ඇති විය හැක. නැවත රිෆ්‍රෙෂ් කර උත්සාහ කරන්න.';
 
   @override
   String get requestSentTitle => 'ඉල්ලීම යවන ලදී';
@@ -4667,6 +4687,26 @@ class AppLocalizationsSi extends AppLocalizations {
   String progressSizeLabel(int progress, String size) {
     return '$progress% • $size MB';
   }
+
+  @override
+  String get arModelPlacementFailedMessage =>
+      'මෙම මාදිලිය තැබිය නොහැකි විය — එය නැති වී හෝ දූෂිත විය හැක. නැවත උත්සාහ කරන්න හෝ වෙනත් ස්ථානයක් තෝරන්න.';
+
+  @override
+  String arSessionErrorMessage(String message) {
+    return 'AR දෝෂය: $message';
+  }
+
+  @override
+  String get largeDownloadWarningTitle => 'විශාල බාගැනීමක්';
+
+  @override
+  String largeDownloadWarningMessage(String size) {
+    return 'මෙම 3D මාදිලිය ආසන්න වශයෙන් MB $size කි. දැන් බාගත කිරීමෙන් ඔබේ ජංගම දත්ත භාවිතා වේ. දිගටම කරගෙන යනවාද?';
+  }
+
+  @override
+  String get downloadAnywayButtonLabel => 'කෙසේ වෙතත් බාගන්න';
 
   @override
   String modelColonNameLabel(String name) {

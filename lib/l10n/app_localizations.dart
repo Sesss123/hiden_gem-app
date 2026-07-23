@@ -2539,7 +2539,7 @@ abstract class AppLocalizations {
   /// No description provided for @cameraPermissionRequiredMessage.
   ///
   /// In en, this message translates to:
-  /// **'Please enable camera access in app settings to use the scanner.'**
+  /// **'Camera access is required for the AR experience. Please enable it in Settings.'**
   String get cameraPermissionRequiredMessage;
 
   /// No description provided for @openSettings.
@@ -3399,6 +3399,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This guide has reached their maximum booking quota for the month. Please try again next month or select another guide.'**
   String get guideQuotaExceededError;
+
+  /// No description provided for @noGuideListingError.
+  ///
+  /// In en, this message translates to:
+  /// **'This guide hasn\'t set up their profile yet, so they can\'t accept bookings right now. Please try another guide.'**
+  String get noGuideListingError;
+
+  /// No description provided for @sendQuoteDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Set your price'**
+  String get sendQuoteDialogTitle;
+
+  /// No description provided for @sendQuoteAmountLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount'**
+  String get sendQuoteAmountLabel;
+
+  /// No description provided for @sendQuoteConfirmButtonLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept & send quote'**
+  String get sendQuoteConfirmButtonLabel;
+
+  /// No description provided for @payNowButtonLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay Now'**
+  String get payNowButtonLabel;
+
+  /// No description provided for @paymentUnavailableError.
+  ///
+  /// In en, this message translates to:
+  /// **'This booking can\'t be paid right now — it may already be paid, or the price may have changed. Pull to refresh and try again.'**
+  String get paymentUnavailableError;
 
   /// No description provided for @requestSentTitle.
   ///
@@ -8271,6 +8307,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{progress}% • {size} MB'**
   String progressSizeLabel(int progress, String size);
+
+  /// No description provided for @arModelPlacementFailedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This model couldn\'t be placed — it may be missing or corrupted. Try again or pick another location.'**
+  String get arModelPlacementFailedMessage;
+
+  /// No description provided for @arSessionErrorMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'AR error: {message}'**
+  String arSessionErrorMessage(String message);
+
+  /// No description provided for @largeDownloadWarningTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Large download'**
+  String get largeDownloadWarningTitle;
+
+  /// No description provided for @largeDownloadWarningMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This 3D model is about {size} MB. Downloading it now will use your mobile data. Continue?'**
+  String largeDownloadWarningMessage(String size);
+
+  /// No description provided for @downloadAnywayButtonLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Download anyway'**
+  String get downloadAnywayButtonLabel;
 
   /// No description provided for @modelColonNameLabel.
   ///

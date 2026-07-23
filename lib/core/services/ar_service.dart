@@ -64,11 +64,20 @@ class ARService {
     _sessionManager!.onInitialize(showFeaturePoints: false, showPlanes: true);
     _objectManager!.onInitialize();
     _sessionManager!.onPlaneOrPointTap = _handlePlaneTap;
+    _sessionManager!.onError = (error) => onArError?.call(error);
+    _objectManager!.onNodeTap = _handleNodeTap;
     _isInitialized = true;
   }
 
   void Function(String nodeName)? onArtifactFound;
   void Function(vector.Vector3 position)? onNodePlaced;
+  /// Surfaces native AR failures (ARCore unavailable, session errors) that
+  /// were previously silently dropped — ARSessionManager.onError was never
+  /// wired to anything. ARObjectManager has no equivalent callback exposed
+  /// by ar_flutter_plugin_2 (its 'onError' case only print()s internally),
+  /// so per-node load failures are instead reported via the bool? result of
+  /// addNode() in _addHeritageNode below.
+  void Function(String message)? onArError;
 
   /// Request model placement on next plane tap.
   Future<void> requestPlaceModel({
@@ -121,6 +130,21 @@ class ARService {
         : NodeType.fileSystemAppFolderGLB;
   }
 
+  /// Handles a tap on any placed AR node. Artifact nodes are named
+  /// 'artifact_{id}' in placeArtifacts() below — this was previously wired
+  /// nowhere, so onArtifactFound could never fire and the hidden-artifact
+  /// gamification feature was unreachable dead code regardless of how many
+  /// artifacts were placed in the scene.
+  void _handleNodeTap(List<String> nodeNames) {
+    for (final name in nodeNames) {
+      if (!name.startsWith('artifact_')) continue;
+      final artifactId = name.substring('artifact_'.length);
+      if (_artifactNodes.containsKey(artifactId)) {
+        onArtifactFound?.call(artifactId);
+      }
+    }
+  }
+
   void _handlePlaneTap(List<ARHitTestResult> results) {
     if (_pendingModelUrl == null || results.isEmpty) return;
 
@@ -141,10 +165,10 @@ class ARService {
     _pendingHistoricalModelUrl = null;
   }
 
-  void _addHeritageNode({
+  Future<void> _addHeritageNode({
     required String url,
     required vector.Matrix4 transformation,
-  }) {
+  }) async {
     final node = ARNode(
       type: _nodeTypeFor(url),
       uri: url,
@@ -153,7 +177,17 @@ class ARService {
       scale: vector.Vector3(_pendingScale, _pendingScale, _pendingScale),
     );
     _heritageNode = node;
-    _objectManager?.addNode(node);
+    // addNode() returns false (not just an exception) when the native side
+    // fails to load the GLB (e.g. a 404'd/corrupt model) — this was
+    // previously ignored entirely, so a broken model placed with zero error
+    // feedback: the loading overlay had already dismissed, the "tap to
+    // place" snackbar already showed, and the user's tap just produced
+    // nothing with no explanation anywhere.
+    final added = await _objectManager?.addNode(node);
+    if (added != true) {
+      _heritageNode = null;
+      onArError?.call('model_placement_failed');
+    }
   }
 
   /// 🕰️ THEN/NOW TOGGLE: Swaps between normal ruins and reconstructed model.
@@ -164,11 +198,14 @@ class ARService {
     isHistoricalMode.value = !isHistoricalMode.value;
     final transformation = _heritageNode!.transform;
 
-    // Remove existing node
-    await removeModel();
+    // Remove only the heritage node — NOT removeModel(), which now also
+    // clears artifact nodes (see removeModel() doc). Toggling Then/Now must
+    // not make already-placed gamification artifacts disappear.
+    _objectManager?.removeNode(_heritageNode!);
+    _heritageNode = null;
 
     // Add new node at same position
-    _addHeritageNode(
+    await _addHeritageNode(
       url: isHistoricalMode.value ? _currentHistoricalUrl! : _currentModelUrl!,
       transformation: transformation,
     );
@@ -206,11 +243,19 @@ class ARService {
     }
   }
 
-  /// Remove the current model.
+  /// Remove the current model and any placed artifact nodes. Previously this
+  /// only removed the heritage node — artifact GLBs placed by
+  /// placeArtifacts() stayed resident in the native AR scene across repeated
+  /// place/reset cycles, leaking GPU/memory with no bound over one session.
   Future<void> removeModel() async {
-    if (_heritageNode == null) return;
-    _objectManager?.removeNode(_heritageNode!);
-    _heritageNode = null;
+    if (_heritageNode != null) {
+      _objectManager?.removeNode(_heritageNode!);
+      _heritageNode = null;
+    }
+    for (final node in _artifactNodes.values) {
+      _objectManager?.removeNode(node);
+    }
+    _artifactNodes.clear();
   }
 
   /// Adjust scale for next placement.

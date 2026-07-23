@@ -72,6 +72,17 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::middleware('throttle:30,1')->group(function () {
             Route::resource('places', PlaceController::class)->only(['store', 'update']);
             Route::resource('events', EventController::class)->only(['store', 'update', 'destroy']);
+
+            // Unlike Place images (full_admin-only below — a content_manager's
+            // place edits get reset to pending for re-review, so they
+            // shouldn't be able to unilaterally finalize a cover photo),
+            // content_manager has full unreviewed edit rights over Events
+            // (see comment atop this group) and previously had no way to
+            // ever delete or re-cover an event photo after uploading it —
+            // the controls were hidden and these routes were full_admin-only,
+            // an oversight carried over unchanged from the Places form.
+            Route::delete('event-images/{id}', [EventController::class, 'deleteImage'])->name('event-images.delete');
+            Route::post('event-images/{id}/cover', [EventController::class, 'setCoverImage'])->name('event-images.cover');
         });
     });
 
@@ -79,8 +90,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
         Route::get('/dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard.index');
 
-        Route::resource('partners', PartnerController::class)->only(['index', 'create', 'show', 'edit']);
-        Route::resource('users', UserController::class)->only(['index', 'create', 'show', 'edit']);
+        // 'show' intentionally excluded on both — neither controller has a
+        // show() method or dedicated detail view (edit() serves as the
+        // detail/edit page for both, same pattern as Places/Events). Listing
+        // 'show' here without a matching method previously registered a
+        // route that threw a fatal 500 (not a 404) if ever hit directly.
+        Route::resource('partners', PartnerController::class)->only(['index', 'create', 'edit']);
+        Route::resource('users', UserController::class)->only(['index', 'create', 'edit']);
 
         // Guide verification document viewer — see security note on
         // GuideDocumentUploadController::upload()/download(). Session
@@ -111,8 +127,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::post('/places/{id}/approve', [PlaceController::class, 'approve'])->name('places.approve');
             Route::post('/places/{id}/reject', [PlaceController::class, 'reject'])->name('places.reject');
 
-            Route::delete('event-images/{id}', [EventController::class, 'deleteImage'])->name('event-images.delete');
-            Route::post('event-images/{id}/cover', [EventController::class, 'setCoverImage'])->name('event-images.cover');
             Route::post('/events/{id}/approve', [EventController::class, 'approve'])->name('events.approve');
             Route::post('/events/{id}/reject', [EventController::class, 'reject'])->name('events.reject');
 

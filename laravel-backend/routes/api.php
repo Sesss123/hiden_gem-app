@@ -137,6 +137,7 @@ Route::prefix('v1')->group(function () {
         Route::get('/quota-check', [BookingController::class, 'quotaCheck']);
         Route::get('/priority-check', [BookingController::class, 'priorityCheck']);
         Route::post('/{bookingId}/notify-guide', [BookingController::class, 'notifyGuide']);
+        Route::post('/{bookingId}/quote', [BookingController::class, 'sendQuote']);
     });
 
     // Payment checkout (tourist-initiated; returns signed PayHere params).

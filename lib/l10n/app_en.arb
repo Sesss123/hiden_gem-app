@@ -703,6 +703,12 @@
   "sendRequestButton": "Send request",
   "userNotAuthenticatedError": "User not authenticated",
   "guideQuotaExceededError": "This guide has reached their maximum booking quota for the month. Please try again next month or select another guide.",
+  "noGuideListingError": "This guide hasn't set up their profile yet, so they can't accept bookings right now. Please try another guide.",
+  "sendQuoteDialogTitle": "Set your price",
+  "sendQuoteAmountLabel": "Amount",
+  "sendQuoteConfirmButtonLabel": "Accept & send quote",
+  "payNowButtonLabel": "Pay Now",
+  "paymentUnavailableError": "This booking can't be paid right now — it may already be paid, or the price may have changed. Pull to refresh and try again.",
   "requestSentTitle": "Request sent",
   "requestSentMessage": "Your booking request has been sent to the guide. You'll get a notification once they respond.",
   "closeButton": "Close",
@@ -1865,6 +1871,18 @@
   "@progressSizeLabel": {
     "placeholders": { "progress": { "type": "int" }, "size": { "type": "String" } }
   },
+  "cameraPermissionRequiredMessage": "Camera access is required for the AR experience. Please enable it in Settings.",
+  "arModelPlacementFailedMessage": "This model couldn't be placed — it may be missing or corrupted. Try again or pick another location.",
+  "arSessionErrorMessage": "AR error: {message}",
+  "@arSessionErrorMessage": {
+    "placeholders": { "message": { "type": "String" } }
+  },
+  "largeDownloadWarningTitle": "Large download",
+  "largeDownloadWarningMessage": "This 3D model is about {size} MB. Downloading it now will use your mobile data. Continue?",
+  "@largeDownloadWarningMessage": {
+    "placeholders": { "size": { "type": "String" } }
+  },
+  "downloadAnywayButtonLabel": "Download anyway",
   "modelColonNameLabel": "Model: {name}",
   "@modelColonNameLabel": {
     "placeholders": { "name": { "type": "String" } }

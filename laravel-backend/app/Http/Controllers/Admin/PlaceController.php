@@ -165,6 +165,8 @@ class PlaceController extends Controller
             Cache::forget('admin_pending_place_count');
         }
 
+        $this->logAdminAction('place.created', 'Place', $place->id, ['name' => $place->name, 'status' => $place->status]);
+
         $message = $isContentManager
             ? "Place '{$place->name}' submitted and is awaiting admin approval."
             : "Place '{$place->name}' created successfully.";
@@ -217,6 +219,8 @@ class PlaceController extends Controller
 
             $this->handleImages($request, $place);
         });
+
+        $this->logAdminAction('place.updated', 'Place', $place->id, ['name' => $place->name, 'status' => $place->status]);
 
         $sentBackForReview = $isContentManager && $place->status === Place::STATUS_PENDING;
         $message = $sentBackForReview
@@ -328,6 +332,8 @@ class PlaceController extends Controller
         // Deleting image touches parent place -> increments sync_version!
         $image->delete();
 
+        $this->logAdminAction('place.image_deleted', 'Place', $image->place_id, ['image_id' => $imageId]);
+
         return back()->with('success', 'Image removed.');
     }
 
@@ -339,6 +345,8 @@ class PlaceController extends Controller
             PlaceImage::where('place_id', $image->place_id)->update(['is_cover' => false]);
             $image->update(['is_cover' => true]);
         });
+
+        $this->logAdminAction('place.cover_image_changed', 'Place', $image->place_id, ['image_id' => $imageId]);
 
         return back()->with('success', 'Cover image updated.');
     }

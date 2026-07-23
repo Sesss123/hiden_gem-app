@@ -4,10 +4,13 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Services\FirestoreService;
+use App\Traits\LogsAdminActivity;
 use Illuminate\Http\Request;
 
 class BookingController extends Controller
 {
+    use LogsAdminActivity;
+
     private FirestoreService $firestoreService;
 
     public function __construct()
@@ -63,11 +66,20 @@ class BookingController extends Controller
         $booking = $this->firestoreService->getDocument('booking_requests', $id);
         abort_if($booking === null, 404);
 
-        $this->firestoreService->patchDocument('booking_requests', $id, [
+        $ok = $this->firestoreService->patchDocument('booking_requests', $id, [
             'status' => 'cancelled_by_guide',
             'responseNote' => '[Admin cancellation] ' . $request->input('reason'),
             'respondedAt' => now()->toIso8601String(),
         ]);
+
+        if (!$ok) {
+            return back()->withErrors(['error' => 'Could not cancel the booking — the update failed. Please try again.']);
+        }
+
+        // This is exactly the kind of contested action (dispute/no-show/
+        // fraud, per this method's own doc comment) an audit trail exists
+        // for — previously unlogged.
+        $this->logAdminAction('booking.cancelled', 'Booking', $id, ['reason' => $request->input('reason')]);
 
         return redirect()->route('admin.bookings.index', ['status' => $booking['status'] ?? 'pending'])
             ->with('success', 'Booking cancelled by admin.');

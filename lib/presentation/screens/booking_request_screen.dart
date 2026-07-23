@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../data/repositories/booking_repository.dart';
 import '../../data/models/booking_request.dart';
 import '../../data/repositories/package_repository.dart';
+import '../../data/repositories/marketplace_repository.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../l10n/app_localizations.dart';
 
@@ -178,6 +179,17 @@ class _BookingRequestScreenState extends ConsumerState<BookingRequestScreen> {
       if (user == null) throw Exception(l10n.userNotAuthenticatedError);
 
       if (widget.guideId.isNotEmpty) {
+        // A booking against a guide with no marketplace listing yet would
+        // still get created in Firestore, but BookingController::notifyGuide
+        // silently no-ops (nothing to increment bookingRequestsCount on) —
+        // catch that up front instead of letting the request go to a guide
+        // who can never see it counted.
+        final listing = await ref.read(marketplaceRepositoryProvider).getListing(widget.guideId);
+        if (!mounted) return;
+        if (listing == null) {
+          throw Exception(l10n.noGuideListingError);
+        }
+
         final quotaExceeded = await ref.read(bookingRepositoryProvider).checkMonthlyQuota(widget.guideId);
         if (!mounted) return;
         if (quotaExceeded) {

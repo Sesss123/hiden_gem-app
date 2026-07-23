@@ -4,10 +4,13 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Services\FirestoreService;
+use App\Traits\LogsAdminActivity;
 use Illuminate\Http\Request;
 
 class IncidentController extends Controller
 {
+    use LogsAdminActivity;
+
     private FirestoreService $firestoreService;
 
     public function __construct()
@@ -54,16 +57,29 @@ class IncidentController extends Controller
             'resolution_note' => 'required|string|max:1000',
         ]);
 
+        // Confirm the incident exists before patching — patchDocument()
+        // doesn't itself distinguish "doc not found" from other failures,
+        // so this is the only way to give a real 404 for a bad/stale id
+        // instead of a false "success" redirect.
+        $incident = $this->firestoreService->getDocument('incident_reports', $id);
+        abort_if($incident === null, 404);
+
         $now = now()->toIso8601String();
         $resolvedBy = auth()->user()->name ?? 'admin';
 
-        $this->firestoreService->patchDocument('incident_reports', $id, [
+        $ok = $this->firestoreService->patchDocument('incident_reports', $id, [
             'status' => 'resolved',
             'resolvedAt' => $now,
             'resolvedBy' => $resolvedBy,
             'resolutionNote' => $request->input('resolution_note'),
             'updatedAt' => $now,
         ]);
+
+        if (!$ok) {
+            return back()->withErrors(['error' => 'Could not save the resolution — the update failed. Please try again.']);
+        }
+
+        $this->logAdminAction('incident.resolved', 'Incident', $id, ['resolution_note' => $request->input('resolution_note')]);
 
         return redirect()->route('admin.incidents.index', ['status' => 'open'])
             ->with('success', 'Incident marked resolved.');
@@ -75,10 +91,19 @@ class IncidentController extends Controller
      */
     public function dismiss(string $id)
     {
-        $this->firestoreService->patchDocument('incident_reports', $id, [
+        $incident = $this->firestoreService->getDocument('incident_reports', $id);
+        abort_if($incident === null, 404);
+
+        $ok = $this->firestoreService->patchDocument('incident_reports', $id, [
             'status' => 'dismissed',
             'updatedAt' => now()->toIso8601String(),
         ]);
+
+        if (!$ok) {
+            return back()->withErrors(['error' => 'Could not dismiss the incident — the update failed. Please try again.']);
+        }
+
+        $this->logAdminAction('incident.dismissed', 'Incident', $id, []);
 
         return redirect()->route('admin.incidents.index', ['status' => 'open'])
             ->with('success', 'Incident dismissed.');
