@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Services\FirestoreService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 
 class BookingController extends Controller
 {
@@ -113,7 +114,17 @@ class BookingController extends Controller
         try {
             $listings = $firestore->queryDocuments('guide_listings', 'guideId', 'EQUAL', $guideId, 1);
             if (empty($listings)) {
-                // Guide has no listing yet — nothing to increment, not an error.
+                // Guide has no listing yet — nothing to increment. The booking itself
+                // already succeeded (this endpoint only updates an analytics counter),
+                // so don't fail the tourist's flow over it — but this previously went
+                // completely unlogged, making it invisible that a booking landed on a
+                // guide who can never see bookingRequestsCount update. The real fix is
+                // BookingRequestScreen checking listing existence before allowing the
+                // booking at all (see MarketplaceRepository.getListing usage there).
+                Log::warning('Booking notify-guide: no listing found for guide, counter not incremented', [
+                    'guide_id' => $guideId,
+                    'booking_id' => $bookingId,
+                ]);
                 return response()->json(['status' => 'ok', 'note' => 'no listing found for guide']);
             }
 
@@ -130,6 +141,58 @@ class BookingController extends Controller
                 'error' => $e->getMessage(),
             ]);
             return response()->json(['error' => 'Failed to update guide listing'], 500);
+        }
+
+        return response()->json(['status' => 'ok']);
+    }
+
+    /**
+     * POST /v1/bookings/{bookingId}/quote
+     *
+     * Guide sets a price on a pending booking, folding "accept + quote" into
+     * one action. quotedPrice/currency/status are all in firestore.rules'
+     * locked-field list (see booking_requests match block) — a guide's client
+     * can never set them via a direct Firestore write, so this goes through
+     * the Admin SDK (FirestoreService) exactly like PayHereController::notify()
+     * later reads quotedPrice server-side to build the actual payment amount.
+     */
+    public function sendQuote(Request $request, string $bookingId, FirestoreService $firestore)
+    {
+        $validator = Validator::make($request->all(), [
+            'amount' => 'required|numeric|min:0.01',
+            'currency' => 'nullable|string|max:10',
+        ]);
+        if ($validator->fails()) {
+            return response()->json(['error' => 'Validation failed.', 'errors' => $validator->errors()], 422);
+        }
+
+        $booking = $firestore->getDocument('booking_requests', $bookingId);
+        if (!$booking) {
+            return response()->json(['error' => 'Booking not found.'], 404);
+        }
+
+        // Only the booking's own guide may quote it.
+        if (($booking['guideId'] ?? null) !== (string) $request->user()->firebase_uid) {
+            return response()->json(['error' => 'This booking does not belong to you.'], 403);
+        }
+
+        if (($booking['status'] ?? null) !== 'pending') {
+            return response()->json(['error' => 'This booking has already been responded to.'], 422);
+        }
+
+        try {
+            $firestore->updateBooking($bookingId, [
+                'quotedPrice' => (float) $request->input('amount'),
+                'currency' => $request->input('currency', 'LKR'),
+                'status' => 'accepted',
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Booking sendQuote: Firestore update failed', [
+                'guide_id' => $booking['guideId'],
+                'booking_id' => $bookingId,
+                'error' => $e->getMessage(),
+            ]);
+            return response()->json(['error' => 'Failed to save the quote.'], 500);
         }
 
         return response()->json(['status' => 'ok']);

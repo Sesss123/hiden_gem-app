@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Place;
 use App\Models\PlaceImage;
+use App\Services\GeohashService;
 use App\Services\ImageProcessingService;
 use App\Traits\LogsAdminActivity;
 use Illuminate\Http\Request;
@@ -82,6 +83,40 @@ class PlaceController extends Controller
         return view('admin.places.my-submissions', compact('places'));
     }
 
+    /**
+     * Resolves a shortened Google Maps link (maps.app.goo.gl/...) to the
+     * full URL it redirects to, so the browser-side coordinate parser (which
+     * can't follow a cross-origin redirect itself) can run on the resolved
+     * URL. Restricted to Google's own short-link/maps domains — this fetches
+     * a user-supplied URL server-side, so an open allowlist would be an SSRF
+     * vector letting a client probe internal network addresses.
+     */
+    public function resolveMapsLink(Request $request)
+    {
+        $request->validate(['url' => 'required|url|max:500']);
+        $url = $request->input('url');
+
+        $host = parse_url($url, PHP_URL_HOST);
+        $allowedHosts = ['maps.app.goo.gl', 'goo.gl', 'maps.google.com', 'www.google.com', 'google.com'];
+        if (!$host || !in_array(strtolower($host), $allowedHosts, true)) {
+            return response()->json(['error' => 'Only Google Maps links are supported.'], 422);
+        }
+
+        try {
+            $response = \Illuminate\Support\Facades\Http::withOptions(['allow_redirects' => ['track_redirects' => true]])
+                ->timeout(6)
+                ->get($url);
+
+            // Guzzle exposes the final resolved URL after following redirects
+            // via this header when track_redirects is enabled.
+            $resolvedUrl = $response->effectiveUri() ? (string) $response->effectiveUri() : $url;
+
+            return response()->json(['resolved_url' => $resolvedUrl]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Could not reach that link.'], 502);
+        }
+    }
+
     public function store(Request $request)
     {
         $data = $this->validatePlace($request);
@@ -130,11 +165,19 @@ class PlaceController extends Controller
             Cache::forget('admin_pending_place_count');
         }
 
+        $this->logAdminAction('place.created', 'Place', $place->id, ['name' => $place->name, 'status' => $place->status]);
+
         $message = $isContentManager
             ? "Place '{$place->name}' submitted and is awaiting admin approval."
             : "Place '{$place->name}' created successfully.";
 
-        return redirect()->route('admin.places.index')->with('success', $message);
+        // A content_manager's submission won't show up on the main Places
+        // list scoped view the way a full admin's would expect — send them
+        // straight to My Pending Places so they land on the page that
+        // actually shows what they just did, instead of Manage Places.
+        $redirectRoute = $isContentManager ? 'admin.places.my-submissions' : 'admin.places.index';
+
+        return redirect()->route($redirectRoute)->with('success', $message);
     }
 
     public function edit($id)
@@ -177,11 +220,16 @@ class PlaceController extends Controller
             $this->handleImages($request, $place);
         });
 
-        $message = ($isContentManager && $place->status === Place::STATUS_PENDING)
+        $this->logAdminAction('place.updated', 'Place', $place->id, ['name' => $place->name, 'status' => $place->status]);
+
+        $sentBackForReview = $isContentManager && $place->status === Place::STATUS_PENDING;
+        $message = $sentBackForReview
             ? "Place '{$place->name}' updated and sent back for admin re-approval."
             : "Place '{$place->name}' updated successfully.";
 
-        return redirect()->route('admin.places.index')->with('success', $message);
+        $redirectRoute = $sentBackForReview ? 'admin.places.my-submissions' : 'admin.places.index';
+
+        return redirect()->route($redirectRoute)->with('success', $message);
     }
 
     public function destroy($id)
@@ -284,6 +332,8 @@ class PlaceController extends Controller
         // Deleting image touches parent place -> increments sync_version!
         $image->delete();
 
+        $this->logAdminAction('place.image_deleted', 'Place', $image->place_id, ['image_id' => $imageId]);
+
         return back()->with('success', 'Image removed.');
     }
 
@@ -295,6 +345,8 @@ class PlaceController extends Controller
             PlaceImage::where('place_id', $image->place_id)->update(['is_cover' => false]);
             $image->update(['is_cover' => true]);
         });
+
+        $this->logAdminAction('place.cover_image_changed', 'Place', $image->place_id, ['image_id' => $imageId]);
 
         return back()->with('success', 'Cover image updated.');
     }
@@ -368,6 +420,11 @@ class PlaceController extends Controller
         $data['activities'] = implode(', ', array_merge($selected, $other)) ?: null;
         unset($data['activities_selected'], $data['activities_other']);
 
+        // Geohash is a pure function of lat/lng — always derive it server-side
+        // rather than trusting a manually-typed value, which drifts the
+        // moment someone edits coordinates without remembering to update it.
+        $data['geohash'] = GeohashService::encode((float) $data['lat'], (float) $data['lng']);
+
         return $data;
     }
 
@@ -418,13 +475,38 @@ class PlaceController extends Controller
         $catCode = $catMap[$catKey] ?? strtoupper(substr(preg_replace('/[^a-zA-Z]/', '', $category), 0, 3));
         if (empty($catCode)) $catCode = 'GEM';
 
-        $distCode = strtoupper(substr(preg_replace('/[^a-zA-Z]/', '', $district), 0, 3));
+        // Explicit map, not a generic first-3-letters rule: Matale and Matara
+        // both truncate to "MAT", which would silently collide two real
+        // districts onto the same ID prefix (and their sequence numbers would
+        // interleave). Every other Sri Lankan district happens to already be
+        // unique under the naive rule, but they're listed explicitly here too
+        // so the whole set stays guaranteed-unique even if a future district
+        // name is added.
+        $districtCodeMap = [
+            'ampara' => 'AMP', 'anuradhapura' => 'ANU', 'badulla' => 'BAD',
+            'batticaloa' => 'BAT', 'colombo' => 'COL', 'galle' => 'GAL',
+            'gampaha' => 'GAM', 'hambantota' => 'HAM', 'jaffna' => 'JAF',
+            'kalutara' => 'KAL', 'kandy' => 'KAN', 'kegalle' => 'KEG',
+            'kilinochchi' => 'KIL', 'kurunegala' => 'KUR', 'mannar' => 'MAN',
+            'matale' => 'MTL', 'matara' => 'MTR', 'moneragala' => 'MON',
+            'mullaitivu' => 'MUL', 'nuwara eliya' => 'NUW', 'polonnaruwa' => 'POL',
+            'puttalam' => 'PUT', 'ratnapura' => 'RAT', 'trincomalee' => 'TRI',
+            'vavuniya' => 'VAV',
+        ];
+        $distKey = strtolower(trim($district));
+        $distCode = $districtCodeMap[$distKey] ?? strtoupper(substr(preg_replace('/[^a-zA-Z]/', '', $district), 0, 3));
         if (empty($distCode)) $distCode = 'SL';
 
         $prefix = "{$catCode}-{$distCode}-";
-        
-        // BUG-L004: Lock matching ID prefix range to prevent concurrent duplicate ID generation
-        $lastPlace = Place::where('id', 'like', "{$prefix}%")
+
+        // BUG-L004: Lock matching ID prefix range to prevent concurrent duplicate ID generation.
+        // withoutGlobalScopes() is required here: Place's "active" scope hides
+        // soft-deleted rows (is_deleted=true), but the physical primary key
+        // stays occupied forever — scanning only active rows would regenerate
+        // an already-used ID and the INSERT would fail with a duplicate-key
+        // error on every subsequent attempt for that category+district.
+        $lastPlace = Place::withoutGlobalScopes()
+            ->where('id', 'like', "{$prefix}%")
             ->lockForUpdate()
             ->orderBy('id', 'desc')
             ->first();

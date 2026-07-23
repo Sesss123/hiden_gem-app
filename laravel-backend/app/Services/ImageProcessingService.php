@@ -10,21 +10,26 @@ class ImageProcessingService
 {
     /**
      * Processes an uploaded image file, generating a 400px WebP thumbnail
-     * and a 1080px WebP hero version, saving both to public storage.
+     * and a 1080px WebP hero version, saving both to public storage under
+     * "{$folder}/{$ownerId}/...". $folder lets callers other than Places
+     * (e.g. Events) store into their own tree instead of being nested under
+     * "places/" — pass 'places' from PlaceController to keep existing paths
+     * unchanged.
      *
      * @param UploadedFile $file
-     * @param string $placeId
+     * @param string $ownerId
+     * @param string $folder
      * @return array {thumb_path: string, full_path: string}
      */
-    public function processAndStore(UploadedFile $file, string $placeId): array
+    public function processAndStore(UploadedFile $file, string $ownerId, string $folder = 'places'): array
     {
         $filename = Str::uuid()->toString();
-        $thumbRelPath = "places/{$placeId}/thumb/{$filename}.webp";
-        $fullRelPath = "places/{$placeId}/full/{$filename}.webp";
+        $thumbRelPath = "{$folder}/{$ownerId}/thumb/{$filename}.webp";
+        $fullRelPath = "{$folder}/{$ownerId}/full/{$filename}.webp";
 
         // Create storage directories if they don't exist
-        Storage::disk('public')->makeDirectory("places/{$placeId}/thumb");
-        Storage::disk('public')->makeDirectory("places/{$placeId}/full");
+        Storage::disk('public')->makeDirectory("{$folder}/{$ownerId}/thumb");
+        Storage::disk('public')->makeDirectory("{$folder}/{$ownerId}/full");
 
         $sourcePath = $file->getRealPath();
 
@@ -87,10 +92,10 @@ class ImageProcessingService
             throw new \InvalidArgumentException("Invalid image extension: .{$ext}. Only JPG, PNG, and WebP are allowed.");
         }
 
-        $fallbackThumb = "places/{$placeId}/thumb/{$filename}.{$ext}";
-        $fallbackFull = "places/{$placeId}/full/{$filename}.{$ext}";
-        Storage::disk('public')->putFileAs("places/{$placeId}/thumb", $file, "{$filename}.{$ext}");
-        Storage::disk('public')->putFileAs("places/{$placeId}/full", $file, "{$filename}.{$ext}");
+        $fallbackThumb = "{$folder}/{$ownerId}/thumb/{$filename}.{$ext}";
+        $fallbackFull = "{$folder}/{$ownerId}/full/{$filename}.{$ext}";
+        Storage::disk('public')->putFileAs("{$folder}/{$ownerId}/thumb", $file, "{$filename}.{$ext}");
+        Storage::disk('public')->putFileAs("{$folder}/{$ownerId}/full", $file, "{$filename}.{$ext}");
 
         return [
             'thumb_path' => "/storage/" . $fallbackThumb,

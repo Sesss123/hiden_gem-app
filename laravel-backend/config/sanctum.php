@@ -46,7 +46,12 @@ return [
     |
     */
 
-    'expiration' => null,
+    // SECURITY: previously null (tokens never expired) — a stolen token
+    // stayed valid forever. 30 days shrinks that window while the Flutter
+    // client silently re-authenticates via Firebase before expiry causes a
+    // visible logout (see SanctumTokenRefresher / SecureHttpClient's
+    // 401-retry interceptor).
+    'expiration' => 43200, // 30 days, in minutes (60 * 24 * 30)
 
     /*
     |--------------------------------------------------------------------------

@@ -24,18 +24,55 @@
         @endif
     </div>
 
+    @if ($errors->any())
+        <div class="glass-card p-4 rounded-2xl border border-red-500/30 bg-red-500/5">
+            <p class="text-xs font-semibold text-red-400 mb-1 flex items-center gap-2">
+                <i class="fa-solid fa-triangle-exclamation"></i> Please fix the following before saving:
+            </p>
+            <ul class="text-xs text-red-300 list-disc list-inside space-y-0.5">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
+    <!-- Tab bar -->
+    <div class="glass-card p-2 rounded-2xl border border-slate-800 sticky top-2 z-10 backdrop-blur">
+        <div class="flex gap-1 overflow-x-auto" id="form_tabs" role="tablist">
+            <button type="button" data-tab="core" class="form-tab-btn shrink-0 px-4 py-2.5 rounded-xl text-xs font-semibold whitespace-nowrap flex items-center gap-1.5 transition">
+                <i class="fa-solid fa-tag"></i> Core Info
+            </button>
+            <button type="button" data-tab="gps" class="form-tab-btn shrink-0 px-4 py-2.5 rounded-xl text-xs font-semibold whitespace-nowrap flex items-center gap-1.5 transition">
+                <i class="fa-solid fa-earth-asia"></i> GPS
+            </button>
+            <button type="button" data-tab="insights" class="form-tab-btn shrink-0 px-4 py-2.5 rounded-xl text-xs font-semibold whitespace-nowrap flex items-center gap-1.5 transition">
+                <i class="fa-solid fa-compass"></i> Travel Insights
+            </button>
+            <button type="button" data-tab="access" class="form-tab-btn shrink-0 px-4 py-2.5 rounded-xl text-xs font-semibold whitespace-nowrap flex items-center gap-1.5 transition">
+                <i class="fa-solid fa-shield-halved"></i> Access & Safety
+            </button>
+            <button type="button" data-tab="ar" class="form-tab-btn shrink-0 px-4 py-2.5 rounded-xl text-xs font-semibold whitespace-nowrap flex items-center gap-1.5 transition">
+                <i class="fa-solid fa-cube"></i> AR & Audio
+            </button>
+            <button type="button" data-tab="media" class="form-tab-btn shrink-0 px-4 py-2.5 rounded-xl text-xs font-semibold whitespace-nowrap flex items-center gap-1.5 transition">
+                <i class="fa-solid fa-images"></i> Media
+            </button>
+        </div>
+    </div>
+
     <form action="{{ $action }}" method="POST" enctype="multipart/form-data" class="space-y-6">
         @csrf
         @if($isEdit)
             @method('PUT')
         @endif
 
-        <!-- Card 1: Core Identification -->
-        <div class="glass-card p-6 rounded-2xl space-y-4 border border-slate-800">
+        <!-- Tab 1: Core Identification -->
+        <div class="form-tab-panel glass-card p-6 rounded-2xl space-y-4 border border-slate-800" data-panel="core">
             <h3 class="text-sm font-semibold text-emerald-400 uppercase tracking-wider border-b border-slate-800 pb-2 flex items-center gap-2">
                 <i class="fa-solid fa-tag"></i> Core Identification
             </h3>
-            
+
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                     <label class="block text-xs font-semibold text-slate-300 mb-1">Custom Gem ID (Optional)</label>
@@ -68,11 +105,24 @@
                             @endif
                         @endforeach
                     </select>
+                    <input type="hidden" name="province" id="province_input" value="{{ old('province', $place->province) }}">
+                    <p class="text-[11px] text-slate-500 mt-1">Province: <span id="province_display" class="text-slate-300 font-medium">{{ old('province', $place->province) ?: '—' }}</span></p>
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-slate-300 mb-1">Category *</label>
                     @php
-                        $defaultCats = ['Adventure Park', 'Religious Places', 'Temple', 'Beach', 'Tea Estate', 'View Point', 'Waterfalls', 'Ancient Architecture', 'Colonial Fort', 'Royal Palace', 'Sacred Temple', 'Natural Heritage', 'Historical Monument', 'Wildlife / National Park', 'Hiking / Trekking', 'Village Experience', 'Culinary / Food', 'Cultural Site', 'General'];
+                        $defaultCats = [
+                            'Adventure Park', 'Religious Places', 'Temple', 'Beach', 'Tea Estate', 'View Point', 'Waterfalls',
+                            'Ancient Architecture', 'Colonial Fort', 'Royal Palace', 'Sacred Temple', 'Natural Heritage',
+                            'Historical Monument', 'Wildlife / National Park', 'Hiking / Trekking', 'Village Experience',
+                            'Culinary / Food', 'Cultural Site',
+                            'Eco Tourism', 'Scenic Train Journeys', 'Cycling Tours', 'Kayaking & Canoeing', 'Fishing Tourism',
+                            'Shopping Tourism', 'Festival & Event Tourism', 'Gem & Jewelry Tourism', 'Water Sports',
+                            'Surfing Tourism', 'Sunrise & Sunset Viewpoints', 'River & Lagoon Tours', 'Museum Tourism',
+                            'Multi-Religious Pilgrimage', 'Film & Photography Locations', 'Honeymoon & Romantic Getaways',
+                            'Luxury Tourism', 'Business & MICE Tourism',
+                            'General',
+                        ];
                         $dbCats = \App\Models\Place::select('category')->distinct()->pluck('category')->toArray();
                         $allCats = array_unique(array_merge($defaultCats, $dbCats));
                         sort($allCats);
@@ -89,36 +139,59 @@
             </div>
         </div>
 
-        <!-- Card 2: Location Coordinates & GPS -->
-        <div class="glass-card p-6 rounded-2xl space-y-4 border border-slate-800">
+        <!-- Tab 2: Location Coordinates & GPS -->
+        <div class="form-tab-panel glass-card p-6 rounded-2xl space-y-4 border border-slate-800" data-panel="gps">
             <h3 class="text-sm font-semibold text-teal-400 uppercase tracking-wider border-b border-slate-800 pb-2 flex items-center gap-2">
                 <i class="fa-solid fa-earth-asia"></i> GPS Coordinates & Geohash
             </h3>
-            
+
+            <div>
+                <label class="block text-xs font-semibold text-slate-300 mb-1">Paste a Google Maps Link</label>
+                <p class="text-[11px] text-slate-500 mb-2">Paste a link copied from Google Maps' "Share" button — Latitude and Longitude below fill in automatically. Coordinates can still be typed or adjusted manually after.</p>
+                <div class="flex gap-2">
+                    <input type="text" id="maps_link_input" placeholder="e.g. https://maps.google.com/?q=7.957,80.7603 or https://www.google.com/maps/@7.957,80.7603,15z"
+                        class="flex-1 px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500">
+                    <button type="button" id="maps_link_parse_btn" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-emerald-600 text-slate-300 hover:text-white text-xs font-semibold transition shrink-0">
+                        <i class="fa-solid fa-location-crosshairs mr-1"></i> Fill Coordinates
+                    </button>
+                </div>
+                <p id="maps_link_status" class="text-[11px] mt-1.5 hidden"></p>
+            </div>
+
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                     <label class="block text-xs font-semibold text-slate-300 mb-1">Latitude (Decimal) *</label>
-                    <input type="number" step="0.0000001" name="lat" value="{{ old('lat', $place->lat) }}" required
+                    <input type="number" step="0.0000001" name="lat" id="lat_input" value="{{ old('lat', $place->lat) }}" required
                         placeholder="e.g. 7.9570000"
                         class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white font-mono focus:outline-none focus:border-emerald-500">
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-slate-300 mb-1">Longitude (Decimal) *</label>
-                    <input type="number" step="0.0000001" name="lng" value="{{ old('lng', $place->lng) }}" required
+                    <input type="number" step="0.0000001" name="lng" id="lng_input" value="{{ old('lng', $place->lng) }}" required
                         placeholder="e.g. 80.7603000"
                         class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white font-mono focus:outline-none focus:border-emerald-500">
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-slate-300 mb-1">Geohash</label>
-                    <input type="text" name="geohash" value="{{ old('geohash', $place->geohash) }}"
-                        placeholder="e.g. tc1y69"
-                        class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white font-mono focus:outline-none focus:border-emerald-500">
+                    <input type="text" value="{{ $place->geohash }}" readonly
+                        placeholder="Auto-computed on save"
+                        class="w-full px-3 py-2 bg-slate-900/60 border border-slate-800 rounded-xl text-xs text-slate-400 font-mono cursor-not-allowed focus:outline-none">
+                    <p class="text-[10px] text-slate-500 mt-1">Derived automatically from Latitude/Longitude when you save — not editable.</p>
                 </div>
             </div>
+
+            @if(old('lat', $place->lat) && old('lng', $place->lng))
+                <div id="map_preview_link" class="text-[11px]">
+                    <a href="https://www.google.com/maps?q={{ old('lat', $place->lat) }},{{ old('lng', $place->lng) }}" target="_blank" rel="noopener"
+                        class="text-teal-400 hover:text-teal-300 inline-flex items-center gap-1">
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i> Preview this location on Google Maps
+                    </a>
+                </div>
+            @endif
         </div>
 
-        <!-- Card 3: Curated Travel Insights & Details -->
-        <div class="glass-card p-6 rounded-2xl space-y-4 border border-slate-800">
+        <!-- Tab 3: Curated Travel Insights & Details -->
+        <div class="form-tab-panel glass-card p-6 rounded-2xl space-y-4 border border-slate-800" data-panel="insights">
             <h3 class="text-sm font-semibold text-amber-400 uppercase tracking-wider border-b border-slate-800 pb-2 flex items-center gap-2">
                 <i class="fa-solid fa-compass"></i> Curated Travel Insights & Details (App Unique Value)
             </h3>
@@ -131,13 +204,7 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div>
-                    <label class="block text-xs font-semibold text-slate-300 mb-1">Province</label>
-                    <input type="text" name="province" id="province_input" value="{{ old('province', $place->province) }}" readonly
-                        placeholder="Auto-filled from District"
-                        class="w-full px-3 py-2 bg-slate-900/60 border border-slate-800 rounded-xl text-xs text-slate-400 cursor-not-allowed focus:outline-none">
-                </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                     <label class="block text-xs font-semibold text-slate-300 mb-1">Opening Hours</label>
                     @php
@@ -283,8 +350,8 @@
             </div>
         </div>
 
-        <!-- Card 4: Access, Amenities & Safety Advisories -->
-        <div class="glass-card p-6 rounded-2xl space-y-4 border border-slate-800">
+        <!-- Tab 4: Access, Amenities & Safety Advisories -->
+        <div class="form-tab-panel glass-card p-6 rounded-2xl space-y-4 border border-slate-800" data-panel="access">
             <h3 class="text-sm font-semibold text-rose-400 uppercase tracking-wider border-b border-slate-800 pb-2 flex items-center gap-2">
                 <i class="fa-solid fa-shield-halved"></i> Access, Amenities & Safety Advisories
             </h3>
@@ -444,8 +511,8 @@
             </div>
         </div>
 
-        <!-- Card 5: AR & Audio Guides -->
-        <div class="glass-card p-6 rounded-2xl space-y-4 border border-slate-800">
+        <!-- Tab 5: AR & Audio Guides -->
+        <div class="form-tab-panel glass-card p-6 rounded-2xl space-y-4 border border-slate-800" data-panel="ar">
             <h3 class="text-sm font-semibold text-purple-400 uppercase tracking-wider border-b border-slate-800 pb-2 flex items-center gap-2">
                 <i class="fa-solid fa-cube"></i> AR Model & Audio Guide Links
             </h3>
@@ -501,8 +568,8 @@
             </div>
         </div>
 
-        <!-- Card 4: Media Gallery & Uploads -->
-        <div class="glass-card p-6 rounded-2xl space-y-4 border border-slate-800">
+        <!-- Tab 6: Media Gallery & Uploads -->
+        <div class="form-tab-panel glass-card p-6 rounded-2xl space-y-4 border border-slate-800" data-panel="media">
             <h3 class="text-sm font-semibold text-amber-400 uppercase tracking-wider border-b border-slate-800 pb-2 flex items-center gap-2">
                 <i class="fa-solid fa-images"></i> Dual-Tier WebP Image Management
             </h3>
@@ -602,12 +669,29 @@ document.addEventListener('DOMContentLoaded', function() {
         'cultural site': 'CS'
     };
 
+    // Explicit map, not a first-3-letters rule: Matale and Matara both
+    // truncate to "MAT" and would silently collide onto the same ID prefix.
+    // Mirrors PlaceController::generateSmartId()'s $districtCodeMap — keep
+    // both in sync if a district is ever added/renamed.
+    const distMap = {
+        'ampara': 'AMP', 'anuradhapura': 'ANU', 'badulla': 'BAD',
+        'batticaloa': 'BAT', 'colombo': 'COL', 'galle': 'GAL',
+        'gampaha': 'GAM', 'hambantota': 'HAM', 'jaffna': 'JAF',
+        'kalutara': 'KAL', 'kandy': 'KAN', 'kegalle': 'KEG',
+        'kilinochchi': 'KIL', 'kurunegala': 'KUR', 'mannar': 'MAN',
+        'matale': 'MTL', 'matara': 'MTR', 'moneragala': 'MON',
+        'mullaitivu': 'MUL', 'nuwara eliya': 'NUW', 'polonnaruwa': 'POL',
+        'puttalam': 'PUT', 'ratnapura': 'RAT', 'trincomalee': 'TRI',
+        'vavuniya': 'VAV'
+    };
+
     function updateSmartId() {
         if (idInput && distInput && catInput && !idInput.dataset.manual) {
-            const distVal = distInput.value.trim().replace(/[^a-zA-Z]/g, '').substring(0, 3).toUpperCase() || 'SL';
+            const distKey = distInput.value.trim().toLowerCase();
+            const distVal = distMap[distKey] || (distInput.value.trim().replace(/[^a-zA-Z]/g, '').substring(0, 3).toUpperCase() || 'SL');
             const catVal = catInput.value.trim().toLowerCase();
             const catCode = catMap[catVal] || (catInput.value.trim().replace(/[^a-zA-Z]/g, '').substring(0, 3).toUpperCase() || 'GEM');
-            
+
             if (distInput.value.trim() || catInput.value.trim()) {
                 idInput.value = `${catCode}-${distVal}-001`;
             }
@@ -629,6 +713,7 @@ document.addEventListener('DOMContentLoaded', function() {
 document.addEventListener('DOMContentLoaded', function() {
     const distInput = document.getElementById('district_input');
     const provInput = document.getElementById('province_input');
+    const provDisplay = document.getElementById('province_display');
 
     const districtToProvince = {
         'Colombo': 'Western', 'Gampaha': 'Western', 'Kalutara': 'Western',
@@ -644,7 +729,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function updateProvince() {
         if (distInput && provInput) {
-            provInput.value = districtToProvince[distInput.value] || '';
+            const province = districtToProvince[distInput.value] || '';
+            provInput.value = province;
+            if (provDisplay) provDisplay.textContent = province || '—';
         }
     }
 
@@ -652,6 +739,97 @@ document.addEventListener('DOMContentLoaded', function() {
         distInput.addEventListener('change', updateProvince);
         updateProvince(); // sync on load (edit mode: district pre-selected)
     }
+});
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const linkInput = document.getElementById('maps_link_input');
+    const parseBtn = document.getElementById('maps_link_parse_btn');
+    const statusEl = document.getElementById('maps_link_status');
+    const latInput = document.getElementById('lat_input');
+    const lngInput = document.getElementById('lng_input');
+    if (!parseBtn || !latInput || !lngInput) return;
+
+    // Google Maps share links vary a lot depending on where they were
+    // copied from — cover the common shapes rather than assume one format.
+    function extractLatLng(url) {
+        const patterns = [
+            /@(-?\d{1,3}\.\d+),(-?\d{1,3}\.\d+)/,       // .../@7.957,80.7603,15z
+            /[?&]q=(-?\d{1,3}\.\d+),(-?\d{1,3}\.\d+)/,   // ?q=7.957,80.7603
+            /!3d(-?\d{1,3}\.\d+)!4d(-?\d{1,3}\.\d+)/,    // .../!3d7.957!4d80.7603 (place-detail links)
+            /^\s*(-?\d{1,3}\.\d+)\s*,\s*(-?\d{1,3}\.\d+)\s*$/, // bare "lat, lng" pasted directly
+        ];
+        for (const re of patterns) {
+            const m = url.match(re);
+            if (m) return { lat: parseFloat(m[1]), lng: parseFloat(m[2]) };
+        }
+        return null;
+    }
+
+    function showStatus(message, isError) {
+        statusEl.textContent = message;
+        statusEl.className = 'text-[11px] mt-1.5 ' + (isError ? 'text-red-400' : 'text-emerald-400');
+    }
+
+    function applyCoords(coords) {
+        latInput.value = coords.lat;
+        lngInput.value = coords.lng;
+        showStatus('Coordinates filled: ' + coords.lat + ', ' + coords.lng, false);
+    }
+
+    function isShortLink(url) {
+        // Shortened Google Maps links (maps.app.goo.gl, goo.gl) never contain
+        // the coordinates themselves — those only appear in the full URL
+        // Google redirects to, which the browser can't follow cross-origin
+        // from client-side JS. resolve-maps-link fetches it server-side.
+        return /^https?:\/\/(maps\.app\.goo\.gl|goo\.gl)\//i.test(url.trim());
+    }
+
+    parseBtn.addEventListener('click', function() {
+        const url = (linkInput.value || '').trim();
+        if (!url) {
+            showStatus('Paste a Google Maps link first.', true);
+            return;
+        }
+
+        const coords = extractLatLng(url);
+        if (coords && coords.lat >= -90 && coords.lat <= 90 && coords.lng >= -180 && coords.lng <= 180) {
+            applyCoords(coords);
+            return;
+        }
+
+        if (!isShortLink(url)) {
+            showStatus('Could not find coordinates in that link — try the "Share" → "Copy link" option from Google Maps, or type Latitude/Longitude manually below.', true);
+            return;
+        }
+
+        // Short link with no inline coordinates — resolve it server-side first.
+        showStatus('Resolving shortened link…', false);
+        parseBtn.disabled = true;
+
+        fetch('{{ route("admin.places.resolve-maps-link") }}?url=' + encodeURIComponent(url), {
+            headers: { 'Accept': 'application/json' }
+        })
+            .then(function(res) { return res.json().then(function(body) { return { ok: res.ok, body: body }; }); })
+            .then(function(result) {
+                parseBtn.disabled = false;
+                if (!result.ok || !result.body.resolved_url) {
+                    showStatus(result.body.error || 'Could not resolve that link.', true);
+                    return;
+                }
+                const resolvedCoords = extractLatLng(result.body.resolved_url);
+                if (!resolvedCoords) {
+                    showStatus('Resolved the link, but could not find coordinates in it. Try typing Latitude/Longitude manually below.', true);
+                    return;
+                }
+                applyCoords(resolvedCoords);
+            })
+            .catch(function() {
+                parseBtn.disabled = false;
+                showStatus('Could not resolve that link — check your connection and try again.', true);
+            });
+    });
 });
 </script>
 
@@ -699,6 +877,62 @@ document.addEventListener('DOMContentLoaded', function() {
         catInput.addEventListener('change', filterActivities);
         filterActivities(); // sync on load (edit mode: category pre-selected)
     }
+});
+</script>
+
+<style>
+    .form-tab-btn { color: #94a3b8; }
+    .form-tab-btn:hover { color: #e2e8f0; background: rgba(148, 163, 184, 0.08); }
+    .form-tab-btn.active { color: white; background: linear-gradient(to right, rgb(5 150 105), rgb(13 148 136)); box-shadow: 0 2px 10px -2px rgba(16, 185, 129, 0.4); }
+    .form-tab-panel { display: none; }
+    .form-tab-panel.active { display: block; }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const tabButtons = document.querySelectorAll('.form-tab-btn');
+    const panels = document.querySelectorAll('.form-tab-panel');
+
+    function showTab(name) {
+        tabButtons.forEach(function(btn) {
+            btn.classList.toggle('active', btn.dataset.tab === name);
+        });
+        panels.forEach(function(panel) {
+            panel.classList.toggle('active', panel.dataset.panel === name);
+        });
+    }
+
+    tabButtons.forEach(function(btn) {
+        btn.addEventListener('click', function() { showTab(btn.dataset.tab); });
+    });
+
+    // On a validation-error redisplay, jump straight to whichever tab holds
+    // the first invalid field — errors can land on any of the 6 tabs, and
+    // silently defaulting to "Core Info" would hide the actual problem from
+    // the user (e.g. a bad lat/lng error on the GPS tab going unnoticed).
+    let initialTab = 'core';
+    const firstInvalidName = @json($errors->any() ? array_key_first($errors->toArray()) : null);
+    if (firstInvalidName) {
+        const fieldToTab = {
+            id: 'core', name: 'core', district: 'core', category: 'core',
+            lat: 'gps', lng: 'gps', geohash: 'gps',
+            description: 'insights', province: 'insights', opening_hours: 'insights',
+            best_time_to_visit: 'insights', tourist_popularity: 'insights',
+            activities_selected: 'insights', activities_other: 'insights',
+            family_friendly: 'insights', budget_category: 'insights', ticket_price: 'insights',
+            mobile_signal: 'access', road_condition: 'access', parking_avail: 'access',
+            toilets: 'access', food_nearby: 'access', wheelchair_access: 'access',
+            camping_allowed: 'access', guide_required: 'access', safety_level: 'access',
+            wildlife_hazard: 'access', rain_sensitivity: 'access', monsoon_note: 'access',
+            height_m: 'access', length_km: 'access', surfing: 'access',
+            ar_supported: 'ar', ar_tier: 'ar', ar_model_scale: 'ar', ar_model_url: 'ar',
+            ar_historical_model_url: 'ar', audio_guide_url_si: 'ar', audio_guide_url_en: 'ar',
+            'images.0': 'media', 'images': 'media',
+        };
+        initialTab = fieldToTab[firstInvalidName] || 'core';
+    }
+
+    showTab(initialTab);
 });
 </script>
 @endsection

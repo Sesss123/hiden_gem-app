@@ -50,6 +50,7 @@ import 'core/services/emergency_control_service.dart';
 import 'core/services/monsoon_broadcast_service.dart';
 import 'core/services/consent_service.dart';
 import 'core/services/explorer_progress_service.dart';
+import 'core/services/family_share_sync_service.dart';
 import 'package:freerasp/freerasp.dart';
 
 class InitializationResult {
@@ -280,6 +281,10 @@ Future<InitializationResult> performInitialization() async {
     // Initialize Encryption System early
     await EncryptionUtil.init();
     SecureLogger.info("Encryption system initialized.");
+
+    // Keeps family-share link status blobs (see FamilyShareScreen) E2E
+    // encrypted and current -- follows auth state internally.
+    FamilyShareSyncService.instance.init();
 
   } catch (e) {
     SecureLogger.error("Encryption init error: $e");

@@ -25,7 +25,7 @@ class DynamicContentService {
       } else {
         final response = await _client.get(
           Uri.parse('${AppConfig.baseUrl}/discovery/events'),
-          headers: {'X-HiddenGems-Key': AppConfig.hiddenGemsApiKey},
+          headers: {'X-API-KEY': AppConfig.hiddenGemsApiKey},
         ).timeout(const Duration(seconds: 5));
 
         if (response.statusCode == 200) {

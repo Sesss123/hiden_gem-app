@@ -127,7 +127,9 @@
                         ['route' => 'admin.places.index', 'match' => 'admin.places.index', 'icon' => 'fa-map-location-dot', 'label' => $isFullAdmin ? 'Places' : 'Manage Places', 'color' => 'text-emerald-400'],
                         $isFullAdmin ? ['route' => 'admin.places.pending', 'match' => 'admin.places.pending', 'icon' => 'fa-hourglass-half', 'label' => 'Pending Places', 'color' => 'text-amber-400', 'badgeKey' => 'pendingPlaceCount'] : null,
                         !$isFullAdmin ? ['route' => 'admin.places.my-submissions', 'match' => 'admin.places.my-submissions', 'icon' => 'fa-file-lines', 'label' => 'My Pending Places', 'color' => 'text-amber-400'] : null,
-                        ['route' => 'admin.events.index', 'match' => 'admin.events.*', 'icon' => 'fa-calendar-days', 'label' => 'Events', 'color' => 'text-teal-400'],
+                        ['route' => 'admin.events.index', 'match' => 'admin.events.index', 'icon' => 'fa-calendar-days', 'label' => 'Events', 'color' => 'text-teal-400'],
+                        $isFullAdmin ? ['route' => 'admin.events.pending', 'match' => 'admin.events.pending', 'icon' => 'fa-hourglass-half', 'label' => 'Pending Events', 'color' => 'text-amber-400', 'badgeKey' => 'pendingEventCount'] : null,
+                        !$isFullAdmin ? ['route' => 'admin.events.my-submissions', 'match' => 'admin.events.my-submissions', 'icon' => 'fa-file-lines', 'label' => 'My Pending Events', 'color' => 'text-amber-400'] : null,
                         $isFullAdmin ? ['route' => 'admin.partners.index', 'match' => 'admin.partners.*', 'icon' => 'fa-handshake', 'label' => 'Partners', 'color' => 'text-teal-400'] : null,
                     ],
                 ];

@@ -46,6 +46,7 @@
                     <tr class="bg-slate-900/50 border-b border-slate-800 text-xs text-slate-400 uppercase font-semibold">
                         <th class="px-6 py-4">Applicant</th>
                         <th class="px-6 py-4">License Number</th>
+                        <th class="px-6 py-4">Expiry</th>
                         <th class="px-6 py-4">Category</th>
                         <th class="px-6 py-4">Applied Date</th>
                         <th class="px-6 py-4 text-right">Actions</th>
@@ -63,6 +64,19 @@
                                     {{ $app->license_number }}
                                 </span>
                             </td>
+                            <td class="px-6 py-5">
+                                @if($app->license_expiry_date)
+                                    @php
+                                        $isExpired = $app->license_expiry_date->isPast();
+                                        $isExpiringSoon = !$isExpired && now()->diffInDays($app->license_expiry_date) <= 30;
+                                    @endphp
+                                    <span class="text-xs font-mono {{ $isExpired ? 'text-red-400' : ($isExpiringSoon ? 'text-amber-400' : 'text-slate-300') }}">
+                                        {{ $app->license_expiry_date->format('M d, Y') }}
+                                    </span>
+                                @else
+                                    <span class="text-xs text-slate-600 italic">—</span>
+                                @endif
+                            </td>
                             <td class="px-6 py-5 text-slate-300">
                                 {{ ucfirst(str_replace('_', ' ', $app->category)) }}
                             </td>
@@ -79,7 +93,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="px-6 py-12 text-center text-slate-500">
+                            <td colspan="6" class="px-6 py-12 text-center text-slate-500">
                                 <div class="flex flex-col items-center justify-center gap-2">
                                     <i class="fa-solid fa-folder-open text-3xl text-slate-600"></i>
                                     <span>No applications found in this section.</span>

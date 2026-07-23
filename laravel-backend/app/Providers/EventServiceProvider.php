@@ -29,6 +29,8 @@ class EventServiceProvider extends ServiceProvider
     {
         \App\Models\Place::observe(\App\Observers\PlaceObserver::class);
         \App\Models\PlaceImage::observe(\App\Observers\PlaceImageObserver::class);
+        \App\Models\Event::observe(\App\Observers\EventObserver::class);
+        \App\Models\EventImage::observe(\App\Observers\EventImageObserver::class);
     }
 
     /**

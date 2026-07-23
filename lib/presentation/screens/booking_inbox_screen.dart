@@ -504,15 +504,56 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
     }
   }
 
+  /// Shows a dialog for the guide to enter a price before accepting. Returns
+  /// null if the guide cancels — the caller must not proceed with accept in
+  /// that case, leaving the booking untouched at 'pending'.
+  Future<double?> _showQuoteDialog(AppLocalizations l10n) async {
+    final controller = TextEditingController();
+    return showDialog<double>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n.sendQuoteDialogTitle),
+        content: TextField(
+          controller: controller,
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          autofocus: true,
+          decoration: InputDecoration(
+            labelText: l10n.sendQuoteAmountLabel,
+            prefixText: 'LKR ',
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: Text(MaterialLocalizations.of(dialogContext).cancelButtonLabel),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              final amount = double.tryParse(controller.text.trim());
+              Navigator.pop(dialogContext, (amount != null && amount > 0) ? amount : null);
+            },
+            child: Text(l10n.sendQuoteConfirmButtonLabel),
+          ),
+        ],
+      ),
+    );
+  }
+
   Future<void> _handleAccept(BookingRequest request) async {
     HapticFeedback.mediumImpact();
     final l10n = AppLocalizations.of(context)!;
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid == null) return;
 
+    final amount = await _showQuoteDialog(l10n);
+    if (amount == null) return; // Guide cancelled — booking stays pending.
+    if (!mounted) return;
+
     try {
       final bookingRepo = ref.read(bookingRepositoryProvider);
       final sessionRepo = ref.read(tourSessionRepositoryProvider);
+
+      await bookingRepo.sendQuote(bookingId: request.bookingId, amount: amount);
 
       // Security: not a predictable timestamp — an attacker who could guess
       // recent millisecond timestamps could brute-force session IDs. UUID

@@ -13,6 +13,7 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:video_player/video_player.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import '../models/ar_video_content.dart';
 import '../services/ar_video_service.dart';
@@ -96,8 +97,25 @@ class _ARVideoScreenState extends State<ARVideoScreen>
       CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
     );
 
+    // Camera permission was previously never requested by this screen at
+    // all — ARView relied entirely on the native ARCore SDK's own prompt (if
+    // any), which can leave a denial in an unclear blank-camera state with
+    // no in-app explanation or retry path.
+    _ensureCameraPermission();
+
     // Pre-cache, then init video
     VideoCacheService.preload(widget.content.videoUrl).then((_) => _initVideo());
+  }
+
+  Future<void> _ensureCameraPermission() async {
+    final status = await Permission.camera.request();
+    if (!mounted) return;
+    if (!status.isGranted) {
+      setState(() {
+        _hasError = true;
+        _errorMsg = 'Camera access is required for the AR experience. Please enable it in Settings.';
+      });
+    }
   }
 
   Future<void> _initVideo() async {
@@ -146,6 +164,11 @@ class _ARVideoScreenState extends State<ARVideoScreen>
     _arSessionManager!.onInitialize(showFeaturePoints: false, showPlanes: true);
     _arObjectManager!.onInitialize();
     _arSessionManager!.onPlaneOrPointTap = _handlePlaneTap;
+    // Previously unwired — native AR session failures (no ARCore support,
+    // tracking loss, etc.) were silently dropped with no user-facing signal.
+    _arSessionManager!.onError = (error) {
+      if (mounted) setState(() { _hasError = true; _errorMsg = error; });
+    };
 
     // Simulate initial environment scanning feedback before showing tap
     // action hint. Cancel any prior timer first — if this callback ever
@@ -162,6 +185,7 @@ class _ARVideoScreenState extends State<ARVideoScreen>
   void _handlePlaneTap(List<ARHitTestResult> hits) async {
     if (_videoPlaced || !_isReady) return;
     if (hits.isEmpty) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: const Text('No surface detected here. Try tapping directly on the dotted grid lines.'),

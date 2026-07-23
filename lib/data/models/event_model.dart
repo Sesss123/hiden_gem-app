@@ -44,6 +44,7 @@ enum EventCategory {
 }
 
 class EventModel {
+  final int? id;
   final String name;
   final String description;
   final EventCategory category;
@@ -57,8 +58,10 @@ class EventModel {
   final double? longitude;
   final List<String> tags;
   final int? priceLkr;
+  final String imageUrl;
 
   EventModel({
+    this.id,
     required this.name,
     required this.description,
     required this.category,
@@ -72,6 +75,7 @@ class EventModel {
     this.longitude,
     this.tags = const [],
     this.priceLkr,
+    this.imageUrl = '',
   });
 
   Color get categoryColor {
@@ -110,6 +114,7 @@ class EventModel {
 
   factory EventModel.fromJson(Map<String, dynamic> json) {
     return EventModel(
+      id: (json['id'] as num?)?.toInt(),
       name: json['name'] ?? '',
       description: json['description'] ?? '',
       category: _parseCategory(json['type'] ?? json['category']),
@@ -123,6 +128,7 @@ class EventModel {
       longitude: json['lng'],
       tags: List<String>.from(json['tags'] ?? []),
       priceLkr: json['price_lkr'],
+      imageUrl: json['imageUrl'] as String? ?? json['image_url'] as String? ?? '',
     );
   }
 
@@ -151,6 +157,7 @@ class EventModel {
 
   Map<String, dynamic> toJson() {
     return {
+      'id': id,
       'name': name,
       'description': description,
       'category': category.name,
@@ -164,6 +171,8 @@ class EventModel {
       'lineup': lineup.map((a) => a.toJson()).toList(),
       'tags': tags,
       'price_lkr': priceLkr,
+      'imageUrl': imageUrl,
+      'image_url': imageUrl,
     };
   }
 }

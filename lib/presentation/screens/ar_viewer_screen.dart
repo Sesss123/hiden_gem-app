@@ -23,6 +23,7 @@ import '../../core/services/asset_cache_service.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:gal/gal.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 
 import 'ar_upgrade_dialog.dart';
 import 'premium_hub_screen.dart';
@@ -71,6 +72,7 @@ class _ARViewerScreenState extends State<ARViewerScreen>
 
   bool _modelRequested = false;
   bool _isThenMode = false;
+  String? _arErrorMessage;
   bool _isAudioPlaying = false;
   bool _isMuted = false;
   bool _showHotspots = false;
@@ -81,6 +83,12 @@ class _ARViewerScreenState extends State<ARViewerScreen>
   bool _isCapturing = false;
   late AnimationController _flashController;
   late Animation<double> _flashAnimation;
+  // Temp capture PNGs were previously never deleted — unbounded disk growth
+  // per photo taken across the app's lifetime. Tracked here and cleaned up
+  // on dispose (not immediately after share/save, since a share intent may
+  // still need to read the file asynchronously after this screen's UI
+  // considers the action "done").
+  final List<String> _capturedTempPaths = [];
   
   // Gamification logic
   final GamificationService _gamificationService = GamificationService();
@@ -168,10 +176,34 @@ class _ARViewerScreenState extends State<ARViewerScreen>
     _gamificationService.init();
     _arService.onArtifactFound = _onArtifactFound;
     _arService.onNodePlaced = _onNodePlaced;
+    // Previously unwired — native AR failures (unsupported device, broken
+    // model URL, tracking loss) were silently dropped with no user-facing
+    // signal anywhere in this screen.
+    _arService.onArError = _onArError;
     _startRadarTimer();
     _startNavigationTracking();
     _fetchNearbyPartners();
     _initMemoryStream();
+    _ensureCameraPermission();
+  }
+
+  Future<void> _ensureCameraPermission() async {
+    final status = await Permission.camera.request();
+    if (!mounted) return;
+    if (!status.isGranted) {
+      setState(() {
+        _arErrorMessage = AppLocalizations.of(context)!.cameraPermissionRequiredMessage;
+      });
+    }
+  }
+
+  void _onArError(String message) {
+    if (!mounted) return;
+    setState(() {
+      _arErrorMessage = message == 'model_placement_failed'
+          ? AppLocalizations.of(context)!.arModelPlacementFailedMessage
+          : AppLocalizations.of(context)!.arSessionErrorMessage(message);
+    });
   }
 
 
@@ -372,7 +404,20 @@ class _ARViewerScreenState extends State<ARViewerScreen>
     } catch (_) {}
     _audioPlayer.dispose();
     _arService.dispose();
+    _cleanupCapturedTempFiles();
     super.dispose();
+  }
+
+  void _cleanupCapturedTempFiles() {
+    for (final path in _capturedTempPaths) {
+      try {
+        final file = File(path);
+        if (file.existsSync()) file.deleteSync();
+      } catch (_) {
+        // Best-effort — a failed delete here shouldn't ever crash teardown.
+      }
+    }
+    _capturedTempPaths.clear();
   }
 
   void _onARViewCreated(
@@ -385,13 +430,31 @@ class _ARViewerScreenState extends State<ARViewerScreen>
         sessionManager, objectManager, anchorManager, locationManager);
   }
 
+  // Models over this size on cellular get a confirmation prompt instead of
+  // silently starting the download. modelFileSizeMb previously existed on
+  // ARPlaceData purely for display text in the loading overlay — it was
+  // never actually checked against anything before a download began.
+  static const double _cellularWarningThresholdMb = 20.0;
+
   void _requestPlaceModel() async {
+    final sizeMb = widget.arData.modelFileSizeMb;
+    if (sizeMb > _cellularWarningThresholdMb) {
+      final connectivity = await Connectivity().checkConnectivity();
+      final onCellular = connectivity.contains(ConnectivityResult.mobile) &&
+          !connectivity.contains(ConnectivityResult.wifi);
+      if (onCellular) {
+        if (!mounted) return;
+        final proceed = await _confirmCellularDownload(sizeMb);
+        if (proceed != true) return;
+      }
+    }
+
     await _arService.requestPlaceModel(
       modelUrl: widget.arData.arModelUrl,
       historicalModelUrl: widget.arData.arHistoricalModelUrl,
       scale: widget.arData.arModelScale,
     );
-    
+
     if (!mounted) return;
     setState(() => _modelRequested = true);
     ScaffoldMessenger.of(context).showSnackBar(
@@ -400,6 +463,27 @@ class _ARViewerScreenState extends State<ARViewerScreen>
             style: GoogleFonts.inter()),
         backgroundColor: AppTheme.cardColor(context).withValues(alpha: 0.9),
         duration: const Duration(seconds: 3),
+      ),
+    );
+  }
+
+  Future<bool?> _confirmCellularDownload(double sizeMb) {
+    final l10n = AppLocalizations.of(context)!;
+    return showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n.largeDownloadWarningTitle),
+        content: Text(l10n.largeDownloadWarningMessage(sizeMb.toStringAsFixed(0))),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: Text(MaterialLocalizations.of(dialogContext).cancelButtonLabel),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: Text(l10n.downloadAnywayButtonLabel),
+          ),
+        ],
       ),
     );
   }
@@ -509,7 +593,8 @@ class _ARViewerScreenState extends State<ARViewerScreen>
         final path = '${directory.path}/ar_capture_${DateTime.now().millisecondsSinceEpoch}.png';
         final file = File(path);
         await file.writeAsBytes(image);
-        
+        _capturedTempPaths.add(path);
+
         // 4. Save to Public Gallery
         await Gal.putImage(path);
         
@@ -755,10 +840,47 @@ class _ARViewerScreenState extends State<ARViewerScreen>
 
         // Cinematic Flash Layer
         _buildFlashOverlay(),
+
+        // AR error banner (session failure, camera permission denied, or a
+        // model that failed to place) — surfaces failures that were
+        // previously silently dropped.
+        if (_arErrorMessage != null && !_isCapturing) _arErrorBanner(),
       ]),
     ),
   );
   }
+
+  Widget _arErrorBanner() => Positioned(
+    top: 120, left: 16, right: 16,
+    child: SafeArea(
+      child: Material(
+        color: AppTheme.colors.transparent,
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: AppTheme.colors.red.shade800.withValues(alpha: 0.95),
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Row(
+            children: [
+              Icon(Icons.error_outline, color: AppTheme.colors.white, size: 20),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  _arErrorMessage ?? '',
+                  style: GoogleFonts.inter(color: AppTheme.colors.white, fontSize: 13),
+                ),
+              ),
+              GestureDetector(
+                onTap: () => setState(() => _arErrorMessage = null),
+                child: Icon(Icons.close, color: AppTheme.colors.white70, size: 18),
+              ),
+            ],
+          ),
+        ),
+      ),
+    ),
+  );
 
   Widget _buildFlashOverlay() => FadeTransition(
     opacity: _flashAnimation,

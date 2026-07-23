@@ -121,7 +121,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="8" class="py-12 text-center text-slate-500">
+                        <td colspan="7" class="py-12 text-center text-slate-500">
                             <i class="fa-solid fa-compass text-3xl mb-3 block opacity-40"></i>
                             No hidden gems found. Click "Add New Gem" above to begin seeding the database.
                         </td>

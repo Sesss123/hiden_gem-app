@@ -14,6 +14,7 @@ class GuideApplication extends Model
         'email',
         'name',
         'license_number',
+        'license_expiry_date',
         'bio',
         'category',
         'license_doc_url',
@@ -26,6 +27,7 @@ class GuideApplication extends Model
     ];
 
     protected $casts = [
+        'license_expiry_date' => 'date',
         'applied_at' => 'datetime',
         'reviewed_at' => 'datetime',
     ];

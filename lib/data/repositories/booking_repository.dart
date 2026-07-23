@@ -280,4 +280,36 @@ class BookingRepository {
       return false;
     }
   }
+
+  /// Guide sets a price on a pending booking, accepting it in the same step.
+  /// Goes through Laravel (Admin SDK) because quotedPrice/currency/status are
+  /// all in firestore.rules' locked-field list for booking_requests — a
+  /// guide's client can never set them via a direct Firestore write. Throws
+  /// on failure so the caller can show the guide a real error instead of
+  /// silently leaving the booking unpriced.
+  Future<void> sendQuote({
+    required String bookingId,
+    required double amount,
+    String currency = 'LKR',
+  }) async {
+    final client = SecureHttpClient(http.Client());
+    final uri = Uri.parse('${AppConfig.laravelUrl}/bookings/$bookingId/quote');
+    final response = await client.post(
+      uri,
+      headers: {
+        'Content-Type': 'application/json',
+        'X-API-KEY': AppConfig.hiddenGemsApiKey,
+      },
+      body: json.encode({'amount': amount, 'currency': currency}),
+    ).timeout(const Duration(seconds: 10));
+
+    if (response.statusCode != 200) {
+      String message = 'Failed to send quote (${response.statusCode})';
+      try {
+        final data = json.decode(response.body) as Map<String, dynamic>;
+        message = data['error'] as String? ?? message;
+      } catch (_) {}
+      throw Exception(message);
+    }
+  }
 }

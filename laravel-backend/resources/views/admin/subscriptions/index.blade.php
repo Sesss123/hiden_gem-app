@@ -13,7 +13,7 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div class="glass-card p-5 rounded-2xl">
             <div class="text-xs text-slate-400 uppercase font-semibold mb-1">Total Premium Users</div>
-            <div class="text-3xl font-bold text-white">{{ count($premiumUsers) }}</div>
+            <div class="text-3xl font-bold text-white">{{ $totalPremiumCount }}</div>
         </div>
         <div class="glass-card p-5 rounded-2xl">
             <div class="text-xs text-slate-400 uppercase font-semibold mb-1">Expiring Within 7 Days</div>
@@ -32,6 +32,26 @@
                 @endforelse
             </div>
         </div>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="glass-card p-4 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-4">
+        <form action="{{ route('admin.subscriptions.index') }}" method="GET" class="w-full flex flex-col md:flex-row gap-4">
+            <div class="flex-1 relative">
+                <i class="fa-solid fa-magnifying-glass absolute left-4 top-3 text-slate-400"></i>
+                <input type="text" name="search" value="{{ request('search') }}" placeholder="Search by name or email..." class="w-full bg-slate-900 border border-slate-800 rounded-xl py-2.5 pl-11 pr-4 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500/50 transition">
+            </div>
+            <div class="flex gap-2">
+                <button type="submit" class="bg-slate-800 hover:bg-slate-700 text-white px-5 py-2.5 rounded-xl text-sm font-semibold border border-slate-700 transition">
+                    Filter
+                </button>
+                @if(request('search'))
+                    <a href="{{ route('admin.subscriptions.index') }}" class="bg-slate-900 hover:bg-slate-850 text-slate-400 border border-slate-800 px-5 py-2.5 rounded-xl text-sm font-semibold transition flex items-center justify-center">
+                        Clear
+                    </a>
+                @endif
+            </div>
+        </form>
     </div>
 
     <div class="glass-card rounded-2xl overflow-hidden">

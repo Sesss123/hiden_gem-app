@@ -34,10 +34,23 @@ class VerifyZenithSignature
     {
         $secret = config('services.zenith_hmac_secret');
         if (empty($secret)) {
-            // Not configured — fail open rather than break every request in
-            // an environment that hasn't set HMAC_SECRET yet. This mirrors
-            // how the header set was effectively a no-op before this fix;
-            // configuring the secret is what activates real enforcement.
+            if (app()->environment('production')) {
+                // SECURITY: fail CLOSED in production — a blank HMAC_SECRET
+                // must never silently degrade this into a no-op
+                // verification layer. Any other environment (local,
+                // testing, etc.) still fails open below so a developer's
+                // default .env (HMAC_SECRET unset) keeps working.
+                \Illuminate\Support\Facades\Log::critical(
+                    'VerifyZenithSignature: HMAC_SECRET is unset in production — rejecting protected request.',
+                    ['path' => $request->path()]
+                );
+                return response()->json([
+                    'error' => 'Server misconfiguration: request verification unavailable.',
+                ], 500);
+            }
+
+            // Not configured in a non-production environment — fail open so
+            // local/testing setups without HMAC_SECRET configured keep working.
             return $next($request);
         }
 

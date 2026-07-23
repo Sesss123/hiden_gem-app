@@ -53,6 +53,16 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/search', [\App\Http\Controllers\Admin\SearchController::class, 'index'])->name('search');
 
         Route::get('/my-submissions', [PlaceController::class, 'mySubmissions'])->name('places.my-submissions');
+        Route::get('/my-events', [EventController::class, 'mySubmissions'])->name('events.my-submissions');
+
+        // Resolves shortened Google Maps links (maps.app.goo.gl/...) — the
+        // coordinates only exist in the URL Google redirects to, not in the
+        // short link itself, and a browser can't follow that redirect from
+        // client-side JS (cross-origin). Throttled since it's an outbound
+        // HTTP call triggered by user input.
+        Route::get('/places/resolve-maps-link', [PlaceController::class, 'resolveMapsLink'])
+            ->name('places.resolve-maps-link')
+            ->middleware('throttle:20,1');
 
         Route::resource('places', PlaceController::class)->only(['index', 'create', 'edit']);
         Route::resource('events', EventController::class)->only(['index', 'create', 'edit']);
@@ -62,6 +72,17 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::middleware('throttle:30,1')->group(function () {
             Route::resource('places', PlaceController::class)->only(['store', 'update']);
             Route::resource('events', EventController::class)->only(['store', 'update', 'destroy']);
+
+            // Unlike Place images (full_admin-only below — a content_manager's
+            // place edits get reset to pending for re-review, so they
+            // shouldn't be able to unilaterally finalize a cover photo),
+            // content_manager has full unreviewed edit rights over Events
+            // (see comment atop this group) and previously had no way to
+            // ever delete or re-cover an event photo after uploading it —
+            // the controls were hidden and these routes were full_admin-only,
+            // an oversight carried over unchanged from the Places form.
+            Route::delete('event-images/{id}', [EventController::class, 'deleteImage'])->name('event-images.delete');
+            Route::post('event-images/{id}/cover', [EventController::class, 'setCoverImage'])->name('event-images.cover');
         });
     });
 
@@ -69,8 +90,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
         Route::get('/dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard.index');
 
-        Route::resource('partners', PartnerController::class)->only(['index', 'create', 'show', 'edit']);
-        Route::resource('users', UserController::class)->only(['index', 'create', 'show', 'edit']);
+        // 'show' intentionally excluded on both — neither controller has a
+        // show() method or dedicated detail view (edit() serves as the
+        // detail/edit page for both, same pattern as Places/Events). Listing
+        // 'show' here without a matching method previously registered a
+        // route that threw a fatal 500 (not a 404) if ever hit directly.
+        Route::resource('partners', PartnerController::class)->only(['index', 'create', 'edit']);
+        Route::resource('users', UserController::class)->only(['index', 'create', 'edit']);
 
         // Guide verification document viewer — see security note on
         // GuideDocumentUploadController::upload()/download(). Session
@@ -82,6 +108,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/guides', [GuideController::class, 'index'])->name('guides.index');
         Route::get('/guides/{id}', [GuideController::class, 'show'])->name('guides.show');
         Route::get('/places-pending', [PlaceController::class, 'pending'])->name('places.pending');
+        Route::get('/events-pending', [EventController::class, 'pending'])->name('events.pending');
         Route::get('/incidents', [IncidentController::class, 'index'])->name('incidents.index');
         Route::get('/incidents/{id}', [IncidentController::class, 'show'])->name('incidents.show');
         Route::get('/bookings', [BookingController::class, 'index'])->name('bookings.index');
@@ -99,6 +126,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::post('images/{id}/cover', [PlaceController::class, 'setCoverImage'])->name('images.cover');
             Route::post('/places/{id}/approve', [PlaceController::class, 'approve'])->name('places.approve');
             Route::post('/places/{id}/reject', [PlaceController::class, 'reject'])->name('places.reject');
+
+            Route::post('/events/{id}/approve', [EventController::class, 'approve'])->name('events.approve');
+            Route::post('/events/{id}/reject', [EventController::class, 'reject'])->name('events.reject');
 
             Route::resource('partners', PartnerController::class)->only(['store', 'update', 'destroy']);
 

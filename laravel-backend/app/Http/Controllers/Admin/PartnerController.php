@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Services\FirestoreService;
+use App\Traits\LogsAdminActivity;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -19,6 +20,8 @@ use Illuminate\Support\Str;
  */
 class PartnerController extends Controller
 {
+    use LogsAdminActivity;
+
     public function index(Request $request, FirestoreService $firestore)
     {
         $partners = $firestore->listDocuments('partners');
@@ -46,7 +49,12 @@ class PartnerController extends Controller
         $data = $this->validatePartner($request);
         $id = Str::slug($data['name']) . '-' . Str::random(6);
 
-        $firestore->patchDocument('partners', $id, $data);
+        $ok = $firestore->patchDocument('partners', $id, $data);
+        if (!$ok) {
+            return back()->withInput()->withErrors(['error' => 'Could not create the partner — the save failed. Please try again.']);
+        }
+
+        $this->logAdminAction('partner.created', 'Partner', $id, ['name' => $data['name']]);
 
         return redirect()->route('admin.partners.index')->with('success', "Partner '{$data['name']}' created successfully.");
     }
@@ -62,14 +70,25 @@ class PartnerController extends Controller
     public function update(Request $request, $id, FirestoreService $firestore)
     {
         $data = $this->validatePartner($request);
-        $firestore->patchDocument('partners', $id, $data);
+
+        $ok = $firestore->patchDocument('partners', $id, $data);
+        if (!$ok) {
+            return back()->withInput()->withErrors(['error' => 'Could not update the partner — the save failed. Please try again.']);
+        }
+
+        $this->logAdminAction('partner.updated', 'Partner', $id, ['name' => $data['name']]);
 
         return redirect()->route('admin.partners.index')->with('success', "Partner '{$data['name']}' updated successfully.");
     }
 
     public function destroy($id, FirestoreService $firestore)
     {
-        $firestore->deleteDocument('partners', $id);
+        $ok = $firestore->deleteDocument('partners', $id);
+        if (!$ok) {
+            return back()->withErrors(['error' => 'Could not remove the partner — the delete failed. Please try again.']);
+        }
+
+        $this->logAdminAction('partner.deleted', 'Partner', $id, []);
 
         return redirect()->route('admin.partners.index')->with('success', 'Partner removed.');
     }

@@ -43,6 +43,7 @@
             <table class="w-full text-left border-collapse">
                 <thead>
                     <tr class="bg-slate-900/50 border-b border-slate-800 text-xs text-slate-400 uppercase font-semibold">
+                        <th class="px-6 py-4"></th>
                         <th class="px-6 py-4">Event Details</th>
                         <th class="px-6 py-4">Category</th>
                         <th class="px-6 py-4">Location</th>
@@ -55,6 +56,16 @@
                 <tbody class="divide-y divide-slate-800/40 text-sm">
                     @forelse($events as $event)
                         <tr class="hover:bg-slate-900/30 transition">
+                            <td class="px-6 py-5">
+                                @php $thumb = $event->coverImage->thumb_path ?? null; @endphp
+                                @if($thumb)
+                                    <img src="{{ $thumb }}" alt="{{ $event->name }}" class="w-12 h-12 rounded-xl object-cover border border-slate-700 shadow-sm">
+                                @else
+                                    <div class="w-12 h-12 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-500">
+                                        <i class="fa-solid fa-calendar-days text-sm"></i>
+                                    </div>
+                                @endif
+                            </td>
                             <td class="px-6 py-5">
                                 <div class="font-bold text-white">{{ $event->name }}</div>
                                 <div class="text-xs text-slate-400 max-w-xs truncate mt-0.5">{{ $event->description }}</div>
@@ -75,15 +86,21 @@
                                 @else
                                     <span class="text-slate-500">N/A</span>
                                 @endif
+                                @if($event->passedThisYear ?? false)
+                                    <div class="mt-1 inline-flex items-center gap-1 text-[10px] text-slate-500 bg-slate-800/60 px-1.5 py-0.5 rounded border border-slate-700">
+                                        <i class="fa-solid fa-clock-rotate-left"></i> Already happened this year
+                                    </div>
+                                @endif
                             </td>
                             <td class="px-6 py-5">
-                                @if($event->is_active)
-                                    <span class="inline-flex items-center gap-1.5 text-xs text-emerald-400 font-semibold bg-emerald-500/5 px-2 py-0.5 rounded-md border border-emerald-500/10">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Active
-                                    </span>
-                                @else
-                                    <span class="inline-flex items-center gap-1.5 text-xs text-slate-400 font-semibold bg-slate-800 px-2 py-0.5 rounded-md border border-slate-700">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-slate-500"></span> Inactive
+                                @php $estatus = $event->status ?? 'approved'; @endphp
+                                <span class="inline-flex items-center gap-1.5 text-xs font-semibold px-2 py-0.5 rounded-md border
+                                    {{ $estatus === 'approved' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : ($estatus === 'rejected' ? 'bg-red-500/10 text-red-400 border-red-500/20' : 'bg-amber-500/10 text-amber-400 border-amber-500/20') }}">
+                                    {{ ucfirst($estatus) }}
+                                </span>
+                                @if(!$event->is_active)
+                                    <span class="inline-flex items-center gap-1.5 text-xs text-slate-400 font-semibold bg-slate-800 px-2 py-0.5 rounded-md border border-slate-700 mt-1">
+                                        Inactive
                                     </span>
                                 @endif
                             </td>
@@ -113,7 +130,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="px-6 py-10 text-center text-slate-500">
+                            <td colspan="8" class="px-6 py-10 text-center text-slate-500">
                                 <div class="flex flex-col items-center justify-center gap-2">
                                     <i class="fa-solid fa-calendar-xmark text-3xl text-slate-600"></i>
                                     <span>No events registered yet.</span>

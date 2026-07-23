@@ -2,30 +2,18 @@
 
 namespace App\Http\Middleware;
 
-use Closure;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-
-class IsAdmin
+/**
+ * Registered as the 'is_admin' Kernel alias, used on the API-side
+ * admin/guide-applications and admin/guide-listings route groups. Checking
+ * is_admin alone is not enough — the restricted content_manager role also
+ * has is_admin=true (so it can reach the web admin panel at all), but must
+ * not reach these API routes (guide/listing approval etc.), which are
+ * full-admin-only actions — so this enforces exactly the same check as
+ * IsFullAdmin ('full_admin' alias, used in routes/web.php). Extends it
+ * (inheriting handle() as-is) rather than duplicating the check, so the two
+ * aliases can never silently drift apart if one is ever edited without the
+ * other.
+ */
+class IsAdmin extends IsFullAdmin
 {
-    /**
-     * Handle an incoming request.
-     * Ensure the authenticated user has full admin privileges. Checking
-     * is_admin alone is not enough — the restricted content_manager role
-     * also has is_admin=true (so it can reach the web admin panel at all),
-     * but must not reach these API routes (guide/listing approval etc.),
-     * which are full-admin-only actions.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
-     * @return mixed
-     */
-    public function handle(Request $request, Closure $next)
-    {
-        if (!Auth::check() || !Auth::user()->is_admin || !Auth::user()->isFullAdmin()) {
-            abort(403, 'Unauthorized access. Admin privileges required.');
-        }
-
-        return $next($request);
-    }
 }

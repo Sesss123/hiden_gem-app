@@ -3,7 +3,40 @@
     "allow": [
       "Bash(grep -iE \"google-services\\\\.json|\\\\.env$|serviceAccountKey|firebase-credentials|key\\\\.properties|\\\\.jks$|\\\\.keystore$\")",
       "Bash(C:\\\\Users\\\\sehas\\\\.config\\\\herd\\\\bin\\\\php.bat -v)",
-      "Bash(grep -v \"//\")"
+      "Bash(grep -v \"//\")",
+      "Bash(curl -s -o /dev/null -w \"status: %{http_code}\\\\n\" http://laravel-backend.test/admin/login)",
+      "Bash(curl -s -b /tmp/jar.txt http://laravel-backend.test/admin/my-submissions -o /tmp/my_sub2.html)",
+      "Bash(python3 -c ' *)",
+      "Bash(grep -o 'WF-KAN-001/approve.\\\\{0,400\\\\}' /tmp/pending_admin.html)",
+      "Bash(curl -s 'http://laravel-backend.test/api/v1/places/delta?since_version=3&limit=100' -H 'X-API-KEY: dev-key-local' -H 'Accept: application/json')",
+      "Bash(curl -s -b /tmp/formtest.txt \"http://laravel-backend.test/admin/places/TM-KIL-002/edit\" -o /tmp/edit_out.html -w \"edit form status: %{http_code}\\\\n\")",
+      "Bash(curl -s -b /tmp/formtest.txt \"http://laravel-backend.test/admin/places/TM-KIL-002/edit\" -o /tmp/redisplay.html)",
+      "Bash(node -e ' *)",
+      "Bash(curl -sIL \"https://maps.app.goo.gl/yDnFdTb8pMhb3CYm6\")",
+      "Bash(curl -s -b /tmp/resolvejar.txt \"http://laravel-backend.test/admin/places/resolve-maps-link?url=https%3A%2F%2Fevil.example.com%2Finternal\" -w \"\\\\nstatus: %{http_code}\\\\n\")",
+      "Bash(grep -n 'protected $softDelete\\\\|SoftDeletes\\\\|global scope\\\\|addGlobalScope' app/Models/Place.php)",
+      "Bash(curl -s 'http://laravel-backend.test/api/v1/places/delta?since_version=0&limit=500' -H 'X-API-KEY: dev-key-local' -H 'Accept: application/json')",
+      "Bash(curl -s -o /dev/null -w \"status: %{http_code}\\\\n\" -I \"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3\")",
+      "Bash(curl -s -o /dev/null -w \"status: %{http_code}\\\\n\" \"https://file-examples.com/storage/fe58c1f7dc66d9e8b58cfda/2017/11/file_example_MP3_700KB.mp3\")",
+      "Bash(file storage/app/public/places/TM-KAN-001/thumb/*.webp storage/app/public/places/TM-KAN-001/full/*.webp)",
+      "Bash(curl -s -o /dev/null -w \"thumb HTTP status: %{http_code}\\\\n\" \"http://laravel-backend.test/storage/places/TM-KAN-001/thumb/ea325aed-2594-4666-a7a4-ade86b91b329.webp\")",
+      "Bash(curl -s -o /dev/null -w \"full HTTP status: %{http_code}\\\\n\" \"http://laravel-backend.test/storage/places/TM-KAN-001/full/ea325aed-2594-4666-a7a4-ade86b91b329.webp\")",
+      "Bash(grep -o '\"id\":\"TM-KAN-001\".\\\\{0,600\\\\}' /tmp/delta_full.json)",
+      "Bash(curl -s -o /dev/null -w \"status: %{http_code}\\\\n\" \"http://laravel-backend.test/storage/places/TM-KAN-001/thumb/ea325aed-2594-4666-a7a4-ade86b91b329.webp\")",
+      "Bash(rm -f /tmp/checkjar.txt /tmp/checkheaders.txt)",
+      "Bash(cd \"c:/Users/sehas/.gemini/antigravity/scratch/hidden_gems_sl/laravel-backend\")",
+      "Bash(curl -s -b /tmp/cm_cookies.txt __TRACKED_VAR__/admin/my-events?status=pending -o /tmp/mysubs.html)",
+      "Bash(grep -o \"Test Perahera Festival E2E\" /tmp/mysubs.html)",
+      "Bash(echo \"found in my-events: $?\")",
+      "Bash(curl -s -o /dev/null -w 'events-pending page: %{http_code}\\\\n' -b /tmp/admin_cookies.txt __TRACKED_VAR__/admin/events-pending)",
+      "Bash(curl -s -b /tmp/admin_cookies.txt __TRACKED_VAR__/admin/events-pending -o /tmp/pending.html)",
+      "Bash(grep -o \"Test Perahera Festival E2E\" /tmp/pending.html)",
+      "Bash(curl -s \"http://laravel-backend.test/api/v1/discovery/events\" -H \"X-HiddenGems-Key: dev-key-local\")",
+      "Bash(curl -s \"http://laravel-backend.test/api/v1/discovery/events\" -H \"X-API-KEY: dev-key-local\" -o /tmp/discovery_events.json)",
+      "Bash(php -r ' *)"
+    ],
+    "additionalDirectories": [
+      "\\tmp"
     ]
   }
 }

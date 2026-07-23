@@ -73,6 +73,9 @@
             </div>
         @else
             <div class="border-t border-slate-800 pt-4 space-y-3">
+                <!-- Two sibling forms, not nested — nested <form> tags are
+                     invalid HTML5 and browsers silently un-nest them during
+                     parsing, which can break field association unpredictably. -->
                 <form action="{{ route('admin.incidents.resolve', $incident['id']) }}" method="POST" class="space-y-3">
                     @csrf
                     <label class="text-xs text-slate-500 uppercase font-semibold">Resolution Note</label>
@@ -83,13 +86,13 @@
                         <button type="submit" class="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white px-5 py-2.5 rounded-xl text-sm font-semibold shadow-md transition flex items-center gap-2">
                             <i class="fa-solid fa-circle-check"></i> Mark Resolved
                         </button>
-                        <form action="{{ route('admin.incidents.dismiss', $incident['id']) }}" method="POST" onsubmit="return confirm('Dismiss this incident (e.g. false alarm)?');">
-                            @csrf
-                            <button type="submit" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-5 py-2.5 rounded-xl text-sm font-semibold border border-slate-700 transition">
-                                Dismiss
-                            </button>
-                        </form>
                     </div>
+                </form>
+                <form action="{{ route('admin.incidents.dismiss', $incident['id']) }}" method="POST" onsubmit="return confirm('Dismiss this incident (e.g. false alarm)?');">
+                    @csrf
+                    <button type="submit" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-5 py-2.5 rounded-xl text-sm font-semibold border border-slate-700 transition">
+                        Dismiss
+                    </button>
                 </form>
             </div>
         @endif

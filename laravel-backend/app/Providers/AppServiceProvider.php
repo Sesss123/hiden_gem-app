@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\Event;
 use App\Models\Place;
 use App\Services\FirestoreService;
 use Illuminate\Support\Facades\Cache;
@@ -48,6 +49,11 @@ class AppServiceProvider extends ServiceProvider
                 return Place::where('status', Place::STATUS_PENDING)->whereNotNull('created_by')->count();
             });
             $view->with('pendingPlaceCount', $pendingPlaceCount);
+
+            $pendingEventCount = Cache::remember('admin_pending_event_count', 60, function () {
+                return Event::where('status', Event::STATUS_PENDING)->whereNotNull('created_by')->count();
+            });
+            $view->with('pendingEventCount', $pendingEventCount);
         });
     }
 }

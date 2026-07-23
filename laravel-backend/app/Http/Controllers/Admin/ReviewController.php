@@ -4,11 +4,14 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Services\FirestoreService;
+use App\Traits\LogsAdminActivity;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 
 class ReviewController extends Controller
 {
+    use LogsAdminActivity;
+
     private FirestoreService $firestoreService;
 
     public function __construct()
@@ -51,13 +54,18 @@ class ReviewController extends Controller
         $review = $this->firestoreService->getDocument('tour_reviews', $id);
         abort_if($review === null, 404);
 
-        $this->firestoreService->patchDocument('tour_reviews', $id, [
+        $ok = $this->firestoreService->patchDocument('tour_reviews', $id, [
             'moderationStatus' => 'hidden',
             'hiddenByAdmin' => auth()->user()->name ?? 'admin',
             'hiddenReason' => $request->input('reason'),
         ]);
 
+        if (!$ok) {
+            return back()->withErrors(['error' => 'Could not hide the review — the update failed. Please try again.']);
+        }
+
         $this->recalculateGuideStats($review['guideId'] ?? null);
+        $this->logAdminAction('review.hidden', 'Review', $id, ['reason' => $request->input('reason')]);
 
         return redirect()->route('admin.reviews.index', ['status' => 'flagged'])
             ->with('success', 'Review hidden from public view.');
@@ -71,13 +79,18 @@ class ReviewController extends Controller
         $review = $this->firestoreService->getDocument('tour_reviews', $id);
         abort_if($review === null, 404);
 
-        $this->firestoreService->patchDocument('tour_reviews', $id, [
+        $ok = $this->firestoreService->patchDocument('tour_reviews', $id, [
             'moderationStatus' => 'active',
             'hiddenByAdmin' => null,
             'hiddenReason' => null,
         ]);
 
+        if (!$ok) {
+            return back()->withErrors(['error' => 'Could not restore the review — the update failed. Please try again.']);
+        }
+
         $this->recalculateGuideStats($review['guideId'] ?? null);
+        $this->logAdminAction('review.restored', 'Review', $id, []);
 
         return redirect()->route('admin.reviews.index', ['status' => 'flagged'])
             ->with('success', 'Review restored to active.');
