@@ -32,7 +32,9 @@ Route::get('/', function () {
 });
 
 // Public family-sharing "join" page — no auth, rate limited to blunt token
-// enumeration attempts against the 8-char share token.
+// enumeration attempts against the share token (26 chars from a 33-symbol
+// alphabet, ~131 bits — the throttle is defense-in-depth, not the primary
+// protection). Displayed status is E2E encrypted; see JoinController.
 Route::get('/join/{token}', [JoinController::class, 'show'])
     ->middleware('throttle:20,1')
     ->name('join.show');
@@ -49,6 +51,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
     // review/undo safety net.
     Route::middleware(['auth', 'content_manager_or_admin'])->group(function () {
         Route::get('/search', [\App\Http\Controllers\Admin\SearchController::class, 'index'])->name('search');
+
+        Route::get('/my-submissions', [PlaceController::class, 'mySubmissions'])->name('places.my-submissions');
 
         Route::resource('places', PlaceController::class)->only(['index', 'create', 'edit']);
         Route::resource('events', EventController::class)->only(['index', 'create', 'edit']);

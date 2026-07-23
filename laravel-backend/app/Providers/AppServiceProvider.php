@@ -45,7 +45,7 @@ class AppServiceProvider extends ServiceProvider
             $view->with('openIncidentCount', $count);
 
             $pendingPlaceCount = Cache::remember('admin_pending_place_count', 60, function () {
-                return Place::where('status', Place::STATUS_PENDING)->count();
+                return Place::where('status', Place::STATUS_PENDING)->whereNotNull('created_by')->count();
             });
             $view->with('pendingPlaceCount', $pendingPlaceCount);
         });

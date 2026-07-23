@@ -29,12 +29,15 @@ class PlaceController extends Controller
     {
         $query = Place::with('coverImage')->where('is_deleted', false);
 
-        // content_manager only ever sees places they personally created —
-        // no visibility into the existing catalog or other admins'/content
+        // content_manager sees places they personally created plus unclaimed
+        // drafts (created_by null — e.g. bulk-imported data awaiting first
+        // review) that anyone may pick up. No visibility into other content
         // managers' submissions. Edit access follows the same scoping (see
-        // edit()/update() below); destroy stays full_admin-only regardless.
+        // authorizePlaceOwner()); destroy stays full_admin-only regardless.
         if (!Auth::user()->isFullAdmin()) {
-            $query->where('created_by', Auth::id());
+            $query->where(function ($q) {
+                $q->where('created_by', Auth::id())->orWhereNull('created_by');
+            });
         }
 
         if ($search = $request->input('search')) {
@@ -56,6 +59,27 @@ class PlaceController extends Controller
     public function create()
     {
         return view('admin.places.form', ['place' => new Place()]);
+    }
+
+    /**
+     * Content manager's own submissions, defaulting to just the ones still
+     * awaiting admin approval — unlike index(), which full_admin also uses
+     * to browse the whole catalog, this is always scoped to the caller.
+     * The status filter tabs let the caller widen to approved/rejected/all.
+     */
+    public function mySubmissions(Request $request)
+    {
+        $query = Place::with('coverImage')
+            ->where('is_deleted', false)
+            ->where('created_by', Auth::id());
+
+        $status = $request->input('status', Place::STATUS_PENDING);
+        if ($status !== 'all') {
+            $query->where('status', $status);
+        }
+
+        $places = $query->orderBy('updated_at', 'desc')->paginate(15);
+        return view('admin.places.my-submissions', compact('places'));
     }
 
     public function store(Request $request)
@@ -138,6 +162,13 @@ class PlaceController extends Controller
             Cache::forget('admin_pending_place_count');
         }
 
+        // Claim an unclaimed draft (created_by null — bulk-imported data
+        // awaiting first review) the moment a content_manager saves it, so
+        // it starts showing up under their own "My Pending Places".
+        if ($isContentManager && $place->created_by === null) {
+            $data['created_by'] = Auth::id();
+        }
+
         // BUG-L006: Wrap model update and image processing in a transaction
         DB::transaction(function () use ($place, $data, $request) {
             // Updating triggers PlaceObserver::saving if dirty
@@ -174,7 +205,10 @@ class PlaceController extends Controller
     protected function authorizePlaceOwner(Place $place): void
     {
         $user = Auth::user();
-        if (!$user->isFullAdmin() && $place->created_by !== $user->id) {
+        // created_by === null means an unclaimed draft (e.g. bulk-imported
+        // data awaiting first review) — any content_manager may pick it up.
+        // Saving it (see update()) stamps created_by, claiming it from then on.
+        if (!$user->isFullAdmin() && $place->created_by !== null && $place->created_by !== $user->id) {
             abort(403, 'You can only manage places you created.');
         }
     }
@@ -187,6 +221,10 @@ class PlaceController extends Controller
     {
         $places = Place::with('creator')
             ->where('status', Place::STATUS_PENDING)
+            // Unclaimed drafts (created_by null — bulk-imported data no
+            // content_manager has reviewed yet) aren't real submissions and
+            // don't belong in the admin review queue.
+            ->whereNotNull('created_by')
             ->orderBy('created_at', 'asc')
             ->paginate(15);
 
