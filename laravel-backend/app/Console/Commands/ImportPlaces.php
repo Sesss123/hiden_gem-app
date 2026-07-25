@@ -29,6 +29,13 @@ class ImportPlaces extends Command
      */
     public function handle()
     {
+        // Passed by reference into generateSmartId() below and accumulates
+        // per category+district sequence numbers across the whole import
+        // run — must be declared before the loop, not left to PHP's
+        // reference auto-vivification (works today, but emits a deprecation
+        // notice on stricter PHP versions and reads as a bug at a glance).
+        $counters = [];
+
         $inputPath = $this->argument('path');
 
         if ($inputPath) {

@@ -2,11 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../core/theme/app_theme.dart';
+import 'native_ad_widget.dart';
 
 import '../../data/models/trip_plan_model.dart';
 
 class KineticTimelineView extends StatelessWidget {
   final List<ItineraryDay> days;
+
+  // One native ad every 5 stops — frequent enough to matter for revenue,
+  // spaced out enough that it reads as a natural break in the itinerary
+  // scroll rather than clutter (NativeAdWidget itself no-ops for premium
+  // users and while no ad has loaded, so this never leaves a visible gap).
+  static const int _adInterval = 5;
 
   const KineticTimelineView({super.key, required this.days});
 
@@ -18,8 +25,8 @@ class KineticTimelineView extends StatelessWidget {
       final day = days[i];
       for (int j = 0; j < day.items.length; j++) {
         allItems.add((
-          item: day.items[j], 
-          dayNum: day.day, 
+          item: day.items[j],
+          dayNum: day.day,
           isLastItemOfDay: j == day.items.length - 1
         ));
       }
@@ -29,11 +36,24 @@ class KineticTimelineView extends StatelessWidget {
       shrinkWrap: true,
       padding: EdgeInsets.zero,
       physics: const NeverScrollableScrollPhysics(),
-      itemCount: allItems.length,
+      // +1 slot per ad interval, skipping the very first and last positions
+      // so an ad never opens or closes the itinerary.
+      itemCount: allItems.length + (allItems.length - 1) ~/ _adInterval,
       itemBuilder: (context, index) {
-        final entry = allItems[index];
+        final adSlotsBefore = (index + 1) ~/ (_adInterval + 1);
+        final isAdSlot = index > 0 && (index + 1) % (_adInterval + 1) == 0;
+
+        if (isAdSlot) {
+          return const Padding(
+            padding: EdgeInsets.only(left: 66, bottom: 24),
+            child: NativeAdWidget(),
+          );
+        }
+
+        final itemIndex = index - adSlotsBefore;
+        final entry = allItems[itemIndex];
         final item = entry.item;
-        final isLast = index == allItems.length - 1;
+        final isLast = itemIndex == allItems.length - 1;
 
         return Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -43,7 +63,7 @@ class KineticTimelineView extends StatelessWidget {
               width: 50,
               child: Column(
                 children: [
-                  if (index == 0 || entry.dayNum != allItems[index - 1].dayNum)
+                  if (itemIndex == 0 || entry.dayNum != allItems[itemIndex - 1].dayNum)
                     Padding(
                       padding: const EdgeInsets.only(bottom: 12, top: 12),
                       child: Text(

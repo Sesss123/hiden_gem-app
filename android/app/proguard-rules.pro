@@ -8,9 +8,10 @@
 -keep class * implements io.flutter.plugin.common.MethodChannel$MethodCallHandler { *; }
 -keep class * implements io.flutter.embedding.engine.plugins.FlutterPlugin { *; }
 
-# Firebase & Play Services
--keep class com.google.firebase.** { *; }
--keep class com.google.android.gms.** { *; }
+# Firebase & Play Services — no broad -keep needed, these ship their own
+# consumer ProGuard rules that R8 applies automatically. A blanket
+# `-keep ... { *; }` here disables shrinking for the entire library tree,
+# not just the classes actually reachable from app code.
 -dontwarn com.google.android.play.core.**
 -dontwarn com.google.android.gms.internal.**
 
@@ -42,11 +43,8 @@
 -dontwarn io.grpc.**
 -dontwarn com.squareup.okhttp.**
 
-# ARCore & Sceneform
--keep class com.google.ar.** { *; }
--keep interface com.google.ar.** { *; }
--keep class com.google.ar.sceneform.** { *; }
--keep interface com.google.ar.sceneform.** { *; }
+# ARCore & Sceneform — same rationale as Firebase above: rely on the
+# library's own consumer rules instead of a blanket keep that blocks shrinking.
 -dontwarn com.google.ar.**
 -dontwarn com.google.ar.sceneform.**
 -dontwarn com.google.devtools.build.android.desugar.runtime.**

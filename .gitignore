@@ -90,3 +90,4 @@ assets/videos/splash.mp4
 *.jks
 *.keystore
 key.properties
+dart_define_prod.json

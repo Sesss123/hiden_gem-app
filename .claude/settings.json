@@ -33,7 +33,22 @@
       "Bash(grep -o \"Test Perahera Festival E2E\" /tmp/pending.html)",
       "Bash(curl -s \"http://laravel-backend.test/api/v1/discovery/events\" -H \"X-HiddenGems-Key: dev-key-local\")",
       "Bash(curl -s \"http://laravel-backend.test/api/v1/discovery/events\" -H \"X-API-KEY: dev-key-local\" -o /tmp/discovery_events.json)",
-      "Bash(php -r ' *)"
+      "Bash(php -r ' *)",
+      "Bash(curl -s -X POST http://laravel-backend.test/api/v1/payments/checkout -H 'Authorization: Bearer 4|bHdj3bn47QPBs15vhNaqvalfw5kuXyZOAcaBuG3Ebff603e3' -H 'X-API-KEY: dev-key-local' -H 'Accept: application/json' -H 'Content-Type: application/json' -d '{\"booking_id\": \"e2e-test-booking-001\"}' -o /tmp/checkout_resp.json -w '\\\\nStatus: %{http_code}\\\\n')",
+      "Bash(cat /tmp/checkout_resp.json)",
+      "Bash(xargs cat)",
+      "Bash(xargs grep -ln \"share\\\\|composer\")",
+      "Bash(awk '/public function \\(destroy|deleteImage|setCoverImage|approve|reject\\)\\\\\\(/{fn=1; name=$0} fn{print NR\": \"$0} /^    }/{if\\(fn\\){fn=0; print \"---\"}}' app/Http/Controllers/Admin/PlaceController.php)",
+      "Bash(powershell -Command 'Get-Process | Where-Object { $_.ProcessName -match '\\\\''java|gradle'\\\\'' } | Select-Object ProcessName, Id')",
+      "Bash(powershell -Command \"Get-Process java -ErrorAction SilentlyContinue | Stop-Process -Force\")",
+      "Bash(powershell -Command 'Get-Process | Where-Object { $_.ProcessName -match '\\\\''java|gradle'\\\\'' }')",
+      "Bash(rm -rf \"/c/Users/sehas/AppData/Local/Pub/Cache/hosted/pub.dev/ar_flutter_plugin_2-0.0.3/android/build\")",
+      "Bash(powershell -Command 'Get-Process | Where-Object { $_.ProcessName -match '\\\\''java'\\\\'' } | Select-Object Id, CPU')",
+      "Bash(powershell -Command 'Get-Process | Where-Object { $_.ProcessName -match '\\\\''java'\\\\'' } | Stop-Process -Force -ErrorAction SilentlyContinue')",
+      "Bash(powershell -Command 'Get-Process | Where-Object { $_.ProcessName -match '\\\\''java|gradle'\\\\'' } | Stop-Process -Force -ErrorAction SilentlyContinue')",
+      "Bash(mkdir -p \"C:\\\\Users\\\\sehas\\\\gradle_home_fresh\")",
+      "Bash(GRADLE_USER_HOME=\"C:\\\\Users\\\\sehas\\\\gradle_home_fresh\" flutter build apk --release --target-platform android-arm64 --dart-define-from-file=dart_define_prod.json --obfuscate --split-debug-info=build/app/outputs/symbols)",
+      "Bash(powershell -Command 'Get-Process | Where-Object { $_.ProcessName -match '\\\\''java'\\\\'' } | Select-Object Id, CPU, StartTime')"
     ],
     "additionalDirectories": [
       "\\tmp"

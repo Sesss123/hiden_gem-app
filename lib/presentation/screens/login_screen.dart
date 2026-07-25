@@ -232,31 +232,30 @@ class _LoginScreenState extends State<LoginScreen> {
         );
       }
     } catch (e) {
+      if (!mounted) return;
       setState(() => _isLoading = false);
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            backgroundColor: AppTheme.colors.transparent,
-            elevation: 0,
-            content: OracleUI.glassContainer(
-              padding: const EdgeInsets.all(16),
-              borderColor: AppTheme.colors.redAccent.withValues(alpha: 0.3),
-              child: Row(
-                children: [
-                  Icon(Icons.error_outline_rounded, color: AppTheme.colors.redAccent),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      AppLocalizations.of(context)!.googleSignInFailedPrefix(_mapAuthException(context, e)),
-                      style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.bold),
-                    ),
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: AppTheme.colors.transparent,
+          elevation: 0,
+          content: OracleUI.glassContainer(
+            padding: const EdgeInsets.all(16),
+            borderColor: AppTheme.colors.redAccent.withValues(alpha: 0.3),
+            child: Row(
+              children: [
+                Icon(Icons.error_outline_rounded, color: AppTheme.colors.redAccent),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    AppLocalizations.of(context)!.googleSignInFailedPrefix(_mapAuthException(context, e)),
+                    style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.bold),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
-        );
-      }
+        ),
+      );
     }
   }
 
@@ -280,31 +279,30 @@ class _LoginScreenState extends State<LoginScreen> {
         );
       }
     } catch (e) {
+      if (!mounted) return;
       setState(() => _isLoading = false);
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            backgroundColor: AppTheme.colors.transparent,
-            elevation: 0,
-            content: OracleUI.glassContainer(
-              padding: const EdgeInsets.all(16),
-              borderColor: AppTheme.colors.redAccent.withValues(alpha: 0.3),
-              child: Row(
-                children: [
-                  Icon(Icons.error_outline_rounded, color: AppTheme.colors.redAccent),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      AppLocalizations.of(context)!.appleSignInFailedPrefix(_mapAuthException(context, e)),
-                      style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.bold),
-                    ),
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: AppTheme.colors.transparent,
+          elevation: 0,
+          content: OracleUI.glassContainer(
+            padding: const EdgeInsets.all(16),
+            borderColor: AppTheme.colors.redAccent.withValues(alpha: 0.3),
+            child: Row(
+              children: [
+                Icon(Icons.error_outline_rounded, color: AppTheme.colors.redAccent),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    AppLocalizations.of(context)!.appleSignInFailedPrefix(_mapAuthException(context, e)),
+                    style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.bold),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
-        );
-      }
+        ),
+      );
     }
   }
 

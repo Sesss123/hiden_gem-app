@@ -8,6 +8,7 @@ import 'secure_entitlements.dart';
 /// an in-memory set.
 class PremiumUnlockService {
   static final Set<String> _unlockedPlaceIds = {};
+  static final Set<String> _unlockedTripPdfIds = {};
 
   /// Checks if a place is accessible to the user.
   /// Always returns true for Premium/Admin users.
@@ -29,9 +30,21 @@ class PremiumUnlockService {
     debugPrint("[PremiumUnlockService] Place $placeId unlocked via Ad.");
   }
 
+  /// Whether this trip's PDF export has been unlocked via ad for a free user.
+  /// Premium users always have access — checked separately at the call site
+  /// (same pattern as hasAccess above) since it's already cheaply cached there.
+  static bool hasTripPdfAccess(String tripId) => _unlockedTripPdfIds.contains(tripId);
+
+  /// Temporarily unlocks PDF export for one trip plan for the current session.
+  static void unlockTripPdf(String tripId) {
+    _unlockedTripPdfIds.add(tripId);
+    debugPrint("[PremiumUnlockService] Trip PDF $tripId unlocked via Ad.");
+  }
+
   /// Invalidates all temporary unlocks (e.g., on subscription expiry or logout).
   static void invalidateAllUnlocks() {
     _unlockedPlaceIds.clear();
+    _unlockedTripPdfIds.clear();
     debugPrint("[PremiumUnlockService] All temporary unlocks invalidated.");
   }
 }

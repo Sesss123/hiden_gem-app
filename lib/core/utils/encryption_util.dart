@@ -230,14 +230,31 @@ class EncryptionUtil {
     }
   }
 
+  /// Legacy pre-HMAC payload format ("iv:cipher", no signature segment) —
+  /// reachable only from decrypt() (the async entry point), which currently
+  /// has no callers anywhere in the app; decryptSync() (the one active
+  /// caller, via DiscoveryPlace.fromJson) returns 2-part payloads unchanged
+  /// instead of routing here. Kept for forward/backward compatibility with
+  /// any legacy-format data still on a device from before the HMAC-signed
+  /// format was introduced.
+  ///
+  /// CBC mode has no built-in integrity check (unlike GCM's auth tag used
+  /// everywhere else in this file) — a genuinely old payload decrypts fine,
+  /// but corrupted or tampered ciphertext can decrypt "successfully" into
+  /// garbage with no error. There's no HMAC available for this legacy
+  /// format to verify against, so the only realistic hardening is to bound
+  /// the strict length check below (prevents a malformed payload from being
+  /// silently accepted) — callers must still treat this path's output as
+  /// less trustworthy than the HMAC-verified format in decrypt().
   static Future<String> _handleLegacyDecryption(String payload) async {
     try {
       final parts = payload.split(':');
-      final iv = enc.IV.fromBase64(parts[0]);
+      if (parts.length != 2) return '{}';
+      final ivBase64 = parts[0];
       final cipherText = parts[1];
-      
-      // Use old key alias if versioning was different, but here we assume same key
-      final key = await _getOrCreateKey(); 
+      final iv = enc.IV.fromBase64(ivBase64);
+
+      final key = await _getOrCreateKey();
       final encrypter = enc.Encrypter(enc.AES(key, mode: enc.AESMode.cbc));
       return encrypter.decrypt64(cipherText, iv: iv);
     } catch (e) {

@@ -1,3 +1,4 @@
+import 'dart:io' show Platform;
 import 'package:flutter/foundation.dart';
 import '../utils/secure_logger.dart';
 
@@ -182,28 +183,40 @@ class AppConfig {
       return;
     }
 
-    if (isPlaceholder(hiddenGemsApiKey) || isPlaceholder(const String.fromEnvironment('HIDDEN_GEMS_API_KEY'))) {
+    // Each secret below is already read once via its static field (e.g.
+    // hiddenGemsApiKey = String.fromEnvironment('HIDDEN_GEMS_API_KEY',
+    // defaultValue: ...)) — that single read is what's checked. An earlier
+    // version of this method re-read the same --dart-define a second time
+    // inline (isPlaceholder(const String.fromEnvironment('HIDDEN_GEMS_API_KEY')))
+    // with no defaultValue, which resolves to "" and is always a placeholder
+    // regardless of what's actually passed at build time, permanently
+    // failing validation no matter how the real secret was supplied. Removed.
+    if (isPlaceholder(hiddenGemsApiKey)) {
       throw AssertionError("CRITICAL: Must configure a valid HIDDEN_GEMS_API_KEY environment variable.");
     }
     if (isPlaceholder(revenueCatApiKeyAndroid) || isPlaceholder(revenueCatApiKeyIos)) {
       throw AssertionError("CRITICAL: Must configure valid RevenueCat API Keys via secure environment variables (BUG-Q001).");
     }
-    if (isPlaceholder(sharedSecret) || isPlaceholder(const String.fromEnvironment('HMAC_SECRET'))) {
+    if (isPlaceholder(sharedSecret)) {
       throw AssertionError("CRITICAL: Must configure a valid HMAC_SECRET environment variable.");
     }
-    if (isPlaceholder(vaultSignKey) || isPlaceholder(const String.fromEnvironment('VAULT_SIGN_KEY'))) {
+    if (isPlaceholder(vaultSignKey)) {
       throw AssertionError("CRITICAL: Must configure a valid VAULT_SIGN_KEY environment variable.");
     }
-    if (isPlaceholder(sharedAesKey) || isPlaceholder(const String.fromEnvironment('SHARED_AES_KEY'))) {
+    if (isPlaceholder(sharedAesKey)) {
       throw AssertionError("CRITICAL: Must configure a valid SHARED_AES_KEY environment variable.");
     }
-    if (isPlaceholder(sharedHmacKey) || isPlaceholder(const String.fromEnvironment('SHARED_HMAC_KEY'))) {
+    if (isPlaceholder(sharedHmacKey)) {
       throw AssertionError("CRITICAL: Must configure a valid SHARED_HMAC_KEY environment variable.");
     }
-    if (isPlaceholder(hmacExpirySecret) || isPlaceholder(const String.fromEnvironment('HMAC_EXPIRY_SECRET'))) {
+    if (isPlaceholder(hmacExpirySecret)) {
       throw AssertionError("CRITICAL: Must configure a valid HMAC_EXPIRY_SECRET.");
     }
-    if (isPlaceholder(appStoreId)) {
+    // App Store ID only exists for the iOS listing (used to build the App
+    // Store review-request/update-check link) — Android has no equivalent,
+    // so this check would otherwise force every Android release build to
+    // fake a value just to pass validation.
+    if (Platform.isIOS && isPlaceholder(appStoreId)) {
       throw AssertionError("CRITICAL: Must configure a valid APP_STORE_ID.");
     }
     if (isPlaceholder(weatherApiKey)) {

@@ -13,6 +13,7 @@ import '../../data/datasources/user_preference_service.dart';
 import '../../data/datasources/trip_cache_service.dart';
 import '../../data/datasources/monetization_service.dart';
 import '../../data/datasources/premium_service.dart';
+import '../../core/services/premium_unlock_service.dart';
 import '../../data/datasources/pdf_service.dart';
 import '../../data/models/trip_plan_model.dart';
 import '../widgets/offline_highlights_widget.dart';
@@ -269,16 +270,33 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
                     IconButton(
                       icon: Icon(Icons.picture_as_pdf_outlined, color: Theme.of(context).colorScheme.secondary),
                       onPressed: () {
-                        if (isPremium) {
+                        // TripPlan has no id field — fall back to the plan's
+                        // object identity when it has no cache key yet (a
+                        // freshly-generated, not-yet-saved plan).
+                        final tripKey = widget.cacheKey ?? identityHashCode(plan).toString();
+                        if (isPremium || PremiumUnlockService.hasTripPdfAccess(tripKey)) {
                           PdfService.generateAndShareTripPdf(plan);
                         } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(l10n.premiumFeatureSnackbar('PDF Export')),
-                              backgroundColor: AppTheme.accentOchre(context),
+                          // Free users get an ad-watch path alongside the
+                          // upgrade CTA, instead of a hard paywall snackbar —
+                          // unlocks PDF export for just this trip.
+                          showDialog(
+                            context: context,
+                            builder: (_) => LimitReachedDialog(
+                              featureName: 'PDF Export',
+                              onWatchAd: () {
+                                MonetizationService().showRewardedAd(
+                                  context: context,
+                                  onRewardEarned: (reward) {
+                                    PremiumUnlockService.unlockTripPdf(tripKey);
+                                    if (context.mounted) {
+                                      PdfService.generateAndShareTripPdf(plan);
+                                    }
+                                  },
+                                );
+                              },
                             ),
                           );
-                          _tabController.animateTo(3);
                         }
                       },
                     ),
@@ -1046,6 +1064,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
             ElevatedButton.icon(
               onPressed: () {
                 MonetizationService().showRewardedAd(onRewardEarned: (reward) {
+                  if (!mounted) return;
                   setState(() => _planBUnlocked = true);
                 });
               },

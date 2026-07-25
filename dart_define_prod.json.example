@@ -1,0 +1,16 @@
+{
+  "HIDDEN_GEMS_API_KEY": "must match laravel-backend/.env API_KEY exactly",
+  "HMAC_SECRET": "must match laravel-backend/.env HMAC_SECRET exactly",
+  "VAULT_SIGN_KEY": "generate a long random string, keep secret, not currently in backend .env.example",
+  "SHARED_AES_KEY": "generate a long random string, keep secret",
+  "SHARED_HMAC_KEY": "generate a long random string, keep secret",
+  "HMAC_EXPIRY_SECRET": "generate a long random string, keep secret",
+  "REVENUECAT_API_KEY_ANDROID": "goog_... from RevenueCat dashboard > Project > API Keys",
+  "REVENUECAT_API_KEY_IOS": "appl_... from RevenueCat dashboard > Project > API Keys",
+  "WEATHER_API_KEY": "your real OpenWeatherMap (or equivalent) API key",
+  "APP_STORE_ID": "your Apple App Store numeric ID (iOS only, still required to pass validate())",
+  "ADMOB_BANNER_ID": "ca-app-pub-... from AdMob console",
+  "ADMOB_INTERSTITIAL_ID": "ca-app-pub-... from AdMob console",
+  "ADMOB_REWARDED_ID": "ca-app-pub-... from AdMob console",
+  "ADMOB_NATIVE_ID": "ca-app-pub-... from AdMob console"
+}

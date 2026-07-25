@@ -59,4 +59,12 @@ return [
     // header set exists to cover.
     'zenith_hmac_secret' => env('HMAC_SECRET'),
 
+    // Inline Firebase service-account JSON (for container/PaaS deploys with
+    // no writable filesystem for a credentials file). Read via config() here
+    // rather than env() directly so this still works once
+    // `php artisan config:cache` runs in production — env() always returns
+    // null after config caching. Falls back to the file path at
+    // config('firebase.credentials') when unset.
+    'firebase_credentials' => env('FIREBASE_CREDENTIALS'),
+
 ];

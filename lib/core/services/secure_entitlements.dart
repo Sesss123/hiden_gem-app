@@ -48,11 +48,17 @@ class SecureEntitlements {
     // Even if isPremium is true, we verify the backend-generated signature
     // for the expiry date to prevent "Local Date Patching".
     if (claims.containsKey('premiumExpiresAt') && claims.containsKey('signature')) {
+      // currentUser can turn null here if the user signed out during the
+      // _getVerifiedClaims() await above — fail closed (no premium) rather
+      // than force-unwrap and crash.
+      final currentUser = _auth.currentUser;
+      if (currentUser == null) return false;
+
       final expiry = DateTime.fromMillisecondsSinceEpoch(claims['premiumExpiresAt']);
       final signature = claims['signature'] as String;
-      
+
       final bool isSignatureValid = HmacExpiryVerifier.verify(
-        uid: _auth.currentUser!.uid,
+        uid: currentUser.uid,
         expiry: expiry,
         signature: signature,
       );

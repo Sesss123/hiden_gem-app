@@ -133,7 +133,10 @@ class AuthController extends Controller
 
         try {
             // Instantiate the Kreait Firebase Factory
-            $credentials = env('FIREBASE_CREDENTIALS'); 
+            // BUG: was env('FIREBASE_CREDENTIALS') — always null once
+            // `php artisan config:cache` runs (standard prod deploy step),
+            // silently falling through to the file-path branch below.
+            $credentials = config('services.firebase_credentials');
             
             $factory = new \Kreait\Firebase\Factory();
             

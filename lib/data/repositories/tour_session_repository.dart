@@ -69,6 +69,16 @@ class TourSessionRepository {
     });
 
     // Update linked booking requests (Phase 2 Financial & Completion Linkage)
+    //
+    // commissionAmount/guideNetAmount/payoutStatus are NOT set here — they're
+    // locked to admin/webhook-only writes in firestore.rules (see
+    // booking_requests match block: any client update() touching those keys
+    // is rejected outright), and PayHereController::notify() (the PayHere
+    // payment webhook, running with the Admin SDK) is the actual authoritative
+    // writer once a payment clears — see its 10%-commission-split comment.
+    // An earlier version of this method tried to compute and write those
+    // fields directly from the client, which firestore.rules has always
+    // silently rejected (caught below, only logged) — removed as dead code.
     try {
       final guideId = FirebaseAuth.instance.currentUser?.uid;
       if (guideId == null) return;
@@ -78,17 +88,9 @@ class TourSessionRepository {
           .where('linkedSessionId', isEqualTo: sessionId)
           .get();
       for (final bookingDoc in bookingQuery.docs) {
-        final data = bookingDoc.data();
-        final quotedPrice = (data['quotedPrice'] as num?)?.toDouble() ?? 0.0;
-        final commission = quotedPrice * 0.10; // 10% platform commission
-        final netEarned = quotedPrice * 0.90;  // 90% guide net earned
-
         await bookingDoc.reference.update({
           'status': 'completed',
           'completedAt': now.toIso8601String(),
-          'commissionAmount': commission,
-          'guideNetAmount': netEarned,
-          'payoutStatus': 'pending',
         });
       }
     } catch (e, st) { SecureLogger.error("Exception caught: $e\n$st"); }

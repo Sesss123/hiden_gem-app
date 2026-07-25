@@ -105,7 +105,10 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
     return FutureBuilder<bool>(
       future: PremiumUnlockService.hasAccess(widget.place.id, arTier: widget.place.arTier),
       builder: (context, snapshot) {
-        final hasAccess = snapshot.data ?? true;
+        // Fail closed: while hasAccess() is still resolving or errors out,
+        // treat the place as locked rather than granting free premium
+        // access for the duration of every screen open.
+        final hasAccess = snapshot.data ?? false;
 
         return Scaffold(
           backgroundColor: Theme.of(context).scaffoldBackgroundColor,

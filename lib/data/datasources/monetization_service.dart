@@ -20,11 +20,11 @@ class MonetizationService {
   // often. These caps make showInterstitialAd() self-throttle no matter where
   // it's called, so a caller can safely request one at any natural break-point
   // and trust it will only actually show if the user hasn't seen one recently.
-  //   - min 3 minutes between interstitials
-  //   - at most 4 interstitials per app session
+  //   - min 2 minutes between interstitials
+  //   - at most 6 interstitials per app session
   //   - premium users never see one (checked at the call site via _isPremium)
-  static const Duration _interstitialMinGap = Duration(minutes: 3);
-  static const int _interstitialSessionCap = 4;
+  static const Duration _interstitialMinGap = Duration(minutes: 2);
+  static const int _interstitialSessionCap = 6;
   DateTime? _lastInterstitialShownAt;
   int _interstitialShownThisSession = 0;
 

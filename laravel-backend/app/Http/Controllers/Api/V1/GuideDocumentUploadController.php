@@ -72,8 +72,11 @@ class GuideDocumentUploadController extends Controller
      */
     public function download(string $uid, string $filename): StreamedResponse|Response
     {
-        // Reject any path-traversal attempt in the filename segment before
+        // Reject any path-traversal attempt in either path segment before
         // touching the filesystem.
+        if (str_contains($uid, '..') || str_contains($uid, '/') || str_contains($uid, '\\')) {
+            abort(400, 'Invalid uid.');
+        }
         if (str_contains($filename, '..') || str_contains($filename, '/') || str_contains($filename, '\\')) {
             abort(400, 'Invalid filename.');
         }
