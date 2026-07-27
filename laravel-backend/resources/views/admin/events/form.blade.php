@@ -145,8 +145,16 @@
                             <p class="text-xs text-slate-400"><span class="font-semibold text-white">Click to upload</span> or drag and drop</p>
                             <p class="text-[10px] text-slate-500 mt-1">PNG, JPG, WEBP (Multiple allowed)</p>
                         </div>
-                        <input type="file" name="images[]" multiple accept="image/*" class="hidden">
+                        <input type="file" id="images_input" name="images[]" multiple accept="image/*" class="hidden">
                     </label>
+                </div>
+                <!-- Client-side preview only — confirms the browser actually picked
+                     up the files before the form is submitted (same pattern as
+                     admin/places/form.blade.php). Not yet uploaded to the server;
+                     the real upload happens on form submit. -->
+                <div id="images_preview_wrap" class="mt-3 hidden">
+                    <p id="images_preview_count" class="text-[11px] font-semibold text-emerald-400 mb-2"></p>
+                    <div id="images_preview_grid" class="grid grid-cols-2 md:grid-cols-4 gap-3"></div>
                 </div>
             </div>
 
@@ -272,6 +280,41 @@ document.addEventListener('DOMContentLoaded', function() {
             hiddenInput.value = picker.value.slice(5);
         });
     });
+
+    // Client-side preview of picked-but-not-yet-uploaded files (same pattern
+    // as admin/places/form.blade.php) — an admin previously had no way to
+    // confirm a file selection registered until saving and reopening the
+    // edit page to see "Existing Gallery Photos".
+    const imagesInput = document.getElementById('images_input');
+    const previewWrap = document.getElementById('images_preview_wrap');
+    const previewCount = document.getElementById('images_preview_count');
+    const previewGrid = document.getElementById('images_preview_grid');
+
+    if (imagesInput) {
+        imagesInput.addEventListener('change', function() {
+            previewGrid.innerHTML = '';
+            const files = Array.from(imagesInput.files || []);
+
+            if (files.length === 0) {
+                previewWrap.classList.add('hidden');
+                return;
+            }
+
+            previewCount.textContent = files.length + ' file' + (files.length === 1 ? '' : 's') + ' selected — not saved yet, click "' + (@json($isEdit) ? 'Save Changes' : 'Create Event') + '" below to upload.';
+            files.forEach(function(file) {
+                const url = URL.createObjectURL(file);
+                const cell = document.createElement('div');
+                cell.className = 'relative bg-slate-900 rounded-xl p-2 border border-slate-800';
+                const img = document.createElement('img');
+                img.src = url;
+                img.className = 'w-full h-24 object-cover rounded-lg';
+                img.onload = function() { URL.revokeObjectURL(url); };
+                cell.appendChild(img);
+                previewGrid.appendChild(cell);
+            });
+            previewWrap.classList.remove('hidden');
+        });
+    }
 });
 </script>
 @endsection
