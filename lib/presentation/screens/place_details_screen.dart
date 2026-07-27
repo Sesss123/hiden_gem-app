@@ -163,8 +163,11 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
   }
 
   Widget _buildLockOverlay(BuildContext context, AppLocalizations l10n) {
+    // Scrim uses the screen's own background color (not a hardcoded black)
+    // so it sits behind the glass card consistently in both themes instead
+    // of a stark black backdrop clashing with the app's warm light theme.
     return Container(
-      color: AppTheme.colors.black.withValues(alpha: 0.9),
+      color: Theme.of(context).scaffoldBackgroundColor.withValues(alpha: 0.92),
       width: double.infinity,
       height: double.infinity,
       child: Center(
@@ -184,7 +187,7 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
               Text(
                 l10n.lockOverlayDescription,
                 textAlign: TextAlign.center,
-                style: GoogleFonts.inter(color: AppTheme.colors.white70, height: 1.5),
+                style: GoogleFonts.inter(color: AppTheme.textSecondary(context), height: 1.5),
               ),
               const SizedBox(height: 32),
               SizedBox(
@@ -210,7 +213,7 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
               const SizedBox(height: 16),
               TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: Text(l10n.goBack, style: TextStyle(color: AppTheme.colors.white38)),
+                child: Text(l10n.goBack, style: TextStyle(color: AppTheme.textSecondary(context).withValues(alpha: 0.7))),
               ),
             ],
           ),

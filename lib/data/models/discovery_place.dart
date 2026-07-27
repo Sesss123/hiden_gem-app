@@ -259,7 +259,12 @@ class DiscoveryPlace {
       updatedAt: parseUtcTimestamp(json['updatedAt'] ?? json['updated_at']),
       syncVersion: (json['syncVersion'] as num?)?.toInt() ?? (json['sync_version'] as num?)?.toInt() ?? 0,
       arSupported: json['arSupported'] as bool? ?? json['ar_supported'] as bool? ?? false,
-      arTier: json['arTier'] as int? ?? json['ar_tier'] as int? ?? 3,
+      // Fail closed: a payload missing this field defaults to Tier 1
+      // (Heritage/gated), not Tier 3 (free) — PremiumUnlockService.hasAccess()
+      // treats any tier > 1 as free-to-view, so defaulting to a permissive
+      // value here silently bypassed the paywall for any place whose data
+      // was missing arTier (partial migration, data-entry gap, etc.).
+      arTier: json['arTier'] as int? ?? json['ar_tier'] as int? ?? 1,
       arBrandName: json['arBrandName'] as String? ?? json['ar_brand_name'] as String? ?? '',
       arModelUrl: json['arModelUrl'] as String? ?? json['ar_model_url'] as String? ?? '',
       arHistoricalModelUrl: json['arHistoricalModelUrl'] as String? ?? json['ar_historical_model_url'] as String? ?? '',
@@ -352,7 +357,8 @@ class DiscoveryPlace {
       updatedAt: parseUtcTimestamp(data['updatedAt'] ?? data['updated_at']),
       syncVersion: (data['syncVersion'] as num?)?.toInt() ?? (data['sync_version'] as num?)?.toInt() ?? 0,
       arSupported: data['arSupported'] ?? false,
-      arTier: data['arTier'] ?? 3,
+      // Fail closed — see matching comment in fromJson() above.
+      arTier: data['arTier'] ?? 1,
       arBrandName: data['arBrandName'] ?? '',
       arModelUrl: data['arModelUrl'] ?? '',
       arHistoricalModelUrl: data['arHistoricalModelUrl'] ?? '',

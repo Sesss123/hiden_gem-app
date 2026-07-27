@@ -151,6 +151,9 @@ class AppLocalizationsTa extends AppLocalizations {
   String get villageStayTitle => 'கிராமம் & உண்மையான தங்கும் இடங்கள்';
 
   @override
+  String get allNearbyPlacesTitle => 'அருகிலுள்ள அனைத்து இடங்களும்';
+
+  @override
   String get noMatchesNearby => 'அருகில் எந்த பொருத்தமும் இல்லை';
 
   @override

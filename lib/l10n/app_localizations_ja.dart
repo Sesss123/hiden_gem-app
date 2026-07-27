@@ -150,6 +150,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get villageStayTitle => '村と本格的な滞在';
 
   @override
+  String get allNearbyPlacesTitle => '近くのすべての場所';
+
+  @override
   String get noMatchesNearby => '近くに一致するものはありません';
 
   @override

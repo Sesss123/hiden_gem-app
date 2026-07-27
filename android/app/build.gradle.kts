@@ -7,7 +7,15 @@ plugins {
 import java.util.Properties
 import java.io.FileInputStream
 
-layout.buildDirectory.set(file("../../build/app"))
+// A custom layout.buildDirectory.set(file("../../build/app")) redirect used
+// to live here. Removed: it ran after the Flutter Gradle plugin's own
+// plugins{} application above already captured the default build directory
+// for jniLibs source-set wiring (FlutterPlugin.kt's sourceSets.all{} block
+// resolves the intermediates path eagerly at apply time), so libapp.so was
+// compiled into the redirected build/app/... tree but Android's native-lib
+// merge kept looking in the default android/app/build/... tree, silently
+// dropping the app's own compiled code from every release APK. Flutter's
+// default build output location (android/app/build) is used instead.
 
 android {
     namespace = "com.hidden.gems.hidden_gems_sl"

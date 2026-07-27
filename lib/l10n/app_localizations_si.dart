@@ -151,6 +151,9 @@ class AppLocalizationsSi extends AppLocalizations {
   String get villageStayTitle => 'ග්‍රාමීය හා අව්‍යාජ නැවතුම්';
 
   @override
+  String get allNearbyPlacesTitle => 'අවට සියලුම ස්ථාන';
+
+  @override
   String get noMatchesNearby => 'අසල ගැලපෙන ස්ථාන නොමැත';
 
   @override

@@ -51,9 +51,25 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
   String _selectedPriceRange = "All";
   bool _onlyAR = false;
 
-  final List<String> _filters = [
-    "all", "nature", "waterfall", "hiking", "culture", "coastal", "family", "budget", "ar"
-  ];
+  // Fixed, non-category filters: "all" plus the ones that key off a field
+  // other than category (ticketRange/vehicleAccess/arSupported — see
+  // _applyFilter). Real place categories are appended dynamically from
+  // whatever's actually in _allPlaces, so an admin-added category (e.g.
+  // "Beach") is filterable without a matching hand-written keyword group.
+  static const List<String> _fixedFilters = ["all", "budget", "family", "ar"];
+  // Primary row keeps the chip strip short and scannable; the rest live
+  // behind the "More" chip so the row doesn't grow every time a new
+  // category is added in the admin panel.
+  static const List<String> _primaryFilters = ["all"];
+
+  List<String> get _categoryFilters {
+    final cats = _allPlaces.map((p) => p.category).where((c) => c.trim().isNotEmpty).toSet().toList();
+    cats.sort();
+    return cats.map((c) => '$_categoryFilterPrefix$c').toList();
+  }
+
+  List<String> get _filters => [..._fixedFilters, ..._categoryFilters];
+  List<String> get _secondaryFilters => _filters.where((f) => !_primaryFilters.contains(f)).toList();
 
   // BUG-080: Debounce timer for search queries
   Timer? _searchDebounce;
@@ -68,7 +84,11 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
   @override
   void initState() {
     super.initState();
-    if (widget.initialFilter != null && _filters.contains(widget.initialFilter)) {
+    // _filters (real categories) is empty until _allPlaces loads, so this
+    // can't gate on _filters.contains(...) the way it used to — any
+    // non-empty value is safe since _applyFilter's fallback branch treats
+    // an unrecognized filter as a plain substring match against category.
+    if (widget.initialFilter != null && widget.initialFilter!.trim().isNotEmpty) {
       _selectedFilter = widget.initialFilter!;
     }
     _searchController.addListener(() {
@@ -205,32 +225,30 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
     return 'Sri Lanka'; // Default fallback
   }
 
+  // Prefix marking a filter value as a literal Place.category match (as
+  // opposed to the fixed "all"/"budget"/"family"/"ar" special filters,
+  // which key off ticketRange/vehicleAccess/arSupported instead of category).
+  // Chosen so admin-added categories filter correctly without a matching
+  // hand-written keyword group — the tag IS the filter.
+  static const String _categoryFilterPrefix = 'category:';
+
   void _applyFilter() {
+    final isSearching = _searchQuery.trim().isNotEmpty;
     final cleanFilter = _selectedFilter.toLowerCase();
-    
+
     setState(() => _isLoading = true);
 
     Future.delayed(const Duration(milliseconds: 100), () {
       if (!mounted) return;
-      
+
       final List<DiscoveryPlace> results = _allPlaces.where((p) {
         // 1. Category Filter
         bool matchesCategory = true;
         if (cleanFilter != "all") {
           final cat = p.category.toLowerCase();
-          final name = p.name.toLowerCase();
-          final resolvedDistrict = _resolveDistrict(p).toLowerCase();
 
-          if (cleanFilter == "nature") {
-            matchesCategory = cat.contains("nature") || cat.contains("hiking") || cat.contains("waterfall") || cat.contains("park") || cat.contains("village");
-          } else if (cleanFilter == "waterfall") {
-            matchesCategory = cat.contains("waterfall") || name.contains("waterfall") || name.contains("ella");
-          } else if (cleanFilter == "hiking") {
-            matchesCategory = cat.contains("hiking") || cat.contains("mountain") || cat.contains("peak") || name.contains("peak");
-          } else if (cleanFilter == "culture") {
-            matchesCategory = cat.contains("culture") || cat.contains("histor") || cat.contains("temple") || cat.contains("village");
-          } else if (cleanFilter == "coastal") {
-            matchesCategory = cat.contains("coast") || cat.contains("beach") || cat.contains("ocean") || resolvedDistrict.contains("galle") || resolvedDistrict.contains("jaffna");
+          if (cleanFilter.startsWith(_categoryFilterPrefix)) {
+            matchesCategory = cat == cleanFilter.substring(_categoryFilterPrefix.length);
           } else if (cleanFilter == "budget") {
             matchesCategory = p.ticketRange.toLowerCase().contains("free") || p.ticketRange.contains("50") || p.ticketRange.contains("100");
           } else if (cleanFilter == "family") {
@@ -238,14 +256,14 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
           } else if (cleanFilter == "ar") {
             matchesCategory = p.arSupported;
           } else {
-            matchesCategory = cat.contains(cleanFilter) || name.contains(cleanFilter) || resolvedDistrict.contains(cleanFilter);
+            matchesCategory = cat.contains(cleanFilter);
           }
         }
 
         if (!matchesCategory) return false;
 
         // 2. Free-text search (name / category / district substring match)
-        if (_searchQuery.trim().isNotEmpty) {
+        if (isSearching) {
           final q = _searchQuery.trim().toLowerCase();
           final matchesSearch = p.name.toLowerCase().contains(q) ||
               p.category.toLowerCase().contains(q) ||
@@ -253,8 +271,11 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
           if (!matchesSearch) return false;
         }
 
-        // 3. Distance Filter
-        if (p.distanceKm > _maxDistance) return false;
+        // 3. Distance Filter — skipped while actively searching by name/
+        // category/district, since that's an explicit "find this place"
+        // intent that shouldn't be silently defeated by the (easily
+        // forgotten) distance slider in the advanced filter sheet.
+        if (!isSearching && p.distanceKm > _maxDistance) return false;
 
         // 4. Price Filter — numeric threshold-based (not fragile string matching)
         if (_selectedPriceRange != "All") {
@@ -670,16 +691,23 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
   IconData _getFilterIcon(String filter) {
     switch (filter) {
       case 'all': return Icons.explore_outlined;
-      case 'nature': return Icons.forest_outlined;
-      case 'waterfall': return Icons.water_drop_outlined;
-      case 'hiking': return Icons.directions_walk_outlined;
-      case 'culture': return Icons.temple_hindu_outlined;
-      case 'coastal': return Icons.waves_outlined;
       case 'family': return Icons.people_outline_rounded;
       case 'budget': return Icons.sell_outlined;
       case 'ar': return Icons.view_in_ar_rounded;
-      default: return Icons.tag;
     }
+    if (filter.startsWith(_categoryFilterPrefix)) {
+      final cat = filter.substring(_categoryFilterPrefix.length).toLowerCase();
+      if (cat.contains('waterfall')) return Icons.water_drop_outlined;
+      if (cat.contains('beach') || cat.contains('coast') || cat.contains('ocean')) return Icons.waves_outlined;
+      if (cat.contains('hiking') || cat.contains('mountain') || cat.contains('peak')) return Icons.directions_walk_outlined;
+      if (cat.contains('temple') || cat.contains('religio') || cat.contains('sacred')) return Icons.temple_hindu_outlined;
+      if (cat.contains('histor') || cat.contains('ancient') || cat.contains('fort') || cat.contains('palace') || cat.contains('monument')) return Icons.account_balance_outlined;
+      if (cat.contains('nature') || cat.contains('park') || cat.contains('eco') || cat.contains('wildlife')) return Icons.forest_outlined;
+      if (cat.contains('food') || cat.contains('culinary')) return Icons.restaurant_outlined;
+      if (cat.contains('museum')) return Icons.museum_outlined;
+      if (cat.contains('tea')) return Icons.local_cafe_outlined;
+    }
+    return Icons.tag;
   }
 
   Widget _buildLocationHeader() {
@@ -797,7 +825,21 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
     );
   }
 
+  /// Chip label for a filter value: real categories show the bare category
+  /// name (strip the "category:" tag prefix); fixed filters use their l10n
+  /// string via L10nUtils, which falls back to the raw key if unrecognized.
+  String _filterLabel(BuildContext context, String filter) {
+    if (filter.startsWith(_categoryFilterPrefix)) {
+      return filter.substring(_categoryFilterPrefix.length);
+    }
+    return L10nUtils.getFilterLabel(context, filter);
+  }
+
   Widget _buildFilters(AppLocalizations l10n) {
+    // "More" is active whenever the selected filter isn't one of the chips
+    // shown inline, so a filter picked from the sheet still reads as selected.
+    final isMoreSelected = !_primaryFilters.contains(_selectedFilter);
+    final itemCount = _primaryFilters.length + 1;
     return Container(
       height: 48,
       margin: const EdgeInsets.symmetric(vertical: 8),
@@ -805,9 +847,18 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 20),
         physics: const BouncingScrollPhysics(),
-        itemCount: _filters.length,
+        itemCount: itemCount,
         itemBuilder: (context, index) {
-          final filter = _filters[index];
+          if (index == _primaryFilters.length) {
+            return OracleUI.glassChip(
+              context: context,
+              label: isMoreSelected ? _filterLabel(context, _selectedFilter) : l10n.moreLabel,
+              isSelected: isMoreSelected,
+              icon: isMoreSelected ? _getFilterIcon(_selectedFilter) : Icons.tune_rounded,
+              onTap: _showMoreFiltersSheet,
+            );
+          }
+          final filter = _primaryFilters[index];
           final isSelected = _selectedFilter == filter;
           return Padding(
             padding: const EdgeInsets.only(right: 8),
@@ -821,6 +872,73 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
           );
         },
       ),
+    );
+  }
+
+  void _showMoreFiltersSheet() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppTheme.colors.transparent,
+      isScrollControlled: true,
+      builder: (context) {
+        final isDark = Theme.of(context).brightness == Brightness.dark;
+        final l10n = AppLocalizations.of(context)!;
+        return Container(
+          constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.6),
+          decoration: BoxDecoration(
+            color: isDark ? AppTheme.colors.primary.withValues(alpha: 0.95) : AppTheme.colors.white.withValues(alpha: 0.95),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(40)),
+            border: Border.all(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2)),
+          ),
+          child: OracleUI.glassContainer(
+            radius: const BorderRadius.vertical(top: Radius.circular(40)),
+            padding: const EdgeInsets.fromLTRB(24, 32, 24, 32),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    width: 60,
+                    height: 5,
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 24),
+                OracleUI.neonText(
+                  l10n.discoveryFiltersTitle,
+                  style: GoogleFonts.outfit(fontSize: 22, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.secondary),
+                ),
+                const SizedBox(height: 20),
+                Flexible(
+                  child: SingleChildScrollView(
+                    child: Wrap(
+                      spacing: 10,
+                      runSpacing: 10,
+                      children: _secondaryFilters.map((filter) {
+                        final isSelected = _selectedFilter == filter;
+                        return OracleUI.glassChip(
+                          context: context,
+                          label: _filterLabel(context, filter),
+                          isSelected: isSelected,
+                          icon: _getFilterIcon(filter),
+                          onTap: () {
+                            Navigator.pop(context);
+                            _onFilterChanged(filter);
+                          },
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -851,6 +969,21 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
       if (_villageExperiences.isNotEmpty) ...[
         _buildSectionTitle(l10n.villageStayTitle, Icons.home_work_outlined),
         _buildVillageCards(_villageExperiences),
+        const SizedBox(height: 32),
+      ],
+      // Curated buckets above (Oracle/AR/Nature/Culture) are keyword-matched
+      // on category text — a place whose category doesn't hit any of those
+      // keywords (e.g. "Beach") would otherwise never appear anywhere on the
+      // "All" tab. This is the full unfiltered list as a catch-all so every
+      // approved place stays discoverable without switching chips. Sorted by
+      // distance so the "Nearby" name in the title is actually true — a place
+      // across the country would otherwise appear ahead of one 2km away.
+      if (_allPlaces.isNotEmpty) ...[
+        _buildSectionTitle(l10n.allNearbyPlacesTitle, Icons.travel_explore_outlined),
+        _buildHorizontalCards(
+          [..._allPlaces]..sort((a, b) => a.distanceKm.compareTo(b.distanceKm)),
+          l10n,
+        ),
         const SizedBox(height: 32),
       ],
     ];

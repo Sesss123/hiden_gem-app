@@ -388,6 +388,12 @@ abstract class AppLocalizations {
   /// **'Village & Authentic Stays'**
   String get villageStayTitle;
 
+  /// No description provided for @allNearbyPlacesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'All Nearby Places'**
+  String get allNearbyPlacesTitle;
+
   /// No description provided for @noMatchesNearby.
   ///
   /// In en, this message translates to:

@@ -151,6 +151,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get villageStayTitle => 'Деревенский и аутентичный отдых';
 
   @override
+  String get allNearbyPlacesTitle => 'Все места поблизости';
+
+  @override
   String get noMatchesNearby => 'Поблизости нет совпадений';
 
   @override

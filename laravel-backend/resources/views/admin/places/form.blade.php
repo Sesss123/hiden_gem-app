@@ -577,14 +577,23 @@
             <div>
                 <label class="block text-xs font-semibold text-slate-300 mb-2">Upload Photos (Auto-converted to 400px Thumb & 1080px Hero WebP)</label>
                 <div class="flex items-center justify-center w-full">
-                    <label class="flex flex-col items-center justify-center w-full h-32 border-2 border-slate-700 border-dashed rounded-2xl cursor-pointer bg-slate-900/50 hover:bg-slate-900 transition">
-                        <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                    <label id="images_dropzone_label" class="flex flex-col items-center justify-center w-full h-32 border-2 border-slate-700 border-dashed rounded-2xl cursor-pointer bg-slate-900/50 hover:bg-slate-900 transition">
+                        <div id="images_dropzone_placeholder" class="flex flex-col items-center justify-center pt-5 pb-6">
                             <i class="fa-solid fa-cloud-arrow-up text-2xl text-emerald-400 mb-2"></i>
                             <p class="text-xs text-slate-400"><span class="font-semibold text-white">Click to upload</span> or drag and drop</p>
                             <p class="text-[10px] text-slate-500 mt-1">PNG, JPG, WEBP (Multiple allowed)</p>
                         </div>
-                        <input type="file" name="images[]" multiple accept="image/*" class="hidden">
+                        <input type="file" id="images_input" name="images[]" multiple accept="image/*" class="hidden">
                     </label>
+                </div>
+                <!-- Client-side preview only — confirms the browser actually picked up
+                     the files before the form is submitted. This is not yet uploaded
+                     to the server; the real upload happens on form submit (BUG report:
+                     admins had no way to tell a selection succeeded until after saving
+                     and reopening the edit page to see the Existing Gallery section). -->
+                <div id="images_preview_wrap" class="mt-3 hidden">
+                    <p id="images_preview_count" class="text-[11px] font-semibold text-emerald-400 mb-2"></p>
+                    <div id="images_preview_grid" class="grid grid-cols-2 md:grid-cols-4 gap-3"></div>
                 </div>
             </div>
 
@@ -933,6 +942,42 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     showTab(initialTab);
+
+    // Client-side preview of picked-but-not-yet-uploaded files, so an admin
+    // can confirm the browser actually registered the selection before
+    // submitting — previously the only feedback was the native OS file-picker
+    // dialog closing, with no on-page confirmation until saving and
+    // reopening the edit page to see "Existing Gallery Photos".
+    const imagesInput = document.getElementById('images_input');
+    const previewWrap = document.getElementById('images_preview_wrap');
+    const previewCount = document.getElementById('images_preview_count');
+    const previewGrid = document.getElementById('images_preview_grid');
+
+    if (imagesInput) {
+        imagesInput.addEventListener('change', function() {
+            previewGrid.innerHTML = '';
+            const files = Array.from(imagesInput.files || []);
+
+            if (files.length === 0) {
+                previewWrap.classList.add('hidden');
+                return;
+            }
+
+            previewCount.textContent = files.length + ' file' + (files.length === 1 ? '' : 's') + ' selected — not saved yet, click "' + (@json($isEdit) ? 'Save Changes' : 'Create Gem Record') + '" below to upload.';
+            files.forEach(function(file) {
+                const url = URL.createObjectURL(file);
+                const cell = document.createElement('div');
+                cell.className = 'relative bg-slate-900 rounded-xl p-2 border border-slate-800';
+                const img = document.createElement('img');
+                img.src = url;
+                img.className = 'w-full h-24 object-cover rounded-lg';
+                img.onload = function() { URL.revokeObjectURL(url); };
+                cell.appendChild(img);
+                previewGrid.appendChild(cell);
+            });
+            previewWrap.classList.remove('hidden');
+        });
+    }
 });
 </script>
 @endsection

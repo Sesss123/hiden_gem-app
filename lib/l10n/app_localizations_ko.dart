@@ -151,6 +151,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get villageStayTitle => '마을과 진정한 숙박';
 
   @override
+  String get allNearbyPlacesTitle => '주변의 모든 장소';
+
+  @override
   String get noMatchesNearby => '근처에 일치하는 결과가 없습니다';
 
   @override

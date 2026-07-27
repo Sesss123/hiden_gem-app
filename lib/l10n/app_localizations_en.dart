@@ -151,6 +151,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get villageStayTitle => 'Village & Authentic Stays';
 
   @override
+  String get allNearbyPlacesTitle => 'All Nearby Places';
+
+  @override
   String get noMatchesNearby => 'No matches nearby';
 
   @override
