@@ -389,6 +389,15 @@ class AppLocalizationsTa extends AppLocalizations {
       'மின்னஞ்சல் பயன்பாட்டைத் திறக்க முடியவில்லை. support@hiddengems.lk க்கு மின்னஞ்சல் அனுப்பவும்';
 
   @override
+  String get getDirections => 'Get Directions';
+
+  @override
+  String get couldNotOpenMaps => 'Could not open a maps app on this device.';
+
+  @override
+  String get photosLabel => 'Photos';
+
+  @override
   String get privacySection1Title => '1. நாங்கள் சேகரிக்கும் தரவு';
 
   @override
@@ -3409,6 +3418,14 @@ class AppLocalizationsTa extends AppLocalizations {
 
   @override
   String get incidentStatusClosed => 'மூடப்பட்டது';
+
+  @override
+  String get resolutionNoteLabel => 'Resolution';
+
+  @override
+  String resolvedByLabel(String name) {
+    return 'Resolved by $name';
+  }
 
   @override
   String get manageTeamTitle => 'குழுவை நிர்வகி';

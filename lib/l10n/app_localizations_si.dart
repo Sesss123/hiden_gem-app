@@ -387,6 +387,15 @@ class AppLocalizationsSi extends AppLocalizations {
       'විද්‍යුත් තැපැල් යෙදුම විවෘත කළ නොහැක. කරුණාකර support@hiddengems.lk වෙත විද්‍යුත් තැපෑලක් යවන්න.';
 
   @override
+  String get getDirections => 'මාර්ග උපදෙස්';
+
+  @override
+  String get couldNotOpenMaps => 'මෙම උපාංගයේ සිතියම් යෙදුමක් විවෘත කළ නොහැක.';
+
+  @override
+  String get photosLabel => 'ඡායාරූප';
+
+  @override
   String get privacySection1Title => '1. අප එකතු කරන දත්ත';
 
   @override
@@ -3382,6 +3391,14 @@ class AppLocalizationsSi extends AppLocalizations {
 
   @override
   String get incidentStatusClosed => 'වසා ඇත';
+
+  @override
+  String get resolutionNoteLabel => 'විසඳුම';
+
+  @override
+  String resolvedByLabel(String name) {
+    return 'විසඳුවේ $name';
+  }
 
   @override
   String get manageTeamTitle => 'කණ්ඩායම කළමනාකරණය කරන්න';

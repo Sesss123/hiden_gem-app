@@ -131,6 +131,9 @@
   "privacyIntro": "We value your privacy and data sovereignty. This document outlines how Hidden Gems Sri Lanka (Pvt) Ltd collects, protects, and governs your personal information under Sri Lankan law.",
   "contactUsAboutData": "CONTACT US ABOUT YOUR DATA",
   "couldNotOpenEmail": "Could not open email client. Please email support@hiddengems.lk",
+  "getDirections": "Get Directions",
+  "couldNotOpenMaps": "Could not open a maps app on this device.",
+  "photosLabel": "Photos",
   "privacySection1Title": "1. DATA WE COLLECT",
   "privacySection1Body": "Hidden Gems Sri Lanka collects personal information voluntarily provided when using our services:\n\n• Account Information: Display name, email address, phone number, and profile picture (via Firebase Auth / Google Sign-In).\n• Precise & Live Location: We request location data to enable location-based Discovery, Local Gems, and live tracking features. When using Family Sharing, your real-time coordinates are processed to update authorized recipients.\n• Family Sharing Recipient Data: Recipient names, contact identifiers, and temporary share tokens generated during coordination sessions.\n• Guide Profile & Verification Data: Licensing status, identification credentials, languages spoken, and bio details submitted during guide enrollment.\n• In-App Messages & Bookings: Communications between tourists and guides, itinerary data, and session logs.\n• Device & Analytics Data: Crash diagnostics, performance metrics, and device metadata via Firebase Analytics and Crashlytics.\n• Payment Data: If applicable, financial transactions are processed exclusively by PCI-DSS compliant third-party payment gateways. Hidden Gems Sri Lanka never stores raw credit card numbers or banking data on our servers.",
   "privacySection2Title": "2. FAMILY SHARING FEATURE SPECIFICALLY",
@@ -1335,6 +1338,11 @@
   "incidentStatusInvestigating": "Investigating",
   "incidentStatusResolved": "Resolved",
   "incidentStatusClosed": "Closed",
+  "resolutionNoteLabel": "Resolution",
+  "resolvedByLabel": "Resolved by {name}",
+  "@resolvedByLabel": {
+    "placeholders": { "name": { "type": "String" } }
+  },
 
   "manageTeamTitle": "Manage team",
   "signInToManageTeamMessage": "Sign in to manage your team.",

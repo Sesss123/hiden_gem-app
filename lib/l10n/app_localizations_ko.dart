@@ -382,6 +382,15 @@ class AppLocalizationsKo extends AppLocalizations {
       '이메일 클라이언트를 열 수 없습니다. support@hiddengems.lk로 이메일을 보내주세요.';
 
   @override
+  String get getDirections => 'Get Directions';
+
+  @override
+  String get couldNotOpenMaps => 'Could not open a maps app on this device.';
+
+  @override
+  String get photosLabel => 'Photos';
+
+  @override
   String get privacySection1Title => '1. 수집하는 정보';
 
   @override
@@ -3263,6 +3272,14 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get incidentStatusClosed => '종료';
+
+  @override
+  String get resolutionNoteLabel => 'Resolution';
+
+  @override
+  String resolvedByLabel(String name) {
+    return 'Resolved by $name';
+  }
 
   @override
   String get manageTeamTitle => '팀 관리';

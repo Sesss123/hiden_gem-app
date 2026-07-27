@@ -1618,8 +1618,24 @@ class _ARViewerScreenState extends State<ARViewerScreen>
                             ],
                           ),
                           const SizedBox(height: 4),
-                          Text(partner.name, style: GoogleFonts.outfit(color: AppTheme.colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
-                          Text(AppLocalizations.of(context)!.categoryRatingLabel(partner.category.toUpperCase(), partner.rating.toString()), style: GoogleFonts.inter(color: AppTheme.colors.white70, fontSize: 10)),
+                          Row(
+                            children: [
+                              Flexible(
+                                child: Text(partner.name, overflow: TextOverflow.ellipsis, style: GoogleFonts.outfit(color: AppTheme.colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+                              ),
+                              // Admin sets isVerified on partners but nothing
+                              // rendered it anywhere — exactly the kind of trust
+                              // signal a tourist would want before booking.
+                              if (partner.isVerified) ...[
+                                const SizedBox(width: 4),
+                                Icon(Icons.verified_rounded, color: AppTheme.colors.greenAccent, size: 15),
+                              ],
+                            ],
+                          ),
+                          Text(
+                            '${AppLocalizations.of(context)!.categoryRatingLabel(partner.category.toUpperCase(), partner.rating.toString())} • ${partner.priceRange}',
+                            style: GoogleFonts.inter(color: AppTheme.colors.white70, fontSize: 10),
+                          ),
                         ],
                       ),
                     ),

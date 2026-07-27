@@ -390,6 +390,15 @@ class AppLocalizationsRu extends AppLocalizations {
       'Не удалось открыть почтовый клиент. Пожалуйста, напишите на support@hiddengems.lk';
 
   @override
+  String get getDirections => 'Get Directions';
+
+  @override
+  String get couldNotOpenMaps => 'Could not open a maps app on this device.';
+
+  @override
+  String get photosLabel => 'Photos';
+
+  @override
   String get privacySection1Title => '1. ДАННЫЕ, КОТОРЫЕ МЫ СОБИРАЕМ';
 
   @override
@@ -3404,6 +3413,14 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get incidentStatusClosed => 'Закрыт';
+
+  @override
+  String get resolutionNoteLabel => 'Resolution';
+
+  @override
+  String resolvedByLabel(String name) {
+    return 'Resolved by $name';
+  }
 
   @override
   String get manageTeamTitle => 'Управление командой';

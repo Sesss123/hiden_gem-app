@@ -130,6 +130,9 @@
   "privacyIntro": "私たちはお客様のプライバシーとデータ主権を尊重します。この文書では、Hidden Gems Sri Lanka (Pvt) Ltd がスリランカの法律に基づき、お客様の個人情報をどのように収集、保護、管理するかについて説明します。",
   "contactUsAboutData": "データに関するお問い合わせ",
   "couldNotOpenEmail": "メールクライアントを開けませんでした。support@hiddengems.lk までメールでお問い合わせください",
+  "getDirections": "Get Directions",
+  "couldNotOpenMaps": "Could not open a maps app on this device.",
+  "photosLabel": "Photos",
   "privacySection1Title": "1. 収集する情報",
   "privacySection1Body": "Hidden Gems Sri Lanka は、サービスのご利用に際してお客様が自発的に提供する個人情報を収集します。\n\n• アカウント情報：表示名、メールアドレス、電話番号、プロフィール写真（Firebase Auth / Google サインイン経由）。\n• 正確な位置情報およびリアルタイム位置情報：位置情報に基づく「ディスカバリー」「ローカルジェム」機能、およびライブ追跡機能を提供するため、位置情報の取得を要求します。「ファミリー共有」の利用時には、お客様のリアルタイム座標が処理され、許可された受信者に更新情報が送信されます。\n• ファミリー共有の受信者データ：受信者の氏名、連絡先識別情報、および共有セッション中に生成される一時的な共有トークン。\n• ガイドプロフィールおよび認証データ：ガイド登録時に提出されるライセンス状況、身分証明資格、対応言語、プロフィール詳細。\n• アプリ内メッセージおよび予約情報：観光客とガイド間のやり取り、旅程データ、セッションログ。\n• デバイスおよび分析データ：Firebase Analytics および Crashlytics を通じて取得されるクラッシュ診断情報、パフォーマンス指標、デバイスメタデータ。\n• 決済データ：該当する場合、金融取引は PCI-DSS 準拠の第三者決済ゲートウェイのみで処理されます。Hidden Gems Sri Lanka は、クレジットカード番号や銀行データの生情報を当社サーバーに保存することは一切ありません。",
   "privacySection2Title": "2. ファミリー共有機能について",
@@ -1329,6 +1332,11 @@
   "incidentStatusInvestigating": "調査中",
   "incidentStatusResolved": "解決済み",
   "incidentStatusClosed": "終了",
+  "resolutionNoteLabel": "Resolution",
+  "resolvedByLabel": "Resolved by {name}",
+  "@resolvedByLabel": {
+    "placeholders": { "name": { "type": "String" } }
+  },
 
   "manageTeamTitle": "チームを管理",
   "signInToManageTeamMessage": "チームを管理するにはサインインしてください。",

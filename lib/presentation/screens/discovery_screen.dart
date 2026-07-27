@@ -781,6 +781,7 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
                             controller: _searchController,
                             onSubmitted: _onSearchSubmitted,
                             textInputAction: TextInputAction.search,
+                            textAlignVertical: TextAlignVertical.center,
                             decoration: InputDecoration(
                               hintText: l10n.searchHint,
                               hintStyle: GoogleFonts.inter(
@@ -788,7 +789,7 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
                                 fontSize: 14,
                               ),
                               border: InputBorder.none,
-                              isDense: true,
+                              isCollapsed: true,
                               suffixIcon: _searchController.text.isNotEmpty
                                   ? IconButton(
                                       icon: Icon(Icons.clear, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6), size: 18),

@@ -380,6 +380,15 @@ class AppLocalizationsJa extends AppLocalizations {
       'メールクライアントを開けませんでした。support@hiddengems.lk までメールでお問い合わせください';
 
   @override
+  String get getDirections => 'Get Directions';
+
+  @override
+  String get couldNotOpenMaps => 'Could not open a maps app on this device.';
+
+  @override
+  String get photosLabel => 'Photos';
+
+  @override
   String get privacySection1Title => '1. 収集する情報';
 
   @override
@@ -3257,6 +3266,14 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get incidentStatusClosed => '終了';
+
+  @override
+  String get resolutionNoteLabel => 'Resolution';
+
+  @override
+  String resolvedByLabel(String name) {
+    return 'Resolved by $name';
+  }
 
   @override
   String get manageTeamTitle => 'チームを管理';

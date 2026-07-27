@@ -66,12 +66,30 @@ class IncidentController extends Controller
 
         $now = now()->toIso8601String();
         $resolvedBy = auth()->user()->name ?? 'admin';
+        $resolutionNote = $request->input('resolution_note');
+
+        // Mirrors IncidentRepository.resolveIncident() on the Flutter side:
+        // the detail screen's timeline is the only place a reporting user
+        // actually reads what happened to their report — resolutionNote is
+        // parsed onto the model but never rendered directly, so without a
+        // timeline entry an admin resolution was invisible to the user
+        // (status flipped to "resolved" with no visible explanation why).
+        $timelineEvents = $incident['timelineEvents'] ?? [];
+        $timelineEvents[] = [
+            'type' => 'resolved',
+            'description' => "Incident resolved: {$resolutionNote}",
+            'timestamp' => $now,
+            'userId' => $resolvedBy,
+            'role' => 'admin',
+        ];
 
         $ok = $this->firestoreService->patchDocument('incident_reports', $id, [
             'status' => 'resolved',
             'resolvedAt' => $now,
             'resolvedBy' => $resolvedBy,
-            'resolutionNote' => $request->input('resolution_note'),
+            'resolutionNote' => $resolutionNote,
+            'timelineEvents' => $timelineEvents,
+            'timelineCount' => count($timelineEvents),
             'updatedAt' => $now,
         ]);
 
@@ -79,7 +97,7 @@ class IncidentController extends Controller
             return back()->withErrors(['error' => 'Could not save the resolution — the update failed. Please try again.']);
         }
 
-        $this->logAdminAction('incident.resolved', 'Incident', $id, ['resolution_note' => $request->input('resolution_note')]);
+        $this->logAdminAction('incident.resolved', 'Incident', $id, ['resolution_note' => $resolutionNote]);
 
         return redirect()->route('admin.incidents.index', ['status' => 'open'])
             ->with('success', 'Incident marked resolved.');
@@ -94,9 +112,25 @@ class IncidentController extends Controller
         $incident = $this->firestoreService->getDocument('incident_reports', $id);
         abort_if($incident === null, 404);
 
+        $now = now()->toIso8601String();
+        $resolvedBy = auth()->user()->name ?? 'admin';
+
+        // See resolve() above — same reasoning: without a timeline entry,
+        // a dismissed report shows no explanation to the reporting user.
+        $timelineEvents = $incident['timelineEvents'] ?? [];
+        $timelineEvents[] = [
+            'type' => 'dismissed',
+            'description' => 'Incident dismissed by admin.',
+            'timestamp' => $now,
+            'userId' => $resolvedBy,
+            'role' => 'admin',
+        ];
+
         $ok = $this->firestoreService->patchDocument('incident_reports', $id, [
             'status' => 'dismissed',
-            'updatedAt' => now()->toIso8601String(),
+            'timelineEvents' => $timelineEvents,
+            'timelineCount' => count($timelineEvents),
+            'updatedAt' => $now,
         ]);
 
         if (!$ok) {

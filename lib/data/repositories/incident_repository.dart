@@ -67,6 +67,19 @@ class IncidentRepository {
     return doc.id;
   }
 
+  /// Watches a single incident by id directly (not filtered by status) — for
+  /// a reporting user viewing their own report's detail/timeline. Unlike
+  /// getActiveIncidents()/getSessionIncidents(), this doesn't disappear once
+  /// an admin resolves or dismisses the incident: the detail screen using
+  /// getActiveIncidents() to look up a single doc used to 404 the moment its
+  /// status left {open, under_review, escalated} — exactly when the
+  /// reporter most needs to see the resolution.
+  Stream<IncidentReport?> watchIncident(String incidentId) {
+    return _incidentRef.doc(incidentId).snapshots().map(
+      (doc) => doc.exists ? IncidentReport.fromJson(doc.data()!) : null,
+    );
+  }
+
   /// Adds a history event to the incident timeline.
   Future<void> addTimelineEvent({
     required String incidentId,

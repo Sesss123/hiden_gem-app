@@ -287,6 +287,7 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> with Automati
       case EventCategory.seasonal: return Icons.festival_rounded;
       case EventCategory.festival: return Icons.celebration_rounded;
       case EventCategory.party: return Icons.nightlife_rounded;
+      case EventCategory.adventure: return Icons.terrain_rounded;
     }
   }
 
@@ -319,6 +320,7 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> with Automati
       case EventCategory.seasonal: return l10n.categorySeasonal;
       case EventCategory.festival: return l10n.categoryFestival;
       case EventCategory.party: return l10n.categoryParty;
+      case EventCategory.adventure: return l10n.categoryAdventure;
     }
   }
 
@@ -446,7 +448,14 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> with Automati
                   child: Stack(
                     fit: StackFit.expand,
                     children: [
-                      CachedImage(url: "https://images.unsplash.com/photo-1514525253361-bee8a4874051?w=800&q=80", fit: BoxFit.cover),
+                      CachedImage(
+                        // Admin-uploaded event cover (EventResource.images/imageUrl)
+                        // was previously ignored in favor of this hardcoded stock
+                        // photo — any photo an admin actually uploaded was invisible.
+                        // Stock photo now only used as a fallback for events with none.
+                        url: event.imageUrl.isNotEmpty ? event.imageUrl : "https://images.unsplash.com/photo-1514525253361-bee8a4874051?w=800&q=80",
+                        fit: BoxFit.cover,
+                      ),
                       Container(decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [AppTheme.colors.transparent, AppTheme.colors.black.withValues(alpha: 0.6)]))),
                       Positioned(
                         bottom: 24, left: 24,
@@ -473,6 +482,34 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> with Automati
                 event.description,
                  style: GoogleFonts.inter(color: AppTheme.textPrimary(context).withValues(alpha: 0.8), fontSize: 15, height: 1.6),
               ),
+              if (event.images.length > 1) ...[
+                SizedBox(height: 24),
+                Text(
+                  AppLocalizations.of(context)!.photosLabel,
+                  style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 11, fontWeight: FontWeight.w900, letterSpacing: 2)
+                ),
+                SizedBox(height: 12),
+                SizedBox(
+                  height: 80,
+                  child: ListView.separated(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: event.images.length,
+                    separatorBuilder: (_, __) => SizedBox(width: 10),
+                    itemBuilder: (context, index) {
+                      final img = event.images[index];
+                      return ClipRRect(
+                        borderRadius: BorderRadius.circular(14),
+                        child: CachedImage(
+                          url: img.thumbPath.isNotEmpty ? img.thumbPath : img.fullPath,
+                          width: 80,
+                          height: 80,
+                          fit: BoxFit.cover,
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
               SizedBox(height: 32),
               if (event.ticketUrl != null)
                 SizedBox(
@@ -553,7 +590,7 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> with Automati
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(24),
                         child: CachedImage(
-                          url: "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=400&q=80",
+                          url: event.imageUrl.isNotEmpty ? event.imageUrl : "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=400&q=80",
                           fit: BoxFit.cover, width: double.infinity,
                         ),
                       ),

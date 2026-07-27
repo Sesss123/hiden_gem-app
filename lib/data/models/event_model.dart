@@ -41,6 +41,30 @@ enum EventCategory {
   seasonal,
   festival,
   party,
+  adventure,
+}
+
+class EventImage {
+  final int id;
+  final String thumbPath;
+  final String fullPath;
+  final bool isCover;
+
+  const EventImage({
+    required this.id,
+    required this.thumbPath,
+    required this.fullPath,
+    this.isCover = false,
+  });
+
+  factory EventImage.fromJson(Map<String, dynamic> json) {
+    return EventImage(
+      id: (json['id'] as num?)?.toInt() ?? 0,
+      thumbPath: json['thumbPath'] as String? ?? json['thumb_path'] as String? ?? '',
+      fullPath: json['fullPath'] as String? ?? json['full_path'] as String? ?? '',
+      isCover: json['isCover'] as bool? ?? json['is_cover'] as bool? ?? false,
+    );
+  }
 }
 
 class EventModel {
@@ -59,6 +83,11 @@ class EventModel {
   final List<String> tags;
   final int? priceLkr;
   final String imageUrl;
+  // Server (EventSyncController) already filters is_active=true out of the
+  // discovery feed, so this defaulting to true doesn't change what's shown
+  // there — kept for correctness on any other consumer of EventModel.
+  final bool isActive;
+  final List<EventImage> images;
 
   EventModel({
     this.id,
@@ -76,6 +105,8 @@ class EventModel {
     this.tags = const [],
     this.priceLkr,
     this.imageUrl = '',
+    this.isActive = true,
+    this.images = const [],
   });
 
   Color get categoryColor {
@@ -88,6 +119,7 @@ class EventModel {
       case EventCategory.festival:
         return AppTheme.colors.primary; // Modern Green
       case EventCategory.sports:
+      case EventCategory.adventure:
         return AppTheme.colors.orangeAccent;
       case EventCategory.seasonal:
         return AppTheme.colors.tealAccent;
@@ -109,6 +141,8 @@ class EventModel {
         return Icons.sports;
       case EventCategory.seasonal:
         return Icons.ac_unit;
+      case EventCategory.adventure:
+        return Icons.terrain;
     }
   }
 
@@ -129,6 +163,8 @@ class EventModel {
       tags: List<String>.from(json['tags'] ?? []),
       priceLkr: json['price_lkr'],
       imageUrl: json['imageUrl'] as String? ?? json['image_url'] as String? ?? '',
+      isActive: json['isActive'] as bool? ?? json['is_active'] as bool? ?? true,
+      images: (json['images'] as List?)?.map((i) => EventImage.fromJson(i as Map<String, dynamic>)).toList() ?? [],
     );
   }
 
@@ -137,6 +173,8 @@ class EventModel {
       case 'beach':
       case 'party':
         return EventCategory.party;
+      case 'adventure':
+        return EventCategory.adventure;
       case 'cultural':
         return EventCategory.cultural;
       case 'religious':
@@ -173,6 +211,8 @@ class EventModel {
       'price_lkr': priceLkr,
       'imageUrl': imageUrl,
       'image_url': imageUrl,
+      'isActive': isActive,
+      'is_active': isActive,
     };
   }
 }

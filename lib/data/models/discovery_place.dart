@@ -41,6 +41,7 @@ class DiscoveryPlace {
 
   final String id;
   final String name;
+  final String description;
   final String district;
   final String category;
   final double lat;
@@ -118,6 +119,7 @@ class DiscoveryPlace {
   DiscoveryPlace({
     required this.id,
     required this.name,
+    this.description = '',
     required this.district,
     required this.category,
     required this.lat,
@@ -222,6 +224,7 @@ class DiscoveryPlace {
     return DiscoveryPlace(
       id: json['id'].toString(),
       name: json['name'] as String? ?? '',
+      description: json['description'] as String? ?? '',
       district: json['district'] as String? ?? json['district_id'] as String? ?? '',
       category: json['category'] as String? ?? json['category_id'] as String? ?? '',
       lat: parseCoord(json['lat']),
@@ -323,6 +326,7 @@ class DiscoveryPlace {
     return DiscoveryPlace(
       id: doc.id,
       name: data['name'] ?? '',
+      description: data['description'] ?? '',
       district: data['district'] ?? '',
       category: data['category'] ?? '',
       lat: parseCoord(data['lat'], geoPoint?.latitude),
@@ -388,6 +392,7 @@ class DiscoveryPlace {
     return {
       'id': id,
       'name': name,
+      'description': description,
       'district': district,
       'category': category,
       'lat': lat,

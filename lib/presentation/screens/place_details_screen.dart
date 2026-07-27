@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/theme/oracle_ui_system.dart';
@@ -127,6 +128,10 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
                           children: [
                             _buildStatPillStrip(context, l10n).animate().fadeIn(duration: 600.ms),
                             const SizedBox(height: 26),
+                            _buildDescription(context, l10n).animate().fadeIn(duration: 600.ms),
+                            const SizedBox(height: 24),
+                            _buildPhotoGallery(context, l10n).animate().fadeIn(duration: 600.ms),
+                            const SizedBox(height: 24),
                             _buildAIReason(context, l10n).animate().fadeIn(delay: 200.ms, duration: 600.ms).slideY(begin: 0.1),
                             const SizedBox(height: 24),
                             _buildSponsoredExperience().animate().fadeIn(delay: 300.ms, duration: 600.ms),
@@ -545,6 +550,97 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
     );
   }
 
+  // Admin can upload multiple gallery photos per place (Media tab), and the
+  // full images[] list is parsed onto the model, but this screen's hero
+  // only ever showed the single cover image — every other uploaded photo
+  // was wasted admin effort, invisible to any user. Only shown when there's
+  // more than one photo, since the hero already covers the single-photo case.
+  Widget _buildPhotoGallery(BuildContext context, AppLocalizations l10n) {
+    final images = widget.place.images;
+    if (images.length <= 1) return const SizedBox.shrink();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          l10n.photosLabel,
+          style: GoogleFonts.inter(
+            fontWeight: FontWeight.w700,
+            color: Theme.of(context).colorScheme.primary,
+            fontSize: 11,
+            letterSpacing: 0.5,
+          ),
+        ),
+        const SizedBox(height: 12),
+        SizedBox(
+          height: 88,
+          child: ListView.separated(
+            scrollDirection: Axis.horizontal,
+            itemCount: images.length,
+            separatorBuilder: (_, __) => const SizedBox(width: 10),
+            itemBuilder: (context, index) {
+              return GestureDetector(
+                onTap: () => _openGalleryViewer(context, images, index),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(14),
+                  child: CachedImage(
+                    url: images[index].thumbPath,
+                    width: 88,
+                    height: 88,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  void _openGalleryViewer(BuildContext context, List<PlaceImageModel> images, int initialIndex) {
+    HapticFeedback.selectionClick();
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => _FullscreenGalleryViewer(images: images, initialIndex: initialIndex),
+        fullscreenDialog: true,
+      ),
+    );
+  }
+
+  // The admin panel's plain-text "description" field was written to the
+  // model (see PlaceResource.php) but had no widget reading it anywhere —
+  // this screen only ever displayed aiReason (a separate AI-generated
+  // blurb), so an admin's own description text never reached the app.
+  Widget _buildDescription(BuildContext context, AppLocalizations l10n) {
+    if (widget.place.description.trim().isEmpty) return const SizedBox.shrink();
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          l10n.aboutSectionTitle,
+          style: GoogleFonts.inter(
+            fontWeight: FontWeight.w700,
+            color: Theme.of(context).colorScheme.primary,
+            fontSize: 11,
+            letterSpacing: 0.5,
+          ),
+        ),
+        const SizedBox(height: 12),
+        Text(
+          widget.place.description,
+          style: GoogleFonts.inter(
+            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.9),
+            height: 1.7,
+            fontSize: 15,
+            fontWeight: FontWeight.w400,
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildAIReason(BuildContext context, AppLocalizations l10n) {
     if (widget.place.aiReason.isEmpty) return const SizedBox.shrink();
     final currentLocale = Localizations.localeOf(context).languageCode;
@@ -676,10 +772,26 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
 
   Widget _buildStatPillStrip(BuildContext context, AppLocalizations l10n) {
     final pills = <Widget>[
+      // Always available — every place has coordinates, and the admin panel
+      // captures GPS lat/lng but this screen had no way to actually surface
+      // them (no embedded map, no external-maps link). Opens the device's
+      // own maps app via a plain geo: URI — no Maps SDK/API key/billing
+      // involved, unlike the embedded map used elsewhere in the app.
+      _statPill(
+        context,
+        Icons.directions_outlined,
+        l10n.getDirections,
+        onTap: () => _openDirections(context, l10n),
+      ),
       if (widget.place.bestTime.isNotEmpty)
         _statPill(context, Icons.schedule_rounded, l10n.bestAtLabel(widget.place.bestTime)),
       if (widget.place.ticketRange.isNotEmpty)
         _statPill(context, Icons.confirmation_number_outlined, widget.place.ticketRange),
+      // openingHours is captured by the admin form (Travel Insights tab) and
+      // parsed by DiscoveryPlace, but had no widget displaying it anywhere
+      // on this screen — a visitor could never see when a place is open.
+      if (widget.place.openingHours.isNotEmpty)
+        _statPill(context, Icons.access_time_rounded, widget.place.openingHours),
       if (widget.place.arSupported)
         _statPill(
           context,
@@ -704,9 +816,31 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
     );
   }
 
-  Widget _statPill(BuildContext context, IconData icon, String label, {Color? accent}) {
+  Future<void> _openDirections(BuildContext context, AppLocalizations l10n) async {
+    HapticFeedback.selectionClick();
+    final lat = widget.place.lat;
+    final lng = widget.place.lng;
+    final label = Uri.encodeComponent(widget.place.name);
+    // geo: is handled by whatever maps app is installed (Google Maps,
+    // or any other) — falls back to a Google Maps web URL if no app
+    // claims the geo: scheme (e.g. some emulators, or GPS disabled).
+    final geoUri = Uri.parse('geo:$lat,$lng?q=$lat,$lng($label)');
+    final webUri = Uri.parse('https://www.google.com/maps/search/?api=1&query=$lat,$lng');
+
+    final launched = await canLaunchUrl(geoUri) && await launchUrl(geoUri);
+    if (!launched && await canLaunchUrl(webUri)) {
+      await launchUrl(webUri, mode: LaunchMode.externalApplication);
+      return;
+    }
+    if (!launched) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.couldNotOpenMaps)));
+    }
+  }
+
+  Widget _statPill(BuildContext context, IconData icon, String label, {Color? accent, VoidCallback? onTap}) {
     final color = accent ?? AppTheme.textPrimary(context);
-    return Container(
+    final pill = Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
       decoration: BoxDecoration(
         color: accent != null ? accent.withValues(alpha: 0.15) : AppTheme.surfaceMuted(context),
@@ -723,6 +857,12 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
           ),
         ],
       ),
+    );
+    if (onTap == null) return pill;
+    return Material(
+      color: AppTheme.colors.transparent,
+      borderRadius: BorderRadius.circular(100),
+      child: InkWell(borderRadius: BorderRadius.circular(100), onTap: onTap, child: pill),
     );
   }
 
@@ -1402,7 +1542,13 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
     return ARPlaceData(
       arSupported: widget.place.arSupported,
       arTier: widget.place.arTier,
-      arBrandName: widget.place.arTier == 1 ? l10n.arBrandNameHeritage : l10n.arBrandNameExplore,
+      // Admin sets ar_brand_name in the AR & Audio tab, and it reaches this
+      // model correctly (PlaceResource -> DiscoveryPlace.arBrandName), but
+      // this line used to always override it with a hardcoded tier-based
+      // localized string, silently discarding whatever the admin entered.
+      arBrandName: widget.place.arBrandName.isNotEmpty
+          ? widget.place.arBrandName
+          : (widget.place.arTier == 1 ? l10n.arBrandNameHeritage : l10n.arBrandNameExplore),
       arModelUrl: widget.place.arModelUrl.isNotEmpty
           ? widget.place.arModelUrl
           : "https://github.com/KhronosGroup/glTF-Sample-Models/raw/master/2.0/Duck/glTF-Binary/Duck.glb",
@@ -1732,5 +1878,91 @@ class PlaceDetailsScreenStats extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const SizedBox.shrink(); // Placeholder if needed
+  }
+}
+
+/// Minimal fullscreen swipeable photo viewer for a place's gallery — kept
+/// self-contained (no new package dependency) rather than pulling in a
+/// pinch-zoom library for what is currently a simple swipe-through-photos need.
+class _FullscreenGalleryViewer extends StatefulWidget {
+  final List<PlaceImageModel> images;
+  final int initialIndex;
+
+  const _FullscreenGalleryViewer({required this.images, required this.initialIndex});
+
+  @override
+  State<_FullscreenGalleryViewer> createState() => _FullscreenGalleryViewerState();
+}
+
+class _FullscreenGalleryViewerState extends State<_FullscreenGalleryViewer> {
+  late final PageController _controller;
+  late int _currentIndex;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentIndex = widget.initialIndex;
+    _controller = PageController(initialPage: widget.initialIndex);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppTheme.colors.black,
+      body: Stack(
+        children: [
+          PageView.builder(
+            controller: _controller,
+            itemCount: widget.images.length,
+            onPageChanged: (i) => setState(() => _currentIndex = i),
+            itemBuilder: (context, index) {
+              final img = widget.images[index];
+              return InteractiveViewer(
+                minScale: 1.0,
+                maxScale: 4.0,
+                child: Center(
+                  child: CachedImage(
+                    url: img.fullPath.isNotEmpty ? img.fullPath : img.thumbPath,
+                    fit: BoxFit.contain,
+                  ),
+                ),
+              );
+            },
+          ),
+          Positioned(
+            top: 48,
+            left: 12,
+            child: IconButton(
+              icon: Icon(Icons.close_rounded, color: AppTheme.colors.white, size: 28),
+              onPressed: () => Navigator.pop(context),
+            ),
+          ),
+          Positioned(
+            bottom: 32,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                decoration: BoxDecoration(
+                  color: AppTheme.colors.black54,
+                  borderRadius: BorderRadius.circular(100),
+                ),
+                child: Text(
+                  '${_currentIndex + 1} / ${widget.images.length}',
+                  style: GoogleFonts.inter(color: AppTheme.colors.white, fontSize: 12, fontWeight: FontWeight.w600),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

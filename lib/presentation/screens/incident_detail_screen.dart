@@ -23,17 +23,20 @@ class _IncidentDetailScreenState extends ConsumerState<IncidentDetailScreen> {
 
     return Scaffold(
       body: OracleUI.auraBackground(
-        child: StreamBuilder<List<IncidentReport>>(
-          stream: incidentRepo.getActiveIncidents(), // Using a hack for now, in reality should fetch by ID
+        // Watches this single doc by id directly — getActiveIncidents() is
+        // status-filtered to {open, under_review, escalated} for the admin
+        // dashboard and would 404 this screen the moment an admin resolves
+        // or dismisses the incident, hiding the resolution from the
+        // reporting user right when they need to see it.
+        child: StreamBuilder<IncidentReport?>(
+          stream: incidentRepo.watchIncident(widget.incidentId),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
             }
-            
+
             final l10n = AppLocalizations.of(context)!;
-            final incident = (snapshot.data ?? []).firstWhere(
-              (element) => element.incidentId == widget.incidentId,
-              orElse: () => IncidentReport(
+            final incident = snapshot.data ?? IncidentReport(
                 incidentId: '404',
                 incidentNumber: 'INV-404',
                 sessionId: 'none',
@@ -48,8 +51,7 @@ class _IncidentDetailScreenState extends ConsumerState<IncidentDetailScreen> {
                 status: 'closed',
                 createdAt: DateTime.now(),
                 updatedAt: DateTime.now(),
-              ),
-            );
+              );
 
             return CustomScrollView(
               slivers: [
@@ -169,9 +171,63 @@ class _IncidentDetailScreenState extends ConsumerState<IncidentDetailScreen> {
             incident.description,
             style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 14, height: 1.6),
           ).animate().fadeIn(delay: 200.ms),
+          if ((incident.resolutionNote ?? '').trim().isNotEmpty) ...[
+            const SizedBox(height: 20),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: AppTheme.colors.teal.withValues(alpha: 0.08),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: AppTheme.colors.teal.withValues(alpha: 0.25)),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(Icons.check_circle_outline_rounded, color: AppTheme.colors.teal, size: 16),
+                      const SizedBox(width: 8),
+                      Text(
+                        l10n.resolutionNoteLabel,
+                        style: GoogleFonts.inter(color: AppTheme.colors.teal, fontSize: 11, fontWeight: FontWeight.w700),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    incident.resolutionNote!,
+                    style: GoogleFonts.inter(color: AppTheme.textPrimary(context), fontSize: 13, height: 1.5),
+                  ),
+                  if ((incident.resolvedBy ?? '').trim().isNotEmpty) ...[
+                    const SizedBox(height: 8),
+                    Text(
+                      l10n.resolvedByLabel(incident.resolvedBy!),
+                      style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 10.5, fontWeight: FontWeight.w600),
+                    ),
+                  ],
+                ],
+              ),
+            ).animate().fadeIn(delay: 250.ms),
+          ],
         ],
       );
     });
+  }
+
+  // Timeline entries used to always show a hardcoded "2m ago" regardless of
+  // the actual event — misleading for anything but the very first event on
+  // a freshly-opened incident, and especially wrong for the resolution
+  // entry a reporter would check hours or days after filing.
+  String _formatTimelineTimestamp(String? isoTimestamp, AppLocalizations l10n) {
+    if (isoTimestamp == null) return '';
+    final parsed = DateTime.tryParse(isoTimestamp);
+    if (parsed == null) return '';
+    final diff = DateTime.now().difference(parsed);
+    if (diff.inMinutes < 60) return l10n.minutesAgoLabel(diff.inMinutes < 1 ? 1 : diff.inMinutes);
+    if (diff.inHours < 24) return '${diff.inHours}h ago';
+    if (diff.inDays < 30) return '${diff.inDays}d ago';
+    return '${parsed.year}-${parsed.month.toString().padLeft(2, '0')}-${parsed.day.toString().padLeft(2, '0')}';
   }
 
   String _timelineEventTypeLabel(String type, AppLocalizations l10n) {
@@ -278,7 +334,7 @@ class _IncidentDetailScreenState extends ConsumerState<IncidentDetailScreen> {
                             style: GoogleFonts.inter(color: AppTheme.textPrimary(context), fontWeight: FontWeight.bold, fontSize: 12),
                           ),
                           Text(
-                            AppLocalizations.of(context)!.minutesAgoLabel(2), // In reality, format the timestamp
+                            _formatTimelineTimestamp(e['timestamp'] as String?, AppLocalizations.of(context)!),
                             style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 10),
                           ),
                         ],

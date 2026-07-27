@@ -384,6 +384,15 @@ class AppLocalizationsEn extends AppLocalizations {
       'Could not open email client. Please email support@hiddengems.lk';
 
   @override
+  String get getDirections => 'Get Directions';
+
+  @override
+  String get couldNotOpenMaps => 'Could not open a maps app on this device.';
+
+  @override
+  String get photosLabel => 'Photos';
+
+  @override
   String get privacySection1Title => '1. DATA WE COLLECT';
 
   @override
@@ -3346,6 +3355,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get incidentStatusClosed => 'Closed';
+
+  @override
+  String get resolutionNoteLabel => 'Resolution';
+
+  @override
+  String resolvedByLabel(String name) {
+    return 'Resolved by $name';
+  }
 
   @override
   String get manageTeamTitle => 'Manage team';

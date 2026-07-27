@@ -832,6 +832,24 @@ abstract class AppLocalizations {
   /// **'Could not open email client. Please email support@hiddengems.lk'**
   String get couldNotOpenEmail;
 
+  /// No description provided for @getDirections.
+  ///
+  /// In en, this message translates to:
+  /// **'Get Directions'**
+  String get getDirections;
+
+  /// No description provided for @couldNotOpenMaps.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open a maps app on this device.'**
+  String get couldNotOpenMaps;
+
+  /// No description provided for @photosLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Photos'**
+  String get photosLabel;
+
   /// No description provided for @privacySection1Title.
   ///
   /// In en, this message translates to:
@@ -6039,6 +6057,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Closed'**
   String get incidentStatusClosed;
+
+  /// No description provided for @resolutionNoteLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolution'**
+  String get resolutionNoteLabel;
+
+  /// No description provided for @resolvedByLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolved by {name}'**
+  String resolvedByLabel(String name);
 
   /// No description provided for @manageTeamTitle.
   ///

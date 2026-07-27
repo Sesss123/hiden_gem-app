@@ -144,11 +144,30 @@ class _CuratorDealsScreenState extends State<CuratorDealsScreen> {
               children: [
                 Row(
                   children: [
-                    Expanded(child: Text(partner.name, style: GoogleFonts.outfit(fontSize: 15, fontWeight: FontWeight.w700, color: AppTheme.textPrimary(context)))),
+                    Expanded(
+                      child: Row(
+                        children: [
+                          Flexible(
+                            child: Text(partner.name, overflow: TextOverflow.ellipsis, style: GoogleFonts.outfit(fontSize: 15, fontWeight: FontWeight.w700, color: AppTheme.textPrimary(context))),
+                          ),
+                          // Same trust-badge gap as the AR nearby-partners card —
+                          // admin sets isVerified but it was never rendered anywhere.
+                          if (partner.isVerified) ...[
+                            const SizedBox(width: 4),
+                            Icon(Icons.verified_rounded, color: AppTheme.colors.greenAccent, size: 14),
+                          ],
+                        ],
+                      ),
+                    ),
                     Icon(Icons.star_rounded, color: AppTheme.colors.amber, size: 16),
                     const SizedBox(width: 2),
                     Text(partner.rating.toStringAsFixed(1), style: GoogleFonts.outfit(fontSize: 12, fontWeight: FontWeight.w700, color: AppTheme.textPrimary(context))),
                   ],
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  partner.priceRange,
+                  style: GoogleFonts.inter(fontSize: 11, color: AppTheme.textSecondary(context), fontWeight: FontWeight.w600),
                 ),
                 const SizedBox(height: 4),
                 Text(
