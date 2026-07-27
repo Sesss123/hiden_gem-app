@@ -98,20 +98,23 @@
             <h3 class="text-sm font-semibold text-teal-400 uppercase tracking-wider border-b border-slate-800 pb-2 flex items-center gap-2">
                 <i class="fa-regular fa-calendar"></i> Timing Configuration
             </h3>
-            <p class="text-xs text-slate-500 -mt-2">Specify whether this is a single day event or spans a season/range (MM-DD format, e.g. 04-13). Events in this catalog are annual/recurring, so no year is stored.</p>
+            <p class="text-xs text-slate-500 -mt-2">Specify whether this is a single day event or spans a season/range. Events in this catalog are annual/recurring, so pick any year below — only the month and day are saved.</p>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                    <label for="date" class="block text-xs font-semibold text-slate-300 mb-1">Single Day (MM-DD)</label>
-                    <input type="text" name="date" id="date" value="{{ old('date', $event->date) }}" placeholder="e.g., 04-13" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white font-mono placeholder-slate-600 focus:outline-none focus:border-emerald-500">
+                    <label for="date_picker" class="block text-xs font-semibold text-slate-300 mb-1">Single Day</label>
+                    <input type="date" id="date_picker" class="event-date-picker w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white font-mono focus:outline-none focus:border-emerald-500" data-target="date" style="color-scheme: dark;">
+                    <input type="hidden" name="date" id="date" value="{{ old('date', $event->date) }}">
                 </div>
                 <div>
-                    <label for="start" class="block text-xs font-semibold text-slate-300 mb-1">Start (MM-DD)</label>
-                    <input type="text" name="start" id="start" value="{{ old('start', $event->start) }}" placeholder="e.g., 07-01" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white font-mono placeholder-slate-600 focus:outline-none focus:border-emerald-500">
+                    <label for="start_picker" class="block text-xs font-semibold text-slate-300 mb-1">Start</label>
+                    <input type="date" id="start_picker" class="event-date-picker w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white font-mono focus:outline-none focus:border-emerald-500" data-target="start" style="color-scheme: dark;">
+                    <input type="hidden" name="start" id="start" value="{{ old('start', $event->start) }}">
                 </div>
                 <div>
-                    <label for="end" class="block text-xs font-semibold text-slate-300 mb-1">End (MM-DD)</label>
-                    <input type="text" name="end" id="end" value="{{ old('end', $event->end) }}" placeholder="e.g., 08-31" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white font-mono placeholder-slate-600 focus:outline-none focus:border-emerald-500">
+                    <label for="end_picker" class="block text-xs font-semibold text-slate-300 mb-1">End</label>
+                    <input type="date" id="end_picker" class="event-date-picker w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white font-mono focus:outline-none focus:border-emerald-500" data-target="end" style="color-scheme: dark;">
+                    <input type="hidden" name="end" id="end" value="{{ old('end', $event->end) }}">
                 </div>
             </div>
 
@@ -242,6 +245,33 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     showTab(initialTab);
+
+    // The DB stores MM-DD only (events are annual/recurring, no year), but
+    // <input type="date"> needs a full date to render as a real calendar
+    // widget — a fixed dummy leap year (2024) lets Feb 29 events still be
+    // picked. The hidden text input (the one actually submitted/validated
+    // server-side against /^[0-1][0-9]-[0-3][0-9]$/) is kept in sync from it.
+    const DUMMY_YEAR = '2024';
+    document.querySelectorAll('.event-date-picker').forEach(function(picker) {
+        const targetId = picker.dataset.target;
+        const hiddenInput = document.getElementById(targetId);
+        if (!hiddenInput) return;
+
+        // Pre-fill the visible picker from any existing MM-DD value
+        // (edit mode, or a validation-error redisplay).
+        if (hiddenInput.value && /^\d{2}-\d{2}$/.test(hiddenInput.value)) {
+            picker.value = DUMMY_YEAR + '-' + hiddenInput.value;
+        }
+
+        picker.addEventListener('change', function() {
+            if (!picker.value) {
+                hiddenInput.value = '';
+                return;
+            }
+            // picker.value is always YYYY-MM-DD per the date input spec.
+            hiddenInput.value = picker.value.slice(5);
+        });
+    });
 });
 </script>
 @endsection
