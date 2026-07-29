@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../../core/network/secure_http_client.dart';
 import '../../core/config/app_config.dart';
-import '../../core/config/remote_config_service.dart';
 import '../../core/utils/secure_logger.dart';
 import 'trip_cache_service.dart';
 import 'sri_lanka_event_dataset.dart';
@@ -12,13 +11,19 @@ class DynamicContentService {
 
   static Future<List<Map<String, dynamic>>> fetchEvents() async {
     try {
-      final remoteConfig = await RemoteConfigService.getInstance();
-      final remoteTimestamp = remoteConfig.dataRefreshTimestamp;
-      final localTimestamp = TripCacheService.getGlobalDataTimestamp('events');
-      
+      // Used to gate on Firebase Remote Config's "data_refresh_timestamp",
+      // which nothing on the backend/admin side ever bumps — it stayed at
+      // its default (0) forever, so localTimestamp (which grows on every
+      // cache write) was always >= it, and the app never refetched events
+      // from the API again after the very first successful fetch. An admin
+      // could publish a brand-new event and it would stay invisible on
+      // already-installed apps indefinitely. Switched to the same TTL-based
+      // shouldCheckServer/markLastServerCheck pattern already used for
+      // places (DiscoveryLocalDataSource.isCacheValid).
       final String? cachedData = TripCacheService.getGlobalData('events');
+      final needsRefresh = TripCacheService.shouldCheckServer('events', ttl: const Duration(minutes: 15));
 
-      if (cachedData != null && localTimestamp >= remoteTimestamp) {
+      if (cachedData != null && !needsRefresh) {
         final List<dynamic> data = json.decode(cachedData);
         SecureLogger.info("Events loaded from cache (Smart Refresh).");
         return List<Map<String, dynamic>>.from(data);
@@ -31,6 +36,7 @@ class DynamicContentService {
         if (response.statusCode == 200) {
           final List<dynamic> data = json.decode(response.body);
           await TripCacheService.cacheGlobalData('events', response.body);
+          TripCacheService.markLastServerCheck('events');
           SecureLogger.info("Events fetched from API and cached.");
           return List<Map<String, dynamic>>.from(data);
         } else {

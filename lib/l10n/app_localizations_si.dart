@@ -396,6 +396,9 @@ class AppLocalizationsSi extends AppLocalizations {
   String get photosLabel => 'ඡායාරූප';
 
   @override
+  String get scheduleOngoingLabel => 'පවතී — දිනය පසුව නිවේදනය කෙරේ';
+
+  @override
   String get privacySection1Title => '1. අප එකතු කරන දත්ත';
 
   @override
@@ -1886,6 +1889,24 @@ class AppLocalizationsSi extends AppLocalizations {
   @override
   String get paymentUnavailableError =>
       'මෙම වෙන්කිරීම දැන් ගෙවිය නොහැක — එය දැනටමත් ගෙවී ඇති හෝ මිල වෙනස් වී ඇති විය හැක. නැවත රිෆ්‍රෙෂ් කර උත්සාහ කරන්න.';
+
+  @override
+  String get receiptTitleLabel => 'ගෙවීම් රිසිට්පත';
+
+  @override
+  String get receiptReferenceLabel => 'යොමු අංකය';
+
+  @override
+  String get guideLabelShort => 'මාර්ගෝපදේශක';
+
+  @override
+  String get receiptPaidOnLabel => 'ගෙවූ දිනය';
+
+  @override
+  String get receiptPaymentIdLabel => 'ගෙවීම් හැඳුනුම්පත';
+
+  @override
+  String get receiptTotalPaidLabel => 'මුළු ගෙවීම';
 
   @override
   String get requestSentTitle => 'ඉල්ලීම යවන ලදී';

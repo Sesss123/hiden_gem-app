@@ -12,7 +12,18 @@ class LiveEventsService {
     final sourceEvents = dynamicEvents ?? SriLankaEvents.events;
 
     for (var event in sourceEvents) {
-      if (event.containsKey("date")) {
+      // API sends "date"/"start"/"end" as keys that are present but null for
+      // an admin-created event with no schedule set (nullable in validation
+      // — see EventController::validateEvent()). containsKey() alone is true
+      // for a null value too, so event["date"].split() used to throw, get
+      // silently swallowed by the catch block below, and drop the event from
+      // every day's view — an event with no date became invisible everywhere,
+      // not "always visible" as an unscheduled/ongoing event arguably should be.
+      final hasDate = event.containsKey("date") && event["date"] != null;
+      final hasRange = event.containsKey("start") && event["start"] != null &&
+          event.containsKey("end") && event["end"] != null;
+
+      if (hasDate) {
         // Single Day Event
         final parts = event["date"].split("-");
         try {
@@ -26,7 +37,7 @@ class LiveEventsService {
         } catch (e) {
           SecureLogger.warning('Failed parsing single day event date ${event["date"]}: $e');
         }
-      } else if (event.containsKey("start") && event.containsKey("end")) {
+      } else if (hasRange) {
         // Multi-Day or Seasonal Event
         try {
           final s = event["start"].split("-");
@@ -40,15 +51,20 @@ class LiveEventsService {
             eventEnd = eventEnd.add(const Duration(days: 365));
           }
 
-          bool overlap = startDate.isBefore(eventEnd.add(const Duration(days: 1))) && 
+          bool overlap = startDate.isBefore(eventEnd.add(const Duration(days: 1))) &&
                          endDate.isAfter(eventStart.subtract(const Duration(days: 1)));
-          
+
           if (overlap) {
             results.add(EventModel.fromJson(event));
           }
         } catch (e) {
           SecureLogger.warning('Failed parsing multi-day event range: $e');
         }
+      } else {
+        // No schedule set at all — treat as always-on/ongoing rather than
+        // invisible on every day, so an admin can publish an event before
+        // its dates are finalized without it silently vanishing.
+        results.add(EventModel.fromJson(event));
       }
     }
 

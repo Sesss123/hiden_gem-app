@@ -100,7 +100,12 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> with Automati
   }
 
   List<EventModel> _getEventsForDay(DateTime day) {
-    final events = LiveEventsService.getEventsForTrip(day, 1);
+    // Was missing dynamicEvents: _dynamicEvents, so it always read the
+    // static seed dataset (SriLankaEvents.events) instead of live
+    // admin-created events — the calendar's day markers/dots could never
+    // reflect a real admin event, even though _updateEvents() (used for the
+    // list below the calendar) correctly passes it.
+    final events = LiveEventsService.getEventsForTrip(day, 1, dynamicEvents: _dynamicEvents);
     if (_selectedCategory == null) return events;
     return events.where((e) => e.category == _selectedCategory).toList();
   }
@@ -265,15 +270,33 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> with Automati
 
   Widget _buildCategoryFilters() {
     final l10n = AppLocalizations.of(context)!;
-    return SizedBox(
-      height: 46,
-      child: ListView(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 24),
-        children: [
-          _filterChip(l10n.categoryAllFilter, null, Icons.auto_awesome_mosaic_rounded),
-          ...EventCategory.values.map((cat) => _filterChip(_categoryLabel(cat, l10n), cat, _getCategoryIcon(cat))),
+    // 9 chips (All + 8 categories) never fit one screen width — the row is
+    // scrollable by design, but with a hard-cut trailing edge and no visual
+    // cue, it reads as a rendering bug rather than "swipe for more". A fade
+    // mask on both edges signals scrollability without changing the layout.
+    return ShaderMask(
+      shaderCallback: (rect) => LinearGradient(
+        begin: Alignment.centerLeft,
+        end: Alignment.centerRight,
+        colors: [
+          AppTheme.colors.transparent,
+          AppTheme.colors.white,
+          AppTheme.colors.white,
+          AppTheme.colors.transparent,
         ],
+        stops: const [0.0, 0.04, 0.92, 1.0],
+      ).createShader(rect),
+      blendMode: BlendMode.dstIn,
+      child: SizedBox(
+        height: 46,
+        child: ListView(
+          scrollDirection: Axis.horizontal,
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          children: [
+            _filterChip(l10n.categoryAllFilter, null, Icons.auto_awesome_mosaic_rounded),
+            ...EventCategory.values.map((cat) => _filterChip(_categoryLabel(cat, l10n), cat, _getCategoryIcon(cat))),
+          ],
+        ),
       ),
     );
   }
@@ -309,6 +332,29 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> with Automati
         },
       ),
     );
+  }
+
+  static const List<String> _monthAbbrev = [
+    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+  ];
+
+  String _formatMonthDay(String mmdd) {
+    final parts = mmdd.split('-');
+    final month = int.tryParse(parts[0]);
+    final day = int.tryParse(parts.length > 1 ? parts[1] : '');
+    if (month == null || day == null || month < 1 || month > 12) return mmdd;
+    return '${_monthAbbrev[month - 1]} $day';
+  }
+
+  String _formatEventSchedule(EventModel event, AppLocalizations l10n) {
+    final date = event.date;
+    final start = event.start;
+    final end = event.end;
+    if (date != null && date.isNotEmpty) return _formatMonthDay(date);
+    if (start != null && start.isNotEmpty && end != null && end.isNotEmpty) {
+      return '${_formatMonthDay(start)} – ${_formatMonthDay(end)}';
+    }
+    return l10n.scheduleOngoingLabel;
   }
 
   String _categoryLabel(EventCategory category, AppLocalizations l10n) {
@@ -372,14 +418,16 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> with Automati
         ),
         child: Row(
           children: [
-            Container(
-              width: 44,
-              height: 44,
-              decoration: BoxDecoration(
-                color: event.categoryColor.withValues(alpha: 0.12),
-                borderRadius: BorderRadius.circular(14),
-              ),
-              child: Icon(event.categoryIcon, color: event.categoryColor, size: 20),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(14),
+              child: event.imageUrl.isNotEmpty
+                  ? CachedImage(url: event.imageUrl, width: 44, height: 44, fit: BoxFit.cover)
+                  : Container(
+                      width: 44,
+                      height: 44,
+                      decoration: BoxDecoration(color: event.categoryColor.withValues(alpha: 0.12)),
+                      child: Icon(event.categoryIcon, color: event.categoryColor, size: 20),
+                    ),
             ),
             const SizedBox(width: 14),
             Expanded(
@@ -473,15 +521,49 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> with Automati
                 ),
               ),
               SizedBox(height: 32),
+              // This section previously showed the "TEMPORAL DATA" header
+              // with event.description directly underneath it — no actual
+              // date/schedule content was ever rendered, and an event with
+              // no description (like an admin's date-less test event) left
+              // the header sitting above an empty block.
               Text(
                 AppLocalizations.of(context)!.temporalDataLabel,
                 style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 11, fontWeight: FontWeight.w900, letterSpacing: 2)
               ),
               SizedBox(height: 12),
-              Text(
-                event.description,
-                 style: GoogleFonts.inter(color: AppTheme.textPrimary(context).withValues(alpha: 0.8), fontSize: 15, height: 1.6),
+              Row(
+                children: [
+                  Icon(Icons.calendar_today_rounded, size: 14, color: Theme.of(context).colorScheme.primary),
+                  SizedBox(width: 8),
+                  Text(
+                    _formatEventSchedule(event, AppLocalizations.of(context)!),
+                    style: GoogleFonts.inter(color: AppTheme.textPrimary(context), fontSize: 13, fontWeight: FontWeight.w700),
+                  ),
+                ],
               ),
+              // location is set in the admin form and shown on the list card
+              // (eventLocationCategoryLabel) but was never rendered anywhere
+              // in this details sheet.
+              if ((event.location ?? '').trim().isNotEmpty) ...[
+                SizedBox(height: 10),
+                Row(
+                  children: [
+                    Icon(Icons.location_on_outlined, size: 14, color: Theme.of(context).colorScheme.primary),
+                    SizedBox(width: 8),
+                    Text(
+                      event.location!,
+                      style: GoogleFonts.inter(color: AppTheme.textPrimary(context), fontSize: 13, fontWeight: FontWeight.w700),
+                    ),
+                  ],
+                ),
+              ],
+              if (event.description.trim().isNotEmpty) ...[
+                SizedBox(height: 16),
+                Text(
+                  event.description,
+                   style: GoogleFonts.inter(color: AppTheme.textPrimary(context).withValues(alpha: 0.8), fontSize: 15, height: 1.6),
+                ),
+              ],
               if (event.images.length > 1) ...[
                 SizedBox(height: 24),
                 Text(

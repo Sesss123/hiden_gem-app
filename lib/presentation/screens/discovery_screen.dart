@@ -99,6 +99,17 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
         if (mounted && _searchQuery != _searchController.text) {
           setState(() {
             _searchQuery = _searchController.text;
+            // _onSearchSubmitted already resets _selectedFilter to "all" on
+            // Enter/search-action — this live-as-you-type path (fires on
+            // every debounced keystroke) didn't, so typing a name while any
+            // category chip was still selected (e.g. arriving here via
+            // widget.initialFilter from a home-screen category card) kept
+            // every result silently filtered down to that stale category
+            // first. A search for "Galle Face" while "Waterfall" was still
+            // selected matched nothing, even though the place existed.
+            if (_searchQuery.trim().isNotEmpty) {
+              _selectedFilter = "all";
+            }
           });
           _applyFilter();
         }

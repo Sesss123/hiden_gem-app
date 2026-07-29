@@ -134,6 +134,7 @@
   "getDirections": "Get Directions",
   "couldNotOpenMaps": "Could not open a maps app on this device.",
   "photosLabel": "Photos",
+  "scheduleOngoingLabel": "Ongoing — date to be announced",
   "privacySection1Title": "1. நாங்கள் சேகரிக்கும் தரவு",
   "privacySection1Body": "எங்கள் சேவைகளைப் பயன்படுத்தும்போது தானாக முன்வந்து வழங்கப்படும் தனிப்பட்ட தகவல்களை Hidden Gems Sri Lanka சேகரிக்கிறது:\n\n• கணக்குத் தகவல்: காட்சிப் பெயர், மின்னஞ்சல் முகவரி, தொலைபேசி எண், மற்றும் சுயவிவரப் படம் (Firebase Auth / Google Sign-In வழியாக).\n• துல்லியமான & நேரடி இருப்பிடம்: இருப்பிடம் அடிப்படையிலான Discovery, Local Gems, மற்றும் நேரடி கண்காணிப்பு அம்சங்களை இயக்க இருப்பிடத் தரவை நாங்கள் கோருகிறோம். Family Sharing பயன்படுத்தும்போது, அங்கீகரிக்கப்பட்ட பெறுநர்களைப் புதுப்பிக்க உங்கள் நேரடி ஆயத்தொலைவுகள் செயலாக்கப்படும்.\n• Family Sharing பெறுநர் தரவு: ஒருங்கிணைப்பு அமர்வுகளின் போது உருவாக்கப்படும் பெறுநர் பெயர்கள், தொடர்பு அடையாளங்கள், மற்றும் தற்காலிக பகிர்வு டோக்கன்கள்.\n• வழிகாட்டி சுயவிவரம் & சரிபார்ப்புத் தரவு: வழிகாட்டி சேர்க்கையின் போது சமர்ப்பிக்கப்படும் உரிமக் கள் நிலை, அடையாள சான்றுகள், பேசும் மொழிகள், மற்றும் சுயவிவர விவரங்கள்.\n• செயலியிலான செய்திகள் & முன்பதிவுகள்: சுற்றுலாப் பயணிகளுக்கும் வழிகாட்டிகளுக்கும் இடையிலான தொடர்புகள், பயணத் திட்டத் தரவு, மற்றும் அமர்வு பதிவுகள்.\n• சாதனம் & பகுப்பாய்வுத் தரவு: Firebase Analytics மற்றும் Crashlytics வழியாக செயலிழப்பு கண்டறிதல், செயல்திறன் அளவீடுகள், மற்றும் சாதன மேலுலகத் தரவு.\n• கட்டணத் தரவு: பொருந்தினால், நிதி பரிவர்த்தனைகள் PCI-DSS இணக்கமான மூன்றாம் தரப்பு கட்டண நுழைவாயில்கள் மூலம் மட்டுமே செயலாக்கப்படும். Hidden Gems Sri Lanka எங்கள் சேவையகங்களில் மூல கடன் அட்டை எண்கள் அல்லது வங்கித் தரவை ஒருபோதும் சேமிக்காது.",
   "privacySection2Title": "2. Family Sharing அம்சம் குறிப்பாக",
@@ -2033,5 +2034,11 @@
   "filterApplyButton": "வடிப்பான்களைப் பயன்படுத்து",
   "filterClearButton": "அழி",
   "filterRegionLabel": "பிராந்தியம்",
-  "filterLanguageLabel": "மொழி"
+  "filterLanguageLabel": "மொழி",
+  "receiptTitleLabel": "Payment Receipt",
+  "receiptReferenceLabel": "Reference",
+  "guideLabelShort": "Guide",
+  "receiptPaidOnLabel": "Paid on",
+  "receiptPaymentIdLabel": "Payment ID",
+  "receiptTotalPaidLabel": "Total paid"
 }

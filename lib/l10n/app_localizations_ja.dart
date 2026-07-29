@@ -389,6 +389,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get photosLabel => 'Photos';
 
   @override
+  String get scheduleOngoingLabel => 'Ongoing — date to be announced';
+
+  @override
   String get privacySection1Title => '1. 収集する情報';
 
   @override
@@ -1821,6 +1824,24 @@ class AppLocalizationsJa extends AppLocalizations {
   @override
   String get paymentUnavailableError =>
       'This booking can\'t be paid right now — it may already be paid, or the price may have changed. Pull to refresh and try again.';
+
+  @override
+  String get receiptTitleLabel => 'Payment Receipt';
+
+  @override
+  String get receiptReferenceLabel => 'Reference';
+
+  @override
+  String get guideLabelShort => 'Guide';
+
+  @override
+  String get receiptPaidOnLabel => 'Paid on';
+
+  @override
+  String get receiptPaymentIdLabel => 'Payment ID';
+
+  @override
+  String get receiptTotalPaidLabel => 'Total paid';
 
   @override
   String get requestSentTitle => 'リクエストを送信しました';

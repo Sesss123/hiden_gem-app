@@ -850,6 +850,12 @@ abstract class AppLocalizations {
   /// **'Photos'**
   String get photosLabel;
 
+  /// No description provided for @scheduleOngoingLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Ongoing — date to be announced'**
+  String get scheduleOngoingLabel;
+
   /// No description provided for @privacySection1Title.
   ///
   /// In en, this message translates to:
@@ -3459,6 +3465,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This booking can\'t be paid right now — it may already be paid, or the price may have changed. Pull to refresh and try again.'**
   String get paymentUnavailableError;
+
+  /// No description provided for @receiptTitleLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment Receipt'**
+  String get receiptTitleLabel;
+
+  /// No description provided for @receiptReferenceLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Reference'**
+  String get receiptReferenceLabel;
+
+  /// No description provided for @guideLabelShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Guide'**
+  String get guideLabelShort;
+
+  /// No description provided for @receiptPaidOnLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid on'**
+  String get receiptPaidOnLabel;
+
+  /// No description provided for @receiptPaymentIdLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment ID'**
+  String get receiptPaymentIdLabel;
+
+  /// No description provided for @receiptTotalPaidLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Total paid'**
+  String get receiptTotalPaidLabel;
 
   /// No description provided for @requestSentTitle.
   ///
