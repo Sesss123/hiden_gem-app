@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\ProcessedWebhookEvent;
 use App\Services\FirestoreService;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -16,6 +18,15 @@ class RevenueCatWebhookController extends Controller
     private const PRODUCT_TO_PLAN = [
         'guide_pro_monthly' => 'pro',
         'guide_elite_monthly' => 'elite',
+        // Traveler-side products (lib/data/datasources/premium_service.dart).
+        // These were missing entirely, so array_filter() below silently
+        // dropped premiumPlanId/premiumPlan/planId from every traveler
+        // purchase write — isPremium still got set to true, but the app had
+        // no plan key to look up usage limits against and fell back to the
+        // free tier's limits for paying Heritage Premium/Explorer users.
+        'hgems_explorer_monthly' => 'explorer',
+        'hgems_premium_monthly' => 'premium',
+        'hgems_premium_annual' => 'premium',
     ];
 
     /**
@@ -56,11 +67,21 @@ class RevenueCatWebhookController extends Controller
         $appUserId = $payload['app_user_id'] ?? null;
         $productId = $payload['product_id'] ?? null;
         $expirationAtMs = $payload['expiration_at_ms'] ?? null;
+        $eventId = $payload['id'] ?? null;
 
         if (!$eventType || !$appUserId) {
             Log::warning('RevenueCat webhook: missing event.type or event.app_user_id', ['payload' => $payload]);
             // Acknowledge anyway — malformed/irrelevant events shouldn't be retried forever.
             return response()->json(['status' => 'ignored']);
+        }
+
+        // RevenueCat retries on any non-200/timeout, so the same event can
+        // arrive more than once. Recording event.id here, before any
+        // Firestore writes happen, means a replay is a fast no-op instead of
+        // re-running the whole state transition a second time.
+        if ($eventId && !$this->markEventProcessed('revenuecat', (string) $eventId)) {
+            Log::info("RevenueCat webhook: event {$eventId} already processed, skipping.");
+            return response()->json(['status' => 'already-processed']);
         }
 
         $planId = self::PRODUCT_TO_PLAN[$productId] ?? null;
@@ -125,6 +146,36 @@ class RevenueCatWebhookController extends Controller
         }
 
         return response()->json(['status' => 'ok']);
+    }
+
+    /**
+     * Atomically records (source, event_id) as processed. Returns true the
+     * first time a given event is seen, false on every subsequent replay —
+     * relies on the unique index on processed_webhook_events(source,
+     * event_id) to make concurrent duplicate requests safe, not just
+     * sequential ones (an insert-then-check without the unique constraint
+     * would still race).
+     */
+    private function markEventProcessed(string $source, string $eventId): bool
+    {
+        try {
+            ProcessedWebhookEvent::create([
+                'source' => $source,
+                'event_id' => $eventId,
+                'created_at' => now(),
+            ]);
+            return true;
+        } catch (QueryException $e) {
+            // 23000 = integrity constraint violation (unique index hit) —
+            // this is the expected/normal path for a replayed event, not an
+            // error. Anything else is a real DB problem; let it surface via
+            // the outer catch in handle() so a genuine failure isn't
+            // silently treated as "already processed" and dropped.
+            if ($e->getCode() === '23000') {
+                return false;
+            }
+            throw $e;
+        }
     }
 
     /**

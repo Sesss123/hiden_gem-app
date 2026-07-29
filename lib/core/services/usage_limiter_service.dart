@@ -78,10 +78,28 @@ class UsageLimiterService {
     }
   }
 
+  // profile.premiumPlan holds whatever RevenueCat/the webhook last wrote —
+  // the raw store product ID (e.g. "hgems_premium_monthly"), not a short
+  // plan key. _defaultLimits and the Firestore plans/{planId} docs are both
+  // keyed by short names ("explorer"/"premium"). Without this mapping,
+  // every real purchase missed both lookups and silently fell back to the
+  // free tier's limits ("user") — a paying Heritage Premium user got the
+  // advertised "Unlimited AI Itineraries" downgraded to 3/month.
+  static const Map<String, String> _productIdToPlanKey = {
+    'hgems_explorer_monthly': 'explorer',
+    'hgems_premium_monthly': 'premium',
+    'hgems_premium_annual': 'premium',
+  };
+
+  static String _planKeyFor(String? rawPlan) {
+    if (rawPlan == null) return 'premium';
+    return _productIdToPlanKey[rawPlan] ?? rawPlan;
+  }
+
   /// Get the limit mapped to the current plan role
   static Future<int> _getLimitForFeature(String featureKey, UserProfile profile) async {
     final bool hasValidPremium = await _isPremiumValid(profile);
-    final String effectivePlan = hasValidPremium ? (profile.premiumPlan ?? 'premium') : 'user';
+    final String effectivePlan = hasValidPremium ? _planKeyFor(profile.premiumPlan) : 'user';
 
     final limits = await _getPlanLimits(effectivePlan);
     if (limits != null && limits.containsKey(featureKey)) {
