@@ -17,16 +17,31 @@ class DatabaseSeeder extends Seeder
         // Seed Places (Fix BUG-R16)
         $this->call(PlaceSeeder::class);
 
-        // Admin user (if not exists)
-        $admin = \App\Models\User::firstOrCreate(
-            ['email' => 'admin@hiddengemssl.com'],
-            [
+        // Admin user (if not exists). Was hardcoded to the plaintext password
+        // 'password123' — trivially guessable, and sitting in cleartext in
+        // version control forever regardless of whether this seeder is ever
+        // run against a real database. ADMIN_SEED_PASSWORD lets a deploy
+        // supply its own secure value; if unset, a random one is generated
+        // and printed once so it can be captured and stored properly (a
+        // password manager, not a second commit).
+        $adminEmail = env('ADMIN_SEED_EMAIL', 'admin@hiddengemssl.com');
+        $existingAdmin = \App\Models\User::where('email', $adminEmail)->first();
+        if (!$existingAdmin) {
+            $adminPassword = env('ADMIN_SEED_PASSWORD') ?: \Illuminate\Support\Str::password(20);
+            $admin = \App\Models\User::create([
+                'email' => $adminEmail,
                 'name' => 'Genesis Super Admin',
-                'password' => bcrypt('password123'),
+                'password' => bcrypt($adminPassword),
                 'is_admin' => true,
                 'role' => 'super_admin',
-            ]
-        );
+            ]);
+            if (!env('ADMIN_SEED_PASSWORD')) {
+                $this->command->warn("Generated admin password for {$adminEmail}: {$adminPassword}");
+                $this->command->warn('Save this now — it is not stored anywhere and will not be shown again.');
+            }
+        } else {
+            $admin = $existingAdmin;
+        }
         if ($admin && ($admin->role !== 'super_admin' || !$admin->is_admin)) {
             $admin->update(['role' => 'super_admin', 'is_admin' => true]);
         }

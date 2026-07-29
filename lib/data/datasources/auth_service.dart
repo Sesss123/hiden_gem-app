@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import '../../core/config/app_config.dart';
+import '../../core/network/secure_http_client.dart';
 import '../../core/services/brute_force_service.dart';
 import '../../core/utils/secure_logger.dart';
 import '../../core/notifications/notification_service.dart';
@@ -354,27 +355,46 @@ class AuthService {
   }
   
   // Delete Account (Permanent)
+  //
+  // Order matters: the Laravel cleanup call runs FIRST, while the Firebase
+  // Auth session (and its Sanctum token) is still valid. Previously
+  // user.delete() ran first "to catch requires-recent-login before touching
+  // Firestore" — but that meant any failure in the cleanup step afterward
+  // left the account's data (bookings, reviews, saved plans, security
+  // records, the Laravel `users` row, etc.) permanently orphaned with no way
+  // for the user to sign back in and retry, since their login was already
+  // gone. Now a failed cleanup call just rethrows before Firebase Auth is
+  // touched at all — the user stays logged in and can retry.
   Future<void> deleteAccount() async {
     final user = _auth.currentUser;
     if (user == null) return;
-    
+
     try {
-      // BUG-014 Fix: Attempt Auth deletion FIRST to catch requires-recent-login before touching Firestore/profile
-      await user.delete();
-      
-      // 2. Clear local profile, auth tokens, and sign out of providers
+      // 1. Server-side deep cleanup: Firestore (personal data deleted, safety/
+      // fraud records anonymized) + the linked Laravel `users` row. This is
+      // the ONLY path that can actually reach most of this data — the client
+      // has no firestore.rules permission to delete most of these
+      // collections directly, and no access to MySQL at all.
+      final response = await SecureHttpClient(http.Client()).delete(
+        Uri.parse('${AppConfig.laravelUrl}/auth/account'),
+        headers: {'X-API-KEY': AppConfig.hiddenGemsApiKey},
+      ).timeout(const Duration(seconds: 20));
+
+      if (response.statusCode != 200) {
+        throw Exception('Account deletion failed on the server (${response.statusCode}).');
+      }
+
+      // 2. Clear local profile, auth tokens, and sign out of providers.
       await UserPreferenceService.clearProfile();
       await UserPreferenceService.clearAuthToken();
       if (!kIsWeb) {
         try { await GoogleSignIn.instance.signOut(); } catch (e) { SecureLogger.warning('Google sign out failed: $e'); }
       }
 
-      // 3. Best effort Firestore cleanup (server-side Cloud Function / Admin SDK should handle deep cleanup)
-      try {
-        await _firestore.collection('users').doc(user.uid).delete();
-      } catch (e) {
-        SecureLogger.warning("Firestore doc deletion handled by backend Admin SDK: $e", tag: "Auth", isBackground: true);
-      }
+      // 3. Firebase Auth deletion last — the Laravel call above already
+      // revoked the Sanctum token and deleted users/{uid}, so this is just
+      // removing the login credential itself.
+      await user.delete();
     } catch (e) {
       SecureLogger.error("Error during Account Deletion: $e");
       rethrow;

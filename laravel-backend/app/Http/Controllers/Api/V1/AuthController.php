@@ -3,9 +3,13 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Models\Event;
+use App\Models\Place;
 use App\Models\User;
+use App\Services\FirestoreService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
@@ -224,6 +228,132 @@ class AuthController extends Controller
                 $response['debug_message'] = $e->getMessage();
             }
             return response()->json($response, 401);
+        }
+    }
+
+    /**
+     * DELETE /v1/auth/account   (GDPR right-to-erasure)
+     *
+     * The real cleanup that AuthService.deleteAccount() (Flutter) previously
+     * skipped — it only ever deleted the Firebase Auth user and the single
+     * users/{uid} Firestore doc, leaving bookings/reviews/saved plans/
+     * security records/etc. fully intact and still joinable by uid. This is
+     * called FIRST (before the Flutter side touches Firebase Auth), so a
+     * failure here leaves the user still able to sign in and retry, instead
+     * of the account being gone but the data surviving.
+     *
+     * Content authorship (places/events created_by) is nulled, not
+     * cascade-deleted — that's public tourism content, not personal data,
+     * and created_by rows are almost always content_manager/admin staff
+     * sharing this same users table. Safety/fraud records (incident reports,
+     * SOS alerts, security/device-trust events, abuse reports) are
+     * anonymized rather than deleted — security_events' own firestore.rules
+     * forbid delete entirely (`allow update, delete: if false`), signaling
+     * these are meant to stay as immutable audit records.
+     */
+    public function deleteAccount(Request $request, FirestoreService $firestore)
+    {
+        $user = $request->user();
+        $uid = $user->firebase_uid;
+
+        if ($uid) {
+            $this->purgeFirestoreData($firestore, $uid);
+        }
+
+        // Content authorship: keep the content, drop the link to this account.
+        Place::where('created_by', $user->id)->update(['created_by' => null]);
+        Event::where('created_by', $user->id)->update(['created_by' => null]);
+
+        // Revoke every token (including the one authenticating this request)
+        // before the row itself goes — this request is the account's last
+        // authenticated action either way.
+        $user->tokens()->delete();
+        $user->delete();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Account and associated data deleted.',
+        ]);
+    }
+
+    /**
+     * Deletes personal Firestore data owned by $uid, and anonymizes
+     * safety/fraud records instead of deleting them. Each collection is
+     * wrapped independently — one collection's transient failure shouldn't
+     * abort cleanup of the rest, mirroring the tolerant logging pattern
+     * already used in RevenueCatWebhookController/PayHereController.
+     */
+    private function purgeFirestoreData(FirestoreService $firestore, string $uid): void
+    {
+        $hardDeleteQueries = [
+            ['booking_requests', 'touristId'],
+            ['booking_requests', 'guideId'],
+            ['tour_reviews', 'touristId'],
+            ['tour_sessions', 'guideId'],
+            ['tour_sessions', 'touristIds', 'ARRAY_CONTAINS'],
+            ['tour_links', 'touristId'],
+            ['tour_links', 'guideId'],
+            ['family_share_links', 'touristId'],
+            ['saved_plans', 'userId'],
+            ['ar_sessions', 'hostUid'],
+            ['guide_client_notes', 'guideId'],
+            ['vehicles', 'guideId'],
+            ['vehicles', 'operatorId'],
+            ['user_progress', 'userId'],
+            ['user_gamification', 'userId'],
+            ['community_memories', 'userId'],
+            ['guide_listings', 'guideId'],
+            ['tour_packages', 'ownerId'],
+            ['operator_accounts', 'ownerUserId'],
+        ];
+
+        foreach ($hardDeleteQueries as [$collection, $field, $op]) {
+            $op = $op ?? 'EQUAL';
+            try {
+                $docs = $firestore->queryDocuments($collection, $field, $op, $uid);
+                foreach ($docs as $doc) {
+                    $firestore->deleteDocument($collection, $doc['id']);
+                }
+            } catch (\Exception $e) {
+                Log::error("Account deletion: failed purging {$collection} by {$field}", [
+                    'uid' => $uid,
+                    'error' => $e->getMessage(),
+                ]);
+            }
+        }
+
+        // Doc ID IS the uid for these two — no query needed.
+        foreach (['guide_applications', 'users'] as $collection) {
+            try {
+                $firestore->deleteDocument($collection, $uid);
+            } catch (\Exception $e) {
+                Log::error("Account deletion: failed deleting {$collection}/{$uid}", ['error' => $e->getMessage()]);
+            }
+        }
+
+        $anonymizeQueries = [
+            ['incident_reports', 'reportedBy'],
+            ['sos_alerts', 'triggeredBy'],
+            ['security_events', 'uid'],
+            ['security_alerts', 'uid'],
+            ['device_trust', 'uid'],
+            ['quarantined_sessions', 'uid'],
+            ['abuse_reports', 'reportedBy'],
+            ['abuse_events', 'userId'],
+        ];
+
+        foreach ($anonymizeQueries as [$collection, $field]) {
+            try {
+                $docs = $firestore->queryDocuments($collection, $field, 'EQUAL', $uid);
+                foreach ($docs as $doc) {
+                    $firestore->patchDocument($collection, $doc['id'], [$field => 'deleted_user']);
+                }
+            } catch (\Exception $e) {
+                Log::error("Account deletion: failed anonymizing {$collection} by {$field}", [
+                    'uid' => $uid,
+                    'error' => $e->getMessage(),
+                ]);
+            }
         }
     }
 }

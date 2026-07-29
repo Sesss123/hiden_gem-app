@@ -82,6 +82,7 @@ class AppConfig {
     if (lower == 'hidden_gems_v1_staging_key_shhh') return true;
     if (lower == '6400000000') return true;
     if (lower.contains('your_real_')) return true;
+    if (lower.contains('replace_with')) return true;
     return false;
   }
 
@@ -218,6 +219,21 @@ class AppConfig {
     // fake a value just to pass validation.
     if (Platform.isIOS && isPlaceholder(appStoreId)) {
       throw AssertionError("CRITICAL: Must configure a valid APP_STORE_ID.");
+    }
+    // Apple Sign-In on Android goes through a web-based OAuth flow (Apple has
+    // no native Android SDK) via appleServiceId/appleRedirectUri — see
+    // signInWithApple() in auth_service.dart. Warn rather than throw: unlike
+    // the secrets above, this is one of several sign-in options (Google,
+    // email, Apple), not something the whole app depends on to function —
+    // hard-failing every release build over one unconfigured secondary
+    // button would be disproportionate. Leaving it unset just means that
+    // button fails cleanly at tap time instead of at launch.
+    if (Platform.isAndroid && (isPlaceholder(appleServiceId) || isPlaceholder(appleRedirectUri))) {
+      SecureLogger.warning(
+        "Apple Sign-In is not configured (APPLE_SERVICE_ID/APPLE_REDIRECT_URI still placeholder) — "
+        "the Apple Sign-In button will fail for any user who taps it on Android.",
+        tag: "AppConfig",
+      );
     }
     if (isPlaceholder(weatherApiKey)) {
       throw AssertionError("CRITICAL: Must configure a valid WEATHER_API_KEY environment variable.");

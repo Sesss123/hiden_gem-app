@@ -68,6 +68,7 @@ Route::prefix('v1')->group(function () {
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('/auth/profile', [AuthController::class, 'profile']);
         Route::post('/auth/logout', [AuthController::class, 'logout']);
+        Route::delete('/auth/account', [AuthController::class, 'deleteAccount']);
 
         Route::get('/user/wishlist', [WishlistController::class, 'index']);
         Route::post('/places/{id}/bookmark', [WishlistController::class, 'toggle']);
