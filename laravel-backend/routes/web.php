@@ -143,6 +143,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::post('/incidents/{id}/dismiss', [IncidentController::class, 'dismiss'])->name('incidents.dismiss');
 
             Route::post('/bookings/{id}/cancel', [BookingController::class, 'cancel'])->name('bookings.cancel');
+            Route::post('/bookings/{id}/refund', [BookingController::class, 'refund'])->name('bookings.refund');
 
             Route::post('/reviews/{id}/hide', [ReviewController::class, 'hide'])->name('reviews.hide');
             Route::post('/reviews/{id}/restore', [ReviewController::class, 'restore'])->name('reviews.restore');

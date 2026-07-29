@@ -48,6 +48,15 @@ return [
         // Mirrors the client-side 0.10 in tour_session_repository.dart; the
         // server is the authoritative source once payments run through here.
         'commission_rate' => env('PAYHERE_COMMISSION_RATE', 0.10),
+        // Separate from the checkout merchant_id/merchant_secret above —
+        // PayHere's merchant *API* (used for server-initiated actions like
+        // refunds, not the hosted checkout flow) authenticates via an OAuth
+        // app id/secret pair issued from the merchant dashboard's "API &
+        // Mobile SDK" section, not the storefront credentials. Get these
+        // when you're ready to enable refunds; Admin\BookingController::refund()
+        // fails cleanly (503) until both are set, same pattern as checkout().
+        'app_id' => env('PAYHERE_APP_ID'),
+        'app_secret' => env('PAYHERE_APP_SECRET'),
     ],
 
     // Must match AppConfig.sharedSecret (HMAC_SECRET dart-define) in the

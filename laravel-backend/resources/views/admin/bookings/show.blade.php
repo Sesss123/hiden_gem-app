@@ -89,6 +89,22 @@
             </form>
         </div>
         @endif
+
+        @if(($booking['payoutStatus'] ?? 'pending') === 'paid')
+        <div class="border-t border-slate-800 pt-4">
+            <form action="{{ route('admin.bookings.refund', $booking['id']) }}" method="POST" class="space-y-3"
+                  onsubmit="return confirm('Refund this booking via PayHere? This calls PayHere\'s live refund API and cannot be undone from here.');">
+                @csrf
+                <label class="text-xs text-slate-500 uppercase font-semibold">Admin Refund Reason</label>
+                <textarea name="reason" rows="2" required maxlength="1000"
+                    class="w-full bg-slate-900 border border-slate-800 rounded-xl py-2.5 px-4 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-orange-500/50 transition"
+                    placeholder="Reason for refund (dispute, cancellation, service issue, etc.)..."></textarea>
+                <button type="submit" class="bg-orange-600 hover:bg-orange-500 text-white px-5 py-2.5 rounded-xl text-sm font-semibold shadow-md transition flex items-center gap-2">
+                    <i class="fa-solid fa-rotate-left"></i> Refund Booking
+                </button>
+            </form>
+        </div>
+        @endif
     </div>
 </div>
 @endsection

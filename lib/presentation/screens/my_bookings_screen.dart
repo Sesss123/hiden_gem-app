@@ -190,12 +190,22 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen> {
           ),
           const Spacer(),
           if (isPaid)
-            Row(
-              children: [
-                Icon(Icons.check_circle_rounded, size: 16, color: AppTheme.colors.green),
-                const SizedBox(width: 6),
-                Text(l10n.paymentPaidLabel, style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w700, color: AppTheme.colors.green)),
-              ],
+            InkWell(
+              borderRadius: BorderRadius.circular(100),
+              onTap: () => _showReceiptSheet(context, l10n, booking),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 2),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.check_circle_rounded, size: 16, color: AppTheme.colors.green),
+                    const SizedBox(width: 6),
+                    Text(l10n.paymentPaidLabel, style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w700, color: AppTheme.colors.green)),
+                    const SizedBox(width: 4),
+                    Icon(Icons.chevron_right_rounded, size: 14, color: AppTheme.colors.green.withValues(alpha: 0.6)),
+                  ],
+                ),
+              ),
             )
           else
             SizedBox(
@@ -238,6 +248,87 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen> {
     } finally {
       if (mounted) setState(() => _payingBookingId = null);
     }
+  }
+
+  /// Read-only receipt for an already-paid booking. All fields come from the
+  /// already-loaded BookingRequest (written server-side by PayHereController
+  /// ::notify() — see paidAmount/paymentId/paidAt) — no extra fetch needed.
+  /// commissionAmount/guideNetAmount are platform-internal (the guide's own
+  /// earnings split), not shown to the tourist; the total they paid is.
+  void _showReceiptSheet(BuildContext context, AppLocalizations l10n, BookingRequest booking) {
+    final guideName = _guideNames[booking.guideId] ?? l10n.guideFallbackName;
+    final currency = booking.currency ?? 'LKR';
+    final paidAmount = booking.paidAmount ?? booking.quotedPrice ?? 0;
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppTheme.colors.transparent,
+      isScrollControlled: true,
+      builder: (sheetContext) => Container(
+        padding: const EdgeInsets.fromLTRB(24, 12, 24, 32),
+        decoration: BoxDecoration(
+          color: Theme.of(sheetContext).colorScheme.surface,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(color: Theme.of(sheetContext).dividerColor.withValues(alpha: 0.3), borderRadius: BorderRadius.circular(2)),
+              ),
+            ),
+            const SizedBox(height: 20),
+            Row(
+              children: [
+                Icon(Icons.receipt_long_rounded, color: AppTheme.colors.green, size: 22),
+                const SizedBox(width: 10),
+                Text(l10n.receiptTitleLabel, style: GoogleFonts.outfit(fontSize: 17, fontWeight: FontWeight.w800, color: AppTheme.textPrimary(sheetContext))),
+              ],
+            ),
+            const SizedBox(height: 20),
+            _receiptRow(sheetContext, l10n.receiptReferenceLabel, booking.bookingId),
+            _receiptRow(sheetContext, l10n.guideLabelShort, guideName),
+            if (booking.paidAt != null)
+              _receiptRow(sheetContext, l10n.receiptPaidOnLabel, DateFormat('MMM d, yyyy • h:mm a').format(booking.paidAt!)),
+            if (booking.paymentId != null && booking.paymentId!.isNotEmpty)
+              _receiptRow(sheetContext, l10n.receiptPaymentIdLabel, booking.paymentId!),
+            const Divider(height: 32),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(l10n.receiptTotalPaidLabel, style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: AppTheme.textSecondary(sheetContext))),
+                Text(
+                  '$currency ${paidAmount.toStringAsFixed(2)}',
+                  style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.w800, color: AppTheme.textPrimary(sheetContext)),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _receiptRow(BuildContext context, String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 110,
+            child: Text(label, style: GoogleFonts.inter(fontSize: 12, color: AppTheme.textSecondary(context))),
+          ),
+          Expanded(
+            child: Text(value, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: AppTheme.textPrimary(context))),
+          ),
+        ],
+      ),
+    );
   }
 }
 

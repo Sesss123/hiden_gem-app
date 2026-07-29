@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Models\ProcessedWebhookEvent;
 use App\Services\FirestoreService;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
@@ -251,6 +253,18 @@ class PayHereController extends Controller
             return response('ok', 200);
         }
 
+        // PayHere retries this callback on timeout/non-200, so the same
+        // successful payment can arrive more than once. payment_id is
+        // PayHere's own unique identifier for the transaction — recording it
+        // before the Firestore write means a replay is a fast no-op instead
+        // of re-running updateBooking() (harmless today since it's a plain
+        // overwrite, but not something to rely on once any one-shot
+        // side-effect — a push notification, a payout trigger — is added).
+        if ($paymentId && !$this->markEventProcessed('payhere', (string) $paymentId)) {
+            Log::info("PayHere notify: payment {$paymentId} already processed, skipping.");
+            return response('ok', 200);
+        }
+
         try {
             $booking = $firestore->getDocument('booking_requests', $orderId);
             if (!$booking) {
@@ -282,6 +296,32 @@ class PayHereController extends Controller
         }
 
         return response('ok', 200);
+    }
+
+    /**
+     * Atomically records (source, event_id) as processed. Returns true the
+     * first time a given event is seen, false on every subsequent replay —
+     * relies on the unique index on processed_webhook_events(source,
+     * event_id), so concurrent duplicate requests are safe too, not just
+     * sequential ones.
+     */
+    private function markEventProcessed(string $source, string $eventId): bool
+    {
+        try {
+            ProcessedWebhookEvent::create([
+                'source' => $source,
+                'event_id' => $eventId,
+                'created_at' => now(),
+            ]);
+            return true;
+        } catch (QueryException $e) {
+            // 23000 = integrity constraint violation (unique index hit) — the
+            // expected/normal path for a replayed event, not an error.
+            if ($e->getCode() === '23000') {
+                return false;
+            }
+            throw $e;
+        }
     }
 
     /**
