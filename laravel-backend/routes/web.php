@@ -31,6 +31,18 @@ Route::get('/', function () {
     return redirect()->route('admin.login');
 });
 
+Route::get('/health', function () {
+    try {
+        \Illuminate\Support\Facades\DB::connection()->getPdo();
+        return response()->json(['status' => 'ok', 'checks' => ['database' => 'ok']]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'status' => 'error',
+            'checks' => ['database' => 'failed: ' . $e->getMessage()],
+        ], 503);
+    }
+});
+
 // Public family-sharing "join" page — no auth, rate limited to blunt token
 // enumeration attempts against the share token (26 chars from a 33-symbol
 // alphabet, ~131 bits — the throttle is defense-in-depth, not the primary

@@ -35,6 +35,13 @@ return [
         'webhook_secret' => env('REVENUECAT_WEBHOOK_SECRET'),
     ],
 
+    // Operational alerts (health-check state changes, backup failures) — see
+    // DiscordAlertService. Create a webhook under a Discord channel's
+    // Integrations settings; no bot/OAuth setup needed.
+    'discord' => [
+        'webhook_url' => env('DISCORD_ALERT_WEBHOOK_URL'),
+    ],
+
     // PayHere (Sri Lanka payment gateway) — collects tourist booking payments
     // so the platform's 10% commission is actually captured (previously the
     // commission was computed but never collected; money moved off-platform).
