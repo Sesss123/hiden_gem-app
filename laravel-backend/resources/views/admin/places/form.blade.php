@@ -61,7 +61,7 @@
         </div>
     </div>
 
-    <form action="{{ $action }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+    <form id="place_form" action="{{ $action }}" method="POST" enctype="multipart/form-data" class="space-y-6">
         @csrf
         @if($isEdit)
             @method('PUT')
@@ -942,6 +942,29 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     showTab(initialTab);
+
+    // A required field left empty on a tab other than the currently-visible
+    // one fails HTML5 validation silently — the browser can't focus/show its
+    // bubble on a hidden (display:none) element, so the click just does
+    // nothing with zero visible feedback. Jump to that field's tab first so
+    // the browser's native validation bubble actually has something visible
+    // to attach to.
+    const placeForm = document.getElementById('place_form');
+    if (placeForm) {
+        placeForm.addEventListener('submit', function(e) {
+            const firstInvalid = placeForm.querySelector(':invalid');
+            if (firstInvalid) {
+                const panel = firstInvalid.closest('.form-tab-panel');
+                if (panel && !panel.classList.contains('active')) {
+                    e.preventDefault();
+                    showTab(panel.dataset.panel);
+                    setTimeout(function() {
+                        firstInvalid.reportValidity();
+                    }, 50);
+                }
+            }
+        });
+    }
 
     // Client-side preview of picked-but-not-yet-uploaded files, so an admin
     // can confirm the browser actually registered the selection before
