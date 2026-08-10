@@ -114,7 +114,7 @@
                             ⚠️ AI Duplicate Detection Alert
                         </h3>
                         <span class="bg-amber-500 text-slate-950 text-xs font-black px-3 py-1 rounded-full uppercase tracking-wider">
-                            {{ $duplicates->count() }} Duplicate Groups Found
+                            {{ $duplicatesCount }} Duplicate Groups Found
                         </span>
                     </div>
                     <p class="text-xs text-amber-200/80 mt-1">
@@ -140,6 +140,9 @@
                             </div>
                         @endforeach
                     </div>
+                    @if($duplicatesCount > $duplicates->count())
+                        <p class="text-[11px] text-amber-300/70 mt-3">Showing the first {{ $duplicates->count() }} of {{ $duplicatesCount }} groups — use search to find the rest.</p>
+                    @endif
                 </div>
             </div>
         </div>

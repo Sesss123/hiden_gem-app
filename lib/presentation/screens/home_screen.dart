@@ -728,11 +728,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(12),
                     child: (user.photoURL != null && user.photoURL!.isNotEmpty)
-                        ? Image.network(
-                            user.photoURL!,
+                        ? CachedImage(
+                            url: user.photoURL!,
                             fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) =>
-                                Icon(Icons.person_rounded, color: AppTheme.textPrimary(context), size: 20),
+                            width: 36,
+                            height: 36,
+                            errorWidget: Icon(Icons.person_rounded, color: AppTheme.textPrimary(context), size: 20),
                           )
                         : Icon(Icons.person_rounded, color: AppTheme.textPrimary(context), size: 20),
                   ),

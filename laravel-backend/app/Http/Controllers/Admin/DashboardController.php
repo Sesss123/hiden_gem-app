@@ -44,12 +44,19 @@ class DashboardController extends Controller
         $duplicates = Place::select('name', 'district', DB::raw('count(*) as cnt'), DB::raw('GROUP_CONCAT(id SEPARATOR ", ") as duplicate_ids'))
             ->groupBy('name', 'district')
             ->having('cnt', '>', 1)
+            ->take(50)
             ->get();
+
+        // The badge shows the real total group count, not just how many
+        // rows were rendered — a wrapped COUNT over the grouped subquery
+        // so this stays a single indexed aggregate rather than re-running
+        // the unbounded group/having scan a second time.
+        $duplicatesCount = DB::table(DB::raw('(select 1 from places group by name, district having count(*) > 1) as dup_groups'))->count();
 
         return view('admin.dashboard', compact(
             'totalPlaces', 'arPlaces',
             'totalUsers', 'proUsers', 'vipUsers',
-            'totalWishlists', 'byDistrict', 'byCategory', 'recentPlaces', 'duplicates'
+            'totalWishlists', 'byDistrict', 'byCategory', 'recentPlaces', 'duplicates', 'duplicatesCount'
         ));
     }
 }
