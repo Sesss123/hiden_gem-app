@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\ProcessImageUpload;
 use App\Models\Event;
 use App\Models\EventImage;
 use App\Services\ImageProcessingService;
@@ -12,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class EventController extends Controller
 {
@@ -289,6 +291,11 @@ class EventController extends Controller
         return $data;
     }
 
+    /**
+     * Creates each image row immediately with the shared "processing"
+     * placeholder, then dispatches the actual GD resize/WebP-encode work to
+     * ProcessImageUpload — see PlaceController::handleImages() for why.
+     */
     protected function handleImages(Request $request, Event $event)
     {
         if ($request->hasFile('images')) {
@@ -296,16 +303,35 @@ class EventController extends Controller
             $isFirst = $event->images()->count() === 0;
 
             foreach ($request->file('images') as $file) {
-                $paths = $this->imageService->processAndStore($file, (string) $event->id, 'events');
                 $order++;
+                $isCover = $isFirst && $order === 1;
 
-                EventImage::create([
+                $holdingPath = 'image_uploads/' . Str::uuid()->toString() . '.' . ($file->getClientOriginalExtension() ?: 'jpg');
+                Storage::disk('local')->put($holdingPath, file_get_contents($file->getRealPath()));
+
+                // EventImageObserver::saving() rejects a second row for this
+                // event with the same full_path (duplicate-detection) — see
+                // PlaceController::handleImages() for why the placeholder
+                // needs a unique tag per row instead of a bare shared URL.
+                $placeholderUrl = '/images/processing-placeholder.webp?row=' . Str::uuid()->toString();
+
+                $image = EventImage::create([
                     'event_id' => $event->id,
-                    'thumb_path' => $paths['thumb_path'],
-                    'full_path' => $paths['full_path'],
-                    'is_cover' => $isFirst && $order === 1,
+                    'thumb_path' => $placeholderUrl,
+                    'full_path' => $placeholderUrl,
+                    'is_cover' => $isCover,
                     'sort_order' => $order,
+                    'status' => 'processing',
                 ]);
+
+                ProcessImageUpload::dispatch(
+                    'event',
+                    $image->id,
+                    $holdingPath,
+                    (string) $event->id,
+                    'events',
+                    $file->getClientOriginalExtension() ?: 'jpg',
+                );
             }
         }
     }

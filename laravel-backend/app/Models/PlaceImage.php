@@ -11,7 +11,7 @@ class PlaceImage extends Model
 
     protected $fillable = [
         'place_id', 'thumb_path', 'full_path', 'is_cover',
-        'sort_order', 'sync_version'
+        'sort_order', 'sync_version', 'status'
     ];
 
     protected $casts = [

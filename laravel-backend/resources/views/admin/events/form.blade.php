@@ -164,7 +164,16 @@
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                         @foreach($event->images as $img)
                             <div class="relative group bg-slate-900 rounded-xl p-2 border {{ $img->is_cover ? 'border-emerald-500 shadow-lg shadow-emerald-950/50' : 'border-slate-800' }}">
-                                <img src="{{ $img->thumb_path }}" class="w-full h-24 object-cover rounded-lg">
+                                <img src="{{ $img->thumb_path }}" class="w-full h-24 object-cover rounded-lg {{ $img->status === 'processing' ? 'opacity-50 animate-pulse' : '' }}">
+                                @if($img->status === 'processing')
+                                    <span class="absolute top-3 right-3 bg-amber-500 text-slate-950 text-[9px] font-bold px-1.5 py-0.5 rounded shadow flex items-center gap-1">
+                                        <i class="fa-solid fa-spinner fa-spin"></i> Processing
+                                    </span>
+                                @elseif($img->status === 'failed')
+                                    <span class="absolute top-3 right-3 bg-red-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded shadow" title="Image processing failed — try re-uploading.">
+                                        <i class="fa-solid fa-triangle-exclamation"></i> Failed
+                                    </span>
+                                @endif
                                 @if($img->is_cover)
                                     <span class="absolute top-3 left-3 bg-emerald-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded shadow">COVER</span>
                                 @endif

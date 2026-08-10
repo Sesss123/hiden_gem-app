@@ -31,7 +31,12 @@ class PlaceSyncController extends Controller
         // Honor client limit capped at 500 max to avoid memory exhaustion (Audit #13)
         $limit = min((int) $request->query('limit', 100), 500);
 
-        $query = Place::withoutGlobalScope('active')->with('images');
+        // Still-processing/failed uploads carry the shared placeholder path,
+        // not a real photo — never ship that to the app as if it were the
+        // place's actual gallery.
+        $query = Place::withoutGlobalScope('active')->with(['images' => function ($q) {
+            $q->where('status', 'ready');
+        }]);
         if ($sinceVersion > 0) {
             $query->where('sync_version', '>', $sinceVersion);
         } else {
@@ -89,7 +94,9 @@ class PlaceSyncController extends Controller
         $cursor = (int) $request->query('cursor', 0);
         $limit = min((int) $request->query('limit', 100), 500);
 
-        $query = Place::with('images')
+        $query = Place::with(['images' => function ($q) {
+                $q->where('status', 'ready');
+            }])
             ->where('is_deleted', false)
             ->where('status', Place::STATUS_APPROVED);
 

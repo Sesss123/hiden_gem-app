@@ -23,6 +23,23 @@ class ImageProcessingService
      */
     public function processAndStore(UploadedFile $file, string $ownerId, string $folder = 'places'): array
     {
+        return $this->processFromPath($file->getRealPath(), $ownerId, $folder, $file->getClientOriginalExtension());
+    }
+
+    /**
+     * Same pipeline as processAndStore(), but reads from an already-saved
+     * disk path instead of a live UploadedFile — used by ProcessImageUpload
+     * (queued), since UploadedFile wraps a request-scoped temp file that's
+     * gone by the time a queue worker picks the job up.
+     *
+     * @param string $sourcePath Absolute path to the raw image bytes.
+     * @param string $ownerId
+     * @param string $folder
+     * @param string $originalExtension Used only by the no-GD fallback path.
+     * @return array {thumb_path: string, full_path: string}
+     */
+    public function processFromPath(string $sourcePath, string $ownerId, string $folder, string $originalExtension = 'jpg'): array
+    {
         $filename = Str::uuid()->toString();
         $thumbRelPath = "{$folder}/{$ownerId}/thumb/{$filename}.webp";
         $fullRelPath = "{$folder}/{$ownerId}/full/{$filename}.webp";
@@ -30,8 +47,6 @@ class ImageProcessingService
         // Create storage directories if they don't exist
         Storage::disk('public')->makeDirectory("{$folder}/{$ownerId}/thumb");
         Storage::disk('public')->makeDirectory("{$folder}/{$ownerId}/full");
-
-        $sourcePath = $file->getRealPath();
 
         // Check if GD extension is available for WebP conversion
         if (function_exists('imagecreatefromstring') && function_exists('imagewebp')) {
@@ -87,15 +102,15 @@ class ImageProcessingService
 
         // BUG-L001: Fallback direct storage MUST validate extension to prevent webshell/RCE uploads
         $allowedExts = ['jpg', 'jpeg', 'png', 'webp'];
-        $ext = strtolower($file->getClientOriginalExtension() ?: 'jpg');
+        $ext = strtolower($originalExtension ?: 'jpg');
         if (!in_array($ext, $allowedExts)) {
             throw new \InvalidArgumentException("Invalid image extension: .{$ext}. Only JPG, PNG, and WebP are allowed.");
         }
 
         $fallbackThumb = "{$folder}/{$ownerId}/thumb/{$filename}.{$ext}";
         $fallbackFull = "{$folder}/{$ownerId}/full/{$filename}.{$ext}";
-        Storage::disk('public')->putFileAs("{$folder}/{$ownerId}/thumb", $file, "{$filename}.{$ext}");
-        Storage::disk('public')->putFileAs("{$folder}/{$ownerId}/full", $file, "{$filename}.{$ext}");
+        Storage::disk('public')->put("{$folder}/{$ownerId}/thumb/{$filename}.{$ext}", file_get_contents($sourcePath));
+        Storage::disk('public')->put("{$folder}/{$ownerId}/full/{$filename}.{$ext}", file_get_contents($sourcePath));
 
         return [
             'thumb_path' => "/storage/" . $fallbackThumb,

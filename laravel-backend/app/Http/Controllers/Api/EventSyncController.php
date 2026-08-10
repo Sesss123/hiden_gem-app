@@ -20,12 +20,21 @@ class EventSyncController extends Controller
      */
     public function events(Request $request)
     {
-        $events = Event::with('images')
+        // Cap the payload like PlaceSyncController does — this endpoint has
+        // no cursor, so a hard limit is the difference between "harmless
+        // today" and "unbounded once events stop being pruned."
+        $events = Event::with(['images' => function ($q) {
+                // Still-processing/failed uploads carry the shared
+                // placeholder path, not a real photo — never ship that to
+                // the app as if it were the event's actual cover image.
+                $q->where('status', 'ready');
+            }])
             ->where('is_deleted', false)
             ->where('status', Event::STATUS_APPROVED)
             ->where('is_active', true)
             ->orderBy('sync_version', 'asc')
             ->orderBy('id', 'asc')
+            ->limit(500)
             ->get();
 
         return response()->json(EventResource::collection($events)->resolve());

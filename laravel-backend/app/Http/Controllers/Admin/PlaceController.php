@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\ProcessImageUpload;
 use App\Models\Place;
 use App\Models\PlaceImage;
 use App\Services\GeohashService;
@@ -428,6 +429,13 @@ class PlaceController extends Controller
         return $data;
     }
 
+    /**
+     * Creates each image row immediately with the shared "processing"
+     * placeholder, then dispatches the actual GD resize/WebP-encode work to
+     * ProcessImageUpload — the CPU-bound part no longer runs inside the
+     * caller's DB::transaction(), which previously stayed open for the
+     * entire multi-second pipeline on a multi-photo submission.
+     */
     protected function handleImages(Request $request, Place $place)
     {
         if ($request->hasFile('images')) {
@@ -435,16 +443,39 @@ class PlaceController extends Controller
             $isFirst = $place->images()->count() === 0;
 
             foreach ($request->file('images') as $file) {
-                $paths = $this->imageService->processAndStore($file, $place->id);
                 $order++;
+                $isCover = $isFirst && $order === 1;
 
-                PlaceImage::create([
+                // Move the raw bytes off the request-scoped temp path onto the
+                // 'local' disk now, synchronously — UploadedFile itself can't
+                // survive being serialized onto the queue.
+                $holdingPath = 'image_uploads/' . Str::uuid()->toString() . '.' . ($file->getClientOriginalExtension() ?: 'jpg');
+                Storage::disk('local')->put($holdingPath, file_get_contents($file->getRealPath()));
+
+                // PlaceImageObserver::saving() rejects a second row for this
+                // place with the same full_path (duplicate-detection) — a
+                // shared literal placeholder path would collide on any
+                // multi-photo upload, so give each row's placeholder a
+                // unique query-string tag instead of a bare shared URL.
+                $placeholderUrl = '/images/processing-placeholder.webp?row=' . Str::uuid()->toString();
+
+                $image = PlaceImage::create([
                     'place_id' => $place->id,
-                    'thumb_path' => $paths['thumb_path'],
-                    'full_path' => $paths['full_path'],
-                    'is_cover' => $isFirst && $order === 1,
+                    'thumb_path' => $placeholderUrl,
+                    'full_path' => $placeholderUrl,
+                    'is_cover' => $isCover,
                     'sort_order' => $order,
+                    'status' => 'processing',
                 ]);
+
+                ProcessImageUpload::dispatch(
+                    'place',
+                    $image->id,
+                    $holdingPath,
+                    $place->id,
+                    'places',
+                    $file->getClientOriginalExtension() ?: 'jpg',
+                );
             }
         }
     }
