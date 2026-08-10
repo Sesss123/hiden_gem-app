@@ -4,6 +4,10 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/theme/oracle_ui_system.dart';
 import '../../core/services/voice_assistant_service.dart';
+import '../../core/services/usage_limiter_service.dart';
+import '../../data/datasources/monetization_service.dart';
+import '../../l10n/app_localizations.dart';
+import 'limit_reached_dialog.dart';
 
 class OracleOrb extends StatefulWidget {
   const OracleOrb({super.key});
@@ -21,36 +25,69 @@ class _OracleOrbState extends State<OracleOrb> {
       await VoiceAssistantService.stopListening();
       if (!mounted) return;
       setState(() => _isListening = false);
-    } else {
-      setState(() {
-        _isListening = true;
-        _words = "Oracle is listening...";
-      });
-      
-      await VoiceAssistantService.startListening(
-        onResult: (words) {
-          if (!mounted) return;
-          setState(() => _words = words);
-        },
-        onDone: () async {
-          final position = await VoiceAssistantService.getCurrentPosition();
-          final contextLoc = position != null 
-              ? "${position.latitude}, ${position.longitude}" 
-              : "Mystical Coordinates";
-
-          final reply = await VoiceAssistantService.getOracleLogic(_words, contextLoc, position: position);
-          await VoiceAssistantService.speak(reply);
-          
-          if (mounted) {
-            setState(() {
-              _isListening = false;
-              _words = reply;
-            });
-            _showCinematicReply(context, reply);
-          }
-        },
-      );
+      return;
     }
+
+    // Gate every new query on the monthly Oracle-chat quota — mirrors the
+    // check-then-consume pattern used for AR sessions (place_details_screen)
+    // so a rapid double-tap can't slip past the check before it's consumed.
+    final canAccess = await UsageLimiterService.canAccessOracleChat();
+    if (!mounted) return;
+    if (!canAccess) {
+      _showLimitReachedDialog();
+      return;
+    }
+    final claimed = await UsageLimiterService.incrementOracleChat();
+    if (!mounted) return;
+    if (!claimed) {
+      _showLimitReachedDialog();
+      return;
+    }
+
+    setState(() {
+      _isListening = true;
+      _words = "Oracle is listening...";
+    });
+
+    await VoiceAssistantService.startListening(
+      onResult: (words) {
+        if (!mounted) return;
+        setState(() => _words = words);
+      },
+      onDone: () async {
+        final position = await VoiceAssistantService.getCurrentPosition();
+        final contextLoc = position != null
+            ? "${position.latitude}, ${position.longitude}"
+            : "Mystical Coordinates";
+
+        final reply = await VoiceAssistantService.getOracleLogic(_words, contextLoc, position: position);
+        await VoiceAssistantService.speak(reply);
+
+        if (mounted) {
+          setState(() {
+            _isListening = false;
+            _words = reply;
+          });
+          _showCinematicReply(context, reply);
+        }
+      },
+    );
+  }
+
+  void _showLimitReachedDialog() {
+    showDialog(
+      context: context,
+      builder: (_) => LimitReachedDialog(
+        featureName: AppLocalizations.of(context)!.featureNameOracleQueries,
+        onWatchAd: () {
+          MonetizationService().showRewardedAd(
+            onRewardEarned: (reward) async {
+              await UsageLimiterService.provideBonusOracleChat();
+            },
+          );
+        },
+      ),
+    );
   }
 
   void _showCinematicReply(BuildContext context, String text) {

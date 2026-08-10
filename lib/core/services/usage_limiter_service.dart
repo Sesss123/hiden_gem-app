@@ -34,18 +34,21 @@ class UsageLimiterService {
       'saved_plans': 2,
       'offline_downloads_per_month': 2,
       'ar_sessions_per_month': 1,
+      'oracle_chats_per_month': 10,
     },
     'explorer': {
       'ai_plans_per_month': 20,
       'saved_plans': 10,
       'offline_downloads_per_month': 10,
       'ar_sessions_per_month': 3,
+      'oracle_chats_per_month': 40,
     },
     'premium': {
       'ai_plans_per_month': 50,
       'saved_plans': 25,
       'offline_downloads_per_month': 9999, // Unlimited
       'ar_sessions_per_month': 9999, // Unlimited
+      'oracle_chats_per_month': 9999, // Unlimited
     }
   };
 
@@ -59,7 +62,8 @@ class UsageLimiterService {
       profile.aiTripsUsedThisMonth = 0;
       profile.arSessionsUsedThisMonth = 0;
       profile.offlineDownloadsUsed = 0;
-      
+      profile.oracleChatsUsedThisMonth = 0;
+
       // Calculate next reset date (next 30 days)
       profile.usageResetDate = now.add(const Duration(days: 30));
 
@@ -72,6 +76,7 @@ class UsageLimiterService {
           'aiTripsUsedThisMonth': 0,
           'arSessionsUsedThisMonth': 0,
           'offlineDownloadsUsed': 0,
+          'oracleChatsUsedThisMonth': 0,
           'usageResetDate': profile.usageResetDate?.toIso8601String(),
         });
       }
@@ -268,6 +273,60 @@ class UsageLimiterService {
     final allowed = await _atomicCheckAndIncrement(counterField: 'arSessionsUsedThisMonth', limit: limit);
     if (allowed) {
       profile.arSessionsUsedThisMonth++;
+      await UserPreferenceService.saveProfile(profile);
+    }
+    return allowed;
+  }
+
+  /// Provides one-time bonus access to Oracle chat (e.g. after watching a rewarded ad)
+  static Future<void> provideBonusOracleChat() async {
+    final profile = UserPreferenceService.getProfile();
+    if (profile.oracleChatsUsedThisMonth > 0) {
+      profile.oracleChatsUsedThisMonth--;
+      await UserPreferenceService.saveProfile(profile);
+
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        await _firestore.collection('users').doc(user.uid).update({
+          'oracleChatsUsedThisMonth': profile.oracleChatsUsedThisMonth,
+        });
+      }
+    }
+  }
+
+  // --- Oracle Chat (voice AI orb) ---
+
+  /// Checks if Oracle chat access is allowed within the user's limit constraints
+  static Future<bool> canAccessOracleChat() async {
+    final profile = UserPreferenceService.getProfile();
+
+    // Core Logic: Valid Premium users have unlimited Oracle chat
+    if (await _isPremiumValid(profile)) return true;
+
+    await checkAndResetLimits(profile);
+    final limit = await _getLimitForFeature('oracle_chats_per_month', profile);
+    return profile.oracleChatsUsedThisMonth < limit;
+  }
+
+  /// Marks an Oracle chat query as made and increments the usage meter.
+  /// Atomic against concurrent calls — see _atomicCheckAndIncrement. Returns
+  /// whether the increment was actually allowed.
+  static Future<bool> incrementOracleChat() async {
+    final profile = UserPreferenceService.getProfile();
+    if (await _isPremiumValid(profile)) {
+      final allowed = await _atomicCheckAndIncrement(counterField: 'oracleChatsUsedThisMonth', limit: 9999);
+      if (allowed) {
+        profile.oracleChatsUsedThisMonth++;
+        await UserPreferenceService.saveProfile(profile);
+      }
+      return allowed;
+    }
+
+    await checkAndResetLimits(profile);
+    final limit = await _getLimitForFeature('oracle_chats_per_month', profile);
+    final allowed = await _atomicCheckAndIncrement(counterField: 'oracleChatsUsedThisMonth', limit: limit);
+    if (allowed) {
+      profile.oracleChatsUsedThisMonth++;
       await UserPreferenceService.saveProfile(profile);
     }
     return allowed;

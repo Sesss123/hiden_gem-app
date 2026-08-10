@@ -1702,6 +1702,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get featureNameHeritageSessions => 'ヘリテージセッション';
 
   @override
+  String get featureNameOracleQueries => 'Oracle Queries';
+
+  @override
   String get bonusSessionUnlockedSnackbar =>
       'ボーナスセッションが解放されました！もう一度起動してみてください。';
 

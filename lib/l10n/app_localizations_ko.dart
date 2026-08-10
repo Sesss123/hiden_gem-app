@@ -1706,6 +1706,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get featureNameHeritageSessions => '유적 탐방 세션';
 
   @override
+  String get featureNameOracleQueries => 'Oracle Queries';
+
+  @override
   String get bonusSessionUnlockedSnackbar => '보너스 세션이 잠금 해제되었습니다! 다시 실행해 보세요.';
 
   @override

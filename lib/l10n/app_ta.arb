@@ -2040,5 +2040,6 @@
   "guideLabelShort": "Guide",
   "receiptPaidOnLabel": "Paid on",
   "receiptPaymentIdLabel": "Payment ID",
-  "receiptTotalPaidLabel": "Total paid"
+  "receiptTotalPaidLabel": "Total paid",
+  "featureNameOracleQueries": "Oracle Queries"
 }

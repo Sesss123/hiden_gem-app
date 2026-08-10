@@ -45,6 +45,7 @@ class UserProfile {
   int aiTripsUsedThisMonth;
   int arSessionsUsedThisMonth;
   int offlineDownloadsUsed;
+  int oracleChatsUsedThisMonth;
   DateTime? usageResetDate;
 
   UserProfile({
@@ -82,6 +83,7 @@ class UserProfile {
     this.aiTripsUsedThisMonth = 0,
     this.arSessionsUsedThisMonth = 0,
     this.offlineDownloadsUsed = 0,
+    this.oracleChatsUsedThisMonth = 0,
     this.usageResetDate,
     this.premiumSignature,
     List<String>? bookmarkedPlaces,
@@ -111,6 +113,7 @@ class UserProfile {
       aiTripsUsedThisMonth: 0,
       arSessionsUsedThisMonth: 0,
       offlineDownloadsUsed: 0,
+      oracleChatsUsedThisMonth: 0,
       usageResetDate: DateTime.now().add(const Duration(days: 30)),
     );
   }
@@ -150,6 +153,7 @@ class UserProfile {
         'aiTripsUsedThisMonth': aiTripsUsedThisMonth,
         'arSessionsUsedThisMonth': arSessionsUsedThisMonth,
         'offlineDownloadsUsed': offlineDownloadsUsed,
+        'oracleChatsUsedThisMonth': oracleChatsUsedThisMonth,
         'usageResetDate': usageResetDate?.toIso8601String(),
         'premiumSignature': premiumSignature,
         'bookmarkedPlaces': bookmarkedPlaces,
@@ -194,6 +198,7 @@ class UserProfile {
         aiTripsUsedThisMonth: json['aiTripsUsedThisMonth'] ?? 0,
         arSessionsUsedThisMonth: json['arSessionsUsedThisMonth'] ?? 0,
         offlineDownloadsUsed: json['offlineDownloadsUsed'] ?? 0,
+        oracleChatsUsedThisMonth: json['oracleChatsUsedThisMonth'] ?? 0,
         usageResetDate: json['usageResetDate'] != null ? DateTime.parse(json['usageResetDate']) : null,
         premiumSignature: json['premiumSignature'],
         bookmarkedPlaces: List<String>.from(json['bookmarkedPlaces'] ?? []),

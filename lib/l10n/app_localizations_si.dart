@@ -1764,6 +1764,9 @@ class AppLocalizationsSi extends AppLocalizations {
   String get featureNameHeritageSessions => 'උරුම සැසි';
 
   @override
+  String get featureNameOracleQueries => 'Oracle විමසුම්';
+
+  @override
   String get bonusSessionUnlockedSnackbar =>
       'ප්‍රසාද සැසිය අගුළු හැරී ඇත! නැවත ආරම්භ කිරීමට උත්සාහ කරන්න.';
 

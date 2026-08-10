@@ -3244,6 +3244,12 @@ abstract class AppLocalizations {
   /// **'Heritage Sessions'**
   String get featureNameHeritageSessions;
 
+  /// No description provided for @featureNameOracleQueries.
+  ///
+  /// In en, this message translates to:
+  /// **'Oracle Queries'**
+  String get featureNameOracleQueries;
+
   /// No description provided for @bonusSessionUnlockedSnackbar.
   ///
   /// In en, this message translates to:

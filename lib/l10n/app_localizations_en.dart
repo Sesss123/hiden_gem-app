@@ -1744,6 +1744,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get featureNameHeritageSessions => 'Heritage Sessions';
 
   @override
+  String get featureNameOracleQueries => 'Oracle Queries';
+
+  @override
   String get bonusSessionUnlockedSnackbar =>
       'Bonus Session Unlocked! Try launching again.';
 

@@ -669,6 +669,7 @@
   },
   "itineraryRemovedSnackbar": "සංචාර සැලැස්මෙන් ඉවත් කරන ලදී.",
   "featureNameHeritageSessions": "උරුම සැසි",
+  "featureNameOracleQueries": "Oracle විමසුම්",
   "bonusSessionUnlockedSnackbar": "ප්‍රසාද සැසිය අගුළු හැරී ඇත! නැවත ආරම්භ කිරීමට උත්සාහ කරන්න.",
   "oracleRewardActiveSnackbar": "✨ ඔරකල් ත්‍යාගය සක්‍රීයයි! AR සැසිය අගුළු හැරී ඇත.",
   "okButton": "හරි",

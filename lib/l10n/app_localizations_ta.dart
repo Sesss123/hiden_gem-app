@@ -1773,6 +1773,9 @@ class AppLocalizationsTa extends AppLocalizations {
   String get featureNameHeritageSessions => 'பாரம்பரிய அமர்வுகள்';
 
   @override
+  String get featureNameOracleQueries => 'Oracle Queries';
+
+  @override
   String get bonusSessionUnlockedSnackbar =>
       'போனஸ் அமர்வு திறக்கப்பட்டது! மீண்டும் தொடங்க முயற்சிக்கவும்.';
 

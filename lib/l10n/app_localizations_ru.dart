@@ -1774,6 +1774,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get featureNameHeritageSessions => 'Сеансы наследия';
 
   @override
+  String get featureNameOracleQueries => 'Oracle Queries';
+
+  @override
   String get bonusSessionUnlockedSnackbar =>
       'Бонусный сеанс разблокирован! Попробуйте запустить снова.';
 

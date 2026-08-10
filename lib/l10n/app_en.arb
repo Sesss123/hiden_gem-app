@@ -672,6 +672,7 @@
   },
   "itineraryRemovedSnackbar": "Removed from itinerary.",
   "featureNameHeritageSessions": "Heritage Sessions",
+  "featureNameOracleQueries": "Oracle Queries",
   "bonusSessionUnlockedSnackbar": "Bonus Session Unlocked! Try launching again.",
   "oracleRewardActiveSnackbar": "✨ Oracle reward active! AR session unlocked.",
   "okButton": "OK",
