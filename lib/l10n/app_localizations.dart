@@ -3268,6 +3268,18 @@ abstract class AppLocalizations {
   /// **'OK'**
   String get okButton;
 
+  /// No description provided for @arComingSoonTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'AR Experience Coming Soon'**
+  String get arComingSoonTitle;
+
+  /// No description provided for @arComingSoonMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'We\'re putting the finishing touches on the AR experience for {placeName}. Check back in a future update.'**
+  String arComingSoonMessage(String placeName);
+
   /// No description provided for @arBrandNameHeritage.
   ///
   /// In en, this message translates to:

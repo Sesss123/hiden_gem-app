@@ -1778,6 +1778,14 @@ class AppLocalizationsSi extends AppLocalizations {
   String get okButton => 'හරි';
 
   @override
+  String get arComingSoonTitle => 'AR අත්දැකීම ඉක්මනින්';
+
+  @override
+  String arComingSoonMessage(String placeName) {
+    return '$placeName සඳහා AR අත්දැකීම අවසන් කරමින් සිටිමු. ඉදිරි update එකකදී නැවත බලන්න.';
+  }
+
+  @override
   String get arBrandNameHeritage => 'උරුම AR';
 
   @override

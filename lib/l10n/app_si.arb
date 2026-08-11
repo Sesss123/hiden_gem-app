@@ -673,6 +673,11 @@
   "bonusSessionUnlockedSnackbar": "ප්‍රසාද සැසිය අගුළු හැරී ඇත! නැවත ආරම්භ කිරීමට උත්සාහ කරන්න.",
   "oracleRewardActiveSnackbar": "✨ ඔරකල් ත්‍යාගය සක්‍රීයයි! AR සැසිය අගුළු හැරී ඇත.",
   "okButton": "හරි",
+  "arComingSoonTitle": "AR අත්දැකීම ඉක්මනින්",
+  "arComingSoonMessage": "{placeName} සඳහා AR අත්දැකීම අවසන් කරමින් සිටිමු. ඉදිරි update එකකදී නැවත බලන්න.",
+  "@arComingSoonMessage": {
+    "placeholders": { "placeName": { "type": "String" } }
+  },
   "arBrandNameHeritage": "උරුම AR",
   "arBrandNameExplore": "ගවේෂණ AR",
   "bonusDownloadUnlockedSnackbar": "ප්‍රසාද බාගැනීම අගුළු හැරී ඇත! නැවත බාගැනීමට උත්සාහ කරන්න.",

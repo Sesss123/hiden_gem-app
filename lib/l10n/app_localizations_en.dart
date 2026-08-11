@@ -1758,6 +1758,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get okButton => 'OK';
 
   @override
+  String get arComingSoonTitle => 'AR Experience Coming Soon';
+
+  @override
+  String arComingSoonMessage(String placeName) {
+    return 'We\'re putting the finishing touches on the AR experience for $placeName. Check back in a future update.';
+  }
+
+  @override
   String get arBrandNameHeritage => 'Heritage AR';
 
   @override

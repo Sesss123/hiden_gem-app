@@ -4,10 +4,12 @@ import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hidden_gems_sl/data/datasources/trip_cache_service.dart';
+import '../../core/config/app_config.dart';
 import '../../core/theme/oracle_ui_system.dart';
 import '../../data/models/trip_plan_model.dart';
 import '../widgets/interested_events_hub.dart';
 import 'ar_viewer_screen.dart';
+import 'ar_coming_soon_screen.dart';
 import 'results_screen.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:collection/collection.dart';
@@ -88,6 +90,15 @@ class _SavedPlansScreenState extends ConsumerState<SavedPlansScreen> {
   }
 
   void _launchARShortcut(BuildContext context, String name) {
+    // AR content isn't live yet — see AppConfig.arFeatureEnabled.
+    if (!AppConfig.arFeatureEnabled) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => ARComingSoonScreen(placeName: name)),
+      );
+      return;
+    }
+
     final l10n = AppLocalizations.of(context)!;
     final arData = ARPlaceData(
       arSupported: true,

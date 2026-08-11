@@ -156,6 +156,11 @@ class AppConfig {
 
   static const bool ragEnabled = true;
 
+  // Heritage AR models aren't ready yet (no trained/production 3D assets) —
+  // flip to true once real AR content ships, rather than reverting every
+  // place.arSupported gate this flag guards across place_details_screen.dart.
+  static const bool arFeatureEnabled = false;
+
   static final String sharedAesKey = const String.fromEnvironment(
     'SHARED_AES_KEY',
     defaultValue: "DEFAULT_NON_PROD_AES_KEY", // Non-prod placeholder

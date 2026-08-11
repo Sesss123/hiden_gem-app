@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import '../../core/config/app_config.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/theme/oracle_ui_system.dart';
 import '../../core/analytics/analytics_service.dart';
@@ -28,6 +29,7 @@ import '../widgets/limit_reached_dialog.dart';
 import 'ar_viewer_screen.dart';
 import 'ar_upgrade_dialog.dart';
 import 'ar_fallback_screen.dart';
+import 'ar_coming_soon_screen.dart';
 import 'premium_hub_screen.dart';
 import '../../core/services/premium_unlock_service.dart';
 import '../../data/datasources/monetization_service.dart';
@@ -51,6 +53,12 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
   String? _translatedAiReason;
   bool _isTranslating = false;
   bool _isBookmarked = false;
+
+  // AR content isn't live yet (no trained/production 3D assets) — gate every
+  // AR entry point on AppConfig.arFeatureEnabled as well as the place's own
+  // arSupported flag, so flipping that one config value is enough to bring
+  // AR back for a future release without touching this screen again.
+  bool get _arAvailableForPlace => widget.place.arSupported && AppConfig.arFeatureEnabled;
 
   @override
   void initState() {
@@ -374,7 +382,7 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
                 ],
               ),
             ),
-            if (widget.place.arSupported)
+            if (_arAvailableForPlace)
               Positioned(
                 top: 104,
                 right: 16,
@@ -706,7 +714,7 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
               fontFamilyFallback: [GoogleFonts.abhayaLibre().fontFamily!, GoogleFonts.hindGuntur().fontFamily!],
             )
           ),
-          if (widget.place.arSupported) ...[
+          if (_arAvailableForPlace) ...[
               SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -792,7 +800,7 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
       // on this screen — a visitor could never see when a place is open.
       if (widget.place.openingHours.isNotEmpty)
         _statPill(context, Icons.access_time_rounded, widget.place.openingHours),
-      if (widget.place.arSupported)
+      if (_arAvailableForPlace)
         _statPill(
           context,
           Icons.view_in_ar_outlined,
@@ -1196,8 +1204,17 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
                 ),
                 onPressed: () async {
                   HapticFeedback.mediumImpact();
-                  if (widget.place.arSupported) {
+                  if (_arAvailableForPlace) {
                     _handleARLaunch(context, ref, l10n);
+                  } else if (widget.place.arSupported && !AppConfig.arFeatureEnabled) {
+                    // This place genuinely has AR content tagged — the
+                    // feature itself is just switched off app-wide, so say
+                    // that rather than silently falling back to the
+                    // unrelated "Add to Destiny" action.
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => ARComingSoonScreen(placeName: widget.place.name)),
+                    );
                   } else {
                     final nowAdded = await UserPreferenceService.toggleItinerary(widget.place.id);
                     if (!context.mounted) return;
@@ -1213,10 +1230,17 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(widget.place.arSupported ? Icons.view_in_ar : Icons.auto_fix_high, size: 20),
+                      Icon(
+                        _arAvailableForPlace
+                            ? Icons.view_in_ar
+                            : (widget.place.arSupported ? Icons.view_in_ar_outlined : Icons.auto_fix_high),
+                        size: 20,
+                      ),
                       const SizedBox(width: 10),
                       Text(
-                        widget.place.arSupported ? l10n.invokeAr : l10n.addToDestiny,
+                        _arAvailableForPlace
+                            ? l10n.invokeAr
+                            : (widget.place.arSupported ? l10n.comingSoonButton : l10n.addToDestiny),
                         style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w700),
                       ),
                     ],

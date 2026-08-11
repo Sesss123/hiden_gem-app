@@ -1719,6 +1719,14 @@ class AppLocalizationsKo extends AppLocalizations {
   String get okButton => '확인';
 
   @override
+  String get arComingSoonTitle => 'AR Experience Coming Soon';
+
+  @override
+  String arComingSoonMessage(String placeName) {
+    return 'We\'re putting the finishing touches on the AR experience for $placeName. Check back in a future update.';
+  }
+
+  @override
   String get arBrandNameHeritage => '유적 AR';
 
   @override

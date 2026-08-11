@@ -2042,5 +2042,10 @@
   "receiptPaidOnLabel": "Paid on",
   "receiptPaymentIdLabel": "Payment ID",
   "receiptTotalPaidLabel": "Total paid",
-  "featureNameOracleQueries": "Oracle Queries"
+  "featureNameOracleQueries": "Oracle Queries",
+  "arComingSoonTitle": "AR Experience Coming Soon",
+  "arComingSoonMessage": "We're putting the finishing touches on the AR experience for {placeName}. Check back in a future update.",
+  "@arComingSoonMessage": {
+    "placeholders": { "placeName": { "type": "String" } }
+  }
 }

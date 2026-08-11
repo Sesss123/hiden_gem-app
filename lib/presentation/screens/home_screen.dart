@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:hidden_gems_sl/l10n/app_localizations.dart';
 import 'package:hidden_gems_sl/presentation/screens/real_time_food_scanner_screen.dart';
+import '../../core/config/app_config.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/theme/oracle_ui_system.dart';
 import '../../core/utils/secure_logger.dart';
@@ -25,6 +26,7 @@ import '../../data/models/event_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'savor_lanka_screen.dart';
 import '../../features/ar_video/screens/ar_video_library_screen.dart';
+import 'ar_coming_soon_screen.dart';
 import '../widgets/banner_ad_widget.dart';
 import '../widgets/native_ad_widget.dart';
 import '../../data/models/discovery_place.dart';
@@ -319,7 +321,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             AppTheme.colors.indigoAccent,
             () {
               Haptics.medium();
-              Navigator.push(context, MaterialPageRoute(builder: (context) => const ARVideoLibraryScreen()));
+              // AR content isn't live yet — see AppConfig.arFeatureEnabled.
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => AppConfig.arFeatureEnabled
+                      ? const ARVideoLibraryScreen()
+                      : ARComingSoonScreen(placeName: l10n.arPortalsAction),
+                ),
+              );
             },
           ),
         ),

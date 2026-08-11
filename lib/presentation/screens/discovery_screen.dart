@@ -7,6 +7,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:hidden_gems_sl/l10n/app_localizations.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:hidden_gems_sl/data/repositories/discovery_repository.dart';
+import '../../core/config/app_config.dart';
 import '../../core/theme/oracle_ui_system.dart';
 import '../../core/theme/app_theme.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -68,7 +69,13 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
     return cats.map((c) => '$_categoryFilterPrefix$c').toList();
   }
 
-  List<String> get _filters => [..._fixedFilters, ..._categoryFilters];
+  // AR content isn't live yet — see AppConfig.arFeatureEnabled. Drop the
+  // "ar" chip from what actually renders rather than removing it from
+  // _fixedFilters itself, so re-enabling the flag needs no further change.
+  List<String> get _filters => [
+        ..._fixedFilters.where((f) => f != 'ar' || AppConfig.arFeatureEnabled),
+        ..._categoryFilters,
+      ];
   List<String> get _secondaryFilters => _filters.where((f) => !_primaryFilters.contains(f)).toList();
 
   // BUG-080: Debounce timer for search queries
@@ -154,7 +161,11 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
         p.category.toLowerCase().contains("village")
       ).toList();
       
-      _arPicks = _allPlaces.where((p) => p.arSupported).toList();
+      // AR content isn't live yet — see AppConfig.arFeatureEnabled. Leave
+      // _arPicks empty so the "Explore in AR" section (gated on isNotEmpty
+      // below) never renders instead of promising an experience that isn't
+      // ready.
+      _arPicks = AppConfig.arFeatureEnabled ? _allPlaces.where((p) => p.arSupported).toList() : [];
 
       _villageExperiences = await VillageExperienceService.getNearbyExperiences(
         lat: _currentPosition?.latitude ?? 7.8731,
@@ -442,36 +453,38 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
                   const SizedBox(height: 40),
 
                   // AR Toggle
-                  OracleUI.glassContainer(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    child: Row(
-                      children: [
-                        Icon(Icons.view_in_ar_rounded, color: Theme.of(context).colorScheme.secondary),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                l10n.heritageArSearchTitle,
-                                style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 13, color: AppTheme.textPrimary(context)),
-                              ),
-                              Text(
-                                l10n.onlyShowArEnabledSpots,
-                                style: GoogleFonts.inter(fontSize: 10, color: AppTheme.textSecondary(context)),
-                              ),
-                            ],
+                  if (AppConfig.arFeatureEnabled) ...[
+                    OracleUI.glassContainer(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      child: Row(
+                        children: [
+                          Icon(Icons.view_in_ar_rounded, color: Theme.of(context).colorScheme.secondary),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  l10n.heritageArSearchTitle,
+                                  style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 13, color: AppTheme.textPrimary(context)),
+                                ),
+                                Text(
+                                  l10n.onlyShowArEnabledSpots,
+                                  style: GoogleFonts.inter(fontSize: 10, color: AppTheme.textSecondary(context)),
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                        Switch(
-                          value: _onlyAR,
-                          activeThumbColor: Theme.of(context).colorScheme.secondary,
-                          onChanged: (val) => setModalState(() => _onlyAR = val),
-                        ),
-                      ],
+                          Switch(
+                            value: _onlyAR,
+                            activeThumbColor: Theme.of(context).colorScheme.secondary,
+                            onChanged: (val) => setModalState(() => _onlyAR = val),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 40),
+                    const SizedBox(height: 40),
+                  ],
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
@@ -1302,7 +1315,7 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
                                 ),
                               ),
                             ),
-                            if (place.arSupported)
+                            if (place.arSupported && AppConfig.arFeatureEnabled)
                               Positioned(
                                 top: 12,
                                 right: 12,

@@ -676,6 +676,11 @@
   "bonusSessionUnlockedSnackbar": "Bonus Session Unlocked! Try launching again.",
   "oracleRewardActiveSnackbar": "✨ Oracle reward active! AR session unlocked.",
   "okButton": "OK",
+  "arComingSoonTitle": "AR Experience Coming Soon",
+  "arComingSoonMessage": "We're putting the finishing touches on the AR experience for {placeName}. Check back in a future update.",
+  "@arComingSoonMessage": {
+    "placeholders": { "placeName": { "type": "String" } }
+  },
   "arBrandNameHeritage": "Heritage AR",
   "arBrandNameExplore": "Explore AR",
   "bonusDownloadUnlockedSnackbar": "Bonus Download Unlocked! Try downloading again.",
