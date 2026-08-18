@@ -536,16 +536,22 @@ class PlaceController extends Controller
         // stays occupied forever — scanning only active rows would regenerate
         // an already-used ID and the INSERT would fail with a duplicate-key
         // error on every subsequent attempt for that category+district.
-        $lastPlace = Place::withoutGlobalScopes()
+        $ids = Place::withoutGlobalScopes()
             ->where('id', 'like', "{$prefix}%")
             ->lockForUpdate()
-            ->orderBy('id', 'desc')
-            ->first();
+            ->pluck('id');
 
-        $nextNum = 1;
-        if ($lastPlace && preg_match('/-(\d+)$/', $lastPlace->id, $matches)) {
-            $nextNum = ((int)$matches[1]) + 1;
+        $maxNum = 0;
+        foreach ($ids as $id) {
+            if (preg_match('/-(\d+)$/', $id, $matches)) {
+                $num = (int)$matches[1];
+                if ($num > $maxNum) {
+                    $maxNum = $num;
+                }
+            }
         }
+
+        $nextNum = $maxNum + 1;
 
         return $prefix . sprintf('%03d', $nextNum);
     }
