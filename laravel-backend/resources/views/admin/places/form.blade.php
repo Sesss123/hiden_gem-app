@@ -207,19 +207,15 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                     <label class="block text-xs font-semibold text-slate-300 mb-1">Opening Hours</label>
-                    @php
-                        $openOpts = ['24 Hours', '8 AM - 5 PM', '8 AM - 6 PM', 'Varies by season'];
-                        $currOpen = old('opening_hours', $place->opening_hours);
-                    @endphp
-                    <select name="opening_hours" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-emerald-500">
-                        <option value="">Select Hours</option>
-                        @foreach($openOpts as $opt)
-                            <option value="{{ $opt }}" {{ $currOpen == $opt ? 'selected' : '' }}>{{ $opt }}</option>
-                        @endforeach
-                        @if($currOpen && !in_array($currOpen, $openOpts))
-                            <option value="{{ $currOpen }}" selected>{{ $currOpen }} (Custom)</option>
-                        @endif
-                    </select>
+                    <input type="text" name="opening_hours" list="hours_list" value="{{ old('opening_hours', $place->opening_hours) }}"
+                        placeholder="e.g. 8 AM - 5 PM, or 24 Hours"
+                        class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500">
+                    <datalist id="hours_list">
+                        <option value="24 Hours">
+                        <option value="8 AM - 5 PM">
+                        <option value="8 AM - 6 PM">
+                        <option value="Varies by season">
+                    </datalist>
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-slate-300 mb-1">Best Time to Visit</label>
