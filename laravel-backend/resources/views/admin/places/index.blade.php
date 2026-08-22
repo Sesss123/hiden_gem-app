@@ -10,6 +10,16 @@
             </h2>
             <p class="text-xs text-slate-400 mt-0.5">Showing active places syncing to mobile clients</p>
         </div>
+        
+        <div class="hidden md:flex items-center ml-auto mr-4">
+            <form action="{{ route('admin.places.import') }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                <input type="file" name="json_file" accept=".json,.jsonl,.txt" class="hidden" id="json_import_file" onchange="if(confirm('Import places from this file?')) this.form.submit();">
+                <button type="button" onclick="document.getElementById('json_import_file').click()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-2 rounded-xl text-xs font-semibold transition border border-slate-700 flex items-center gap-2 shadow-lg" title="Import Places from JSON/JSONL">
+                    <i class="fa-solid fa-file-import text-emerald-400"></i> Import JSON
+                </button>
+            </form>
+        </div>
 
         <form action="{{ route('admin.places.index') }}" method="GET" class="flex flex-wrap items-center gap-3 w-full md:w-auto">
             <div class="relative flex-1 md:w-64">

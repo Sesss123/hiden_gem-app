@@ -352,6 +352,101 @@ class PlaceController extends Controller
         return back()->with('success', 'Cover image updated.');
     }
 
+    public function importJson(Request $request)
+    {
+        $request->validate([
+            'json_file' => 'required|file|mimes:json,txt|max:10240', // Max 10MB
+        ]);
+
+        $file = $request->file('json_file');
+        $jsonStr = trim(file_get_contents($file->getRealPath()));
+
+        // Fix concatenated JSON objects commonly found in loosely formatted .jsonl files
+        if (str_starts_with($jsonStr, '{') && str_ends_with($jsonStr, '}')) {
+            $jsonStr = preg_replace('/\}\s*\{/', '},{', $jsonStr);
+            $jsonStr = '[' . $jsonStr . ']';
+        }
+
+        $data = json_decode($jsonStr, true);
+
+        if (!is_array($data)) {
+            return back()->with('error', 'Invalid JSON format. Please upload a valid JSON array or concatenated JSON objects.');
+        }
+
+        $count = 0;
+        DB::transaction(function () use ($data, &$count) {
+            foreach ($data as $item) {
+                if (!isset($item['name'])) continue;
+
+                $rawId = $item['id'] ?? null;
+                $category = $item['category'] ?? $item['category_id'] ?? 'General';
+                $district = $item['district'] ?? $item['district_id'] ?? 'Unknown';
+
+                if ($rawId && preg_match('/^[A-Z]{2,4}-[A-Z]{3}-\d{3}$/', $rawId)) {
+                    $id = $rawId;
+                } else {
+                    $id = $this->generateSmartId($category, $district);
+                }
+
+                Place::updateOrCreate(
+                    ['id' => $id],
+                    [
+                    'name' => $item['name'] ?? 'Unnamed Gem',
+                    'description' => $item['description'] ?? '',
+                    'district' => $district,
+                    'province' => $item['province'] ?? $item['province_id'] ?? '',
+                    'category' => $category,
+                    'lat' => (float) ($item['lat'] ?? 0),
+                    'lng' => (float) ($item['lng'] ?? 0),
+                    'rating' => (float) ($item['rating'] ?? 4.5),
+                    'ticket_price' => $item['ticket_price'] ?? $item['ticketRange'] ?? 'Free',
+                    'road_condition' => $item['road_condition'] ?? $item['roadType'] ?? 'Unknown',
+                    'vehicle_access' => $item['vehicleAccess'] ?? $item['vehicle_access'] ?? '',
+                    'opening_hours' => $item['opening_hours'] ?? $item['openingHours'] ?? '',
+                    'mobile_signal' => $item['mobile_signal'] ?? '',
+                    'activities' => $item['activities'] ?? '',
+                    'tourist_popularity' => $item['tourist_popularity'] ?? '',
+                    'family_friendly' => $item['family_friendly'] ?? '',
+                    'budget_category' => $item['budget_category'] ?? $item['budgetCategory'] ?? '',
+                    'parking_avail' => $item['parking_avail'] ?? '',
+                    'parking_range' => $item['parkingRange'] ?? ($item['parking_avail'] === 'yes' ? 'Available' : 'No'),
+                    'toilets' => $item['toilets'] ?? '',
+                    'food_nearby' => $item['food_nearby'] ?? '',
+                    'wheelchair_access' => $item['wheelchair_access'] ?? '',
+                    'camping_allowed' => $item['camping_allowed'] ?? '',
+                    'safety_level' => $item['safety_level'] ?? $item['safetyLevel'] ?? '',
+                    'wildlife_hazard' => $item['wildlife_hazard'] ?? '',
+                    'guide_required' => $item['guide_required'] ?? '',
+                    'rain_sensitivity' => $item['rain_sensitivity'] ?? '',
+                    'monsoon_note' => $item['monsoon_note'] ?? '',
+                    'best_time_to_visit' => $item['best_time_to_visit'] ?? $item['bestTime'] ?? 'Anytime',
+                    'height_m' => $item['Height_m'] ?? $item['height_m'] ?? '0',
+                    'length_km' => $item['Length_km'] ?? $item['length_km'] ?? '0',
+                    'surfing' => $item['Surfing'] ?? $item['surfing'] ?? 'no',
+                    'risk_tags' => is_array($item['riskTags'] ?? null) ? $item['riskTags'] : [],
+                    'facilities' => is_array($item['facilities'] ?? null) ? $item['facilities'] : [],
+                    'ar_supported' => (bool) ($item['arSupported'] ?? false),
+                    'ar_tier' => (int) ($item['arTier'] ?? 3),
+                    'ar_brand_name' => $item['arBrandName'] ?? '',
+                    'ar_model_url' => $item['arModelUrl'] ?? '',
+                    'ar_historical_model_url' => $item['arHistoricalModelUrl'] ?? '',
+                    'ar_model_scale' => (float) ($item['arModelScale'] ?? 0.01),
+                    'historical_period' => $item['historicalPeriod'] ?? '',
+                    'ar_file_size_mb' => (float) ($item['ar_file_size_mb'] ?? 0),
+                    'audio_guide_url_si' => $item['audio_guide_url_si'] ?? '',
+                    'audio_guide_url_en' => $item['audio_guide_url_en'] ?? '',
+                    'geohash' => $item['geohash'] ?? '',
+                    'image_url' => $item['imageUrl'] ?? null,
+                ]);
+                $count++;
+            }
+        });
+
+        $this->logAdminAction('place.imported', 'Place', null, ['count' => $count]);
+
+        return redirect()->route('admin.places.index')->with('success', "Successfully imported/updated {$count} places from JSON.");
+    }
+
     protected function validatePlace(Request $request, $isUpdate = false)
     {
         $data = $request->validate([

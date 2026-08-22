@@ -82,6 +82,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         // Mutating writes throttled (30/min) — content_manager mutates events
         // directly with no approval gate, same abuse risk as full-admin writes.
         Route::middleware('throttle:30,1')->group(function () {
+            Route::post('places/import', [PlaceController::class, 'importJson'])->name('places.import');
             Route::resource('places', PlaceController::class)->only(['store', 'update']);
             Route::resource('events', EventController::class)->only(['store', 'update', 'destroy']);
 
