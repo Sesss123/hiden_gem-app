@@ -445,7 +445,9 @@ class PlaceController extends Controller
 
         $this->logAdminAction('place.imported', 'Place', null, ['count' => $count]);
 
-        return redirect()->route('admin.places.index')->with('success', "Successfully imported/updated {$count} places from JSON.");
+        $redirectRoute = Auth::user()->isFullAdmin() ? 'admin.places.pending' : 'admin.places.my-submissions';
+
+        return redirect()->route($redirectRoute)->with('success', "Successfully imported/updated {$count} places from JSON.");
     }
 
     protected function validatePlace(Request $request, $isUpdate = false)
