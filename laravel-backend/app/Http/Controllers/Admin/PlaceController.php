@@ -437,6 +437,7 @@ class PlaceController extends Controller
                     'audio_guide_url_en' => $item['audio_guide_url_en'] ?? '',
                     'geohash' => $item['geohash'] ?? '',
                     'image_url' => $item['imageUrl'] ?? null,
+                    'status' => Place::STATUS_PENDING,
                 ]);
                 $count++;
             }
