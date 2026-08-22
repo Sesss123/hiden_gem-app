@@ -40,6 +40,10 @@ class PlaceController extends Controller
             $query->where(function ($q) {
                 $q->where('created_by', Auth::id())->orWhereNull('created_by');
             });
+        } else {
+            // Full admins should only see Approved places in the main list.
+            // Pending places are reviewed in the Pending tab.
+            $query->where('status', Place::STATUS_APPROVED);
         }
 
         if ($search = $request->input('search')) {
@@ -438,6 +442,7 @@ class PlaceController extends Controller
                     'geohash' => $item['geohash'] ?? '',
                     'image_url' => $item['imageUrl'] ?? null,
                     'status' => Place::STATUS_PENDING,
+                    'created_by' => \Illuminate\Support\Facades\Auth::id(),
                 ]);
                 $count++;
             }
