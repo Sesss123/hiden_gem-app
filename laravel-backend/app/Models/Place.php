@@ -124,4 +124,19 @@ class Place extends Model
     {
         return $this->belongsTo(User::class, 'created_by');
     }
+
+    /**
+     * Scope a query to only include places close to a given coordinate.
+     * Uses the Haversine formula. Returns places within the given radius (in km).
+     */
+    public function scopeCloseTo(Builder $query, $lat, $lng, $radius = 50)
+    {
+        // 6371 is the radius of the Earth in kilometers
+        $haversine = "(6371 * acos(cos(radians(?)) * cos(radians(lat)) * cos(radians(lng) - radians(?)) + sin(radians(?)) * sin(radians(lat))))";
+        
+        return $query->select('*')
+                     ->selectRaw("{$haversine} AS distance", [$lat, $lng, $lat])
+                     ->having('distance', '<=', $radius)
+                     ->orderBy('distance');
+    }
 }

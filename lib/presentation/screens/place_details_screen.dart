@@ -152,6 +152,8 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
                             _buildEtiquetteSection(context, l10n).animate().fadeIn(delay: 600.ms, duration: 600.ms),
                             const SizedBox(height: 20),
                             _buildAncestralPortalCard(context).animate().fadeIn(delay: 700.ms, duration: 600.ms).shimmer(delay: 2.seconds, duration: 1500.ms),
+                            const SizedBox(height: 24),
+                            _buildNearbyPlacesSection(context, l10n).animate().fadeIn(delay: 800.ms, duration: 600.ms),
                             const SizedBox(height: 100),
                           ],
                         ),
@@ -1597,6 +1599,102 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
   }
 
 
+
+  Widget _buildNearbyPlacesSection(BuildContext context, AppLocalizations l10n) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(Icons.near_me_outlined, color: Theme.of(context).colorScheme.primary, size: 18),
+            const SizedBox(width: 8),
+            Text(
+              "Nearby Places",
+              style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w700, color: AppTheme.textPrimary(context)),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        SizedBox(
+          height: 140,
+          child: FutureBuilder<Result<List<DiscoveryPlace>, AppError>>(
+            future: ref.read(discoveryRepositoryProvider).getNearbyPlaces(widget.place),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              if (!snapshot.hasData || snapshot.data!.isError) {
+                return Center(child: Text("Unable to load nearby places.", style: GoogleFonts.inter(color: AppTheme.textSecondary(context))));
+              }
+              
+              final places = snapshot.data!.successValue!;
+              if (places.isEmpty) {
+                return Center(child: Text("No nearby places found.", style: GoogleFonts.inter(color: AppTheme.textSecondary(context))));
+              }
+
+              return ListView.separated(
+                scrollDirection: Axis.horizontal,
+                physics: const BouncingScrollPhysics(),
+                itemCount: places.length,
+                separatorBuilder: (context, index) => const SizedBox(width: 12),
+                itemBuilder: (context, index) {
+                  final place = places[index];
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => PlaceDetailsScreen(place: place),
+                        ),
+                      );
+                    },
+                    child: Container(
+                      width: 120,
+                      decoration: BoxDecoration(
+                        color: AppTheme.surfaceMuted(context),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      clipBehavior: Clip.antiAlias,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          CachedImage(
+                            url: place.thumbUrl,
+                            width: 120,
+                            height: 80,
+                            fit: BoxFit.cover,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  place.name,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.bold, color: AppTheme.textPrimary(context)),
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  "${place.distanceKm.toStringAsFixed(1)} km",
+                                  style: GoogleFonts.inter(fontSize: 10, color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.w600),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
 
   Widget _buildAncestralPortalCard(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;

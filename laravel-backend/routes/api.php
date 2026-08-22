@@ -86,6 +86,7 @@ Route::prefix('v1')->group(function () {
         Route::get('/', [PlaceSyncController::class, 'allPlaces']);
         Route::get('/check-version', [PlaceSyncController::class, 'checkVersion']);
         Route::get('/delta', [PlaceSyncController::class, 'delta']);
+        Route::get('/{id}/nearby', [PlaceSyncController::class, 'nearby']);
     });
 
     // Guide Applications API Routes (Protected by Sanctum Auth, API Key & Rate Limiting)

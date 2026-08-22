@@ -120,9 +120,40 @@ class PlaceSyncController extends Controller
         $nextCursor = $places->last()?->sync_version ?? 0;
 
         return response()->json([
-            'places' => $formatted,
-            'next_cursor' => $nextCursor,
             'has_more' => $hasMore,
+            'next_cursor' => $nextCursor,
+            'places' => $formatted,
+        ]);
+    }
+
+    /**
+     * GET /api/v1/places/{id}/nearby
+     * Returns nearby places based on the given place's coordinates.
+     */
+    public function nearby(Request $request, $id)
+    {
+        $place = Place::where('is_deleted', false)->where('status', Place::STATUS_APPROVED)->findOrFail($id);
+        
+        $radius = (float) $request->query('radius', 50); // Default 50km
+        $limit = min((int) $request->query('limit', 10), 50); // Default 10 places
+        
+        $query = Place::with(['images' => function ($q) {
+                $q->where('status', 'ready');
+            }])
+            ->where('is_deleted', false)
+            ->where('status', Place::STATUS_APPROVED)
+            ->where('id', '!=', $id);
+            
+        // If the user wants to filter by the same category
+        if ($request->query('same_category') === 'true') {
+            $query->where('category', $place->category);
+        }
+
+        $nearbyPlaces = $query->closeTo($place->lat, $place->lng, $radius)->limit($limit)->get();
+        
+        return response()->json([
+            'place' => \App\Http\Resources\PlaceResource::make($place),
+            'nearby_places' => \App\Http\Resources\PlaceResource::collection($nearbyPlaces),
         ]);
     }
 }

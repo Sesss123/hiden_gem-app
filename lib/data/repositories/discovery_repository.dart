@@ -159,6 +159,25 @@ class DiscoveryRepository {
     */
   }
 
+  // --- Nearby Places ---
+  Future<Result<List<DiscoveryPlace>, AppError>> getNearbyPlaces(DiscoveryPlace currentPlace, {double radiusKm = 50.0, int limit = 10}) async {
+    final result = await getDiscoveryPlaces(userLat: currentPlace.lat, userLng: currentPlace.lng);
+    
+    if (result.isSuccess) {
+      final allPlaces = result.successValue!;
+      
+      // Filter out current place, enforce radius limit, and take top N
+      final nearby = allPlaces
+          .where((p) => p.id != currentPlace.id && p.distanceKm <= radiusKm)
+          .take(limit)
+          .toList();
+          
+      return Success(nearby);
+    }
+    
+    return result;
+  }
+
   // --- Private Helpers ---
 
   Future<List<DiscoveryPlace>> _processPlaces(List<DiscoveryPlace> places, double? lat, double? lng) async {
