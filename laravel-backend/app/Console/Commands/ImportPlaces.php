@@ -60,7 +60,15 @@ class ImportPlaces extends Command
 
             $this->info("Loading file: " . basename($path));
             $json = File::get($path);
-            $data = json_decode($json, true);
+            
+            // Fix concatenated JSON objects commonly found in loosely formatted .jsonl files
+            $jsonStr = trim($json);
+            if (str_starts_with($jsonStr, '{') && str_ends_with($jsonStr, '}')) {
+                $jsonStr = preg_replace('/\}\s*\{/', '},{', $jsonStr);
+                $jsonStr = '[' . $jsonStr . ']';
+            }
+
+            $data = json_decode($jsonStr, true);
 
             if (!is_array($data)) {
                 $this->error("Invalid JSON format in {$path}");
@@ -79,13 +87,10 @@ class ImportPlaces extends Command
                     $id = $this->generateSmartId($category, $district, $counters);
                 }
 
-                if (Place::where('id', $id)->exists()) {
-                    continue;
-                }
-
                 // Map legacy LLM JSON fields or new camelCase fields
-                Place::create([
-                    'id' => $id,
+                Place::updateOrCreate(
+                    ['id' => $id],
+                    [
                     'name' => $item['name'] ?? 'Unnamed Gem',
                     'description' => $item['description'] ?? '',
                     'district' => $item['district'] ?? $item['district_id'] ?? 'Unknown',
