@@ -551,18 +551,38 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                     <label class="block text-xs font-semibold text-slate-300 mb-1">AR GLB Model URL</label>
-                    <input type="url" name="ar_model_url" value="{{ old('ar_model_url', $place->ar_model_url) }}"
-                        placeholder="https://cdn.hiddengemssl.com/models/sigiriya.glb"
-                        class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white font-mono">
+                    <div class="flex flex-col gap-3">
+                        <input type="url" name="ar_model_url" value="{{ old('ar_model_url', $place->ar_model_url) }}"
+                            placeholder="https://cdn.hiddengemssl.com/models/sigiriya.glb"
+                            class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white font-mono">
+                        
+                        <div class="flex items-center gap-2">
+                            <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">OR UPLOAD NEW FILE</span>
+                            <div class="flex-1 h-px bg-slate-800"></div>
+                        </div>
+                        
+                        <input type="file" name="ar_model_file" accept=".glb"
+                            class="w-full px-3 py-2 bg-slate-900/50 border border-slate-700 border-dashed rounded-xl text-xs text-slate-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-[10px] file:font-semibold file:bg-purple-500/20 file:text-purple-300 hover:file:bg-purple-500/30 transition cursor-pointer">
+                    </div>
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-slate-300 mb-1">Historical Reconstruction GLB URL</label>
-                    <input type="url" name="ar_historical_model_url" value="{{ old('ar_historical_model_url', $place->ar_historical_model_url) }}"
-                        placeholder="https://cdn.hiddengemssl.com/models/sigiriya_ancient.glb"
-                        class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white font-mono">
+                    <div class="flex flex-col gap-3">
+                        <input type="url" name="ar_historical_model_url" value="{{ old('ar_historical_model_url', $place->ar_historical_model_url) }}"
+                            placeholder="https://cdn.hiddengemssl.com/models/sigiriya_ancient.glb"
+                            class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white font-mono">
+                        
+                        <div class="flex items-center gap-2">
+                            <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">OR UPLOAD NEW FILE</span>
+                            <div class="flex-1 h-px bg-slate-800"></div>
+                        </div>
+                        
+                        <input type="file" name="ar_historical_model_file" accept=".glb"
+                            class="w-full px-3 py-2 bg-slate-900/50 border border-slate-700 border-dashed rounded-xl text-xs text-slate-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-[10px] file:font-semibold file:bg-purple-500/20 file:text-purple-300 hover:file:bg-purple-500/30 transition cursor-pointer">
+                    </div>
                 </div>
             </div>
 
