@@ -497,9 +497,7 @@ class PlaceController extends Controller
             'ar_tier' => 'nullable|integer',
             'ar_brand_name' => 'nullable|string|max:100',
             'ar_model_url' => 'nullable|string|max:500',
-            'ar_model_file' => 'nullable|file|max:51200',
             'ar_historical_model_url' => 'nullable|string|max:500',
-            'ar_historical_model_file' => 'nullable|file|max:51200',
             'ar_model_scale' => 'nullable|numeric',
             'historical_period' => 'nullable|string|max:100',
             'ar_file_size_mb' => 'nullable|numeric',
@@ -527,16 +525,6 @@ class PlaceController extends Controller
         // explicitly set it to false so that we can turn off AR support after
         // it was previously turned on.
         $data['ar_supported'] = $request->has('ar_supported');
-
-        if ($request->hasFile('ar_model_file')) {
-            $path = $request->file('ar_model_file')->store('models', 'public');
-            $data['ar_model_url'] = Storage::disk('public')->url($path);
-        }
-        
-        if ($request->hasFile('ar_historical_model_file')) {
-            $path = $request->file('ar_historical_model_file')->store('models', 'public');
-            $data['ar_historical_model_url'] = Storage::disk('public')->url($path);
-        }
 
         return $data;
     }

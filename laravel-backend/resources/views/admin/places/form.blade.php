@@ -531,73 +531,58 @@
                 <i class="fa-solid fa-cube"></i> AR Model & Audio Guide Links
             </h3>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
-                <div class="flex items-center gap-3 bg-slate-900 p-3 rounded-xl border border-slate-800">
+            <div class="mb-6">
+                <div class="flex items-center gap-3 bg-slate-900 p-3 rounded-xl border border-slate-800 w-fit">
                     <input type="checkbox" name="ar_supported" value="1" {{ old('ar_supported', $place->ar_supported) ? 'checked' : '' }} id="ar_supported" class="w-4 h-4 rounded text-purple-600 focus:ring-purple-500">
                     <label for="ar_supported" class="text-xs font-semibold text-white cursor-pointer">Enable AR Experience</label>
                 </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-300 mb-1">AR Tier (1=Hero, 3=Basic)</label>
-                    <select name="ar_tier" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white">
-                        <option value="1" {{ old('ar_tier', $place->ar_tier) == 1 ? 'selected' : '' }}>Tier 1 - Ultra High Res Hero</option>
-                        <option value="2" {{ old('ar_tier', $place->ar_tier) == 2 ? 'selected' : '' }}>Tier 2 - Standard Model</option>
-                        <option value="3" {{ old('ar_tier', $place->ar_tier) == 3 ? 'selected' : '' }}>Tier 3 - Basic Optimized</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-300 mb-1">Model Scale</label>
-                    <input type="number" step="0.0001" name="ar_model_scale" value="{{ old('ar_model_scale', $place->ar_model_scale ?: 0.0100) }}"
-                        class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white font-mono">
-                </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                    <label class="block text-xs font-semibold text-slate-300 mb-1">AR GLB Model URL</label>
-                    <div class="flex flex-col gap-3">
+            <div id="ar_fields_wrapper" class="{{ old('ar_supported', $place->ar_supported) ? '' : 'hidden' }} space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1">AR Tier (1=Hero, 3=Basic)</label>
+                        <select name="ar_tier" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white">
+                            <option value="1" {{ old('ar_tier', $place->ar_tier) == 1 ? 'selected' : '' }}>Tier 1 - Ultra High Res Hero</option>
+                            <option value="2" {{ old('ar_tier', $place->ar_tier) == 2 ? 'selected' : '' }}>Tier 2 - Standard Model</option>
+                            <option value="3" {{ old('ar_tier', $place->ar_tier) == 3 ? 'selected' : '' }}>Tier 3 - Basic Optimized</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1">Model Scale</label>
+                        <input type="number" step="0.0001" name="ar_model_scale" value="{{ old('ar_model_scale', $place->ar_model_scale ?: 0.0100) }}"
+                            class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white font-mono">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1">AR GLB Model URL</label>
                         <input type="url" name="ar_model_url" value="{{ old('ar_model_url', $place->ar_model_url) }}"
                             placeholder="https://cdn.hiddengemssl.com/models/sigiriya.glb"
                             class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white font-mono">
-                        
-                        <div class="flex items-center gap-2">
-                            <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">OR UPLOAD NEW FILE</span>
-                            <div class="flex-1 h-px bg-slate-800"></div>
-                        </div>
-                        
-                        <input type="file" name="ar_model_file" accept=".glb"
-                            class="w-full px-3 py-2 bg-slate-900/50 border border-slate-700 border-dashed rounded-xl text-xs text-slate-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-[10px] file:font-semibold file:bg-purple-500/20 file:text-purple-300 hover:file:bg-purple-500/30 transition cursor-pointer">
                     </div>
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-300 mb-1">Historical Reconstruction GLB URL</label>
-                    <div class="flex flex-col gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1">Historical Reconstruction GLB URL</label>
                         <input type="url" name="ar_historical_model_url" value="{{ old('ar_historical_model_url', $place->ar_historical_model_url) }}"
                             placeholder="https://cdn.hiddengemssl.com/models/sigiriya_ancient.glb"
                             class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white font-mono">
-                        
-                        <div class="flex items-center gap-2">
-                            <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">OR UPLOAD NEW FILE</span>
-                            <div class="flex-1 h-px bg-slate-800"></div>
-                        </div>
-                        
-                        <input type="file" name="ar_historical_model_file" accept=".glb"
-                            class="w-full px-3 py-2 bg-slate-900/50 border border-slate-700 border-dashed rounded-xl text-xs text-slate-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-[10px] file:font-semibold file:bg-purple-500/20 file:text-purple-300 hover:file:bg-purple-500/30 transition cursor-pointer">
                     </div>
                 </div>
-            </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-xs font-semibold text-slate-300 mb-1">Audio Guide URL (Sinhala)</label>
-                    <input type="url" name="audio_guide_url_si" value="{{ old('audio_guide_url_si', $place->audio_guide_url_si) }}"
-                        placeholder="https://cdn.hiddengemssl.com/audio/sigiriya_si.mp3"
-                        class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white font-mono">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-300 mb-1">Audio Guide URL (English)</label>
-                    <input type="url" name="audio_guide_url_en" value="{{ old('audio_guide_url_en', $place->audio_guide_url_en) }}"
-                        placeholder="https://cdn.hiddengemssl.com/audio/sigiriya_en.mp3"
-                        class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white font-mono">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1">Audio Guide URL (Sinhala)</label>
+                        <input type="url" name="audio_guide_url_si" value="{{ old('audio_guide_url_si', $place->audio_guide_url_si) }}"
+                            placeholder="https://cdn.hiddengemssl.com/audio/sigiriya_si.mp3"
+                            class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white font-mono">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1">Audio Guide URL (English)</label>
+                        <input type="url" name="audio_guide_url_en" value="{{ old('audio_guide_url_en', $place->audio_guide_url_en) }}"
+                            placeholder="https://cdn.hiddengemssl.com/audio/sigiriya_en.mp3"
+                            class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white font-mono">
+                    </div>
                 </div>
             </div>
         </div>
@@ -1042,6 +1027,19 @@ document.addEventListener('DOMContentLoaded', function() {
                 previewGrid.appendChild(cell);
             });
             previewWrap.classList.remove('hidden');
+        });
+    }
+
+    // Toggle AR fields visibility based on "Enable AR Experience" checkbox
+    const arSupportedCheckbox = document.getElementById('ar_supported');
+    const arFieldsWrapper = document.getElementById('ar_fields_wrapper');
+    if (arSupportedCheckbox && arFieldsWrapper) {
+        arSupportedCheckbox.addEventListener('change', function() {
+            if (this.checked) {
+                arFieldsWrapper.classList.remove('hidden');
+            } else {
+                arFieldsWrapper.classList.add('hidden');
+            }
         });
     }
 });
