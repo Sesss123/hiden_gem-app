@@ -274,7 +274,25 @@
                             'activities' => ['Historical Tours', 'Cultural Tours', 'Photography', 'Sightseeing'],
                         ],
                     ];
-                    $activityOpts = ['Photography', 'Swimming', 'Hiking', 'Bird Watching', 'Picnicking', 'Nature Walk', 'Prayer and Meditation', 'Sightseeing', 'Snorkeling', 'Surfing', 'Kayaking', 'Cultural Tours', 'Historical Tours', 'Relaxation', 'Sunbathing', 'Cycling', 'Reflection'];
+                    $baseActivityOpts = ['Photography', 'Swimming', 'Hiking', 'Bird Watching', 'Picnicking', 'Nature Walk', 'Prayer and Meditation', 'Sightseeing', 'Snorkeling', 'Surfing', 'Kayaking', 'Cultural Tours', 'Historical Tours', 'Relaxation', 'Sunbathing', 'Cycling', 'Reflection'];
+                    $activityOpts = $baseActivityOpts;
+                    try {
+                        $dbActivitiesStr = \App\Models\Place::whereNotNull('activities')->pluck('activities');
+                        $allCustom = [];
+                        foreach ($dbActivitiesStr as $str) {
+                            $acts = array_map('trim', explode(',', $str));
+                            foreach ($acts as $a) {
+                                if (!empty($a) && !in_array($a, $activityOpts)) {
+                                    $allCustom[] = $a;
+                                }
+                            }
+                        }
+                        $allCustom = array_unique($allCustom);
+                        $activityOpts = array_merge($activityOpts, $allCustom);
+                        sort($activityOpts);
+                    } catch (\Exception $e) {
+                        // ignore during migrations
+                    }
                     // The form submits activities_selected[]/activities_other, never a
                     // bare "activities" key — so on a validation-error redisplay, old()
                     // must be read from those two actual field names, not a nonexistent
@@ -878,7 +896,7 @@ document.addEventListener('DOMContentLoaded', function() {
         checkboxLabels.forEach(function(label) {
             const checkbox = label.querySelector('input[type="checkbox"]');
             const labelGroups = (label.dataset.groups || '').split(' ').filter(Boolean);
-            const isRelevant = groups.length === 0 || labelGroups.some(function(g) { return groups.includes(g); });
+            const isRelevant = groups.length === 0 || labelGroups.length === 0 || labelGroups.some(function(g) { return groups.includes(g); });
             // Always keep a checkbox visible if it's already checked (existing
             // data shouldn't silently disappear just because the category
             // filter would otherwise hide it), or if no category is selected
