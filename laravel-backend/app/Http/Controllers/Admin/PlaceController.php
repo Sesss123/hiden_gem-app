@@ -520,6 +520,11 @@ class PlaceController extends Controller
         // rather than trusting a manually-typed value, which drifts the
         // moment someone edits coordinates without remembering to update it.
         $data['geohash'] = GeohashService::encode((float) $data['lat'], (float) $data['lng']);
+        
+        // HTML checkboxes are omitted from the request if unchecked. We must
+        // explicitly set it to false so that we can turn off AR support after
+        // it was previously turned on.
+        $data['ar_supported'] = $request->has('ar_supported');
 
         return $data;
     }
