@@ -359,10 +359,16 @@ class PlaceController extends Controller
     public function importJson(Request $request)
     {
         $request->validate([
-            'json_file' => 'required|file|mimes:json,txt|max:10240', // Max 10MB
+            'json_file' => 'required|file|max:10240', // Max 10MB
         ]);
 
         $file = $request->file('json_file');
+        $extension = strtolower($file->getClientOriginalExtension());
+        
+        if (!in_array($extension, ['json', 'jsonl', 'txt'])) {
+            return back()->with('error', 'Invalid file type. Please upload a .json or .jsonl file.');
+        }
+
         $jsonStr = trim(file_get_contents($file->getRealPath()));
 
         // Fix concatenated JSON objects commonly found in loosely formatted .jsonl files
