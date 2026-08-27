@@ -42,6 +42,7 @@ class DashboardController extends Controller
             ->get();
 
         $duplicates = Place::select('name', 'district', DB::raw('count(*) as cnt'), DB::raw('GROUP_CONCAT(id SEPARATOR ", ") as duplicate_ids'))
+            ->where('is_deleted', false)
             ->groupBy('name', 'district')
             ->having('cnt', '>', 1)
             ->take(50)
@@ -51,7 +52,7 @@ class DashboardController extends Controller
         // rows were rendered — a wrapped COUNT over the grouped subquery
         // so this stays a single indexed aggregate rather than re-running
         // the unbounded group/having scan a second time.
-        $duplicatesCount = DB::table(DB::raw('(select 1 from places group by name, district having count(*) > 1) as dup_groups'))->count();
+        $duplicatesCount = DB::table(DB::raw('(select 1 from places where is_deleted = 0 group by name, district having count(*) > 1) as dup_groups'))->count();
 
         return view('admin.dashboard', compact(
             'totalPlaces', 'arPlaces',

@@ -137,6 +137,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::resource('places', PlaceController::class)->only(['destroy']);
             Route::delete('images/{id}', [PlaceController::class, 'deleteImage'])->name('images.delete');
             Route::post('images/{id}/cover', [PlaceController::class, 'setCoverImage'])->name('images.cover');
+            Route::post('/places/deduplicate', [PlaceController::class, 'deduplicate'])->name('places.deduplicate');
             Route::post('/places/{id}/approve', [PlaceController::class, 'approve'])->name('places.approve');
             Route::post('/places/{id}/reject', [PlaceController::class, 'reject'])->name('places.reject');
 

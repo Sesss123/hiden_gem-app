@@ -132,10 +132,19 @@
                                     <p class="text-[11px] text-slate-400 mt-0.5"><i class="fa-solid fa-location-dot text-amber-400 mr-1"></i> {{ $dup->district }}</p>
                                 </div>
                                 <div class="mt-2 pt-2 border-t border-slate-800 flex items-center justify-between text-[10px] text-slate-400">
-                                    <span>IDs: <strong class="text-slate-200">{{ $dup->duplicate_ids }}</strong></span>
-                                    <a href="{{ route('admin.places.index', ['search' => $dup->name]) }}" class="text-amber-400 hover:underline font-bold flex items-center gap-1">
-                                        Fix <i class="fa-solid fa-arrow-right"></i>
-                                    </a>
+                                    <span>IDs: <strong class="text-slate-200">{{ Str::limit($dup->duplicate_ids, 15) }}</strong></span>
+                                    <div class="flex gap-2 items-center">
+                                        <a href="{{ route('admin.places.index', ['search' => $dup->name]) }}" class="text-amber-400 hover:underline font-bold flex items-center gap-1">
+                                            Fix <i class="fa-solid fa-arrow-right"></i>
+                                        </a>
+                                        <form action="{{ route('admin.places.deduplicate') }}" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to delete the duplicate records? This will keep one and delete the rest.');">
+                                            @csrf
+                                            <input type="hidden" name="ids" value="{{ $dup->duplicate_ids }}">
+                                            <button type="submit" class="text-red-400 hover:underline font-bold flex items-center gap-1 ml-1" title="Delete all but one">
+                                                Delete <i class="fa-solid fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
                         @endforeach
