@@ -315,7 +315,7 @@ class PlaceController extends Controller
             Place::whereIn('id', $ids)->update(['is_deleted' => true]);
             
             // Log the action
-            $this->logAction('places_deduplicated', Place::class, null, 'Deleted duplicates: ' . implode(', ', $ids));
+            $this->logAdminAction('places_deduplicated', Place::class, null, ['deleted_ids' => $ids]);
         }
 
         return redirect()->back()->with('success', 'Duplicates removed successfully.');
