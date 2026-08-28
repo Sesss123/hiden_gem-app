@@ -394,9 +394,12 @@ class PlaceController extends Controller
 
         $jsonStr = trim(file_get_contents($file->getRealPath()));
 
-        // Fix concatenated JSON objects commonly found in loosely formatted .jsonl files
+        // Fix concatenated JSON objects (e.g. `} {` or `}\n{` -> `},{`) 
+        // This handles cases where items in an array are missing commas, or raw JSONL lines.
+        $jsonStr = preg_replace('/\}\s*\{/', '},{', $jsonStr);
+
+        // If it's still just a sequence of objects not wrapped in an array, wrap it.
         if (str_starts_with($jsonStr, '{') && str_ends_with($jsonStr, '}')) {
-            $jsonStr = preg_replace('/\}\s*\{/', '},{', $jsonStr);
             $jsonStr = '[' . $jsonStr . ']';
         }
 
