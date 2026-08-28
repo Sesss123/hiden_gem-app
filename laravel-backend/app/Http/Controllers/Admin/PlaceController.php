@@ -626,6 +626,32 @@ class PlaceController extends Controller
         }
     }
 
+    public function deduplicate(Request $request)
+    {
+        $idsStr = $request->input('ids');
+        if (!$idsStr) {
+            return back()->with('error', 'No duplicate IDs provided.');
+        }
+
+        $ids = array_filter(array_map('trim', explode(',', $idsStr)));
+        if (count($ids) < 2) {
+            return back()->with('error', 'Need at least 2 IDs to deduplicate.');
+        }
+
+        // Keep the first one, delete the rest
+        $keepId = array_shift($ids);
+        
+        // Soft delete the duplicates
+        Place::whereIn('id', $ids)->update(['is_deleted' => true]);
+
+        $this->logAdminAction('place.deduplicated', 'Place', $keepId, [
+            'kept' => $keepId,
+            'deleted' => $ids
+        ]);
+
+        return back()->with('success', count($ids) . ' duplicate records deleted successfully.');
+    }
+
     protected function generateSmartId($category, $district)
     {
         $catMap = [
