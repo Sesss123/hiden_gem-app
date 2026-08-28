@@ -211,6 +211,12 @@ class PlaceController extends Controller
             $data['reviewed_by'] = null;
             $data['review_reason'] = null;
             Cache::forget('admin_pending_place_count');
+        } elseif (!$isContentManager && $place->status !== Place::STATUS_APPROVED) {
+            // If a Full Admin edits a pending/rejected place, automatically approve it
+            $data['status'] = Place::STATUS_APPROVED;
+            $data['reviewed_by'] = Auth::id();
+            $data['review_reason'] = null;
+            Cache::forget('admin_pending_place_count');
         }
 
         // Claim an unclaimed draft (created_by null — bulk-imported data
