@@ -23,7 +23,14 @@
                     Real-time intelligence from your Hidden Gems Sri Lanka backend, tracking subscriptions, AR models, user wishlist bookmarks, and spatial geodata.
                 </p>
             </div>
-            <div class="flex items-center gap-3">
+            <div class="flex flex-wrap items-center gap-3 mt-4 md:mt-0">
+                <form action="{{ route('admin.places.import') }}" method="POST" enctype="multipart/form-data" class="m-0">
+                    @csrf
+                    <input type="file" name="json_file" accept=".json,.jsonl,.txt" class="hidden" id="json_import_file_dashboard" onchange="if(confirm('Import places from this file?')) this.form.submit();">
+                    <button type="button" onclick="document.getElementById('json_import_file_dashboard').click()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold px-4 py-3 rounded-xl border border-slate-700 transition duration-200 flex items-center gap-2 text-sm">
+                        <i class="fa-solid fa-file-import text-emerald-400"></i> Import JSON
+                    </button>
+                </form>
                 <a href="{{ route('admin.places.create') }}" class="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-bold px-5 py-3 rounded-xl shadow-lg shadow-emerald-500/20 transition duration-200 flex items-center gap-2 text-sm transform hover:-translate-y-0.5">
                     <i class="fa-solid fa-plus-circle"></i> Add New Gem
                 </a>
