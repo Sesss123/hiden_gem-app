@@ -471,7 +471,7 @@ class PlaceController extends Controller
                     'geohash' => $item['geohash'] ?? '',
                     'image_url' => $item['imageUrl'] ?? null,
                     'status' => Place::STATUS_PENDING,
-                    'created_by' => \Illuminate\Support\Facades\Auth::id(),
+                    'created_by' => Auth::id(),
                 ]);
                 $count++;
             }
@@ -480,7 +480,7 @@ class PlaceController extends Controller
         DatasetImport::create([
             'filename' => $file->getClientOriginalName(),
             'record_count' => $count,
-            'user_id' => \Illuminate\Support\Facades\Auth::id()
+            'user_id' => Auth::id()
         ]);
 
         $this->logAdminAction('place.imported', 'Place', null, ['count' => $count, 'filename' => $file->getClientOriginalName()]);
