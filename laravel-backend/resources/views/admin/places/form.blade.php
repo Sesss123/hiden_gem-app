@@ -161,13 +161,13 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                     <label class="block text-xs font-semibold text-slate-300 mb-1">Latitude (Decimal) *</label>
-                    <input type="number" step="0.0000001" name="lat" id="lat_input" value="{{ old('lat', $place->lat) }}" required
+                    <input type="number" step="any" name="lat" id="lat_input" value="{{ old('lat', $place->lat) }}" required
                         placeholder="e.g. 7.9570000"
                         class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white font-mono focus:outline-none focus:border-emerald-500">
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-slate-300 mb-1">Longitude (Decimal) *</label>
-                    <input type="number" step="0.0000001" name="lng" id="lng_input" value="{{ old('lng', $place->lng) }}" required
+                    <input type="number" step="any" name="lng" id="lng_input" value="{{ old('lng', $place->lng) }}" required
                         placeholder="e.g. 80.7603000"
                         class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white font-mono focus:outline-none focus:border-emerald-500">
                 </div>
