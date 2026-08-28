@@ -308,23 +308,6 @@ class PlaceController extends Controller
             ->with('success', "Place '{$place->name}' approved and is now live.");
     }
 
-    public function deduplicate(Request $request)
-    {
-        $ids = array_map('trim', explode(',', $request->input('ids')));
-        
-        if (count($ids) > 1) {
-            // Keep the first ID, delete the rest
-            array_shift($ids);
-            
-            // Soft delete the remaining duplicates
-            Place::whereIn('id', $ids)->update(['is_deleted' => true]);
-            
-            // Log the action
-            $this->logAdminAction('places_deduplicated', Place::class, null, ['deleted_ids' => $ids]);
-        }
-
-        return redirect()->back()->with('success', 'Duplicates removed successfully.');
-    }
 
     public function reject(Request $request, $id)
     {
