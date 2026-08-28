@@ -128,34 +128,56 @@
                         Our AI Integrity Scanner detected places with identical names in the same district. Please review and remove or rename accidental duplicates.
                     </p>
 
-                    <div class="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                        @foreach($duplicates as $dup)
-                            <div class="p-3 rounded-xl bg-slate-900/90 border border-amber-500/30 flex flex-col justify-between">
-                                <div>
-                                    <div class="flex justify-between items-start">
-                                        <h4 class="text-xs font-bold text-white truncate">{{ $dup->name }}</h4>
-                                        <span class="text-[10px] font-extrabold bg-red-500/20 text-red-400 px-2 py-0.5 rounded border border-red-500/30">{{ $dup->cnt }}x Copies</span>
+                    <form id="bulkDeduplicateForm" action="{{ route('admin.places.bulk_deduplicate') }}" method="POST">
+                        @csrf
+                        <div class="mt-3 flex items-center justify-between border-b border-amber-500/20 pb-3">
+                            <label class="flex items-center gap-2 cursor-pointer text-amber-300 text-xs font-bold">
+                                <input type="checkbox" class="rounded bg-slate-900 border-amber-500 text-amber-500 focus:ring-amber-500 cursor-pointer" onclick="document.querySelectorAll('.dup-checkbox').forEach(cb => cb.checked = this.checked)">
+                                Select All Current Page
+                            </label>
+                            <button type="submit" onclick="if(document.querySelectorAll('.dup-checkbox:checked').length === 0) { alert('Please select at least one duplicate group.'); return false; } return confirm('Are you sure you want to bulk delete the selected duplicate groups?');" class="bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/30 font-bold px-3 py-1.5 rounded-lg text-xs transition flex items-center gap-2">
+                                <i class="fa-solid fa-trash-can"></i> Bulk Delete Selected
+                            </button>
+                        </div>
+
+                        <div class="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                            @foreach($duplicates as $dup)
+                                <div class="p-3 rounded-xl bg-slate-900/90 border border-amber-500/30 flex flex-col justify-between hover:border-amber-500/60 transition">
+                                    <div>
+                                        <div class="flex justify-between items-start">
+                                            <div class="flex items-center gap-2 flex-1 min-w-0 pr-2">
+                                                <input type="checkbox" name="duplicate_groups[]" value="{{ $dup->duplicate_ids }}" class="dup-checkbox rounded bg-slate-800 border-amber-500/50 text-amber-500 focus:ring-amber-500 w-3.5 h-3.5 cursor-pointer shrink-0">
+                                                <h4 class="text-xs font-bold text-white truncate" title="{{ $dup->name }}">{{ $dup->name }}</h4>
+                                            </div>
+                                            <span class="text-[10px] font-extrabold bg-red-500/20 text-red-400 px-2 py-0.5 rounded border border-red-500/30 shrink-0">{{ $dup->cnt }}x Copies</span>
+                                        </div>
+                                        <p class="text-[11px] text-slate-400 mt-0.5 ml-5.5"><i class="fa-solid fa-location-dot text-amber-400 mr-1"></i> {{ $dup->district }}</p>
                                     </div>
-                                    <p class="text-[11px] text-slate-400 mt-0.5"><i class="fa-solid fa-location-dot text-amber-400 mr-1"></i> {{ $dup->district }}</p>
-                                </div>
-                                <div class="mt-2 pt-2 border-t border-slate-800 flex items-center justify-between text-[10px] text-slate-400">
-                                    <span>IDs: <strong class="text-slate-200">{{ Str::limit($dup->duplicate_ids, 15) }}</strong></span>
-                                    <div class="flex gap-2 items-center">
-                                        <a href="{{ route('admin.places.index', ['search' => $dup->name]) }}" class="text-amber-400 hover:underline font-bold flex items-center gap-1">
-                                            Fix <i class="fa-solid fa-arrow-right"></i>
-                                        </a>
-                                        <form action="{{ route('admin.places.deduplicate') }}" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to delete the duplicate records? This will keep one and delete the rest.');">
-                                            @csrf
-                                            <input type="hidden" name="ids" value="{{ $dup->duplicate_ids }}">
-                                            <button type="submit" class="text-red-400 hover:underline font-bold flex items-center gap-1 ml-1" title="Delete all but one">
+                                    <div class="mt-2 pt-2 border-t border-slate-800 flex items-center justify-between text-[10px] text-slate-400">
+                                        <span>IDs: <strong class="text-slate-200">{{ Str::limit($dup->duplicate_ids, 15) }}</strong></span>
+                                        <div class="flex gap-2 items-center">
+                                            <a href="{{ route('admin.places.index', ['search' => $dup->name]) }}" class="text-amber-400 hover:underline font-bold flex items-center gap-1">
+                                                Fix <i class="fa-solid fa-arrow-right"></i>
+                                            </a>
+                                            <!-- We keep the individual form outside so it doesn't nest inside the bulk form -->
+                                            <button type="submit" form="singleDeduplicateForm_{{ md5($dup->duplicate_ids) }}" class="text-red-400 hover:underline font-bold flex items-center gap-1 ml-1" title="Delete all but one">
                                                 Delete <i class="fa-solid fa-trash"></i>
                                             </button>
-                                        </form>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        @endforeach
-                    </div>
+                            @endforeach
+                        </div>
+                    </form>
+                    
+                    <!-- Hidden forms for individual deletion to avoid nested forms -->
+                    @foreach($duplicates as $dup)
+                        <form id="singleDeduplicateForm_{{ md5($dup->duplicate_ids) }}" action="{{ route('admin.places.deduplicate') }}" method="POST" class="hidden" onsubmit="return confirm('Are you sure you want to delete the duplicate records? This will keep one and delete the rest.');">
+                            @csrf
+                            <input type="hidden" name="ids" value="{{ $dup->duplicate_ids }}">
+                        </form>
+                    @endforeach
+
                     @if($duplicatesCount > $duplicates->count())
                         <p class="text-[11px] text-amber-300/70 mt-3">Showing the first {{ $duplicates->count() }} of {{ $duplicatesCount }} groups — use search to find the rest.</p>
                     @endif

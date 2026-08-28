@@ -635,6 +635,38 @@ class PlaceController extends Controller
         return back()->with('success', count($ids) . ' duplicate records deleted successfully.');
     }
 
+    public function bulkDeduplicate(Request $request)
+    {
+        $duplicateGroups = $request->input('duplicate_groups'); // Array of comma-separated string of IDs
+        
+        if (!$duplicateGroups || !is_array($duplicateGroups)) {
+            return back()->with('error', 'No duplicate groups selected.');
+        }
+
+        $totalDeleted = 0;
+        $totalKept = 0;
+
+        foreach ($duplicateGroups as $idsStr) {
+            $ids = array_filter(array_map('trim', explode(',', $idsStr)));
+            if (count($ids) < 2) continue;
+
+            $keepId = array_shift($ids);
+            
+            // Soft delete the duplicates
+            Place::whereIn('id', $ids)->update(['is_deleted' => true]);
+
+            $this->logAdminAction('place.deduplicated', 'Place', $keepId, [
+                'kept' => $keepId,
+                'deleted' => $ids
+            ]);
+
+            $totalDeleted += count($ids);
+            $totalKept++;
+        }
+
+        return back()->with('success', "Bulk deduplication complete. Kept {$totalKept} records, deleted {$totalDeleted} duplicates.");
+    }
+
     protected function generateSmartId($category, $district)
     {
         $catMap = [
