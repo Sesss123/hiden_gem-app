@@ -21,6 +21,40 @@
         </div>
     </div>
 
+    @if(isset($datasetImports) && $datasetImports->count() > 0)
+    <div class="glass-card p-5 rounded-2xl border border-slate-800 shadow-xl mb-6">
+        <div class="flex items-center justify-between mb-3">
+            <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                <i class="fa-solid fa-clock-rotate-left text-blue-400"></i> Recent JSON Imports
+            </h3>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+                <thead>
+                    <tr class="text-slate-500 border-b border-slate-800/50">
+                        <th class="py-2 px-2 font-medium">Filename</th>
+                        <th class="py-2 px-2 font-medium">Places Imported</th>
+                        <th class="py-2 px-2 font-medium">Uploaded By</th>
+                        <th class="py-2 px-2 font-medium text-right">Date</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-800/30">
+                    @foreach($datasetImports as $import)
+                    <tr class="hover:bg-slate-800/20">
+                        <td class="py-2 px-2 font-mono text-emerald-400">{{ $import->filename }}</td>
+                        <td class="py-2 px-2 text-slate-300">
+                            <span class="inline-block px-2 py-0.5 rounded-full bg-slate-800 text-[10px]">{{ $import->record_count }} records</span>
+                        </td>
+                        <td class="py-2 px-2 text-slate-400">{{ $import->user ? $import->user->name : 'Unknown' }}</td>
+                        <td class="py-2 px-2 text-slate-500 text-right">{{ $import->created_at->format('Y-m-d g:i A') }}</td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    </div>
+    @endif
+
     <div class="glass-card rounded-2xl overflow-hidden border border-slate-800 shadow-xl">
         <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse">

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Jobs\ProcessImageUpload;
 use App\Models\Place;
 use App\Models\PlaceImage;
+use App\Models\DatasetImport;
 use App\Services\GeohashService;
 use App\Services\ImageProcessingService;
 use App\Traits\LogsAdminActivity;
@@ -59,7 +60,8 @@ class PlaceController extends Controller
         }
 
         $places = $query->orderBy('updated_at', 'desc')->paginate(15);
-        return view('admin.places.index', compact('places'));
+        $datasetImports = DatasetImport::with('user')->orderBy('created_at', 'desc')->take(10)->get();
+        return view('admin.places.index', compact('places', 'datasetImports'));
     }
 
     public function create()
@@ -85,7 +87,8 @@ class PlaceController extends Controller
         }
 
         $places = $query->orderBy('updated_at', 'desc')->paginate(15);
-        return view('admin.places.my-submissions', compact('places'));
+        $datasetImports = DatasetImport::with('user')->orderBy('created_at', 'desc')->take(10)->get();
+        return view('admin.places.my-submissions', compact('places', 'datasetImports'));
     }
 
     /**
@@ -281,7 +284,9 @@ class PlaceController extends Controller
             ->orderBy('created_at', 'asc')
             ->paginate(15);
 
-        return view('admin.places.pending', compact('places'));
+        $datasetImports = DatasetImport::with('user')->orderBy('created_at', 'desc')->take(10)->get();
+
+        return view('admin.places.pending', compact('places', 'datasetImports'));
     }
 
     public function approve($id)
@@ -472,7 +477,13 @@ class PlaceController extends Controller
             }
         });
 
-        $this->logAdminAction('place.imported', 'Place', null, ['count' => $count]);
+        DatasetImport::create([
+            'filename' => $file->getClientOriginalName(),
+            'record_count' => $count,
+            'user_id' => \Illuminate\Support\Facades\Auth::id()
+        ]);
+
+        $this->logAdminAction('place.imported', 'Place', null, ['count' => $count, 'filename' => $file->getClientOriginalName()]);
 
         $redirectRoute = Auth::user()->isFullAdmin() ? 'admin.places.pending' : 'admin.places.my-submissions';
 

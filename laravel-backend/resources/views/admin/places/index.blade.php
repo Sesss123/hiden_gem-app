@@ -10,6 +10,15 @@
             </h2>
             <p class="text-xs text-slate-400 mt-0.5">Showing active places syncing to mobile clients</p>
         </div>
+        <div class="flex items-center gap-4 mt-4 md:mt-0 md:ml-auto">
+            <form action="{{ route('admin.places.import') }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                <input type="file" name="json_file" accept=".json,.jsonl,.txt" class="hidden" id="json_import_file_index" onchange="if(confirm('Import places from this file?')) this.form.submit();">
+                <button type="button" onclick="document.getElementById('json_import_file_index').click()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-4 py-2 rounded-xl text-sm font-bold transition border border-emerald-500/30 flex items-center gap-2 shadow-[0_0_15px_rgba(16,185,129,0.1)] hover:shadow-[0_0_20px_rgba(16,185,129,0.2)]">
+                    <i class="fa-solid fa-file-import text-emerald-400"></i> Import JSON
+                </button>
+            </form>
+        </div>
 
         <form action="{{ route('admin.places.index') }}" method="GET" class="flex flex-wrap items-center gap-3 w-full md:w-auto">
             <div class="relative flex-1 md:w-64">
@@ -36,6 +45,40 @@
             @endif
         </form>
     </div>
+
+    @if(isset($datasetImports) && $datasetImports->count() > 0)
+    <div class="glass-card p-5 rounded-2xl border border-slate-800 shadow-xl mb-6">
+        <div class="flex items-center justify-between mb-3">
+            <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                <i class="fa-solid fa-clock-rotate-left text-blue-400"></i> Recent JSON Imports
+            </h3>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+                <thead>
+                    <tr class="text-slate-500 border-b border-slate-800/50">
+                        <th class="py-2 px-2 font-medium">Filename</th>
+                        <th class="py-2 px-2 font-medium">Places Imported</th>
+                        <th class="py-2 px-2 font-medium">Uploaded By</th>
+                        <th class="py-2 px-2 font-medium text-right">Date</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-800/30">
+                    @foreach($datasetImports as $import)
+                    <tr class="hover:bg-slate-800/20">
+                        <td class="py-2 px-2 font-mono text-emerald-400">{{ $import->filename }}</td>
+                        <td class="py-2 px-2 text-slate-300">
+                            <span class="inline-block px-2 py-0.5 rounded-full bg-slate-800 text-[10px]">{{ $import->record_count }} records</span>
+                        </td>
+                        <td class="py-2 px-2 text-slate-400">{{ $import->user ? $import->user->name : 'Unknown' }}</td>
+                        <td class="py-2 px-2 text-slate-500 text-right">{{ $import->created_at->format('Y-m-d g:i A') }}</td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    </div>
+    @endif
 
     <!-- Places Table -->
     <div class="glass-card rounded-2xl overflow-hidden border border-slate-800 shadow-xl">
