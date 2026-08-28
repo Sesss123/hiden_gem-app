@@ -9,7 +9,6 @@
             </h2>
             <p class="text-sm text-slate-400">Places submitted by content managers, awaiting your approval before they go live to app users.</p>
         </div>
-        
         <div class="flex items-center gap-4 mt-4 md:mt-0 md:ml-auto">
             <form action="{{ route('admin.places.import') }}" method="POST" enctype="multipart/form-data">
                 @csrf
@@ -19,6 +18,31 @@
                 </button>
             </form>
         </div>
+
+        <form action="{{ route('admin.places.pending') }}" method="GET" class="flex flex-wrap items-center gap-3 w-full md:w-auto mt-4 md:mt-0">
+            <div class="relative flex-1 md:w-64">
+                <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500">
+                    <i class="fa-solid fa-magnifying-glass text-xs"></i>
+                </span>
+                <input type="text" name="search" value="{{ request('search') }}" placeholder="Search gems, districts..."
+                    class="w-full pl-9 pr-4 py-2 bg-slate-900/80 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500">
+            </div>
+
+            <select name="category" onchange="this.form.submit()" class="bg-slate-900/80 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-300 focus:outline-none focus:border-emerald-500">
+                <option value="">All Categories</option>
+                @foreach(\App\Models\Place::select('category')->distinct()->orderBy('category')->pluck('category') as $cat)
+                    @if($cat)
+                        <option value="{{ $cat }}" {{ request('category') == $cat ? 'selected' : '' }}>{{ $cat }}</option>
+                    @endif
+                @endforeach
+            </select>
+
+            @if(request('search') || request('category'))
+                <a href="{{ route('admin.places.pending') }}" class="text-xs text-slate-400 hover:text-white px-2 py-2">
+                    <i class="fa-solid fa-xmark"></i> Clear
+                </a>
+            @endif
+        </form>
     </div>
 
     @if(isset($datasetImports) && $datasetImports->count() > 0)

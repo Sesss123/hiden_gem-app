@@ -279,16 +279,28 @@ class PlaceController extends Controller
      * Pending places queue — submissions from content_managers awaiting review.
      * Only reachable via the full_admin route group.
      */
-    public function pending()
+    public function pending(Request $request)
     {
-        $places = Place::with('creator')
+        $query = Place::with('creator')
             ->where('status', Place::STATUS_PENDING)
             // Unclaimed drafts (created_by null — bulk-imported data no
             // content_manager has reviewed yet) aren't real submissions and
             // don't belong in the admin review queue.
-            ->whereNotNull('created_by')
-            ->orderBy('created_at', 'asc')
-            ->paginate(15);
+            ->whereNotNull('created_by');
+
+        if ($search = $request->input('search')) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('district', 'like', "%{$search}%")
+                  ->orWhere('category', 'like', "%{$search}%");
+            });
+        }
+
+        if ($category = $request->input('category')) {
+            $query->where('category', $category);
+        }
+
+        $places = $query->orderBy('created_at', 'asc')->paginate(15);
 
         $datasetImports = DatasetImport::with('user')->orderBy('created_at', 'desc')->take(10)->get();
 
