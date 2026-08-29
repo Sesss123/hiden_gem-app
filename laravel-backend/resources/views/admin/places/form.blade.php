@@ -823,6 +823,23 @@ document.addEventListener('DOMContentLoaded', function() {
         return /^https?:\/\/(maps\.app\.goo\.gl|goo\.gl)\//i.test(url.trim());
     }
 
+    function handlePaste(e) {
+        const pastedText = (e.clipboardData || window.clipboardData).getData('text');
+        if (pastedText) {
+            const coords = extractLatLng(pastedText);
+            if (coords && coords.lat >= -90 && coords.lat <= 90 && coords.lng >= -180 && coords.lng <= 180) {
+                e.preventDefault();
+                applyCoords(coords);
+                if (e.target === linkInput) {
+                    linkInput.value = pastedText;
+                }
+            }
+        }
+    }
+
+    linkInput.addEventListener('paste', handlePaste);
+    latInput.addEventListener('paste', handlePaste);
+
     parseBtn.addEventListener('click', function() {
         const url = (linkInput.value || '').trim();
         if (!url) {
