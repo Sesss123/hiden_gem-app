@@ -121,6 +121,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/guides', [GuideController::class, 'index'])->name('guides.index');
         Route::get('/guides/{id}', [GuideController::class, 'show'])->name('guides.show');
         Route::get('/places-pending', [PlaceController::class, 'pending'])->name('places.pending');
+        Route::get('/places-rejected', [PlaceController::class, 'rejected'])->name('places.rejected');
         Route::get('/events-pending', [EventController::class, 'pending'])->name('events.pending');
         Route::get('/incidents', [IncidentController::class, 'index'])->name('incidents.index');
         Route::get('/incidents/{id}', [IncidentController::class, 'show'])->name('incidents.show');

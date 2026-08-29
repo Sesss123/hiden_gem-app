@@ -327,6 +327,38 @@ class PlaceController extends Controller
         return view('admin.places.pending', compact('places', 'datasetImports', 'search', 'category'));
     }
 
+    public function rejected(Request $request)
+    {
+        // Store filter in session if provided, otherwise retrieve from session
+        if ($request->has('search') || $request->has('category')) {
+            session([
+                'admin_places_rejected_search' => $request->input('search'),
+                'admin_places_rejected_category' => $request->input('category'),
+            ]);
+        }
+        $search = session('admin_places_rejected_search');
+        $category = session('admin_places_rejected_category');
+
+        $query = Place::with('creator')
+            ->where('status', Place::STATUS_REJECTED);
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('district', 'like', "%{$search}%")
+                  ->orWhere('category', 'like', "%{$search}%");
+            });
+        }
+
+        if ($category) {
+            $query->where('category', $category);
+        }
+
+        $places = $query->orderBy('updated_at', 'desc')->paginate(15);
+
+        return view('admin.places.rejected', compact('places', 'search', 'category'));
+    }
+
     public function approve($id)
     {
         $place = Place::findOrFail($id);
