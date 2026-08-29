@@ -25,7 +25,7 @@
                 <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500">
                     <i class="fa-solid fa-magnifying-glass text-xs"></i>
                 </span>
-                <input type="text" name="search" value="{{ request('search') }}" placeholder="Search gems, districts..."
+                <input type="text" name="search" value="{{ $search ?? '' }}" placeholder="Search gems, districts..."
                     class="w-full pl-9 pr-4 py-2 bg-slate-900/80 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500">
             </div>
 
@@ -33,12 +33,12 @@
                 <option value="">All Categories</option>
                 @foreach(\App\Models\Place::select('category')->distinct()->orderBy('category')->pluck('category') as $cat)
                     @if($cat)
-                        <option value="{{ $cat }}" {{ request('category') == $cat ? 'selected' : '' }}>{{ $cat }}</option>
+                        <option value="{{ $cat }}" {{ (isset($category) && $category == $cat) ? 'selected' : '' }}>{{ $cat }}</option>
                     @endif
                 @endforeach
             </select>
 
-            @if(request('search') || request('category'))
+            @if(!empty($search) || !empty($category))
                 <a href="{{ route('admin.places.index') }}" class="text-xs text-slate-400 hover:text-white px-2 py-2">
                     <i class="fa-solid fa-xmark"></i> Clear
                 </a>

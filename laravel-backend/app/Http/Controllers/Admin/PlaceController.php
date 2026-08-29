@@ -30,6 +30,16 @@ class PlaceController extends Controller
 
     public function index(Request $request)
     {
+        // Store filter in session if provided, otherwise retrieve from session
+        if ($request->has('search') || $request->has('category')) {
+            session([
+                'admin_places_index_search' => $request->input('search'),
+                'admin_places_index_category' => $request->input('category'),
+            ]);
+        }
+        $search = session('admin_places_index_search');
+        $category = session('admin_places_index_category');
+
         $query = Place::with('coverImage')->where('is_deleted', false);
 
         // content_manager sees places they personally created plus unclaimed
@@ -47,7 +57,7 @@ class PlaceController extends Controller
             $query->where('status', Place::STATUS_APPROVED);
         }
 
-        if ($search = $request->input('search')) {
+        if ($search) {
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
                   ->orWhere('district', 'like', "%{$search}%")
@@ -55,13 +65,13 @@ class PlaceController extends Controller
             });
         }
 
-        if ($category = $request->input('category')) {
+        if ($category) {
             $query->where('category', $category);
         }
 
         $places = $query->orderBy('updated_at', 'desc')->paginate(15);
         $datasetImports = DatasetImport::with('user')->orderBy('created_at', 'desc')->take(10)->get();
-        return view('admin.places.index', compact('places', 'datasetImports'));
+        return view('admin.places.index', compact('places', 'datasetImports', 'search', 'category'));
     }
 
     public function create()
@@ -281,6 +291,16 @@ class PlaceController extends Controller
      */
     public function pending(Request $request)
     {
+        // Store filter in session if provided, otherwise retrieve from session
+        if ($request->has('search') || $request->has('category')) {
+            session([
+                'admin_places_pending_search' => $request->input('search'),
+                'admin_places_pending_category' => $request->input('category'),
+            ]);
+        }
+        $search = session('admin_places_pending_search');
+        $category = session('admin_places_pending_category');
+
         $query = Place::with('creator')
             ->where('status', Place::STATUS_PENDING)
             // Unclaimed drafts (created_by null — bulk-imported data no
@@ -288,7 +308,7 @@ class PlaceController extends Controller
             // don't belong in the admin review queue.
             ->whereNotNull('created_by');
 
-        if ($search = $request->input('search')) {
+        if ($search) {
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
                   ->orWhere('district', 'like', "%{$search}%")
@@ -296,7 +316,7 @@ class PlaceController extends Controller
             });
         }
 
-        if ($category = $request->input('category')) {
+        if ($category) {
             $query->where('category', $category);
         }
 
@@ -304,7 +324,7 @@ class PlaceController extends Controller
 
         $datasetImports = DatasetImport::with('user')->orderBy('created_at', 'desc')->take(10)->get();
 
-        return view('admin.places.pending', compact('places', 'datasetImports'));
+        return view('admin.places.pending', compact('places', 'datasetImports', 'search', 'category'));
     }
 
     public function approve($id)
@@ -539,7 +559,7 @@ class PlaceController extends Controller
             'height_m' => 'nullable|string|max:50',
             'length_km' => 'nullable|string|max:50',
             'surfing' => 'nullable|string|max:50',
-            'road_condition' => 'nullable|string|max:100',
+            'road_condition' => 'nullable|string|max:255',
             'ar_supported' => 'nullable|boolean',
             'ar_tier' => 'nullable|integer',
             'ar_brand_name' => 'nullable|string|max:100',
