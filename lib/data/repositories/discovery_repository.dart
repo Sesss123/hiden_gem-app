@@ -164,7 +164,7 @@ class DiscoveryRepository {
     final result = await getDiscoveryPlaces(userLat: currentPlace.lat, userLng: currentPlace.lng);
     
     if (result.isSuccess) {
-      final allPlaces = result.successValue!;
+      final allPlaces = result.valueOrNull!;
       
       // Filter out current place, enforce radius limit, and take top N
       final nearby = allPlaces

@@ -60,16 +60,7 @@ class GuideDocumentUploadController extends Controller
         ], 200);
     }
 
-    /**
-     * Streams a guide document back to an admin reviewing the application
-     * (resources/views/admin/guides/show.blade.php — the only real caller;
-     * the mobile app never displays a guide's own uploaded document back to
-     * them). Registered under the session-authenticated admin route group
-     * in routes/web.php (auth + is_admin middleware), so reaching this
-     * method at all already implies the caller is an admin — this is the
-     * sole legitimate way to read a guide_documents file now that they're
-     * stored on the private disk, see the security note on upload() above.
-     */
+    
     public function download(string $uid, string $filename): StreamedResponse|Response
     {
         // Reject any path-traversal attempt in either path segment before

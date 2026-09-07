@@ -37,6 +37,10 @@ class EventController extends Controller
             $query->where(function ($q) {
                 $q->where('created_by', Auth::id())->orWhereNull('created_by');
             });
+        } else {
+            // Full admins should only see Approved events in the main list.
+            // Pending events are reviewed in the Pending tab.
+            $query->where('status', Event::STATUS_APPROVED);
         }
 
         if ($search = $request->input('search')) {

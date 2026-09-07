@@ -12,6 +12,7 @@ import '../../core/services/ar_service.dart';
 import '../../data/models/ar_place_data.dart';
 import '../../core/services/ar_support_service.dart';
 import '../../core/services/asset_cache_service.dart';
+import '../../core/utils/result.dart';
 import 'package:hidden_gems_sl/data/repositories/discovery_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../widgets/cached_image.dart';
@@ -1623,11 +1624,11 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
               }
-              if (!snapshot.hasData || snapshot.data!.isError) {
+              if (!snapshot.hasData || snapshot.data!.isFailure) {
                 return Center(child: Text("Unable to load nearby places.", style: GoogleFonts.inter(color: AppTheme.textSecondary(context))));
               }
               
-              final places = snapshot.data!.successValue!;
+              final places = snapshot.data!.valueOrNull!;
               if (places.isEmpty) {
                 return Center(child: Text("No nearby places found.", style: GoogleFonts.inter(color: AppTheme.textSecondary(context))));
               }
@@ -1659,7 +1660,7 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           CachedImage(
-                            url: place.thumbUrl,
+                            url: place.imageUrl,
                             width: 120,
                             height: 80,
                             fit: BoxFit.cover,

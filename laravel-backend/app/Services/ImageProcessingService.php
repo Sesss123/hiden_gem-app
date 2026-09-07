@@ -100,11 +100,23 @@ class ImageProcessingService
             ];
         }
 
-        // BUG-L001: Fallback direct storage MUST validate extension to prevent webshell/RCE uploads
+        // Extension allowlist alone is spoofable (e.g. a renamed webshell), so this
+        // also verifies the file decodes as a real image via getimagesize(), which
+        // reads actual image headers rather than trusting the filename.
         $allowedExts = ['jpg', 'jpeg', 'png', 'webp'];
         $ext = strtolower($originalExtension ?: 'jpg');
         if (!in_array($ext, $allowedExts)) {
             throw new \InvalidArgumentException("Invalid image extension: .{$ext}. Only JPG, PNG, and WebP are allowed.");
+        }
+
+        $imageInfo = @getimagesize($sourcePath);
+        if ($imageInfo === false) {
+            throw new \InvalidArgumentException("Uploaded file could not be verified as a valid image.");
+        }
+
+        $allowedMimes = ['image/jpeg', 'image/png', 'image/webp'];
+        if (!in_array($imageInfo['mime'] ?? '', $allowedMimes)) {
+            throw new \InvalidArgumentException("Uploaded file has an unsupported image type: " . ($imageInfo['mime'] ?? 'unknown'));
         }
 
         $fallbackThumb = "{$folder}/{$ownerId}/thumb/{$filename}.{$ext}";
