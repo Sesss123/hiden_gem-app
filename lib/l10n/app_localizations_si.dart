@@ -393,6 +393,21 @@ class AppLocalizationsSi extends AppLocalizations {
   String get couldNotOpenMaps => 'මෙම උපාංගයේ සිතියම් යෙදුමක් විවෘත කළ නොහැක.';
 
   @override
+  String get awayLabel => 'දුරින්';
+
+  @override
+  String get travelModeWalk => 'ඇවිදීම';
+
+  @override
+  String get travelModeBike => 'බයික්';
+
+  @override
+  String get travelModeCar => 'කාර්';
+
+  @override
+  String get openInMaps => 'සිතියමේ විවෘත කරන්න';
+
+  @override
   String get photosLabel => 'ඡායාරූප';
 
   @override

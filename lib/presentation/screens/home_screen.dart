@@ -1133,7 +1133,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     }
 
     return SizedBox(
-      height: 140,
+      height: 180,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         physics: const BouncingScrollPhysics(),
@@ -1153,15 +1153,39 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               width: 160,
               margin: const EdgeInsets.only(right: 16),
               child: OracleUI.glassContainer(
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.zero,
                 radius: BorderRadius.circular(20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Icon(Icons.location_on_rounded, size: 14, color: Theme.of(context).colorScheme.primary),
-                    const Spacer(),
-                    Text(gem.name.toUpperCase(), style: GoogleFonts.outfit(fontSize: 11, fontWeight: FontWeight.bold, color: AppTheme.textPrimary(context)), maxLines: 1, overflow: TextOverflow.ellipsis),
-                    Text(gem.district, style: GoogleFonts.inter(fontSize: 9, color: AppTheme.textSecondary(context))),
+                    ClipRRect(
+                      borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+                      child: CachedImage(
+                        url: gem.imageUrl,
+                        width: double.infinity,
+                        height: 90,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(gem.name.toUpperCase(), style: GoogleFonts.outfit(fontSize: 11, fontWeight: FontWeight.bold, color: AppTheme.textPrimary(context)), maxLines: 1, overflow: TextOverflow.ellipsis),
+                          const SizedBox(height: 2),
+                          Row(
+                            children: [
+                              Icon(Icons.location_on_rounded, size: 11, color: Theme.of(context).colorScheme.primary),
+                              const SizedBox(width: 3),
+                              Expanded(
+                                child: Text(gem.district, style: GoogleFonts.inter(fontSize: 9, color: AppTheme.textSecondary(context)), maxLines: 1, overflow: TextOverflow.ellipsis),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
               ),

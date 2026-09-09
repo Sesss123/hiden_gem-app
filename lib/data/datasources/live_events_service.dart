@@ -1,6 +1,5 @@
 import 'package:url_launcher/url_launcher.dart';
 import '../models/event_model.dart';
-import 'sri_lanka_event_dataset.dart';
 import '../../core/utils/secure_logger.dart';
 
 class LiveEventsService {
@@ -9,7 +8,7 @@ class LiveEventsService {
     DateTime endDate = startDate.add(Duration(days: durationDays));
     List<EventModel> results = [];
     
-    final sourceEvents = dynamicEvents ?? SriLankaEvents.events;
+    final sourceEvents = dynamicEvents ?? const <Map<String, dynamic>>[];
 
     for (var event in sourceEvents) {
       // API sends "date"/"start"/"end" as keys that are present but null for
@@ -114,7 +113,7 @@ class LiveEventsService {
 
   /// Returns events personalized for the user (Phase 3: Top Picks)
   static List<EventModel> getPersonalizedEvents(String userVibe, List<String> userInterests, {int limit = 3, List<Map<String, dynamic>>? dynamicEvents}) {
-    final allEvents = (dynamicEvents ?? SriLankaEvents.events).map((e) => EventModel.fromJson(e)).toList();
+    final allEvents = (dynamicEvents ?? const <Map<String, dynamic>>[]).map((e) => EventModel.fromJson(e)).toList();
     
     // Simple scoring algorithm
     List<({EventModel event, double score})> scoredEvents = [];

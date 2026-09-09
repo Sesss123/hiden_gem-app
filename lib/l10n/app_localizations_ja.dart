@@ -386,6 +386,21 @@ class AppLocalizationsJa extends AppLocalizations {
   String get couldNotOpenMaps => 'Could not open a maps app on this device.';
 
   @override
+  String get awayLabel => 'away';
+
+  @override
+  String get travelModeWalk => 'Walk';
+
+  @override
+  String get travelModeBike => 'Bike';
+
+  @override
+  String get travelModeCar => 'Car';
+
+  @override
+  String get openInMaps => 'Open in Maps';
+
+  @override
   String get photosLabel => 'Photos';
 
   @override

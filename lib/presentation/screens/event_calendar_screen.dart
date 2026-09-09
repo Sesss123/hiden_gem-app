@@ -506,13 +506,18 @@ class _EventCalendarScreenState extends State<EventCalendarScreen> with Automati
                       ),
                       Container(decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [AppTheme.colors.transparent, AppTheme.colors.black.withValues(alpha: 0.6)]))),
                       Positioned(
-                        bottom: 24, left: 24,
+                        bottom: 24, left: 24, right: 24,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             OracleUI.glassChip(context: context, label: _categoryLabel(event.category, AppLocalizations.of(context)!).toUpperCase(), isSelected: true),
                             SizedBox(height: 12),
-                            OracleUI.neonText(event.name.toUpperCase(), style: GoogleFonts.outfit(fontSize: 24, fontWeight: FontWeight.w900, color: AppTheme.colors.white)),
+                            Text(
+                              event.name.toUpperCase(),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: GoogleFonts.outfit(fontSize: 24, fontWeight: FontWeight.w900, color: AppTheme.colors.white),
+                            ),
                           ],
                         ),
                       ),

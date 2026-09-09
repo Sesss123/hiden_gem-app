@@ -4,7 +4,6 @@ import '../../core/network/secure_http_client.dart';
 import '../../core/config/app_config.dart';
 import '../../core/utils/secure_logger.dart';
 import 'trip_cache_service.dart';
-import 'sri_lanka_event_dataset.dart';
 
 class DynamicContentService {
   static final _client = SecureHttpClient(http.Client());
@@ -31,7 +30,7 @@ class DynamicContentService {
         final response = await _client.get(
           Uri.parse('${AppConfig.baseUrl}/discovery/events'),
           headers: {'X-API-KEY': AppConfig.hiddenGemsApiKey},
-        ).timeout(const Duration(seconds: 5));
+        ).timeout(const Duration(seconds: 15));
 
         if (response.statusCode == 200) {
           final List<dynamic> data = json.decode(response.body);
@@ -44,12 +43,15 @@ class DynamicContentService {
         }
       }
     } catch (e) {
-      SecureLogger.error("Dynamic events fetch failed, checking cache or local: $e");
+      SecureLogger.error("Dynamic events fetch failed, checking cache: $e");
       final String? cachedData = TripCacheService.getGlobalData('events');
       if (cachedData != null) {
         return List<Map<String, dynamic>>.from(json.decode(cachedData));
       }
-      return SriLankaEvents.events;
+      // No cache and the API is unreachable — return nothing rather than
+      // fake placeholder events (Mirissa party, Kandy Perahera, etc.) that
+      // don't exist in the real backend and would mislead users.
+      return [];
     }
   }
 

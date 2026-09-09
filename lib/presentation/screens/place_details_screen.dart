@@ -791,7 +791,7 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
       _statPill(
         context,
         Icons.directions_outlined,
-        l10n.getDirections,
+        _directionsPillLabel(l10n),
         onTap: () => _openDirections(context, l10n),
       ),
       if (widget.place.bestTime.isNotEmpty)
@@ -827,8 +827,52 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
     );
   }
 
+  // Free, offline estimates — no Directions API/billing involved. Each is a
+  // flat average speed rather than real routing, so these are rough "about
+  // this long" figures, not turn-by-turn ETAs (road type/traffic aren't
+  // factored in). Speeds reflect typical Sri Lankan road conditions (mixed
+  // paved/unpaved, hills, traffic) for each mode.
+  static const double _walkSpeedKmh = 4.5;
+  static const double _bikeSpeedKmh = 28.0;
+  static const double _carSpeedKmh = 35.0;
+
+  String _estimateTimeLabel(double distanceKm, double speedKmh) {
+    final minutes = (distanceKm / speedKmh * 60).round();
+    return minutes < 60 ? '$minutes min' : '${(minutes / 60).floor()}h ${minutes % 60}m';
+  }
+
+  String _directionsPillLabel(AppLocalizations l10n) {
+    final distanceKm = widget.place.distanceKm;
+    if (distanceKm <= 0) return l10n.getDirections;
+    return '${distanceKm.toStringAsFixed(1)} km · ~${_estimateTimeLabel(distanceKm, _bikeSpeedKmh)}';
+  }
+
   Future<void> _openDirections(BuildContext context, AppLocalizations l10n) async {
     HapticFeedback.selectionClick();
+    if (widget.place.distanceKm <= 0) {
+      await _launchMaps();
+      return;
+    }
+    if (!context.mounted) return;
+    await showModalBottomSheet(
+      context: context,
+      backgroundColor: AppTheme.colors.transparent,
+      builder: (sheetContext) => _VehicleEtaSheet(
+        distanceKm: widget.place.distanceKm,
+        placeName: widget.place.name,
+        walkSpeedKmh: _walkSpeedKmh,
+        bikeSpeedKmh: _bikeSpeedKmh,
+        carSpeedKmh: _carSpeedKmh,
+        estimateLabel: _estimateTimeLabel,
+        onOpenMaps: () async {
+          Navigator.pop(sheetContext);
+          await _launchMaps();
+        },
+      ),
+    );
+  }
+
+  Future<void> _launchMaps() async {
     final lat = widget.place.lat;
     final lng = widget.place.lng;
     final label = Uri.encodeComponent(widget.place.name);
@@ -844,7 +888,8 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
       return;
     }
     if (!launched) {
-      if (!context.mounted) return;
+      if (!mounted) return;
+      final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.couldNotOpenMaps)));
     }
   }
@@ -2085,6 +2130,151 @@ class _FullscreenGalleryViewerState extends State<_FullscreenGalleryViewer> {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// Vehicle-type ETA picker shown from the "Get Directions" pill — lets the
+/// visitor see a rough distance/time estimate per travel mode (walk/bike/car)
+/// before jumping out to the device's maps app. Estimates are flat
+/// average-speed calculations (see the speed constants in
+/// PlaceDetailsScreen), not real routing.
+class _VehicleEtaSheet extends StatefulWidget {
+  final double distanceKm;
+  final String placeName;
+  final double walkSpeedKmh;
+  final double bikeSpeedKmh;
+  final double carSpeedKmh;
+  final String Function(double distanceKm, double speedKmh) estimateLabel;
+  final VoidCallback onOpenMaps;
+
+  const _VehicleEtaSheet({
+    required this.distanceKm,
+    required this.placeName,
+    required this.walkSpeedKmh,
+    required this.bikeSpeedKmh,
+    required this.carSpeedKmh,
+    required this.estimateLabel,
+    required this.onOpenMaps,
+  });
+
+  @override
+  State<_VehicleEtaSheet> createState() => _VehicleEtaSheetState();
+}
+
+enum _TravelMode { walk, bike, car }
+
+class _VehicleEtaSheetState extends State<_VehicleEtaSheet> {
+  _TravelMode _selected = _TravelMode.bike;
+
+  double get _speedForSelected => switch (_selected) {
+        _TravelMode.walk => widget.walkSpeedKmh,
+        _TravelMode.bike => widget.bikeSpeedKmh,
+        _TravelMode.car => widget.carSpeedKmh,
+      };
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return Container(
+      padding: EdgeInsets.only(
+        left: 24, right: 24, top: 24,
+        bottom: 24 + MediaQuery.of(context).viewInsets.bottom,
+      ),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Center(
+            child: Container(
+              width: 40, height: 4,
+              decoration: BoxDecoration(
+                color: AppTheme.surfaceMuted(context),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+          ),
+          const SizedBox(height: 20),
+          Text(
+            widget.placeName,
+            style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.w800, color: AppTheme.textPrimary(context)),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            '${widget.distanceKm.toStringAsFixed(1)} km ${l10n.awayLabel}',
+            style: GoogleFonts.inter(fontSize: 13, color: AppTheme.textSecondary(context)),
+          ),
+          const SizedBox(height: 20),
+          Row(
+            children: [
+              Expanded(child: _modeOption(context, _TravelMode.walk, Icons.directions_walk_rounded, l10n.travelModeWalk)),
+              const SizedBox(width: 10),
+              Expanded(child: _modeOption(context, _TravelMode.bike, Icons.two_wheeler_rounded, l10n.travelModeBike)),
+              const SizedBox(width: 10),
+              Expanded(child: _modeOption(context, _TravelMode.car, Icons.directions_car_filled_rounded, l10n.travelModeCar)),
+            ],
+          ),
+          const SizedBox(height: 24),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed: widget.onOpenMaps,
+              icon: const Icon(Icons.map_outlined),
+              label: Text(l10n.openInMaps, style: GoogleFonts.inter(fontWeight: FontWeight.w700)),
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                foregroundColor: isDark ? AppTheme.colors.black : AppTheme.colors.white,
+                elevation: 0,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _modeOption(BuildContext context, _TravelMode mode, IconData icon, String label) {
+    final isSelected = _selected == mode;
+    final speed = switch (mode) {
+      _TravelMode.walk => widget.walkSpeedKmh,
+      _TravelMode.bike => widget.bikeSpeedKmh,
+      _TravelMode.car => widget.carSpeedKmh,
+    };
+    final color = isSelected ? Theme.of(context).colorScheme.primary : AppTheme.textSecondary(context);
+
+    return GestureDetector(
+      onTap: () {
+        HapticFeedback.selectionClick();
+        setState(() => _selected = mode);
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 14),
+        decoration: BoxDecoration(
+          color: isSelected ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.12) : AppTheme.surfaceMuted(context),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: isSelected ? Theme.of(context).colorScheme.primary : AppTheme.colors.transparent, width: 1.5),
+        ),
+        child: Column(
+          children: [
+            Icon(icon, color: color, size: 22),
+            const SizedBox(height: 6),
+            Text(label, style: GoogleFonts.inter(fontSize: 11.5, fontWeight: FontWeight.w700, color: color)),
+            const SizedBox(height: 2),
+            Text(
+              widget.estimateLabel(widget.distanceKm, speed),
+              style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: color.withValues(alpha: 0.8)),
+            ),
+          ],
+        ),
       ),
     );
   }

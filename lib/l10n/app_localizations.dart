@@ -844,6 +844,36 @@ abstract class AppLocalizations {
   /// **'Could not open a maps app on this device.'**
   String get couldNotOpenMaps;
 
+  /// No description provided for @awayLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'away'**
+  String get awayLabel;
+
+  /// No description provided for @travelModeWalk.
+  ///
+  /// In en, this message translates to:
+  /// **'Walk'**
+  String get travelModeWalk;
+
+  /// No description provided for @travelModeBike.
+  ///
+  /// In en, this message translates to:
+  /// **'Bike'**
+  String get travelModeBike;
+
+  /// No description provided for @travelModeCar.
+  ///
+  /// In en, this message translates to:
+  /// **'Car'**
+  String get travelModeCar;
+
+  /// No description provided for @openInMaps.
+  ///
+  /// In en, this message translates to:
+  /// **'Open in Maps'**
+  String get openInMaps;
+
   /// No description provided for @photosLabel.
   ///
   /// In en, this message translates to:

@@ -322,12 +322,15 @@ class _MarketplaceResultsScreenState extends ConsumerState<MarketplaceResultsScr
                   },
                 ),
               ),
-              Row(
-                children: [
-                  Expanded(child: _buildCategoryChips(context)),
-                  _buildFilterButton(context),
-                  const SizedBox(width: 20),
-                ],
+              SizedBox(
+                height: 44,
+                child: Row(
+                  children: [
+                    Expanded(child: _buildCategoryChips(context)),
+                    _buildFilterButton(context),
+                    const SizedBox(width: 20),
+                  ],
+                ),
               ),
               const SizedBox(height: 10),
               Expanded(

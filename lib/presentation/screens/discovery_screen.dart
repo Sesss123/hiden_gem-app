@@ -972,22 +972,22 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
     // are never constructed until they scroll into the viewport.
     final List<Widget> sections = [
       if (_oraclePicks.isNotEmpty) ...[
-        _buildSectionTitle(l10n.picksForYou, Icons.auto_awesome),
+        _buildSectionTitle(l10n.picksForYou, Icons.auto_awesome, places: _oraclePicks),
         _buildHorizontalCards(_oraclePicks, l10n, isOracle: true),
         const SizedBox(height: 32),
       ],
       if (_arPicks.isNotEmpty) ...[
-        _buildSectionTitle(l10n.exploreInAr, Icons.view_in_ar),
+        _buildSectionTitle(l10n.exploreInAr, Icons.view_in_ar, places: _arPicks),
         _buildHorizontalCards(_arPicks, l10n, isAR: true),
         const SizedBox(height: 32),
       ],
       if (_naturePicks.isNotEmpty) ...[
-        _buildSectionTitle(l10n.bestNatureNearby, Icons.park_outlined),
+        _buildSectionTitle(l10n.bestNatureNearby, Icons.park_outlined, places: _naturePicks),
         _buildHorizontalCards(_naturePicks, l10n),
         const SizedBox(height: 32),
       ],
       if (_culturePicks.isNotEmpty) ...[
-        _buildSectionTitle(l10n.topCultureSpots, Icons.temple_buddhist_outlined),
+        _buildSectionTitle(l10n.topCultureSpots, Icons.temple_buddhist_outlined, places: _culturePicks),
         _buildHorizontalCards(_culturePicks, l10n),
         const SizedBox(height: 32),
       ],
@@ -1004,7 +1004,7 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
       // distance so the "Nearby" name in the title is actually true — a place
       // across the country would otherwise appear ahead of one 2km away.
       if (_allPlaces.isNotEmpty) ...[
-        _buildSectionTitle(l10n.allNearbyPlacesTitle, Icons.travel_explore_outlined),
+        _buildSectionTitle(l10n.allNearbyPlacesTitle, Icons.travel_explore_outlined, places: [..._allPlaces]..sort((a, b) => a.distanceKm.compareTo(b.distanceKm))),
         _buildHorizontalCards(
           [..._allPlaces]..sort((a, b) => a.distanceKm.compareTo(b.distanceKm)),
           l10n,
@@ -1201,7 +1201,7 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
   }
 
 
-  Widget _buildSectionTitle(String title, IconData icon) {
+  Widget _buildSectionTitle(String title, IconData icon, {List<DiscoveryPlace>? places}) {
     final l10n = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
@@ -1221,14 +1221,26 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
             ),
           ),
           const SizedBox(width: 8),
-          Text(
-            l10n.seeAll,
-            style: GoogleFonts.inter(
-              fontSize: 11,
-              fontWeight: FontWeight.w600,
-              color: Theme.of(context).colorScheme.primary,
+          if (places != null && places.isNotEmpty)
+            GestureDetector(
+              onTap: () {
+                HapticFeedback.selectionClick();
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => SeeAllPlacesScreen(title: title, places: places),
+                  ),
+                );
+              },
+              child: Text(
+                l10n.seeAll,
+                style: GoogleFonts.inter(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+              ),
             ),
-          ),
         ],
       ),
     );
@@ -1240,8 +1252,15 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
     bool isOracle = false,
     bool isAR = false,
   }) {
+    // Oracle cards reserve extra height for an AI-reason blurb, but that
+    // feature is currently disabled server-side (getAiRecommendations()
+    // never populates aiReason) — so every oracle card was rendering the
+    // full 340px height with nothing to fill the bottom third, leaving a
+    // large blank strip under the price/distance row. Fall back to the
+    // compact 230px height whenever there's no blurb to show.
+    final hasAiReasonRow = isOracle && places.any((p) => p.aiReason.isNotEmpty);
     return SizedBox(
-      height: (isOracle || isAR) ? 340 : 270,
+      height: (hasAiReasonRow || isAR) ? 340 : 230,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         physics: const BouncingScrollPhysics(),
@@ -1345,6 +1364,7 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
                           padding: const EdgeInsets.all(14),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: hasAiReasonRow ? MainAxisAlignment.start : MainAxisAlignment.center,
                             children: [
                               Text(
                                 place.name,
@@ -1586,6 +1606,116 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// Full list of places for a "See all" tap on a Discovery section — reuses
+/// the same grid-of-cards layout every horizontal-scroll section already
+/// renders, just without the horizontal scroll limit.
+class SeeAllPlacesScreen extends StatelessWidget {
+  final String title;
+  final List<DiscoveryPlace> places;
+
+  const SeeAllPlacesScreen({super.key, required this.title, required this.places});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        elevation: 0,
+        title: Text(
+          title,
+          style: GoogleFonts.outfit(fontSize: 17, fontWeight: FontWeight.w700, color: AppTheme.textPrimary(context)),
+        ),
+        iconTheme: IconThemeData(color: AppTheme.textPrimary(context)),
+      ),
+      body: GridView.builder(
+        padding: const EdgeInsets.all(16),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          mainAxisSpacing: 16,
+          crossAxisSpacing: 16,
+          childAspectRatio: 0.72,
+        ),
+        itemCount: places.length,
+        itemBuilder: (context, index) {
+          final place = places[index];
+          return GestureDetector(
+            onTap: () {
+              HapticFeedback.selectionClick();
+              Navigator.push(context, MaterialPageRoute(builder: (_) => PlaceDetailsScreen(place: place)));
+            },
+            child: OracleUI.premiumGlassCard(
+              padding: EdgeInsets.zero,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: ClipRRect(
+                      borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+                      child: place.imageUrl.isEmpty
+                          ? Container(
+                              color: AppTheme.colors.black12,
+                              child: Center(child: Icon(Icons.image_outlined, color: AppTheme.colors.white24, size: 32)),
+                            )
+                          : CachedNetworkImage(
+                              imageUrl: place.imageUrl,
+                              width: double.infinity,
+                              fit: BoxFit.cover,
+                              memCacheWidth: 400,
+                              placeholder: (context, url) => Shimmer.fromColors(
+                                baseColor: AppTheme.colors.white.withValues(alpha: 0.05),
+                                highlightColor: AppTheme.colors.white.withValues(alpha: 0.15),
+                                child: Container(color: AppTheme.colors.white),
+                              ),
+                              errorWidget: (context, url, error) => Container(
+                                color: AppTheme.colors.black12,
+                                child: Center(child: Icon(Icons.broken_image_outlined, color: AppTheme.colors.white24, size: 32)),
+                              ),
+                            ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          place.name,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: GoogleFonts.outfit(fontSize: 13, fontWeight: FontWeight.w800, color: AppTheme.textPrimary(context)),
+                        ),
+                        const SizedBox(height: 4),
+                        Row(
+                          children: [
+                            Text(
+                              "${place.distanceKm.toStringAsFixed(1)} km",
+                              style: GoogleFonts.inter(fontSize: 11, color: AppTheme.textSecondary(context), fontWeight: FontWeight.w500),
+                            ),
+                            const Spacer(),
+                            Flexible(
+                              child: Text(
+                                place.ticketRange,
+                                overflow: TextOverflow.ellipsis,
+                                style: GoogleFonts.outfit(fontSize: 11, color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.w700),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
       ),
     );
   }
