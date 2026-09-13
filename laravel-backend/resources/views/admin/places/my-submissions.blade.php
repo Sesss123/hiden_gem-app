@@ -56,7 +56,7 @@
                             <span class="inline-block px-2 py-0.5 rounded-full bg-slate-800 text-[10px]">{{ $import->record_count }} records</span>
                         </td>
                         <td class="py-2 px-2 text-slate-400">{{ $import->user ? $import->user->name : 'Unknown' }}</td>
-                        <td class="py-2 px-2 text-slate-500 text-right">{{ $import->created_at->format('Y-m-d g:i A') }}</td>
+                        <td class="py-2 px-2 text-slate-500 text-right">{{ optional($import->created_at)->format('Y-m-d g:i A') ?? 'N/A' }}</td>
                     </tr>
                     @endforeach
                 </tbody>

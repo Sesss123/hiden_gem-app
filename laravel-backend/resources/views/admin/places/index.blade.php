@@ -31,7 +31,10 @@
 
             <select name="category" onchange="this.form.submit()" class="bg-slate-900/80 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-300 focus:outline-none focus:border-emerald-500">
                 <option value="">All Categories</option>
-                @foreach(\App\Models\Place::select('category')->distinct()->orderBy('category')->pluck('category') as $cat)
+                @php
+                    $categoryList = isset($categories) ? $categories : (\Illuminate\Support\Facades\Schema::hasTable('places') ? \App\Models\Place::select('category')->distinct()->whereNotNull('category')->orderBy('category')->pluck('category') : collect());
+                @endphp
+                @foreach($categoryList as $cat)
                     @if($cat)
                         <option value="{{ $cat }}" {{ (isset($category) && $category == $cat) ? 'selected' : '' }}>{{ $cat }}</option>
                     @endif
@@ -71,7 +74,7 @@
                             <span class="inline-block px-2 py-0.5 rounded-full bg-slate-800 text-[10px]">{{ $import->record_count }} records</span>
                         </td>
                         <td class="py-2 px-2 text-slate-400">{{ $import->user ? $import->user->name : 'Unknown' }}</td>
-                        <td class="py-2 px-2 text-slate-500 text-right">{{ $import->created_at->format('Y-m-d g:i A') }}</td>
+                        <td class="py-2 px-2 text-slate-500 text-right">{{ optional($import->created_at)->format('Y-m-d g:i A') ?? 'N/A' }}</td>
                     </tr>
                     @endforeach
                 </tbody>
@@ -131,7 +134,7 @@
                                     <span class="bg-purple-500/20 text-purple-300 border border-purple-500/30 text-[10px] font-bold px-2 py-0.5 rounded uppercase">AR Tier {{ $place->ar_tier }}</span>
                                 @endif
                                 <span class="text-amber-400 font-bold text-xs flex items-center gap-1">
-                                    <i class="fa-solid fa-star"></i> {{ number_format($place->rating, 1) }}
+                                    <i class="fa-solid fa-star"></i> {{ number_format((float)($place->rating ?? 0), 1) }}
                                 </span>
                             </div>
                         </td>
@@ -164,7 +167,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="7" class="py-12 text-center text-slate-500">
+                        <td colspan="8" class="py-12 text-center text-slate-500">
                             <i class="fa-solid fa-compass text-3xl mb-3 block opacity-40"></i>
                             No hidden gems found. Click "Add New Gem" above to begin seeding the database.
                         </td>

@@ -1,3 +1,10 @@
+## Completed: Fix Admin Places 500 Server Error (2026-09-13)
+- [x] Resilient dataset imports querying in `PlaceController.php` (Schema::hasTable guard + try-catch fallback)
+- [x] Guard `DatasetImport::create` in `PlaceController::importDataset`
+- [x] Null-safe date formatting `optional($import->created_at)->format(...)` across `index.blade.php`, `pending.blade.php`, and `my-submissions.blade.php`
+- [x] Null-safe rating number format `number_format((float)($place->rating ?? 0), 1)` in `index.blade.php`
+- [x] Hardened `AppServiceProvider.php` view composer against uncaught Throwables for incident and badge counts
+
 ## Completed: Enterprise Zero-Trust Security Upgrade (2026-09-13)
 - [x] Phase 1: Device-Bound Cryptographic Sessions (ECDSA P-256 asymmetric keypair in Keystore/Keychain, backend key registration, X-Zenith-Device-Signature)
 - [x] Phase 2: Refresh Token Rotation & Token Family Tracking (Automatic breach detection on reuse and instant session termination)

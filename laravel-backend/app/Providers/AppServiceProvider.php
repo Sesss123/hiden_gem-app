@@ -38,7 +38,7 @@ class AppServiceProvider extends ServiceProvider
             $count = Cache::remember('admin_open_incident_count', 60, function () {
                 try {
                     return count((new FirestoreService())->queryDocuments('incident_reports', 'status', 'EQUAL', 'open'));
-                } catch (\Exception $e) {
+                } catch (\Throwable $e) {
                     Log::warning('Sidebar open-incident count failed: ' . $e->getMessage());
                     return 0;
                 }
@@ -46,12 +46,20 @@ class AppServiceProvider extends ServiceProvider
             $view->with('openIncidentCount', $count);
 
             $pendingPlaceCount = Cache::remember('admin_pending_place_count', 60, function () {
-                return Place::where('status', Place::STATUS_PENDING)->whereNotNull('created_by')->count();
+                try {
+                    return Place::where('status', Place::STATUS_PENDING)->whereNotNull('created_by')->count();
+                } catch (\Throwable $e) {
+                    return 0;
+                }
             });
             $view->with('pendingPlaceCount', $pendingPlaceCount);
 
             $pendingEventCount = Cache::remember('admin_pending_event_count', 60, function () {
-                return Event::where('status', Event::STATUS_PENDING)->whereNotNull('created_by')->count();
+                try {
+                    return Event::where('status', Event::STATUS_PENDING)->whereNotNull('created_by')->count();
+                } catch (\Throwable $e) {
+                    return 0;
+                }
             });
             $view->with('pendingEventCount', $pendingEventCount);
         });

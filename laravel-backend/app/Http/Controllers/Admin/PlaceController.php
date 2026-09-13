@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -70,8 +71,15 @@ class PlaceController extends Controller
         }
 
         $places = $query->orderBy('updated_at', 'desc')->paginate(15);
-        $datasetImports = DatasetImport::with('user')->orderBy('created_at', 'desc')->take(10)->get();
-        return view('admin.places.index', compact('places', 'datasetImports', 'search', 'category'));
+        $datasetImports = $this->getRecentDatasetImports();
+        $categories = Cache::remember('admin_places_categories', 300, function () {
+            try {
+                return Place::select('category')->distinct()->whereNotNull('category')->orderBy('category')->pluck('category');
+            } catch (\Throwable $e) {
+                return collect();
+            }
+        });
+        return view('admin.places.index', compact('places', 'datasetImports', 'search', 'category', 'categories'));
     }
 
     public function create()
@@ -97,7 +105,7 @@ class PlaceController extends Controller
         }
 
         $places = $query->orderBy('updated_at', 'desc')->paginate(15);
-        $datasetImports = DatasetImport::with('user')->orderBy('created_at', 'desc')->take(10)->get();
+        $datasetImports = $this->getRecentDatasetImports();
         return view('admin.places.my-submissions', compact('places', 'datasetImports'));
     }
 
@@ -322,7 +330,7 @@ class PlaceController extends Controller
 
         $places = $query->orderBy('created_at', 'asc')->paginate(15);
 
-        $datasetImports = DatasetImport::with('user')->orderBy('created_at', 'desc')->take(10)->get();
+        $datasetImports = $this->getRecentDatasetImports();
 
         return view('admin.places.pending', compact('places', 'datasetImports', 'search', 'category'));
     }
@@ -533,11 +541,17 @@ class PlaceController extends Controller
             }
         });
 
-        DatasetImport::create([
-            'filename' => $file->getClientOriginalName(),
-            'record_count' => $count,
-            'user_id' => Auth::id()
-        ]);
+        try {
+            if (Schema::hasTable('dataset_imports')) {
+                DatasetImport::create([
+                    'filename' => $file->getClientOriginalName(),
+                    'record_count' => $count,
+                    'user_id' => Auth::id()
+                ]);
+            }
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('Failed logging dataset import: ' . $e->getMessage());
+        }
 
         $this->logAdminAction('place.imported', 'Place', null, ['count' => $count, 'filename' => $file->getClientOriginalName()]);
 
@@ -811,5 +825,22 @@ class PlaceController extends Controller
         $nextNum = $maxNum + 1;
 
         return $prefix . sprintf('%03d', $nextNum);
+    }
+
+    /**
+     * Safely retrieves recent dataset imports, gracefully failing if the table
+     * does not yet exist on the production database.
+     */
+    protected function getRecentDatasetImports(int $limit = 10)
+    {
+        try {
+            if (!Schema::hasTable('dataset_imports')) {
+                return collect();
+            }
+            return DatasetImport::with('user')->orderBy('created_at', 'desc')->take($limit)->get();
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('Failed fetching dataset imports: ' . $e->getMessage());
+            return collect();
+        }
     }
 }
