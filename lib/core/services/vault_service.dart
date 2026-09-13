@@ -5,6 +5,9 @@ import 'package:crypto/crypto.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:pointycastle/export.dart';
 import 'package:uuid/uuid.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
+import 'dart:io' show Platform;
 import '../utils/secure_logger.dart';
 
 /// VaultService provides high-security cryptographic operations for device binding and request signing.
@@ -12,6 +15,7 @@ import '../utils/secure_logger.dart';
 /// keypair stored in Secure Storage (Keystore/Keychain). The private key never leaves the device,
 /// while the public key is registered with the backend, preventing stolen token reuse across devices.
 class VaultService {
+  static const MethodChannel _nativeKeys = MethodChannel('hidden_gems/device_keys');
   static const String _signingKeyName = 'DEVICE_SIGNING_KEY';
   static const String _deviceIdKeyName = 'DEVICE_UUID';
   static const String _privateKeyDName = 'DEVICE_ECDSA_PRIV_D';
@@ -97,6 +101,14 @@ class VaultService {
 
   /// Exports the public key in standard X.509 SPKI PEM format to register with backend.
   static Future<String> getDevicePublicKeyPem() async {
+    if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
+      try {
+        final key = await _nativeKeys.invokeMethod<String>('getPublicKey');
+        if (key != null && key.isNotEmpty) return key;
+      } on PlatformException catch (e) {
+        SecureLogger.warning('Native device key unavailable (${e.code}); using encrypted fallback.');
+      }
+    }
     await _ensureAsymmetricKeyPair();
     return _cachedPublicKeyPem!;
   }
@@ -104,6 +116,14 @@ class VaultService {
   /// Signs an arbitrary string payload (e.g., METHOD|PATH|TIMESTAMP|NONCE|BODY_HASH)
   /// using the device's private key via ECDSA P-256 + SHA256 and returns Base64 DER signature.
   static Future<String> signPayload(String payload) async {
+    if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
+      try {
+        final signature = await _nativeKeys.invokeMethod<String>('sign', {'payload': payload});
+        if (signature != null && signature.isNotEmpty) return signature;
+      } on PlatformException catch (e) {
+        SecureLogger.warning('Native device signing unavailable (${e.code}); using encrypted fallback.');
+      }
+    }
     await _ensureAsymmetricKeyPair();
     final signer = ECDSASigner(null, HMac(SHA256Digest(), 64));
     signer.init(true, PrivateKeyParameter(_cachedPrivateKey!));

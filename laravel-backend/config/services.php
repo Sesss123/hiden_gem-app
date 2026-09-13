@@ -74,6 +74,9 @@ return [
     // unmodified (nonce + timestamp window), which is the real threat this
     // header set exists to cover.
     'zenith_hmac_secret' => env('HMAC_SECRET'),
+    // Server-to-server only. Never ship this value in a Dart define or app
+    // binary; Cloud Functions uses the same secret to issue step-up tickets.
+    'step_up_hmac_secret' => env('STEP_UP_HMAC_SECRET'),
 
     // Inline Firebase service-account JSON (for container/PaaS deploys with
     // no writable filesystem for a credentials file). Read via config() here

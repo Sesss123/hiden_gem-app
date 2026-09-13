@@ -165,6 +165,7 @@ class GuideApplicationRepository {
     required String userId,
     required GuideStatus status,
     String? adminComment,
+    Map<String, String> stepUpHeaders = const {},
   }) async {
     // 1. Review on Laravel Backend
     try {
@@ -180,6 +181,7 @@ class GuideApplicationRepository {
               'Accept': 'application/json',
               'X-API-KEY': AppConfig.hiddenGemsApiKey,
               'X-HiddenGems-Key': AppConfig.hiddenGemsApiKey,
+              ...stepUpHeaders,
             },
             body: json.encode({
               'admin_comment': adminComment,

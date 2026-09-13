@@ -7,6 +7,7 @@ import '../../data/models/guide_status.dart';
 import '../../data/repositories/guide_application_repository.dart';
 import '../widgets/cached_image.dart';
 import '../../core/services/media_cache_manager.dart';
+import '../../core/services/step_up_auth_service.dart';
 import '../../l10n/app_localizations.dart';
 
 class AdminGuideVerificationDetailScreen extends StatefulWidget {
@@ -37,19 +38,29 @@ class _AdminGuideVerificationDetailScreenState extends State<AdminGuideVerificat
       return;
     }
 
+    final stepUp = StepUpAuthService();
+    final verified = await stepUp.requireStepUp(
+      context: context,
+      action: 'admin_moderation',
+      reason: 'Confirm your identity before changing a guide verification status.',
+    );
+    if (!verified || !mounted) return;
     setState(() => _isSubmitting = true);
     try {
       await _repo.reviewApplication(
         userId: widget.application.userId,
         status: status,
         adminComment: _commentController.text.trim().isEmpty ? null : _commentController.text.trim(),
+        stepUpHeaders: stepUp.getGrantHeaders('admin_moderation'),
       );
+      stepUp.consumeGrant('admin_moderation');
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(status == GuideStatus.approved ? l10n.applicationApprovedNoticeMessage : l10n.applicationRejectedNoticeMessage)),
       );
       Navigator.pop(context);
     } catch (e) {
+      stepUp.consumeGrant('admin_moderation');
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(l10n.reviewActionFailedMessage(e.toString()))),

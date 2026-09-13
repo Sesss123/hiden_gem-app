@@ -65,7 +65,7 @@ Route::prefix('v1')->group(function () {
     });
 
     // Protected Auth & Wishlist Routes (Require Sanctum Bearer Token)
-    Route::middleware('auth:sanctum')->group(function () {
+    Route::middleware(['auth:sanctum', 'zenith'])->group(function () {
         Route::get('/auth/profile', [AuthController::class, 'profile']);
         Route::post('/auth/logout', [AuthController::class, 'logout']);
         Route::delete('/auth/account', [AuthController::class, 'deleteAccount']);
@@ -101,16 +101,16 @@ Route::prefix('v1')->group(function () {
     // Admin Guide Applications Routes (Protected by Sanctum Auth, Admin Role, API Key & Rate Limiting)
     Route::prefix('admin/guide-applications')->middleware(['auth:sanctum', 'is_admin', VerifyApiKey::class, 'zenith', 'throttle:60,1'])->group(function () {
         Route::get('/', [GuideApplicationController::class, 'index']);
-        Route::post('/{id}/approve', [GuideApplicationController::class, 'approve']);
-        Route::post('/{id}/reject', [GuideApplicationController::class, 'reject']);
+        Route::post('/{id}/approve', [GuideApplicationController::class, 'approve'])->middleware('step_up:admin_moderation');
+        Route::post('/{id}/reject', [GuideApplicationController::class, 'reject'])->middleware('step_up:admin_moderation');
     });
 
     // Admin Guide Listings Moderation Routes (Protected by Sanctum Auth, Admin Role, API Key & Rate Limiting)
     Route::prefix('admin/guide-listings')->middleware(['auth:sanctum', 'is_admin', VerifyApiKey::class, 'zenith', 'throttle:60,1'])->group(function () {
         Route::get('/', [GuideListingController::class, 'index']);
-        Route::post('/{listingId}/approve', [GuideListingController::class, 'approve']);
-        Route::post('/{listingId}/reject', [GuideListingController::class, 'reject']);
-        Route::post('/{listingId}/featured', [GuideListingController::class, 'setFeatured']);
+        Route::post('/{listingId}/approve', [GuideListingController::class, 'approve'])->middleware('step_up:admin_moderation');
+        Route::post('/{listingId}/reject', [GuideListingController::class, 'reject'])->middleware('step_up:admin_moderation');
+        Route::post('/{listingId}/featured', [GuideListingController::class, 'setFeatured'])->middleware('step_up:admin_moderation');
     });
 
     // Review Routes (Protected by Sanctum Auth, API Key & Rate Limiting)
@@ -126,7 +126,7 @@ Route::prefix('v1')->group(function () {
     });
 
     // Marketplace Photo Uploads (cover/vehicle photos — Protected by Sanctum Auth, API Key & Rate Limiting)
-    Route::prefix('marketplace')->middleware(['auth:sanctum', VerifyApiKey::class, 'throttle:30,1'])->group(function () {
+    Route::prefix('marketplace')->middleware(['auth:sanctum', VerifyApiKey::class, 'zenith', 'throttle:30,1'])->group(function () {
         Route::post('/photos', [MarketplacePhotoUploadController::class, 'upload']);
     });
 
@@ -152,7 +152,7 @@ Route::prefix('v1')->group(function () {
     });
 
     // Security Routes (Protected by Sanctum Auth, API Key & Rate Limiting)
-    Route::prefix('security')->middleware(['auth:sanctum', VerifyApiKey::class, 'throttle:30,1'])->group(function () {
+    Route::prefix('security')->middleware(['auth:sanctum', VerifyApiKey::class, 'zenith', 'throttle:30,1'])->group(function () {
         Route::get('/device-account-count', [SecurityController::class, 'deviceAccountCount']);
     });
 

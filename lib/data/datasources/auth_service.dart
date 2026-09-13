@@ -12,6 +12,8 @@ import '../../core/services/brute_force_service.dart';
 import '../../core/utils/secure_logger.dart';
 import '../../core/notifications/notification_service.dart';
 import '../../core/services/secure_entitlements.dart';
+import '../../core/services/zenith_security_facade.dart';
+import '../../core/services/vault_service.dart';
 import 'trip_cache_service.dart';
 import 'user_preference_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -475,6 +477,11 @@ class AuthService {
         final token = data['data']['access_token'];
         if (token != null) {
           await UserPreferenceService.saveAuthToken(token);
+          final deviceId = await VaultService.getDeviceId();
+          await ZenithSecurityFacade().onUserLogin(
+            deviceHash: deviceId,
+            platform: kIsWeb ? 'web' : Platform.operatingSystem,
+          );
         }
       } else if (response.statusCode == 403) {
         throw const AccountDisabledException();
@@ -520,6 +527,7 @@ class AuthService {
       }
     }
     await _auth.signOut();
+    ZenithSecurityFacade().onUserLogout();
     await UserPreferenceService.clearProfile();
     await UserPreferenceService.clearAuthToken();
     await TripCacheService.clearUserData();

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:geolocator/geolocator.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../models/discovery_place.dart';
 import '../../core/config/app_config.dart';
 import '../../core/services/vault_service.dart';

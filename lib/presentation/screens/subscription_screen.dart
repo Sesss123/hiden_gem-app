@@ -11,6 +11,7 @@ import 'billing_history_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:hidden_gems_sl/core/utils/secure_logger.dart';
 import '../../l10n/app_localizations.dart';
+import '../../core/services/step_up_auth_service.dart';
 
 class SubscriptionScreen extends ConsumerStatefulWidget {
   const SubscriptionScreen({super.key});
@@ -25,6 +26,11 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
   Future<void> _subscribe(String planId, String price) async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
+    if (!await StepUpAuthService().requireStepUp(
+      context: context,
+      action: 'subscription_change',
+      reason: 'Confirm your identity before changing your subscription.',
+    )) return;
     setState(() => _isProcessing = true);
 
     try {

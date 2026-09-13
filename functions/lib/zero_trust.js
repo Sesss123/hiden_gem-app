@@ -1,13 +1,4 @@
 "use strict";
-/**
- * 🛡️ ZERO-TRUST SECURITY NEXUS (Upgrades 1 - 5)
- *
- * 1. Device-Bound Cryptographic Sessions (Asymmetric ECDSA P-256 Key Binding)
- * 2. Refresh Token Rotation & Token Family Tracking (Theft Detection)
- * 3. Server-Side Authoritative Risk & Policy Engine
- * 4. Real-time Session Revocation & Maximum Session Age Limits
- * 5. Step-Up Authentication Grants for High-Risk Actions
- */
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     var desc = Object.getOwnPropertyDescriptor(m, k);
@@ -46,312 +37,209 @@ exports.issue_step_up_grant = exports.revoke_all_sessions = exports.revoke_sessi
 const functions = __importStar(require("firebase-functions/v1"));
 const admin = __importStar(require("firebase-admin"));
 const crypto = __importStar(require("crypto"));
-const HMAC_SECRET = process.env.HMAC_SECRET || 'hidden_gems_dev_hmac_secret_key_12345';
-/**
- * 🔑 register_device_key (Phase 1)
- * Binds an ECDSA P-256 Public Key (SPKI PEM) to the authenticated user's device.
- * Stolen access tokens used from another device without the matching private key are rejected.
- */
-exports.register_device_key = functions.https.onCall(async (data, context) => {
-    if (!context.auth)
-        throw new functions.https.HttpsError('unauthenticated', 'User must be authenticated.');
-    const uid = context.auth.uid;
-    const deviceId = ((data === null || data === void 0 ? void 0 : data.deviceId) || '').toString().trim();
-    const publicKeyPem = ((data === null || data === void 0 ? void 0 : data.publicKeyPem) || '').toString().trim();
-    const platform = ((data === null || data === void 0 ? void 0 : data.platform) || 'unknown').toString().trim();
-    const model = ((data === null || data === void 0 ? void 0 : data.model) || '').toString().trim();
-    if (!deviceId || !publicKeyPem) {
-        throw new functions.https.HttpsError('invalid-argument', 'deviceId and publicKeyPem are required.');
-    }
-    if (!publicKeyPem.includes('BEGIN PUBLIC KEY') || !publicKeyPem.includes('END PUBLIC KEY')) {
-        throw new functions.https.HttpsError('invalid-argument', 'Invalid Public Key PEM format.');
-    }
-    const deviceRef = admin.firestore()
-        .collection('users')
-        .doc(uid)
-        .collection('devices')
-        .doc(deviceId);
-    await deviceRef.set({
-        deviceId,
-        publicKeyPem,
-        platform,
-        model,
-        boundAt: admin.firestore.FieldValue.serverTimestamp(),
-        lastActiveAt: admin.firestore.FieldValue.serverTimestamp(),
-        isRevoked: false
-    }, { merge: true });
-    return { success: true, deviceId };
-});
-/**
- * 🔄 rotate_session_token (Phase 2 & 4)
- * Enforces Refresh Token Rotation and Token Family Theft Detection.
- * If a previously consumed refresh token is presented again (theft/replay),
- * the entire token family/session is immediately revoked.
- */
-exports.rotate_session_token = functions.https.onCall(async (data, context) => {
-    var _a;
+const zero_trust_policy_1 = require("./zero_trust_policy");
+const db = () => admin.firestore();
+function requireAuth(context) {
     if (!context.auth)
         throw new functions.https.HttpsError('unauthenticated', 'Authentication required.');
-    const uid = context.auth.uid;
-    const sessionId = ((data === null || data === void 0 ? void 0 : data.sessionId) || '').toString().trim();
-    const presentedTokenHash = ((data === null || data === void 0 ? void 0 : data.presentedTokenHash) || '').toString().trim();
-    const deviceId = ((data === null || data === void 0 ? void 0 : data.deviceId) || '').toString().trim();
-    if (!sessionId || !presentedTokenHash) {
-        throw new functions.https.HttpsError('invalid-argument', 'sessionId and presentedTokenHash are required.');
+    return context.auth.uid;
+}
+function stepUpSecret() {
+    const secret = process.env.STEP_UP_HMAC_SECRET;
+    if (!secret || secret.length < 32) {
+        throw new functions.https.HttpsError('failed-precondition', 'Step-up signing secret is not securely configured.');
     }
-    const sessionRef = admin.firestore()
-        .collection('users')
-        .doc(uid)
-        .collection('sessions')
-        .doc(sessionId);
-    const sessionDoc = await sessionRef.get();
-    if (!sessionDoc.exists) {
-        // Create initial session if this is the first rotation
-        const initialToken = crypto.randomBytes(32).toString('hex');
-        const initialTokenHash = crypto.createHash('sha256').update(initialToken).digest('hex');
-        await sessionRef.set({
-            sessionId,
-            deviceId: deviceId || 'unknown',
-            createdAt: admin.firestore.FieldValue.serverTimestamp(),
+    return secret;
+}
+exports.register_device_key = functions.https.onCall(async (data, context) => {
+    const uid = requireAuth(context);
+    if (!context.app && process.env.FUNCTIONS_EMULATOR !== 'true') {
+        throw new functions.https.HttpsError('failed-precondition', 'Valid App Check attestation required.');
+    }
+    const deviceId = String((data === null || data === void 0 ? void 0 : data.deviceId) || '').trim();
+    const publicKeyPem = String((data === null || data === void 0 ? void 0 : data.publicKeyPem) || '').trim();
+    const platform = String((data === null || data === void 0 ? void 0 : data.platform) || 'unknown').trim();
+    const model = String((data === null || data === void 0 ? void 0 : data.model) || '').trim();
+    if (!deviceId || !publicKeyPem)
+        throw new functions.https.HttpsError('invalid-argument', 'deviceId and publicKeyPem are required.');
+    try {
+        crypto.createPublicKey(publicKeyPem);
+    }
+    catch (_) {
+        throw new functions.https.HttpsError('invalid-argument', 'Invalid public key.');
+    }
+    const ref = db().collection('users').doc(uid).collection('devices').doc(deviceId);
+    await db().runTransaction(async (tx) => {
+        var _a, _b, _c;
+        const existing = await tx.get(ref);
+        if (existing.exists && ((_a = existing.data()) === null || _a === void 0 ? void 0 : _a.keyVersion) === 'native-v1' && ((_b = existing.data()) === null || _b === void 0 ? void 0 : _b.publicKeyPem) !== publicKeyPem) {
+            throw new functions.https.HttpsError('permission-denied', 'Device key replacement requires explicit revocation.');
+        }
+        tx.set(ref, {
+            deviceId, publicKeyPem, platform, model,
+            boundAt: existing.exists ? (_c = existing.data()) === null || _c === void 0 ? void 0 : _c.boundAt : admin.firestore.FieldValue.serverTimestamp(),
+            lastActiveAt: admin.firestore.FieldValue.serverTimestamp(), isRevoked: false, keyVersion: 'native-v1'
+        }, { merge: true });
+    });
+    return { success: true, deviceId };
+});
+exports.rotate_session_token = functions.https.onCall(async (data, context) => {
+    var _a, _b;
+    const uid = requireAuth(context);
+    const sessionId = String((data === null || data === void 0 ? void 0 : data.sessionId) || '').trim();
+    const presentedHash = String((data === null || data === void 0 ? void 0 : data.presentedTokenHash) || '').trim();
+    const deviceId = String((data === null || data === void 0 ? void 0 : data.deviceId) || '').trim();
+    if (!sessionId || !deviceId)
+        throw new functions.https.HttpsError('invalid-argument', 'sessionId and deviceId are required.');
+    const device = await db().collection('users').doc(uid).collection('devices').doc(deviceId).get();
+    if (!device.exists || ((_a = device.data()) === null || _a === void 0 ? void 0 : _a.isRevoked) === true) {
+        throw new functions.https.HttpsError('permission-denied', 'Device key is not registered or was revoked.');
+    }
+    const ref = db().collection('users').doc(uid).collection('sessions').doc(sessionId);
+    const newToken = crypto.randomBytes(32).toString('base64url');
+    const newHash = (0, zero_trust_policy_1.hashSessionToken)(newToken);
+    const ipHash = crypto.createHash('sha256').update(`${context.rawRequest.ip}|${process.env.GCLOUD_PROJECT || 'hidden-gems'}`).digest('hex');
+    const userAgent = String(context.rawRequest.header('user-agent') || '').slice(0, 256);
+    let replay = false;
+    await db().runTransaction(async (tx) => {
+        var _a, _b, _c;
+        const snapshot = await tx.get(ref);
+        if (!snapshot.exists) {
+            if (presentedHash)
+                throw new functions.https.HttpsError('permission-denied', 'Unknown session.');
+            tx.create(ref, {
+                sessionId, familyId: crypto.randomUUID(), deviceId,
+                createdAt: admin.firestore.FieldValue.serverTimestamp(),
+                lastSeenAt: admin.firestore.FieldValue.serverTimestamp(),
+                currentActiveTokenHash: newHash, consumedTokenHashes: [], isRevoked: false,
+                ipHash, userAgent
+            });
+            return;
+        }
+        const session = snapshot.data();
+        if (session.isRevoked)
+            throw new functions.https.HttpsError('permission-denied', 'Session is revoked.');
+        if (session.deviceId !== deviceId)
+            replay = true;
+        const created = (_c = (_b = (_a = session.createdAt) === null || _a === void 0 ? void 0 : _a.toMillis) === null || _b === void 0 ? void 0 : _b.call(_a)) !== null && _c !== void 0 ? _c : Date.now();
+        if (Date.now() - created > 12 * 60 * 60 * 1000) {
+            tx.update(ref, { isRevoked: true, revocationReason: 'maximum_age', revokedAt: admin.firestore.FieldValue.serverTimestamp() });
+            throw new functions.https.HttpsError('deadline-exceeded', 'Session expired.');
+        }
+        const consumed = session.consumedTokenHashes || [];
+        if (!presentedHash || session.currentActiveTokenHash !== presentedHash || consumed.includes(presentedHash))
+            replay = true;
+        if (replay) {
+            tx.update(ref, { isRevoked: true, revocationReason: 'token_reuse', revokedAt: admin.firestore.FieldValue.serverTimestamp() });
+            return;
+        }
+        tx.update(ref, {
+            previousTokenHash: presentedHash,
+            currentActiveTokenHash: newHash,
+            consumedTokenHashes: admin.firestore.FieldValue.arrayUnion(presentedHash),
             lastSeenAt: admin.firestore.FieldValue.serverTimestamp(),
-            currentActiveTokenHash: initialTokenHash,
-            consumedTokenHashes: [],
-            isRevoked: false
+            ipHash, userAgent
         });
-        return {
-            success: true,
-            newToken: initialToken,
-            newTokenHash: initialTokenHash,
-            expiresInSeconds: 3600
-        };
-    }
-    const sessionData = sessionDoc.data();
-    if (sessionData.isRevoked) {
-        throw new functions.https.HttpsError('permission-denied', 'Session has been revoked.');
-    }
-    // Check Maximum Session Age (14 days absolute timeout)
-    const createdAtMs = ((_a = sessionData.createdAt) === null || _a === void 0 ? void 0 : _a.toMillis) ? sessionData.createdAt.toMillis() : Date.now();
-    const maxSessionLifetimeMs = 14 * 24 * 60 * 60 * 1000;
-    if (Date.now() - createdAtMs > maxSessionLifetimeMs) {
-        await sessionRef.set({
-            isRevoked: true,
-            revocationReason: 'session_expired_max_age',
-            revokedAt: admin.firestore.FieldValue.serverTimestamp()
-        }, { merge: true });
-        throw new functions.https.HttpsError('deadline-exceeded', 'Session expired. Please log in again.');
-    }
-    const currentHash = sessionData.currentActiveTokenHash;
-    const consumedHashes = sessionData.consumedTokenHashes || [];
-    // DETECT TOKEN THEFT: If presented token was already consumed or doesn't match active token
-    if (consumedHashes.includes(presentedTokenHash) || (currentHash && currentHash !== presentedTokenHash)) {
-        console.error(`🚨 TOKEN REUSE BREACH DETECTED for user ${uid}, session ${sessionId}`);
-        await sessionRef.set({
-            isRevoked: true,
-            revocationReason: 'token_reuse_theft_detected',
-            revokedAt: admin.firestore.FieldValue.serverTimestamp()
-        }, { merge: true });
-        // Update security posture to blocked
-        await admin.firestore()
-            .collection('users')
-            .doc(uid)
-            .collection('security')
-            .doc('posture')
-            .set({
-            riskScore: 100,
-            isBlocked: true,
-            breachAlert: 'Stolen refresh token reuse attempt detected',
+    });
+    if (replay) {
+        await db().collection('users').doc(uid).collection('security').doc('posture').set({
+            riskScore: 100, isBlocked: true, breachAlert: 'session_token_reuse',
             lastBreachAt: admin.firestore.FieldValue.serverTimestamp()
         }, { merge: true });
-        throw new functions.https.HttpsError('permission-denied', 'Security breach detected: token reuse. Session terminated.');
+        const profile = await db().collection('users').doc(uid).get();
+        const tokens = ((_b = profile.data()) === null || _b === void 0 ? void 0 : _b.fcmTokens) || [];
+        if (tokens.length)
+            await admin.messaging().sendEachForMulticast({
+                tokens: tokens.slice(0, 500),
+                notification: { title: 'Security alert', body: 'A reused session token was blocked.' },
+                data: { type: 'security_session_revoked' }
+            }).catch(error => console.error('Security notification failed', error));
+        throw new functions.https.HttpsError('permission-denied', 'Token reuse detected; session revoked.');
     }
-    // Generate new rotating token
-    const newToken = crypto.randomBytes(32).toString('hex');
-    const newTokenHash = crypto.createHash('sha256').update(newToken).digest('hex');
-    await sessionRef.set({
-        previousTokenHash: presentedTokenHash,
-        currentActiveTokenHash: newTokenHash,
-        consumedTokenHashes: admin.firestore.FieldValue.arrayUnion(presentedTokenHash),
-        lastSeenAt: admin.firestore.FieldValue.serverTimestamp(),
-        deviceId: deviceId || sessionData.deviceId || 'unknown'
-    }, { merge: true });
-    return {
-        success: true,
-        newToken,
-        newTokenHash,
-        expiresInSeconds: 3600
-    };
+    return { success: true, newToken, newTokenHash: newHash, expiresInSeconds: 3600 };
 });
-/**
- * 🧠 evaluate_security_posture (Phase 3)
- * Authoritative Server-Side Risk & ABAC Policy Engine.
- * Client sends raw telemetry; server computes the authoritative score and stores posture.
- */
 exports.evaluate_security_posture = functions.https.onCall(async (data, context) => {
-    if (!context.auth)
-        return { riskScore: 100, isBlocked: true, level: 'critical' };
-    const uid = context.auth.uid;
-    const signals = (data === null || data === void 0 ? void 0 : data.signals) || [];
-    const deviceId = ((data === null || data === void 0 ? void 0 : data.deviceId) || '').toString();
-    let riskScore = 0;
-    const activeThreats = [];
-    if (signals.includes('device_rooted_jailbroken')) {
-        riskScore += 50;
-        activeThreats.push('root_or_jailbreak');
-    }
-    if (signals.includes('package_name_mismatch')) {
-        riskScore += 90;
-        activeThreats.push('repackaged_clone_apk');
-    }
-    if (signals.includes('signature_mismatch')) {
-        riskScore += 80;
-        activeThreats.push('invalid_app_signature');
-    }
-    if (signals.includes('debugger_attached')) {
+    var _a, _b, _c, _d, _e;
+    const uid = requireAuth(context);
+    const signals = Array.isArray(data === null || data === void 0 ? void 0 : data.signals) ? data.signals.filter((v) => typeof v === 'string').slice(0, 50) : [];
+    const deviceId = String((data === null || data === void 0 ? void 0 : data.deviceId) || '');
+    const action = String((data === null || data === void 0 ? void 0 : data.action) || 'general');
+    const [user, device, activeSessions] = await Promise.all([
+        db().collection('users').doc(uid).get(),
+        deviceId ? db().collection('users').doc(uid).collection('devices').doc(deviceId).get() : Promise.resolve(null),
+        deviceId ? db().collection('users').doc(uid).collection('sessions').where('deviceId', '==', deviceId).where('isRevoked', '==', false).limit(1).get() : Promise.resolve(null)
+    ]);
+    const scored = (0, zero_trust_policy_1.scoreSignals)(signals);
+    let riskScore = scored.score;
+    const threats = scored.threats;
+    if (!context.app) {
         riskScore += 40;
-        activeThreats.push('runtime_debugger_or_hook');
+        threats.push('app_check_missing');
     }
-    if (signals.includes('emulator_detected')) {
-        riskScore += 30;
-        activeThreats.push('emulator_environment');
+    if (!device || !device.exists || ((_a = device.data()) === null || _a === void 0 ? void 0 : _a.isRevoked)) {
+        riskScore += 60;
+        threats.push('untrusted_device');
     }
-    if (signals.includes('mock_location_detected')) {
-        riskScore += 35;
-        activeThreats.push('mock_gps_spoofing');
+    if (!activeSessions || activeSessions.empty) {
+        riskScore += 40;
+        threats.push('no_active_session');
     }
-    if (signals.includes('honeypot_triggered')) {
-        riskScore += 70;
-        activeThreats.push('honeypot_trap_tripped');
-    }
-    // Threat Correlation: Root + Debugger = Active Reverse Engineering
-    if (signals.includes('device_rooted_jailbroken') && signals.includes('debugger_attached')) {
-        riskScore = Math.max(riskScore, 95);
-        activeThreats.push('active_reverse_engineering');
-    }
+    riskScore = Math.min(100, riskScore);
+    const role = ((_b = user.data()) === null || _b === void 0 ? void 0 : _b.role) || ((_c = context.auth) === null || _c === void 0 ? void 0 : _c.token.role) || 'tourist';
+    const entitlement = ((_d = user.data()) === null || _d === void 0 ? void 0 : _d.subscriptionPlan) || ((_e = user.data()) === null || _e === void 0 ? void 0 : _e.subscriptionTier) || 'Free';
     const isBlocked = riskScore >= 90;
-    const isRestricted = riskScore >= 50;
+    const allowed = !isBlocked && !(action.startsWith('admin_') && !['admin', 'super_admin'].includes(role));
     const level = riskScore < 30 ? 'normal' : riskScore < 60 ? 'medium' : riskScore < 90 ? 'high' : 'critical';
-    await admin.firestore()
-        .collection('users')
-        .doc(uid)
-        .collection('security')
-        .doc('posture')
-        .set({
-        riskScore,
-        level,
-        isBlocked,
-        isRestricted,
-        activeThreats,
-        deviceId,
-        signals,
-        evaluatedAt: admin.firestore.FieldValue.serverTimestamp(),
-        engineVersion: 'ZeroTrust-PolicyEngine-3.0'
+    await db().collection('users').doc(uid).collection('security').doc('posture').set({
+        riskScore, level, isBlocked, isRestricted: riskScore >= 50, activeThreats: threats,
+        deviceId, role, entitlement, lastAction: action, lastDecisionAllowed: allowed,
+        evaluatedAt: admin.firestore.FieldValue.serverTimestamp(), engineVersion: 'ZeroTrust-PolicyEngine-4.0'
     }, { merge: true });
-    return {
-        riskScore,
-        level,
-        isBlocked,
-        isRestricted,
-        activeThreats
-    };
+    return { riskScore, level, isBlocked, isRestricted: riskScore >= 50, activeThreats: threats, role, entitlement, allowed };
 });
-/**
- * 🛑 revoke_session & revoke_all_sessions (Phase 4)
- * Allows users to revoke a specific session or immediately logout from all devices.
- */
 exports.revoke_session = functions.https.onCall(async (data, context) => {
-    if (!context.auth)
-        throw new functions.https.HttpsError('unauthenticated', 'Login required.');
-    const uid = context.auth.uid;
-    const sessionId = ((data === null || data === void 0 ? void 0 : data.sessionId) || '').toString().trim();
+    const uid = requireAuth(context);
+    const sessionId = String((data === null || data === void 0 ? void 0 : data.sessionId) || '').trim();
     if (!sessionId)
         throw new functions.https.HttpsError('invalid-argument', 'sessionId is required.');
-    await admin.firestore()
-        .collection('users')
-        .doc(uid)
-        .collection('sessions')
-        .doc(sessionId)
-        .set({
-        isRevoked: true,
-        revocationReason: 'user_requested_revocation',
-        revokedAt: admin.firestore.FieldValue.serverTimestamp()
+    await db().collection('users').doc(uid).collection('sessions').doc(sessionId).set({
+        isRevoked: true, revocationReason: 'user_requested', revokedAt: admin.firestore.FieldValue.serverTimestamp()
     }, { merge: true });
     return { success: true };
 });
 exports.revoke_all_sessions = functions.https.onCall(async (_data, context) => {
-    if (!context.auth)
-        throw new functions.https.HttpsError('unauthenticated', 'Login required.');
-    const uid = context.auth.uid;
-    const sessionsSnapshot = await admin.firestore()
-        .collection('users')
-        .doc(uid)
-        .collection('sessions')
-        .where('isRevoked', '==', false)
-        .get();
-    const batch = admin.firestore().batch();
-    sessionsSnapshot.docs.forEach(doc => {
-        batch.update(doc.ref, {
-            isRevoked: true,
-            revocationReason: 'user_logged_out_all_devices',
-            revokedAt: admin.firestore.FieldValue.serverTimestamp()
-        });
-    });
+    const uid = requireAuth(context);
+    const sessions = await db().collection('users').doc(uid).collection('sessions').where('isRevoked', '==', false).get();
+    const batch = db().batch();
+    sessions.docs.forEach(doc => batch.update(doc.ref, {
+        isRevoked: true, revocationReason: 'user_requested_all', revokedAt: admin.firestore.FieldValue.serverTimestamp()
+    }));
     await batch.commit();
-    return { success: true, count: sessionsSnapshot.size };
+    return { success: true, count: sessions.size };
 });
-/**
- * 🔒 issue_step_up_grant (Phase 5)
- * Step-Up Authentication for high-risk operations (e.g. change email/password, admin actions, guide payouts).
- * Valid for 10 minutes only.
- */
 exports.issue_step_up_grant = functions.https.onCall(async (data, context) => {
-    var _a;
-    if (!context.auth)
-        throw new functions.https.HttpsError('unauthenticated', 'Login required.');
-    const uid = context.auth.uid;
-    const action = ((data === null || data === void 0 ? void 0 : data.action) || '').toString().trim();
-    const deviceId = ((data === null || data === void 0 ? void 0 : data.deviceId) || '').toString().trim();
-    const allowedActions = [
-        'change_email',
-        'change_password',
-        'admin_moderation',
-        'guide_payout',
-        'subscription_change'
-    ];
-    if (!allowedActions.includes(action)) {
-        throw new functions.https.HttpsError('invalid-argument', `Invalid action: ${action}`);
-    }
-    const postureDoc = await admin.firestore()
-        .collection('users')
-        .doc(uid)
-        .collection('security')
-        .doc('posture')
-        .get();
-    if (postureDoc.exists && ((_a = postureDoc.data()) === null || _a === void 0 ? void 0 : _a.isBlocked) === true) {
-        throw new functions.https.HttpsError('permission-denied', 'Device is blocked by security posture.');
-    }
+    var _a, _b, _c;
+    const uid = requireAuth(context);
+    const action = String((data === null || data === void 0 ? void 0 : data.action) || '').trim();
+    const deviceId = String((data === null || data === void 0 ? void 0 : data.deviceId) || '').trim();
+    const allowedActions = ['change_email', 'change_password', 'admin_moderation', 'guide_payout', 'subscription_change'];
+    if (!allowedActions.includes(action))
+        throw new functions.https.HttpsError('invalid-argument', 'Invalid action.');
+    const authTime = Number(((_a = context.auth) === null || _a === void 0 ? void 0 : _a.token.auth_time) || 0);
+    if (!(0, zero_trust_policy_1.isFreshAuthentication)(authTime, Date.now()))
+        throw new functions.https.HttpsError('unauthenticated', 'Fresh authentication required.');
+    const [posture, device] = await Promise.all([
+        db().collection('users').doc(uid).collection('security').doc('posture').get(),
+        db().collection('users').doc(uid).collection('devices').doc(deviceId).get()
+    ]);
+    if (((_b = posture.data()) === null || _b === void 0 ? void 0 : _b.isBlocked) || !device.exists || ((_c = device.data()) === null || _c === void 0 ? void 0 : _c.isRevoked))
+        throw new functions.https.HttpsError('permission-denied', 'Device is not trusted.');
     const grantId = crypto.randomBytes(16).toString('hex');
     const expiresAt = Date.now() + 10 * 60 * 1000;
-    const grantToken = crypto.createHmac('sha256', HMAC_SECRET)
-        .update(`${uid}|${action}|${grantId}|${expiresAt}`)
-        .digest('hex');
-    await admin.firestore()
-        .collection('users')
-        .doc(uid)
-        .collection('step_up_grants')
-        .doc(grantId)
-        .set({
-        grantId,
-        action,
-        deviceId,
-        expiresAt,
-        isUsed: false,
-        createdAt: admin.firestore.FieldValue.serverTimestamp()
+    const grantToken = (0, zero_trust_policy_1.signStepUpGrant)(stepUpSecret(), uid, action, grantId, expiresAt);
+    await db().collection('users').doc(uid).collection('step_up_grants').doc(grantId).set({
+        grantId, action, deviceId, expiresAt, isUsed: false, createdAt: admin.firestore.FieldValue.serverTimestamp()
     });
-    return {
-        grantId,
-        grantToken,
-        expiresAt,
-        action
-    };
+    return { grantId, grantToken, expiresAt, action };
 });
 //# sourceMappingURL=zero_trust.js.map

@@ -13,6 +13,7 @@
   },
   "scripts": {
     "build": "tsc",
-    "test:rules": "firebase emulators:exec --only firestore --project hidden-gems-rules-test \"node --test test/firestore.rules.test.js\""
+    "test:rules": "firebase emulators:exec --only firestore --project hidden-gems-rules-test \"node --test test/firestore.rules.test.js\"",
+    "test:zero-trust": "npm run build && node --test test/zero_trust_policy.test.js"
   }
 }

@@ -30,6 +30,7 @@ import '../../data/repositories/marketplace_repository.dart';
 import '../../data/repositories/broadcast_repository.dart';
 import '../../data/models/broadcast_message.dart';
 import '../../l10n/app_localizations.dart';
+import '../../core/utils/secure_logger.dart';
 
 class GuideDashboardScreen extends StatefulWidget {
   const GuideDashboardScreen({super.key});

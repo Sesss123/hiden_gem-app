@@ -69,5 +69,6 @@ class Kernel extends HttpKernel
         'full_admin' => \App\Http\Middleware\IsFullAdmin::class,
         'content_manager_or_admin' => \App\Http\Middleware\IsContentManagerOrAdmin::class,
         'zenith' => \App\Http\Middleware\VerifyZenithSignature::class,
+        'step_up' => \App\Http\Middleware\RequireStepUpGrant::class,
     ];
 }

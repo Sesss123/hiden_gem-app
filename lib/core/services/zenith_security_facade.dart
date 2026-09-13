@@ -7,6 +7,7 @@ import 'device_trust_graph.dart';
 import 'session_quarantine.dart';
 import 'vault_service.dart';
 import 'step_up_auth_service.dart';
+import 'session_token_manager.dart';
 
 export 'integrity_shield.dart';
 export 'secure_entitlements.dart';
@@ -71,13 +72,7 @@ class ZenithSecurityFacade {
     required String deviceHash,
     required String platform,
   }) async {
-    // 1. Check device trust graph
-    await deviceTrust.recordAndVerifyLogin(
-      deviceHash: deviceHash,
-      platform: platform,
-    );
-
-    // 2. Zero-Trust: Register hardware-bound ECDSA Public Key with backend
+    // Register before any API call that requires a device-bound session.
     try {
       final deviceId = await VaultService.getDeviceId();
       final pubKeyPem = await VaultService.getDevicePublicKeyPem();
@@ -87,11 +82,19 @@ class ZenithSecurityFacade {
         'platform': platform,
       });
       debugPrint('[ZenithSecurity] Device key registered successfully.');
+      await SessionTokenManager.startNewSession();
     } catch (e) {
       debugPrint('[ZenithSecurity] Device key registration notice: $e');
+      rethrow;
     }
 
+    await deviceTrust.recordAndVerifyLogin(
+      deviceHash: deviceHash,
+      platform: platform,
+    );
+
     // 3. Re-evaluate quarantine level with new device signals
+    await shield.runFullScan();
     await quarantine.evaluate();
 
     // 4. Pre-warm entitlements cache
@@ -102,6 +105,7 @@ class ZenithSecurityFacade {
   void onUserLogout() {
     entitlements.forceRefresh();
     stepUp.clearGrants();
+    SessionTokenManager.clear();
   }
 
   /// Revoke current session on server.

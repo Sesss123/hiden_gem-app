@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../config/app_config.dart';
 import '../services/vault_service.dart';
+import '../services/session_token_manager.dart';
 import '../../data/datasources/sanctum_token_refresher.dart';
 
 /// [SecureHttpClient] — Hardened network layer with signing and replay protection.
@@ -108,6 +109,9 @@ class SecureHttpClient extends http.BaseClient {
       final authToken = await _getSanctumToken();
       if (authToken != null && !request.headers.containsKey('Authorization')) {
         request.headers['Authorization'] = 'Bearer $authToken';
+      }
+      if (authToken != null) {
+        request.headers.addAll(await SessionTokenManager.securityHeaders());
       }
     }
 

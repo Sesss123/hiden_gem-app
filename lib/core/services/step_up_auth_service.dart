@@ -19,6 +19,12 @@ class StepUpGrant {
   });
 
   bool get isValid => DateTime.now().isBefore(expiresAt);
+
+  Map<String, String> get headers => {
+        'X-Zenith-Step-Up-Id': grantId,
+        'X-Zenith-Step-Up-Token': grantToken,
+        'X-Zenith-Step-Up-Action': action,
+      };
 }
 
 /// [StepUpAuthService] — Zero-Trust Step-Up Authentication for High-Risk Operations.
@@ -60,6 +66,11 @@ class StepUpAuthService {
     return null;
   }
 
+  Map<String, String> getGrantHeaders(String action) =>
+      hasValidGrant(action) ? _activeGrants[action]!.headers : const {};
+
+  void consumeGrant(String action) => _activeGrants.remove(action);
+
   /// Enforces Step-Up Authentication before allowing a sensitive action.
   ///
   /// If an active grant exists (< 10 minutes old), returns `true` immediately.
@@ -84,6 +95,10 @@ class StepUpAuthService {
     if (!authenticated) {
       return false;
     }
+
+    // Callable auth_time comes from the ID token; force a new token after
+    // reauthentication so the server can enforce its five-minute freshness.
+    await user.getIdToken(true);
 
     // Request Step-Up Grant from Backend
     try {
@@ -116,6 +131,24 @@ class StepUpAuthService {
 
   /// Displays a streamlined, secure re-authentication dialog to verify identity.
   Future<bool> _promptUserReauth(BuildContext context, User user, String reason) async {
+    final providers = user.providerData.map((p) => p.providerId).toSet();
+    try {
+      if (providers.contains('google.com')) {
+        await user.reauthenticateWithProvider(GoogleAuthProvider());
+        return true;
+      }
+      if (providers.contains('apple.com')) {
+        await user.reauthenticateWithProvider(AppleAuthProvider());
+        return true;
+      }
+    } on FirebaseAuthException catch (e) {
+      SecureLogger.warning('Federated step-up authentication failed: ${e.code}');
+      return false;
+    }
+    if (!providers.contains('password')) {
+      SecureLogger.warning('Step-up is unavailable for this authentication provider.');
+      return false;
+    }
     final passwordController = TextEditingController();
     bool isSubmitting = false;
     String? errorMessage;
