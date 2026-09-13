@@ -1,64 +1,31 @@
 import 'dart:convert';
 import 'dart:math';
+import 'dart:typed_data';
 import 'package:crypto/crypto.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:pointycastle/export.dart';
 import 'package:uuid/uuid.dart';
 import '../utils/secure_logger.dart';
 
-/// VaultService provides high-security cryptographic signing for all outbound requests.
-/// It implements a Zero-Trust architecture by ensuring every request carries a unique 
-/// HMAC-SHA256 signature, preventing replay attacks and unauthorized API access.
+/// VaultService provides high-security cryptographic operations for device binding and request signing.
+/// It implements a Zero-Trust architecture by creating a hardware-bound asymmetric ECDSA (P-256)
+/// keypair stored in Secure Storage (Keystore/Keychain). The private key never leaves the device,
+/// while the public key is registered with the backend, preventing stolen token reuse across devices.
 class VaultService {
   static const String _signingKeyName = 'DEVICE_SIGNING_KEY';
   static const String _deviceIdKeyName = 'DEVICE_UUID';
+  static const String _privateKeyDName = 'DEVICE_ECDSA_PRIV_D';
+  static const String _publicKeyPemName = 'DEVICE_ECDSA_PUB_PEM';
+
   static final _storage = const FlutterSecureStorage();
-  static String? _cachedKey;
+  
+  static String? _cachedSymmetricKey;
   static String? _cachedDeviceId;
+  static ECPrivateKey? _cachedPrivateKey;
+  static String? _cachedPublicKeyPem;
 
-  /// Retrieves or generates a persistent hardware-bound signing key.
-  /// On some devices (custom ROMs, a Keystore left in a bad state after a
-  /// factory reset) reading/writing secure storage can throw instead of
-  /// just returning null. Without a fallback, that exception would
-  /// otherwise propagate uncaught into every signed HTTP request this
-  /// service backs — so on failure, delete the corrupt entry and generate
-  /// a fresh key rather than leaving the app unable to sign any request.
-  static Future<String> _getSigningKey() async {
-    if (_cachedKey != null) return _cachedKey!;
-
-    try {
-      String? key = await _storage.read(key: _signingKeyName);
-
-      if (key == null) {
-        key = _generateRandomKey();
-        await _storage.write(key: _signingKeyName, value: key);
-      }
-
-      _cachedKey = key;
-      return key;
-    } catch (e) {
-      SecureLogger.warning('VaultService: secure storage read/write failed for signing key ($e). Resetting and regenerating.');
-      final key = _generateRandomKey();
-      try {
-        await _storage.delete(key: _signingKeyName);
-        await _storage.write(key: _signingKeyName, value: key);
-      } catch (e2) {
-        SecureLogger.warning('VaultService: signing key reset also failed ($e2). Using in-memory-only key for this session.');
-      }
-      _cachedKey = key;
-      return key;
-    }
-  }
-
-  static String _generateRandomKey() {
-    // Generate a secure random 256-bit (32-byte) key
-    final random = Random.secure();
-    final bytes = List<int>.generate(32, (i) => random.nextInt(256));
-    return base64Url.encode(bytes);
-  }
-
-  /// Retrieves or generates a persistent unique Device ID. Same reset-on-
-  /// failure behavior as _getSigningKey() — see that method's comment.
-  static Future<String> _getDeviceId() async {
+  /// Retrieves or generates a persistent unique Device ID.
+  static Future<String> getDeviceId() async {
     if (_cachedDeviceId != null) return _cachedDeviceId!;
 
     try {
@@ -67,7 +34,6 @@ class VaultService {
         id = const Uuid().v4();
         await _storage.write(key: _deviceIdKeyName, value: id);
       }
-
       _cachedDeviceId = id;
       return id;
     } catch (e) {
@@ -77,29 +43,203 @@ class VaultService {
         await _storage.delete(key: _deviceIdKeyName);
         await _storage.write(key: _deviceIdKeyName, value: id);
       } catch (e2) {
-        SecureLogger.warning('VaultService: device ID reset also failed ($e2). Using in-memory-only ID for this session.');
+        SecureLogger.warning('VaultService: device ID reset failed ($e2). Using in-memory ID.');
       }
       _cachedDeviceId = id;
       return id;
     }
   }
 
-  /// Generates a unique signature for a request based on path, timestamp, and device ID.
+  /// Retrieves or generates a persistent hardware-bound ECDSA P-256 keypair.
+  static Future<void> _ensureAsymmetricKeyPair() async {
+    if (_cachedPrivateKey != null && _cachedPublicKeyPem != null) return;
+
+    try {
+      final privDHex = await _storage.read(key: _privateKeyDName);
+      final pubPem = await _storage.read(key: _publicKeyPemName);
+
+      if (privDHex != null && pubPem != null) {
+        final domain = ECDomainParameters('secp256r1');
+        final d = BigInt.parse(privDHex, radix: 16);
+        _cachedPrivateKey = ECPrivateKey(d, domain);
+        _cachedPublicKeyPem = pubPem;
+        return;
+      }
+    } catch (e) {
+      SecureLogger.warning('VaultService: Failed reading asymmetric keys from secure storage ($e). Regenerating fresh keypair.');
+    }
+
+    // Generate fresh ECDSA P-256 (secp256r1) keypair
+    final domain = ECDomainParameters('secp256r1');
+    final secureRandom = SecureRandom('Fortuna')
+      ..seed(KeyParameter(Uint8List.fromList(List.generate(32, (_) => Random.secure().nextInt(256)))));
+
+    final keyGen = ECKeyGenerator()
+      ..init(ParametersWithRandom(ECKeyGeneratorParameters(domain), secureRandom));
+
+    final pair = keyGen.generateKeyPair();
+    final privKey = pair.privateKey as ECPrivateKey;
+    final pubKey = pair.publicKey as ECPublicKey;
+
+    final privDHex = privKey.d!.toRadixString(16);
+    final pubPem = _exportEcPublicKeyToPem(pubKey);
+
+    try {
+      await _storage.write(key: _privateKeyDName, value: privDHex);
+      await _storage.write(key: _publicKeyPemName, value: pubPem);
+    } catch (e) {
+      SecureLogger.warning('VaultService: Could not persist asymmetric key to secure storage ($e). Storing in memory.');
+    }
+
+    _cachedPrivateKey = privKey;
+    _cachedPublicKeyPem = pubPem;
+  }
+
+  /// Exports the public key in standard X.509 SPKI PEM format to register with backend.
+  static Future<String> getDevicePublicKeyPem() async {
+    await _ensureAsymmetricKeyPair();
+    return _cachedPublicKeyPem!;
+  }
+
+  /// Signs an arbitrary string payload (e.g., METHOD|PATH|TIMESTAMP|NONCE|BODY_HASH)
+  /// using the device's private key via ECDSA P-256 + SHA256 and returns Base64 DER signature.
+  static Future<String> signPayload(String payload) async {
+    await _ensureAsymmetricKeyPair();
+    final signer = ECDSASigner(null, HMac(SHA256Digest(), 64));
+    signer.init(true, PrivateKeyParameter(_cachedPrivateKey!));
+
+    final payloadBytes = utf8.encode(payload);
+    final hash = Uint8List.fromList(sha256.convert(payloadBytes).bytes);
+
+    final sig = signer.generateSignature(hash) as ECSignature;
+    final derBytes = _encodeEcdsaSignatureToDer(sig.r, sig.s);
+    return base64.encode(derBytes);
+  }
+
+  /// Converts BigInt to ASN.1 DER integer bytes.
+  static Uint8List _encodeBigIntToDerInt(BigInt n) {
+    var bytes = <int>[];
+    var temp = n;
+    while (temp > BigInt.zero) {
+      bytes.insert(0, (temp & BigInt.from(0xff)).toInt());
+      temp = temp >> 8;
+    }
+    if (bytes.isEmpty) bytes = [0];
+    if ((bytes[0] & 0x80) != 0) {
+      bytes.insert(0, 0x00);
+    }
+    return Uint8List.fromList(bytes);
+  }
+
+  /// Encodes ECDSA (r, s) into standard ASN.1 DER sequence.
+  static Uint8List _encodeEcdsaSignatureToDer(BigInt r, BigInt s) {
+    final rBytes = _encodeBigIntToDerInt(r);
+    final sBytes = _encodeBigIntToDerInt(s);
+    final seqLen = rBytes.length + sBytes.length + 4;
+    final builder = BytesBuilder();
+    builder.addByte(0x30);
+    if (seqLen < 128) {
+      builder.addByte(seqLen);
+    } else {
+      builder.addByte(0x81);
+      builder.addByte(seqLen);
+    }
+    builder.addByte(0x02);
+    builder.addByte(rBytes.length);
+    builder.add(rBytes);
+    builder.addByte(0x02);
+    builder.addByte(sBytes.length);
+    builder.add(sBytes);
+    return builder.toBytes();
+  }
+
+  /// Converts PointyCastle ECPublicKey into standard SubjectPublicKeyInfo (SPKI) PEM.
+  static String _exportEcPublicKeyToPem(ECPublicKey key) {
+    final q = key.Q!;
+    final x = q.x!.toBigInteger()!;
+    final y = q.y!.toBigInteger()!;
+
+    List<int> toPadded32(BigInt n) {
+      final b = <int>[];
+      var temp = n;
+      while (temp > BigInt.zero) {
+        b.insert(0, (temp & BigInt.from(0xff)).toInt());
+        temp = temp >> 8;
+      }
+      while (b.length < 32) {
+        b.insert(0, 0);
+      }
+      return b.sublist(b.length - 32);
+    }
+
+    final xBytes = toPadded32(x);
+    final yBytes = toPadded32(y);
+
+    // Standard SPKI header for prime256v1 (secp256r1)
+    final spkiHeader = [
+      0x30, 0x59, 0x30, 0x13, 0x06, 0x07, 0x2a, 0x86, 0x48, 0xce, 0x3d, 0x02,
+      0x01, 0x06, 0x08, 0x2a, 0x86, 0x48, 0xce, 0x3d, 0x03, 0x01, 0x07, 0x03,
+      0x42, 0x00, 0x04
+    ];
+
+    final fullSpki = Uint8List.fromList([...spkiHeader, ...xBytes, ...yBytes]);
+    final base64Spki = base64.encode(fullSpki);
+    return '-----BEGIN PUBLIC KEY-----\n$base64Spki\n-----END PUBLIC KEY-----';
+  }
+
+  // --- Symmetric Legacy Compatibility ---
+  static Future<String> _getSigningKey() async {
+    if (_cachedSymmetricKey != null) return _cachedSymmetricKey!;
+
+    try {
+      String? key = await _storage.read(key: _signingKeyName);
+      if (key == null) {
+        key = _generateRandomKey();
+        await _storage.write(key: _signingKeyName, value: key);
+      }
+      _cachedSymmetricKey = key;
+      return key;
+    } catch (e) {
+      SecureLogger.warning('VaultService: symmetric key read failed ($e). Regenerating.');
+      final key = _generateRandomKey();
+      _cachedSymmetricKey = key;
+      return key;
+    }
+  }
+
+  static String _generateRandomKey() {
+    final random = Random.secure();
+    final bytes = List<int>.generate(32, (i) => random.nextInt(256));
+    return base64Url.encode(bytes);
+  }
+
+  /// Generates a complete set of security headers for outbound requests.
   static Future<Map<String, String>> getSecurityHeaders(String path, {String body = ''}) async {
     final timestamp = DateTime.now().millisecondsSinceEpoch.toString();
-    final deviceId = await _getDeviceId();
-    final secret = await _getSigningKey();
+    final deviceId = await getDeviceId();
+    final nonce = const Uuid().v4();
+    final bodyHash = sha256.convert(utf8.encode(body)).toString();
+    
+    // Asymmetric signature payload
+    final payloadToSign = 'POST|$path|$timestamp|$nonce|$bodyHash';
+    final deviceSig = await signPayload(payloadToSign);
 
-    // Payload to sign: PATH|TIMESTAMP|DEVICE_ID|BODY
-    final payload = '$path|$timestamp|$deviceId|$body';
+    // Symmetric legacy signature
+    final secret = await _getSigningKey();
+    final symmetricPayload = '$path|$timestamp|$deviceId|$body';
     final hmac = Hmac(sha256, utf8.encode(secret));
-    final signature = hmac.convert(utf8.encode(payload)).toString();
+    final legacySig = hmac.convert(utf8.encode(symmetricPayload)).toString();
 
     return {
-      'X-HiddenGems-Signature': signature,
+      'X-Zenith-Device-Id': deviceId,
+      'X-Zenith-Timestamp': timestamp,
+      'X-Zenith-Nonce': nonce,
+      'X-Zenith-Body-Hash': bodyHash,
+      'X-Zenith-Device-Signature': deviceSig,
+      'X-HiddenGems-Signature': legacySig,
       'X-HiddenGems-Timestamp': timestamp,
       'X-HiddenGems-Device-ID': deviceId,
-      'X-HiddenGems-Version': '2.0.0-Hardened',
+      'X-HiddenGems-Version': '3.0.0-ZeroTrust',
     };
   }
 }

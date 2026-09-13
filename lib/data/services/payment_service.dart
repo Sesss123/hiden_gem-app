@@ -37,7 +37,9 @@ class PaymentService {
         body: jsonEncode({'booking_id': bookingId}),
       );
       if (res.statusCode != 200) {
-        SecureLogger.warning('Payment checkout rejected (${res.statusCode}): ${res.body}', tag: 'Payment');
+        SecureLogger.warning(
+            'Payment checkout rejected (${res.statusCode}): ${res.body}',
+            tag: 'Payment');
         return null;
       }
       final data = jsonDecode(res.body) as Map<String, dynamic>;
@@ -46,6 +48,7 @@ class PaymentService {
       return PaymentQuote(
         amount: double.tryParse('${params['amount']}') ?? 0,
         currency: '${params['currency'] ?? 'LKR'}',
+        redirectUrl: Uri.parse(data['redirect_url'] as String),
       );
     } catch (e) {
       SecureLogger.error('Payment checkout failed', e, null, 'Payment');
@@ -56,8 +59,7 @@ class PaymentService {
   /// Opens PayHere's hosted checkout for the booking in an external browser.
   /// Returns true if the checkout page was launched (NOT that payment
   /// succeeded — that is confirmed asynchronously via the server webhook).
-  static Future<bool> launchCheckout(String bookingId) async {
-    final uri = Uri.parse('$_baseUrl/payments/redirect/$bookingId');
+  static Future<bool> launchCheckout(Uri uri) async {
     if (await canLaunchUrl(uri)) {
       return launchUrl(uri, mode: LaunchMode.externalApplication);
     }
@@ -69,5 +71,9 @@ class PaymentService {
 class PaymentQuote {
   final double amount;
   final String currency;
-  const PaymentQuote({required this.amount, required this.currency});
+  final Uri redirectUrl;
+  const PaymentQuote(
+      {required this.amount,
+      required this.currency,
+      required this.redirectUrl});
 }

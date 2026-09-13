@@ -18,10 +18,12 @@ class GuideApplicationRepository {
   /// backend's local disk storage — the self-hosted replacement for Firebase
   /// Storage, so it moves to a VPS unchanged when one is provisioned.
   /// Returns the absolute URL to the stored file, or null on failure.
-  Future<String?> uploadDocument({required XFile file, required String docType}) async {
+  Future<String?> uploadDocument(
+      {required XFile file, required String docType}) async {
     try {
       final client = SecureHttpClient(http.Client());
-      final uri = Uri.parse('${AppConfig.laravelUrl}/guide-applications/documents');
+      final uri =
+          Uri.parse('${AppConfig.laravelUrl}/guide-applications/documents');
       final request = http.MultipartRequest('POST', uri)
         ..headers['Accept'] = 'application/json'
         ..headers['X-API-KEY'] = AppConfig.hiddenGemsApiKey
@@ -29,51 +31,62 @@ class GuideApplicationRepository {
         ..fields['doc_type'] = docType
         ..files.add(await http.MultipartFile.fromPath('file', file.path));
 
-      final streamedResponse = await client.send(request).timeout(const Duration(seconds: 30));
+      final streamedResponse =
+          await client.send(request).timeout(const Duration(seconds: 30));
       final response = await http.Response.fromStream(streamedResponse);
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         return data['data']['full_url'] as String?;
       }
-      SecureLogger.error("Document upload returned status ${response.statusCode}: ${response.body}");
+      SecureLogger.error(
+          "Document upload returned status ${response.statusCode}: ${response.body}");
     } catch (e) {
-      SecureLogger.error("Failed to upload guide document to Laravel Backend: $e");
+      SecureLogger.error(
+          "Failed to upload guide document to Laravel Backend: $e");
     }
     return null;
   }
 
   Future<void> submitApplication(GuideApplication application) async {
-    // 1. Submit to Laravel Backend API
+    // Laravel is authoritative and is responsible for synchronizing the
+    // verification projection in Firestore.
     try {
       final client = SecureHttpClient(http.Client());
       final uri = Uri.parse('${AppConfig.laravelUrl}/guide-applications');
-      final response = await client.post(
-        uri,
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'X-API-KEY': AppConfig.hiddenGemsApiKey,
-          'X-HiddenGems-Key': AppConfig.hiddenGemsApiKey,
-        },
-        body: json.encode({
-          ...application.toJson(),
-          'email': _auth.currentUser?.email,
-          'name': _auth.currentUser?.displayName ?? 'Guide Applicant',
-        }),
-      ).timeout(const Duration(seconds: 10));
+      final response = await client
+          .post(
+            uri,
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+              'X-API-KEY': AppConfig.hiddenGemsApiKey,
+              'X-HiddenGems-Key': AppConfig.hiddenGemsApiKey,
+            },
+            body: json.encode({
+              ...application.toJson(),
+              'email': _auth.currentUser?.email,
+              'name': _auth.currentUser?.displayName ?? 'Guide Applicant',
+            }),
+          )
+          .timeout(const Duration(seconds: 15));
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        SecureLogger.info("Guide application successfully submitted to Laravel Backend.");
+        final data = json.decode(response.body) as Map<String, dynamic>;
+        if (data['firestore_synced'] != true) {
+          throw Exception('Verification sync is pending. Please retry.');
+        }
+        SecureLogger.info(
+            "Guide application successfully submitted to Laravel Backend.");
       } else {
-        SecureLogger.error("Laravel Backend returned status ${response.statusCode} during guide submission.");
+        throw Exception(
+            'Guide application was not accepted (${response.statusCode}).');
       }
     } catch (e) {
-      SecureLogger.error("Failed to submit guide application to Laravel Backend (falling back to Firestore): $e");
+      SecureLogger.error(
+          "Failed to submit guide application to Laravel Backend: $e");
+      rethrow;
     }
-
-    // 2. Fallback / Sync to Firestore
-    await _firestore.collection('guide_applications').doc(application.userId).set(application.toJson());
   }
 
   Future<GuideApplication?> getMyApplication() async {
@@ -83,7 +96,8 @@ class GuideApplicationRepository {
     // 1. Check Laravel Backend API first
     try {
       final client = SecureHttpClient(http.Client());
-      final uri = Uri.parse('${AppConfig.laravelUrl}/guide-applications/status/${user.uid}');
+      final uri = Uri.parse(
+          '${AppConfig.laravelUrl}/guide-applications/status/${user.uid}');
       final response = await client.get(
         uri,
         headers: {
@@ -110,18 +124,21 @@ class GuideApplicationRepository {
           } else if (app.status == GuideStatus.rejected) {
             await _firestore.collection('users').doc(user.uid).update({
               'guideStatus': GuideStatus.rejected.name,
-              'guideRejectionReason': app.adminComment ?? "Documents incomplete or unclear. Please reapply.",
+              'guideRejectionReason': app.adminComment ??
+                  "Documents incomplete or unclear. Please reapply.",
             }).catchError((_) {});
           }
           return app;
         }
       }
     } catch (e) {
-      SecureLogger.error("Failed to fetch guide status from Laravel Backend: $e");
+      SecureLogger.error(
+          "Failed to fetch guide status from Laravel Backend: $e");
     }
 
     // 2. Fallback to Firestore
-    final doc = await _firestore.collection('guide_applications').doc(user.uid).get();
+    final doc =
+        await _firestore.collection('guide_applications').doc(user.uid).get();
     if (doc.exists) {
       return GuideApplication.fromJson(doc.data()!);
     }
@@ -130,7 +147,8 @@ class GuideApplicationRepository {
 
   // Admin-only dashboard (low traffic), capped as defense-in-depth against
   // an unbounded pending-applications backlog re-delivering on every change.
-  Stream<List<GuideApplication>> getPendingApplications() => getApplicationsByStatus(GuideStatus.pending.name);
+  Stream<List<GuideApplication>> getPendingApplications() =>
+      getApplicationsByStatus(GuideStatus.pending.name);
 
   Stream<List<GuideApplication>> getApplicationsByStatus(String status) {
     return _firestore
@@ -138,7 +156,9 @@ class GuideApplicationRepository {
         .where('status', isEqualTo: status)
         .limit(200)
         .snapshots()
-        .map((snapshot) => snapshot.docs.map((doc) => GuideApplication.fromJson(doc.data())).toList());
+        .map((snapshot) => snapshot.docs
+            .map((doc) => GuideApplication.fromJson(doc.data()))
+            .toList());
   }
 
   Future<void> reviewApplication({
@@ -150,47 +170,33 @@ class GuideApplicationRepository {
     try {
       final client = SecureHttpClient(http.Client());
       final endpoint = status == GuideStatus.approved ? 'approve' : 'reject';
-      final uri = Uri.parse('${AppConfig.laravelUrl}/admin/guide-applications/$userId/$endpoint');
-      await client.post(
-        uri,
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'X-API-KEY': AppConfig.hiddenGemsApiKey,
-          'X-HiddenGems-Key': AppConfig.hiddenGemsApiKey,
-        },
-        body: json.encode({
-          'admin_comment': adminComment,
-        }),
-      ).timeout(const Duration(seconds: 10));
+      final uri = Uri.parse(
+          '${AppConfig.laravelUrl}/admin/guide-applications/$userId/$endpoint');
+      final response = await client
+          .post(
+            uri,
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+              'X-API-KEY': AppConfig.hiddenGemsApiKey,
+              'X-HiddenGems-Key': AppConfig.hiddenGemsApiKey,
+            },
+            body: json.encode({
+              'admin_comment': adminComment,
+            }),
+          )
+          .timeout(const Duration(seconds: 10));
+      if (response.statusCode != 200) {
+        throw Exception('Guide review failed (${response.statusCode}).');
+      }
+      final body = json.decode(response.body) as Map<String, dynamic>;
+      if (body['firestore_synced'] != true) {
+        throw Exception(
+            'Guide review saved but Firestore sync failed. Retry the review.');
+      }
     } catch (e) {
       SecureLogger.error("Failed to review application on Laravel Backend: $e");
-    }
-
-    // 2. Update Firestore as well. Unlike the Laravel call above (best-effort
-    // logged-only), failures here are NOT swallowed — they propagate to the
-    // caller so admin_guide_verification_detail_screen.dart's error handling
-    // can actually fire instead of showing a false "approved"/"rejected"
-    // success message while the applicant's records are unchanged.
-    await _firestore.collection('guide_applications').doc(userId).update({
-      'status': status.name,
-      'adminComment': adminComment,
-      'reviewedAt': DateTime.now().toIso8601String(),
-    });
-
-    if (status == GuideStatus.approved) {
-      await _firestore.collection('users').doc(userId).update({
-        'role': 'guide_approved',
-        'guideStatus': GuideStatus.approved.name,
-        'isGuideApproved': true,
-      });
-    } else if (status == GuideStatus.rejected) {
-      await _firestore.collection('users').doc(userId).update({
-        'role': 'user',
-        'guideStatus': GuideStatus.rejected.name,
-        'isGuideApproved': false,
-        'guideRejectionReason': adminComment ?? "Documents incomplete or unclear. Please reapply.",
-      });
+      rethrow;
     }
   }
 }

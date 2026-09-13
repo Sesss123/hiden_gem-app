@@ -1,38 +1,24 @@
 import 'package:flutter/foundation.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'integrity_shield.dart';
 import 'secure_entitlements.dart';
 import 'behavior_analytics_engine.dart';
 import 'device_trust_graph.dart';
 import 'session_quarantine.dart';
+import 'vault_service.dart';
+import 'step_up_auth_service.dart';
 
 export 'integrity_shield.dart';
 export 'secure_entitlements.dart';
 export 'behavior_analytics_engine.dart';
 export 'device_trust_graph.dart';
 export 'session_quarantine.dart';
+export 'vault_service.dart';
+export 'step_up_auth_service.dart';
 
-/// [ZenithSecurityFacade] — Single entry point for the entire security stack.
+/// [ZenithSecurityFacade] — Single entry point for the entire Zero-Trust security stack.
 ///
-/// Instead of importing 5 different services, consume this one facade.
-///
-/// USAGE:
-/// ```dart
-/// final security = ZenithSecurityFacade();
-///
-/// // On app startup:
-/// await security.initialize();
-///
-/// // On login:
-/// await security.onUserLogin(deviceHash: hash, platform: 'android');
-///
-/// // Before showing premium feature:
-/// if (!security.quarantine.isPremiumAllowed) return;
-///
-/// // Track behavior:
-/// security.behavior.reportSearchFired();
-/// ```
-///
-/// THE FULL SECURITY STACK:
+/// THE FULL ZERO-TRUST SECURITY STACK:
 ///
 /// ┌─────────────────────────────────────────────────────────────┐
 /// │                   ZenithSecurityFacade                      │
@@ -42,6 +28,8 @@ export 'session_quarantine.dart';
 /// │  BehaviorAnalytics    → Silent forensic telemetry           │
 /// │  DeviceTrustGraph     → Account-device abuse detection      │
 /// │  SessionQuarantine    → Automatic session containment       │
+/// │  VaultService         → Device-bound Asymmetric ECDSA Keys │
+/// │  StepUpAuthService    → High-risk operation challenge gates │
 /// └─────────────────────────────────────────────────────────────┘
 class ZenithSecurityFacade {
   static final ZenithSecurityFacade _instance = ZenithSecurityFacade._internal();
@@ -53,7 +41,9 @@ class ZenithSecurityFacade {
   final BehaviorAnalyticsEngine behavior = BehaviorAnalyticsEngine();
   final DeviceTrustGraph deviceTrust = DeviceTrustGraph();
   final SessionQuarantine quarantine = SessionQuarantine();
+  final StepUpAuthService stepUp = StepUpAuthService();
 
+  final _functions = FirebaseFunctions.instance;
   bool _initialized = false;
 
   // --- Lifecycle ---
@@ -76,26 +66,61 @@ class ZenithSecurityFacade {
   }
 
   /// Call after successful user login.
+  /// Binds hardware ECDSA public key to user record on the backend (Zero-Trust Phase 1).
   Future<void> onUserLogin({
     required String deviceHash,
     required String platform,
   }) async {
-    // 1. Check device trust
+    // 1. Check device trust graph
     await deviceTrust.recordAndVerifyLogin(
       deviceHash: deviceHash,
       platform: platform,
     );
 
-    // 2. Re-evaluate quarantine level with new device signals
+    // 2. Zero-Trust: Register hardware-bound ECDSA Public Key with backend
+    try {
+      final deviceId = await VaultService.getDeviceId();
+      final pubKeyPem = await VaultService.getDevicePublicKeyPem();
+      await _functions.httpsCallable('register_device_key').call({
+        'deviceId': deviceId,
+        'publicKeyPem': pubKeyPem,
+        'platform': platform,
+      });
+      debugPrint('[ZenithSecurity] Device key registered successfully.');
+    } catch (e) {
+      debugPrint('[ZenithSecurity] Device key registration notice: $e');
+    }
+
+    // 3. Re-evaluate quarantine level with new device signals
     await quarantine.evaluate();
 
-    // 3. Pre-warm entitlements cache
+    // 4. Pre-warm entitlements cache
     entitlements.forceRefresh();
   }
 
-  /// Call on logout to clean up session state.
+  /// Call on logout to clean up session state and step-up grants.
   void onUserLogout() {
-    entitlements.forceRefresh(); // Clear cached entitlements
+    entitlements.forceRefresh();
+    stepUp.clearGrants();
+  }
+
+  /// Revoke current session on server.
+  Future<void> revokeCurrentSession(String sessionId) async {
+    try {
+      await _functions.httpsCallable('revoke_session').call({'sessionId': sessionId});
+    } catch (e) {
+      debugPrint('[ZenithSecurity] Session revocation error: $e');
+    }
+  }
+
+  /// Revoke all sessions across all devices (Remote Kill / Force Logout).
+  Future<void> revokeAllSessions() async {
+    try {
+      await _functions.httpsCallable('revoke_all_sessions').call({});
+      onUserLogout();
+    } catch (e) {
+      debugPrint('[ZenithSecurity] Revoke all sessions error: $e');
+    }
   }
 
   // --- Quick Access Guards (Synchronous) ---

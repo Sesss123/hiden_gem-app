@@ -5,6 +5,7 @@ namespace App\Services;
 use Google\Auth\Credentials\ServiceAccountCredentials;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Http\Client\PendingRequest;
 
 /**
  * FirestoreService
@@ -16,7 +17,8 @@ use Illuminate\Support\Facades\Log;
 class FirestoreService
 {
     private string $projectId;
-    private string $credentialsPath;
+    /** @var array<string,mixed>|string */
+    private $credentials;
 
     /**
      * Initialize Firestore REST service using service account credentials.
@@ -24,21 +26,26 @@ class FirestoreService
     public function __construct()
     {
         try {
-            $credentialsPath = config('firebase.credentials');
-            
-            // Ensure we resolve relative paths (e.g. 'config/firebase-credentials.json') to absolute base path
-            $fullPath = file_exists($credentialsPath) ? $credentialsPath : base_path($credentialsPath);
-            
-            if (!file_exists($fullPath)) {
-                throw new \Exception("Firebase credentials not found at {$credentialsPath} or {$fullPath}");
+            $inlineCredentials = config('services.firebase_credentials');
+            if ($inlineCredentials) {
+                $json = json_decode($inlineCredentials, true);
+                if (!is_array($json)) {
+                    throw new \Exception('FIREBASE_CREDENTIALS is not valid JSON.');
+                }
+                $this->credentials = $json;
+            } else {
+                $credentialsPath = config('firebase.credentials', 'config/firebase-credentials.json');
+                $fullPath = is_file($credentialsPath) ? $credentialsPath : base_path($credentialsPath);
+                if (!is_file($fullPath)) {
+                    throw new \Exception("Firebase credentials not found at {$credentialsPath} or {$fullPath}");
+                }
+                $this->credentials = $fullPath;
+                $json = json_decode(file_get_contents($fullPath), true);
             }
-            
-            $this->credentialsPath = $fullPath;
-            $json = json_decode(file_get_contents($fullPath), true);
             $this->projectId = $json['project_id'] ?? '';
             
             if (empty($this->projectId)) {
-                throw new \Exception("project_id not found in Firebase credentials JSON at {$fullPath}");
+                throw new \Exception('project_id not found in Firebase credentials JSON.');
             }
         } catch (\Exception $e) {
             Log::error("FirestoreService initialization failed: " . $e->getMessage());
@@ -52,9 +59,17 @@ class FirestoreService
     private function getToken(): string
     {
         $scopes = ['https://www.googleapis.com/auth/datastore'];
-        $credentials = new ServiceAccountCredentials($scopes, $this->credentialsPath);
+        $credentials = new ServiceAccountCredentials($scopes, $this->credentials);
         $token = $credentials->fetchAuthToken();
         return $token['access_token'] ?? '';
+    }
+
+    private function client(string $token): PendingRequest
+    {
+        return Http::withToken($token)
+            ->connectTimeout(5)
+            ->timeout(15)
+            ->retry(2, 250, throw: false);
     }
 
     /**
@@ -101,6 +116,7 @@ class FirestoreService
         if (array_key_exists('integerValue', $field)) return (int) $field['integerValue'];
         if (array_key_exists('doubleValue', $field)) return (float) $field['doubleValue'];
         if (array_key_exists('booleanValue', $field)) return $field['booleanValue'];
+        if (array_key_exists('timestampValue', $field)) return $field['timestampValue'];
         if (array_key_exists('nullValue', $field)) return null;
         if (array_key_exists('mapValue', $field)) {
             $out = [];
@@ -131,7 +147,7 @@ class FirestoreService
             
             $url = "https://firestore.googleapis.com/v1/projects/{$this->projectId}/databases/(default)/documents/{$collection}/{$documentId}?" . implode('&', $updateMask);
             
-            $response = Http::withToken($token)->patch($url, ['fields' => $fields]);
+            $response = $this->client($token)->patch($url, ['fields' => $fields]);
             
             if ($response->successful()) {
                 Log::info("Firestore {$collection}/{$documentId} updated via REST: " . json_encode($data));
@@ -154,7 +170,7 @@ class FirestoreService
         try {
             $token = $this->getToken();
             $url = "https://firestore.googleapis.com/v1/projects/{$this->projectId}/databases/(default)/documents/{$collection}/{$documentId}";
-            $response = Http::withToken($token)->delete($url);
+            $response = $this->client($token)->delete($url);
 
             if ($response->successful()) {
                 Log::info("Firestore {$collection}/{$documentId} deleted via REST.");
@@ -166,6 +182,85 @@ class FirestoreService
             Log::error("Firestore REST exception deleting {$collection}/{$documentId}: " . $e->getMessage());
             throw $e;
         }
+    }
+
+    /** Atomically commit multiple document creates/partial updates. */
+    public function commitDocuments(array $writes): bool
+    {
+        $commitWrites = [];
+        foreach ($writes as $write) {
+            $fields = [];
+            foreach ($write['data'] as $key => $value) {
+                $fields[$key] = $this->encodeValue($value);
+            }
+            $entry = [
+                'update' => [
+                    'name' => 'projects/' . $this->projectId . '/databases/(default)/documents/' . $write['collection'] . '/' . $write['id'],
+                    'fields' => $fields,
+                ],
+            ];
+            if (!empty($write['updateMask'])) {
+                $entry['updateMask'] = ['fieldPaths' => array_values($write['updateMask'])];
+            }
+            if (array_key_exists('exists', $write)) {
+                $entry['currentDocument'] = ['exists' => (bool) $write['exists']];
+            }
+            $commitWrites[] = $entry;
+        }
+
+        $token = $this->getToken();
+        $url = "https://firestore.googleapis.com/v1/projects/{$this->projectId}/databases/(default)/documents:commit";
+        $response = $this->client($token)->post($url, ['writes' => $commitWrites]);
+        if (!$response->successful()) {
+            Log::error("Firestore atomic commit failed ({$response->status()}): " . $response->body());
+            return false;
+        }
+        return true;
+    }
+
+    /** Delete a document and all nested subcollections below it. */
+    public function deleteDocumentRecursively(string $collection, string $documentId): bool
+    {
+        return $this->deleteDocumentPathRecursively("{$collection}/{$documentId}");
+    }
+
+    private function deleteDocumentPathRecursively(string $documentPath): bool
+    {
+        $token = $this->getToken();
+        $base = "https://firestore.googleapis.com/v1/projects/{$this->projectId}/databases/(default)/documents";
+        $pageToken = null;
+
+        do {
+            $body = ['pageSize' => 1000];
+            if ($pageToken) $body['pageToken'] = $pageToken;
+            $collectionsResponse = $this->client($token)->post("{$base}/{$documentPath}:listCollectionIds", $body);
+            if (!$collectionsResponse->successful()) {
+                throw new \RuntimeException("Failed listing subcollections for {$documentPath} ({$collectionsResponse->status()}).");
+            }
+
+            foreach (($collectionsResponse->json('collectionIds') ?? []) as $collectionId) {
+                $documentsPageToken = null;
+                do {
+                    $query = ['pageSize' => 1000];
+                    if ($documentsPageToken) $query['pageToken'] = $documentsPageToken;
+                    $documentsResponse = $this->client($token)->get("{$base}/{$documentPath}/{$collectionId}", $query);
+                    if (!$documentsResponse->successful()) {
+                        throw new \RuntimeException("Failed listing {$documentPath}/{$collectionId} ({$documentsResponse->status()}).");
+                    }
+                    foreach (($documentsResponse->json('documents') ?? []) as $document) {
+                        $childPath = explode('/documents/', $document['name'], 2)[1] ?? null;
+                        if (!$childPath || !$this->deleteDocumentPathRecursively($childPath)) {
+                            throw new \RuntimeException("Failed recursively deleting a child of {$documentPath}.");
+                        }
+                    }
+                    $documentsPageToken = $documentsResponse->json('nextPageToken');
+                } while ($documentsPageToken);
+            }
+            $pageToken = $collectionsResponse->json('nextPageToken');
+        } while ($pageToken);
+
+        $response = $this->client($token)->delete("{$base}/{$documentPath}");
+        return $response->successful();
     }
 
     /**
@@ -221,7 +316,7 @@ class FirestoreService
         try {
             $token = $this->getToken();
             $url = "https://firestore.googleapis.com/v1/projects/{$this->projectId}/databases/(default)/documents/{$collection}/{$documentId}";
-            $response = Http::withToken($token)->get($url);
+            $response = $this->client($token)->get($url);
 
             if (!$response->successful()) {
                 return null;
@@ -247,7 +342,7 @@ class FirestoreService
         try {
             $token = $this->getToken();
             $url = "https://firestore.googleapis.com/v1/projects/{$this->projectId}/databases/(default)/documents/{$collection}/{$documentId}";
-            $response = Http::withToken($token)->get($url);
+            $response = $this->client($token)->get($url);
             return $response->successful();
         } catch (\Exception $e) {
             Log::error("Firestore REST exception checking existence of {$collection}/{$documentId}: " . $e->getMessage());
@@ -259,7 +354,7 @@ class FirestoreService
      * Runs a simple structured query (single equality filter) against a
      * collection and returns decoded documents (each with an 'id' key).
      */
-    public function queryDocuments(string $collection, string $field, string $op, $value, ?int $limit = null): array
+    public function queryDocuments(string $collection, string $field, string $op, $value, ?int $limit = null, bool $strict = false): array
     {
         try {
             $token = $this->getToken();
@@ -279,9 +374,12 @@ class FirestoreService
                 $structuredQuery['limit'] = $limit;
             }
 
-            $response = Http::withToken($token)->post($url, ['structuredQuery' => $structuredQuery]);
+            $response = $this->client($token)->post($url, ['structuredQuery' => $structuredQuery]);
             if (!$response->successful()) {
                 Log::error("Firestore REST query error ({$response->status()}): " . $response->body());
+                if ($strict) {
+                    throw new \RuntimeException("Firestore query failed for {$collection} ({$response->status()}).");
+                }
                 return [];
             }
 
@@ -299,6 +397,9 @@ class FirestoreService
             return $results;
         } catch (\Exception $e) {
             Log::error("Firestore REST exception querying {$collection} where {$field} {$op} " . json_encode($value) . ": " . $e->getMessage());
+            if ($strict) {
+                throw $e;
+            }
             return [];
         }
     }
@@ -341,7 +442,7 @@ class FirestoreService
                 ],
             ];
 
-            $response = Http::withToken($token)->post($url, ['structuredQuery' => $structuredQuery]);
+            $response = $this->client($token)->post($url, ['structuredQuery' => $structuredQuery]);
             if (!$response->successful()) {
                 Log::error("Firestore REST query error ({$response->status()}): " . $response->body());
                 return 0;
@@ -379,21 +480,27 @@ class FirestoreService
             $token = $this->getToken();
             $url = "https://firestore.googleapis.com/v1/projects/{$this->projectId}/databases/(default)/documents/{$collection}";
 
-            $response = Http::withToken($token)->get($url);
-            if (!$response->successful()) {
-                Log::error("Firestore REST list error ({$response->status()}): " . $response->body());
-                return [];
-            }
-
             $results = [];
-            foreach (($response->json()['documents'] ?? []) as $doc) {
-                $id = basename($doc['name']);
-                $fields = [];
-                foreach (($doc['fields'] ?? []) as $k => $v) {
-                    $fields[$k] = $this->decodeValue($v);
+            $pageToken = null;
+            do {
+                $query = ['pageSize' => 1000];
+                if ($pageToken) $query['pageToken'] = $pageToken;
+                $response = $this->client($token)->get($url, $query);
+                if (!$response->successful()) {
+                    Log::error("Firestore REST list error ({$response->status()}): " . $response->body());
+                    return [];
                 }
-                $results[] = array_merge(['id' => $id], $fields);
-            }
+
+                foreach (($response->json()['documents'] ?? []) as $doc) {
+                    $id = basename($doc['name']);
+                    $fields = [];
+                    foreach (($doc['fields'] ?? []) as $k => $v) {
+                        $fields[$k] = $this->decodeValue($v);
+                    }
+                    $results[] = array_merge(['id' => $id], $fields);
+                }
+                $pageToken = $response->json('nextPageToken');
+            } while ($pageToken);
             return $results;
         } catch (\Exception $e) {
             Log::error("Firestore REST exception listing {$collection}: " . $e->getMessage());

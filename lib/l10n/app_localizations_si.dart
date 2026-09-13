@@ -408,6 +408,11 @@ class AppLocalizationsSi extends AppLocalizations {
   String get openInMaps => 'සිතියමේ විවෘත කරන්න';
 
   @override
+  String nearbyNowLabel(String km) {
+    return 'km $km ක් දුරින් — දැන් ළඟින්';
+  }
+
+  @override
   String get photosLabel => 'ඡායාරූප';
 
   @override

@@ -29,8 +29,8 @@ class FamilyShareSyncService {
 
   StreamSubscription<User?>? _authSub;
   StreamSubscription<QuerySnapshot>? _linksSub;
-  final Map<String, StreamSubscription<DocumentSnapshot>> _sessionSubsByLink = {};
-  final Map<String, String?> _guideNameCache = {}; // guideId -> displayName
+  final Map<String, StreamSubscription<DocumentSnapshot>> _sessionSubsByLink =
+      {};
 
   bool _started = false;
 
@@ -62,7 +62,8 @@ class FamilyShareSyncService {
           activeIds.add(link.shareId);
           watchLink(link);
         } catch (e) {
-          SecureLogger.error("FamilyShareSyncService: malformed link doc ${doc.id}: $e");
+          SecureLogger.error(
+              "FamilyShareSyncService: malformed link doc ${doc.id}: $e");
         }
       }
       // Drop session listeners for links that are no longer active/owned.
@@ -84,8 +85,12 @@ class FamilyShareSyncService {
         .collection('tour_sessions')
         .doc(link.sessionId)
         .snapshots()
-        .listen((sessionDoc) => _onSessionUpdate(link, sessionDoc), onError: (e, st) {
-      SecureLogger.error("FamilyShareSyncService: session listener error for ${link.shareId}", e, st);
+        .listen((sessionDoc) => _onSessionUpdate(link, sessionDoc),
+            onError: (e, st) {
+      SecureLogger.error(
+          "FamilyShareSyncService: session listener error for ${link.shareId}",
+          e,
+          st);
     });
   }
 
@@ -100,15 +105,18 @@ class FamilyShareSyncService {
       sub.cancel();
     }
     _sessionSubsByLink.clear();
-    _guideNameCache.clear();
   }
 
-  Future<void> _onSessionUpdate(FamilyShareLink link, DocumentSnapshot sessionDoc) async {
+  Future<void> _onSessionUpdate(
+      FamilyShareLink link, DocumentSnapshot sessionDoc) async {
     if (!sessionDoc.exists) return;
     final session = sessionDoc.data() as Map<String, dynamic>? ?? {};
 
-    final linkKey = await _storage.read(key: 'family_share_key_${link.shareId}');
-    if (linkKey == null) return; // Key not on this device -- nothing we can encrypt for the recipient.
+    final linkKey =
+        await _storage.read(key: 'family_share_key_${link.shareId}');
+    if (linkKey == null) {
+      return; // Key not on this device -- nothing we can encrypt for the recipient.
+    }
 
     final blob = await buildEncryptedStatus(
       sessionId: link.sessionId,
@@ -119,9 +127,16 @@ class FamilyShareSyncService {
     if (blob == null) return;
 
     try {
-      await _firestore.collection('family_share_links').doc(link.shareId).update({'encryptedStatus': blob});
+      await _firestore
+          .collection('family_share_links')
+          .doc(link.shareId)
+          .update({
+        'encryptedStatus': blob,
+        'lastSyncedAt': FieldValue.serverTimestamp(),
+      });
     } catch (e) {
-      SecureLogger.error("FamilyShareSyncService: failed to write encryptedStatus for ${link.shareId}: $e");
+      SecureLogger.error(
+          "FamilyShareSyncService: failed to write encryptedStatus for ${link.shareId}: $e");
     }
   }
 
@@ -137,7 +152,8 @@ class FamilyShareSyncService {
   }) async {
     Map<String, dynamic>? session = sessionData;
     if (session == null && sessionId.isNotEmpty) {
-      final doc = await _firestore.collection('tour_sessions').doc(sessionId).get();
+      final doc =
+          await _firestore.collection('tour_sessions').doc(sessionId).get();
       session = doc.data();
     }
     if (session == null) return null;
@@ -151,10 +167,10 @@ class FamilyShareSyncService {
       payload['sosActive'] = session['sosActive'] ?? false;
     }
     if (permissions['show_identity'] == true) {
-      final guideId = session['guideId'] as String?;
-      if (guideId != null && guideId.isNotEmpty) {
-        payload['guideName'] = await _resolveGuideName(guideId);
-      }
+      // The participant-readable session contains a safe display-name
+      // snapshot. Reading another user's private users/{uid} document is
+      // deliberately forbidden by firestore.rules.
+      payload['guideName'] = session['guideName'] as String?;
     }
     if (permissions['show_meeting_point'] == true) {
       final meetingPointName = session['meetingPointName'] as String?;
@@ -164,21 +180,6 @@ class FamilyShareSyncService {
     }
 
     return EncryptionUtil.encryptWithKey(jsonEncode(payload), linkKey);
-  }
-
-  Future<String?> _resolveGuideName(String guideId) async {
-    // Guide identity doesn't change mid-tour -- cache per app session.
-    if (_guideNameCache.containsKey(guideId)) return _guideNameCache[guideId];
-    try {
-      final doc = await _firestore.collection('users').doc(guideId).get();
-      final data = doc.data();
-      final name = (data?['displayName'] as String?) ?? (data?['name'] as String?);
-      _guideNameCache[guideId] = name;
-      return name;
-    } catch (e) {
-      SecureLogger.error("FamilyShareSyncService: failed to resolve guide name for $guideId: $e");
-      return null;
-    }
   }
 
   void dispose() {

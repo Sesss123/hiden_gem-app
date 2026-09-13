@@ -3,8 +3,6 @@ import 'package:http/http.dart' as http;
 import '../models/trip_plan_model.dart';
 import '../datasources/user_preference_service.dart';
 import '../../core/config/app_config.dart';
-import 'live_events_service.dart';
-import 'dynamic_content_service.dart';
 import '../../core/network/secure_http_client.dart';
 import '../../core/utils/secure_logger.dart';
 
@@ -33,11 +31,9 @@ class AiTripService {
     required List<String> mustInclude,
     required List<String> avoid,
   }) async {
-    final url = Uri.parse("$_baseUrl/ai/plan-itinerary"); // Python's real endpoint via Laravel proxy
+    final url = Uri.parse(
+        "$_baseUrl/ai/plan-itinerary"); // Python's real endpoint via Laravel proxy
     final userProfile = UserPreferenceService.getProfile();
-    
-    // 1. Fetch dynamic events for real-time AI grounding
-    final dynamicEvents = await DynamicContentService.fetchEvents();
 
     final body = {
       "origin": origin,
@@ -57,12 +53,10 @@ class AiTripService {
       "avoid": avoid,
       "language_code": userProfile.languageCode ?? "en",
       "user_context": {
-        ...userProfile.toJson(),
-        "live_cultural_events": LiveEventsService.getEventsForDates(
-          startDate, 
-          days, 
-          dynamicEvents: dynamicEvents
-        ),
+        // Send only the minimum personalization needed by the planner. The
+        // full local profile can contain account/private preference fields and
+        // must never be copied wholesale into an AI prompt.
+        "preferred_vibe": userProfile.vibe,
       },
     };
 
@@ -84,14 +78,16 @@ class AiTripService {
 
     while (retryCount <= maxRetries) {
       try {
-        final response = await _client.post(
-          url,
-          headers: {
-            "Content-Type": "application/json",
-            "X-HiddenGems-Key": _apiKey,
-          },
-          body: json.encode(body),
-        ).timeout(Duration(seconds: currentTimeoutSeconds));
+        final response = await _client
+            .post(
+              url,
+              headers: {
+                "Content-Type": "application/json",
+                "X-HiddenGems-Key": _apiKey,
+              },
+              body: json.encode(body),
+            )
+            .timeout(Duration(seconds: currentTimeoutSeconds));
 
         if (response.statusCode == 200) {
           final Map<String, dynamic> data = json.decode(response.body);
@@ -102,24 +98,30 @@ class AiTripService {
         } else if (response.statusCode == 429) {
           throw Exception("Rate limit reached. Try again soon.");
         } else if (response.statusCode >= 500) {
-          throw Exception("HiddenGems.lk is experiencing issues. Status: ${response.statusCode}");
+          throw Exception(
+              "HiddenGems.lk is experiencing issues. Status: ${response.statusCode}");
         } else {
           String errorMessage = "Unknown API error (${response.statusCode})";
           try {
-            final errorData = json.decode(response.body) as Map<String, dynamic>;
-            errorMessage = errorData['detail']?['message'] as String? ?? errorMessage;
+            final errorData =
+                json.decode(response.body) as Map<String, dynamic>;
+            errorMessage =
+                errorData['detail']?['message'] as String? ?? errorMessage;
           } catch (e) {
             SecureLogger.warning('Failed to parse error payload: $e');
           }
           throw Exception("HiddenGems.lk: $errorMessage");
         }
       } catch (e) {
-        if (retryCount < maxRetries && (e.toString().contains('SocketException') || e.toString().contains('Timeout'))) {
+        if (retryCount < maxRetries &&
+            (e.toString().contains('SocketException') ||
+                e.toString().contains('Timeout'))) {
           retryCount++;
-          // await Future.delayed(Duration(seconds: 2 * retryCount));
+          await Future.delayed(Duration(seconds: 2 * retryCount));
           continue;
         }
-        throw Exception("Could not connect to HiddenGems.lk. Check your connection.");
+        throw Exception(
+            "Could not connect to HiddenGems.lk. Check your connection.");
       }
     }
     throw Exception("Maximum retries reached.");

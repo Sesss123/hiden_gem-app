@@ -6,23 +6,24 @@ import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:uuid/uuid.dart';
 import 'package:flutter/services.dart';
 import '../../core/config/app_config.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 final subscriptionServiceProvider = Provider((ref) => SubscriptionService());
 
 class SubscriptionService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  CollectionReference<Map<String, dynamic>> get _subscriptionRef => 
+  CollectionReference<Map<String, dynamic>> get _subscriptionRef =>
       _firestore.collection('subscriptions');
 
   /// Fetches the active subscription for an account.
   Future<SubscriptionRecord?> getActiveSubscription(String accountId) async {
     final snapshot = await _subscriptionRef
         .where('accountId', isEqualTo: accountId)
-        .where('status', isEqualTo: 'active')
+        .where('status', whereIn: ['active', 'grace_period'])
         .limit(1)
         .get();
-    
+
     if (snapshot.docs.isEmpty) return null;
     final record = SubscriptionRecord.fromJson(snapshot.docs.first.data());
     // SAFETY NET CHECK: Immediately fall back to free-tier if local date is past expiresAt
@@ -35,10 +36,24 @@ class SubscriptionService {
   // Capabilities each paid plan unlocks. 'pro' capabilities are a subset of
   // 'elite' so an elite guide gets everything pro does, plus elite-only ones.
   static const Map<String, Set<String>> _planCapabilities = {
-    'pro': {'featuredListings', 'prioritySos', 'advancedAnalytics', 'priorityLeads', 'verifiedInsured', 'customPackages'},
+    'pro': {
+      'featuredListings',
+      'prioritySos',
+      'advancedAnalytics',
+      'priorityLeads',
+      'verifiedInsured',
+      'customPackages'
+    },
     'elite': {
-      'featuredListings', 'prioritySos', 'advancedAnalytics', 'priorityLeads', 'verifiedInsured', 'customPackages',
-      'teamManagement', 'operatorDashboard', 'whiteLabelBranding',
+      'featuredListings',
+      'prioritySos',
+      'advancedAnalytics',
+      'priorityLeads',
+      'verifiedInsured',
+      'customPackages',
+      'teamManagement',
+      'operatorDashboard',
+      'whiteLabelBranding',
     },
   };
 
@@ -54,7 +69,7 @@ class SubscriptionService {
   Future<int> getLimit(String accountId, String key) async {
     final sub = await getActiveSubscription(accountId);
     final planId = sub?.planId ?? 'free';
-    
+
     return _getPlanLimit(planId, key);
   }
 
@@ -62,22 +77,43 @@ class SubscriptionService {
     final limits = {
       'free': {'maxTeamSize': 1, 'maxPackages': 3, 'monthlyBookingQuota': 5},
       'pro': {'maxTeamSize': 5, 'maxPackages': 10, 'monthlyBookingQuota': 50},
-      'elite': {'maxTeamSize': 20, 'maxPackages': 50, 'monthlyBookingQuota': 500},
-      'starter': {'maxTeamSize': 3, 'maxPackages': 10, 'monthlyBookingQuota': 30},
-      'growth': {'maxTeamSize': 15, 'maxPackages': 50, 'monthlyBookingQuota': 200},
-      'enterprise': {'maxTeamSize': 100, 'maxPackages': 1000, 'monthlyBookingQuota': 9999},
+      'elite': {
+        'maxTeamSize': 20,
+        'maxPackages': 50,
+        'monthlyBookingQuota': 500
+      },
+      'starter': {
+        'maxTeamSize': 3,
+        'maxPackages': 10,
+        'monthlyBookingQuota': 30
+      },
+      'growth': {
+        'maxTeamSize': 15,
+        'maxPackages': 50,
+        'monthlyBookingQuota': 200
+      },
+      'enterprise': {
+        'maxTeamSize': 100,
+        'maxPackages': 1000,
+        'monthlyBookingQuota': 9999
+      },
     };
-    
+
     return limits[planId]?[key] ?? 0;
   }
 
   bool get _revenueCatUnconfigured {
     final key = AppConfig.revenueCatApiKeyAndroid;
-    return key.isEmpty || key == 'goog_example_key' || key == 'appl_example_key' || key.contains('example_key') || key == 'dev-key-local';
+    return key.isEmpty ||
+        key == 'goog_example_key' ||
+        key == 'appl_example_key' ||
+        key.contains('example_key') ||
+        key == 'dev-key-local';
   }
 
   /// Initiates a real payment via RevenueCat.
-  Future<void> purchasePlan(String planId, String accountId, String accountType) async {
+  Future<void> purchasePlan(
+      String planId, String accountId, String accountType) async {
     // Dev-mode bypass: RevenueCat's SDK is never configured when only dummy
     // API keys are present (see premium_service.dart's identical check), so
     // any real Purchases.* call throws "no singleton instance" before it can
@@ -95,12 +131,22 @@ class SubscriptionService {
     }
 
     // Map internal plan IDs to RevenueCat product identifiers
-    final revenueCatProductId = planId == 'pro' ? 'guide_pro_monthly' : 'guide_elite_monthly';
+    final revenueCatProductId =
+        planId == 'pro' ? 'guide_pro_monthly' : 'guide_elite_monthly';
 
     try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null || user.uid != accountId) {
+        throw StateError(
+            'The billing account does not match the signed-in user.');
+      }
+      if (await Purchases.appUserID != accountId) {
+        await Purchases.logIn(accountId);
+      }
       // 1. Fetch available products from RevenueCat
       final offerings = await Purchases.getOfferings();
-      if (offerings.current == null || offerings.current!.availablePackages.isEmpty) {
+      if (offerings.current == null ||
+          offerings.current!.availablePackages.isEmpty) {
         throw Exception("No products available or configured in RevenueCat.");
       }
 
@@ -114,11 +160,13 @@ class SubscriptionService {
       }
 
       if (packageToBuy == null) {
-        throw Exception("Product $revenueCatProductId not found in current offering.");
+        throw Exception(
+            "Product $revenueCatProductId not found in current offering.");
       }
 
       // 3. Initiate the native purchase flow
-      final purchaseResult = await Purchases.purchase(PurchaseParams.package(packageToBuy));
+      final purchaseResult =
+          await Purchases.purchase(PurchaseParams.package(packageToBuy));
 
       // 4. If successful, sync the active subscription with our Firestore database
       if (purchaseResult.customerInfo.entitlements.all.isNotEmpty) {
@@ -129,12 +177,14 @@ class SubscriptionService {
           planId: planId,
           status: 'active',
           startedAt: DateTime.now(),
-          expiresAt: DateTime.now().add(const Duration(days: 30)), // Basic estimation, real expiry is in RevenueCat
+          expiresAt: DateTime.now().add(const Duration(
+              days: 30)), // Basic estimation, real expiry is in RevenueCat
           entitlements: {},
         );
         await startSubscription(record);
       } else {
-         throw Exception("Purchase completed but no entitlements were unlocked.");
+        throw Exception(
+            "Purchase completed but no entitlements were unlocked.");
       }
     } on PlatformException catch (e) {
       final errorCode = PurchasesErrorHelper.getErrorCode(e);
@@ -159,6 +209,28 @@ class SubscriptionService {
   /// than trust a client-written optimistic record.
   Future<void> startSubscription(SubscriptionRecord record) async {}
 
+  /// Restores store purchases only after binding RevenueCat to the current
+  /// Firebase UID, then waits for the server webhook projection. This keeps a
+  /// purchase restored under one Google account from silently unlocking a
+  /// different in-app account.
+  Future<SubscriptionRecord> restorePurchases(String accountId) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null || user.uid != accountId) {
+      throw StateError(
+          'The billing account does not match the signed-in user.');
+    }
+    if (await Purchases.appUserID != accountId) {
+      await Purchases.logIn(accountId);
+    }
+    await Purchases.restorePurchases();
+    for (var attempt = 0; attempt < 4; attempt++) {
+      final subscription = await getActiveSubscription(accountId);
+      if (subscription != null) return subscription;
+      if (attempt < 3) await Future.delayed(const Duration(seconds: 2));
+    }
+    throw StateError('No server-verified active subscription was found.');
+  }
+
   /// Retrieves billing history for an account. One-shot read (not a live
   /// listener) — a billing history screen is a historical record the user
   /// checks occasionally, not something that needs sub-second live updates
@@ -168,7 +240,9 @@ class SubscriptionService {
         .where('accountId', isEqualTo: accountId)
         .orderBy('startedAt', descending: true)
         .get();
-    return snapshot.docs.map((doc) => SubscriptionRecord.fromJson(doc.data())).toList();
+    return snapshot.docs
+        .map((doc) => SubscriptionRecord.fromJson(doc.data()))
+        .toList();
   }
 
   /// Cancels an active subscription.
@@ -179,13 +253,14 @@ class SubscriptionService {
       'autoRenew': false,
       'cancelledAt': DateTime.now().toIso8601String(),
     });
-    
+
     if (docSnap.exists && docSnap.data() != null) {
       final data = docSnap.data()!;
       final accountId = data['accountId'] as String?;
       final accountType = data['accountType'] as String?;
       if (accountId != null && accountType != null) {
-        final collection = accountType == 'guide' ? 'users' : 'operator_accounts';
+        final collection =
+            accountType == 'guide' ? 'users' : 'operator_accounts';
         await _firestore.collection(collection).doc(accountId).update({
           'autoRenew': false,
         });

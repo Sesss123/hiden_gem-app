@@ -411,6 +411,11 @@ class AppLocalizationsRu extends AppLocalizations {
   String get openInMaps => 'Open in Maps';
 
   @override
+  String nearbyNowLabel(String km) {
+    return '$km km away — nearby now';
+  }
+
+  @override
   String get photosLabel => 'Photos';
 
   @override

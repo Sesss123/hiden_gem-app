@@ -23,10 +23,12 @@ class GuideListingEditorScreen extends ConsumerStatefulWidget {
   const GuideListingEditorScreen({super.key, this.embedded = false});
 
   @override
-  ConsumerState<GuideListingEditorScreen> createState() => _GuideListingEditorScreenState();
+  ConsumerState<GuideListingEditorScreen> createState() =>
+      _GuideListingEditorScreenState();
 }
 
-class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScreen> {
+class _GuideListingEditorScreenState
+    extends ConsumerState<GuideListingEditorScreen> {
   final _formKey = GlobalKey<FormState>();
   final _displayNameController = TextEditingController();
   final _bioController = TextEditingController();
@@ -91,7 +93,8 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
         _regionsController.text = listing.regions.join(', ');
         _selectedTourTypes
           ..clear()
-          ..addAll(kTourTypes.map((t) => t.fieldKey).where(listing.hasTourType));
+          ..addAll(
+              kTourTypes.map((t) => t.fieldKey).where(listing.hasTourType));
       } else if (mounted) {
         // Set defaults from auth user if available
         final user = FirebaseAuth.instance.currentUser;
@@ -109,14 +112,18 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
       // sync, and backfill it onto the listing the first time this screen
       // runs for a guide who was approved before this field existed.
       if (_licenseNumber == null || _licenseNumber!.isEmpty) {
-        final application = await GuideApplicationRepository().getMyApplication().catchError((_) => null);
+        final application = await GuideApplicationRepository()
+            .getMyApplication()
+            .catchError((_) => null);
         if (application != null && mounted) {
           _licenseNumber = application.licenseNumber;
         }
       }
 
-      final canFeature = await SubscriptionService().hasEntitlement(uid, 'featuredListings');
-      final canInsure = await SubscriptionService().hasEntitlement(uid, 'verifiedInsured');
+      final canFeature =
+          await SubscriptionService().hasEntitlement(uid, 'featuredListings');
+      final canInsure =
+          await SubscriptionService().hasEntitlement(uid, 'verifiedInsured');
       if (mounted) {
         _canFeature = canFeature;
         _isInsured = canInsure;
@@ -130,14 +137,17 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
 
   Future<void> _pickAndUploadCoverPhoto() async {
     try {
-      final XFile? image = await _picker.pickImage(source: ImageSource.gallery, imageQuality: 75);
+      final XFile? image = await _picker.pickImage(
+          source: ImageSource.gallery, imageQuality: 75);
       if (image == null) return;
 
       if (!mounted) return;
       setState(() => _isSaving = true);
       final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.uploadingPhotoMessage), backgroundColor: Theme.of(context).colorScheme.primary),
+        SnackBar(
+            content: Text(l10n.uploadingPhotoMessage),
+            backgroundColor: Theme.of(context).colorScheme.primary),
       );
 
       final repo = ref.read(marketplaceRepositoryProvider);
@@ -151,17 +161,24 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
           _coverPhotos.add(url);
         });
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.photoUploadedSuccessMessage), backgroundColor: AppTheme.colors.green),
+          SnackBar(
+              content: Text(l10n.photoUploadedSuccessMessage),
+              backgroundColor: AppTheme.colors.green),
         );
       } else if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.failedToUploadPhotoMessage), backgroundColor: AppTheme.colors.redAccent),
+          SnackBar(
+              content: Text(l10n.failedToUploadPhotoMessage),
+              backgroundColor: AppTheme.colors.redAccent),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.errorGenericMessage(e.toString())), backgroundColor: AppTheme.colors.redAccent),
+          SnackBar(
+              content: Text(AppLocalizations.of(context)!
+                  .errorGenericMessage(e.toString())),
+              backgroundColor: AppTheme.colors.redAccent),
         );
       }
     } finally {
@@ -171,33 +188,44 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
 
   Future<void> _pickAndUploadVehiclePhoto() async {
     try {
-      final XFile? image = await _picker.pickImage(source: ImageSource.gallery, imageQuality: 75);
+      final XFile? image = await _picker.pickImage(
+          source: ImageSource.gallery, imageQuality: 75);
       if (image == null) return;
 
       if (!mounted) return;
       setState(() => _isSaving = true);
       final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.uploadingVehiclePhotoMessage), backgroundColor: Theme.of(context).colorScheme.primary),
+        SnackBar(
+            content: Text(l10n.uploadingVehiclePhotoMessage),
+            backgroundColor: Theme.of(context).colorScheme.primary),
       );
 
       final repo = ref.read(marketplaceRepositoryProvider);
-      final url = await repo.uploadListingPhoto(file: image, photoType: 'vehicle');
+      final url =
+          await repo.uploadListingPhoto(file: image, photoType: 'vehicle');
 
       if (url != null && mounted) {
         setState(() => _vehicleImageUrl = url);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.vehiclePhotoUploadedMessage), backgroundColor: AppTheme.colors.green),
+          SnackBar(
+              content: Text(l10n.vehiclePhotoUploadedMessage),
+              backgroundColor: AppTheme.colors.green),
         );
       } else if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.failedToUploadPhotoMessage), backgroundColor: AppTheme.colors.redAccent),
+          SnackBar(
+              content: Text(l10n.failedToUploadPhotoMessage),
+              backgroundColor: AppTheme.colors.redAccent),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.errorGenericMessage(e.toString())), backgroundColor: AppTheme.colors.redAccent),
+          SnackBar(
+              content: Text(AppLocalizations.of(context)!
+                  .errorGenericMessage(e.toString())),
+              backgroundColor: AppTheme.colors.redAccent),
         );
       }
     } finally {
@@ -238,7 +266,8 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
         guideId: uid,
         displayName: _displayNameController.text.trim(),
         bio: _bioController.text.trim(),
-        profilePhotoUrl: _existingListing?.profilePhotoUrl ?? FirebaseAuth.instance.currentUser?.photoURL,
+        profilePhotoUrl: _existingListing?.profilePhotoUrl ??
+            FirebaseAuth.instance.currentUser?.photoURL,
         licenseNumber: _licenseNumber,
         isInsured: _isInsured,
         coverPhotos: _coverPhotos,
@@ -256,7 +285,8 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
         trustTierPublic: _existingListing?.trustTierPublic ?? 'Strong',
         yearsExperience: _existingListing?.yearsExperience ?? 2,
         vehicleAvailable: _vehicleAvailable,
-        vehicleType: _vehicleAvailable ? _vehicleTypeController.text.trim() : null,
+        vehicleType:
+            _vehicleAvailable ? _vehicleTypeController.text.trim() : null,
         vehicleImageUrl: _vehicleAvailable ? _vehicleImageUrl : null,
         hourlyRate: hourlyRate,
         currency: _currency,
@@ -269,8 +299,11 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
         // save always passes the rules unchanged instead of getting
         // rejected. The actual moderation decision and featured grant now
         // happen server-side via GuideListingController (Laravel admin API).
-        moderationStatus: _existingListing?.moderationStatus ?? 'pending',
-        availability: _existingListing?.availability ?? GuideAvailability(listingId: uid),
+        // Any guide-authored edit must return to moderation. Keeping the old
+        // approved flag would publish changed identity/rates without review.
+        moderationStatus: 'pending',
+        availability:
+            _existingListing?.availability ?? GuideAvailability(listingId: uid),
         isFeatured: _existingListing?.isFeatured ?? false,
         featuredUntil: _existingListing?.featuredUntil,
         isFeaturedRequested: _canFeature && _isFeaturedRequested,
@@ -288,18 +321,27 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
         final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(status == 'published' ? l10n.listingPublishedMessage : l10n.draftSavedMessage),
-            backgroundColor: status == 'published' ? AppTheme.colors.green : AppTheme.colors.blueAccent,
+            content: Text(status == 'published'
+                ? l10n.listingPublishedMessage
+                : l10n.draftSavedMessage),
+            backgroundColor: status == 'published'
+                ? AppTheme.colors.green
+                : AppTheme.colors.blueAccent,
           ),
         );
-        if (status == 'published' && !widget.embedded && Navigator.canPop(context)) {
+        if (status == 'published' &&
+            !widget.embedded &&
+            Navigator.canPop(context)) {
           Navigator.pop(context);
         }
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.failedToSaveListingMessage(e.toString())), backgroundColor: AppTheme.colors.redAccent),
+          SnackBar(
+              content: Text(AppLocalizations.of(context)!
+                  .failedToSaveListingMessage(e.toString())),
+              backgroundColor: AppTheme.colors.redAccent),
         );
       }
     } finally {
@@ -324,7 +366,9 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
     if (_isLoading) {
       return Scaffold(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        body: Center(child: CircularProgressIndicator(color: Theme.of(context).colorScheme.primary)),
+        body: Center(
+            child: CircularProgressIndicator(
+                color: Theme.of(context).colorScheme.primary)),
       );
     }
 
@@ -336,7 +380,11 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
         elevation: 0,
         title: Text(
           l10n.yourListingTitle,
-          style: GoogleFonts.outfit(fontWeight: FontWeight.w800, letterSpacing: -0.5, fontSize: 20, color: AppTheme.textPrimary(context)),
+          style: GoogleFonts.outfit(
+              fontWeight: FontWeight.w800,
+              letterSpacing: -0.5,
+              fontSize: 20,
+              color: AppTheme.textPrimary(context)),
         ),
         centerTitle: false,
       ),
@@ -359,7 +407,8 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
                   label: l10n.displayNameLabel,
                   hint: l10n.displayNameHint,
                   icon: Icons.person_outline,
-                  validator: (v) => v == null || v.isEmpty ? l10n.requiredFieldMessage : null,
+                  validator: (v) =>
+                      v == null || v.isEmpty ? l10n.requiredFieldMessage : null,
                 ),
                 const SizedBox(height: 16),
                 _buildTextField(
@@ -368,10 +417,10 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
                   hint: l10n.aboutMeBioHint,
                   icon: Icons.info_outline,
                   maxLines: 4,
-                  validator: (v) => v == null || v.isEmpty ? l10n.requiredFieldMessage : null,
+                  validator: (v) =>
+                      v == null || v.isEmpty ? l10n.requiredFieldMessage : null,
                 ),
                 const SizedBox(height: 24),
-
                 _buildSectionTitle(l10n.categorySpecialtiesTitle),
                 const SizedBox(height: 12),
                 _buildDropdown(
@@ -406,7 +455,6 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
                   icon: Icons.map_outlined,
                 ),
                 const SizedBox(height: 24),
-
                 _buildSectionTitle(l10n.pricingVehicleTitle),
                 const SizedBox(height: 12),
                 Row(
@@ -419,7 +467,9 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
                         hint: l10n.hourlyRateHint,
                         icon: Icons.attach_money,
                         keyboardType: TextInputType.number,
-                        validator: (v) => v == null || v.isEmpty ? l10n.requiredFieldMessage : null,
+                        validator: (v) => v == null || v.isEmpty
+                            ? l10n.requiredFieldMessage
+                            : null,
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -436,14 +486,21 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
                 ),
                 const SizedBox(height: 16),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   decoration: BoxDecoration(
                     color: AppTheme.surfaceMuted(context),
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: SwitchListTile(
-                    title: Text(l10n.vehicleAvailableForToursLabel, style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.w600)),
-                    subtitle: Text(l10n.provideTransportationLabel, style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 12)),
+                    title: Text(l10n.vehicleAvailableForToursLabel,
+                        style: GoogleFonts.outfit(
+                            color: AppTheme.textPrimary(context),
+                            fontWeight: FontWeight.w600)),
+                    subtitle: Text(l10n.provideTransportationLabel,
+                        style: GoogleFonts.inter(
+                            color: AppTheme.textSecondary(context),
+                            fontSize: 12)),
                     value: _vehicleAvailable,
                     activeThumbColor: Theme.of(context).colorScheme.primary,
                     contentPadding: EdgeInsets.zero,
@@ -462,35 +519,40 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
                   _buildVehiclePhotoPicker(),
                 ],
                 const SizedBox(height: 24),
-
-                _buildSectionTitle(l10n.coverPhotosCountTitle(_coverPhotos.length)),
+                _buildSectionTitle(
+                    l10n.coverPhotosCountTitle(_coverPhotos.length)),
                 const SizedBox(height: 12),
                 _buildCoverPhotosSection(),
                 const SizedBox(height: 24),
-
                 _buildSectionTitle(l10n.availabilityCalendarTitle),
                 const SizedBox(height: 12),
                 _buildAvailabilityButton(context),
                 const SizedBox(height: 24),
-
                 _buildSectionTitle(l10n.visibilityBoostTitle),
                 const SizedBox(height: 12),
                 _buildFeaturedToggle(),
                 const SizedBox(height: 36),
-
                 Row(
                   children: [
                     Expanded(
                       child: OutlinedButton(
-                        onPressed: _isSaving ? null : () => _saveListing(status: 'draft'),
+                        onPressed: _isSaving
+                            ? null
+                            : () => _saveListing(status: 'draft'),
                         style: OutlinedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 16),
-                          side: BorderSide(color: Theme.of(context).colorScheme.primary, width: 1.5),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
+                          side: BorderSide(
+                              color: Theme.of(context).colorScheme.primary,
+                              width: 1.5),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(100)),
                         ),
                         child: Text(
                           l10n.saveDraftButton,
-                          style: GoogleFonts.inter(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.w700, fontSize: 14),
+                          style: GoogleFonts.inter(
+                              color: Theme.of(context).colorScheme.primary,
+                              fontWeight: FontWeight.w700,
+                              fontSize: 14),
                         ),
                       ),
                     ),
@@ -498,19 +560,32 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
                     Expanded(
                       flex: 2,
                       child: ElevatedButton(
-                        onPressed: _isSaving ? null : () => _saveListing(status: 'published'),
+                        onPressed: _isSaving
+                            ? null
+                            : () => _saveListing(status: 'published'),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Theme.of(context).colorScheme.primary,
-                          foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                          backgroundColor:
+                              Theme.of(context).colorScheme.primary,
+                          foregroundColor:
+                              Theme.of(context).colorScheme.onPrimary,
                           padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(100)),
                           elevation: 0,
                         ),
                         child: _isSaving
-                            ? SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Theme.of(context).colorScheme.onPrimary))
+                            ? SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onPrimary))
                             : Text(
                                 l10n.publishListingButton,
-                                style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 14),
+                                style: GoogleFonts.inter(
+                                    fontWeight: FontWeight.w700, fontSize: 14),
                               ),
                       ),
                     ),
@@ -549,19 +624,30 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
       controller: controller,
       maxLines: maxLines,
       keyboardType: keyboardType,
-      style: GoogleFonts.inter(color: AppTheme.textPrimary(context), fontSize: 15),
+      style:
+          GoogleFonts.inter(color: AppTheme.textPrimary(context), fontSize: 15),
       validator: validator,
       decoration: InputDecoration(
         labelText: label,
         hintText: hint,
         labelStyle: GoogleFonts.outfit(color: AppTheme.textSecondary(context)),
-        hintStyle: GoogleFonts.inter(color: AppTheme.textSecondary(context).withValues(alpha: 0.5), fontSize: 13),
-        prefixIcon: Icon(icon, color: Theme.of(context).colorScheme.primary, size: 20),
+        hintStyle: GoogleFonts.inter(
+            color: AppTheme.textSecondary(context).withValues(alpha: 0.5),
+            fontSize: 13),
+        prefixIcon:
+            Icon(icon, color: Theme.of(context).colorScheme.primary, size: 20),
         filled: true,
         fillColor: AppTheme.surfaceMuted(context),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
-        enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
-        focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: Theme.of(context).colorScheme.primary, width: 1.5)),
+        border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: BorderSide.none),
+        enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: BorderSide.none),
+        focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: BorderSide(
+                color: Theme.of(context).colorScheme.primary, width: 1.5)),
       ),
     );
   }
@@ -580,13 +666,20 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
       ),
       child: DropdownButtonFormField<String>(
         initialValue: value,
-        items: items.map((e) => DropdownMenuItem(value: e, child: Text(e, style: GoogleFonts.inter(color: AppTheme.textPrimary(context))))).toList(),
+        items: items
+            .map((e) => DropdownMenuItem(
+                value: e,
+                child: Text(e,
+                    style: GoogleFonts.inter(
+                        color: AppTheme.textPrimary(context)))))
+            .toList(),
         onChanged: onChanged,
         dropdownColor: Theme.of(context).cardColor,
         style: GoogleFonts.inter(color: AppTheme.textPrimary(context)),
         decoration: InputDecoration(
           labelText: label,
-          labelStyle: GoogleFonts.outfit(color: AppTheme.textSecondary(context)),
+          labelStyle:
+              GoogleFonts.outfit(color: AppTheme.textSecondary(context)),
           border: InputBorder.none,
         ),
       ),
@@ -612,18 +705,26 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
             duration: const Duration(milliseconds: 200),
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
             decoration: BoxDecoration(
-              color: isSelected ? Theme.of(context).colorScheme.primary : AppTheme.surfaceMuted(context),
+              color: isSelected
+                  ? Theme.of(context).colorScheme.primary
+                  : AppTheme.surfaceMuted(context),
               borderRadius: BorderRadius.circular(100),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(tourType.icon, size: 16, color: isSelected ? AppTheme.colors.white : AppTheme.textSecondary(context)),
+                Icon(tourType.icon,
+                    size: 16,
+                    color: isSelected
+                        ? AppTheme.colors.white
+                        : AppTheme.textSecondary(context)),
                 const SizedBox(width: 6),
                 Text(
                   tourType.label(l10n),
                   style: GoogleFonts.inter(
-                    color: isSelected ? AppTheme.colors.white : AppTheme.textSecondary(context),
+                    color: isSelected
+                        ? AppTheme.colors.white
+                        : AppTheme.textSecondary(context),
                     fontWeight: FontWeight.w600,
                     fontSize: 13,
                   ),
@@ -654,16 +755,28 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
                     width: 100,
                     height: 100,
                     decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+                      color: Theme.of(context)
+                          .colorScheme
+                          .primary
+                          .withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: Theme.of(context).colorScheme.primary, style: BorderStyle.solid, width: 1.5),
+                      border: Border.all(
+                          color: Theme.of(context).colorScheme.primary,
+                          style: BorderStyle.solid,
+                          width: 1.5),
                     ),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.add_a_photo_outlined, color: Theme.of(context).colorScheme.primary, size: 28),
+                        Icon(Icons.add_a_photo_outlined,
+                            color: Theme.of(context).colorScheme.primary,
+                            size: 28),
                         const SizedBox(height: 6),
-                        Text(AppLocalizations.of(context)!.addPhotoLabel, style: GoogleFonts.inter(color: Theme.of(context).colorScheme.primary, fontSize: 11, fontWeight: FontWeight.w700)),
+                        Text(AppLocalizations.of(context)!.addPhotoLabel,
+                            style: GoogleFonts.inter(
+                                color: Theme.of(context).colorScheme.primary,
+                                fontSize: 11,
+                                fontWeight: FontWeight.w700)),
                       ],
                     ),
                   ),
@@ -691,8 +804,11 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
                       },
                       child: Container(
                         padding: const EdgeInsets.all(4),
-                        decoration: BoxDecoration(color: AppTheme.colors.black87, shape: BoxShape.circle),
-                        child: Icon(Icons.close, color: AppTheme.colors.white, size: 14),
+                        decoration: BoxDecoration(
+                            color: AppTheme.colors.black87,
+                            shape: BoxShape.circle),
+                        child: Icon(Icons.close,
+                            color: AppTheme.colors.white, size: 14),
                       ),
                     ),
                   ),
@@ -712,19 +828,29 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
       decoration: BoxDecoration(
         color: AppTheme.colors.greenAccent.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppTheme.colors.greenAccent.withValues(alpha: 0.3)),
+        border: Border.all(
+            color: AppTheme.colors.greenAccent.withValues(alpha: 0.3)),
       ),
       child: Row(
         children: [
-          Icon(Icons.verified_rounded, color: AppTheme.colors.greenAccent, size: 22),
+          Icon(Icons.verified_rounded,
+              color: AppTheme.colors.greenAccent, size: 22),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(AppLocalizations.of(context)!.verifiedLicenseLabel, style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 11, fontWeight: FontWeight.w600)),
+                Text(AppLocalizations.of(context)!.verifiedLicenseLabel,
+                    style: GoogleFonts.inter(
+                        color: AppTheme.textSecondary(context),
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600)),
                 const SizedBox(height: 2),
-                Text(_licenseNumber!, style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.w700, fontSize: 14)),
+                Text(_licenseNumber!,
+                    style: GoogleFonts.outfit(
+                        color: AppTheme.textPrimary(context),
+                        fontWeight: FontWeight.w700,
+                        fontSize: 14)),
               ],
             ),
           ),
@@ -743,15 +869,21 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Theme.of(context).colorScheme.primary, width: 1.5),
+          border: Border.all(
+              color: Theme.of(context).colorScheme.primary, width: 1.5),
         ),
         child: _vehicleImageUrl == null
             ? Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.add_a_photo_outlined, color: Theme.of(context).colorScheme.primary, size: 28),
+                  Icon(Icons.add_a_photo_outlined,
+                      color: Theme.of(context).colorScheme.primary, size: 28),
                   const SizedBox(height: 8),
-                  Text(AppLocalizations.of(context)!.addVehiclePhotoLabel, style: GoogleFonts.inter(color: Theme.of(context).colorScheme.primary, fontSize: 12, fontWeight: FontWeight.w700)),
+                  Text(AppLocalizations.of(context)!.addVehiclePhotoLabel,
+                      style: GoogleFonts.inter(
+                          color: Theme.of(context).colorScheme.primary,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700)),
                 ],
               )
             : Stack(
@@ -765,8 +897,11 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
                       onTap: () => setState(() => _vehicleImageUrl = null),
                       child: Container(
                         padding: const EdgeInsets.all(6),
-                        decoration: BoxDecoration(color: AppTheme.colors.black87, shape: BoxShape.circle),
-                        child: Icon(Icons.close, color: AppTheme.colors.white, size: 16),
+                        decoration: BoxDecoration(
+                            color: AppTheme.colors.black87,
+                            shape: BoxShape.circle),
+                        child: Icon(Icons.close,
+                            color: AppTheme.colors.white, size: 16),
                       ),
                     ),
                   ),
@@ -793,7 +928,10 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
           color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
-            BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.05), blurRadius: 14, offset: const Offset(0, 5)),
+            BoxShadow(
+                color: AppTheme.colors.black.withValues(alpha: 0.05),
+                blurRadius: 14,
+                offset: const Offset(0, 5)),
           ],
         ),
         child: Row(
@@ -801,23 +939,35 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.12),
+                color: Theme.of(context)
+                    .colorScheme
+                    .primary
+                    .withValues(alpha: 0.12),
                 shape: BoxShape.circle,
               ),
-              child: Icon(Icons.calendar_month_outlined, color: Theme.of(context).colorScheme.primary, size: 24),
+              child: Icon(Icons.calendar_month_outlined,
+                  color: Theme.of(context).colorScheme.primary, size: 24),
             ),
             const SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(AppLocalizations.of(context)!.manageAvailabilityTitle, style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.bold, fontSize: 16)),
+                  Text(AppLocalizations.of(context)!.manageAvailabilityTitle,
+                      style: GoogleFonts.outfit(
+                          color: AppTheme.textPrimary(context),
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16)),
                   const SizedBox(height: 4),
-                  Text(AppLocalizations.of(context)!.manageAvailabilitySubtitle, style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 12)),
+                  Text(AppLocalizations.of(context)!.manageAvailabilitySubtitle,
+                      style: GoogleFonts.inter(
+                          color: AppTheme.textSecondary(context),
+                          fontSize: 12)),
                 ],
               ),
             ),
-            Icon(Icons.arrow_forward_ios_rounded, color: AppTheme.textSecondary(context), size: 16),
+            Icon(Icons.arrow_forward_ios_rounded,
+                color: AppTheme.textSecondary(context), size: 16),
           ],
         ),
       ),
@@ -830,20 +980,28 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: _canFeature ? AppTheme.surfaceMuted(context) : AppTheme.surfaceMuted(context).withValues(alpha: 0.5),
+        color: _canFeature
+            ? AppTheme.surfaceMuted(context)
+            : AppTheme.surfaceMuted(context).withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(16),
-        border: _canFeature ? null : Border.all(color: AppTheme.borderColor(context)),
+        border: _canFeature
+            ? null
+            : Border.all(color: AppTheme.borderColor(context)),
       ),
       child: _canFeature
           ? SwitchListTile(
-              title: Text(l10n.featureThisListingLabel, style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.w600)),
+              title: Text(l10n.featureThisListingLabel,
+                  style: GoogleFonts.outfit(
+                      color: AppTheme.textPrimary(context),
+                      fontWeight: FontWeight.w600)),
               subtitle: Text(
                 isLiveFeatured
                     ? l10n.currentlyFeaturedMessage
                     : (_isFeaturedRequested
                         ? l10n.featureRequestedMessage
                         : l10n.featureRequestPromptMessage),
-                style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 12),
+                style: GoogleFonts.inter(
+                    color: AppTheme.textSecondary(context), fontSize: 12),
               ),
               // isFeatured itself is admin-granted (server-side, via
               // GuideListingController) — this switch only records the
@@ -852,16 +1010,31 @@ class _GuideListingEditorScreenState extends ConsumerState<GuideListingEditorScr
               value: isLiveFeatured || _isFeaturedRequested,
               activeThumbColor: Theme.of(context).colorScheme.primary,
               contentPadding: EdgeInsets.zero,
-              onChanged: isLiveFeatured ? null : (val) => setState(() => _isFeaturedRequested = val),
+              onChanged: isLiveFeatured
+                  ? null
+                  : (val) => setState(() => _isFeaturedRequested = val),
             )
           : ListTile(
               contentPadding: EdgeInsets.zero,
-              leading: Icon(Icons.lock_outline_rounded, color: Theme.of(context).colorScheme.primary, size: 20),
-              title: Text(l10n.featureThisListingLabel, style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.w600)),
-              subtitle: Text(l10n.upgradeToProFeatureMessage, style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 12)),
+              leading: Icon(Icons.lock_outline_rounded,
+                  color: Theme.of(context).colorScheme.primary, size: 20),
+              title: Text(l10n.featureThisListingLabel,
+                  style: GoogleFonts.outfit(
+                      color: AppTheme.textPrimary(context),
+                      fontWeight: FontWeight.w600)),
+              subtitle: Text(l10n.upgradeToProFeatureMessage,
+                  style: GoogleFonts.inter(
+                      color: AppTheme.textSecondary(context), fontSize: 12)),
               trailing: TextButton(
-                onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SubscriptionScreen())),
-                child: Text(l10n.upgradeButtonLabel, style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 12, color: Theme.of(context).colorScheme.primary)),
+                onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (_) => const SubscriptionScreen())),
+                child: Text(l10n.upgradeButtonLabel,
+                    style: GoogleFonts.inter(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 12,
+                        color: Theme.of(context).colorScheme.primary)),
               ),
             ),
     );

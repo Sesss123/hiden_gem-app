@@ -10,6 +10,60 @@ use Illuminate\Support\Facades\Validator;
 
 class BookingController extends Controller
 {
+    public function acceptWithSession(Request $request, string $bookingId, FirestoreService $firestore)
+    {
+        $validator = Validator::make($request->all(), [
+            'amount' => 'required|numeric|min:0.01',
+            'currency' => 'nullable|string|max:10',
+            'session' => 'required|array',
+            'session.sessionId' => ['required', 'string', 'regex:/^TS_[0-9a-fA-F-]{36}$/'],
+            'session.meetingPointName' => 'required|string|max:255',
+            'session.meetingPointLat' => 'required|numeric|between:-90,90',
+            'session.meetingPointLng' => 'required|numeric|between:-180,180',
+            'session.sessionCode' => 'required|string|size:6',
+        ]);
+        if ($validator->fails()) {
+            return response()->json(['error' => 'Validation failed.', 'errors' => $validator->errors()], 422);
+        }
+
+        $booking = $firestore->getDocument('booking_requests', $bookingId);
+        $guideId = (string) $request->user()->firebase_uid;
+        if (!$booking || ($booking['guideId'] ?? null) !== $guideId) {
+            return response()->json(['error' => 'This booking does not belong to you.'], 403);
+        }
+        if (($booking['status'] ?? null) !== 'pending') {
+            return response()->json(['error' => 'This booking has already been responded to.'], 409);
+        }
+
+        $session = $request->input('session');
+        $session['guideId'] = $guideId;
+        $session['touristIds'] = [$booking['touristId']];
+        $session['status'] = 'initial';
+        $session['currentPhase'] = 'assembling';
+        $session['trackingEnabled'] = false;
+        $session['sosActive'] = false;
+        $session['isJoinOpen'] = false;
+
+        $bookingUpdate = [
+            'quotedPrice' => (float) $request->input('amount'),
+            'currency' => $request->input('currency', 'LKR'),
+            'status' => 'session_ready',
+            'linkedSessionId' => $session['sessionId'],
+            'respondedAt' => now()->toIso8601String(),
+            'responseNote' => 'Booking accepted and tour session created.',
+        ];
+
+        $ok = $firestore->commitDocuments([
+            ['collection' => 'tour_sessions', 'id' => $session['sessionId'], 'data' => $session, 'exists' => false],
+            ['collection' => 'booking_requests', 'id' => $bookingId, 'data' => $bookingUpdate,
+             'updateMask' => array_keys($bookingUpdate), 'exists' => true],
+        ]);
+        if (!$ok) {
+            return response()->json(['error' => 'Booking acceptance could not be committed.'], 503);
+        }
+        return response()->json(['status' => 'ok', 'sessionId' => $session['sessionId']]);
+    }
+
     /**
      * GET /v1/bookings/quota-check?guideId=...
      *
@@ -181,11 +235,14 @@ class BookingController extends Controller
         }
 
         try {
-            $firestore->updateBooking($bookingId, [
+            $updated = $firestore->updateBooking($bookingId, [
                 'quotedPrice' => (float) $request->input('amount'),
                 'currency' => $request->input('currency', 'LKR'),
                 'status' => 'accepted',
             ]);
+            if (!$updated) {
+                throw new \RuntimeException('Firestore did not confirm the quote update.');
+            }
         } catch (\Exception $e) {
             Log::error('Booking sendQuote: Firestore update failed', [
                 'guide_id' => $booking['guideId'],

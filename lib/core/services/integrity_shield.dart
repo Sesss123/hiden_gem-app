@@ -7,6 +7,7 @@ import 'package:hidden_gems_sl/core/services/threat_reporter.dart';
 import 'package:hidden_gems_sl/core/config/app_config.dart';
 import 'package:hidden_gems_sl/core/utils/secure_logger.dart';
 import 'dart:io';
+import 'vault_service.dart';
 
 /// [IntegrityShield] — Multi-signal, score-based tamper detection.
 ///
@@ -99,10 +100,12 @@ class IntegrityShield {
       }
 
       // We upload all locally detected signals to the backend.
+      final deviceId = await VaultService.getDeviceId();
       final result = await _functions
-          .httpsCallable('report_forensic_signals')
+          .httpsCallable('evaluate_security_posture')
           .call({
-            'signals': _activeSignals, 
+            'signals': _activeSignals,
+            'deviceId': deviceId, 
             'isSpectre': isSpectre,
             'timestamp': DateTime.now().millisecondsSinceEpoch
           });
@@ -184,6 +187,9 @@ class IntegrityShield {
   }
 
   Future<void> _checkPackageIdentity() async {
+    // Browser builds don't have the Android applicationId. Comparing web
+    // metadata with an Android package name quarantined every Chrome session.
+    if (kIsWeb) return;
     try {
       final info = await PackageInfo.fromPlatform();
       

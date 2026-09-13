@@ -13,7 +13,8 @@ import '../../core/network/secure_http_client.dart';
 import '../../core/services/reverb_channel_service.dart';
 import '../../core/utils/secure_logger.dart';
 
-final marketplaceRepositoryProvider = Provider((ref) => MarketplaceRepository());
+final marketplaceRepositoryProvider =
+    Provider((ref) => MarketplaceRepository());
 
 /// [MarketplaceRepository] — Scalability-hardened data layer.
 ///
@@ -37,8 +38,6 @@ class MarketplaceRepository {
 
   CollectionReference<Map<String, dynamic>> get _listingRef =>
       _firestore.collection('guide_listings');
-
-  static const int _pageSize = 20;
 
   // --- Featured Guides (Hot Data Cache) ---
 
@@ -79,9 +78,12 @@ class MarketplaceRepository {
         _featuredCacheExpiry = DateTime.now().add(const Duration(minutes: 5));
         return _featuredCache!;
       }
-      SecureLogger.warning("Featured listings fetch returned ${response.statusCode}", tag: "Marketplace");
+      SecureLogger.warning(
+          "Featured listings fetch returned ${response.statusCode}",
+          tag: "Marketplace");
     } catch (e) {
-      SecureLogger.warning("Failed to fetch featured listings from backend: $e", tag: "Marketplace");
+      SecureLogger.warning("Failed to fetch featured listings from backend: $e",
+          tag: "Marketplace");
     }
     return _featuredCache ?? [];
   }
@@ -103,9 +105,12 @@ class MarketplaceRepository {
             .map((l) => GuideListing.fromJson(l as Map<String, dynamic>))
             .toList();
         _featuredCacheExpiry = DateTime.now().add(const Duration(minutes: 5));
-        SecureLogger.info("Featured listings updated via Reverb push.", tag: "Marketplace");
+        SecureLogger.info("Featured listings updated via Reverb push.",
+            tag: "Marketplace");
       } catch (e) {
-        SecureLogger.warning("Failed to apply Reverb featured-listings push: $e", tag: "Marketplace");
+        SecureLogger.warning(
+            "Failed to apply Reverb featured-listings push: $e",
+            tag: "Marketplace");
       }
     });
     _reverb!.connect();
@@ -134,78 +139,76 @@ class MarketplaceRepository {
 
   /// First page of a marketplace search. Returns a [MarketplacePage].
   Future<MarketplacePage> searchMarketplace({
+    String query = '',
     String? region,
     String? category,
     String? language,
     bool? vehicleRequired,
     String? tourType,
   }) async {
-    Query query = _buildSearchQuery(
-      region: region,
-      category: category,
-      language: language,
-      vehicleRequired: vehicleRequired,
-      tourType: tourType,
-    );
-
-    final snapshot = await query
-        .limit(_pageSize)
-        .get(const GetOptions(source: Source.serverAndCache));
-
-    return MarketplacePage._fromSnapshot(snapshot, _pageSize);
+    return _searchBackend(
+        query: query,
+        page: 1,
+        region: region,
+        category: category,
+        language: language,
+        vehicleRequired: vehicleRequired,
+        tourType: tourType);
   }
 
   /// Loads the next page of results using a cursor from the previous page.
   Future<MarketplacePage> loadNextPage({
-    required DocumentSnapshot lastDocument,
+    required String query,
+    required int page,
     String? region,
     String? category,
     String? language,
     bool? vehicleRequired,
     String? tourType,
   }) async {
-    Query query = _buildSearchQuery(
-      region: region,
-      category: category,
-      language: language,
-      vehicleRequired: vehicleRequired,
-      tourType: tourType,
-    );
-
-    final snapshot = await query
-        .startAfterDocument(lastDocument)
-        .limit(_pageSize)
-        .get(const GetOptions(source: Source.serverAndCache));
-
-    return MarketplacePage._fromSnapshot(snapshot, _pageSize);
+    return _searchBackend(
+        query: query,
+        page: page,
+        region: region,
+        category: category,
+        language: language,
+        vehicleRequired: vehicleRequired,
+        tourType: tourType);
   }
 
-  Query _buildSearchQuery({
-    String? region,
-    String? category,
-    String? language,
-    bool? vehicleRequired,
-    String? tourType,
-  }) {
-    Query query = _listingRef
-        .where('status', isEqualTo: 'published')
-        .where('moderationStatus', isEqualTo: 'approved');
-
-    if (region != null) query = query.where('regions', arrayContains: region);
-    if (category != null) {
-      query = query.where('guideCategory', isEqualTo: category);
-    }
-    if (language != null) {
-      query = query.where('languages', arrayContains: language);
-    }
-    if (vehicleRequired == true) {
-      query = query.where('vehicleAvailable', isEqualTo: true);
-    }
+  Future<MarketplacePage> _searchBackend(
+      {required String query,
+      required int page,
+      String? region,
+      String? category,
+      String? language,
+      bool? vehicleRequired,
+      String? tourType}) async {
+    final params = <String, String>{'q': query, 'page': '$page'};
+    if (region != null) params['region'] = region;
+    if (category != null) params['category'] = category;
+    if (language != null) params['language'] = language;
+    if (vehicleRequired == true) params['vehicle'] = '1';
     if (tourType != null && kTourTypeFieldKeys.contains(tourType)) {
-      query = query.where(tourType, isEqualTo: true);
+      params['tour_type'] = tourType;
     }
-
-    return query.orderBy('ratingAverage', descending: true);
+    final uri = Uri.parse('${AppConfig.laravelUrl}/listings/search')
+        .replace(queryParameters: params);
+    final response = await SecureHttpClient(http.Client()).get(uri, headers: {
+      'Accept': 'application/json',
+      'X-API-KEY': AppConfig.hiddenGemsApiKey,
+    });
+    if (response.statusCode != 200) {
+      throw Exception('Marketplace search failed (${response.statusCode})');
+    }
+    final data = json.decode(response.body) as Map<String, dynamic>;
+    return MarketplacePage(
+      listings: (data['listings'] as List<dynamic>? ?? [])
+          .map((e) => GuideListing.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      hasMore: data['has_more'] == true,
+      nextPage: (data['next_page'] as num?)?.toInt(),
+    );
   }
 
   // --- Single Listing ---
@@ -225,7 +228,8 @@ class MarketplaceRepository {
           .httpsCallable('track_profile_view')
           .call({'listingId': listingId});
     } catch (e) {
-      SecureLogger.warning("Failed to track profile view: $e", tag: "Marketplace", isBackground: true);
+      SecureLogger.warning("Failed to track profile view: $e",
+          tag: "Marketplace", isBackground: true);
     }
   }
 
@@ -249,7 +253,8 @@ class MarketplaceRepository {
         .set(listing.toJson(), SetOptions(merge: true));
   }
 
-  Future<void> updateAvailability(String listingId, GuideAvailability availability) async {
+  Future<void> updateAvailability(
+      String listingId, GuideAvailability availability) async {
     await _listingRef
         .doc(listingId)
         .set({'availability': availability.toJson()}, SetOptions(merge: true));
@@ -259,7 +264,8 @@ class MarketplaceRepository {
   /// backend's local disk storage — same self-hosted path used for guide
   /// enrollment documents, since Firebase Storage's upload session kept
   /// failing in local dev. Returns the absolute URL, or null on failure.
-  Future<String?> uploadListingPhoto({required XFile file, required String photoType}) async {
+  Future<String?> uploadListingPhoto(
+      {required XFile file, required String photoType}) async {
     try {
       final client = SecureHttpClient(http.Client());
       final uri = Uri.parse('${AppConfig.laravelUrl}/marketplace/photos');
@@ -270,16 +276,19 @@ class MarketplaceRepository {
         ..fields['photo_type'] = photoType
         ..files.add(await http.MultipartFile.fromPath('file', file.path));
 
-      final streamedResponse = await client.send(request).timeout(const Duration(seconds: 30));
+      final streamedResponse =
+          await client.send(request).timeout(const Duration(seconds: 30));
       final response = await http.Response.fromStream(streamedResponse);
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         return data['data']['full_url'] as String?;
       }
-      SecureLogger.error("Listing photo upload returned status ${response.statusCode}: ${response.body}");
+      SecureLogger.error(
+          "Listing photo upload returned status ${response.statusCode}: ${response.body}");
     } catch (e) {
-      SecureLogger.error("Failed to upload listing photo to Laravel Backend: $e");
+      SecureLogger.error(
+          "Failed to upload listing photo to Laravel Backend: $e");
     }
     return null;
   }
@@ -303,7 +312,8 @@ class MarketplaceRepository {
     });
   }
 
-  Future<void> toggleFeatured(String listingId, bool isFeatured, {DateTime? featuredUntil}) async {
+  Future<void> toggleFeatured(String listingId, bool isFeatured,
+      {DateTime? featuredUntil}) async {
     await _listingRef.doc(listingId).update({
       'isFeatured': isFeatured,
       'featuredUntil': isFeatured ? featuredUntil?.toIso8601String() : null,
@@ -315,25 +325,13 @@ class MarketplaceRepository {
 class MarketplacePage {
   final List<GuideListing> listings;
   final bool hasMore;
-  final DocumentSnapshot? lastDocument;
+  final int? nextPage;
 
   const MarketplacePage({
     required this.listings,
     required this.hasMore,
-    this.lastDocument,
+    this.nextPage,
   });
-
-  factory MarketplacePage._fromSnapshot(QuerySnapshot snapshot, int pageSize) {
-    final listings = snapshot.docs
-        .map((doc) => GuideListing.fromJson(doc.data() as Map<String, dynamic>))
-        .toList();
-
-    return MarketplacePage(
-      listings: listings,
-      hasMore: listings.length >= pageSize,
-      lastDocument: snapshot.docs.isNotEmpty ? snapshot.docs.last : null,
-    );
-  }
 
   static const MarketplacePage empty = MarketplacePage(
     listings: [],

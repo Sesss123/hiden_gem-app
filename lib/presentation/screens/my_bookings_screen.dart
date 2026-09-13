@@ -41,7 +41,8 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen> {
       return;
     }
 
-    final bookings = await ref.read(bookingRepositoryProvider).getTouristBookings(uid);
+    final bookings =
+        await ref.read(bookingRepositoryProvider).getTouristBookings(uid);
     final marketplaceRepo = ref.read(marketplaceRepositoryProvider);
 
     final guideIds = bookings.map((b) => b.guideId).whereType<String>().toSet();
@@ -66,13 +67,20 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen> {
         backgroundColor: AppTheme.colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new, size: 20, color: AppTheme.textPrimary(context)),
+          icon: Icon(Icons.arrow_back_ios_new,
+              size: 20, color: AppTheme.textPrimary(context)),
           onPressed: () => Navigator.pop(context),
         ),
-        title: Text(l10n.myBookingsTitle, style: GoogleFonts.outfit(fontWeight: FontWeight.w800, fontSize: 18, color: AppTheme.textPrimary(context))),
+        title: Text(l10n.myBookingsTitle,
+            style: GoogleFonts.outfit(
+                fontWeight: FontWeight.w800,
+                fontSize: 18,
+                color: AppTheme.textPrimary(context))),
       ),
       body: _isLoading
-          ? Center(child: CircularProgressIndicator(color: Theme.of(context).colorScheme.primary))
+          ? Center(
+              child: CircularProgressIndicator(
+                  color: Theme.of(context).colorScheme.primary))
           : _bookings.isEmpty
               ? _buildEmptyState(context, l10n)
               : RefreshIndicator(
@@ -80,9 +88,11 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen> {
                   onRefresh: _load,
                   child: ListView.builder(
                     padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
-                    physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+                    physics: const AlwaysScrollableScrollPhysics(
+                        parent: BouncingScrollPhysics()),
                     itemCount: _bookings.length,
-                    itemBuilder: (context, index) => _buildBookingCard(context, l10n, _bookings[index]),
+                    itemBuilder: (context, index) =>
+                        _buildBookingCard(context, l10n, _bookings[index]),
                   ),
                 ),
     );
@@ -95,14 +105,21 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.event_note_outlined, size: 56, color: AppTheme.textSecondary(context).withValues(alpha: 0.3)),
+            Icon(Icons.event_note_outlined,
+                size: 56,
+                color: AppTheme.textSecondary(context).withValues(alpha: 0.3)),
             const SizedBox(height: 16),
-            Text(l10n.myBookingsEmptyTitle, style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.w700, color: AppTheme.textPrimary(context))),
+            Text(l10n.myBookingsEmptyTitle,
+                style: GoogleFonts.outfit(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                    color: AppTheme.textPrimary(context))),
             const SizedBox(height: 8),
             Text(
               l10n.myBookingsEmptySubtitle,
               textAlign: TextAlign.center,
-              style: GoogleFonts.inter(fontSize: 13, color: AppTheme.textSecondary(context)),
+              style: GoogleFonts.inter(
+                  fontSize: 13, color: AppTheme.textSecondary(context)),
             ),
           ],
         ),
@@ -110,7 +127,8 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen> {
     );
   }
 
-  Widget _buildBookingCard(BuildContext context, AppLocalizations l10n, BookingRequest booking) {
+  Widget _buildBookingCard(
+      BuildContext context, AppLocalizations l10n, BookingRequest booking) {
     final guideName = _guideNames[booking.guideId] ?? l10n.guideFallbackName;
     final status = _StatusInfo.forStatus(booking.status, l10n);
 
@@ -120,7 +138,12 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen> {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(18),
-        boxShadow: [BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.05), blurRadius: 14, offset: const Offset(0, 5))],
+        boxShadow: [
+          BoxShadow(
+              color: AppTheme.colors.black.withValues(alpha: 0.05),
+              blurRadius: 14,
+              offset: const Offset(0, 5))
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -128,25 +151,42 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen> {
           Row(
             children: [
               Expanded(
-                child: Text(guideName, style: GoogleFonts.outfit(fontSize: 15, fontWeight: FontWeight.w700, color: AppTheme.textPrimary(context))),
+                child: Text(guideName,
+                    style: GoogleFonts.outfit(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        color: AppTheme.textPrimary(context))),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                decoration: BoxDecoration(color: status.color.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(100)),
-                child: Text(status.label, style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w700, color: status.color)),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                    color: status.color.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(100)),
+                child: Text(status.label,
+                    style: GoogleFonts.inter(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                        color: status.color)),
               ),
             ],
           ),
           const SizedBox(height: 8),
           Row(
             children: [
-              Icon(Icons.calendar_today_rounded, size: 13, color: AppTheme.textSecondary(context)),
+              Icon(Icons.calendar_today_rounded,
+                  size: 13, color: AppTheme.textSecondary(context)),
               const SizedBox(width: 6),
-              Text(DateFormat('MMM d, yyyy').format(booking.requestedDate), style: GoogleFonts.inter(fontSize: 12, color: AppTheme.textSecondary(context))),
+              Text(DateFormat('MMM d, yyyy').format(booking.requestedDate),
+                  style: GoogleFonts.inter(
+                      fontSize: 12, color: AppTheme.textSecondary(context))),
               const SizedBox(width: 16),
-              Icon(Icons.group_rounded, size: 13, color: AppTheme.textSecondary(context)),
+              Icon(Icons.group_rounded,
+                  size: 13, color: AppTheme.textSecondary(context)),
               const SizedBox(width: 6),
-              Text(l10n.guestCountLabel(booking.guestCount), style: GoogleFonts.inter(fontSize: 12, color: AppTheme.textSecondary(context))),
+              Text(l10n.guestCountLabel(booking.guestCount),
+                  style: GoogleFonts.inter(
+                      fontSize: 12, color: AppTheme.textSecondary(context))),
             ],
           ),
           if (booking.notes != null && booking.notes!.isNotEmpty) ...[
@@ -155,7 +195,10 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen> {
               booking.notes!,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style: GoogleFonts.inter(fontSize: 12, color: AppTheme.textSecondary(context), fontStyle: FontStyle.italic),
+              style: GoogleFonts.inter(
+                  fontSize: 12,
+                  color: AppTheme.textSecondary(context),
+                  fontStyle: FontStyle.italic),
             ),
           ],
           _buildPaymentRow(context, l10n, booking),
@@ -169,9 +212,11 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen> {
   /// (checkout → PayHere → server webhook) is the full source of truth for
   /// whether payment succeeded — this button only launches checkout, it
   /// never marks the booking paid itself.
-  Widget _buildPaymentRow(BuildContext context, AppLocalizations l10n, BookingRequest booking) {
-    final hasPrice = (booking.status == 'accepted' || booking.status == 'session_ready') &&
-        (booking.quotedPrice ?? 0) > 0;
+  Widget _buildPaymentRow(
+      BuildContext context, AppLocalizations l10n, BookingRequest booking) {
+    final hasPrice =
+        (booking.status == 'accepted' || booking.status == 'session_ready') &&
+            (booking.quotedPrice ?? 0) > 0;
     final isPaid = booking.payoutStatus == 'paid';
 
     if (!hasPrice && !isPaid) return const SizedBox.shrink();
@@ -186,7 +231,10 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen> {
         children: [
           Text(
             '$currency ${price.toStringAsFixed(2)}',
-            style: GoogleFonts.outfit(fontSize: 15, fontWeight: FontWeight.w800, color: AppTheme.textPrimary(context)),
+            style: GoogleFonts.outfit(
+                fontSize: 15,
+                fontWeight: FontWeight.w800,
+                color: AppTheme.textPrimary(context)),
           ),
           const Spacer(),
           if (isPaid)
@@ -198,11 +246,18 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen> {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.check_circle_rounded, size: 16, color: AppTheme.colors.green),
+                    Icon(Icons.check_circle_rounded,
+                        size: 16, color: AppTheme.colors.green),
                     const SizedBox(width: 6),
-                    Text(l10n.paymentPaidLabel, style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w700, color: AppTheme.colors.green)),
+                    Text(l10n.paymentPaidLabel,
+                        style: GoogleFonts.inter(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w700,
+                            color: AppTheme.colors.green)),
                     const SizedBox(width: 4),
-                    Icon(Icons.chevron_right_rounded, size: 14, color: AppTheme.colors.green.withValues(alpha: 0.6)),
+                    Icon(Icons.chevron_right_rounded,
+                        size: 14,
+                        color: AppTheme.colors.green.withValues(alpha: 0.6)),
                   ],
                 ),
               ),
@@ -211,21 +266,27 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen> {
             SizedBox(
               height: 32,
               child: ElevatedButton(
-                onPressed: isPayingThis ? null : () => _handlePayNow(booking, l10n),
+                onPressed:
+                    isPayingThis ? null : () => _handlePayNow(booking, l10n),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Theme.of(context).colorScheme.primary,
                   foregroundColor: Theme.of(context).colorScheme.onPrimary,
                   padding: const EdgeInsets.symmetric(horizontal: 16),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(100)),
                   elevation: 0,
                 ),
                 child: isPayingThis
                     ? SizedBox(
                         width: 14,
                         height: 14,
-                        child: CircularProgressIndicator(strokeWidth: 2, color: Theme.of(context).colorScheme.onPrimary),
+                        child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Theme.of(context).colorScheme.onPrimary),
                       )
-                    : Text(l10n.payNowButtonLabel, style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w700)),
+                    : Text(l10n.payNowButtonLabel,
+                        style: GoogleFonts.inter(
+                            fontSize: 12, fontWeight: FontWeight.w700)),
               ),
             ),
         ],
@@ -233,18 +294,28 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen> {
     );
   }
 
-  Future<void> _handlePayNow(BookingRequest booking, AppLocalizations l10n) async {
+  Future<void> _handlePayNow(
+      BookingRequest booking, AppLocalizations l10n) async {
     setState(() => _payingBookingId = booking.bookingId);
     try {
       final quote = await PaymentService.fetchQuote(booking.bookingId);
       if (!mounted) return;
       if (quote == null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.paymentUnavailableError), backgroundColor: AppPalette.error),
+          SnackBar(
+              content: Text(l10n.paymentUnavailableError),
+              backgroundColor: AppPalette.error),
         );
         return;
       }
-      await PaymentService.launchCheckout(booking.bookingId);
+      final launched = await PaymentService.launchCheckout(quote.redirectUrl);
+      if (!launched && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content: Text(l10n.paymentUnavailableError),
+              backgroundColor: AppPalette.error),
+        );
+      }
     } finally {
       if (mounted) setState(() => _payingBookingId = null);
     }
@@ -255,7 +326,8 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen> {
   /// ::notify() — see paidAmount/paymentId/paidAt) — no extra fetch needed.
   /// commissionAmount/guideNetAmount are platform-internal (the guide's own
   /// earnings split), not shown to the tourist; the total they paid is.
-  void _showReceiptSheet(BuildContext context, AppLocalizations l10n, BookingRequest booking) {
+  void _showReceiptSheet(
+      BuildContext context, AppLocalizations l10n, BookingRequest booking) {
     final guideName = _guideNames[booking.guideId] ?? l10n.guideFallbackName;
     final currency = booking.currency ?? 'LKR';
     final paidAmount = booking.paidAmount ?? booking.quotedPrice ?? 0;
@@ -278,32 +350,51 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen> {
               child: Container(
                 width: 40,
                 height: 4,
-                decoration: BoxDecoration(color: Theme.of(sheetContext).dividerColor.withValues(alpha: 0.3), borderRadius: BorderRadius.circular(2)),
+                decoration: BoxDecoration(
+                    color: Theme.of(sheetContext)
+                        .dividerColor
+                        .withValues(alpha: 0.3),
+                    borderRadius: BorderRadius.circular(2)),
               ),
             ),
             const SizedBox(height: 20),
             Row(
               children: [
-                Icon(Icons.receipt_long_rounded, color: AppTheme.colors.green, size: 22),
+                Icon(Icons.receipt_long_rounded,
+                    color: AppTheme.colors.green, size: 22),
                 const SizedBox(width: 10),
-                Text(l10n.receiptTitleLabel, style: GoogleFonts.outfit(fontSize: 17, fontWeight: FontWeight.w800, color: AppTheme.textPrimary(sheetContext))),
+                Text(l10n.receiptTitleLabel,
+                    style: GoogleFonts.outfit(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w800,
+                        color: AppTheme.textPrimary(sheetContext))),
               ],
             ),
             const SizedBox(height: 20),
-            _receiptRow(sheetContext, l10n.receiptReferenceLabel, booking.bookingId),
+            _receiptRow(
+                sheetContext, l10n.receiptReferenceLabel, booking.bookingId),
             _receiptRow(sheetContext, l10n.guideLabelShort, guideName),
             if (booking.paidAt != null)
-              _receiptRow(sheetContext, l10n.receiptPaidOnLabel, DateFormat('MMM d, yyyy • h:mm a').format(booking.paidAt!)),
+              _receiptRow(sheetContext, l10n.receiptPaidOnLabel,
+                  DateFormat('MMM d, yyyy • h:mm a').format(booking.paidAt!)),
             if (booking.paymentId != null && booking.paymentId!.isNotEmpty)
-              _receiptRow(sheetContext, l10n.receiptPaymentIdLabel, booking.paymentId!),
+              _receiptRow(
+                  sheetContext, l10n.receiptPaymentIdLabel, booking.paymentId!),
             const Divider(height: 32),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(l10n.receiptTotalPaidLabel, style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: AppTheme.textSecondary(sheetContext))),
+                Text(l10n.receiptTotalPaidLabel,
+                    style: GoogleFonts.inter(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: AppTheme.textSecondary(sheetContext))),
                 Text(
                   '$currency ${paidAmount.toStringAsFixed(2)}',
-                  style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.w800, color: AppTheme.textPrimary(sheetContext)),
+                  style: GoogleFonts.outfit(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w800,
+                      color: AppTheme.textPrimary(sheetContext)),
                 ),
               ],
             ),
@@ -321,10 +412,16 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen> {
         children: [
           SizedBox(
             width: 110,
-            child: Text(label, style: GoogleFonts.inter(fontSize: 12, color: AppTheme.textSecondary(context))),
+            child: Text(label,
+                style: GoogleFonts.inter(
+                    fontSize: 12, color: AppTheme.textSecondary(context))),
           ),
           Expanded(
-            child: Text(value, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: AppTheme.textPrimary(context))),
+            child: Text(value,
+                style: GoogleFonts.inter(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: AppTheme.textPrimary(context))),
           ),
         ],
       ),
@@ -344,14 +441,17 @@ class _StatusInfo {
       case 'accepted':
         return _StatusInfo(l10n.bookingStatusAcceptedLabel, AppPalette.success);
       case 'session_ready':
-        return _StatusInfo(l10n.bookingStatusSessionReadyLabel, AppPalette.success);
+        return _StatusInfo(
+            l10n.bookingStatusSessionReadyLabel, AppPalette.success);
       case 'declined':
         return _StatusInfo(l10n.bookingStatusDeclinedLabel, AppPalette.error);
       case 'expired':
-        return _StatusInfo(l10n.bookingStatusExpiredLabel, AppPalette.textMuted);
+        return _StatusInfo(
+            l10n.bookingStatusExpiredLabel, AppPalette.textMuted);
       case 'cancelled_by_tourist':
       case 'cancelled_by_guide':
-        return _StatusInfo(l10n.bookingStatusCancelledLabel, AppPalette.textMuted);
+        return _StatusInfo(
+            l10n.bookingStatusCancelledLabel, AppPalette.textMuted);
       case 'completed':
         return _StatusInfo(l10n.bookingStatusCompletedLabel, AppPalette.earth);
       default:

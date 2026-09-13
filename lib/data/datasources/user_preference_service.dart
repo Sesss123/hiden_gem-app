@@ -36,10 +36,15 @@ class UserPreferenceService {
 
   // ── Layer 1: In-Memory Cache ─────────────────────────────────────────────
   static UserProfile? _cachedProfile;
-  static bool _isDirty = false;           // True if cache differs from disk
+  static bool _isDirty = false; // True if cache differs from disk
   static DateTime? _lastFlush;
   static const _flushCooldown = Duration(seconds: 2); // Minimum flush interval
   static bool _pendingFirestoreSync = false;
+  static bool _syncInFlight = false;
+  static final Set<String> _bookmarkAdds = {};
+  static final Set<String> _bookmarkRemoves = {};
+  static final Set<String> _itineraryAdds = {};
+  static final Set<String> _itineraryRemoves = {};
   static StreamSubscription<List<ConnectivityResult>>? _connectivitySub;
   static final _firestoreSyncDebouncer = Debouncer(milliseconds: 3000);
 
@@ -53,17 +58,34 @@ class UserPreferenceService {
   static Future<void> ensureProfileLoaded() async {
     if (_cachedProfile != null) return; // Already loaded
     _cachedProfile = await _loadFromDisk();
-    
+
     try {
-      final pendingRaw = await _secureStorage.read(key: 'pending_firestore_sync');
+      final pendingRaw =
+          await _secureStorage.read(key: 'pending_firestore_sync');
       _pendingFirestoreSync = pendingRaw == 'true';
-    } catch (e, st) { SecureLogger.error("Exception caught: $e\n$st"); }
+      final mutationsRaw =
+          await _secureStorage.read(key: 'pending_firestore_mutations');
+      if (mutationsRaw != null) {
+        final mutations = json.decode(mutationsRaw) as Map<String, dynamic>;
+        _bookmarkAdds
+            .addAll(List<String>.from(mutations['bookmarkAdds'] ?? []));
+        _bookmarkRemoves
+            .addAll(List<String>.from(mutations['bookmarkRemoves'] ?? []));
+        _itineraryAdds
+            .addAll(List<String>.from(mutations['itineraryAdds'] ?? []));
+        _itineraryRemoves
+            .addAll(List<String>.from(mutations['itineraryRemoves'] ?? []));
+      }
+    } catch (e, st) {
+      SecureLogger.error("Exception caught: $e\n$st");
+    }
 
     await _migrateIfNeeded();
     debugPrint('[UPS] Profile loaded. uid=${_cachedProfile?.uid}');
 
     if (_pendingFirestoreSync) {
-      debugPrint('[UPS] Pending firestore sync detected. Retrying sync in background.');
+      debugPrint(
+          '[UPS] Pending firestore sync detected. Retrying sync in background.');
       syncToFirestore();
     }
 
@@ -71,12 +93,12 @@ class UserPreferenceService {
     _connectivitySub?.cancel();
     _connectivitySub = Connectivity().onConnectivityChanged.listen((results) {
       if (!results.contains(ConnectivityResult.none) && _pendingFirestoreSync) {
-        debugPrint('[UPS] Connectivity restored! Replaying pending offline wishlist/itinerary sync to Firestore.');
+        debugPrint(
+            '[UPS] Connectivity restored! Replaying pending offline wishlist/itinerary sync to Firestore.');
         syncToFirestore();
       }
     });
   }
-
 
   // ── Public Read API ──────────────────────────────────────────────────────
 
@@ -91,7 +113,8 @@ class UserPreferenceService {
   /// Saves a complete profile. Used for wholesale replacements (e.g., after login sync).
   static Future<void> saveProfile(UserProfile profile) async {
     _cachedProfile = profile;
-    await _flushToDisk(force: true); // Full replacement — always flush immediately
+    await _flushToDisk(
+        force: true); // Full replacement — always flush immediately
   }
 
   /// Stamps the local profile with the just-authenticated user's real uid.
@@ -108,9 +131,21 @@ class UserPreferenceService {
   }
 
   static Future<void> clearProfile() async {
+    _firestoreSyncDebouncer.cancel();
+    await _connectivitySub?.cancel();
+    _connectivitySub = null;
+    _pendingFirestoreSync = false;
+    _syncInFlight = false;
+    _bookmarkAdds.clear();
+    _bookmarkRemoves.clear();
+    _itineraryAdds.clear();
+    _itineraryRemoves.clear();
     _cachedProfile = null;
     _isDirty = false;
+    _lastFlush = null;
     await _secureStorage.delete(key: _profileKey);
+    await _secureStorage.delete(key: 'pending_firestore_sync');
+    await _secureStorage.delete(key: 'pending_firestore_mutations');
     debugPrint('[UPS] Profile cleared.');
   }
 
@@ -145,11 +180,16 @@ class UserPreferenceService {
     _mutate((p) {
       if (isNowBookmarked) {
         p.bookmarkedPlaces.add(placeId);
+        _bookmarkRemoves.remove(placeId);
+        _bookmarkAdds.add(placeId);
       } else {
         p.bookmarkedPlaces.remove(placeId);
+        _bookmarkAdds.remove(placeId);
+        _bookmarkRemoves.add(placeId);
       }
     });
     await _flushToDisk(force: true);
+    await _persistPendingMutations();
     _scheduleFirestoreSync();
     return isNowBookmarked;
   }
@@ -161,11 +201,16 @@ class UserPreferenceService {
     _mutate((p) {
       if (isNowAdded) {
         p.itineraryPlaceIds.add(placeId);
+        _itineraryRemoves.remove(placeId);
+        _itineraryAdds.add(placeId);
       } else {
         p.itineraryPlaceIds.remove(placeId);
+        _itineraryAdds.remove(placeId);
+        _itineraryRemoves.add(placeId);
       }
     });
     await _flushToDisk(force: true);
+    await _persistPendingMutations();
     _scheduleFirestoreSync();
     return isNowAdded;
   }
@@ -328,30 +373,86 @@ class UserPreferenceService {
 
   /// Forces sync of the local profile configuration to Firestore if Firebase is ready and user is logged in
   static Future<void> syncToFirestore() async {
-    final profile = _cachedProfile;
-    if (profile == null) return;
+    if (_cachedProfile == null || _syncInFlight || !_hasPendingMutations)
+      return;
 
     if (Firebase.apps.isNotEmpty) {
+      _syncInFlight = true;
+      final bookmarkAdds = Set<String>.from(_bookmarkAdds);
+      final bookmarkRemoves = Set<String>.from(_bookmarkRemoves);
+      final itineraryAdds = Set<String>.from(_itineraryAdds);
+      final itineraryRemoves = Set<String>.from(_itineraryRemoves);
       try {
         final currentUser = FirebaseAuth.instance.currentUser;
         if (currentUser != null) {
-          await FirebaseFirestore.instance
+          final ref = FirebaseFirestore.instance
               .collection('users')
-              .doc(currentUser.uid)
-              .set({
-            'bookmarkedPlaces': profile.bookmarkedPlaces,
-            'itineraryPlaceIds': profile.itineraryPlaceIds,
-          }, SetOptions(merge: true));
-          _pendingFirestoreSync = false;
-          await _secureStorage.write(key: 'pending_firestore_sync', value: 'false');
-          debugPrint('[UPS] Local profile successfully synchronized to Firestore.');
+              .doc(currentUser.uid);
+          await FirebaseFirestore.instance.runTransaction((transaction) async {
+            final snapshot = await transaction.get(ref);
+            final data = snapshot.data() ?? const <String, dynamic>{};
+            final serverBookmarks =
+                Set<String>.from(data['bookmarkedPlaces'] ?? const []);
+            final serverItinerary =
+                Set<String>.from(data['itineraryPlaceIds'] ?? const []);
+            serverBookmarks
+              ..removeAll(bookmarkRemoves)
+              ..addAll(bookmarkAdds);
+            serverItinerary
+              ..removeAll(itineraryRemoves)
+              ..addAll(itineraryAdds);
+            transaction.set(
+              ref,
+              {
+                'bookmarkedPlaces': serverBookmarks.toList(),
+                'itineraryPlaceIds': serverItinerary.toList(),
+              },
+              SetOptions(merge: true),
+            );
+          });
+          _bookmarkAdds.removeAll(bookmarkAdds);
+          _bookmarkRemoves.removeAll(bookmarkRemoves);
+          _itineraryAdds.removeAll(itineraryAdds);
+          _itineraryRemoves.removeAll(itineraryRemoves);
+          await _persistPendingMutations();
+          debugPrint(
+              '[UPS] Local profile successfully synchronized to Firestore.');
         }
       } catch (e) {
         _pendingFirestoreSync = true;
-        await _secureStorage.write(key: 'pending_firestore_sync', value: 'true');
+        await _persistPendingMutations();
         debugPrint('[UPS] Firestore sync failed: $e. Queued update locally.');
+      } finally {
+        _syncInFlight = false;
       }
     }
+  }
+
+  static bool get _hasPendingMutations =>
+      _bookmarkAdds.isNotEmpty ||
+      _bookmarkRemoves.isNotEmpty ||
+      _itineraryAdds.isNotEmpty ||
+      _itineraryRemoves.isNotEmpty;
+
+  static Future<void> _persistPendingMutations() async {
+    _pendingFirestoreSync = _hasPendingMutations;
+    await _secureStorage.write(
+      key: 'pending_firestore_sync',
+      value: _pendingFirestoreSync.toString(),
+    );
+    if (!_pendingFirestoreSync) {
+      await _secureStorage.delete(key: 'pending_firestore_mutations');
+      return;
+    }
+    await _secureStorage.write(
+      key: 'pending_firestore_mutations',
+      value: json.encode({
+        'bookmarkAdds': _bookmarkAdds.toList(),
+        'bookmarkRemoves': _bookmarkRemoves.toList(),
+        'itineraryAdds': _itineraryAdds.toList(),
+        'itineraryRemoves': _itineraryRemoves.toList(),
+      }),
+    );
   }
 
   /// Reads profile from disk — only called once at startup.

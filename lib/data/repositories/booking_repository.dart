@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../models/booking_request.dart';
+import '../models/tour_session.dart';
 import '../../core/utils/secure_logger.dart';
 import '../../core/config/app_config.dart';
 import '../../core/network/secure_http_client.dart';
@@ -78,16 +79,20 @@ class BookingRepository {
         await _firestore.collection('user_notifications').add({
           'recipientId': request.guideId,
           'title': '📅 New Booking Request!',
-          'body': 'You have received a tour request for ${request.guestCount} guests on ${request.requestedDate.toString().split(' ')[0]}.',
+          'body':
+              'You have received a tour request for ${request.guestCount} guests on ${request.requestedDate.toString().split(' ')[0]}.',
           'type': 'new_booking',
           'bookingId': doc.id,
           'createdAt': FieldValue.serverTimestamp(),
           'isRead': false,
           'isPriority': isPriority,
         });
-        SecureLogger.info("Dispatched new_booking notification to guide: ${request.guideId}", tag: "Booking");
+        SecureLogger.info(
+            "Dispatched new_booking notification to guide: ${request.guideId}",
+            tag: "Booking");
       } catch (e) {
-        SecureLogger.warning("Failed to dispatch booking notification: $e", tag: "Booking");
+        SecureLogger.warning("Failed to dispatch booking notification: $e",
+            tag: "Booking");
       }
     }
 
@@ -97,7 +102,8 @@ class BookingRepository {
   Future<bool> _checkPriorityLeads(String guideId) async {
     try {
       final client = SecureHttpClient(http.Client());
-      final uri = Uri.parse('${AppConfig.laravelUrl}/bookings/priority-check?guideId=$guideId');
+      final uri = Uri.parse(
+          '${AppConfig.laravelUrl}/bookings/priority-check?guideId=$guideId');
       final response = await client.get(
         uri,
         headers: {
@@ -116,23 +122,28 @@ class BookingRepository {
     return false;
   }
 
-  Future<void> _notifyBackendOfNewBooking(String bookingId, String guideId) async {
+  Future<void> _notifyBackendOfNewBooking(
+      String bookingId, String guideId) async {
     // Increments guide_listings.bookingRequestsCount server-side —
     // firestore.rules only allows the listing owner (the guide) to write
     // that field, and the tourist submitting the booking isn't the owner.
     try {
       final client = SecureHttpClient(http.Client());
-      final uri = Uri.parse('${AppConfig.laravelUrl}/bookings/$bookingId/notify-guide');
-      await client.post(
-        uri,
-        headers: {
-          'Content-Type': 'application/json',
-          'X-API-KEY': AppConfig.hiddenGemsApiKey,
-        },
-        body: json.encode({'guideId': guideId}),
-      ).timeout(const Duration(seconds: 8));
+      final uri =
+          Uri.parse('${AppConfig.laravelUrl}/bookings/$bookingId/notify-guide');
+      await client
+          .post(
+            uri,
+            headers: {
+              'Content-Type': 'application/json',
+              'X-API-KEY': AppConfig.hiddenGemsApiKey,
+            },
+            body: json.encode({'guideId': guideId}),
+          )
+          .timeout(const Duration(seconds: 8));
     } catch (e) {
-      SecureLogger.warning("Failed to increment booking count: $e", tag: "Booking");
+      SecureLogger.warning("Failed to increment booking count: $e",
+          tag: "Booking");
     }
   }
 
@@ -168,7 +179,8 @@ class BookingRepository {
           'isRead': false,
         });
       } catch (e) {
-        SecureLogger.warning("Failed to notify tourist of booking response: $e", tag: "Booking");
+        SecureLogger.warning("Failed to notify tourist of booking response: $e",
+            tag: "Booking");
       }
     }
   }
@@ -185,7 +197,8 @@ class BookingRepository {
   /// _inboxStreamCache above. Capped at the 300 most recent bookings
   /// (createdAt desc); a guide's actionable inbox/earnings/clients views
   /// only ever need recent history, not an unbounded years-long feed.
-  Stream<List<BookingRequest>> getInbox(String ownerId, {bool isOperator = false}) {
+  Stream<List<BookingRequest>> getInbox(String ownerId,
+      {bool isOperator = false}) {
     final cacheKey = '${isOperator ? 'op' : 'guide'}_$ownerId';
     final cached = _inboxStreamCache[cacheKey];
     if (cached != null) return cached;
@@ -199,7 +212,10 @@ class BookingRepository {
     query = query.orderBy('createdAt', descending: true).limit(300);
 
     final stream = query.snapshots().map((snapshot) {
-      return snapshot.docs.map((doc) => BookingRequest.fromJson(doc.data() as Map<String, dynamic>)).toList();
+      return snapshot.docs
+          .map((doc) =>
+              BookingRequest.fromJson(doc.data() as Map<String, dynamic>))
+          .toList();
     }).asBroadcastStream();
 
     _inboxStreamCache[cacheKey] = stream;
@@ -220,8 +236,11 @@ class BookingRepository {
   /// while the screen happens to be open; re-fetch on screen open or
   /// pull-to-refresh is enough.
   Future<List<BookingRequest>> getTouristBookings(String touristId) async {
-    final snapshot = await _bookingRef.where('touristId', isEqualTo: touristId).get();
-    final docs = snapshot.docs.map((doc) => BookingRequest.fromJson(doc.data())).toList();
+    final snapshot =
+        await _bookingRef.where('touristId', isEqualTo: touristId).get();
+    final docs = snapshot.docs
+        .map((doc) => BookingRequest.fromJson(doc.data()))
+        .toList();
     docs.sort((a, b) => b.createdAt.compareTo(a.createdAt));
     return docs;
   }
@@ -244,7 +263,8 @@ class BookingRepository {
     // works the same as a Timestamp bound would.
     final query = await _bookingRef
         .where('guideId', isEqualTo: guideId)
-        .where('createdAt', isGreaterThanOrEqualTo: startOfMonth.toIso8601String())
+        .where('createdAt',
+            isGreaterThanOrEqualTo: startOfMonth.toIso8601String())
         .count()
         .get();
 
@@ -259,7 +279,8 @@ class BookingRepository {
   Future<bool> checkMonthlyQuota(String guideId) async {
     try {
       final client = SecureHttpClient(http.Client());
-      final uri = Uri.parse('${AppConfig.laravelUrl}/bookings/quota-check?guideId=$guideId');
+      final uri = Uri.parse(
+          '${AppConfig.laravelUrl}/bookings/quota-check?guideId=$guideId');
       final response = await client.get(
         uri,
         headers: {
@@ -269,14 +290,18 @@ class BookingRepository {
       ).timeout(const Duration(seconds: 10));
 
       if (response.statusCode != 200) {
-        SecureLogger.warning("Quota check failed (${response.statusCode}), allowing booking to proceed", tag: "Booking");
+        SecureLogger.warning(
+            "Quota check failed (${response.statusCode}), allowing booking to proceed",
+            tag: "Booking");
         return false;
       }
 
       final data = json.decode(response.body) as Map<String, dynamic>;
       return data['quotaExceeded'] as bool? ?? false;
     } catch (e) {
-      SecureLogger.warning("Quota check failed: $e, allowing booking to proceed", tag: "Booking");
+      SecureLogger.warning(
+          "Quota check failed: $e, allowing booking to proceed",
+          tag: "Booking");
       return false;
     }
   }
@@ -294,14 +319,16 @@ class BookingRepository {
   }) async {
     final client = SecureHttpClient(http.Client());
     final uri = Uri.parse('${AppConfig.laravelUrl}/bookings/$bookingId/quote');
-    final response = await client.post(
-      uri,
-      headers: {
-        'Content-Type': 'application/json',
-        'X-API-KEY': AppConfig.hiddenGemsApiKey,
-      },
-      body: json.encode({'amount': amount, 'currency': currency}),
-    ).timeout(const Duration(seconds: 10));
+    final response = await client
+        .post(
+          uri,
+          headers: {
+            'Content-Type': 'application/json',
+            'X-API-KEY': AppConfig.hiddenGemsApiKey,
+          },
+          body: json.encode({'amount': amount, 'currency': currency}),
+        )
+        .timeout(const Duration(seconds: 10));
 
     if (response.statusCode != 200) {
       String message = 'Failed to send quote (${response.statusCode})';
@@ -310,6 +337,32 @@ class BookingRepository {
         message = data['error'] as String? ?? message;
       } catch (_) {}
       throw Exception(message);
+    }
+  }
+
+  Future<void> acceptWithSession({
+    required String bookingId,
+    required double amount,
+    required TourSession session,
+    String currency = 'LKR',
+  }) async {
+    final response = await SecureHttpClient(http.Client())
+        .post(
+          Uri.parse(
+              '${AppConfig.laravelUrl}/bookings/$bookingId/accept-with-session'),
+          headers: {
+            'Content-Type': 'application/json',
+            'X-API-KEY': AppConfig.hiddenGemsApiKey
+          },
+          body: json.encode({
+            'amount': amount,
+            'currency': currency,
+            'session': session.toJson()
+          }),
+        )
+        .timeout(const Duration(seconds: 15));
+    if (response.statusCode != 200) {
+      throw Exception('Could not accept booking (${response.statusCode}).');
     }
   }
 }

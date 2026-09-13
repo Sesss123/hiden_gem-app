@@ -137,6 +137,14 @@
   "travelModeBike": "Bike",
   "travelModeCar": "Car",
   "openInMaps": "Open in Maps",
+  "nearbyNowLabel": "{km} km away — nearby now",
+  "@nearbyNowLabel": {
+    "placeholders": {
+      "km": {
+        "type": "String"
+      }
+    }
+  },
   "couldNotOpenMaps": "Could not open a maps app on this device.",
   "photosLabel": "Photos",
   "scheduleOngoingLabel": "Ongoing — date to be announced",

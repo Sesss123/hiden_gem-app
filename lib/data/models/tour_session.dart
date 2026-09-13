@@ -1,6 +1,7 @@
 class TourSession {
   final String sessionId;
   final String guideId;
+  final String? guideName;
   final List<String> touristIds;
   final String meetingPointName;
   final double meetingPointLat;
@@ -8,7 +9,8 @@ class TourSession {
   final String? vehicleId;
   final String? vehicleNumber;
   final String status; // initial, active, completed, cancelled
-  final String currentPhase; // assembling, en_route, at_site, break_time, returning
+  final String
+      currentPhase; // assembling, en_route, at_site, break_time, returning
   final String? sessionCode;
   final bool trackingEnabled;
   final bool sosActive;
@@ -31,9 +33,10 @@ class TourSession {
   final int redeemedCount;
 
   // Phase C: Completion Integrity
-  final String? completionStatus; // completed_normally, completed_with_incident, cancelled_by_guide, aborted_safety
+  final String?
+      completionStatus; // completed_normally, completed_with_incident, cancelled_by_guide, aborted_safety
   final DateTime? completedAt;
-  final String? completedBy; 
+  final String? completedBy;
   final DateTime? completionVerifiedAt;
   final DateTime? reviewWindowEndsAt;
   final List<String> reviewEligibleTouristIds; // Immutable after session close
@@ -45,6 +48,7 @@ class TourSession {
   TourSession({
     required this.sessionId,
     required this.guideId,
+    this.guideName,
     this.touristIds = const [],
     required this.meetingPointName,
     required this.meetingPointLat,
@@ -84,90 +88,105 @@ class TourSession {
   });
 
   Map<String, dynamic> toJson() => {
-    'sessionId': sessionId,
-    'guideId': guideId,
-    'touristIds': touristIds,
-    'meetingPointName': meetingPointName,
-    'meetingPointLat': meetingPointLat,
-    'meetingPointLng': meetingPointLng,
-    'vehicleId': vehicleId,
-    'vehicleNumber': vehicleNumber,
-    'status': status,
-    'currentPhase': currentPhase,
-    'sessionCode': sessionCode,
-    'trackingEnabled': trackingEnabled,
-    'sosActive': sosActive,
-    'startedAt': startedAt?.toIso8601String(),
-    'endedAt': endedAt?.toIso8601String(),
-    'maxTourists': maxTourists,
-    'notes': notes,
-    'lastGuideLat': lastGuideLat,
-    'lastGuideLng': lastGuideLng,
-    'lastVehicleLat': lastVehicleLat,
-    'lastVehicleLng': lastVehicleLng,
-    'meetingPointVersion': meetingPointVersion,
-    'isLocked': isLocked,
-    'legacyBatchId': legacyBatchId,
-    'completionStatus': completionStatus,
-    'completedAt': completedAt?.toIso8601String(),
-    'completedBy': completedBy,
-    'completionVerifiedAt': completionVerifiedAt?.toIso8601String(),
-    'reviewWindowEndsAt': reviewWindowEndsAt?.toIso8601String(),
-    'reviewEligibleTouristIds': reviewEligibleTouristIds,
-    'incidentCount': incidentCount,
-    'criticalIncidentCount': criticalIncidentCount,
-    'sessionHealthScore': sessionHealthScore,
-    'isReviewEnabled': isReviewEnabled,
-    'joinToken': joinToken,
-    'tokenExpiresAt': tokenExpiresAt?.toIso8601String(),
-    'isJoinOpen': isJoinOpen,
-    'redeemedCount': redeemedCount,
-  };
+        'sessionId': sessionId,
+        'guideId': guideId,
+        'guideName': guideName,
+        'touristIds': touristIds,
+        'meetingPointName': meetingPointName,
+        'meetingPointLat': meetingPointLat,
+        'meetingPointLng': meetingPointLng,
+        'vehicleId': vehicleId,
+        'vehicleNumber': vehicleNumber,
+        'status': status,
+        'currentPhase': currentPhase,
+        'sessionCode': sessionCode,
+        'trackingEnabled': trackingEnabled,
+        'sosActive': sosActive,
+        'startedAt': startedAt?.toIso8601String(),
+        'endedAt': endedAt?.toIso8601String(),
+        'maxTourists': maxTourists,
+        'notes': notes,
+        'lastGuideLat': lastGuideLat,
+        'lastGuideLng': lastGuideLng,
+        'lastVehicleLat': lastVehicleLat,
+        'lastVehicleLng': lastVehicleLng,
+        'meetingPointVersion': meetingPointVersion,
+        'isLocked': isLocked,
+        'legacyBatchId': legacyBatchId,
+        'completionStatus': completionStatus,
+        'completedAt': completedAt?.toIso8601String(),
+        'completedBy': completedBy,
+        'completionVerifiedAt': completionVerifiedAt?.toIso8601String(),
+        'reviewWindowEndsAt': reviewWindowEndsAt?.toIso8601String(),
+        'reviewEligibleTouristIds': reviewEligibleTouristIds,
+        'incidentCount': incidentCount,
+        'criticalIncidentCount': criticalIncidentCount,
+        'sessionHealthScore': sessionHealthScore,
+        'isReviewEnabled': isReviewEnabled,
+        'joinToken': joinToken,
+        'tokenExpiresAt': tokenExpiresAt?.toIso8601String(),
+        'isJoinOpen': isJoinOpen,
+        'redeemedCount': redeemedCount,
+      };
 
   factory TourSession.fromJson(Map<String, dynamic> json) => TourSession(
-    sessionId: json['sessionId'],
-    guideId: json['guideId'],
-    touristIds: List<String>.from(json['touristIds'] ?? []),
-    meetingPointName: json['meetingPointName'],
-    meetingPointLat: (json['meetingPointLat'] ?? 0.0).toDouble(),
-    meetingPointLng: (json['meetingPointLng'] ?? 0.0).toDouble(),
-    vehicleId: json['vehicleId'],
-    vehicleNumber: json['vehicleNumber'],
-    status: json['status'] ?? 'initial',
-    currentPhase: json['currentPhase'] ?? 'assembling',
-    sessionCode: json['sessionCode'],
-    trackingEnabled: json['trackingEnabled'] ?? false,
-    sosActive: json['sosActive'] ?? false,
-    startedAt: json['startedAt'] != null ? DateTime.parse(json['startedAt']) : null,
-    endedAt: json['endedAt'] != null ? DateTime.parse(json['endedAt']) : null,
-    maxTourists: json['maxTourists'] ?? 10,
-    notes: json['notes'],
-    lastGuideLat: (json['lastGuideLat'])?.toDouble(),
-    lastGuideLng: (json['lastGuideLng'])?.toDouble(),
-    lastVehicleLat: (json['lastVehicleLat'])?.toDouble(),
-    lastVehicleLng: (json['lastVehicleLng'])?.toDouble(),
-    meetingPointVersion: json['meetingPointVersion'] ?? 0,
-    isLocked: json['isLocked'] ?? false,
-    legacyBatchId: json['legacyBatchId'],
-    completionStatus: json['completionStatus'],
-    completedAt: json['completedAt'] != null ? DateTime.parse(json['completedAt']) : null,
-    completedBy: json['completedBy'],
-    completionVerifiedAt: json['completionVerifiedAt'] != null ? DateTime.parse(json['completionVerifiedAt']) : null,
-    reviewWindowEndsAt: json['reviewWindowEndsAt'] != null ? DateTime.parse(json['reviewWindowEndsAt']) : null,
-    reviewEligibleTouristIds: List<String>.from(json['reviewEligibleTouristIds'] ?? []),
-    incidentCount: json['incidentCount'] ?? 0,
-    criticalIncidentCount: json['criticalIncidentCount'] ?? 0,
-    sessionHealthScore: (json['sessionHealthScore'] ?? 100.0).toDouble(),
-    isReviewEnabled: json['isReviewEnabled'] ?? true,
-    joinToken: json['joinToken'],
-    tokenExpiresAt: json['tokenExpiresAt'] != null ? DateTime.parse(json['tokenExpiresAt']) : null,
-    isJoinOpen: json['isJoinOpen'] ?? false,
-    redeemedCount: json['redeemedCount'] ?? 0,
-  );
+        sessionId: json['sessionId'],
+        guideId: json['guideId'],
+        guideName: json['guideName'],
+        touristIds: List<String>.from(json['touristIds'] ?? []),
+        meetingPointName: json['meetingPointName'],
+        meetingPointLat: (json['meetingPointLat'] ?? 0.0).toDouble(),
+        meetingPointLng: (json['meetingPointLng'] ?? 0.0).toDouble(),
+        vehicleId: json['vehicleId'],
+        vehicleNumber: json['vehicleNumber'],
+        status: json['status'] ?? 'initial',
+        currentPhase: json['currentPhase'] ?? 'assembling',
+        sessionCode: json['sessionCode'],
+        trackingEnabled: json['trackingEnabled'] ?? false,
+        sosActive: json['sosActive'] ?? false,
+        startedAt: json['startedAt'] != null
+            ? DateTime.parse(json['startedAt'])
+            : null,
+        endedAt:
+            json['endedAt'] != null ? DateTime.parse(json['endedAt']) : null,
+        maxTourists: json['maxTourists'] ?? 10,
+        notes: json['notes'],
+        lastGuideLat: (json['lastGuideLat'])?.toDouble(),
+        lastGuideLng: (json['lastGuideLng'])?.toDouble(),
+        lastVehicleLat: (json['lastVehicleLat'])?.toDouble(),
+        lastVehicleLng: (json['lastVehicleLng'])?.toDouble(),
+        meetingPointVersion: json['meetingPointVersion'] ?? 0,
+        isLocked: json['isLocked'] ?? false,
+        legacyBatchId: json['legacyBatchId'],
+        completionStatus: json['completionStatus'],
+        completedAt: json['completedAt'] != null
+            ? DateTime.parse(json['completedAt'])
+            : null,
+        completedBy: json['completedBy'],
+        completionVerifiedAt: json['completionVerifiedAt'] != null
+            ? DateTime.parse(json['completionVerifiedAt'])
+            : null,
+        reviewWindowEndsAt: json['reviewWindowEndsAt'] != null
+            ? DateTime.parse(json['reviewWindowEndsAt'])
+            : null,
+        reviewEligibleTouristIds:
+            List<String>.from(json['reviewEligibleTouristIds'] ?? []),
+        incidentCount: json['incidentCount'] ?? 0,
+        criticalIncidentCount: json['criticalIncidentCount'] ?? 0,
+        sessionHealthScore: (json['sessionHealthScore'] ?? 100.0).toDouble(),
+        isReviewEnabled: json['isReviewEnabled'] ?? true,
+        joinToken: json['joinToken'],
+        tokenExpiresAt: json['tokenExpiresAt'] != null
+            ? DateTime.parse(json['tokenExpiresAt'])
+            : null,
+        isJoinOpen: json['isJoinOpen'] ?? false,
+        redeemedCount: json['redeemedCount'] ?? 0,
+      );
 
   TourSession copyWith({
     String? sessionId,
     String? guideId,
+    String? guideName,
     List<String>? touristIds,
     String? meetingPointName,
     double? meetingPointLat,
@@ -208,6 +227,7 @@ class TourSession {
     return TourSession(
       sessionId: sessionId ?? this.sessionId,
       guideId: guideId ?? this.guideId,
+      guideName: guideName ?? this.guideName,
       touristIds: touristIds ?? this.touristIds,
       meetingPointName: meetingPointName ?? this.meetingPointName,
       meetingPointLat: meetingPointLat ?? this.meetingPointLat,
@@ -235,9 +255,11 @@ class TourSession {
       completedBy: completedBy ?? this.completedBy,
       completionVerifiedAt: completionVerifiedAt ?? this.completionVerifiedAt,
       reviewWindowEndsAt: reviewWindowEndsAt ?? this.reviewWindowEndsAt,
-      reviewEligibleTouristIds: reviewEligibleTouristIds ?? this.reviewEligibleTouristIds,
+      reviewEligibleTouristIds:
+          reviewEligibleTouristIds ?? this.reviewEligibleTouristIds,
       incidentCount: incidentCount ?? this.incidentCount,
-      criticalIncidentCount: criticalIncidentCount ?? this.criticalIncidentCount,
+      criticalIncidentCount:
+          criticalIncidentCount ?? this.criticalIncidentCount,
       sessionHealthScore: sessionHealthScore ?? this.sessionHealthScore,
       isReviewEnabled: isReviewEnabled ?? this.isReviewEnabled,
       joinToken: joinToken ?? this.joinToken,
@@ -247,4 +269,3 @@ class TourSession {
     );
   }
 }
-

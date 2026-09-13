@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'integrity_shield.dart';
 import 'secure_entitlements.dart';
+import '../../data/datasources/auth_service.dart';
 
 /// [SessionQuarantine] — Automatic suspicious session containment.
 ///
@@ -14,7 +15,7 @@ import 'secure_entitlements.dart';
 ///
 ///   Level 0 — Normal       (score < 30):  Full access
 ///   Level 1 — Soft Limit   (score 30-59): Limit some features silently
-///   Level 2 — Restricted   (score 60-89): Block premium/admin, log heavily  
+///   Level 2 — Restricted   (score 60-89): Block premium/admin, log heavily
 ///   Level 3 — Quarantined  (score 90+):   Force re-auth, revoke server session
 ///
 /// DESIGN PHILOSOPHY:
@@ -22,7 +23,7 @@ import 'secure_entitlements.dart';
 /// - False positives hurt real users
 /// - Attackers who get blocked immediately know their tool was detected
 /// - A quarantined attacker who "seems" to work wastes their time
-/// 
+///
 /// The BEST outcome is: attacker thinks they bypassed security,
 /// but their session is silently marked as suspicious and all
 /// actions are server-rejected or forensically logged.
@@ -43,6 +44,18 @@ class SessionQuarantine {
   /// Evaluate and apply the appropriate quarantine level based on current risk.
   /// Call this after any major integrity event (login, scan, anomaly detected).
   Future<QuarantineResult> evaluate() async {
+    // Native root/signature signals do not exist on web. Browser trust is
+    // enforced by Firebase Auth and App Check, not device quarantine.
+    if (kIsWeb) {
+      _currentLevel = QuarantineLevel.normal;
+      return const QuarantineResult(
+        level: QuarantineLevel.normal,
+        canUsePremium: true,
+        canUseAdmin: true,
+        shouldForceReauth: false,
+        riskScore: 0,
+      );
+    }
     final score = _shield.riskScore;
     final previousLevel = _currentLevel;
 
@@ -72,12 +85,12 @@ class SessionQuarantine {
 
   /// Quick sync check (no async) for guard gates in the UI.
   QuarantineResult get currentStatus => QuarantineResult(
-    level: _currentLevel,
-    canUsePremium: _currentLevel.index < QuarantineLevel.restricted.index,
-    canUseAdmin: _currentLevel.index < QuarantineLevel.softLimit.index,
-    shouldForceReauth: _currentLevel == QuarantineLevel.quarantined,
-    riskScore: _shield.riskScore,
-  );
+        level: _currentLevel,
+        canUsePremium: _currentLevel.index < QuarantineLevel.restricted.index,
+        canUseAdmin: _currentLevel.index < QuarantineLevel.softLimit.index,
+        shouldForceReauth: _currentLevel == QuarantineLevel.quarantined,
+        riskScore: _shield.riskScore,
+      );
 
   bool get isPremiumAllowed =>
       _currentLevel.index < QuarantineLevel.restricted.index;
@@ -90,7 +103,8 @@ class SessionQuarantine {
   Future<void> _onLevelEscalated(QuarantineLevel newLevel) async {
     final uid = _auth.currentUser?.uid;
 
-    debugPrint('[SessionQuarantine] ⚠️ Level escalated to: $newLevel (score: ${_shield.riskScore})');
+    debugPrint(
+        '[SessionQuarantine] ⚠️ Level escalated to: $newLevel (score: ${_shield.riskScore})');
 
     // Record the quarantine event in Firestore
     if (uid != null) {
@@ -106,7 +120,9 @@ class SessionQuarantine {
       }).catchError((e) {
         // Silently ignore Firestore write errors — quarantine still applies
         debugPrint('[SessionQuarantine] Firestore write failed: $e');
-        return _firestore.collection('security_events').doc(); // Return dummy ref
+        return _firestore
+            .collection('security_events')
+            .doc(); // Return dummy ref
       });
     }
 
@@ -120,26 +136,19 @@ class SessionQuarantine {
         // Silently revoke premium/admin in the server entitlements cache.
         // Local UI might still show premium but server will deny all gated calls.
         _entitlements.forceRefresh();
-        debugPrint('[SessionQuarantine] Session restricted — server entitlements refreshed.');
+        debugPrint(
+            '[SessionQuarantine] Session restricted — server entitlements refreshed.');
         break;
 
       case QuarantineLevel.quarantined:
-        // Mark session as quarantined in Firestore + notify admin
-        if (uid != null) {
-          await _firestore.collection('quarantined_sessions').doc(uid).set({
-            'uid': uid,
-            'startedAt': FieldValue.serverTimestamp(),
-            'riskScore': _shield.riskScore,
-            'signals': _shield.activeSignals,
-            'requiresAdminReview': true,
-            'autoResolved': false,
-          }, SetOptions(merge: true));
-        }
+        // quarantined_sessions is Admin-SDK-only by design. The client-side
+        // write that used to be here was guaranteed to be permission-denied;
+        // the security_events record above is the trusted backend signal.
+        debugPrint(
+            '[SessionQuarantine] 🔒 Session QUARANTINED. Force re-auth required.');
 
-        debugPrint('[SessionQuarantine] 🔒 Session QUARANTINED. Force re-auth required.');
-        
         // 🔒 POINT 5: Force re-authentication by signing out
-        await _auth.signOut();
+        await AuthService().signOut();
         _entitlements.forceRefresh();
         break;
 
@@ -150,8 +159,8 @@ class SessionQuarantine {
 }
 
 enum QuarantineLevel {
-  normal,     // 0
-  softLimit,  // 1
+  normal, // 0
+  softLimit, // 1
   restricted, // 2
   quarantined // 3
 }

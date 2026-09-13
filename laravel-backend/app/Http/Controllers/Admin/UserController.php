@@ -8,6 +8,7 @@ use App\Traits\LogsAdminActivity;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rules\Password;
+use App\Services\FirestoreService;
 
 class UserController extends Controller
 {
@@ -78,7 +79,7 @@ class UserController extends Controller
         return view('admin.users.form', compact('user'));
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, $id, FirestoreService $firestore)
     {
         $user = User::findOrFail($id);
         $roleFrom = $user->role;
@@ -115,6 +116,20 @@ class UserController extends Controller
         if (array_key_exists('role', $data)) {
             $user->is_admin = $user->isFullAdmin() || $user->isContentManager();
             $user->save();
+            if ($user->role === User::ROLE_BANNED) {
+                $user->tokens()->delete();
+            }
+            if ($user->firebase_uid && !$firestore->patchDocument('users', $user->firebase_uid, [
+                'role' => $user->role,
+                'isBanned' => $user->role === User::ROLE_BANNED,
+            ])) {
+                // Do not claim success while MySQL and Firebase authorization
+                // disagree. The transaction can be retried by the admin.
+                $user->role = $roleFrom;
+                $user->is_admin = $user->isFullAdmin() || $user->isContentManager();
+                $user->save();
+                return back()->withErrors(['error' => 'Role change was rolled back because Firebase synchronization failed. Please retry.']);
+            }
         }
 
         $this->logAdminAction('user.updated', 'User', $user->id, ['role_from' => $roleFrom, 'role_to' => $user->role]);

@@ -9,10 +9,8 @@ import '../../data/services/subscription_service.dart';
 import '../../data/models/subscription_record.dart';
 import 'billing_history_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:hidden_gems_sl/core/utils/secure_logger.dart';
 import '../../l10n/app_localizations.dart';
-
 
 class SubscriptionScreen extends ConsumerStatefulWidget {
   const SubscriptionScreen({super.key});
@@ -28,14 +26,17 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
     setState(() => _isProcessing = true);
-    
+
     try {
       // Use the new RevenueCat powered purchase flow
-      await ref.read(subscriptionServiceProvider).purchasePlan(planId, user.uid, 'guide');
-      
+      await ref
+          .read(subscriptionServiceProvider)
+          .purchasePlan(planId, user.uid, 'guide');
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(AppLocalizations.of(context)!.subscribedToPlanMessage(planId.toUpperCase())),
+          content: Text(AppLocalizations.of(context)!
+              .subscribedToPlanMessage(planId.toUpperCase())),
           backgroundColor: AppPalette.rust,
           behavior: SnackBarBehavior.floating,
         ));
@@ -43,7 +44,8 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(AppLocalizations.of(context)!.subscriptionFailedMessage(e.toString())),
+          content: Text(AppLocalizations.of(context)!
+              .subscriptionFailedMessage(e.toString())),
           backgroundColor: AppPalette.error.withValues(alpha: 0.9),
           behavior: SnackBarBehavior.floating,
         ));
@@ -56,7 +58,9 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
   Future<void> _restorePurchases() async {
     setState(() => _isProcessing = true);
     try {
-      await Purchases.restorePurchases();
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) throw StateError('Sign in before restoring purchases.');
+      await ref.read(subscriptionServiceProvider).restorePurchases(user.uid);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(AppLocalizations.of(context)!.purchasesRestoredMessage),
@@ -65,24 +69,29 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
         ));
       }
     } catch (e) {
-       if (mounted) {
+      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(AppLocalizations.of(context)!.restoreFailedMessage(e.toString())),
+          content: Text(
+              AppLocalizations.of(context)!.restoreFailedMessage(e.toString())),
           backgroundColor: AppPalette.error.withValues(alpha: 0.9),
           behavior: SnackBarBehavior.floating,
         ));
       }
     } finally {
-       if (mounted) setState(() => _isProcessing = false);
+      if (mounted) setState(() => _isProcessing = false);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
-    if (user == null) return Scaffold(body: Center(child: Text(AppLocalizations.of(context)!.accessDeniedMessage)));
+    if (user == null)
+      return Scaffold(
+          body: Center(
+              child: Text(AppLocalizations.of(context)!.accessDeniedMessage)));
 
-    final activeSubFuture = ref.watch(subscriptionServiceProvider).getActiveSubscription(user.uid);
+    final activeSubFuture =
+        ref.watch(subscriptionServiceProvider).getActiveSubscription(user.uid);
 
     return Scaffold(
       backgroundColor: AppTheme.colors.transparent,
@@ -101,23 +110,37 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
                     const SizedBox(height: 32),
                     Text(
                       AppLocalizations.of(context)!.serviceTiersTitle,
-                      style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w700, color: AppTheme.textPrimary(context)),
+                      style: GoogleFonts.outfit(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: AppTheme.textPrimary(context)),
                     ),
                     const SizedBox(height: 16),
                     _buildPlanCard(
                       title: AppLocalizations.of(context)!.freeTierTitle,
                       price: "0",
                       planId: "free",
-                      description: AppLocalizations.of(context)!.freeTierDescription,
-                      features: [AppLocalizations.of(context)!.featureBasicOperations, AppLocalizations.of(context)!.featureVerifiedBadge, AppLocalizations.of(context)!.featureStandardSos],
+                      description:
+                          AppLocalizations.of(context)!.freeTierDescription,
+                      features: [
+                        AppLocalizations.of(context)!.featureBasicOperations,
+                        AppLocalizations.of(context)!.featureVerifiedBadge,
+                        AppLocalizations.of(context)!.featureStandardSos
+                      ],
                       isPopular: false,
                     ),
                     _buildPlanCard(
                       title: AppLocalizations.of(context)!.proCommanderTitle,
                       price: "29",
                       planId: "pro",
-                      description: AppLocalizations.of(context)!.proCommanderDescription,
-                      features: [AppLocalizations.of(context)!.featureFeaturedListings, AppLocalizations.of(context)!.featureAdvancedAnalytics, AppLocalizations.of(context)!.featureClientAnalytics, AppLocalizations.of(context)!.featurePrioritySos],
+                      description:
+                          AppLocalizations.of(context)!.proCommanderDescription,
+                      features: [
+                        AppLocalizations.of(context)!.featureFeaturedListings,
+                        AppLocalizations.of(context)!.featureAdvancedAnalytics,
+                        AppLocalizations.of(context)!.featureClientAnalytics,
+                        AppLocalizations.of(context)!.featurePrioritySos
+                      ],
                       isPopular: true,
                       color: Theme.of(context).colorScheme.primary,
                     ),
@@ -125,8 +148,13 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
                       title: AppLocalizations.of(context)!.eliteAgencyTitle,
                       price: "89",
                       planId: "elite",
-                      description: AppLocalizations.of(context)!.eliteAgencyDescription,
-                      features: [AppLocalizations.of(context)!.featureTeamManagement, AppLocalizations.of(context)!.featureOperatorDashboard, AppLocalizations.of(context)!.featureWhiteLabelBranding],
+                      description:
+                          AppLocalizations.of(context)!.eliteAgencyDescription,
+                      features: [
+                        AppLocalizations.of(context)!.featureTeamManagement,
+                        AppLocalizations.of(context)!.featureOperatorDashboard,
+                        AppLocalizations.of(context)!.featureWhiteLabelBranding
+                      ],
                       isPopular: false,
                       color: AppPalette.earth,
                     ),
@@ -148,19 +176,31 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
       elevation: 0,
       title: Text(
         AppLocalizations.of(context)!.fleetPlansTitle,
-        style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.w800, color: AppTheme.textPrimary(context)),
+        style: GoogleFonts.outfit(
+            fontSize: 18,
+            fontWeight: FontWeight.w800,
+            color: AppTheme.textPrimary(context)),
       ),
       actions: [
         IconButton(
-          icon: Icon(Icons.history, color: AppTheme.textSecondary(context), size: 20),
+          icon: Icon(Icons.history,
+              color: AppTheme.textSecondary(context), size: 20),
           onPressed: () {
-            Navigator.push(context, MaterialPageRoute(builder: (_) => const BillingHistoryScreen()));
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (_) => const BillingHistoryScreen()));
           },
         ),
         TextButton.icon(
           onPressed: _isProcessing ? null : _restorePurchases,
-          icon: Icon(Icons.restore, color: AppTheme.textSecondary(context), size: 16),
-          label: Text(AppLocalizations.of(context)!.restoreButton, style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 12, fontWeight: FontWeight.w600)),
+          icon: Icon(Icons.restore,
+              color: AppTheme.textSecondary(context), size: 16),
+          label: Text(AppLocalizations.of(context)!.restoreButton,
+              style: GoogleFonts.inter(
+                  color: AppTheme.textSecondary(context),
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600)),
         ),
       ],
     );
@@ -181,40 +221,71 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
           child: Row(
             children: [
               Container(
-                width: 38, height: 38,
-                decoration: BoxDecoration(shape: BoxShape.circle, color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.12)),
-                child: Icon(Icons.verified_user_rounded, color: Theme.of(context).colorScheme.primary, size: 18),
+                width: 38,
+                height: 38,
+                decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Theme.of(context)
+                        .colorScheme
+                        .primary
+                        .withValues(alpha: 0.12)),
+                child: Icon(Icons.verified_user_rounded,
+                    color: Theme.of(context).colorScheme.primary, size: 18),
               ),
               const SizedBox(width: 14),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(l10n.currentPlanLabel, style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 10, fontWeight: FontWeight.w600)),
+                    Text(l10n.currentPlanLabel,
+                        style: GoogleFonts.inter(
+                            color: AppTheme.textSecondary(context),
+                            fontSize: 10,
+                            fontWeight: FontWeight.w600)),
                     Text(
-                      sub?.planId != null ? _planTierLabel(sub!.planId, l10n) : l10n.freeTierLabel,
-                      style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontSize: 15, fontWeight: FontWeight.w700),
+                      sub?.planId != null
+                          ? _planTierLabel(sub!.planId, l10n)
+                          : l10n.freeTierLabel,
+                      style: GoogleFonts.outfit(
+                          color: AppTheme.textPrimary(context),
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700),
                     ),
                     if (sub != null)
-                      Text(l10n.expiresColonDateLabel('${sub.expiresAt.day}/${sub.expiresAt.month}/${sub.expiresAt.year}'), style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 11)),
+                      Text(
+                          l10n.expiresColonDateLabel(
+                              '${sub.expiresAt.day}/${sub.expiresAt.month}/${sub.expiresAt.year}'),
+                          style: GoogleFonts.inter(
+                              color: AppTheme.textSecondary(context),
+                              fontSize: 11)),
                   ],
                 ),
               ),
               if (sub == null)
                 Container(
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primary,
-                    borderRadius: BorderRadius.circular(100),
-                  ),
-                  child: TextButton(
-                    onPressed: _isProcessing ? null : () => _subscribe('pro', '29'),
-                    style: TextButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6)),
-                    child: Text(l10n.upgradeButton, style: GoogleFonts.inter(color: Theme.of(context).colorScheme.onPrimary, fontWeight: FontWeight.w700, fontSize: 12)))
-                )
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.primary,
+                      borderRadius: BorderRadius.circular(100),
+                    ),
+                    child: TextButton(
+                        onPressed: _isProcessing
+                            ? null
+                            : () => _subscribe('pro', '29'),
+                        style: TextButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 14, vertical: 6)),
+                        child: Text(l10n.upgradeButton,
+                            style: GoogleFonts.inter(
+                                color: Theme.of(context).colorScheme.onPrimary,
+                                fontWeight: FontWeight.w700,
+                                fontSize: 12))))
               else
                 TextButton(
-                  onPressed: () => _manageSubscription(context),
-                  child: Text(l10n.manageButton, style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontWeight: FontWeight.w600))),
+                    onPressed: () => _manageSubscription(context),
+                    child: Text(l10n.manageButton,
+                        style: GoogleFonts.inter(
+                            color: AppTheme.textSecondary(context),
+                            fontWeight: FontWeight.w600))),
             ],
           ),
         );
@@ -230,8 +301,10 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
         final url = Uri.parse("https://apps.apple.com/account/subscriptions");
         if (await canLaunchUrl(url)) await launchUrl(url);
       } else {
-        final url = Uri.parse("https://play.google.com/store/account/subscriptions");
-        if (await canLaunchUrl(url)) await launchUrl(url, mode: LaunchMode.externalApplication);
+        final url =
+            Uri.parse("https://play.google.com/store/account/subscriptions");
+        if (await canLaunchUrl(url))
+          await launchUrl(url, mode: LaunchMode.externalApplication);
       }
     } catch (e, st) {
       SecureLogger.error("Could not launch store", e, st, "SubscriptionScreen");
@@ -262,10 +335,16 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
   }) {
     final primary = Theme.of(context).colorScheme.primary;
     final actualColor = color ?? AppTheme.textSecondary(context);
-    final titleColor = isPopular ? AppTheme.colors.white : AppTheme.textPrimary(context);
-    final priceColor = isPopular ? AppTheme.colors.white : AppTheme.textPrimary(context);
-    final descColor = isPopular ? AppTheme.colors.white.withValues(alpha: 0.85) : AppTheme.textSecondary(context);
-    final featureColor = isPopular ? AppTheme.colors.white.withValues(alpha: 0.85) : AppTheme.textSecondary(context);
+    final titleColor =
+        isPopular ? AppTheme.colors.white : AppTheme.textPrimary(context);
+    final priceColor =
+        isPopular ? AppTheme.colors.white : AppTheme.textPrimary(context);
+    final descColor = isPopular
+        ? AppTheme.colors.white.withValues(alpha: 0.85)
+        : AppTheme.textSecondary(context);
+    final featureColor = isPopular
+        ? AppTheme.colors.white.withValues(alpha: 0.85)
+        : AppTheme.textSecondary(context);
     final checkColor = isPopular ? AppTheme.colors.white : actualColor;
 
     return Padding(
@@ -274,65 +353,111 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
         padding: const EdgeInsets.all(22),
         decoration: BoxDecoration(
           gradient: isPopular
-              ? LinearGradient(colors: [primary, AppPalette.rustDim], begin: Alignment.topLeft, end: Alignment.bottomRight)
+              ? LinearGradient(
+                  colors: [primary, AppPalette.rustDim],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight)
               : null,
           color: isPopular ? null : Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(24),
-          boxShadow: isPopular ? null : [
-            BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.05), blurRadius: 16, offset: const Offset(0, 6)),
-          ],
+          boxShadow: isPopular
+              ? null
+              : [
+                  BoxShadow(
+                      color: AppTheme.colors.black.withValues(alpha: 0.05),
+                      blurRadius: 16,
+                      offset: const Offset(0, 6)),
+                ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (isPopular)
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 margin: const EdgeInsets.only(bottom: 10),
-                decoration: BoxDecoration(color: AppTheme.colors.white.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(100)),
-                child: Text(AppLocalizations.of(context)!.mostPopularLabel, style: GoogleFonts.inter(fontSize: 9, fontWeight: FontWeight.w700, color: AppTheme.colors.white)),
+                decoration: BoxDecoration(
+                    color: AppTheme.colors.white.withValues(alpha: 0.2),
+                    borderRadius: BorderRadius.circular(100)),
+                child: Text(AppLocalizations.of(context)!.mostPopularLabel,
+                    style: GoogleFonts.inter(
+                        fontSize: 9,
+                        fontWeight: FontWeight.w700,
+                        color: AppTheme.colors.white)),
               ),
-            Text(title, style: GoogleFonts.outfit(color: titleColor, fontSize: 14, fontWeight: FontWeight.w700)),
+            Text(title,
+                style: GoogleFonts.outfit(
+                    color: titleColor,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700)),
             const SizedBox(height: 6),
             Row(
               textBaseline: TextBaseline.alphabetic,
               crossAxisAlignment: CrossAxisAlignment.baseline,
               children: [
-                Text("\$$price", style: GoogleFonts.outfit(color: priceColor, fontSize: 28, fontWeight: FontWeight.w800)),
+                Text("\$$price",
+                    style: GoogleFonts.outfit(
+                        color: priceColor,
+                        fontSize: 28,
+                        fontWeight: FontWeight.w800)),
                 const SizedBox(width: 4),
-                Text(AppLocalizations.of(context)!.perMonthSlashLabel, style: GoogleFonts.inter(color: descColor, fontSize: 11, fontWeight: FontWeight.w600)),
+                Text(AppLocalizations.of(context)!.perMonthSlashLabel,
+                    style: GoogleFonts.inter(
+                        color: descColor,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600)),
               ],
             ),
             const SizedBox(height: 12),
-            Text(description, style: GoogleFonts.inter(color: descColor, fontSize: 12)),
+            Text(description,
+                style: GoogleFonts.inter(color: descColor, fontSize: 12)),
             const SizedBox(height: 20),
             ...features.map((f) => Padding(
-              padding: const EdgeInsets.only(bottom: 10),
-              child: Row(
-                children: [
-                  Icon(Icons.check_circle_rounded, color: checkColor, size: 16),
-                  const SizedBox(width: 10),
-                  Expanded(child: Text(f, style: GoogleFonts.inter(color: featureColor, fontSize: 12))),
-                ],
-              ),
-            )),
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: Row(
+                    children: [
+                      Icon(Icons.check_circle_rounded,
+                          color: checkColor, size: 16),
+                      const SizedBox(width: 10),
+                      Expanded(
+                          child: Text(f,
+                              style: GoogleFonts.inter(
+                                  color: featureColor, fontSize: 12))),
+                    ],
+                  ),
+                )),
             const SizedBox(height: 20),
             SizedBox(
               width: double.infinity,
               height: 48,
               child: ElevatedButton(
-                onPressed: planId == 'free' || _isProcessing ? null : () => _subscribe(planId, price),
+                onPressed: planId == 'free' || _isProcessing
+                    ? null
+                    : () => _subscribe(planId, price),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: isPopular ? AppTheme.colors.white : AppTheme.surfaceMuted(context),
-                  foregroundColor: isPopular ? primary : AppTheme.textSecondary(context),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
+                  backgroundColor: isPopular
+                      ? AppTheme.colors.white
+                      : AppTheme.surfaceMuted(context),
+                  foregroundColor:
+                      isPopular ? primary : AppTheme.textSecondary(context),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(100)),
                   elevation: 0,
                 ),
                 child: _isProcessing
-                    ? SizedBox(height: 18, width: 18, child: CircularProgressIndicator(strokeWidth: 2, color: primary))
+                    ? SizedBox(
+                        height: 18,
+                        width: 18,
+                        child: CircularProgressIndicator(
+                            strokeWidth: 2, color: primary))
                     : Text(
-                        planId == 'free' ? AppLocalizations.of(context)!.currentPlanButton : AppLocalizations.of(context)!.selectThisPlanButton,
-                        style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 12)),
+                        planId == 'free'
+                            ? AppLocalizations.of(context)!.currentPlanButton
+                            : AppLocalizations.of(context)!
+                                .selectThisPlanButton,
+                        style: GoogleFonts.inter(
+                            fontWeight: FontWeight.w700, fontSize: 12)),
               ),
             ),
           ],

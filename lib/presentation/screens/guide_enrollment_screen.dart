@@ -62,7 +62,8 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
     if (uid == null) return;
 
     _pollStatus();
-    _pollTimer = Timer.periodic(const Duration(seconds: 20), (_) => _pollStatus());
+    _pollTimer =
+        Timer.periodic(const Duration(seconds: 20), (_) => _pollStatus());
   }
 
   Future<void> _pollStatus() async {
@@ -71,20 +72,24 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
       setState(() {
         _currentStatus = app.status;
         if (app.status == GuideStatus.rejected) {
-          _rejectionReason = app.adminComment ?? AppLocalizations.of(context)!.guidePollRejectionReason;
+          _rejectionReason = app.adminComment ??
+              AppLocalizations.of(context)!.guidePollRejectionReason;
         }
       });
       final currentProfile = UserPreferenceService.getProfile();
       bool changed = false;
       if (app.status != currentProfile.guideStatus &&
-          (app.status == GuideStatus.approved || app.status == GuideStatus.rejected || app.status == GuideStatus.pending)) {
+          (app.status == GuideStatus.approved ||
+              app.status == GuideStatus.rejected ||
+              app.status == GuideStatus.pending)) {
         currentProfile.applyGuideStatus(app.status);
         changed = true;
       }
       if (changed) {
         UserPreferenceService.saveProfile(currentProfile);
       }
-      if (app.status == GuideStatus.approved || app.status == GuideStatus.rejected) {
+      if (app.status == GuideStatus.approved ||
+          app.status == GuideStatus.rejected) {
         _pollTimer?.cancel();
       }
     }
@@ -101,9 +106,10 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
   Future<void> _pickImage(String type, ImageSource source) async {
     try {
       final XFile? image = await _picker.pickImage(
-        source: source, 
+        source: source,
         imageQuality: 70,
-        preferredCameraDevice: type == 'selfie' ? CameraDevice.front : CameraDevice.rear,
+        preferredCameraDevice:
+            type == 'selfie' ? CameraDevice.front : CameraDevice.rear,
       );
       if (image != null) {
         if (!mounted) return;
@@ -114,9 +120,11 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
         });
       }
     } catch (e) {
-       if (mounted) {
+      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.cameraAccessDeniedMessage(e.toString()))),
+          SnackBar(
+              content: Text(AppLocalizations.of(context)!
+                  .cameraAccessDeniedMessage(e.toString()))),
         );
       }
     }
@@ -132,13 +140,20 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(24),
-          boxShadow: [BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.08), blurRadius: 20, offset: const Offset(0, 8))],
+          boxShadow: [
+            BoxShadow(
+                color: AppTheme.colors.black.withValues(alpha: 0.08),
+                blurRadius: 20,
+                offset: const Offset(0, 8))
+          ],
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              type == 'selfie' ? AppLocalizations.of(context)!.takeASelfieTitle : AppLocalizations.of(context)!.uploadDocumentTitle,
+              type == 'selfie'
+                  ? AppLocalizations.of(context)!.takeASelfieTitle
+                  : AppLocalizations.of(context)!.uploadDocumentTitle,
               style: GoogleFonts.outfit(
                 color: AppTheme.textPrimary(context),
                 fontSize: 16,
@@ -150,8 +165,16 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                _photoOption(Icons.camera_alt_outlined, AppLocalizations.of(context)!.cameraOptionLabel, ImageSource.camera, type),
-                _photoOption(Icons.photo_library_outlined, AppLocalizations.of(context)!.galleryOptionLabel, ImageSource.gallery, type),
+                _photoOption(
+                    Icons.camera_alt_outlined,
+                    AppLocalizations.of(context)!.cameraOptionLabel,
+                    ImageSource.camera,
+                    type),
+                _photoOption(
+                    Icons.photo_library_outlined,
+                    AppLocalizations.of(context)!.galleryOptionLabel,
+                    ImageSource.gallery,
+                    type),
               ],
             ),
             const SizedBox(height: 16),
@@ -161,7 +184,8 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
     );
   }
 
-  Widget _photoOption(IconData icon, String label, ImageSource source, String type) {
+  Widget _photoOption(
+      IconData icon, String label, ImageSource source, String type) {
     return InkWell(
       onTap: () {
         Navigator.pop(context);
@@ -212,8 +236,11 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
   Future<void> _submitApplication() async {
     final l10n = AppLocalizations.of(context)!;
     // 1. Basic UI Check
-    if (_licenseController.text.isEmpty || _bioController.text.isEmpty ||
-        _licenseFile == null || _nicFile == null || _selfieFile == null) {
+    if (_licenseController.text.isEmpty ||
+        _bioController.text.isEmpty ||
+        _licenseFile == null ||
+        _nicFile == null ||
+        _selfieFile == null) {
       _showNotification(l10n.fieldsMissingMessage, isError: true);
       return;
     }
@@ -236,12 +263,16 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
       // 1. Upload Documents
       _showNotification(l10n.uploadingDocumentsMessage);
 
-      final licenseUrl = await _repo.uploadDocument(file: _licenseFile!, docType: 'license');
-      final nicUrl = await _repo.uploadDocument(file: _nicFile!, docType: 'nic');
-      final selfieUrl = await _repo.uploadDocument(file: _selfieFile!, docType: 'selfie');
+      final licenseUrl =
+          await _repo.uploadDocument(file: _licenseFile!, docType: 'license');
+      final nicUrl =
+          await _repo.uploadDocument(file: _nicFile!, docType: 'nic');
+      final selfieUrl =
+          await _repo.uploadDocument(file: _selfieFile!, docType: 'selfie');
 
       if (licenseUrl == null || nicUrl == null || selfieUrl == null) {
-        throw OracleException(l10n.documentsUploadFailureMessage, code: "UPLOAD_FAILURE");
+        throw OracleException(l10n.documentsUploadFailureMessage,
+            code: "UPLOAD_FAILURE");
       }
 
       // 2. Submit Application
@@ -278,7 +309,8 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
       }
     } catch (e) {
       if (mounted) {
-        _showNotification(l10n.errorGenericMessage(e.toString()), isError: true);
+        _showNotification(l10n.errorGenericMessage(e.toString()),
+            isError: true);
       }
     } finally {
       if (mounted) {
@@ -304,10 +336,13 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
                 shape: BoxShape.circle,
                 color: AppTheme.modernGreen(context).withValues(alpha: 0.1),
               ),
-            ).animate(onPlay: (c) => c.repeat(reverse: true))
-             .scale(begin: const Offset(1, 1), end: const Offset(1.5, 1.5), duration: 1.5.seconds)
-             .blur(begin: const Offset(5, 5), end: const Offset(20, 20)),
-            
+            )
+                .animate(onPlay: (c) => c.repeat(reverse: true))
+                .scale(
+                    begin: const Offset(1, 1),
+                    end: const Offset(1.5, 1.5),
+                    duration: 1.5.seconds)
+                .blur(begin: const Offset(5, 5), end: const Offset(20, 20)),
             SizedBox(
               width: 60,
               height: 60,
@@ -316,15 +351,15 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
                 strokeWidth: 2,
               ),
             ),
-            
             Icon(Icons.security, color: AppTheme.modernGreen(context), size: 24)
-              .animate(onPlay: (c) => c.repeat())
-              .shimmer(duration: 2.seconds),
+                .animate(onPlay: (c) => c.repeat())
+                .shimmer(duration: 2.seconds),
           ],
         ),
         const SizedBox(height: 24),
         Text(
-          _loadingStatus ?? AppLocalizations.of(context)!.verifyingYourDetailsMessage,
+          _loadingStatus ??
+              AppLocalizations.of(context)!.verifyingYourDetailsMessage,
           style: GoogleFonts.outfit(
             fontSize: 13,
             fontWeight: FontWeight.w700,
@@ -350,101 +385,124 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
       barrierDismissible: false,
       builder: (context) => BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-        child: Center(
-          child: Container(
-            width: 320,
-            padding: const EdgeInsets.fromLTRB(32, 40, 32, 32),
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surface,
-              borderRadius: BorderRadius.circular(28),
-              boxShadow: [BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.14), blurRadius: 32, offset: const Offset(0, 14))],
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    Container(
-                      width: 88,
-                      height: 88,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        gradient: LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [
-                            Theme.of(context).colorScheme.primary,
-                            AppPalette.rustDim,
-                          ],
-                        ),
-                      ),
-                    ).animate(onPlay: (c) => c.repeat(reverse: true))
-                     .scale(begin: const Offset(1, 1), end: const Offset(1.12, 1.12), duration: 1.8.seconds)
-                     .fadeOut(begin: 0.4, duration: 1.8.seconds),
-                    Container(
-                      width: 72,
-                      height: 72,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        gradient: LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [
-                            Theme.of(context).colorScheme.primary,
-                            AppPalette.rustDim,
-                          ],
-                        ),
-                      ),
-                      child: const Icon(Icons.check_rounded, color: Colors.white, size: 38),
-                    ).animate().scale(duration: 500.ms, curve: Curves.elasticOut),
+        child: SafeArea(
+          child: Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(20),
+              child: Container(
+                width: MediaQuery.sizeOf(context).width > 360
+                    ? 320
+                    : MediaQuery.sizeOf(context).width - 40,
+                padding: const EdgeInsets.fromLTRB(24, 32, 24, 24),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surface,
+                  borderRadius: BorderRadius.circular(28),
+                  boxShadow: [
+                    BoxShadow(
+                        color: AppTheme.colors.black.withValues(alpha: 0.14),
+                        blurRadius: 32,
+                        offset: const Offset(0, 14))
                   ],
                 ),
-                const SizedBox(height: 28),
-                Text(
-                  AppLocalizations.of(context)!.applicationSubmittedTitle,
-                  textAlign: TextAlign.center,
-                  style: GoogleFonts.outfit(
-                    fontSize: 19,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: -0.3,
-                    color: AppTheme.textPrimary(context),
-                  ),
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  AppLocalizations.of(context)!.applicationSubmittedMessage,
-                  textAlign: TextAlign.center,
-                  style: GoogleFonts.inter(
-                    fontSize: 13,
-                    height: 1.5,
-                    color: AppTheme.textSecondary(context),
-                  ),
-                ),
-                const SizedBox(height: 32),
-                SizedBox(
-                  width: double.infinity,
-                  height: 52,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(context).colorScheme.primary,
-                      foregroundColor: AppTheme.colors.white,
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        Container(
+                          width: 88,
+                          height: 88,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            gradient: LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [
+                                Theme.of(context).colorScheme.primary,
+                                AppPalette.rustDim,
+                              ],
+                            ),
+                          ),
+                        )
+                            .animate(onPlay: (c) => c.repeat(reverse: true))
+                            .scale(
+                                begin: const Offset(1, 1),
+                                end: const Offset(1.12, 1.12),
+                                duration: 1.8.seconds)
+                            .fadeOut(begin: 0.4, duration: 1.8.seconds),
+                        Container(
+                          width: 72,
+                          height: 72,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            gradient: LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [
+                                Theme.of(context).colorScheme.primary,
+                                AppPalette.rustDim,
+                              ],
+                            ),
+                          ),
+                          child: const Icon(Icons.check_rounded,
+                              color: Colors.white, size: 38),
+                        )
+                            .animate()
+                            .scale(duration: 500.ms, curve: Curves.elasticOut),
+                      ],
                     ),
-                    onPressed: () {
-                      Navigator.pop(context); // Close dialog
-                      Navigator.pop(context); // Close screen
-                    },
-                    child: Text(
-                      AppLocalizations.of(context)!.returnToProfileButton,
-                      style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 14),
+                    const SizedBox(height: 28),
+                    Text(
+                      AppLocalizations.of(context)!.applicationSubmittedTitle,
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.outfit(
+                        fontSize: 19,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: -0.3,
+                        color: AppTheme.textPrimary(context),
+                      ),
                     ),
-                  ),
+                    const SizedBox(height: 10),
+                    Text(
+                      AppLocalizations.of(context)!.applicationSubmittedMessage,
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.inter(
+                        fontSize: 13,
+                        height: 1.5,
+                        color: AppTheme.textSecondary(context),
+                      ),
+                    ),
+                    const SizedBox(height: 32),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 52,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              Theme.of(context).colorScheme.primary,
+                          foregroundColor: AppTheme.colors.white,
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(100)),
+                        ),
+                        onPressed: () {
+                          Navigator.pop(context); // Close dialog
+                          Navigator.pop(context); // Close screen
+                        },
+                        child: Text(
+                          AppLocalizations.of(context)!.returnToProfileButton,
+                          style: GoogleFonts.inter(
+                              fontWeight: FontWeight.w700, fontSize: 14),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              ],
+              ).animate().fadeIn(duration: 300.ms).scale(
+                  begin: const Offset(0.9, 0.9), curve: Curves.easeOutBack),
             ),
-          ).animate().fadeIn(duration: 300.ms).scale(begin: const Offset(0.9, 0.9), curve: Curves.easeOutBack),
+          ),
         ),
       ),
     );
@@ -461,7 +519,8 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
             backgroundColor: AppTheme.colors.transparent,
             elevation: 0,
             leading: IconButton(
-              icon: Icon(Icons.arrow_back_ios_new, size: 20, color: AppTheme.textPrimary(context)),
+              icon: Icon(Icons.arrow_back_ios_new,
+                  size: 20, color: AppTheme.textPrimary(context)),
               onPressed: () => Navigator.pop(context),
             ),
             title: Text(
@@ -474,160 +533,185 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
               ),
             ),
           ),
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.all(24.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 20),
+                  if (_currentStatus == GuideStatus.pending) ...[
+                    _buildStatusBanner(
+                      title: l10n.applicationUnderReviewTitle,
+                      message: l10n.applicationUnderReviewMessage,
+                      color: AppTheme.colors.amber,
+                    ),
                     const SizedBox(height: 20),
-                    if (_currentStatus == GuideStatus.pending) ...[
-                      _buildStatusBanner(
-                        title: l10n.applicationUnderReviewTitle,
-                        message: l10n.applicationUnderReviewMessage,
-                        color: AppTheme.colors.amber,
-                      ),
-                      const SizedBox(height: 20),
-                    ] else if (_currentStatus == GuideStatus.rejected) ...[
-                      _buildStatusBanner(
-                        title: l10n.applicationRejectedTitle,
-                        message: l10n.applicationRejectedMessage(_rejectionReason ?? l10n.defaultRejectionReason),
-                        color: AppTheme.colors.redAccent,
-                      ),
-                      const SizedBox(height: 20),
-                    ] else if (_currentStatus == GuideStatus.approved) ...[
-                      _buildStatusBanner(
-                        title: l10n.approvedGuideTitle,
-                        message: l10n.approvedGuideMessage,
-                        color: AppTheme.colors.greenAccent,
-                      ),
-                      const SizedBox(height: 20),
-                    ],
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(24),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(22),
-                        gradient: LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [
-                            Theme.of(context).colorScheme.primary,
-                            AppPalette.rustDim,
-                          ],
-                        ),
-                      ),
-                      child: Column(
-                        children: [
-                          Container(
-                            width: 44,
-                            height: 44,
-                            decoration: BoxDecoration(
-                              color: AppTheme.colors.white.withValues(alpha: 0.2),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: const Icon(
-                              Icons.verified_user_outlined,
-                              size: 22,
-                              color: Colors.white,
-                            ),
-                          ),
-                          const SizedBox(height: 14),
-                          Text(
-                            l10n.shareLocalKnowledgeTitle,
-                            style: GoogleFonts.outfit(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w700,
-                              color: AppTheme.colors.white,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            l10n.guideTravelersEarnSubtitle,
-                            textAlign: TextAlign.center,
-                            style: GoogleFonts.inter(
-                              fontSize: 11,
-                              color: AppTheme.colors.white.withValues(alpha: 0.8),
-                              height: 1.5,
-                            ),
-                          ),
+                  ] else if (_currentStatus == GuideStatus.rejected) ...[
+                    _buildStatusBanner(
+                      title: l10n.applicationRejectedTitle,
+                      message: l10n.applicationRejectedMessage(
+                          _rejectionReason ?? l10n.defaultRejectionReason),
+                      color: AppTheme.colors.redAccent,
+                    ),
+                    const SizedBox(height: 20),
+                  ] else if (_currentStatus == GuideStatus.approved) ...[
+                    _buildStatusBanner(
+                      title: l10n.approvedGuideTitle,
+                      message: l10n.approvedGuideMessage,
+                      color: AppTheme.colors.greenAccent,
+                    ),
+                    const SizedBox(height: 20),
+                  ],
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(24),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(22),
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          Theme.of(context).colorScheme.primary,
+                          AppPalette.rustDim,
                         ],
                       ),
-                    ).animate().fadeIn(duration: 800.ms).slideY(begin: 0.1, end: 0),
-                    const SizedBox(height: 28),
-                    _buildCategorySelector(),
-                    const SizedBox(height: 24),
-                    _buildInputField(
-                      l10n.licenseNumberLabel,
-                      l10n.licenseNumberHint,
-                      _licenseController,
-                    ).animate().fadeIn(delay: 200.ms, duration: 800.ms).slideX(begin: -0.1, end: 0),
-                    const SizedBox(height: 24),
-                    _buildInputField(
-                      l10n.shortBioLabel,
-                      l10n.shortBioHint,
-                      _bioController,
-                      maxLines: 4,
-                    ).animate().fadeIn(delay: 400.ms, duration: 800.ms).slideX(begin: 0.1, end: 0),
-                    const SizedBox(height: 24),
-                    _buildExpiryDatePicker(l10n),
-                    const SizedBox(height: 28),
-                    Text(
-                      l10n.verificationDocumentsTitle,
-                      style: GoogleFonts.outfit(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: -0.2,
-                        color: AppTheme.textPrimary(context),
-                      ),
                     ),
-                    const SizedBox(height: 16),
-                    _buildDocPicker(l10n.guideLicenseLabel, _licenseFile, () => _showPhotoPicker('license')),
-                    const SizedBox(height: 12),
-                    _buildDocPicker(l10n.nicPassportLabel, _nicFile, () => _showPhotoPicker('nic')),
-                    const SizedBox(height: 12),
-                    _buildDocPicker(l10n.selfieForIdentityLabel, _selfieFile, () => _showPhotoPicker('selfie')),
-                    const SizedBox(height: 40),
-                    _isLoading
-                        ? Container(
-                            padding: const EdgeInsets.all(32),
-                            decoration: BoxDecoration(
-                              color: Theme.of(context).colorScheme.surface,
-                              borderRadius: BorderRadius.circular(22),
-                              boxShadow: [BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.06), blurRadius: 16, offset: const Offset(0, 6))],
-                            ),
-                            child: _buildLoadingAura(),
-                          ).animate().fadeIn().scale(begin: const Offset(0.95, 0.95))
-                        : SizedBox(
-                            width: double.infinity,
-                            height: 56,
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Theme.of(context).colorScheme.primary,
-                                elevation: 0,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(100),
-                                ),
+                    child: Column(
+                      children: [
+                        Container(
+                          width: 44,
+                          height: 44,
+                          decoration: BoxDecoration(
+                            color: AppTheme.colors.white.withValues(alpha: 0.2),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Icon(
+                            Icons.verified_user_outlined,
+                            size: 22,
+                            color: Colors.white,
+                          ),
+                        ),
+                        const SizedBox(height: 14),
+                        Text(
+                          l10n.shareLocalKnowledgeTitle,
+                          style: GoogleFonts.outfit(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                            color: AppTheme.colors.white,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          l10n.guideTravelersEarnSubtitle,
+                          textAlign: TextAlign.center,
+                          style: GoogleFonts.inter(
+                            fontSize: 11,
+                            color: AppTheme.colors.white.withValues(alpha: 0.8),
+                            height: 1.5,
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                      .animate()
+                      .fadeIn(duration: 800.ms)
+                      .slideY(begin: 0.1, end: 0),
+                  const SizedBox(height: 28),
+                  _buildCategorySelector(),
+                  const SizedBox(height: 24),
+                  _buildInputField(
+                    l10n.licenseNumberLabel,
+                    l10n.licenseNumberHint,
+                    _licenseController,
+                  )
+                      .animate()
+                      .fadeIn(delay: 200.ms, duration: 800.ms)
+                      .slideX(begin: -0.1, end: 0),
+                  const SizedBox(height: 24),
+                  _buildInputField(
+                    l10n.shortBioLabel,
+                    l10n.shortBioHint,
+                    _bioController,
+                    maxLines: 4,
+                  )
+                      .animate()
+                      .fadeIn(delay: 400.ms, duration: 800.ms)
+                      .slideX(begin: 0.1, end: 0),
+                  const SizedBox(height: 24),
+                  _buildExpiryDatePicker(l10n),
+                  const SizedBox(height: 28),
+                  Text(
+                    l10n.verificationDocumentsTitle,
+                    style: GoogleFonts.outfit(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: -0.2,
+                      color: AppTheme.textPrimary(context),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  _buildDocPicker(l10n.guideLicenseLabel, _licenseFile,
+                      () => _showPhotoPicker('license')),
+                  const SizedBox(height: 12),
+                  _buildDocPicker(l10n.nicPassportLabel, _nicFile,
+                      () => _showPhotoPicker('nic')),
+                  const SizedBox(height: 12),
+                  _buildDocPicker(l10n.selfieForIdentityLabel, _selfieFile,
+                      () => _showPhotoPicker('selfie')),
+                  const SizedBox(height: 40),
+                  _isLoading
+                      ? Container(
+                          padding: const EdgeInsets.all(32),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.surface,
+                            borderRadius: BorderRadius.circular(22),
+                            boxShadow: [
+                              BoxShadow(
+                                  color: AppTheme.colors.black
+                                      .withValues(alpha: 0.06),
+                                  blurRadius: 16,
+                                  offset: const Offset(0, 6))
+                            ],
+                          ),
+                          child: _buildLoadingAura(),
+                        )
+                          .animate()
+                          .fadeIn()
+                          .scale(begin: const Offset(0.95, 0.95))
+                      : SizedBox(
+                          width: double.infinity,
+                          height: 56,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor:
+                                  Theme.of(context).colorScheme.primary,
+                              elevation: 0,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(100),
                               ),
-                              onPressed: _submitApplication,
-                              child: Text(
-                                l10n.submitApplicationButton,
-                                style: GoogleFonts.inter(
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 14,
-                                  color: AppTheme.colors.white,
-                                ),
+                            ),
+                            onPressed: _submitApplication,
+                            child: Text(
+                              l10n.submitApplicationButton,
+                              style: GoogleFonts.inter(
+                                fontWeight: FontWeight.w700,
+                                fontSize: 14,
+                                color: AppTheme.colors.white,
                               ),
                             ),
-                          ).animate(onPlay: (c) => c.repeat(reverse: true))
-                           .scale(begin: const Offset(1, 1), end: const Offset(1.02, 1.02), duration: 2.seconds),
-                  ],
-                ),
+                          ),
+                        ).animate(onPlay: (c) => c.repeat(reverse: true)).scale(
+                          begin: const Offset(1, 1),
+                          end: const Offset(1.02, 1.02),
+                          duration: 2.seconds),
+                ],
               ),
             ),
-          ],
-        ),
-      );
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _buildCategorySelector() {
@@ -652,15 +736,20 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
             return GestureDetector(
               onTap: () => setState(() => _selectedCategory = cat),
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                 decoration: BoxDecoration(
-                  color: isSelected ? Theme.of(context).colorScheme.primary : AppTheme.surfaceMuted(context),
+                  color: isSelected
+                      ? Theme.of(context).colorScheme.primary
+                      : AppTheme.surfaceMuted(context),
                   borderRadius: BorderRadius.circular(100),
                 ),
                 child: Text(
                   _categoryLabel(cat, l10n),
                   style: GoogleFonts.inter(
-                    color: isSelected ? AppTheme.colors.white : AppTheme.textSecondary(context),
+                    color: isSelected
+                        ? AppTheme.colors.white
+                        : AppTheme.textSecondary(context),
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
                   ),
@@ -702,14 +791,21 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
         child: Row(
           children: [
             Icon(
-              _licenseExpiryDate == null ? Icons.event_outlined : Icons.check_circle_rounded,
-              color: _licenseExpiryDate == null ? AppTheme.textSecondary(context) : AppTheme.colors.greenAccent,
+              _licenseExpiryDate == null
+                  ? Icons.event_outlined
+                  : Icons.check_circle_rounded,
+              color: _licenseExpiryDate == null
+                  ? AppTheme.textSecondary(context)
+                  : AppTheme.colors.greenAccent,
             ),
             const SizedBox(width: 14),
             Expanded(
               child: Text(
                 label,
-                style: GoogleFonts.inter(color: AppTheme.textPrimary(context), fontSize: 13, fontWeight: FontWeight.w500),
+                style: GoogleFonts.inter(
+                    color: AppTheme.textPrimary(context),
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500),
               ),
             ),
           ],
@@ -731,22 +827,31 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
         child: Row(
           children: [
             Icon(
-              file == null ? Icons.add_a_photo_outlined : Icons.check_circle_rounded,
-              color: file == null ? AppTheme.textSecondary(context) : AppTheme.colors.greenAccent,
+              file == null
+                  ? Icons.add_a_photo_outlined
+                  : Icons.check_circle_rounded,
+              color: file == null
+                  ? AppTheme.textSecondary(context)
+                  : AppTheme.colors.greenAccent,
             ),
             const SizedBox(width: 14),
             Expanded(
               child: Text(
                 label,
-                style: GoogleFonts.inter(color: AppTheme.textPrimary(context), fontSize: 13, fontWeight: FontWeight.w500),
+                style: GoogleFonts.inter(
+                    color: AppTheme.textPrimary(context),
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500),
               ),
             ),
             if (file != null)
               ClipRRect(
                 borderRadius: BorderRadius.circular(8),
                 child: kIsWeb
-                    ? Image.network(file.path, width: 40, height: 40, fit: BoxFit.cover)
-                    : Image.file(io.File(file.path), width: 40, height: 40, fit: BoxFit.cover),
+                    ? Image.network(file.path,
+                        width: 40, height: 40, fit: BoxFit.cover)
+                    : Image.file(io.File(file.path),
+                        width: 40, height: 40, fit: BoxFit.cover),
               ),
           ],
         ),
@@ -754,7 +859,9 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
     );
   }
 
-  Widget _buildInputField(String label, String hint, TextEditingController controller, {int maxLines = 1}) {
+  Widget _buildInputField(
+      String label, String hint, TextEditingController controller,
+      {int maxLines = 1}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -779,7 +886,8 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
             style: GoogleFonts.inter(color: AppTheme.textPrimary(context)),
             decoration: InputDecoration(
               hintText: hint,
-              hintStyle: GoogleFonts.inter(color: AppTheme.textSecondary(context)),
+              hintStyle:
+                  GoogleFonts.inter(color: AppTheme.textSecondary(context)),
               border: InputBorder.none,
             ),
           ),
@@ -788,7 +896,8 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
     );
   }
 
-  Widget _buildStatusBanner({required String title, required String message, required Color color}) {
+  Widget _buildStatusBanner(
+      {required String title, required String message, required Color color}) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(20),
@@ -797,15 +906,27 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
         borderRadius: BorderRadius.circular(20),
         border: Border(left: BorderSide(color: color, width: 4)),
         boxShadow: [
-          BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.05), blurRadius: 14, offset: const Offset(0, 5)),
+          BoxShadow(
+              color: AppTheme.colors.black.withValues(alpha: 0.05),
+              blurRadius: 14,
+              offset: const Offset(0, 5)),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: GoogleFonts.outfit(color: color, fontSize: 14, fontWeight: FontWeight.w700, letterSpacing: -0.2)),
+          Text(title,
+              style: GoogleFonts.outfit(
+                  color: color,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: -0.2)),
           const SizedBox(height: 8),
-          Text(message, style: GoogleFonts.inter(color: AppTheme.textPrimary(context), fontSize: 13, height: 1.5)),
+          Text(message,
+              style: GoogleFonts.inter(
+                  color: AppTheme.textPrimary(context),
+                  fontSize: 13,
+                  height: 1.5)),
         ],
       ),
     ).animate().fadeIn(duration: 600.ms).slideY(begin: -0.1, end: 0);

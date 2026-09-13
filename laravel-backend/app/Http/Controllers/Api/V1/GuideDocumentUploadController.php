@@ -32,7 +32,7 @@ class GuideDocumentUploadController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'doc_type' => 'required|string|in:license,nic,selfie',
-            'file' => 'required|file|image|max:10240', // 10MB
+            'file' => 'required|file|image|mimes:jpeg,jpg,png,webp|max:10240', // 10MB
         ]);
 
         if ($validator->fails()) {
@@ -47,7 +47,10 @@ class GuideDocumentUploadController extends Controller
         $docType = $request->input('doc_type');
         $file = $request->file('file');
 
-        $fileName = Str::uuid()->toString() . '_' . $docType . '.' . $file->getClientOriginalExtension();
+        // Use Laravel's MIME-derived extension, never the attacker-controlled
+        // original filename/extension.
+        $extension = $file->extension();
+        $fileName = Str::uuid()->toString() . '_' . $docType . '.' . $extension;
         $file->storeAs("guide_documents/{$uid}", $fileName, 'local');
 
         return response()->json([

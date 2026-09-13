@@ -36,7 +36,8 @@ class TripCacheService {
   static const String _savedPlansBox = 'tripme_saved_plans';
   static const String _interestedEventsBox = 'tripme_interested_events';
   static const String _globalDataBox = 'tripme_global_data';
-  static const String _savedFoodsBox = 'savor_lanka_saved_foods'; // Added for SL 2.0
+  static const String _savedFoodsBox =
+      'savor_lanka_saved_foods'; // Added for SL 2.0
   static const Duration _cacheTtl = Duration(days: 7);
 
   static bool _isInitialized = false;
@@ -47,19 +48,21 @@ class TripCacheService {
   static Future<void> init() async {
     try {
       await Hive.initFlutter();
-      
+
       // Setup AES Encryption using Secure Storage
       const secureStorage = FlutterSecureStorage();
       String? encryptionKeyString;
-      
+
       try {
         // 🛡️ Safety: FlutterSecureStorage can fail on non-secure Web contexts or incognito
-        encryptionKeyString = await secureStorage.read(key: 'tripme_hive_aes').timeout(
-          const Duration(seconds: 3),
-          onTimeout: () => null,
-        );
+        encryptionKeyString =
+            await secureStorage.read(key: 'tripme_hive_aes').timeout(
+                  const Duration(seconds: 3),
+                  onTimeout: () => null,
+                );
       } catch (e) {
-        debugPrint("Secure Storage failed: $e. Falling back to unencrypted storage for local development.");
+        debugPrint(
+            "Secure Storage failed: $e. Falling back to unencrypted storage for local development.");
       }
 
       HiveAesCipher? cipher;
@@ -70,9 +73,12 @@ class TripCacheService {
         // In release, if secure storage fails, we generate a new one if possible
         try {
           final key = Hive.generateSecureKey();
-          await secureStorage.write(key: 'tripme_hive_aes', value: base64UrlEncode(key));
+          await secureStorage.write(
+              key: 'tripme_hive_aes', value: base64UrlEncode(key));
           cipher = HiveAesCipher(key);
-        } catch (e, st) { SecureLogger.error("Exception caught: $e\n$st"); }
+        } catch (e, st) {
+          SecureLogger.error("Exception caught: $e\n$st");
+        }
       }
 
       _isInitialized = await _openBoxes(cipher);
@@ -91,7 +97,8 @@ class TripCacheService {
         await Hive.openBox<String>(_savedPlansBox, encryptionCipher: cipher);
       }
       if (!Hive.isBoxOpen(_interestedEventsBox)) {
-        await Hive.openBox<String>(_interestedEventsBox, encryptionCipher: cipher);
+        await Hive.openBox<String>(_interestedEventsBox,
+            encryptionCipher: cipher);
       }
       if (!Hive.isBoxOpen(_globalDataBox)) {
         await Hive.openBox<String>(_globalDataBox, encryptionCipher: cipher);
@@ -102,19 +109,22 @@ class TripCacheService {
       }
       return true;
     } catch (e) {
-      SecureLogger.error("Failed to open encrypted Hive boxes. Deleting existing unencrypted data to upgrade.: $e");
+      SecureLogger.error(
+          "Failed to open encrypted Hive boxes. Deleting existing unencrypted data to upgrade.: $e");
       try {
         await Hive.deleteBoxFromDisk(_lastPlanBox);
         await Hive.deleteBoxFromDisk(_savedPlansBox);
         await Hive.deleteBoxFromDisk(_interestedEventsBox);
         await Hive.deleteBoxFromDisk(_globalDataBox);
         await Hive.deleteBoxFromDisk(_savedFoodsBox); // Added
-        
+
         await Hive.openBox<String>(_lastPlanBox, encryptionCipher: cipher);
         await Hive.openBox<String>(_savedPlansBox, encryptionCipher: cipher);
-        await Hive.openBox<String>(_interestedEventsBox, encryptionCipher: cipher);
+        await Hive.openBox<String>(_interestedEventsBox,
+            encryptionCipher: cipher);
         await Hive.openBox<String>(_globalDataBox, encryptionCipher: cipher);
-        await Hive.openBox<String>(_savedFoodsBox, encryptionCipher: cipher); // Added
+        await Hive.openBox<String>(_savedFoodsBox,
+            encryptionCipher: cipher); // Added
         return true;
       } catch (e2) {
         SecureLogger.error("Hard failure opening storage.", e2);
@@ -144,7 +154,10 @@ class TripCacheService {
     for (final b in bytes) {
       hash = ((hash << 5) - hash + b) & 0xFFFFFFFF;
     }
-    return base64Url.encode(utf8.encode(hash.toString())).replaceAll('=', '').substring(0, 12);
+    return base64Url
+        .encode(utf8.encode(hash.toString()))
+        .replaceAll('=', '')
+        .substring(0, 12);
   }
 
   // ─── Last-Plan Cache (auto TTL + schema versioning) ──────────────────────
@@ -160,20 +173,25 @@ class TripCacheService {
   }
 
   static bool _isValidSchema(Map<String, dynamic> data) {
-    return data.containsKey('destination') && data['destination'] is String &&
-           data.containsKey('days') && data['days'] is int &&
-           data.containsKey('schemaVersion') && data['schemaVersion'] is int;
+    return data.containsKey('destination') &&
+        data['destination'] is String &&
+        data.containsKey('days') &&
+        data['days'] is int &&
+        data.containsKey('schemaVersion') &&
+        data['schemaVersion'] is int;
   }
 
   static CachedPlanResult getLastPlan(String cacheKey) {
     try {
       final box = Hive.box<String>(_lastPlanBox);
       final raw = box.get(cacheKey);
-      if (raw == null) return const CachedPlanResult(state: CacheReadResult.miss);
+      if (raw == null)
+        return const CachedPlanResult(state: CacheReadResult.miss);
 
       final data = json.decode(raw) as Map<String, dynamic>;
       if (!_isValidSchema(data)) {
-        SecureLogger.warning('[TripCache] Cache schema validation failed for key: $cacheKey');
+        SecureLogger.warning(
+            '[TripCache] Cache schema validation failed for key: $cacheKey');
         box.delete(cacheKey);
         return const CachedPlanResult(state: CacheReadResult.miss);
       }
@@ -253,11 +271,14 @@ class TripCacheService {
             } else {
               box.delete(key);
             }
-          } catch (e, st) { SecureLogger.error("Exception caught: $e\n$st"); }
+          } catch (e, st) {
+            SecureLogger.error("Exception caught: $e\n$st");
+          }
         }
       }
       // Newest first
-      plans.sort((a, b) => (b.cachedAt ?? DateTime(0)).compareTo(a.cachedAt ?? DateTime(0)));
+      plans.sort((a, b) =>
+          (b.cachedAt ?? DateTime(0)).compareTo(a.cachedAt ?? DateTime(0)));
       return plans;
     } catch (e) {
       SecureLogger.error('[TripCache] GetAll error', e);
@@ -279,11 +300,13 @@ class TripCacheService {
           } else {
             box.delete(key);
           }
-        } catch (e, st) { SecureLogger.error("Exception caught: $e\n$st"); }
+        } catch (e, st) {
+          SecureLogger.error("Exception caught: $e\n$st");
+        }
       }
       // Newest first
-      entries.sort((a, b) =>
-          (b.plan.cachedAt ?? DateTime(0)).compareTo(a.plan.cachedAt ?? DateTime(0)));
+      entries.sort((a, b) => (b.plan.cachedAt ?? DateTime(0))
+          .compareTo(a.plan.cachedAt ?? DateTime(0)));
       return entries;
     } catch (e) {
       SecureLogger.error('[TripCache] List error', e);
@@ -311,8 +334,9 @@ class TripCacheService {
   }
 
   // ─── Interested Events (Offline Support) ──────────────────────────────────
-  
-  static Future<void> toggleInterestedEvent(String eventId, String eventJson) async {
+
+  static Future<void> toggleInterestedEvent(
+      String eventId, String eventJson) async {
     try {
       final box = Hive.box<String>(_interestedEventsBox);
       if (box.containsKey(eventId)) {
@@ -361,6 +385,19 @@ class TripCacheService {
     }
   }
 
+  /// Clears account-scoped caches on logout/account deletion while retaining
+  /// the shared discovery dataset. Saved plans, food, and interested events
+  /// must never be visible to the next account using the same device.
+  static Future<void> clearUserData() async {
+    if (!_isInitialized) return;
+    await Future.wait([
+      Hive.box<String>(_lastPlanBox).clear(),
+      Hive.box<String>(_savedPlansBox).clear(),
+      Hive.box<String>(_interestedEventsBox).clear(),
+      Hive.box<String>(_savedFoodsBox).clear(),
+    ]);
+  }
+
   // ─── Global Data Cache (Smart Refresh Support) ──────────────────────────
 
   static Future<void> cacheGlobalData(String key, String jsonString) async {
@@ -373,7 +410,8 @@ class TripCacheService {
       }
       final box = Hive.box<String>(_globalDataBox);
       await box.put(key, jsonString);
-      await box.put('${key}_timestamp', DateTime.now().millisecondsSinceEpoch.toString());
+      await box.put(
+          '${key}_timestamp', DateTime.now().millisecondsSinceEpoch.toString());
     } catch (e) {
       SecureLogger.error('[TripCache] Global data cache error', e);
     }
@@ -382,11 +420,15 @@ class TripCacheService {
   static void markLastServerCheck(String key) {
     try {
       final box = Hive.box<String>(_globalDataBox);
-      box.put('${key}_last_check', DateTime.now().millisecondsSinceEpoch.toString());
-    } catch (e, st) { SecureLogger.error("Exception caught: $e\n$st"); }
+      box.put('${key}_last_check',
+          DateTime.now().millisecondsSinceEpoch.toString());
+    } catch (e, st) {
+      SecureLogger.error("Exception caught: $e\n$st");
+    }
   }
 
-  static bool shouldCheckServer(String key, {Duration ttl = const Duration(hours: 12)}) {
+  static bool shouldCheckServer(String key,
+      {Duration ttl = const Duration(hours: 12)}) {
     try {
       final box = Hive.box<String>(_globalDataBox);
       final raw = box.get('${key}_last_check');

@@ -8,13 +8,17 @@ import '../models/tour_link.dart';
 import 'package:uuid/uuid.dart';
 import 'dart:math';
 
-final tourSessionRepositoryProvider = Provider((ref) => TourSessionRepository());
+final tourSessionRepositoryProvider =
+    Provider((ref) => TourSessionRepository());
 
 class TourSessionRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   Future<void> createSession(TourSession session) async {
-    await _firestore.collection('tour_sessions').doc(session.sessionId).set(session.toJson());
+    await _firestore
+        .collection('tour_sessions')
+        .doc(session.sessionId)
+        .set(session.toJson());
   }
 
   Future<void> startSession(String sessionId) async {
@@ -43,13 +47,17 @@ class TourSessionRepository {
           'startedAt': DateTime.now().toIso8601String(),
         });
       }
-    } catch (e, st) { SecureLogger.error("Exception caught: $e\n$st"); }
+    } catch (e, st) {
+      SecureLogger.error("Exception caught: $e\n$st");
+    }
   }
 
-  Future<void> endSession(String sessionId, {String status = 'completed_normally'}) async {
-    final doc = await _firestore.collection('tour_sessions').doc(sessionId).get();
+  Future<void> endSession(String sessionId,
+      {String status = 'completed_normally'}) async {
+    final doc =
+        await _firestore.collection('tour_sessions').doc(sessionId).get();
     if (!doc.exists) return;
-    
+
     final touristIds = List<String>.from(doc.get('touristIds') ?? []);
     final now = DateTime.now();
     final reviewWindow = now.add(const Duration(days: 14));
@@ -93,7 +101,9 @@ class TourSessionRepository {
           'completedAt': now.toIso8601String(),
         });
       }
-    } catch (e, st) { SecureLogger.error("Exception caught: $e\n$st"); }
+    } catch (e, st) {
+      SecureLogger.error("Exception caught: $e\n$st");
+    }
   }
 
   Future<TourSession?> getActiveOrInitialSessionForGuide(String guideId) async {
@@ -144,7 +154,8 @@ class TourSessionRepository {
     });
   }
 
-  Future<void> updateMeetingPoint(String sessionId, String name, double lat, double lng) async {
+  Future<void> updateMeetingPoint(
+      String sessionId, String name, double lat, double lng) async {
     await _firestore.runTransaction((transaction) async {
       final docRef = _firestore.collection('tour_sessions').doc(sessionId);
       final snapshot = await transaction.get(docRef);
@@ -161,9 +172,10 @@ class TourSessionRepository {
   }
 
   Future<void> joinSession(String sessionId, String touristId) async {
-    final doc = await _firestore.collection('tour_sessions').doc(sessionId).get();
+    final doc =
+        await _firestore.collection('tour_sessions').doc(sessionId).get();
     if (!doc.exists) return;
-    
+
     final phase = doc.get('currentPhase') ?? 'assembling';
     if (phase != 'assembling') {
       throw Exception("JOIN_BLOCKED: Tour has already started movement.");
@@ -175,7 +187,8 @@ class TourSessionRepository {
   }
 
   Future<String> generateJoinToken(String sessionId) async {
-    final token = _generateShortToken(); // 6-char human readable or UUID fragment
+    final token =
+        _generateShortToken(); // 6-char human readable or UUID fragment
     final expiry = DateTime.now().add(const Duration(minutes: 10));
 
     await _firestore.collection('tour_sessions').doc(sessionId).update({
@@ -206,12 +219,14 @@ class TourSessionRepository {
     // before revealing whether any guess matched.
     final Map<String, dynamic> result;
     try {
-      final callable = FirebaseFunctions.instance.httpsCallable('validateJoinToken');
+      final callable =
+          FirebaseFunctions.instance.httpsCallable('validateJoinToken');
       final response = await callable.call({'token': token});
       result = Map<String, dynamic>.from(response.data as Map);
     } on FirebaseFunctionsException catch (e) {
       if (e.code == 'resource-exhausted') {
-        throw Exception("TOO_MANY_ATTEMPTS: ${e.message ?? 'Please wait a few minutes and try again.'}");
+        throw Exception(
+            "TOO_MANY_ATTEMPTS: ${e.message ?? 'Please wait a few minutes and try again.'}");
       }
       rethrow;
     }
@@ -221,14 +236,16 @@ class TourSessionRepository {
     }
 
     final sessionId = result['sessionId'] as String;
-    final doc = await _firestore.collection('tour_sessions').doc(sessionId).get();
+    final doc =
+        await _firestore.collection('tour_sessions').doc(sessionId).get();
     if (!doc.exists) {
       throw Exception("INVALID_TOKEN: No active session found for this code.");
     }
     final session = TourSession.fromJson(doc.data()!);
 
     // 2. Check Expiry
-    if (session.tokenExpiresAt != null && session.tokenExpiresAt!.isBefore(DateTime.now())) {
+    if (session.tokenExpiresAt != null &&
+        session.tokenExpiresAt!.isBefore(DateTime.now())) {
       throw Exception("EXPIRED_TOKEN: This join code has expired.");
     }
 
@@ -244,8 +261,9 @@ class TourSessionRepository {
 
     // 5. Atomic Join Transaction
     await _firestore.runTransaction((transaction) async {
-      final sessionRef = _firestore.collection('tour_sessions').doc(session.sessionId);
-      
+      final sessionRef =
+          _firestore.collection('tour_sessions').doc(session.sessionId);
+
       // Create TourLink
       final linkId = const Uuid().v4();
       final tourLink = TourLink(
@@ -258,8 +276,9 @@ class TourSessionRepository {
         trackingConsent: consent,
       );
 
-      transaction.set(_firestore.collection('tour_links').doc(linkId), tourLink.toJson());
-      
+      transaction.set(
+          _firestore.collection('tour_links').doc(linkId), tourLink.toJson());
+
       // Update Session
       transaction.update(sessionRef, {
         'touristIds': FieldValue.arrayUnion([touristId]),
@@ -273,27 +292,33 @@ class TourSessionRepository {
   String _generateShortToken() {
     const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
     final rnd = Random();
-    return String.fromCharCodes(Iterable.generate(6, (_) => chars.codeUnitAt(rnd.nextInt(chars.length))));
+    return String.fromCharCodes(Iterable.generate(
+        6, (_) => chars.codeUnitAt(rnd.nextInt(chars.length))));
   }
 
   // SOS Logic with 30-second cooldown logic (Throttled)
   // Note: Cooldown is best handled on UI/Backend, but repository can check last SOS time.
   Future<void> triggerSos(String sessionId, bool isActive) async {
-    // Phase A: Simple toggle for now, cooldown logic in UI/Functions
-    await _firestore.collection('tour_sessions').doc(sessionId).update({
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) throw StateError('Sign in is required to use SOS.');
+
+    // The session state and its audit record must commit together. Previously
+    // the UI could show SOS active even if the alert record failed to write.
+    final batch = _firestore.batch();
+    batch.update(_firestore.collection('tour_sessions').doc(sessionId), {
       'sosActive': isActive,
     });
 
     // Record the SOS event in a dedicated collection for Admin audit/alerts
     if (isActive) {
-      final uid = FirebaseAuth.instance.currentUser?.uid;
-      await _firestore.collection('sos_alerts').add({
+      batch.set(_firestore.collection('sos_alerts').doc(), {
         'sessionId': sessionId,
         'triggeredBy': uid,
         'timestamp': FieldValue.serverTimestamp(),
         'status': 'triggered',
       });
     }
+    await batch.commit();
   }
 
   Stream<TourSession?> getActiveSession(String sessionId) {
@@ -305,7 +330,8 @@ class TourSessionRepository {
   }
 
   Future<TourSession?> getSession(String sessionId) async {
-    final doc = await _firestore.collection('tour_sessions').doc(sessionId).get();
+    final doc =
+        await _firestore.collection('tour_sessions').doc(sessionId).get();
     if (doc.exists) {
       return TourSession.fromJson(doc.data()!);
     }

@@ -122,6 +122,7 @@ Route::prefix('v1')->group(function () {
     // Marketplace Listing Routes (Protected by Sanctum Auth, API Key & Rate Limiting)
     Route::prefix('listings')->middleware(['auth:sanctum', VerifyApiKey::class, 'throttle:60,1'])->group(function () {
         Route::get('/featured', [MarketplaceController::class, 'featured']);
+        Route::get('/search', [MarketplaceController::class, 'search']);
     });
 
     // Marketplace Photo Uploads (cover/vehicle photos — Protected by Sanctum Auth, API Key & Rate Limiting)
@@ -140,6 +141,7 @@ Route::prefix('v1')->group(function () {
         Route::get('/priority-check', [BookingController::class, 'priorityCheck']);
         Route::post('/{bookingId}/notify-guide', [BookingController::class, 'notifyGuide']);
         Route::post('/{bookingId}/quote', [BookingController::class, 'sendQuote']);
+        Route::post('/{bookingId}/accept-with-session', [BookingController::class, 'acceptWithSession']);
     });
 
     // Payment checkout (tourist-initiated; returns signed PayHere params).
@@ -158,9 +160,12 @@ Route::prefix('v1')->group(function () {
     // BUG-Q006 / BUG-Q010 / BUG-Q011: Replaced inline closures with AiProxyController.
     // All requests are now validated via FormRequest before being forwarded to Python.
     // Python upstream errors are sanitised — raw error bodies are never returned to clients.
-    Route::middleware(['auth:sanctum', VerifyApiKey::class, 'zenith', 'throttle:30,1'])->group(function () {
+    Route::middleware(['auth:sanctum', VerifyApiKey::class, 'zenith', 'throttle:10,1'])->group(function () {
         Route::post('/ai/plan-itinerary', [AiProxyController::class, 'planItinerary']);
         Route::post('/ai/recommendations', [AiProxyController::class, 'recommendations']);
+        Route::post('/ai/chat', [AiProxyController::class, 'chat']);
+        Route::post('/ai/food/scan', [AiProxyController::class, 'foodScan']);
+        Route::get('/ai/status', [AiProxyController::class, 'status']);
     });
 
     // Discovery API — public content feeds consumed by the app's discovery/

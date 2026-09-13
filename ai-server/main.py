@@ -16,9 +16,10 @@ Routes (all under /api, because the app's PYTHON_BACKEND_URL includes /api):
 Run:  uvicorn main:app --host 0.0.0.0 --port 8000
 """
 import base64
-import gzip
 import json
 import os
+import secrets
+import zlib
 
 from dotenv import load_dotenv
 from fastapi import FastAPI, Header, HTTPException, Request
@@ -27,7 +28,6 @@ from pydantic import BaseModel, Field
 
 load_dotenv()
 
-LUMEN_API_KEY = os.getenv("LUMEN_API_KEY", "lumen_default_secure_api_key_2026")
 INTERNAL_BRIDGE_KEY = os.getenv("INTERNAL_BRIDGE_KEY", "")
 
 app = FastAPI(title="Hidden Gems SL — AI Server", version="1.0.0")
@@ -36,14 +36,11 @@ app = FastAPI(title="Hidden Gems SL — AI Server", version="1.0.0")
 # ─────────────────────────────────────────────────────────────────────────────
 # Auth helpers — reject requests whose header doesn't match the shared secret.
 # ─────────────────────────────────────────────────────────────────────────────
-def _require_lumen_key(x_api_key: str | None) -> None:
-    if x_api_key != LUMEN_API_KEY:
-        raise HTTPException(status_code=401, detail="Invalid or missing x-api-key.")
-
-
 def _require_bridge_key(x_admin_internal_key: str | None) -> None:
-    # Fail closed only if a bridge key is configured; if unset (local dev), allow.
-    if INTERNAL_BRIDGE_KEY and x_admin_internal_key != INTERNAL_BRIDGE_KEY:
+    # An empty bridge key is a deployment error, never an authentication bypass.
+    if not INTERNAL_BRIDGE_KEY:
+        raise HTTPException(status_code=503, detail="AI bridge is not configured.")
+    if not x_admin_internal_key or not secrets.compare_digest(x_admin_internal_key, INTERNAL_BRIDGE_KEY):
         raise HTTPException(status_code=401, detail="Invalid X-Admin-Internal-Key.")
 
 
@@ -61,16 +58,15 @@ async def status():
 #    Response: {"response": "<text>"}
 # ─────────────────────────────────────────────────────────────────────────────
 class OracleRequest(BaseModel):
-    prompt: str
+    prompt: str = Field(min_length=1, max_length=2000)
     use_rag: bool = True
-    mode: str = "default"          # default|analyst|optimizer|refactor|database|security
-    system_prompt: str = ""
-    temperature: float = 0.7
+    mode: str = Field(default="default", pattern="^(default|analyst|optimizer|refactor|database|security)$")
+    temperature: float = Field(default=0.7, ge=0.0, le=1.0)
 
 
 @app.post("/api/test-model")
-async def oracle_chat(body: OracleRequest, x_api_key: str | None = Header(default=None)):
-    _require_lumen_key(x_api_key)
+async def oracle_chat(body: OracleRequest, x_admin_internal_key: str | None = Header(default=None)):
+    _require_bridge_key(x_admin_internal_key)
 
     # TODO: PLUG YOUR MODEL IN HERE ─────────────────────────────────────────
     # 1. (optional) if body.use_rag: retrieve top-k Sri-Lanka place records and
@@ -186,7 +182,8 @@ async def plan_itinerary(
 #           "compressed": true}. Response must be application/json (FoodModel).
 # ─────────────────────────────────────────────────────────────────────────────
 @app.post("/api/food/scan")
-async def food_scan(request: Request):
+async def food_scan(request: Request, x_admin_internal_key: str | None = Header(default=None)):
+    _require_bridge_key(x_admin_internal_key)
     payload = await request.json()
     image_b64 = payload.get("image_base64", "")
     user_mode = payload.get("user_mode", "Tourist")
@@ -194,8 +191,19 @@ async def food_scan(request: Request):
     compressed = payload.get("compressed", False)
 
     try:
-        raw = base64.b64decode(image_b64)
-        image_bytes = gzip.decompress(raw) if compressed else raw
+        if not isinstance(image_b64, str) or len(image_b64) > 8_000_000:
+            raise ValueError("image too large")
+        raw = base64.b64decode(image_b64, validate=True)
+        if compressed:
+            decoder = zlib.decompressobj(16 + zlib.MAX_WBITS)
+            image_bytes = decoder.decompress(raw, 5_000_001)
+            if len(image_bytes) > 5_000_000 or decoder.unconsumed_tail:
+                raise ValueError("decompressed image too large")
+            image_bytes += decoder.flush()
+        else:
+            image_bytes = raw
+        if not image_bytes or len(image_bytes) > 5_000_000:
+            raise ValueError("invalid image size")
     except Exception:
         raise HTTPException(status_code=400, detail="Could not decode image payload.")
 

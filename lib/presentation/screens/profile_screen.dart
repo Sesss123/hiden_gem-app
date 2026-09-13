@@ -54,6 +54,7 @@ import 'package:hidden_gems_sl/presentation/screens/family_share_screen.dart';
 import 'package:hidden_gems_sl/presentation/screens/privacy_policy_screen.dart';
 import 'package:hidden_gems_sl/presentation/screens/terms_screen.dart';
 import '../../core/services/secure_entitlements.dart';
+import '../../core/services/consent_service.dart';
 import 'admin_guide_verification_screen.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
@@ -63,7 +64,8 @@ class ProfileScreen extends ConsumerStatefulWidget {
   ConsumerState<ProfileScreen> createState() => _ProfileScreenState();
 }
 
-class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKeepAliveClientMixin {
+class _ProfileScreenState extends ConsumerState<ProfileScreen>
+    with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
   late var profile = UserPreferenceService.getProfile();
@@ -107,11 +109,15 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
       // Laravel/MySQL-backed — zero Firestore cost. Already syncs
       // guideStatus/isGuideApproved on approval/rejection server-side.
       // Always runs (free) — only the Firestore .get() below is time-gated.
-      final app = await GuideApplicationRepository().getMyApplication().catchError((_) => null);
+      final app = await GuideApplicationRepository()
+          .getMyApplication()
+          .catchError((_) => null);
       if (app != null && mounted) {
         bool changed = false;
         if (app.status != profile.guideStatus &&
-            (app.status == GuideStatus.approved || app.status == GuideStatus.rejected || app.status == GuideStatus.pending)) {
+            (app.status == GuideStatus.approved ||
+                app.status == GuideStatus.rejected ||
+                app.status == GuideStatus.pending)) {
           profile.applyGuideStatus(app.status);
           changed = true;
         }
@@ -141,14 +147,20 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
       final prefs = await SharedPreferences.getInstance();
       final lastCheckMs = prefs.getInt(_lastRoleCheckPrefsKey);
       if (lastCheckMs != null) {
-        final elapsed = DateTime.now().difference(DateTime.fromMillisecondsSinceEpoch(lastCheckMs));
-        if (elapsed < _roleCheckWindow) return; // Still fresh — skip the Firestore read.
+        final elapsed = DateTime.now()
+            .difference(DateTime.fromMillisecondsSinceEpoch(lastCheckMs));
+        if (elapsed < _roleCheckWindow)
+          return; // Still fresh — skip the Firestore read.
       }
-      await prefs.setInt(_lastRoleCheckPrefsKey, DateTime.now().millisecondsSinceEpoch);
+      await prefs.setInt(
+          _lastRoleCheckPrefsKey, DateTime.now().millisecondsSinceEpoch);
 
       // One-shot read (not a listener) — also catches role changes outside
       // the guide-application flow (e.g. admin ban/promotion).
-      final doc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+      final doc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .get();
       if (doc.exists && doc.data() != null && mounted) {
         final data = doc.data()!;
         bool changed = false;
@@ -168,7 +180,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
               profile.guideStatus = newStatus;
               changed = true;
             }
-          } catch (e, st) { SecureLogger.error("Exception caught: $e\n$st"); }
+          } catch (e, st) {
+            SecureLogger.error("Exception caught: $e\n$st");
+          }
         }
         if (changed) {
           await UserPreferenceService.saveProfile(profile);
@@ -188,14 +202,18 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
   Future<void> _pollGuideStatus() async {
     if (!mounted) return;
     try {
-      final app = await GuideApplicationRepository().getMyApplication().catchError((_) => null);
+      final app = await GuideApplicationRepository()
+          .getMyApplication()
+          .catchError((_) => null);
       if (app == null || !mounted) return;
 
       bool changed = false;
-      if (app.status == GuideStatus.approved && profile.guideStatus != GuideStatus.approved) {
+      if (app.status == GuideStatus.approved &&
+          profile.guideStatus != GuideStatus.approved) {
         profile.applyGuideStatus(GuideStatus.approved);
         changed = true;
-      } else if (app.status == GuideStatus.rejected && profile.guideStatus != GuideStatus.rejected) {
+      } else if (app.status == GuideStatus.rejected &&
+          profile.guideStatus != GuideStatus.rejected) {
         profile.applyGuideStatus(GuideStatus.rejected);
         changed = true;
         // Stop polling once a terminal state is reached.
@@ -226,7 +244,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
     showModalBottomSheet(
       context: context,
       backgroundColor: AppTheme.colors.transparent,
-      constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.8),
+      constraints:
+          BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.8),
       builder: (context) => _BottomSheet(
         title: AppLocalizations.of(context)!.selectLanguage.toUpperCase(),
         child: Flexible(
@@ -235,13 +254,17 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
               mainAxisSize: MainAxisSize.min,
               children: languages.map((lang) {
                 return ListTile(
-                  leading: Text(lang['flag']!, style: const TextStyle(fontSize: 24)),
+                  leading:
+                      Text(lang['flag']!, style: const TextStyle(fontSize: 24)),
                   title: Text(
                     lang['name']!,
-                    style: GoogleFonts.inter(color: Theme.of(context).colorScheme.onSurface),
+                    style: GoogleFonts.inter(
+                        color: Theme.of(context).colorScheme.onSurface),
                   ),
                   onTap: () {
-                    ref.read(localeProvider.notifier).setLocale(Locale(lang['code']!));
+                    ref
+                        .read(localeProvider.notifier)
+                        .setLocale(Locale(lang['code']!));
                     Navigator.pop(context);
                   },
                 );
@@ -276,7 +299,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
     try {
       final file = File(profile.profileImagePath!);
       if (!file.existsSync()) return _defaultAvatar(isPremium);
-      return Image.file(file, fit: BoxFit.cover,
+      return Image.file(file,
+          fit: BoxFit.cover,
           errorBuilder: (_, __, ___) => _defaultAvatar(isPremium));
     } catch (_) {
       return _defaultAvatar(isPremium);
@@ -308,17 +332,22 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                _photoOption(Icons.camera_alt_outlined, l10n.camera, ImageSource.camera),
-                _photoOption(Icons.photo_library_outlined, l10n.gallery, ImageSource.gallery),
+                _photoOption(
+                    Icons.camera_alt_outlined, l10n.camera, ImageSource.camera),
+                _photoOption(Icons.photo_library_outlined, l10n.gallery,
+                    ImageSource.gallery),
               ],
             ),
             if (profile.profileImagePath != null) ...[
               const SizedBox(height: 16),
               TextButton.icon(
-                icon: Icon(Icons.delete_outline, color: AppTheme.colors.redAccent, size: 18),
+                icon: Icon(Icons.delete_outline,
+                    color: AppTheme.colors.redAccent, size: 18),
                 label: Text(l10n.removePhoto,
                     style: GoogleFonts.inter(
-                        color: AppTheme.colors.redAccent, fontSize: 12, fontWeight: FontWeight.bold)),
+                        color: AppTheme.colors.redAccent,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold)),
                 onPressed: () async {
                   await UserPreferenceService.updateProfileImagePath(null);
                   if (!context.mounted) return;
@@ -333,10 +362,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
     );
 
     if (source != null) {
-      final XFile? image = await picker.pickImage(source: source, maxWidth: 800);
+      final XFile? image =
+          await picker.pickImage(source: source, maxWidth: 800);
       if (image != null) {
         await UserPreferenceService.updateProfileImagePath(image.path);
-        if (mounted) setState(() => profile = UserPreferenceService.getProfile());
+        if (mounted)
+          setState(() => profile = UserPreferenceService.getProfile());
       }
     }
   }
@@ -358,7 +389,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
           const SizedBox(height: 10),
           Text(label,
               style: GoogleFonts.outfit(
-                  color: AppPalette.earth, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1.5)),
+                  color: AppPalette.earth,
+                  fontSize: 10,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1.5)),
         ],
       ),
     );
@@ -374,8 +408,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
       final isDark = Theme.of(context).brightness == Brightness.dark;
 
       if (l10n == null) {
-        return Scaffold(
-          body: Center(child: Text('Loading...', style: TextStyle(color: AppTheme.colors.red))),
+        return const Scaffold(
+          body: Center(child: CircularProgressIndicator()),
         );
       }
 
@@ -393,14 +427,18 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
                 padding: const EdgeInsets.fromLTRB(20, 0, 20, 120),
                 // BUG-053: Wrap in SingleChildScrollView to prevent overflow on small screens
                 child: SingleChildScrollView(
-                  physics: const NeverScrollableScrollPhysics(), // parent CustomScrollView handles scroll
+                  physics:
+                      const NeverScrollableScrollPhysics(), // parent CustomScrollView handles scroll
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const SizedBox(height: 28),
 
                       // Guide Command Hub (Option 1 - Quick Access at the very top!)
-                      if (profile.guideStatus == GuideStatus.approved || profile.role == 'guide_approved' || profile.isGuideApproved || profile.role == 'admin') ...[
+                      if (profile.guideStatus == GuideStatus.approved ||
+                          profile.role == 'guide_approved' ||
+                          profile.isGuideApproved ||
+                          profile.role == 'admin') ...[
                         _buildGuideCommandHub(),
                         const SizedBox(height: 24),
                       ],
@@ -452,7 +490,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
             child: Padding(
               padding: const EdgeInsets.all(24),
               child: Text(
-                fallbackL10n?.somethingWentWrong ?? 'Something went wrong. Please restart the app.',
+                fallbackL10n?.somethingWentWrong ??
+                    'Something went wrong. Please restart the app.',
                 textAlign: TextAlign.center,
                 style: TextStyle(color: AppTheme.colors.white, fontSize: 14),
               ),
@@ -515,9 +554,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
                               height: 88,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                border: Border.all(color: AppTheme.colors.white.withValues(alpha: 0.55), width: 2.5),
+                                border: Border.all(
+                                    color: AppTheme.colors.white
+                                        .withValues(alpha: 0.55),
+                                    width: 2.5),
                               ),
-                              child: ClipOval(child: _buildProfileImage(profile, isPremium)),
+                              child: ClipOval(
+                                  child:
+                                      _buildProfileImage(profile, isPremium)),
                             ),
                             Positioned(
                               right: -2,
@@ -530,7 +574,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
                                   border: Border.all(color: primary, width: 2),
                                 ),
                                 child: Icon(
-                                  isPremium ? Icons.verified_rounded : Icons.camera_alt_rounded,
+                                  isPremium
+                                      ? Icons.verified_rounded
+                                      : Icons.camera_alt_rounded,
                                   color: AppPalette.ink,
                                   size: 14,
                                 ),
@@ -538,7 +584,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
                             ),
                           ],
                         ).animate(onPlay: (c) => c.repeat()).shimmer(
-                            duration: 3.seconds, delay: 2.seconds, color: AppTheme.colors.white.withValues(alpha: 0.3)),
+                            duration: 3.seconds,
+                            delay: 2.seconds,
+                            color:
+                                AppTheme.colors.white.withValues(alpha: 0.3)),
                       ),
                       const SizedBox(height: 14),
                       Text(
@@ -552,13 +601,15 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
                       ),
                       const SizedBox(height: 8),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 4),
                         decoration: BoxDecoration(
                           color: AppTheme.colors.white.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(100),
                         ),
                         child: Text(
-                          l10n.levelBadgeLabel(svc.currentLevel.title, levelNumber),
+                          l10n.levelBadgeLabel(
+                              svc.currentLevel.title, levelNumber),
                           style: GoogleFonts.inter(
                             fontSize: 10,
                             color: AppTheme.colors.white,
@@ -568,16 +619,34 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
                         ),
                       ),
                       const SizedBox(height: 14),
-                      Container(height: 1, color: AppTheme.colors.white.withValues(alpha: 0.15)),
+                      Container(
+                          height: 1,
+                          color: AppTheme.colors.white.withValues(alpha: 0.15)),
                       const SizedBox(height: 12),
                       // Stats, embedded directly in the hero card
                       Row(
                         children: [
-                          Expanded(child: _heroStatTile(profile.totalTripsGenerated.toString(), l10n.statLabelTrips)),
-                          Container(width: 1, height: 32, color: AppTheme.colors.white.withValues(alpha: 0.15)),
-                          Expanded(child: _heroStatTile(profile.visitedPlaces.length.toString(), l10n.statLabelPlaces)),
-                          Container(width: 1, height: 32, color: AppTheme.colors.white.withValues(alpha: 0.15)),
-                          Expanded(child: _heroStatTile(levelNumber.toString(), l10n.statLabelLevel)),
+                          Expanded(
+                              child: _heroStatTile(
+                                  profile.totalTripsGenerated.toString(),
+                                  l10n.statLabelTrips)),
+                          Container(
+                              width: 1,
+                              height: 32,
+                              color: AppTheme.colors.white
+                                  .withValues(alpha: 0.15)),
+                          Expanded(
+                              child: _heroStatTile(
+                                  profile.visitedPlaces.length.toString(),
+                                  l10n.statLabelPlaces)),
+                          Container(
+                              width: 1,
+                              height: 32,
+                              color: AppTheme.colors.white
+                                  .withValues(alpha: 0.15)),
+                          Expanded(
+                              child: _heroStatTile(
+                                  levelNumber.toString(), l10n.statLabelLevel)),
                         ],
                       ),
                     ],
@@ -591,18 +660,23 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
     );
   }
 
-
   Widget _heroStatTile(String value, String label) {
     return Column(
       children: [
         Text(
           value,
-          style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.w800, color: AppTheme.colors.white),
+          style: GoogleFonts.outfit(
+              fontSize: 18,
+              fontWeight: FontWeight.w800,
+              color: AppTheme.colors.white),
         ),
         const SizedBox(height: 2),
         Text(
           label,
-          style: GoogleFonts.inter(fontSize: 10, color: AppTheme.colors.white.withValues(alpha: 0.75), fontWeight: FontWeight.w600),
+          style: GoogleFonts.inter(
+              fontSize: 10,
+              color: AppTheme.colors.white.withValues(alpha: 0.75),
+              fontWeight: FontWeight.w600),
         ),
       ],
     );
@@ -648,25 +722,32 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  isPremium ? l10n.fullArAiAccessGranted : l10n.unlockArAiFeatures,
-                  style: GoogleFonts.inter(color: AppTheme.colors.white.withValues(alpha: 0.6), fontSize: 11),
+                  isPremium
+                      ? l10n.fullArAiAccessGranted
+                      : l10n.unlockArAiFeatures,
+                  style: GoogleFonts.inter(
+                      color: AppTheme.colors.white.withValues(alpha: 0.6),
+                      fontSize: 11),
                 ),
               ],
             ),
           ),
           if (!isPremium)
             GestureDetector(
-              onTap: () => Navigator.push(
-                  context, MaterialPageRoute(builder: (_) => const PremiumHubScreen())),
+              onTap: () => Navigator.push(context,
+                  MaterialPageRoute(builder: (_) => const PremiumHubScreen())),
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                 decoration: BoxDecoration(
                   color: AppPalette.heroOchre,
                   borderRadius: BorderRadius.circular(100),
                 ),
                 child: Text(l10n.upgrade,
                     style: GoogleFonts.inter(
-                        color: AppPalette.ink, fontSize: 11, fontWeight: FontWeight.w700)),
+                        color: AppPalette.ink,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700)),
               ),
             ),
         ],
@@ -691,7 +772,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
               Icons.light_mode_rounded,
               l10n.themeLight,
               themeMode == ThemeMode.light,
-              () => ref.read(themeModeProvider.notifier).setMode(ThemeMode.light),
+              () =>
+                  ref.read(themeModeProvider.notifier).setMode(ThemeMode.light),
             ),
           ),
           Expanded(
@@ -699,7 +781,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
               Icons.dark_mode_rounded,
               l10n.themeDark,
               themeMode == ThemeMode.dark,
-              () => ref.read(themeModeProvider.notifier).setMode(ThemeMode.dark),
+              () =>
+                  ref.read(themeModeProvider.notifier).setMode(ThemeMode.dark),
             ),
           ),
         ],
@@ -707,18 +790,28 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
     );
   }
 
-  Widget _themeOption(IconData icon, String label, bool isSelected, VoidCallback onTap) {
-    final color = isSelected ? AppTheme.textPrimary(context) : AppTheme.textSecondary(context);
+  Widget _themeOption(
+      IconData icon, String label, bool isSelected, VoidCallback onTap) {
+    final color = isSelected
+        ? AppTheme.textPrimary(context)
+        : AppTheme.textSecondary(context);
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 250),
         padding: const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
-          color: isSelected ? Theme.of(context).colorScheme.surface : AppTheme.colors.transparent,
+          color: isSelected
+              ? Theme.of(context).colorScheme.surface
+              : AppTheme.colors.transparent,
           borderRadius: BorderRadius.circular(12),
           boxShadow: isSelected
-              ? [BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.12), blurRadius: 10, offset: const Offset(0, 4))]
+              ? [
+                  BoxShadow(
+                      color: AppTheme.colors.black.withValues(alpha: 0.12),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4))
+                ]
               : null,
         ),
         child: Row(
@@ -762,7 +855,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
           l10n.heritagePassport,
           l10n.verifiableVisitCollection,
           AppPalette.heroOchre,
-          () => Navigator.push(context, MaterialPageRoute(builder: (_) => const HeritagePassportScreen())),
+          () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (_) => const HeritagePassportScreen())),
         ),
         const SizedBox(height: 8),
         FutureBuilder<int>(
@@ -770,8 +866,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
           builder: (context, snapshot) {
             final score = snapshot.data ?? 0;
             final rank = EthicalTravelService.getRank(score);
-            return _hubCard(Icons.eco_outlined, l10n.ethicalTravelMeter,
-                l10n.ethicalRankScore(rank, score), Theme.of(context).colorScheme.secondary, () => _showEthicalMeterDialog(context, score, rank));
+            return _hubCard(
+                Icons.eco_outlined,
+                l10n.ethicalTravelMeter,
+                l10n.ethicalRankScore(rank, score),
+                Theme.of(context).colorScheme.secondary,
+                () => _showEthicalMeterDialog(context, score, rank));
           },
         ),
       ],
@@ -788,14 +888,17 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
     if (trips.isNotEmpty) {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (_) => BudgetTrackerScreen(plan: trips.first)),
+        MaterialPageRoute(
+            builder: (_) => BudgetTrackerScreen(plan: trips.first)),
       );
     } else {
-      Navigator.push(context, MaterialPageRoute(builder: (_) => const BudgetConciergeScreen()));
+      Navigator.push(context,
+          MaterialPageRoute(builder: (_) => const BudgetConciergeScreen()));
     }
   }
 
-  Widget _hubCard(IconData icon, String title, String subtitle, Color color, VoidCallback onTap) {
+  Widget _hubCard(IconData icon, String title, String subtitle, Color color,
+      VoidCallback onTap) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -803,7 +906,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
           color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
-            BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.05), blurRadius: 16, offset: const Offset(0, 6)),
+            BoxShadow(
+                color: AppTheme.colors.black.withValues(alpha: 0.05),
+                blurRadius: 16,
+                offset: const Offset(0, 6)),
           ],
         ),
         child: Padding(
@@ -813,7 +919,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
               Container(
                 width: 36,
                 height: 36,
-                decoration: BoxDecoration(color: color.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(11)),
+                decoration: BoxDecoration(
+                    color: color.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(11)),
                 child: Icon(icon, color: color, size: 18),
               ),
               const SizedBox(width: 12),
@@ -822,13 +930,20 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(title,
-                        style: GoogleFonts.inter(color: AppTheme.textPrimary(context), fontWeight: FontWeight.w600, fontSize: 12)),
+                        style: GoogleFonts.inter(
+                            color: AppTheme.textPrimary(context),
+                            fontWeight: FontWeight.w600,
+                            fontSize: 12)),
                     Text(subtitle,
-                        style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 10)),
+                        style: GoogleFonts.inter(
+                            color: AppTheme.textSecondary(context),
+                            fontSize: 10)),
                   ],
                 ),
               ),
-              Icon(Icons.arrow_forward_ios_rounded, color: AppTheme.textSecondary(context).withValues(alpha: 0.5), size: 12),
+              Icon(Icons.arrow_forward_ios_rounded,
+                  color: AppTheme.textSecondary(context).withValues(alpha: 0.5),
+                  size: 12),
             ],
           ),
         ),
@@ -844,11 +959,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
       isScrollControlled: true,
       backgroundColor: AppTheme.colors.transparent,
       builder: (context) => Container(
-        constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.88),
+        constraints: BoxConstraints(
+            maxHeight: MediaQuery.of(context).size.height * 0.88),
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surface,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(36)),
-          border: Border.all(color: AppTheme.colors.primary.withValues(alpha: 0.3), width: 1.5),
+          border: Border.all(
+              color: AppTheme.colors.primary.withValues(alpha: 0.3),
+              width: 1.5),
           boxShadow: [
             BoxShadow(
               color: AppTheme.colors.black.withValues(alpha: 0.2),
@@ -864,101 +982,137 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-            Container(
-              width: 40, height: 4,
-              decoration: BoxDecoration(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(2)),
-            ),
-            const SizedBox(height: 24),
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: AppTheme.colors.primary.withValues(alpha: 0.15),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(Icons.eco_rounded, color: AppTheme.colors.primary, size: 40),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              l10n.ethicalTravelMeterDialogTitle,
-              style: GoogleFonts.outfit(
-                color: Theme.of(context).colorScheme.onSurface,
-                fontWeight: FontWeight.w900,
-                letterSpacing: 2,
-                fontSize: 18,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              l10n.ethicalRankScorePoints(rank, score),
-              style: GoogleFonts.inter(
-                color: AppTheme.colors.primary,
-                fontWeight: FontWeight.w800,
-                fontSize: 14,
-              ),
-            ),
-            const SizedBox(height: 20),
-            Text(
-              l10n.ethicalScoreDescription,
-              textAlign: TextAlign.center,
-              style: GoogleFonts.inter(
-                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
-                fontSize: 13,
-                height: 1.5,
-              ),
-            ),
-            const SizedBox(height: 24),
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                l10n.howToEarnPointsHeading,
-                style: GoogleFonts.outfit(
-                  color: Theme.of(context).colorScheme.onSurface,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1,
-                  fontSize: 12,
+                Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onSurface
+                          .withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(2)),
                 ),
-              ),
-            ),
-            const SizedBox(height: 12),
-            _ecoPointTile(Icons.rate_review_rounded, l10n.earnPointsReviewsTitle, l10n.earnPointsReviewsAmount, l10n.earnPointsReviewsSubtitle),
-            _ecoPointTile(Icons.restaurant_rounded, l10n.earnPointsFoodTitle, l10n.earnPointsFoodAmount, l10n.earnPointsFoodSubtitle),
-            _ecoPointTile(Icons.account_balance_rounded, l10n.earnPointsHeritageTitle, l10n.earnPointsHeritageAmount, l10n.earnPointsHeritageSubtitle),
-            const SizedBox(height: 20),
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                l10n.rewardsPerksHeading,
-                style: GoogleFonts.outfit(
-                  color: Theme.of(context).colorScheme.onSurface,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1,
-                  fontSize: 12,
+                const SizedBox(height: 24),
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: AppTheme.colors.primary.withValues(alpha: 0.15),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(Icons.eco_rounded,
+                      color: AppTheme.colors.primary, size: 40),
                 ),
-              ),
-            ),
-            const SizedBox(height: 12),
-            _rewardTile(Icons.workspace_premium_rounded, l10n.rewardEcoGuardianBadgeTitle, l10n.rewardEcoGuardianBadgeSubtitle),
-            _rewardTile(Icons.local_cafe_rounded, l10n.rewardPartnerDiscountsTitle, l10n.rewardPartnerDiscountsSubtitle),
-            _rewardTile(Icons.lock_open_rounded, l10n.rewardFreePremiumPerksTitle, l10n.rewardFreePremiumPerksSubtitle),
-            _rewardTile(Icons.park_rounded, l10n.rewardRealWorldImpactTitle, l10n.rewardRealWorldImpactSubtitle),
-            const SizedBox(height: 28),
-            SizedBox(
-              width: double.infinity,
-              height: 54,
-              child: ElevatedButton(
-                onPressed: () => Navigator.pop(context),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppTheme.colors.primary,
-                  foregroundColor: AppTheme.colors.white,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                const SizedBox(height: 16),
+                Text(
+                  l10n.ethicalTravelMeterDialogTitle,
+                  style: GoogleFonts.outfit(
+                    color: Theme.of(context).colorScheme.onSurface,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 2,
+                    fontSize: 18,
+                  ),
                 ),
-                child: Text(
-                  l10n.gotItKeepExploring,
-                  style: GoogleFonts.inter(fontWeight: FontWeight.w900, letterSpacing: 1, fontSize: 13),
+                const SizedBox(height: 8),
+                Text(
+                  l10n.ethicalRankScorePoints(rank, score),
+                  style: GoogleFonts.inter(
+                    color: AppTheme.colors.primary,
+                    fontWeight: FontWeight.w800,
+                    fontSize: 14,
+                  ),
                 ),
-              ),
-            ),
-            const SizedBox(height: 12),
+                const SizedBox(height: 20),
+                Text(
+                  l10n.ethicalScoreDescription,
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.inter(
+                    color: Theme.of(context)
+                        .colorScheme
+                        .onSurface
+                        .withValues(alpha: 0.7),
+                    fontSize: 13,
+                    height: 1.5,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    l10n.howToEarnPointsHeading,
+                    style: GoogleFonts.outfit(
+                      color: Theme.of(context).colorScheme.onSurface,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1,
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                _ecoPointTile(
+                    Icons.rate_review_rounded,
+                    l10n.earnPointsReviewsTitle,
+                    l10n.earnPointsReviewsAmount,
+                    l10n.earnPointsReviewsSubtitle),
+                _ecoPointTile(
+                    Icons.restaurant_rounded,
+                    l10n.earnPointsFoodTitle,
+                    l10n.earnPointsFoodAmount,
+                    l10n.earnPointsFoodSubtitle),
+                _ecoPointTile(
+                    Icons.account_balance_rounded,
+                    l10n.earnPointsHeritageTitle,
+                    l10n.earnPointsHeritageAmount,
+                    l10n.earnPointsHeritageSubtitle),
+                const SizedBox(height: 20),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    l10n.rewardsPerksHeading,
+                    style: GoogleFonts.outfit(
+                      color: Theme.of(context).colorScheme.onSurface,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1,
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                _rewardTile(
+                    Icons.workspace_premium_rounded,
+                    l10n.rewardEcoGuardianBadgeTitle,
+                    l10n.rewardEcoGuardianBadgeSubtitle),
+                _rewardTile(
+                    Icons.local_cafe_rounded,
+                    l10n.rewardPartnerDiscountsTitle,
+                    l10n.rewardPartnerDiscountsSubtitle),
+                _rewardTile(
+                    Icons.lock_open_rounded,
+                    l10n.rewardFreePremiumPerksTitle,
+                    l10n.rewardFreePremiumPerksSubtitle),
+                _rewardTile(Icons.park_rounded, l10n.rewardRealWorldImpactTitle,
+                    l10n.rewardRealWorldImpactSubtitle),
+                const SizedBox(height: 28),
+                SizedBox(
+                  width: double.infinity,
+                  height: 54,
+                  child: ElevatedButton(
+                    onPressed: () => Navigator.pop(context),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppTheme.colors.primary,
+                      foregroundColor: AppTheme.colors.white,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16)),
+                    ),
+                    child: Text(
+                      l10n.gotItKeepExploring,
+                      style: GoogleFonts.inter(
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 1,
+                          fontSize: 13),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
               ],
             ),
           ),
@@ -974,7 +1128,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
       decoration: BoxDecoration(
         color: AppTheme.colors.primary.withValues(alpha: 0.06),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppTheme.colors.primary.withValues(alpha: 0.15)),
+        border:
+            Border.all(color: AppTheme.colors.primary.withValues(alpha: 0.15)),
       ),
       child: Row(
         children: [
@@ -984,8 +1139,18 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: GoogleFonts.inter(color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.bold, fontSize: 12)),
-                Text(subtitle, style: GoogleFonts.inter(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6), fontSize: 11)),
+                Text(title,
+                    style: GoogleFonts.inter(
+                        color: Theme.of(context).colorScheme.onSurface,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12)),
+                Text(subtitle,
+                    style: GoogleFonts.inter(
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onSurface
+                            .withValues(alpha: 0.6),
+                        fontSize: 11)),
               ],
             ),
           ),
@@ -994,14 +1159,19 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
     );
   }
 
-  Widget _ecoPointTile(IconData icon, String title, String points, String subtitle) {
+  Widget _ecoPointTile(
+      IconData icon, String title, String points, String subtitle) {
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.04),
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.08)),
+        border: Border.all(
+            color: Theme.of(context)
+                .colorScheme
+                .onSurface
+                .withValues(alpha: 0.08)),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1012,9 +1182,19 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: GoogleFonts.inter(color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.bold, fontSize: 13)),
+                Text(title,
+                    style: GoogleFonts.inter(
+                        color: Theme.of(context).colorScheme.onSurface,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 13)),
                 const SizedBox(height: 2),
-                Text(subtitle, style: GoogleFonts.inter(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5), fontSize: 11)),
+                Text(subtitle,
+                    style: GoogleFonts.inter(
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onSurface
+                            .withValues(alpha: 0.5),
+                        fontSize: 11)),
               ],
             ),
           ),
@@ -1024,13 +1204,16 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
               color: AppTheme.colors.primary.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: Text(points, style: GoogleFonts.outfit(color: AppTheme.colors.primary, fontWeight: FontWeight.w900, fontSize: 12)),
+            child: Text(points,
+                style: GoogleFonts.outfit(
+                    color: AppTheme.colors.primary,
+                    fontWeight: FontWeight.w900,
+                    fontSize: 12)),
           ),
         ],
       ),
     );
   }
-
 
   // ── Guide Command Hub (Option 1 - Redesigned for High Contrast & Luxury) ────
   Widget _buildGuideCommandHub() {
@@ -1048,7 +1231,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
         ),
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: isDark ? AppTheme.colors.amber.withValues(alpha: 0.5) : AppTheme.colors.primary,
+          color: isDark
+              ? AppTheme.colors.amber.withValues(alpha: 0.5)
+              : AppTheme.colors.primary,
           width: 1.5,
         ),
         boxShadow: [
@@ -1070,10 +1255,16 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: isDark ? AppTheme.colors.amber.withValues(alpha: 0.2) : AppTheme.colors.primary.withValues(alpha: 0.3),
+                  color: isDark
+                      ? AppTheme.colors.amber.withValues(alpha: 0.2)
+                      : AppTheme.colors.primary.withValues(alpha: 0.3),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(Icons.explore, color: isDark ? AppTheme.colors.amber[700] : AppTheme.colors.primary, size: 20),
+                child: Icon(Icons.explore,
+                    color: isDark
+                        ? AppTheme.colors.amber[700]
+                        : AppTheme.colors.primary,
+                    size: 20),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -1086,25 +1277,31 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
                         fontSize: 15,
                         fontWeight: FontWeight.bold,
                         letterSpacing: 1.2,
-                        color: isDark ? AppTheme.colors.white : AppTheme.colors.primary,
+                        color: isDark
+                            ? AppTheme.colors.white
+                            : AppTheme.colors.primary,
                       ),
                     ),
                     Text(
                       l10n.guideCommandHubSubtitle,
                       style: GoogleFonts.inter(
                         fontSize: 11,
-                        color: isDark ? AppTheme.colors.white70 : AppTheme.colors.primary,
+                        color: isDark
+                            ? AppTheme.colors.white70
+                            : AppTheme.colors.primary,
                       ),
                     ),
                   ],
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
                   color: AppTheme.colors.greenAccent.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: AppTheme.colors.greenAccent, width: 1),
+                  border:
+                      Border.all(color: AppTheme.colors.greenAccent, width: 1),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
@@ -1137,7 +1334,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
             l10n.tourDashboard,
             l10n.tourDashboardSubtitle,
             isDark ? AppTheme.colors.amber[700]! : AppTheme.colors.primary,
-            () => Navigator.push(context, MaterialPageRoute(builder: (_) => const GuideDashboardScreen())),
+            () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (_) => const GuideDashboardScreen())),
           ),
           const SizedBox(height: 12),
           Row(
@@ -1149,8 +1349,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
                   Icons.account_balance_wallet_outlined,
                   l10n.earnings,
                   l10n.earningsSubtitle,
-                  isDark ? AppTheme.colors.greenAccent[400]! : AppTheme.colors.primary,
-                  () => Navigator.push(context, MaterialPageRoute(builder: (_) => const GuideEarningsScreen())),
+                  isDark
+                      ? AppTheme.colors.greenAccent[400]!
+                      : AppTheme.colors.primary,
+                  () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) => const GuideEarningsScreen())),
                 ),
               ),
             ],
@@ -1163,8 +1368,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
                   Icons.people_outline_rounded,
                   l10n.clients,
                   l10n.clientsSubtitle,
-                  isDark ? AppTheme.colors.purpleAccent : AppTheme.colors.primary,
-                  () => Navigator.push(context, MaterialPageRoute(builder: (_) => const GuideClientsScreen())),
+                  isDark
+                      ? AppTheme.colors.purpleAccent
+                      : AppTheme.colors.primary,
+                  () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) => const GuideClientsScreen())),
                 ),
               ),
               const SizedBox(width: 12),
@@ -1174,7 +1384,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
           _buildOperatorDashboardEntry(isDark),
         ],
       ),
-    ).animate().fadeIn(duration: 400.ms).slideY(begin: -0.1, curve: Curves.easeOutQuad);
+    )
+        .animate()
+        .fadeIn(duration: 400.ms)
+        .slideY(begin: -0.1, curve: Curves.easeOutQuad);
   }
 
   Widget _buildBookingsEntry(bool isDark) {
@@ -1186,7 +1399,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
         l10n.bookings,
         l10n.tourRequests,
         isDark ? AppTheme.colors.blueAccent : AppTheme.colors.primary,
-        () => Navigator.push(context, MaterialPageRoute(builder: (_) => const BookingInboxScreen())),
+        () => Navigator.push(context,
+            MaterialPageRoute(builder: (_) => const BookingInboxScreen())),
       );
     }
 
@@ -1206,23 +1420,35 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
             _buildGuideHubButton(
               Icons.inbox_rounded,
               l10n.bookings,
-              unreadCount > 0 ? l10n.unreadRequestsCount(unreadCount) : l10n.tourRequests,
+              unreadCount > 0
+                  ? l10n.unreadRequestsCount(unreadCount)
+                  : l10n.tourRequests,
               isDark ? AppTheme.colors.blueAccent : AppTheme.colors.primary,
-              () => Navigator.push(context, MaterialPageRoute(builder: (_) => const BookingInboxScreen())),
+              () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (_) => const BookingInboxScreen())),
             ),
             if (unreadCount > 0)
               Positioned(
-                top: -6, right: -6,
+                top: -6,
+                right: -6,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                   decoration: BoxDecoration(
                     color: AppPalette.rust,
                     borderRadius: BorderRadius.circular(100),
-                    border: Border.all(color: Theme.of(context).scaffoldBackgroundColor, width: 2),
+                    border: Border.all(
+                        color: Theme.of(context).scaffoldBackgroundColor,
+                        width: 2),
                   ),
                   child: Text(
                     unreadCount > 9 ? '9+' : '$unreadCount',
-                    style: GoogleFonts.outfit(color: AppTheme.colors.white, fontSize: 11, fontWeight: FontWeight.w800),
+                    style: GoogleFonts.outfit(
+                        color: AppTheme.colors.white,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w800),
                   ),
                 ),
               ),
@@ -1248,9 +1474,15 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
           isDark ? AppTheme.colors.orangeAccent : AppTheme.colors.primary,
           () {
             if (unlocked) {
-              Navigator.push(context, MaterialPageRoute(builder: (_) => const GuidePackagesScreen()));
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (_) => const GuidePackagesScreen()));
             } else {
-              Navigator.push(context, MaterialPageRoute(builder: (_) => const SubscriptionScreen()));
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (_) => const SubscriptionScreen()));
             }
           },
         );
@@ -1275,7 +1507,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
               l10n.manageTeam,
               l10n.manageTeamSubtitle,
               isDark ? AppTheme.colors.amber[700]! : AppTheme.colors.primary,
-              () => Navigator.push(context, MaterialPageRoute(builder: (_) => const OperatorDashboardScreen())),
+              () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (_) => const OperatorDashboardScreen())),
             ),
           ],
         );
@@ -1283,7 +1518,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
     );
   }
 
-  Widget _buildGuideHubButton(IconData icon, String title, String subtitle, Color color, VoidCallback onTap) {
+  Widget _buildGuideHubButton(IconData icon, String title, String subtitle,
+      Color color, VoidCallback onTap) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return InkWell(
       onTap: () {
@@ -1302,7 +1538,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
           ),
           boxShadow: [
             BoxShadow(
-              color: isDark ? AppTheme.colors.black.withValues(alpha: 0.3) : color.withValues(alpha: 0.15),
+              color: isDark
+                  ? AppTheme.colors.black.withValues(alpha: 0.3)
+                  : color.withValues(alpha: 0.15),
               blurRadius: 10,
               offset: const Offset(0, 3),
             ),
@@ -1326,7 +1564,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
                 Icon(
                   Icons.arrow_forward_ios_rounded,
                   size: 12,
-                  color: isDark ? AppTheme.colors.white38 : AppTheme.colors.primary,
+                  color: isDark
+                      ? AppTheme.colors.white38
+                      : AppTheme.colors.primary,
                 ),
               ],
             ),
@@ -1346,7 +1586,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
               subtitle,
               style: GoogleFonts.inter(
                 fontSize: 10,
-                color: isDark ? AppTheme.colors.white70 : AppTheme.colors.primary,
+                color:
+                    isDark ? AppTheme.colors.white70 : AppTheme.colors.primary,
               ),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
@@ -1362,55 +1603,79 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
     return Column(
       children: [
         // Guide Enrollment (only for non-guides)
-        if (profile.guideStatus != GuideStatus.approved && profile.role != 'guide_approved' && !profile.isGuideApproved && profile.role != 'admin') ...[
-          _tile(Icons.badge_outlined, l10n.becomeAGuide,
+        if (profile.guideStatus != GuideStatus.approved &&
+            profile.role != 'guide_approved' &&
+            !profile.isGuideApproved &&
+            profile.role != 'admin') ...[
+          _tile(Icons.card_membership_rounded, l10n.becomeAGuide,
               onTap: () => Navigator.push(
-                  context, MaterialPageRoute(builder: (_) => const GuideEnrollmentScreen()))),
+                  context,
+                  MaterialPageRoute(
+                      builder: (_) => const GuideEnrollmentScreen()))),
         ],
 
-        _tile(Icons.event_note_outlined, l10n.myBookings,
+        _tile(Icons.luggage_rounded, l10n.myBookings,
             iconColor: AppPalette.rust,
-            onTap: () => Navigator.push(
-                context, MaterialPageRoute(builder: (_) => const MyBookingsScreen()))),
+            onTap: () => Navigator.push(context,
+                MaterialPageRoute(builder: (_) => const MyBookingsScreen()))),
 
-        _tile(Icons.family_restroom_outlined, l10n.familySharing,
+        _tile(Icons.group_rounded, l10n.familySharing,
             iconColor: AppTheme.colors.blue[400],
-            onTap: () => Navigator.push(
-                context, MaterialPageRoute(builder: (_) => const FamilyShareScreen()))),
+            onTap: () => Navigator.push(context,
+                MaterialPageRoute(builder: (_) => const FamilyShareScreen()))),
 
-        _tile(Icons.privacy_tip_outlined, l10n.privacyPolicy,
+        _tile(Icons.shield_rounded, l10n.privacyPolicy,
             iconColor: AppTheme.colors.teal[400],
             onTap: () => Navigator.push(
-                context, MaterialPageRoute(builder: (_) => const PrivacyPolicyScreen()))),
+                context,
+                MaterialPageRoute(
+                    builder: (_) => const PrivacyPolicyScreen()))),
 
-        _tile(Icons.description_outlined, l10n.termsOfService,
+        if (!kIsWeb)
+          _tile(Icons.ads_click_rounded, 'Ad privacy choices',
+              iconColor: AppTheme.colors.teal[400], onTap: () async {
+            try {
+              await ConsentService().showPrivacyOptions();
+            } catch (e) {
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                      content: Text(
+                          'Ad privacy choices are not available right now.')),
+                );
+              }
+            }
+          }),
+
+        _tile(Icons.article_rounded, l10n.termsOfService,
             iconColor: AppTheme.colors.amber[600],
-            onTap: () => Navigator.push(
-                context, MaterialPageRoute(builder: (_) => const TermsScreen()))),
+            onTap: () => Navigator.push(context,
+                MaterialPageRoute(builder: (_) => const TermsScreen()))),
 
         _tile(Icons.qr_code_scanner_rounded, l10n.scanGuideQr,
-            onTap: () => Navigator.push(
-                context, MaterialPageRoute(builder: (_) => const QRScannerScreen()))),
+            onTap: () => Navigator.push(context,
+                MaterialPageRoute(builder: (_) => const QRScannerScreen()))),
 
         // Admin-only: local check is UX polish, verifyAdmin() on tap is the real gate.
         if (profile.role == 'admin')
           _tile(Icons.verified_user_rounded, l10n.adminGuideVerificationTile,
-              iconColor: AppTheme.colors.blue[600],
-              onTap: () async {
-                final isAdmin = await SecureEntitlements().verifyAdmin();
-                if (!mounted) return;
-                if (!isAdmin) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(l10n.accessDeniedMessage)),
-                  );
-                  return;
-                }
-                if (!mounted) return;
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (_) => const AdminGuideVerificationScreen()));
-              }),
+              iconColor: AppTheme.colors.blue[600], onTap: () async {
+            final isAdmin = await SecureEntitlements().verifyAdmin();
+            if (!mounted) return;
+            if (!isAdmin) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(l10n.accessDeniedMessage)),
+              );
+              return;
+            }
+            if (!mounted) return;
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (_) => const AdminGuideVerificationScreen()));
+          }),
 
-        _tile(Icons.camera_alt_outlined, l10n.oracleLens,
+        _tile(Icons.center_focus_strong_rounded, l10n.oracleLens,
             trailing: Switch(
               value: ref.watch(screenshotProvider),
               onChanged: (val) =>
@@ -1418,7 +1683,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
               activeThumbColor: AppPalette.rust,
             )),
 
-        _tile(Icons.language_outlined, l10n.language,
+        _tile(Icons.language_rounded, l10n.language,
             onTap: () => _showLanguagePicker(context)),
 
         _tile(Icons.translate_rounded, l10n.bilingualToggle,
@@ -1431,41 +1696,38 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
               activeThumbColor: AppPalette.rust,
             )),
 
-        _tile(Icons.emergency_outlined, l10n.emergencyProtocol,
+        _tile(Icons.sos_rounded, l10n.emergencyProtocol,
             iconColor: AppTheme.colors.red[600],
-            onTap: () => Navigator.push(
-                context, MaterialPageRoute(builder: (_) => const EmergencyKitScreen()))),
+            onTap: () => Navigator.push(context,
+                MaterialPageRoute(builder: (_) => const EmergencyKitScreen()))),
 
         _tile(Icons.star_rate_rounded, l10n.rateTheApp,
             onTap: () => RatingService().forceRequestReview()),
 
-        _tile(Icons.help_outline_rounded, l10n.support,
-            onTap: () async {
-              final uri = Uri(
-                  scheme: 'mailto',
-                  path: 'support@hiddengems.lk',
-                  query: 'subject=Support%20Request');
-              if (await canLaunchUrl(uri)) await launchUrl(uri);
-            }),
+        _tile(Icons.support_agent_rounded, l10n.support, onTap: () async {
+          final uri = Uri(
+              scheme: 'mailto',
+              path: 'support@hiddengems.lk',
+              query: 'subject=Support%20Request');
+          if (await canLaunchUrl(uri)) await launchUrl(uri);
+        }),
 
-        _tile(Icons.share_rounded, l10n.inviteFriends,
-            onTap: () {
-              SharePlus.instance.share(ShareParams(
-                text: l10n.shareAppMessage,
-                subject: l10n.shareAppSubject,
-              ));
-            }),
+        _tile(Icons.ios_share_rounded, l10n.inviteFriends, onTap: () {
+          SharePlus.instance.share(ShareParams(
+            text: l10n.shareAppMessage,
+            subject: l10n.shareAppSubject,
+          ));
+        }),
 
         if (kDebugMode)
           _tile(Icons.bug_report_rounded, "Simulate Crash (Debug)",
               textColor: AppTheme.colors.orange,
-              iconColor: AppTheme.colors.orange,
-              onTap: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text("Crash in 2s...")));
-                Future.delayed(const Duration(seconds: 2),
-                    () => throw Exception("Test Crash for Firebase Crashlytics"));
-              }),
+              iconColor: AppTheme.colors.orange, onTap: () {
+            ScaffoldMessenger.of(context)
+                .showSnackBar(const SnackBar(content: Text("Crash in 2s...")));
+            Future.delayed(const Duration(seconds: 2),
+                () => throw Exception("Test Crash for Firebase Crashlytics"));
+          }),
 
         const SizedBox(height: 8),
 
@@ -1500,7 +1762,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
     showDialog(
         context: context,
         barrierDismissible: false,
-        builder: (_) => Center(child: CircularProgressIndicator(color: AppPalette.rust)));
+        builder: (_) =>
+            Center(child: CircularProgressIndicator(color: AppPalette.rust)));
     try {
       await AuthService().deleteAccount();
       if (!mounted) return;
@@ -1510,7 +1773,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
     } catch (e) {
       if (!mounted) return;
       Navigator.pop(context);
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.genericErrorWithDetails(e.toString()))));
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.genericErrorWithDetails(e.toString()))));
     }
   }
 
@@ -1527,7 +1791,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
     );
     if (confirm != true) return;
     await AuthService().signOut();
-    if (mounted) Navigator.of(context).pushNamedAndRemoveUntil('/login', (_) => false);
+    if (mounted)
+      Navigator.of(context).pushNamedAndRemoveUntil('/login', (_) => false);
   }
 
   Future<bool?> _showConfirmDialog({
@@ -1548,7 +1813,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
             color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(28),
             border: Border.all(color: AppTheme.borderColor(context)),
-            boxShadow: [BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.08), blurRadius: 24)],
+            boxShadow: [
+              BoxShadow(
+                  color: AppTheme.colors.black.withValues(alpha: 0.08),
+                  blurRadius: 24)
+            ],
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -1556,7 +1825,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
               Container(
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
-                    color: iconColor.withValues(alpha: 0.1), shape: BoxShape.circle),
+                    color: iconColor.withValues(alpha: 0.1),
+                    shape: BoxShape.circle),
                 child: Icon(icon, color: iconColor, size: 32),
               ),
               const SizedBox(height: 16),
@@ -1578,10 +1848,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
                       onPressed: () => Navigator.pop(context, false),
                       style: OutlinedButton.styleFrom(
                         side: BorderSide(color: AppTheme.borderColor(context)),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14)),
                         padding: const EdgeInsets.symmetric(vertical: 14),
                       ),
-                      child: Text(AppLocalizations.of(context)!.cancel.toUpperCase(),
+                      child: Text(
+                          AppLocalizations.of(context)!.cancel.toUpperCase(),
                           style: GoogleFonts.outfit(
                               color: AppTheme.textSecondary(context),
                               fontWeight: FontWeight.bold,
@@ -1594,13 +1866,16 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
                       onPressed: () => Navigator.pop(context, true),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: confirmColor,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14)),
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         elevation: 0,
                       ),
                       child: Text(confirmLabel,
                           style: GoogleFonts.outfit(
-                              color: AppTheme.colors.white, fontWeight: FontWeight.bold, fontSize: 12)),
+                              color: AppTheme.colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12)),
                     ),
                   ),
                 ],
@@ -1614,7 +1889,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
 
   // ── Settings Tile ─────────────────────────────────────────────────────────────
   Widget _tile(IconData icon, String title,
-      {VoidCallback? onTap, Widget? trailing, Color? textColor, Color? iconColor}) {
+      {VoidCallback? onTap,
+      Widget? trailing,
+      Color? textColor,
+      Color? iconColor}) {
     final effectiveIconColor = iconColor ?? AppPalette.rust;
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
@@ -1623,7 +1901,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
         border: Border.all(color: AppTheme.borderColor(context)),
         boxShadow: [
           BoxShadow(
-              color: AppTheme.colors.black.withValues(alpha: 0.03), blurRadius: 8, offset: const Offset(0, 2))
+              color: AppTheme.colors.black.withValues(alpha: 0.03),
+              blurRadius: 8,
+              offset: const Offset(0, 2))
         ],
       ),
       child: Material(
@@ -1631,15 +1911,43 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
         borderRadius: BorderRadius.circular(18),
         clipBehavior: Clip.antiAlias,
         child: ListTile(
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
           leading: Container(
-            width: 38,
-            height: 38,
+            width: 42,
+            height: 42,
             decoration: BoxDecoration(
-              color: effectiveIconColor.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(10),
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  effectiveIconColor.withValues(alpha: 0.18),
+                  effectiveIconColor.withValues(alpha: 0.07),
+                ],
+              ),
+              borderRadius: BorderRadius.circular(13),
+              border: Border.all(
+                color: effectiveIconColor.withValues(alpha: 0.16),
+              ),
             ),
-            child: Icon(icon, color: effectiveIconColor, size: 18),
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                Icon(icon, color: effectiveIconColor, size: 21),
+                Positioned(
+                  top: 6,
+                  right: 6,
+                  child: Container(
+                    width: 4,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: effectiveIconColor.withValues(alpha: 0.65),
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
           title: Text(
             title,
@@ -1651,7 +1959,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
           ),
           trailing: trailing ??
               Icon(Icons.arrow_forward_ios_rounded,
-                  size: 13, color: AppTheme.textSecondary(context).withValues(alpha: 0.35)),
+                  size: 13,
+                  color:
+                      AppTheme.textSecondary(context).withValues(alpha: 0.35)),
           onTap: onTap ?? () => HapticFeedback.selectionClick(),
         ),
       ),
@@ -1660,13 +1970,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> with AutomaticKee
 
   // ── Section Label ─────────────────────────────────────────────────────────────
   Widget _sectionLabel(String label) => Text(
-    label,
-    style: GoogleFonts.outfit(
-      fontSize: 13,
-      fontWeight: FontWeight.w700,
-      color: AppTheme.textPrimary(context),
-    ),
-  );
+        label,
+        style: GoogleFonts.outfit(
+          fontSize: 13,
+          fontWeight: FontWeight.w700,
+          color: AppTheme.textPrimary(context),
+        ),
+      );
 }
 
 // ── Bottom Sheet wrapper ──────────────────────────────────────────────────────
@@ -1682,7 +1992,11 @@ class _BottomSheet extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(28),
         border: Border.all(color: AppTheme.borderColor(context)),
-        boxShadow: [BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.06), blurRadius: 16)],
+        boxShadow: [
+          BoxShadow(
+              color: AppTheme.colors.black.withValues(alpha: 0.06),
+              blurRadius: 16)
+        ],
       ),
       child: Material(
         color: Theme.of(context).colorScheme.surface,
@@ -1738,9 +2052,9 @@ class _GlowingProfileRingState extends State<_GlowingProfileRing>
   @override
   void initState() {
     super.initState();
-    _controller =
-        AnimationController(vsync: this, duration: const Duration(milliseconds: 2000))
-          ..repeat(reverse: true);
+    _controller = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 2000))
+      ..repeat(reverse: true);
   }
 
   @override
@@ -1760,12 +2074,14 @@ class _GlowingProfileRingState extends State<_GlowingProfileRing>
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             border: Border.all(
-              color: AppPalette.rust.withValues(alpha: 0.3 + (_controller.value * 0.5)),
+              color: AppPalette.rust
+                  .withValues(alpha: 0.3 + (_controller.value * 0.5)),
               width: 1.5 + (_controller.value * 2.0),
             ),
             boxShadow: [
               BoxShadow(
-                color: AppPalette.rust.withValues(alpha: 0.1 + (_controller.value * 0.3)),
+                color: AppPalette.rust
+                    .withValues(alpha: 0.1 + (_controller.value * 0.3)),
                 blurRadius: 15 + (_controller.value * 20),
                 spreadRadius: 2 + (_controller.value * 8),
               )

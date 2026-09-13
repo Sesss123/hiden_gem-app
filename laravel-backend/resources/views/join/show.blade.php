@@ -104,7 +104,7 @@
         .locked-card.hidden { display: none; }
     </style>
 </head>
-<body data-encrypted="{{ $encryptedStatus }}">
+<body data-encrypted="{{ $encryptedStatus }}" data-last-synced="{{ $lastSyncedAt }}">
     <div class="wrap">
         <div class="eyebrow">Hidden Gems SL &middot; Live trip sharing</div>
         <h1>Hi {{ $recipientName }}, here's the latest</h1>
@@ -120,6 +120,10 @@
 
         <div id="decrypt-error" class="card locked-card hidden">
             <span>Unable to decrypt trip status — this link may be malformed or out of date.</span>
+        </div>
+
+        <div id="stale-warning" class="card locked-card hidden">
+            <span>Live updates are delayed. The traveler's sharing device may be offline; the status below is the last securely synced update.</span>
         </div>
 
         <div id="status-card" class="card hidden">
@@ -210,6 +214,10 @@
 
             async function main() {
                 var encrypted = document.body.dataset.encrypted;
+                var lastSynced = document.body.dataset.lastSynced;
+                if (!lastSynced || !Number.isFinite(Date.parse(lastSynced)) || Date.now() - Date.parse(lastSynced) > 120000) {
+                    show('stale-warning');
+                }
                 if (!encrypted) {
                     // Pre-migration link or a brand-new link with no status yet.
                     return;

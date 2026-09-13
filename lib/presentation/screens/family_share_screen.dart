@@ -39,18 +39,33 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
 
   Timer? _expiryTimer;
   StreamSubscription? _linksSubscription;
+  StreamSubscription<User?>? _authSubscription;
   String? _resolvedSessionId;
   bool _resolvingSession = false;
+  bool _isGeneratingLink = false;
+  final Set<String> _deletingLinkIds = {};
 
   @override
   void initState() {
     super.initState();
     _resolvedSessionId = widget.sessionId;
-    if (_resolvedSessionId == null) {
-      _resolveActiveSession();
-    }
-    _startWatchingLinks();
-    _expiryTimer = Timer.periodic(const Duration(seconds: 60), (_) => _checkAndCleanExpiredLinks());
+    _authSubscription = FirebaseAuth.instance.authStateChanges().listen((user) {
+      _linksSubscription?.cancel();
+      _linksSubscription = null;
+      if (user == null) {
+        if (mounted) {
+          setState(() {
+            _activeLinks.clear();
+            if (widget.sessionId == null) _resolvedSessionId = null;
+          });
+        }
+        return;
+      }
+      _startWatchingLinks(user.uid);
+      if (_resolvedSessionId == null) _resolveActiveSession();
+    });
+    _expiryTimer = Timer.periodic(
+        const Duration(seconds: 60), (_) => _checkAndCleanExpiredLinks());
   }
 
   Future<void> _resolveActiveSession() async {
@@ -58,7 +73,8 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
     if (uid == null) return;
     setState(() => _resolvingSession = true);
     try {
-      final session = await TourSessionRepository().getActiveSessionForTourist(uid);
+      final session =
+          await TourSessionRepository().getActiveSessionForTourist(uid);
       if (mounted) {
         setState(() {
           _resolvedSessionId = session?.sessionId;
@@ -66,7 +82,8 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
         });
       }
     } catch (e, st) {
-      SecureLogger.error("Failed to resolve active session", e, st, "FamilyShare");
+      SecureLogger.error(
+          "Failed to resolve active session", e, st, "FamilyShare");
       if (mounted) setState(() => _resolvingSession = false);
     }
   }
@@ -75,12 +92,12 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
   void dispose() {
     _expiryTimer?.cancel();
     _linksSubscription?.cancel();
+    _authSubscription?.cancel();
     _nameController.dispose();
     super.dispose();
   }
 
-  void _startWatchingLinks() {
-    final uid = FirebaseAuth.instance.currentUser?.uid ?? 'current_user';
+  void _startWatchingLinks(String uid) {
     // Firestore cost fix: capped — a tourist realistically has a handful of
     // active share links at once (also enforced client-side by
     // _maxActiveLinks), not an unbounded history; this listener doesn't
@@ -129,7 +146,8 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
           FirebaseFirestore.instance
               .collection('family_share_links')
               .doc(link.shareId)
-              .delete().catchError((_) {});
+              .delete()
+              .catchError((_) {});
           const FlutterSecureStorage()
               .delete(key: 'family_share_key_${link.shareId}')
               .catchError((_) {});
@@ -149,12 +167,14 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
   }
 
   String _generateSecureToken() {
-    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // Unambiguous charset, 33 symbols
+    const chars =
+        'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // Unambiguous charset, 33 symbols
     final random = Random.secure();
     // 26 chars * log2(33) =~ 131 bits of entropy -- this token doubles as
     // the Firestore doc ID and the public /join/{token} URL slug, so it
     // must be strong enough to resist brute-force guessing/enumeration.
-    return List.generate(26, (index) => chars[random.nextInt(chars.length)]).join();
+    return List.generate(26, (index) => chars[random.nextInt(chars.length)])
+        .join();
   }
 
   /// Per-link symmetric key for E2EE of the shared status blob (see
@@ -174,6 +194,7 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
   static const int _maxActiveLinks = 10;
 
   void _generateLink() async {
+    if (_isGeneratingLink) return;
     final l10n = AppLocalizations.of(context)!;
     final name = _nameController.text.trim();
     if (_activeLinks.where((l) => !l.isExpired).length >= _maxActiveLinks) {
@@ -203,7 +224,16 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
 
     final token = _generateSecureToken();
     final now = DateTime.now();
-    final uid = FirebaseAuth.instance.currentUser?.uid ?? 'current_user';
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(l10n.somethingWentWrong),
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: AppTheme.colors.redAccent,
+      ));
+      return;
+    }
+    final uid = user.uid;
     final shareId = token;
     final permissions = Map<String, bool>.from(_permissions);
 
@@ -221,24 +251,47 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
     // storage) and embedded in the share URL's fragment -- it must never be
     // written to Firestore or seen by the Laravel join-page backend.
     final linkKey = _generateLinkKey();
-    await const FlutterSecureStorage().write(
-      key: 'family_share_key_$shareId',
-      value: linkKey,
-    );
+    setState(() => _isGeneratingLink = true);
+    try {
+      await const FlutterSecureStorage().write(
+        key: 'family_share_key_$shareId',
+        value: linkKey,
+      );
 
-    final doc = newLink.toJson();
-    doc['encryptedStatus'] = await FamilyShareSyncService.instance
-        .buildEncryptedStatus(sessionId: newLink.sessionId, permissions: permissions, linkKey: linkKey);
+      final doc = newLink.toJson();
+      doc['encryptedStatus'] = await FamilyShareSyncService.instance
+          .buildEncryptedStatus(
+              sessionId: newLink.sessionId,
+              permissions: permissions,
+              linkKey: linkKey);
+      doc['lastSyncedAt'] = FieldValue.serverTimestamp();
 
-    // Persist to Firestore
-    FirebaseFirestore.instance
-        .collection('family_share_links')
-        .doc(shareId)
-        .set(doc);
+      // Do not announce or display a link until Firestore confirms it exists.
+      await FirebaseFirestore.instance
+          .collection('family_share_links')
+          .doc(shareId)
+          .set(doc);
+    } catch (e, st) {
+      await const FlutterSecureStorage()
+          .delete(key: 'family_share_key_$shareId');
+      SecureLogger.error(
+          'Failed to create family share link', e, st, 'FamilyShare');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(l10n.somethingWentWrong),
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: AppTheme.colors.redAccent,
+        ));
+      }
+      return;
+    } finally {
+      if (mounted) setState(() => _isGeneratingLink = false);
+    }
 
     // Make sure the live sync loop picks up this link immediately (it
     // otherwise only re-scans on its own family_share_links listener tick).
-    FamilyShareSyncService.instance.watchLink(newLink.copyWith(permissions: permissions));
+    FamilyShareSyncService.instance
+        .watchLink(newLink.copyWith(permissions: permissions));
 
     if (!mounted) return;
     setState(() {
@@ -284,22 +337,34 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(l10n.familyShareActiveLinksTitle, style: GoogleFonts.inter(color: AppTheme.textPrimary(context), fontSize: 14, fontWeight: FontWeight.w700)),
+                        Text(l10n.familyShareActiveLinksTitle,
+                            style: GoogleFonts.inter(
+                                color: AppTheme.textPrimary(context),
+                                fontSize: 14,
+                                fontWeight: FontWeight.w700)),
                         GestureDetector(
                           onTap: _showCreateLinkSheet,
                           child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 14, vertical: 8),
                             decoration: BoxDecoration(
                               color: Theme.of(context).colorScheme.primary,
                               borderRadius: BorderRadius.circular(100),
                             ),
-                            child: Text(l10n.familyShareNewLinkButton, style: GoogleFonts.inter(color: AppTheme.colors.white, fontWeight: FontWeight.w700, fontSize: 12)),
+                            child: Text(l10n.familyShareNewLinkButton,
+                                style: GoogleFonts.inter(
+                                    color: AppTheme.colors.white,
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 12)),
                           ),
                         ),
                       ],
                     ),
                     const SizedBox(height: 16),
-                    if (_activeLinks.isEmpty) _buildEmptyState(l10n) else ..._activeLinks.map((l) => _buildLinkCard(l, l10n)),
+                    if (_activeLinks.isEmpty)
+                      _buildEmptyState(l10n)
+                    else
+                      ..._activeLinks.map((l) => _buildLinkCard(l, l10n)),
                     const SizedBox(height: 100),
                   ],
                 ),
@@ -318,7 +383,11 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
       elevation: 0,
       title: Text(
         l10n.familyShareAppBarTitle,
-        style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.w800, letterSpacing: -0.5, color: AppTheme.textPrimary(context)),
+        style: GoogleFonts.outfit(
+            fontSize: 20,
+            fontWeight: FontWeight.w800,
+            letterSpacing: -0.5,
+            color: AppTheme.textPrimary(context)),
       ),
     );
   }
@@ -353,7 +422,11 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
           Text(
             l10n.familyShareHeroSubtitle,
             textAlign: TextAlign.center,
-            style: GoogleFonts.inter(color: AppTheme.colors.white, fontSize: 14, fontWeight: FontWeight.w600, height: 1.5),
+            style: GoogleFonts.inter(
+                color: AppTheme.colors.white,
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                height: 1.5),
           ),
         ],
       ),
@@ -366,16 +439,21 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
       decoration: BoxDecoration(
         color: AppTheme.colors.amberAccent.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppTheme.colors.amberAccent.withValues(alpha: 0.3)),
+        border: Border.all(
+            color: AppTheme.colors.amberAccent.withValues(alpha: 0.3)),
       ),
       child: Row(
         children: [
-          Icon(Icons.info_outline_rounded, color: AppTheme.colors.amberAccent, size: 18),
+          Icon(Icons.info_outline_rounded,
+              color: AppTheme.colors.amberAccent, size: 18),
           const SizedBox(width: 10),
           Expanded(
             child: Text(
               l10n.familyShareNoActiveSessionNotice,
-              style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 12, fontWeight: FontWeight.w500),
+              style: GoogleFonts.inter(
+                  color: AppTheme.textSecondary(context),
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500),
             ),
           ),
         ],
@@ -390,15 +468,24 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
-          BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.05), blurRadius: 16, offset: const Offset(0, 6)),
+          BoxShadow(
+              color: AppTheme.colors.black.withValues(alpha: 0.05),
+              blurRadius: 16,
+              offset: const Offset(0, 6)),
         ],
       ),
       child: Center(
         child: Column(
           children: [
-            Icon(Icons.link_off_rounded, color: AppTheme.textSecondary(context).withValues(alpha: 0.4), size: 40),
+            Icon(Icons.link_off_rounded,
+                color: AppTheme.textSecondary(context).withValues(alpha: 0.4),
+                size: 40),
             const SizedBox(height: 20),
-            Text(l10n.familyShareEmptyStateMessage, style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 13, fontWeight: FontWeight.w500)),
+            Text(l10n.familyShareEmptyStateMessage,
+                style: GoogleFonts.inter(
+                    color: AppTheme.textSecondary(context),
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500)),
           ],
         ),
       ),
@@ -418,7 +505,10 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
             color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(18),
             boxShadow: [
-              BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.06), blurRadius: 16, offset: const Offset(0, 6)),
+              BoxShadow(
+                  color: AppTheme.colors.black.withValues(alpha: 0.06),
+                  blurRadius: 16,
+                  offset: const Offset(0, 6)),
             ],
           ),
           child: Row(
@@ -429,89 +519,169 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
                   children: [
                     Row(
                       children: [
-                        Text(link.recipientName, style: GoogleFonts.outfit(color: isExpired ? AppTheme.textSecondary(context) : AppTheme.textPrimary(context), fontWeight: FontWeight.bold, fontSize: 16)),
+                        Flexible(
+                            child: Text(link.recipientName,
+                                overflow: TextOverflow.ellipsis,
+                                style: GoogleFonts.outfit(
+                                    color: isExpired
+                                        ? AppTheme.textSecondary(context)
+                                        : AppTheme.textPrimary(context),
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16))),
                         if (isExpired) ...[
                           const SizedBox(width: 8),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                            decoration: BoxDecoration(color: AppTheme.colors.redAccent, borderRadius: BorderRadius.circular(100)),
-                            child: Text(l10n.familyShareExpiredBadge, style: GoogleFonts.inter(color: AppTheme.colors.white, fontSize: 9, fontWeight: FontWeight.w700)),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 3),
+                            decoration: BoxDecoration(
+                                color: AppTheme.colors.redAccent,
+                                borderRadius: BorderRadius.circular(100)),
+                            child: Text(l10n.familyShareExpiredBadge,
+                                style: GoogleFonts.inter(
+                                    color: AppTheme.colors.white,
+                                    fontSize: 9,
+                                    fontWeight: FontWeight.w700)),
                           ),
                         ] else if (link.viewCount > 0) ...[
                           const SizedBox(width: 8),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                            decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary, borderRadius: BorderRadius.circular(100)),
-                            child: Text(l10n.familyShareViewedCountBadge(link.viewCount), style: GoogleFonts.inter(color: AppTheme.colors.white, fontSize: 9, fontWeight: FontWeight.w700)),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 3),
+                            decoration: BoxDecoration(
+                                color: Theme.of(context).colorScheme.primary,
+                                borderRadius: BorderRadius.circular(100)),
+                            child: Text(
+                                l10n.familyShareViewedCountBadge(
+                                    link.viewCount),
+                                style: GoogleFonts.inter(
+                                    color: AppTheme.colors.white,
+                                    fontSize: 9,
+                                    fontWeight: FontWeight.w700)),
                           ),
                         ],
                       ],
                     ),
                     const SizedBox(height: 4),
-                    Text(isExpired ? l10n.familyShareLinkNoLongerValid : l10n.familyShareLinkExpiresAt('${link.expiresAt.hour}:${link.expiresAt.minute.toString().padLeft(2, '0')}'), style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 11, fontWeight: FontWeight.w500)),
+                    Text(
+                        isExpired
+                            ? l10n.familyShareLinkNoLongerValid
+                            : l10n.familyShareLinkExpiresAt(
+                                '${link.expiresAt.hour}:${link.expiresAt.minute.toString().padLeft(2, '0')}'),
+                        style: GoogleFonts.inter(
+                            color: AppTheme.textSecondary(context),
+                            fontSize: 11,
+                            fontWeight: FontWeight.w500)),
                   ],
                 ),
               ),
               IconButton(
-                icon: Icon(Icons.copy_rounded, color: isExpired ? AppTheme.textSecondary(context).withValues(alpha: 0.3) : AppTheme.textSecondary(context)),
-                onPressed: isExpired ? null : () async {
-                  // linkKey never lives on FamilyShareLink/Firestore -- it's
-                  // looked up from secure storage and only ever leaves the
-                  // device inside the URL fragment (which browsers never
-                  // send to a server), so the decryption key stays out of
-                  // reach of Firestore, Laravel, and any DB leak.
-                  final linkKey = await const FlutterSecureStorage()
-                      .read(key: 'family_share_key_${link.shareId}');
-                  final url = linkKey != null
-                      ? '${AppConfig.webBaseUrl}/join/${link.shareToken}#k=$linkKey'
-                      : '${AppConfig.webBaseUrl}/join/${link.shareToken}';
-                  Clipboard.setData(ClipboardData(text: 'Track my trip live: $url'));
-                  if (!mounted) return;
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    content: Text(l10n.familyShareCopyLinkSnackbar),
-                    behavior: SnackBarBehavior.floating,
-                  ));
-                },
+                icon: Icon(Icons.copy_rounded,
+                    color: isExpired
+                        ? AppTheme.textSecondary(context).withValues(alpha: 0.3)
+                        : AppTheme.textSecondary(context)),
+                onPressed: isExpired
+                    ? null
+                    : () async {
+                        // linkKey never lives on FamilyShareLink/Firestore -- it's
+                        // looked up from secure storage and only ever leaves the
+                        // device inside the URL fragment (which browsers never
+                        // send to a server), so the decryption key stays out of
+                        // reach of Firestore, Laravel, and any DB leak.
+                        final linkKey = await const FlutterSecureStorage()
+                            .read(key: 'family_share_key_${link.shareId}');
+                        final url = linkKey != null
+                            ? '${AppConfig.webBaseUrl}/join/${link.shareToken}#k=$linkKey'
+                            : '${AppConfig.webBaseUrl}/join/${link.shareToken}';
+                        Clipboard.setData(
+                            ClipboardData(text: 'Track my trip live: $url'));
+                        if (!mounted) return;
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: Text(l10n.familyShareCopyLinkSnackbar),
+                          behavior: SnackBarBehavior.floating,
+                        ));
+                      },
               ),
               IconButton(
-                icon: Icon(Icons.delete_outline_rounded, color: AppTheme.colors.redAccent),
-                onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder: (ctx) => AlertDialog(
-                      backgroundColor: Theme.of(context).cardColor,
-                      title: Text(l10n.familyShareRemoveLinkDialogTitle,
-                          style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: AppTheme.textPrimary(context))),
-                      content: Text(l10n.familyShareRemoveLinkDialogBody(link.recipientName),
-                          style: GoogleFonts.inter(fontSize: 13, color: AppTheme.textSecondary(context))),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.pop(ctx),
-                          child: Text(l10n.cancel, style: TextStyle(color: AppTheme.textSecondary(context))),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            Navigator.pop(ctx);
-                            FirebaseFirestore.instance
-                                .collection('family_share_links')
-                                .doc(link.shareId)
-                                .delete().catchError((_) {});
-                            const FlutterSecureStorage()
-                                .delete(key: 'family_share_key_${link.shareId}')
-                                .catchError((_) {});
-                            FamilyShareSyncService.instance.unwatchLink(link.shareId);
-                            setState(() => _activeLinks.remove(link));
-                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                              content: Text(l10n.familyShareLinkRemovedSnackbar(link.recipientName)),
-                              behavior: SnackBarBehavior.floating,
-                            ));
-                          },
-                          child: Text(l10n.familyShareRemoveButton, style: TextStyle(color: AppTheme.colors.redAccent)),
-                        ),
-                      ],
-                    ),
-                  );
-                },
+                icon: Icon(Icons.delete_outline_rounded,
+                    color: AppTheme.colors.redAccent),
+                onPressed: _deletingLinkIds.contains(link.shareId)
+                    ? null
+                    : () {
+                        showDialog(
+                          context: context,
+                          builder: (ctx) => AlertDialog(
+                            backgroundColor: Theme.of(context).cardColor,
+                            title: Text(l10n.familyShareRemoveLinkDialogTitle,
+                                style: GoogleFonts.outfit(
+                                    fontWeight: FontWeight.bold,
+                                    color: AppTheme.textPrimary(context))),
+                            content: Text(
+                                l10n.familyShareRemoveLinkDialogBody(
+                                    link.recipientName),
+                                style: GoogleFonts.inter(
+                                    fontSize: 13,
+                                    color: AppTheme.textSecondary(context))),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(ctx),
+                                child: Text(l10n.cancel,
+                                    style: TextStyle(
+                                        color:
+                                            AppTheme.textSecondary(context))),
+                              ),
+                              TextButton(
+                                onPressed: () async {
+                                  Navigator.pop(ctx);
+                                  setState(
+                                      () => _deletingLinkIds.add(link.shareId));
+                                  try {
+                                    await FirebaseFirestore.instance
+                                        .collection('family_share_links')
+                                        .doc(link.shareId)
+                                        .delete();
+                                    await const FlutterSecureStorage().delete(
+                                        key:
+                                            'family_share_key_${link.shareId}');
+                                    FamilyShareSyncService.instance
+                                        .unwatchLink(link.shareId);
+                                    if (!mounted) return;
+                                    setState(() => _activeLinks.remove(link));
+                                    ScaffoldMessenger.of(context)
+                                        .showSnackBar(SnackBar(
+                                      content: Text(
+                                          l10n.familyShareLinkRemovedSnackbar(
+                                              link.recipientName)),
+                                      behavior: SnackBarBehavior.floating,
+                                    ));
+                                  } catch (e, st) {
+                                    SecureLogger.error(
+                                        'Failed to revoke family share link',
+                                        e,
+                                        st,
+                                        'FamilyShare');
+                                    if (!mounted) return;
+                                    ScaffoldMessenger.of(context)
+                                        .showSnackBar(SnackBar(
+                                      content: Text(l10n.somethingWentWrong),
+                                      behavior: SnackBarBehavior.floating,
+                                      backgroundColor:
+                                          AppTheme.colors.redAccent,
+                                    ));
+                                  } finally {
+                                    if (mounted) {
+                                      setState(() => _deletingLinkIds
+                                          .remove(link.shareId));
+                                    }
+                                  }
+                                },
+                                child: Text(l10n.familyShareRemoveButton,
+                                    style: TextStyle(
+                                        color: AppTheme.colors.redAccent)),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
               ),
             ],
           ),
@@ -532,12 +702,14 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
       backgroundColor: AppTheme.colors.transparent,
       builder: (context) => StatefulBuilder(
         builder: (context, setSheetState) => Padding(
-          padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+          padding:
+              EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
           child: Container(
             padding: const EdgeInsets.all(28),
             decoration: BoxDecoration(
               color: Theme.of(context).scaffoldBackgroundColor,
-              borderRadius: const BorderRadius.only(topLeft: Radius.circular(32), topRight: Radius.circular(32)),
+              borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(32), topRight: Radius.circular(32)),
             ),
             child: SingleChildScrollView(
               child: Column(
@@ -546,40 +718,82 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
                 children: [
                   Text(
                     l10n.familyShareCreateSheetTitle,
-                    style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.w800, letterSpacing: -0.5, color: AppTheme.textPrimary(context)),
+                    style: GoogleFonts.outfit(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: -0.5,
+                        color: AppTheme.textPrimary(context)),
                   ),
                   const SizedBox(height: 28),
-                  _buildTextField(l10n.familyShareRecipientNameLabel, l10n.familyShareRecipientNameHint, _nameController),
+                  _buildTextField(l10n.familyShareRecipientNameLabel,
+                      l10n.familyShareRecipientNameHint, _nameController),
                   const SizedBox(height: 24),
-                  Text(l10n.familyShareExpiryLabel, style: GoogleFonts.inter(color: AppTheme.textPrimary(context), fontSize: 12, fontWeight: FontWeight.w700)),
+                  Text(l10n.familyShareExpiryLabel,
+                      style: GoogleFonts.inter(
+                          color: AppTheme.textPrimary(context),
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700)),
                   const SizedBox(height: 12),
                   Row(
                     children: [
-                      _buildTimeOption(l10n.familyShareDuration4Hours, _selectedHours == 4, () => setSheetState(() => _selectedHours = 4)),
+                      _buildTimeOption(
+                          l10n.familyShareDuration4Hours,
+                          _selectedHours == 4,
+                          () => setSheetState(() => _selectedHours = 4)),
                       const SizedBox(width: 12),
-                      _buildTimeOption(l10n.familyShareDuration12Hours, _selectedHours == 12, () => setSheetState(() => _selectedHours = 12)),
+                      _buildTimeOption(
+                          l10n.familyShareDuration12Hours,
+                          _selectedHours == 12,
+                          () => setSheetState(() => _selectedHours = 12)),
                       const SizedBox(width: 12),
-                      _buildTimeOption(l10n.familyShareDuration24Hours, _selectedHours == 24, () => setSheetState(() => _selectedHours = 24)),
+                      _buildTimeOption(
+                          l10n.familyShareDuration24Hours,
+                          _selectedHours == 24,
+                          () => setSheetState(() => _selectedHours = 24)),
                     ],
                   ),
                   const SizedBox(height: 28),
-                  _buildPermissionRow(l10n.familyShareToggleStatusLabel, _permissions['show_status']!, (v) => setSheetState(() => _permissions['show_status'] = v)),
-                  _buildPermissionRow(l10n.familyShareToggleIdentityLabel, _permissions['show_identity']!, (v) => setSheetState(() => _permissions['show_identity'] = v)),
-                  _buildPermissionRow(l10n.familyShareToggleMeetingPointLabel, _permissions['show_meeting_point']!, (v) => setSheetState(() => _permissions['show_meeting_point'] = v)),
-                  _buildPermissionRow(l10n.familyShareToggleEmergencyLabel, _permissions['show_emergency']!, (v) => setSheetState(() => _permissions['show_emergency'] = v)),
+                  _buildPermissionRow(
+                      l10n.familyShareToggleStatusLabel,
+                      _permissions['show_status']!,
+                      (v) =>
+                          setSheetState(() => _permissions['show_status'] = v)),
+                  _buildPermissionRow(
+                      l10n.familyShareToggleIdentityLabel,
+                      _permissions['show_identity']!,
+                      (v) => setSheetState(
+                          () => _permissions['show_identity'] = v)),
+                  _buildPermissionRow(
+                      l10n.familyShareToggleMeetingPointLabel,
+                      _permissions['show_meeting_point']!,
+                      (v) => setSheetState(
+                          () => _permissions['show_meeting_point'] = v)),
+                  _buildPermissionRow(
+                      l10n.familyShareToggleEmergencyLabel,
+                      _permissions['show_emergency']!,
+                      (v) => setSheetState(
+                          () => _permissions['show_emergency'] = v)),
                   const SizedBox(height: 36),
                   SizedBox(
                     width: double.infinity,
                     height: 56,
                     child: ElevatedButton(
-                      onPressed: _generateLink,
+                      onPressed: _isGeneratingLink ? null : _generateLink,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Theme.of(context).colorScheme.primary,
                         foregroundColor: AppTheme.colors.white,
                         elevation: 0,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(100)),
                       ),
-                      child: Text(l10n.familyShareGenerateLinkButton, style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 14)),
+                      child: _isGeneratingLink
+                          ? const SizedBox(
+                              width: 22,
+                              height: 22,
+                              child: CircularProgressIndicator(strokeWidth: 2))
+                          : Text(l10n.familyShareGenerateLinkButton,
+                              style: GoogleFonts.inter(
+                                  fontWeight: FontWeight.w700, fontSize: 14)),
                     ),
                   ),
                   const SizedBox(height: 32),
@@ -592,11 +806,16 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
     );
   }
 
-  Widget _buildTextField(String label, String hint, TextEditingController controller) {
+  Widget _buildTextField(
+      String label, String hint, TextEditingController controller) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: GoogleFonts.inter(color: AppTheme.textPrimary(context), fontSize: 12, fontWeight: FontWeight.w700)),
+        Text(label,
+            style: GoogleFonts.inter(
+                color: AppTheme.textPrimary(context),
+                fontSize: 12,
+                fontWeight: FontWeight.w700)),
         const SizedBox(height: 10),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 18),
@@ -609,7 +828,8 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
             style: TextStyle(color: AppTheme.textPrimary(context)),
             decoration: InputDecoration(
               hintText: hint,
-              hintStyle: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 13),
+              hintStyle: GoogleFonts.inter(
+                  color: AppTheme.textSecondary(context), fontSize: 13),
               border: InputBorder.none,
             ),
           ),
@@ -626,22 +846,35 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
           height: 48,
           alignment: Alignment.center,
           decoration: BoxDecoration(
-            color: isSelected ? Theme.of(context).colorScheme.primary : AppTheme.surfaceMuted(context),
+            color: isSelected
+                ? Theme.of(context).colorScheme.primary
+                : AppTheme.surfaceMuted(context),
             borderRadius: BorderRadius.circular(14),
           ),
-          child: Text(label, style: GoogleFonts.inter(color: isSelected ? AppTheme.colors.white : AppTheme.textSecondary(context), fontSize: 12, fontWeight: FontWeight.w700)),
+          child: Text(label,
+              style: GoogleFonts.inter(
+                  color: isSelected
+                      ? AppTheme.colors.white
+                      : AppTheme.textSecondary(context),
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700)),
         ),
       ),
     );
   }
 
-  Widget _buildPermissionRow(String label, bool value, ValueChanged<bool> onChanged) {
+  Widget _buildPermissionRow(
+      String label, bool value, ValueChanged<bool> onChanged) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: GoogleFonts.inter(color: AppTheme.textPrimary(context), fontSize: 13, fontWeight: FontWeight.w500)),
+          Text(label,
+              style: GoogleFonts.inter(
+                  color: AppTheme.textPrimary(context),
+                  fontSize: 13,
+                  fontWeight: FontWeight.w500)),
           Switch(
             value: value,
             activeThumbColor: Theme.of(context).colorScheme.primary,
@@ -652,4 +885,3 @@ class _FamilyShareScreenState extends ConsumerState<FamilyShareScreen> {
     );
   }
 }
-

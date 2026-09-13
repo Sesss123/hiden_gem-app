@@ -148,6 +148,7 @@
                         ],
                         'Safety' => [
                             ['route' => 'admin.incidents.index', 'match' => 'admin.incidents.*', 'icon' => 'fa-triangle-exclamation', 'label' => 'Incidents', 'color' => 'text-red-400', 'badgeKey' => 'openIncidentCount'],
+                            ['route' => 'admin.family-share.index', 'match' => 'admin.family-share.*', 'icon' => 'fa-people-arrows', 'label' => 'Family Share', 'color' => 'text-sky-400'],
                         ],
                         'People' => [
                             ['route' => 'admin.guides.index', 'match' => 'admin.guides.*', 'icon' => 'fa-user-tie', 'label' => 'Guides', 'color' => 'text-indigo-400'],

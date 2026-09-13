@@ -24,6 +24,7 @@ use App\Http\Controllers\Admin\BookingController;
 use App\Http\Controllers\Admin\ReviewController;
 use App\Http\Controllers\Admin\SubscriptionController;
 use App\Http\Controllers\Admin\AuditLogController;
+use App\Http\Controllers\Admin\FamilyShareController;
 use App\Http\Controllers\JoinController;
 use App\Http\Controllers\Api\V1\GuideDocumentUploadController;
 
@@ -129,6 +130,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/bookings/{id}', [BookingController::class, 'show'])->name('bookings.show');
         Route::get('/reviews', [ReviewController::class, 'index'])->name('reviews.index');
         Route::get('/subscriptions', [SubscriptionController::class, 'index'])->name('subscriptions.index');
+        Route::get('/family-share', [FamilyShareController::class, 'index'])->name('family-share.index');
         Route::get('/audit-log', [AuditLogController::class, 'index'])->name('audit-log.index');
 
         // Mutating actions (approve/reject/destroy/ban/cancel/hide) throttled
@@ -163,6 +165,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
             Route::post('/reviews/{id}/hide', [ReviewController::class, 'hide'])->name('reviews.hide');
             Route::post('/reviews/{id}/restore', [ReviewController::class, 'restore'])->name('reviews.restore');
+            Route::post('/family-share/{shareId}/revoke', [FamilyShareController::class, 'revoke'])->name('family-share.revoke');
         });
     });
 });

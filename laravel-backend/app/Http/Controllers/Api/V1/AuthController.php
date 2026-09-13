@@ -6,11 +6,15 @@ use App\Http\Controllers\Controller;
 use App\Models\Event;
 use App\Models\Place;
 use App\Models\User;
+use App\Models\GuideApplication;
 use App\Services\FirestoreService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
+use Kreait\Firebase\Factory;
+use Kreait\Firebase\Exception\Auth\UserNotFound;
 
 class AuthController extends Controller
 {
@@ -165,6 +169,7 @@ class AuthController extends Controller
             $verifiedIdToken = $auth->verifyIdToken($request->firebase_token);
             $uid = $verifiedIdToken->claims()->get('sub');
             $email = $verifiedIdToken->claims()->get('email');
+            $phoneNumber = $verifiedIdToken->claims()->get('phone_number');
             $name = $verifiedIdToken->claims()->get('name') ?? 'Firebase User';
             $emailVerified = $verifiedIdToken->claims()->get('email_verified') === true;
 
@@ -178,15 +183,25 @@ class AuthController extends Controller
             $user = User::where('firebase_uid', $uid)->first();
             if (!$user && $email && $emailVerified) {
                 $user = User::where('email', $email)->first();
-                if ($user && !$user->firebase_uid) {
+                if ($user && $user->firebase_uid !== $uid) {
+                    // A verified Firebase email proves ownership of the
+                    // existing Laravel identity. Relink provider/account UID
+                    // changes and revoke tokens issued to the old identity.
+                    $user->tokens()->delete();
                     $user->update(['firebase_uid' => $uid]);
                 }
             }
             if (!$user) {
+                // The legacy users table requires a unique non-null email.
+                // Phone-only Firebase accounts therefore receive a stable,
+                // non-routable internal address keyed by their verified UID.
+                $databaseEmail = $email ?: "firebase-{$uid}@phone.invalid";
                 $user = User::create([
                     'firebase_uid' => $uid,
-                    'email' => $email,
-                    'name' => $name,
+                    'email' => $databaseEmail,
+                    'name' => $name !== 'Firebase User'
+                        ? $name
+                        : ($phoneNumber ?: 'Phone User'),
                     'password' => Hash::make(\Illuminate\Support\Str::random(32)),
                     'role' => 'tourist',
                     'subscription_tier' => 'Free',
@@ -198,6 +213,15 @@ class AuthController extends Controller
                 // so a user who verifies their email after initial signup
                 // gets credit for it without a separate endpoint.
                 $user->update(['email_verified_at' => now()]);
+            }
+
+            if ($user->role === User::ROLE_BANNED) {
+                $user->tokens()->delete();
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'This account has been disabled.',
+                    'code' => 'account_disabled',
+                ], 403);
             }
 
             // Limit token bloat
@@ -257,7 +281,20 @@ class AuthController extends Controller
         $uid = $user->firebase_uid;
 
         if ($uid) {
+            // All cleanup is idempotent and must succeed before either login
+            // identity is removed. A retry can therefore safely finish a
+            // partially-completed deletion after a transient Firestore error.
             $this->purgeFirestoreData($firestore, $uid);
+            GuideApplication::where('user_id', $uid)->delete();
+            Storage::disk('local')->deleteDirectory("guide_documents/{$uid}");
+            Storage::disk('public')->deleteDirectory("listing_photos/{$uid}");
+
+            try {
+                $this->firebaseFactory()->createAuth()->deleteUser($uid);
+            } catch (UserNotFound $e) {
+                // A previous retry may already have removed the identity.
+                Log::info('Firebase identity already absent during account deletion.', ['uid' => $uid]);
+            }
         }
 
         // Content authorship: keep the content, drop the link to this account.
@@ -290,7 +327,6 @@ class AuthController extends Controller
             ['booking_requests', 'guideId'],
             ['tour_reviews', 'touristId'],
             ['tour_sessions', 'guideId'],
-            ['tour_sessions', 'touristIds', 'ARRAY_CONTAINS'],
             ['tour_links', 'touristId'],
             ['tour_links', 'guideId'],
             ['family_share_links', 'touristId'],
@@ -305,29 +341,62 @@ class AuthController extends Controller
             ['guide_listings', 'guideId'],
             ['tour_packages', 'ownerId'],
             ['operator_accounts', 'ownerUserId'],
+            ['subscriptions', 'accountId'],
+            ['user_notifications', 'recipientId'],
+            ['profile_view_markers', 'viewerUid'],
+            ['guide_analytics', 'guideId'],
         ];
 
-        foreach ($hardDeleteQueries as [$collection, $field, $op]) {
-            $op = $op ?? 'EQUAL';
-            try {
-                $docs = $firestore->queryDocuments($collection, $field, $op, $uid);
-                foreach ($docs as $doc) {
-                    $firestore->deleteDocument($collection, $doc['id']);
+        foreach ($hardDeleteQueries as $query) {
+            [$collection, $field] = $query;
+            $op = $query[2] ?? 'EQUAL';
+            $docs = $firestore->queryDocuments($collection, $field, $op, $uid, null, true);
+            foreach ($docs as $doc) {
+                $deleted = $collection === 'tour_sessions'
+                    ? $firestore->deleteDocumentRecursively($collection, $doc['id'])
+                    : $firestore->deleteDocument($collection, $doc['id']);
+                if (!$deleted) {
+                    throw new \RuntimeException("Failed deleting {$collection}/{$doc['id']}.");
                 }
-            } catch (\Exception $e) {
-                Log::error("Account deletion: failed purging {$collection} by {$field}", [
-                    'uid' => $uid,
-                    'error' => $e->getMessage(),
-                ]);
+            }
+        }
+
+        // A tourist deleting their account must be removed from a shared
+        // session, not delete the guide's session and every other tourist's
+        // live-tour data. Guide-owned sessions above are still deleted.
+        $joinedSessions = $firestore->queryDocuments('tour_sessions', 'touristIds', 'ARRAY_CONTAINS', $uid, null, true);
+        foreach ($joinedSessions as $session) {
+            $remainingTourists = array_values(array_filter(
+                $session['touristIds'] ?? [],
+                fn ($touristId) => $touristId !== $uid
+            ));
+            if (!$firestore->patchDocument('tour_sessions', $session['id'], ['touristIds' => $remainingTourists])) {
+                throw new \RuntimeException("Failed removing deleted tourist from tour_sessions/{$session['id']}.");
+            }
+        }
+
+        // Remove membership references in operator accounts owned by someone
+        // else; leaving a deleted UID here would retain personal linkage and
+        // can break future team permission checks.
+        foreach (['teamGuideIds', 'pendingTeamGuideIds'] as $teamField) {
+            $operators = $firestore->queryDocuments('operator_accounts', $teamField, 'ARRAY_CONTAINS', $uid, null, true);
+            foreach ($operators as $operator) {
+                $remaining = array_values(array_filter($operator[$teamField] ?? [], fn ($memberId) => $memberId !== $uid));
+                if (!$firestore->patchDocument('operator_accounts', $operator['id'], [$teamField => $remaining])) {
+                    throw new \RuntimeException("Failed removing deleted user from operator_accounts/{$operator['id']}.");
+                }
             }
         }
 
         // Doc ID IS the uid for these two — no query needed.
-        foreach (['guide_applications', 'users'] as $collection) {
-            try {
-                $firestore->deleteDocument($collection, $uid);
-            } catch (\Exception $e) {
-                Log::error("Account deletion: failed deleting {$collection}/{$uid}", ['error' => $e->getMessage()]);
+        foreach (['guide_applications', 'users', 'join_attempts'] as $collection) {
+            // Firestore DELETE is idempotent, so avoid a separate existence
+            // request whose network failure could be mistaken for "missing".
+            $deleted = $collection === 'users'
+                ? $firestore->deleteDocumentRecursively($collection, $uid)
+                : $firestore->deleteDocument($collection, $uid);
+            if (!$deleted) {
+                throw new \RuntimeException("Failed deleting {$collection}/{$uid}.");
             }
         }
 
@@ -335,25 +404,42 @@ class AuthController extends Controller
             ['incident_reports', 'reportedBy'],
             ['sos_alerts', 'triggeredBy'],
             ['security_events', 'uid'],
-            ['security_alerts', 'uid'],
+            ['security_alerts', 'userId'],
             ['device_trust', 'uid'],
             ['quarantined_sessions', 'uid'],
             ['abuse_reports', 'reportedBy'],
             ['abuse_events', 'userId'],
+            ['location_pings', 'uid'],
         ];
 
         foreach ($anonymizeQueries as [$collection, $field]) {
-            try {
-                $docs = $firestore->queryDocuments($collection, $field, 'EQUAL', $uid);
-                foreach ($docs as $doc) {
-                    $firestore->patchDocument($collection, $doc['id'], [$field => 'deleted_user']);
+            $docs = $firestore->queryDocuments($collection, $field, 'EQUAL', $uid, null, true);
+            foreach ($docs as $doc) {
+                if (!$firestore->patchDocument($collection, $doc['id'], [$field => 'deleted_user'])) {
+                    throw new \RuntimeException("Failed anonymizing {$collection}/{$doc['id']}.");
                 }
-            } catch (\Exception $e) {
-                Log::error("Account deletion: failed anonymizing {$collection} by {$field}", [
-                    'uid' => $uid,
-                    'error' => $e->getMessage(),
-                ]);
             }
         }
+    }
+
+    private function firebaseFactory(): Factory
+    {
+        $jsonCredentials = config('services.firebase_credentials');
+        if ($jsonCredentials) {
+            $decoded = json_decode($jsonCredentials, true);
+            if (!is_array($decoded)) {
+                throw new \RuntimeException('FIREBASE_CREDENTIALS is not valid JSON.');
+            }
+            return (new Factory())->withServiceAccount($decoded);
+        }
+
+        $configuredPath = config('firebase.credentials', 'config/firebase-credentials.json');
+        $credentialsPath = is_file($configuredPath)
+            ? $configuredPath
+            : base_path($configuredPath);
+        if (!is_file($credentialsPath)) {
+            throw new \RuntimeException('Firebase credentials are not configured.');
+        }
+        return (new Factory())->withServiceAccount($credentialsPath);
     }
 }

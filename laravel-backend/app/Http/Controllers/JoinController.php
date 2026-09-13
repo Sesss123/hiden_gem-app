@@ -32,8 +32,15 @@ class JoinController extends Controller
             return response()->view('join.invalid', ['reason' => 'not_found'], 404);
         }
 
-        $expiresAt = isset($link['expiresAt']) ? strtotime($link['expiresAt']) : null;
-        $isExpired = $expiresAt !== null && $expiresAt < time();
+        try {
+            $expiresAt = isset($link['expiresAt'])
+                ? \Carbon\CarbonImmutable::parse($link['expiresAt'])->utc()
+                : null;
+        } catch (\Throwable $e) {
+            return response()->view('join.invalid', ['reason' => 'expired']);
+        }
+        // Missing or malformed expiry metadata fails closed.
+        $isExpired = $expiresAt === null || $expiresAt->isPast();
 
         if (($link['isActive'] ?? false) !== true || $isExpired) {
             return response()->view('join.invalid', ['reason' => 'expired']);
@@ -51,6 +58,7 @@ class JoinController extends Controller
         return view('join.show', [
             'link' => $link,
             'encryptedStatus' => $link['encryptedStatus'] ?? null,
+            'lastSyncedAt' => $link['lastSyncedAt'] ?? null,
         ]);
     }
 }

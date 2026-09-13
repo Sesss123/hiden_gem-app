@@ -11,7 +11,6 @@ import '../../core/theme/oracle_ui_system.dart';
 import '../../data/models/booking_request.dart';
 import '../../data/models/tour_session.dart';
 import '../../data/repositories/booking_repository.dart';
-import '../../data/repositories/tour_session_repository.dart';
 import '../../data/datasources/user_preference_service.dart';
 import '../../core/services/calendar_sync_service.dart';
 import '../../core/notifications/notification_service.dart';
@@ -27,7 +26,15 @@ class BookingInboxScreen extends ConsumerStatefulWidget {
 
 class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
   String _selectedFilter = 'pending';
-  final List<String> _filters = ['pending', 'accepted', 'session_ready', 'completed', 'declined', 'cancelled', 'all'];
+  final List<String> _filters = [
+    'pending',
+    'accepted',
+    'session_ready',
+    'completed',
+    'declined',
+    'cancelled',
+    'all'
+  ];
   List<BookingRequest> _latestBookings = [];
   bool _isSyncingCalendar = false;
 
@@ -41,7 +48,9 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
 
   Future<void> _syncToCalendar() async {
     final l10n = AppLocalizations.of(context)!;
-    final upcoming = _latestBookings.where((b) => b.status == 'accepted' || b.status == 'session_ready').toList();
+    final upcoming = _latestBookings
+        .where((b) => b.status == 'accepted' || b.status == 'session_ready')
+        .toList();
     if (upcoming.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(l10n.noBookingsToSyncMessage)),
@@ -51,24 +60,34 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
 
     setState(() => _isSyncingCalendar = true);
     try {
-      final entries = upcoming.map((b) => CalendarSyncEntry(
-        bookingId: b.bookingId,
-        title: l10n.calendarEventTitle(b.touristDisplayName ?? l10n.defaultTouristName, b.guestCount),
-        description: b.notes ?? '',
-        start: b.requestedDate,
-        end: b.requestedDate.add(const Duration(hours: 4)),
-      )).toList();
+      final entries = upcoming
+          .map((b) => CalendarSyncEntry(
+                bookingId: b.bookingId,
+                title: l10n.calendarEventTitle(
+                    b.touristDisplayName ?? l10n.defaultTouristName,
+                    b.guestCount),
+                description: b.notes ?? '',
+                start: b.requestedDate,
+                end: b.requestedDate.add(const Duration(hours: 4)),
+              ))
+          .toList();
 
       final synced = await CalendarSyncService().syncBookings(entries);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.calendarSyncSuccessMessage(synced)), backgroundColor: AppTheme.colors.green),
+          SnackBar(
+              content: Text(AppLocalizations.of(context)!
+                  .calendarSyncSuccessMessage(synced)),
+              backgroundColor: AppTheme.colors.green),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.calendarSyncFailedMessage(e.toString())), backgroundColor: Theme.of(context).colorScheme.error),
+          SnackBar(
+              content: Text(AppLocalizations.of(context)!
+                  .calendarSyncFailedMessage(e.toString())),
+              backgroundColor: Theme.of(context).colorScheme.error),
         );
       }
     } finally {
@@ -83,7 +102,9 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
     if (uid == null) {
       return Scaffold(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        body: Center(child: Text(l10n.loginRequiredMessage, style: TextStyle(color: AppTheme.colors.white))),
+        body: Center(
+            child: Text(l10n.loginRequiredMessage,
+                style: TextStyle(color: AppTheme.colors.white))),
       );
     }
 
@@ -96,14 +117,22 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
         elevation: 0,
         title: Text(
           l10n.bookingsScreenTitle,
-          style: GoogleFonts.outfit(fontWeight: FontWeight.w800, fontSize: 20, color: AppTheme.textPrimary(context)),
+          style: GoogleFonts.outfit(
+              fontWeight: FontWeight.w800,
+              fontSize: 20,
+              color: AppTheme.textPrimary(context)),
         ),
         centerTitle: false,
         actions: [
           IconButton(
             icon: _isSyncingCalendar
-                ? SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: AppTheme.textPrimary(context)))
-                : Icon(Icons.calendar_month_outlined, color: AppTheme.textPrimary(context)),
+                ? SizedBox(
+                    width: 18,
+                    height: 18,
+                    child: CircularProgressIndicator(
+                        strokeWidth: 2, color: AppTheme.textPrimary(context)))
+                : Icon(Icons.calendar_month_outlined,
+                    color: AppTheme.textPrimary(context)),
             tooltip: l10n.syncToCalendarTooltip,
             onPressed: _isSyncingCalendar ? null : _syncToCalendar,
           ),
@@ -120,11 +149,16 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
                   stream: bookingRepo.getInbox(uid),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Center(child: CircularProgressIndicator(color: AppTheme.colors.amber));
+                      return Center(
+                          child: CircularProgressIndicator(
+                              color: AppTheme.colors.amber));
                     }
                     if (snapshot.hasError) {
                       return Center(
-                        child: Text(l10n.inboxLoadErrorMessage(snapshot.error.toString()), style: TextStyle(color: AppTheme.colors.redAccent)),
+                        child: Text(
+                            l10n.inboxLoadErrorMessage(
+                                snapshot.error.toString()),
+                            style: TextStyle(color: AppTheme.colors.redAccent)),
                       );
                     }
 
@@ -146,7 +180,8 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
                               return req.status.contains('cancelled');
                             }
                             if (_selectedFilter == 'accepted') {
-                              return req.status == 'accepted' || req.status == 'session_ready';
+                              return req.status == 'accepted' ||
+                                  req.status == 'session_ready';
                             }
                             return req.status == _selectedFilter;
                           }).toList();
@@ -170,7 +205,8 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
                       physics: const BouncingScrollPhysics(),
                       itemCount: filteredRequests.length,
                       itemBuilder: (context, index) {
-                        return _buildBookingCard(context, l10n, filteredRequests[index]);
+                        return _buildBookingCard(
+                            context, l10n, filteredRequests[index]);
                       },
                     );
                   },
@@ -188,16 +224,26 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
   /// Firestore-persisted values and must never be translated in place.
   String _statusLabel(String status, AppLocalizations l10n) {
     switch (status) {
-      case 'pending': return l10n.bookingStatusPendingLabel;
-      case 'accepted': return l10n.bookingStatusAcceptedLabel;
-      case 'session_ready': return l10n.bookingStatusSessionReadyLabel;
-      case 'completed': return l10n.bookingStatusCompletedLabel;
-      case 'declined': return l10n.bookingStatusDeclinedLabel;
-      case 'cancelled': return l10n.bookingStatusCancelledLabel;
-      case 'cancelled_by_tourist': return l10n.statusLabelCancelledByTourist;
-      case 'cancelled_by_guide': return l10n.statusLabelCancelledByGuide;
-      case 'all': return l10n.priceRangeAll;
-      default: return l10n.bookingStatusDefaultLabel;
+      case 'pending':
+        return l10n.bookingStatusPendingLabel;
+      case 'accepted':
+        return l10n.bookingStatusAcceptedLabel;
+      case 'session_ready':
+        return l10n.bookingStatusSessionReadyLabel;
+      case 'completed':
+        return l10n.bookingStatusCompletedLabel;
+      case 'declined':
+        return l10n.bookingStatusDeclinedLabel;
+      case 'cancelled':
+        return l10n.bookingStatusCancelledLabel;
+      case 'cancelled_by_tourist':
+        return l10n.statusLabelCancelledByTourist;
+      case 'cancelled_by_guide':
+        return l10n.statusLabelCancelledByGuide;
+      case 'all':
+        return l10n.priceRangeAll;
+      default:
+        return l10n.bookingStatusDefaultLabel;
     }
   }
 
@@ -213,7 +259,9 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
         itemBuilder: (context, index) {
           final filter = _filters[index];
           final isSelected = _selectedFilter == filter;
-          final label = filter == 'session_ready' ? l10n.filterReadyForTour : _statusLabel(filter, l10n);
+          final label = filter == 'session_ready'
+              ? l10n.filterReadyForTour
+              : _statusLabel(filter, l10n);
 
           return OracleUI.glassChip(
             context: context,
@@ -230,19 +278,24 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
   }
 
   Widget _buildEmptyState(AppLocalizations l10n) {
-    final filterLabel = _selectedFilter == 'all' ? '' : _statusLabel(_selectedFilter, l10n).toLowerCase();
+    final filterLabel = _selectedFilter == 'all'
+        ? ''
+        : _statusLabel(_selectedFilter, l10n).toLowerCase();
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.inbox_outlined, size: 64, color: AppTheme.textSecondary(context).withValues(alpha: 0.4)),
+            Icon(Icons.inbox_outlined,
+                size: 64,
+                color: AppTheme.textSecondary(context).withValues(alpha: 0.4)),
             const SizedBox(height: 16),
             Text(
               l10n.emptyBookingsMessage(filterLabel),
               textAlign: TextAlign.center,
-              style: GoogleFonts.inter(fontSize: 16, color: AppTheme.textSecondary(context)),
+              style: GoogleFonts.inter(
+                  fontSize: 16, color: AppTheme.textSecondary(context)),
             ),
           ],
         ),
@@ -250,7 +303,8 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
     );
   }
 
-  Widget _buildBookingCard(BuildContext context, AppLocalizations l10n, BookingRequest request) {
+  Widget _buildBookingCard(
+      BuildContext context, AppLocalizations l10n, BookingRequest request) {
     final dateFormat = DateFormat('EEE, MMM d, yyyy');
     final timeFormat = DateFormat('h:mm a');
     final statusColor = _getStatusColor(request.status);
@@ -287,14 +341,17 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
                         color: statusColor.withValues(alpha: 0.12),
                         shape: BoxShape.circle,
                       ),
-                      child: Icon(_getStatusIcon(request.status), color: statusColor, size: 18),
+                      child: Icon(_getStatusIcon(request.status),
+                          color: statusColor, size: 18),
                     ),
                     const SizedBox(width: 12),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          l10n.touristIdLabel(request.touristId.length > 6 ? request.touristId.substring(0, 6) : request.touristId),
+                          l10n.touristIdLabel(request.touristId.length > 6
+                              ? request.touristId.substring(0, 6)
+                              : request.touristId),
                           style: GoogleFonts.inter(
                             fontSize: 13,
                             fontWeight: FontWeight.w700,
@@ -302,8 +359,11 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
                           ),
                         ),
                         Text(
-                          l10n.requestedAtLabel(timeFormat.format(request.createdAt)),
-                          style: GoogleFonts.inter(fontSize: 11, color: AppTheme.textSecondary(context)),
+                          l10n.requestedAtLabel(
+                              timeFormat.format(request.createdAt)),
+                          style: GoogleFonts.inter(
+                              fontSize: 11,
+                              color: AppTheme.textSecondary(context)),
                         ),
                       ],
                     ),
@@ -314,20 +374,26 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
                   children: [
                     if (request.isPriority) ...[
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 3),
                         decoration: BoxDecoration(
                           color: AppPalette.heroOchre.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(100),
                         ),
                         child: Text(
                           l10n.priorityBadgeLabel,
-                          style: GoogleFonts.outfit(color: AppPalette.heroOchre, fontWeight: FontWeight.w800, fontSize: 9, letterSpacing: 0.5),
+                          style: GoogleFonts.outfit(
+                              color: AppPalette.heroOchre,
+                              fontWeight: FontWeight.w800,
+                              fontSize: 9,
+                              letterSpacing: 0.5),
                         ),
                       ),
                       const SizedBox(height: 6),
                     ],
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 5),
                       decoration: BoxDecoration(
                         color: statusColor.withValues(alpha: 0.12),
                         borderRadius: BorderRadius.circular(100),
@@ -349,8 +415,12 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _buildDetailItem(Icons.calendar_today_rounded, l10n.tourDateLabel, dateFormat.format(request.requestedDate)),
-                _buildDetailItem(Icons.group_outlined, l10n.guestsLabel, l10n.guestsCountValue(request.guestCount)),
+                _buildDetailItem(
+                    Icons.calendar_today_rounded,
+                    l10n.tourDateLabel,
+                    dateFormat.format(request.requestedDate)),
+                _buildDetailItem(Icons.group_outlined, l10n.guestsLabel,
+                    l10n.guestsCountValue(request.guestCount)),
               ],
             ),
             const SizedBox(height: 12),
@@ -365,7 +435,7 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
                 _buildDetailItem(
                   Icons.account_balance_wallet_outlined,
                   l10n.netPayoutLabel,
-                  "${request.currency ?? 'USD'} ${request.guideNetAmount?.toStringAsFixed(2) ?? (request.quotedPrice != null ? (request.quotedPrice! * 0.85).toStringAsFixed(2) : l10n.notAvailableAbbrev)}",
+                  "${request.currency ?? 'USD'} ${request.guideNetAmount?.toStringAsFixed(2) ?? (request.quotedPrice != null ? (request.quotedPrice! * 0.90).toStringAsFixed(2) : l10n.notAvailableAbbrev)}",
                 ),
               ],
             ),
@@ -375,22 +445,37 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
                 width: double.infinity,
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: (Theme.of(context).brightness == Brightness.dark ? AppTheme.colors.black : AppTheme.colors.grey[200]!).withValues(alpha: 0.5),
+                  color: (Theme.of(context).brightness == Brightness.dark
+                          ? AppTheme.colors.black
+                          : AppTheme.colors.grey[200]!)
+                      .withValues(alpha: 0.5),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(l10n.tourNotesLabel, style: GoogleFonts.inter(fontSize: 10, color: AppTheme.colors.amber[800], fontWeight: FontWeight.w700)),
+                    Text(l10n.tourNotesLabel,
+                        style: GoogleFonts.inter(
+                            fontSize: 10,
+                            color: AppTheme.colors.amber[800],
+                            fontWeight: FontWeight.w700)),
                     const SizedBox(height: 4),
-                    Text(request.notes!, style: GoogleFonts.inter(fontSize: 13, color: AppTheme.textPrimary(context))),
+                    Text(request.notes!,
+                        style: GoogleFonts.inter(
+                            fontSize: 13,
+                            color: AppTheme.textPrimary(context))),
                   ],
                 ),
               ),
             ],
-            if (request.responseNote != null && request.responseNote!.isNotEmpty) ...[
+            if (request.responseNote != null &&
+                request.responseNote!.isNotEmpty) ...[
               const SizedBox(height: 12),
-              Text(l10n.responseNoteLabel(request.responseNote ?? ''), style: GoogleFonts.inter(fontSize: 12, fontStyle: FontStyle.italic, color: AppTheme.textSecondary(context))),
+              Text(l10n.responseNoteLabel(request.responseNote ?? ''),
+                  style: GoogleFonts.inter(
+                      fontSize: 12,
+                      fontStyle: FontStyle.italic,
+                      color: AppTheme.textSecondary(context))),
             ],
             if (request.status == 'pending') ...[
               const SizedBox(height: 20),
@@ -403,10 +488,13 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
                         backgroundColor: AppTheme.surfaceMuted(context),
                         foregroundColor: AppTheme.colors.redAccent,
                         padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(100)),
                         elevation: 0,
                       ),
-                      child: Text(l10n.declineButtonLabel, style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 12)),
+                      child: Text(l10n.declineButtonLabel,
+                          style: GoogleFonts.inter(
+                              fontWeight: FontWeight.w600, fontSize: 12)),
                     ),
                   ),
                   const SizedBox(width: 10),
@@ -418,16 +506,20 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
                         backgroundColor: AppTheme.colors.greenAccent[700],
                         foregroundColor: AppTheme.colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(100)),
                         elevation: 0,
                       ),
-                      child: Text(l10n.acceptButtonLabel, style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 12)),
+                      child: Text(l10n.acceptButtonLabel,
+                          style: GoogleFonts.inter(
+                              fontWeight: FontWeight.w700, fontSize: 12)),
                     ),
                   ),
                 ],
               ),
             ],
-            if (request.status == 'session_ready' || request.status == 'accepted') ...[
+            if (request.status == 'session_ready' ||
+                request.status == 'accepted') ...[
               const SizedBox(height: 20),
               SizedBox(
                 width: double.infinity,
@@ -438,17 +530,24 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
                       context,
                       MaterialPageRoute(
                         builder: (_) => TouristCompanionHub(
-                          sessionId: request.linkedSessionId ?? 'TS_${request.bookingId}',
+                          sessionId: request.linkedSessionId ??
+                              'TS_${request.bookingId}',
                         ),
                       ),
                     );
                   },
-                  icon: Icon(Icons.play_arrow_rounded, color: AppTheme.colors.white),
-                  label: Text(l10n.startTourSessionButtonLabel, style: GoogleFonts.inter(color: AppTheme.colors.white, fontWeight: FontWeight.w700, fontSize: 13)),
+                  icon: Icon(Icons.play_arrow_rounded,
+                      color: AppTheme.colors.white),
+                  label: Text(l10n.startTourSessionButtonLabel,
+                      style: GoogleFonts.inter(
+                          color: AppTheme.colors.white,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 13)),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppTheme.colors.amber[800],
                     padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(100)),
                     elevation: 0,
                   ),
                 ),
@@ -468,8 +567,14 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(label, style: GoogleFonts.inter(fontSize: 10, color: AppTheme.textSecondary(context))),
-            Text(value, style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.bold, color: AppTheme.textPrimary(context))),
+            Text(label,
+                style: GoogleFonts.inter(
+                    fontSize: 10, color: AppTheme.textSecondary(context))),
+            Text(value,
+                style: GoogleFonts.outfit(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: AppTheme.textPrimary(context))),
           ],
         ),
       ],
@@ -478,29 +583,39 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
 
   Color _getStatusColor(String status) {
     switch (status) {
-      case 'pending': return AppTheme.colors.orangeAccent;
+      case 'pending':
+        return AppTheme.colors.orangeAccent;
       case 'accepted':
-      case 'session_ready': return AppTheme.colors.green;
-      case 'completed': return AppTheme.colors.blueAccent;
+      case 'session_ready':
+        return AppTheme.colors.green;
+      case 'completed':
+        return AppTheme.colors.blueAccent;
       case 'declined':
       case 'cancelled':
       case 'cancelled_by_tourist':
-      case 'cancelled_by_guide': return AppTheme.colors.redAccent;
-      default: return AppTheme.textSecondary(context);
+      case 'cancelled_by_guide':
+        return AppTheme.colors.redAccent;
+      default:
+        return AppTheme.textSecondary(context);
     }
   }
 
   IconData _getStatusIcon(String status) {
     switch (status) {
-      case 'pending': return Icons.access_time_rounded;
+      case 'pending':
+        return Icons.access_time_rounded;
       case 'accepted':
-      case 'session_ready': return Icons.check_circle_outline_rounded;
-      case 'completed': return Icons.verified_outlined;
+      case 'session_ready':
+        return Icons.check_circle_outline_rounded;
+      case 'completed':
+        return Icons.verified_outlined;
       case 'declined':
       case 'cancelled':
       case 'cancelled_by_tourist':
-      case 'cancelled_by_guide': return Icons.cancel_outlined;
-      default: return Icons.info_outline;
+      case 'cancelled_by_guide':
+        return Icons.cancel_outlined;
+      default:
+        return Icons.info_outline;
     }
   }
 
@@ -525,12 +640,14 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
-            child: Text(MaterialLocalizations.of(dialogContext).cancelButtonLabel),
+            child:
+                Text(MaterialLocalizations.of(dialogContext).cancelButtonLabel),
           ),
           ElevatedButton(
             onPressed: () {
               final amount = double.tryParse(controller.text.trim());
-              Navigator.pop(dialogContext, (amount != null && amount > 0) ? amount : null);
+              Navigator.pop(dialogContext,
+                  (amount != null && amount > 0) ? amount : null);
             },
             child: Text(l10n.sendQuoteConfirmButtonLabel),
           ),
@@ -551,9 +668,6 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
 
     try {
       final bookingRepo = ref.read(bookingRepositoryProvider);
-      final sessionRepo = ref.read(tourSessionRepositoryProvider);
-
-      await bookingRepo.sendQuote(bookingId: request.bookingId, amount: amount);
 
       // Security: not a predictable timestamp — an attacker who could guess
       // recent millisecond timestamps could brute-force session IDs. UUID
@@ -584,21 +698,32 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
       final session = TourSession(
         sessionId: sessionId,
         guideId: uid,
+        guideName: FirebaseAuth.instance.currentUser?.displayName,
         touristIds: [request.touristId],
         meetingPointName: l10n.meetingPointPendingLabel,
         meetingPointLat: sessionLat,
         meetingPointLng: sessionLng,
         status: 'initial',
         currentPhase: 'assembling',
-        sessionCode: (100000 + (DateTime.now().millisecondsSinceEpoch % 900000)).toString(),
+        sessionCode: (100000 + (DateTime.now().millisecondsSinceEpoch % 900000))
+            .toString(),
         maxTourists: request.guestCount,
         notes: request.notes,
         isReviewEnabled: true,
       );
 
-      await sessionRepo.createSession(session);
-      await bookingRepo.respondToRequest(bookingId: request.bookingId, status: 'session_ready', note: l10n.bookingAcceptedResponseNote, touristId: request.touristId);
-      await bookingRepo.updateLinkedSessionId(request.bookingId, sessionId);
+      // Quote, session creation and booking linkage commit atomically on the
+      // backend. A failure leaves the original pending booking untouched.
+      await bookingRepo.acceptWithSession(
+        bookingId: request.bookingId,
+        amount: amount,
+        session: session,
+      );
+      await bookingRepo.respondToRequest(
+          bookingId: request.bookingId,
+          status: 'session_ready',
+          note: l10n.bookingAcceptedResponseNote,
+          touristId: request.touristId);
 
       final profile = UserPreferenceService.getProfile();
       profile.currentBatchId = sessionId;
@@ -606,13 +731,18 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.bookingAcceptedMessage), backgroundColor: AppTheme.colors.green),
+          SnackBar(
+              content: Text(l10n.bookingAcceptedMessage),
+              backgroundColor: AppTheme.colors.green),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.acceptBookingErrorMessage(e.toString())), backgroundColor: AppTheme.colors.redAccent),
+          SnackBar(
+              content: Text(AppLocalizations.of(context)!
+                  .acceptBookingErrorMessage(e.toString())),
+              backgroundColor: AppTheme.colors.redAccent),
         );
       }
     }
@@ -627,33 +757,50 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
         context: context,
         builder: (context) => AlertDialog(
           backgroundColor: Theme.of(context).cardColor,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20), side: BorderSide(color: AppTheme.colors.redAccent)),
-          title: Text(l10n.declineBookingDialogTitle, style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.bold)),
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+              side: BorderSide(color: AppTheme.colors.redAccent)),
+          title: Text(l10n.declineBookingDialogTitle,
+              style: GoogleFonts.outfit(
+                  color: AppTheme.textPrimary(context),
+                  fontWeight: FontWeight.bold)),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(l10n.declineReasonPrompt, style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 13)),
+              Text(l10n.declineReasonPrompt,
+                  style: GoogleFonts.inter(
+                      color: AppTheme.textSecondary(context), fontSize: 13)),
               const SizedBox(height: 12),
               TextField(
                 controller: noteController,
                 style: GoogleFonts.inter(color: AppTheme.textPrimary(context)),
                 decoration: InputDecoration(
                   hintText: l10n.declineReasonHint,
-                  hintStyle: GoogleFonts.inter(color: AppTheme.textSecondary(context).withValues(alpha: 0.5), fontSize: 12),
+                  hintStyle: GoogleFonts.inter(
+                      color: AppTheme.textSecondary(context)
+                          .withValues(alpha: 0.5),
+                      fontSize: 12),
                   filled: true,
                   fillColor: AppTheme.borderColor(context),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide.none),
                 ),
                 maxLines: 2,
               ),
             ],
           ),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(context, false), child: Text(l10n.cancel, style: TextStyle(color: AppTheme.textSecondary(context)))),
+            TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: Text(l10n.cancel,
+                    style: TextStyle(color: AppTheme.textSecondary(context)))),
             ElevatedButton(
               onPressed: () => Navigator.pop(context, true),
-              style: ElevatedButton.styleFrom(backgroundColor: AppTheme.colors.redAccent, foregroundColor: AppTheme.colors.white),
+              style: ElevatedButton.styleFrom(
+                  backgroundColor: AppTheme.colors.redAccent,
+                  foregroundColor: AppTheme.colors.white),
               child: Text(l10n.declineConfirmButtonLabel),
             ),
           ],
@@ -667,19 +814,26 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
         await bookingRepo.respondToRequest(
           bookingId: request.bookingId,
           status: 'declined',
-          note: noteController.text.trim().isNotEmpty ? noteController.text.trim() : l10n.bookingDeclinedDefaultNote,
+          note: noteController.text.trim().isNotEmpty
+              ? noteController.text.trim()
+              : l10n.bookingDeclinedDefaultNote,
           touristId: request.touristId,
         );
 
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(l10n.bookingDeclinedMessage), backgroundColor: AppTheme.colors.redAccent),
+            SnackBar(
+                content: Text(l10n.bookingDeclinedMessage),
+                backgroundColor: AppTheme.colors.redAccent),
           );
         }
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(AppLocalizations.of(context)!.declineBookingErrorMessage(e.toString())), backgroundColor: AppTheme.colors.redAccent),
+            SnackBar(
+                content: Text(AppLocalizations.of(context)!
+                    .declineBookingErrorMessage(e.toString())),
+                backgroundColor: AppTheme.colors.redAccent),
           );
         }
       }

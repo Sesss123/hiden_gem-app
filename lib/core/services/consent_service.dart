@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:app_tracking_transparency/app_tracking_transparency.dart';
@@ -17,7 +18,8 @@ class ConsentService {
     try {
       // 1. Request iOS App Tracking Transparency (ATT)
       if (Platform.isIOS) {
-        final TrackingStatus status = await AppTrackingTransparency.trackingAuthorizationStatus;
+        final TrackingStatus status =
+            await AppTrackingTransparency.trackingAuthorizationStatus;
         if (status == TrackingStatus.notDetermined) {
           // Show ATT dialog
           await AppTrackingTransparency.requestTrackingAuthorization();
@@ -32,19 +34,18 @@ class ConsentService {
           if (await ConsentInformation.instance.isConsentFormAvailable()) {
             _loadAndShowConsentForm();
           } else {
-            // No form available, likely outside EU or already resolved. Initialize ads.
-            _initializeAds();
+            await _initializeAdsIfAllowed();
           }
         },
         (FormError error) {
-          SecureLogger.warning("UMP Consent Info Update Failed: ${error.message}");
-          // Fallback to initializing ads anyway if form update fails
-          _initializeAds();
+          SecureLogger.warning(
+              "UMP Consent Info Update Failed: ${error.message}");
+          // Fail closed: an unavailable consent service is not consent.
         },
       );
     } catch (e) {
       SecureLogger.error("Error in ConsentService init: $e");
-      _initializeAds();
+      // Fail closed; core app functionality does not depend on ads.
     }
   }
 
@@ -56,30 +57,47 @@ class ConsentService {
           consentForm.show(
             (FormError? formError) {
               if (formError != null) {
-                SecureLogger.warning("Consent Form Show Error: ${formError.message}");
+                SecureLogger.warning(
+                    "Consent Form Show Error: ${formError.message}");
               }
-              // After form is dismissed, initialize ads
-              _initializeAds();
+              _initializeAdsIfAllowed();
             },
           );
         } else {
           // Already consented or not required
-          _initializeAds();
+          _initializeAdsIfAllowed();
         }
       },
       (FormError formError) {
         SecureLogger.warning("Consent Form Load Error: ${formError.message}");
-        _initializeAds();
+        // Fail closed when the consent form cannot be loaded.
       },
     );
   }
 
-  void _initializeAds() {
+  Future<void> _initializeAdsIfAllowed() async {
+    if (!await ConsentInformation.instance.canRequestAds()) {
+      SecureLogger.info('Ads remain disabled because consent is unresolved.');
+      return;
+    }
     try {
       MobileAds.instance.initialize();
       SecureLogger.info("MobileAds initialized after consent check.");
     } catch (e) {
       SecureLogger.error("MobileAds Init Error: $e");
     }
+  }
+
+  /// Lets the user revisit/withdraw ad consent from Profile settings.
+  Future<void> showPrivacyOptions() async {
+    final completer = Completer<void>();
+    ConsentForm.showPrivacyOptionsForm((error) {
+      if (error != null) {
+        completer.completeError(StateError(error.message));
+      } else {
+        completer.complete();
+      }
+    });
+    return completer.future;
   }
 }

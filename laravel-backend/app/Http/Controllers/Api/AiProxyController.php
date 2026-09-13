@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PlanItineraryRequest;
 use App\Http\Requests\RecommendationsRequest;
+use App\Http\Requests\AiChatRequest;
+use App\Http\Requests\FoodScanRequest;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
@@ -24,6 +26,52 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class AiProxyController extends Controller
 {
+    private function bridgeKey(): string
+    {
+        $key = (string) config('app.internal_bridge_key', '');
+        abort_if($key === '', Response::HTTP_SERVICE_UNAVAILABLE, 'AI service is not configured.');
+        return $key;
+    }
+
+    public function chat(AiChatRequest $request): \Illuminate\Http\JsonResponse
+    {
+        return $this->forward('/api/test-model', $request->validated(), 45);
+    }
+
+    public function status(): \Illuminate\Http\JsonResponse
+    {
+        $pythonUrl = rtrim((string) config('app.python_backend_url', 'http://localhost:8000'), '/');
+        try {
+            $response = Http::timeout(5)->get($pythonUrl . '/api/status');
+            return response()->json(['status' => $response->successful() ? 'ok' : 'unavailable'], $response->successful() ? 200 : 503);
+        } catch (\Throwable) {
+            return response()->json(['status' => 'unavailable'], 503);
+        }
+    }
+
+    public function foodScan(FoodScanRequest $request): \Illuminate\Http\JsonResponse
+    {
+        return $this->forward('/api/food/scan', $request->validated(), 20);
+    }
+
+    private function forward(string $path, array $payload, int $timeout): \Illuminate\Http\JsonResponse
+    {
+        $pythonUrl = rtrim((string) config('app.python_backend_url', 'http://localhost:8000'), '/');
+        try {
+            $response = Http::timeout($timeout)->retry(2, 300, throw: false)
+                ->withHeaders(['X-Admin-Internal-Key' => $this->bridgeKey()])
+                ->post($pythonUrl . $path, $payload);
+            if ($response->failed()) {
+                Log::warning('[AiProxy] upstream request failed.', ['path' => $path, 'status' => $response->status()]);
+                return response()->json(['status' => 'error', 'message' => 'AI service is currently unavailable.'], 503);
+            }
+            return response()->json($response->json(), $response->status());
+        } catch (\Throwable $e) {
+            Log::error('[AiProxy] upstream connection failed.', ['path' => $path, 'error' => $e->getMessage()]);
+            return response()->json(['status' => 'error', 'message' => 'AI service is currently unavailable.'], 503);
+        }
+    }
+
     /**
      * POST /api/v1/ai/plan-itinerary
      *
@@ -33,7 +81,7 @@ class AiProxyController extends Controller
     public function planItinerary(PlanItineraryRequest $request): \Illuminate\Http\JsonResponse
     {
         $pythonUrl   = config('app.python_backend_url', 'http://localhost:8000');
-        $internalKey = config('app.internal_bridge_key', '');
+        $internalKey = $this->bridgeKey();
         $timeout     = (int) config('app.ai_plan_timeout', 30);
 
         // BUG-Q006: Only forward the validated, whitelisted payload.
@@ -89,7 +137,7 @@ class AiProxyController extends Controller
     public function recommendations(RecommendationsRequest $request): \Illuminate\Http\JsonResponse
     {
         $pythonUrl   = config('app.python_backend_url', 'http://localhost:8000');
-        $internalKey = config('app.internal_bridge_key', '');
+        $internalKey = $this->bridgeKey();
         $timeout     = (int) config('app.ai_rec_timeout', 15);
 
         // BUG-Q006: Only forward the validated, whitelisted payload.

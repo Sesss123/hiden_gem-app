@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io' show Platform;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -10,12 +11,34 @@ import '../../core/network/secure_http_client.dart';
 import '../../core/services/brute_force_service.dart';
 import '../../core/utils/secure_logger.dart';
 import '../../core/notifications/notification_service.dart';
+import '../../core/services/secure_entitlements.dart';
+import 'trip_cache_service.dart';
 import 'user_preference_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:math';
 import 'package:crypto/crypto.dart';
+import 'package:purchases_flutter/purchases_flutter.dart';
+
+class AccountDisabledException implements Exception {
+  const AccountDisabledException();
+
+  @override
+  String toString() => 'This account has been disabled.';
+}
+
+class PhoneSignInChallenge {
+  final String? verificationId;
+  final ConfirmationResult? webConfirmation;
+  final UserCredential? automaticCredential;
+
+  const PhoneSignInChallenge({
+    this.verificationId,
+    this.webConfirmation,
+    this.automaticCredential,
+  });
+}
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -51,16 +74,18 @@ class AuthService {
           await GoogleSignIn.instance.initialize(
             // Web client ID from google-services.json (client_type: 3) —
             // required so Firebase can verify the Google ID token server-side.
-            serverClientId: '932776629360-8n1phprf43pdq41hsknog1t66peguiog.apps.googleusercontent.com',
+            serverClientId:
+                '932776629360-8n1phprf43pdq41hsknog1t66peguiog.apps.googleusercontent.com',
           );
           _googleSignInInitialized = true;
         }
-        final GoogleSignInAccount googleUser = await GoogleSignIn.instance.authenticate(scopeHint: ['email']);
+        final GoogleSignInAccount googleUser =
+            await GoogleSignIn.instance.authenticate(scopeHint: ['email']);
 
         final GoogleSignInAuthentication googleAuth = googleUser.authentication;
-        
+
         // Request authorization for scopes if accessToken is needed by Firebase
-        final GoogleSignInClientAuthorization authz = 
+        final GoogleSignInClientAuthorization authz =
             await googleUser.authorizationClient.authorizeScopes(['email']);
 
         final AuthCredential credential = GoogleAuthProvider.credential(
@@ -79,7 +104,6 @@ class AuthService {
       rethrow;
     }
   }
-
 
   // Sign in with Apple (App Store Guideline 4.8 — required alongside Google Sign-In).
   // Also offered on Android as an additional login option, matching Google's
@@ -119,7 +143,8 @@ class AuthService {
             .whereType<String>()
             .join(' ')
             .trim();
-        await _syncUserData(userCredential.user!, name: name.isEmpty ? null : name);
+        await _syncUserData(userCredential.user!,
+            name: name.isEmpty ? null : name);
       }
       return userCredential;
     } catch (e) {
@@ -128,10 +153,105 @@ class AuthService {
     }
   }
 
+  /// Starts Firebase phone authentication. Phone numbers must be supplied in
+  /// E.164 form (for example +94771234567). Web uses Firebase's reCAPTCHA
+  /// flow; native platforms use SMS verification with automatic Android
+  /// verification when available.
+  Future<PhoneSignInChallenge> startPhoneSignIn(String phoneNumber) async {
+    final normalized = phoneNumber.replaceAll(RegExp(r'[\s()-]'), '');
+    if (!RegExp(r'^\+[1-9]\d{7,14}$').hasMatch(normalized)) {
+      throw FirebaseAuthException(
+        code: 'invalid-phone-number',
+        message: 'Enter a valid phone number including the country code.',
+      );
+    }
+
+    if (kIsWeb) {
+      final confirmation = await _auth.signInWithPhoneNumber(normalized);
+      return PhoneSignInChallenge(webConfirmation: confirmation);
+    }
+
+    final completer = Completer<PhoneSignInChallenge>();
+    await _auth.verifyPhoneNumber(
+      phoneNumber: normalized,
+      timeout: const Duration(seconds: 60),
+      verificationCompleted: (credential) async {
+        try {
+          final result = await _auth.signInWithCredential(credential);
+          if (result.user != null) await _syncUserData(result.user!);
+          if (!completer.isCompleted) {
+            completer.complete(
+              PhoneSignInChallenge(automaticCredential: result),
+            );
+          }
+        } catch (error, stackTrace) {
+          if (!completer.isCompleted) {
+            completer.completeError(error, stackTrace);
+          }
+        }
+      },
+      verificationFailed: (error) {
+        if (!completer.isCompleted) completer.completeError(error);
+      },
+      codeSent: (verificationId, _) {
+        if (!completer.isCompleted) {
+          completer.complete(
+            PhoneSignInChallenge(verificationId: verificationId),
+          );
+        }
+      },
+      codeAutoRetrievalTimeout: (verificationId) {
+        if (!completer.isCompleted) {
+          completer.complete(
+            PhoneSignInChallenge(verificationId: verificationId),
+          );
+        }
+      },
+    );
+    return completer.future.timeout(const Duration(seconds: 75));
+  }
+
+  Future<UserCredential> confirmPhoneCode(
+    PhoneSignInChallenge challenge,
+    String smsCode,
+  ) async {
+    if (challenge.automaticCredential != null) {
+      return challenge.automaticCredential!;
+    }
+
+    final code = smsCode.trim();
+    if (!RegExp(r'^\d{6}$').hasMatch(code)) {
+      throw FirebaseAuthException(
+        code: 'invalid-verification-code',
+        message: 'Enter the 6-digit SMS code.',
+      );
+    }
+
+    final UserCredential result;
+    if (challenge.webConfirmation != null) {
+      result = await challenge.webConfirmation!.confirm(code);
+    } else {
+      final verificationId = challenge.verificationId;
+      if (verificationId == null) {
+        throw StateError('Phone verification session is unavailable.');
+      }
+      result = await _auth.signInWithCredential(
+        PhoneAuthProvider.credential(
+          verificationId: verificationId,
+          smsCode: code,
+        ),
+      );
+    }
+    if (result.user != null) await _syncUserData(result.user!);
+    return result;
+  }
+
   String _generateNonce([int length = 32]) {
-    const charset = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-._';
+    const charset =
+        '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-._';
     final random = Random.secure();
-    return List.generate(length, (_) => charset[random.nextInt(charset.length)]).join();
+    return List.generate(length, (_) => charset[random.nextInt(charset.length)])
+        .join();
   }
 
   String _sha256ofString(String input) {
@@ -146,9 +266,11 @@ class AuthService {
   }
 
   // Sign up with Email
-  Future<UserCredential?> signUpWithEmail(String email, String password, String name) async {
+  Future<UserCredential?> signUpWithEmail(
+      String email, String password, String name) async {
     try {
-      final UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
+      final UserCredential userCredential =
+          await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
@@ -186,11 +308,12 @@ class AuthService {
     }
 
     try {
-      final UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+      final UserCredential userCredential =
+          await _auth.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
-      
+
       if (userCredential.user != null) {
         await guard.reset(); // Clear failures on success
         await _syncUserData(userCredential.user!);
@@ -198,11 +321,13 @@ class AuthService {
       return userCredential;
     } catch (e) {
       // Record failure if it's a password issue
-      if (e is FirebaseAuthException && 
-         (e.code == 'wrong-password' || e.code == 'invalid-credential' || e.code == 'user-not-found')) {
+      if (e is FirebaseAuthException &&
+          (e.code == 'wrong-password' ||
+              e.code == 'invalid-credential' ||
+              e.code == 'user-not-found')) {
         await guard.recordFailure();
       }
-      
+
       SecureLogger.error("Error during Email Sign-In: $e");
       rethrow;
     }
@@ -234,7 +359,9 @@ class AuthService {
       try {
         await user.getIdToken(true);
       } catch (e) {
-        SecureLogger.warning("ID token refresh before Firestore sync failed: $e", tag: "Auth");
+        SecureLogger.warning(
+            "ID token refresh before Firestore sync failed: $e",
+            tag: "Auth");
       }
 
       final userDoc = _firestore.collection('users').doc(user.uid);
@@ -255,21 +382,21 @@ class AuthService {
         // unprotected write here surfaces as a hard sign-in failure instead of
         // a silently-retried one.
         await _withPermissionRetry(() => userDoc.set({
-          'uid': user.uid,
-          'displayName': name ?? user.displayName,
-          'email': user.email,
-          'photoURL': user.photoURL,
-          'planCount': 0,
-          'isPremium': false,
-          'role': 'user',
-          'createdAt': FieldValue.serverTimestamp(),
-          'lastLogin': FieldValue.serverTimestamp(),
-        }));
+              'uid': user.uid,
+              'displayName': name ?? user.displayName,
+              'email': user.email,
+              'photoURL': user.photoURL,
+              'planCount': 0,
+              'isPremium': false,
+              'role': 'user',
+              'createdAt': FieldValue.serverTimestamp(),
+              'lastLogin': FieldValue.serverTimestamp(),
+            }));
       } else {
         // Update last login
         await _withPermissionRetry(() => userDoc.update({
-          'lastLogin': FieldValue.serverTimestamp(),
-        }));
+              'lastLogin': FieldValue.serverTimestamp(),
+            }));
       }
 
       // BUG-N02 Fix: Ensure FCM token is linked to user document on login/signup
@@ -278,17 +405,31 @@ class AuthService {
         if (token != null) {
           await userDoc.set({
             'fcmToken': token,
+            'fcmTokens': FieldValue.arrayUnion([token]),
             'fcmTokenUpdatedAt': FieldValue.serverTimestamp(),
           }, SetOptions(merge: true));
         }
       } catch (e) {
-        SecureLogger.warning("Could not sync FCM token during login: $e", tag: "Auth", isBackground: true);
+        SecureLogger.warning("Could not sync FCM token during login: $e",
+            tag: "Auth", isBackground: true);
       }
 
       // BUG-QA-001 Fix: Sync Firebase Auth with Laravel Sanctum
       await _syncWithLaravelSanctum(user);
+    } on AccountDisabledException {
+      await NotificationService().detachCurrentDevice(user.uid);
+      await UserPreferenceService.clearProfile();
+      await UserPreferenceService.clearAuthToken();
+      await TripCacheService.clearUserData();
+      await SecureEntitlements().clearForUser(user.uid);
+      await _auth.signOut();
+      rethrow;
     } catch (e) {
-      SecureLogger.error("Firestore profile sync failed after successful sign-in (account is still valid): $e", null, null, "Auth");
+      SecureLogger.error(
+          "Firestore profile sync failed after successful sign-in (account is still valid): $e",
+          null,
+          null,
+          "Auth");
     }
   }
 
@@ -299,8 +440,12 @@ class AuthService {
   /// exception, or a permission-denied that persists past the last retry,
   /// propagates to the caller unchanged.
   Future<T> _withPermissionRetry<T>(Future<T> Function() action) async {
-    const delays = [Duration(milliseconds: 250), Duration(milliseconds: 750), Duration(milliseconds: 1500)];
-    for (var attempt = 0; ; attempt++) {
+    const delays = [
+      Duration(milliseconds: 250),
+      Duration(milliseconds: 750),
+      Duration(milliseconds: 1500)
+    ];
+    for (var attempt = 0;; attempt++) {
       try {
         return await action();
       } on FirebaseException catch (e) {
@@ -318,20 +463,24 @@ class AuthService {
     try {
       final idToken = await user.getIdToken();
       if (idToken == null) return;
-      
+
       final response = await http.post(
         Uri.parse('${AppConfig.laravelUrl}/auth/firebase-login'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'firebase_token': idToken}),
       );
-      
+
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         final token = data['data']['access_token'];
         if (token != null) {
           await UserPreferenceService.saveAuthToken(token);
         }
+      } else if (response.statusCode == 403) {
+        throw const AccountDisabledException();
       }
+    } on AccountDisabledException {
+      rethrow;
     } catch (e) {
       SecureLogger.error("Error syncing with Sanctum: $e");
     }
@@ -344,16 +493,39 @@ class AuthService {
     // without this, the device keeps receiving pushes meant for the
     // account that just logged out (topic subscriptions are device-level
     // and outlive Firebase Auth sign-out).
-    await NotificationService().stopWatchingUserNotifications(uid);
+    await NotificationService().detachCurrentDevice(uid);
+
+    // Revoke the active Laravel Sanctum token while it is still available.
+    // Logout remains possible offline; the bounded server token then expires
+    // naturally, while its local copy is always removed below.
+    try {
+      await SecureHttpClient(http.Client())
+          .post(Uri.parse('${AppConfig.laravelUrl}/auth/logout'))
+          .timeout(const Duration(seconds: 8));
+    } catch (e) {
+      SecureLogger.warning('Laravel token revocation failed during logout: $e',
+          tag: 'Auth');
+    }
 
     if (!kIsWeb) {
-      try { await GoogleSignIn.instance.signOut(); } catch (e) { SecureLogger.warning('Google sign out failed: $e'); }
+      try {
+        await GoogleSignIn.instance.signOut();
+      } catch (e) {
+        SecureLogger.warning('Google sign out failed: $e');
+      }
+      try {
+        await Purchases.logOut();
+      } catch (e) {
+        SecureLogger.warning('RevenueCat sign out failed: $e');
+      }
     }
     await _auth.signOut();
     await UserPreferenceService.clearProfile();
     await UserPreferenceService.clearAuthToken();
+    await TripCacheService.clearUserData();
+    if (uid != null) await SecureEntitlements().clearForUser(uid);
   }
-  
+
   // Delete Account (Permanent)
   //
   // Order matters: the Laravel cleanup call runs FIRST, while the Firebase
@@ -381,20 +553,33 @@ class AuthService {
       ).timeout(const Duration(seconds: 20));
 
       if (response.statusCode != 200) {
-        throw Exception('Account deletion failed on the server (${response.statusCode}).');
+        throw Exception(
+            'Account deletion failed on the server (${response.statusCode}).');
       }
 
-      // 2. Clear local profile, auth tokens, and sign out of providers.
+      // 2. Only tear down device state after the server confirms deletion.
+      await NotificationService().detachCurrentDevice(user.uid);
       await UserPreferenceService.clearProfile();
       await UserPreferenceService.clearAuthToken();
+      await TripCacheService.clearUserData();
+      await SecureEntitlements().clearForUser(user.uid);
       if (!kIsWeb) {
-        try { await GoogleSignIn.instance.signOut(); } catch (e) { SecureLogger.warning('Google sign out failed: $e'); }
+        try {
+          await GoogleSignIn.instance.signOut();
+        } catch (e) {
+          SecureLogger.warning('Google sign out failed: $e');
+        }
+        try {
+          await Purchases.logOut();
+        } catch (e) {
+          SecureLogger.warning('RevenueCat sign out failed: $e');
+        }
       }
 
-      // 3. Firebase Auth deletion last — the Laravel call above already
-      // revoked the Sanctum token and deleted users/{uid}, so this is just
-      // removing the login credential itself.
-      await user.delete();
+      // Firebase Auth is deleted by the trusted backend as part of the same
+      // server-authoritative flow, avoiding a client-side recent-login failure
+      // after the user's server data has already been removed.
+      await _auth.signOut();
     } catch (e) {
       SecureLogger.error("Error during Account Deletion: $e");
       rethrow;

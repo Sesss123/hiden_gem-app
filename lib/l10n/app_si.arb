@@ -135,6 +135,14 @@
   "travelModeBike": "බයික්",
   "travelModeCar": "කාර්",
   "openInMaps": "සිතියමේ විවෘත කරන්න",
+  "nearbyNowLabel": "km {km} ක් දුරින් — දැන් ළඟින්",
+  "@nearbyNowLabel": {
+    "placeholders": {
+      "km": {
+        "type": "String"
+      }
+    }
+  },
   "photosLabel": "ඡායාරූප",
   "scheduleOngoingLabel": "පවතී — දිනය පසුව නිවේදනය කෙරේ",
   "privacySection1Title": "1. අප එකතු කරන දත්ත",

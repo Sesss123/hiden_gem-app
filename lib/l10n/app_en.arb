@@ -138,6 +138,14 @@
   "travelModeBike": "Bike",
   "travelModeCar": "Car",
   "openInMaps": "Open in Maps",
+  "nearbyNowLabel": "{km} km away — nearby now",
+  "@nearbyNowLabel": {
+    "placeholders": {
+      "km": {
+        "type": "String"
+      }
+    }
+  },
   "photosLabel": "Photos",
   "scheduleOngoingLabel": "Ongoing — date to be announced",
   "privacySection1Title": "1. DATA WE COLLECT",

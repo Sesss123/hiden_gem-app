@@ -32,7 +32,7 @@ class RevenueCatWebhookController extends Controller
     /**
      * Event types that mean the subscription is currently active.
      */
-    private const ACTIVE_EVENT_TYPES = ['INITIAL_PURCHASE', 'RENEWAL', 'UNCANCELLATION', 'PRODUCT_CHANGE'];
+    private const ACTIVE_EVENT_TYPES = ['INITIAL_PURCHASE', 'RENEWAL', 'UNCANCELLATION', 'PRODUCT_CHANGE', 'NON_RENEWING_PURCHASE'];
 
     /**
      * Event type that means the user cancelled auto-renew but is still
@@ -44,6 +44,7 @@ class RevenueCatWebhookController extends Controller
      * Event type that means the subscription has actually lapsed.
      */
     private const EXPIRATION_EVENT_TYPE = 'EXPIRATION';
+    private const BILLING_ISSUE_EVENT_TYPE = 'BILLING_ISSUE';
 
     /**
      * POST /api/webhooks/revenuecat
@@ -68,6 +69,7 @@ class RevenueCatWebhookController extends Controller
         $productId = $payload['product_id'] ?? null;
         $expirationAtMs = $payload['expiration_at_ms'] ?? null;
         $eventId = $payload['id'] ?? null;
+        $eventAtMs = (int) ($payload['event_timestamp_ms'] ?? $payload['purchased_at_ms'] ?? round(microtime(true) * 1000));
 
         if (!$eventType || !$appUserId) {
             Log::warning('RevenueCat webhook: missing event.type or event.app_user_id', ['payload' => $payload]);
@@ -75,17 +77,12 @@ class RevenueCatWebhookController extends Controller
             return response()->json(['status' => 'ignored']);
         }
 
-        // RevenueCat retries on any non-200/timeout, so the same event can
-        // arrive more than once. Recording event.id here, before any
-        // Firestore writes happen, means a replay is a fast no-op instead of
-        // re-running the whole state transition a second time.
-        if ($eventId && !$this->markEventProcessed('revenuecat', (string) $eventId)) {
-            Log::info("RevenueCat webhook: event {$eventId} already processed, skipping.");
-            return response()->json(['status' => 'already-processed']);
-        }
-
         $planId = self::PRODUCT_TO_PLAN[$productId] ?? null;
         $expiresAt = $expirationAtMs ? date('c', (int) ($expirationAtMs / 1000)) : null;
+        if (in_array($eventType, self::ACTIVE_EVENT_TYPES, true) && !$planId) {
+            Log::warning('RevenueCat webhook: unmapped product ignored.', ['product_id' => $productId]);
+            return response()->json(['status' => 'ignored-unmapped-product']);
+        }
 
         try {
             // Determine which account this subscription belongs to. Mirrors the
@@ -93,14 +90,21 @@ class RevenueCatWebhookController extends Controller
             // (keyed by accountId == appUserId) to learn accountType; otherwise probe
             // 'users' then 'operator_accounts' for a matching document.
             [$collection, $accountType, $subscriptionId] = $this->resolveAccount($firestore, $appUserId);
+            $existingSubscription = $firestore->findSubscriptionByAccountId($appUserId);
+            if ((int) ($existingSubscription['lastEventAtMs'] ?? 0) > $eventAtMs) {
+                if ($eventId) $this->markEventProcessed('revenuecat', (string) $eventId);
+                return response()->json(['status' => 'ignored-older-event']);
+            }
 
             $subUpdate = [
                 'accountId' => $appUserId,
                 'accountType' => $accountType,
+                'lastEventAtMs' => $eventAtMs,
             ];
+            $accountUpdate = [];
 
             if (in_array($eventType, self::ACTIVE_EVENT_TYPES, true)) {
-                $firestore->patchDocument($collection, $appUserId, array_filter([
+                $accountUpdate = array_filter([
                     'isPremium' => true,
                     'premiumPlanId' => $planId,
                     'premiumPlan' => $planId,
@@ -108,7 +112,7 @@ class RevenueCatWebhookController extends Controller
                     'autoRenew' => true,
                     'subscriptionPlan' => $planId,
                     'subExpiresAt' => $expiresAt,
-                ], fn ($v) => $v !== null));
+                ], fn ($v) => $v !== null);
 
                 $subUpdate = array_merge($subUpdate, array_filter([
                     'status' => 'active',
@@ -118,15 +122,24 @@ class RevenueCatWebhookController extends Controller
                 ], fn ($v) => $v !== null));
             } elseif ($eventType === self::CANCELLATION_EVENT_TYPE) {
                 // Still entitled until expiry — only flip autoRenew off.
-                $firestore->patchDocument($collection, $appUserId, ['autoRenew' => false]);
-                $subUpdate['status'] = 'cancelled';
+                $accountUpdate = ['autoRenew' => false];
+                $subUpdate['status'] = 'active';
                 $subUpdate['autoRenew'] = false;
                 $subUpdate['cancelledAt'] = date('c');
+            } elseif ($eventType === self::BILLING_ISSUE_EVENT_TYPE) {
+                $accountUpdate = array_filter([
+                    'isPremium' => true,
+                    'premiumExpiresAt' => $expiresAt,
+                    'autoRenew' => false,
+                ], fn ($v) => $v !== null);
+                $subUpdate['status'] = 'grace_period';
+                $subUpdate['autoRenew'] = false;
+                if ($expiresAt) $subUpdate['expiresAt'] = $expiresAt;
             } elseif ($eventType === self::EXPIRATION_EVENT_TYPE) {
-                $firestore->patchDocument($collection, $appUserId, [
+                $accountUpdate = [
                     'isPremium' => false,
                     'autoRenew' => false,
-                ]);
+                ];
                 $subUpdate['status'] = 'expired';
                 $subUpdate['autoRenew'] = false;
             } else {
@@ -134,7 +147,25 @@ class RevenueCatWebhookController extends Controller
                 return response()->json(['status' => 'ok']);
             }
 
-            $firestore->updateSubscriptionRecord($subscriptionId, $subUpdate);
+            $committed = $firestore->commitDocuments([
+                [
+                    'collection' => $collection,
+                    'id' => $appUserId,
+                    'data' => $accountUpdate,
+                    'updateMask' => array_keys($accountUpdate),
+                    'exists' => true,
+                ],
+                [
+                    'collection' => 'subscriptions',
+                    'id' => $subscriptionId,
+                    'data' => $subUpdate,
+                    'updateMask' => array_keys($subUpdate),
+                ],
+            ]);
+            if (!$committed) {
+                throw new \RuntimeException('Firestore did not confirm the subscription commit.');
+            }
+            if ($eventId) $this->markEventProcessed('revenuecat', (string) $eventId);
         } catch (\Exception $e) {
             // Log and still return 200 — a transient Firestore failure shouldn't
             // trigger RevenueCat's retry storm; investigate via logs instead.
@@ -143,6 +174,7 @@ class RevenueCatWebhookController extends Controller
                 'event_type' => $eventType,
                 'error' => $e->getMessage(),
             ]);
+            return response()->json(['status' => 'retry'], 500);
         }
 
         return response()->json(['status' => 'ok']);
@@ -204,6 +236,6 @@ class RevenueCatWebhookController extends Controller
 
         // Unknown account — default to 'users'/'guide' so the webhook still
         // records something rather than silently dropping the event.
-        return ['users', 'guide', $appUserId];
+        throw new \RuntimeException('RevenueCat event references an unknown account.');
     }
 }

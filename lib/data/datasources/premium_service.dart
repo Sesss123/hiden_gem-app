@@ -32,6 +32,9 @@ class PremiumNotifier extends _$PremiumNotifier {
   static const String premiumAnnualId = 'hgems_premium_annual';
 
   bool get _isFirebaseReady => Firebase.apps.isNotEmpty;
+  StreamSubscription<User?>? _authSubscription;
+  bool _revenueCatConfigured = false;
+  String? _identifiedUid;
 
   @override
   bool build() {
@@ -42,10 +45,18 @@ class PremiumNotifier extends _$PremiumNotifier {
     void listener(CustomerInfo customerInfo) {
       _updateStateFromCustomerInfo(customerInfo);
     }
+
     Purchases.addCustomerInfoUpdateListener(listener);
+
+    if (_isFirebaseReady) {
+      _authSubscription = FirebaseAuth.instance.authStateChanges().listen(
+            _identifyRevenueCatUser,
+          );
+    }
 
     ref.onDispose(() {
       Purchases.removeCustomerInfoUpdateListener(listener);
+      _authSubscription?.cancel();
     });
 
     _initRevenueCat();
@@ -64,26 +75,34 @@ class PremiumNotifier extends _$PremiumNotifier {
           ? AppConfig.revenueCatApiKeyIos
           : AppConfig.revenueCatApiKeyAndroid;
 
-      if (apiKey.isEmpty || apiKey == 'goog_example_key' || apiKey == 'appl_example_key' || apiKey.contains('example_key') || apiKey == 'dev-key-local') {
-        SecureLogger.info("Skipping RevenueCat initialization: Dummy/example API key detected in dev mode.", tag: "RevenueCat");
+      if (apiKey.isEmpty ||
+          apiKey == 'goog_example_key' ||
+          apiKey == 'appl_example_key' ||
+          apiKey.contains('example_key') ||
+          apiKey == 'dev-key-local') {
+        SecureLogger.info(
+            "Skipping RevenueCat initialization: Dummy/example API key detected in dev mode.",
+            tag: "RevenueCat");
         return;
       }
 
-      await Purchases.configure(PurchasesConfiguration(apiKey));
+      final firebaseUser =
+          _isFirebaseReady ? FirebaseAuth.instance.currentUser : null;
+      final configuration = PurchasesConfiguration(apiKey);
+      if (firebaseUser != null) configuration.appUserID = firebaseUser.uid;
+      await Purchases.configure(configuration);
+      _revenueCatConfigured = true;
+      _identifiedUid = firebaseUser?.uid;
 
-      // Identify user if logged in
-      if (_isFirebaseReady) {
-        final user = FirebaseAuth.instance.currentUser;
-        if (user != null) {
-          await Purchases.logIn(user.uid);
-        }
-      }
+      await _identifyRevenueCatUser(firebaseUser);
 
       final customerInfo = await Purchases.getCustomerInfo();
       _updateStateFromCustomerInfo(customerInfo);
     } catch (e) {
       final errStr = e.toString();
-      if (errStr.contains('InvalidCredentialsError') || errStr.contains('Invalid API Key') || errStr.contains('credentials issue')) {
+      if (errStr.contains('InvalidCredentialsError') ||
+          errStr.contains('Invalid API Key') ||
+          errStr.contains('credentials issue')) {
         SecureLogger.warning(
           "RevenueCat API Key is invalid or not configured properly. "
           "Please check your RevenueCat Dashboard for the correct public Android/iOS API Key and set REVENUECAT_API_KEY_ANDROID / REVENUECAT_API_KEY_IOS. "
@@ -92,8 +111,34 @@ class PremiumNotifier extends _$PremiumNotifier {
           isBackground: true,
         );
       } else {
-        SecureLogger.warning("RevenueCat Init error: $e", tag: "RevenueCat", isBackground: true);
+        SecureLogger.warning("RevenueCat Init error: $e",
+            tag: "RevenueCat", isBackground: true);
       }
+    }
+  }
+
+  Future<void> _identifyRevenueCatUser(User? user) async {
+    if (!_revenueCatConfigured || kIsWeb) return;
+    try {
+      if (user == null) {
+        if (_identifiedUid != null) await Purchases.logOut();
+        _identifiedUid = null;
+        state = false;
+        return;
+      }
+      if (_identifiedUid != null && _identifiedUid != user.uid) {
+        await Purchases.logOut();
+        _identifiedUid = null;
+      }
+      if (_identifiedUid != user.uid) {
+        final result = await Purchases.logIn(user.uid);
+        _identifiedUid = user.uid;
+        await _updateStateFromCustomerInfo(result.customerInfo);
+      }
+    } catch (e) {
+      state = false;
+      SecureLogger.warning('RevenueCat account binding failed: $e',
+          tag: 'RevenueCat');
     }
   }
 
@@ -133,51 +178,66 @@ class PremiumNotifier extends _$PremiumNotifier {
       final window = _checkWindowForRiskScore(riskScore);
 
       if (lastCheckMs != null && window > Duration.zero) {
-        final elapsed = DateTime.now().difference(DateTime.fromMillisecondsSinceEpoch(lastCheckMs));
+        final elapsed = DateTime.now()
+            .difference(DateTime.fromMillisecondsSinceEpoch(lastCheckMs));
         if (elapsed < window) {
           _checkPremiumStatus();
           return;
         }
       }
 
-      await prefs.setInt(_lastCheckPrefsKey, DateTime.now().millisecondsSinceEpoch);
+      await prefs.setInt(
+          _lastCheckPrefsKey, DateTime.now().millisecondsSinceEpoch);
     } catch (e) {
-      SecureLogger.warning("Premium check-window lookup failed, checking anyway: $e", tag: "RevenueCat", isBackground: true);
+      SecureLogger.warning(
+          "Premium check-window lookup failed, checking anyway: $e",
+          tag: "RevenueCat",
+          isBackground: true);
     }
 
     try {
-      final doc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+      final doc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .get();
       if (doc.exists && doc.data() != null) {
         final data = doc.data()!;
         final isPrem = data['isPremium'] == true;
         final expiry = data['premiumExpiresAt'] ?? data['subExpiresAt'];
         DateTime? expiryDate;
         if (expiry != null) {
-          expiryDate = expiry is Timestamp ? expiry.toDate() : DateTime.tryParse(expiry.toString());
+          expiryDate = expiry is Timestamp
+              ? expiry.toDate()
+              : DateTime.tryParse(expiry.toString());
         }
 
-        if (!isPrem || (expiryDate != null && expiryDate.isBefore(DateTime.now()))) {
+        if (!isPrem ||
+            (expiryDate != null && expiryDate.isBefore(DateTime.now()))) {
           if (state == true) {
             state = false;
             SecureEntitlements().forceRefresh();
             PremiumUnlockService.invalidateAllUnlocks();
             UsageLimiterService.invalidatePlanLimitsCache();
-            await UserPreferenceService.updatePremiumStatus(false, source: 'expired');
-            SecureLogger.info("Premium status revoked or expired via server sync.", tag: "RevenueCat");
+            await UserPreferenceService.updatePremiumStatus(false,
+                source: 'expired');
+            SecureLogger.info(
+                "Premium status revoked or expired via server sync.",
+                tag: "RevenueCat");
           }
         } else if (isPrem && state == false) {
           state = true;
           SecureEntitlements().forceRefresh();
           UsageLimiterService.invalidatePlanLimitsCache();
-          await UserPreferenceService.updatePremiumStatus(
-            true,
-            plan: data['premiumPlanId'] ?? data['premiumPlan'] ?? data['subscriptionPlan'],
-            source: 'firestore'
-          );
+          await UserPreferenceService.updatePremiumStatus(true,
+              plan: data['premiumPlanId'] ??
+                  data['premiumPlan'] ??
+                  data['subscriptionPlan'],
+              source: 'firestore');
         }
       }
     } catch (e) {
-      SecureLogger.warning("Server override check failed: $e", tag: "RevenueCat", isBackground: true);
+      SecureLogger.warning("Server override check failed: $e",
+          tag: "RevenueCat", isBackground: true);
     }
 
     _checkPremiumStatus();
@@ -189,40 +249,54 @@ class PremiumNotifier extends _$PremiumNotifier {
       final customerInfo = await Purchases.getCustomerInfo();
       _updateStateFromCustomerInfo(customerInfo);
     } catch (e) {
-      SecureLogger.warning("Status Check failed: $e", tag: "RevenueCat", isBackground: true);
+      SecureLogger.warning("Status Check failed: $e",
+          tag: "RevenueCat", isBackground: true);
     }
   }
 
   Future<void> _updateStateFromCustomerInfo(CustomerInfo customerInfo) async {
     try {
-      final bool isPremium = customerInfo.entitlements.active.containsKey(entitlementId);
-    
-    if (state != isPremium) {
-      state = isPremium;
-      // A mid-session plan change (e.g. a purchase completing) must not
-      // keep serving usage limits cached under the old plan for up to
-      // the 1-hour cache window in UsageLimiterService.
-      UsageLimiterService.invalidatePlanLimitsCache();
+      final bool storeReportsPremium =
+          customerInfo.entitlements.active.containsKey(entitlementId);
+      bool isPremium = false;
+      if (storeReportsPremium) {
+        SecureEntitlements().forceRefresh();
+        for (var attempt = 0; attempt < 3 && !isPremium; attempt++) {
+          isPremium = await SecureEntitlements().verifyPremium();
+          if (!isPremium && attempt < 2) {
+            await Future.delayed(Duration(seconds: 2 + attempt * 2));
+            SecureEntitlements().forceRefresh();
+          }
+        }
+      }
 
-      final activeEntitlement = customerInfo.entitlements.active[entitlementId];
-      
-      // Sync locally for offline access
-      await UserPreferenceService.updatePremiumStatus(
-        isPremium,
-        plan: activeEntitlement?.productIdentifier,
-        expiry: activeEntitlement?.expirationDate != null
-            ? DateTime.tryParse(activeEntitlement!.expirationDate!)
-            : null,
-        source: 'revenuecat',
-      );
+      if (state != isPremium) {
+        state = isPremium;
+        // A mid-session plan change (e.g. a purchase completing) must not
+        // keep serving usage limits cached under the old plan for up to
+        // the 1-hour cache window in UsageLimiterService.
+        UsageLimiterService.invalidatePlanLimitsCache();
 
-      // NOTE: users/{uid}.isPremium is a backend-owned field — firestore.rules
-      // blocks the client from writing it on its own document (anti-fraud).
-      // The real sync path is the RevenueCat webhook -> Laravel ->
-      // FirestoreService.updateUserSubscription(), which fires server-side
-      // the moment RevenueCat confirms the purchase. No client write needed
-      // or possible here.
-    }
+        final activeEntitlement =
+            customerInfo.entitlements.active[entitlementId];
+
+        // Sync locally for offline access
+        await UserPreferenceService.updatePremiumStatus(
+          isPremium,
+          plan: activeEntitlement?.productIdentifier,
+          expiry: activeEntitlement?.expirationDate != null
+              ? DateTime.tryParse(activeEntitlement!.expirationDate!)
+              : null,
+          source: 'revenuecat',
+        );
+
+        // NOTE: users/{uid}.isPremium is a backend-owned field — firestore.rules
+        // blocks the client from writing it on its own document (anti-fraud).
+        // The real sync path is the RevenueCat webhook -> Laravel ->
+        // FirestoreService.updateUserSubscription(), which fires server-side
+        // the moment RevenueCat confirms the purchase. No client write needed
+        // or possible here.
+      }
     } catch (e, st) {
       SecureLogger.error("Failed to sync premium state", e, st, "RevenueCat");
     }
@@ -231,7 +305,8 @@ class PremiumNotifier extends _$PremiumNotifier {
   Future<void> buyPremium({String? productId}) async {
     try {
       Offerings offerings = await Purchases.getOfferings();
-      if (offerings.current != null && offerings.current!.availablePackages.isNotEmpty) {
+      if (offerings.current != null &&
+          offerings.current!.availablePackages.isNotEmpty) {
         // Purchase the first available package (usually monthly/yearly)
         Package package = offerings.current!.availablePackages.first;
         if (productId != null) {
@@ -240,8 +315,9 @@ class PremiumNotifier extends _$PremiumNotifier {
             orElse: () => offerings.current!.availablePackages.first,
           );
         }
-        
-        PurchaseResult purchaseResult = await Purchases.purchase(PurchaseParams.package(package));
+
+        PurchaseResult purchaseResult =
+            await Purchases.purchase(PurchaseParams.package(package));
         _updateStateFromCustomerInfo(purchaseResult.customerInfo);
       }
     } on PlatformException catch (e) {
@@ -253,11 +329,14 @@ class PremiumNotifier extends _$PremiumNotifier {
   }
 
   Future<void> restorePurchases() async {
-    try {
-      CustomerInfo customerInfo = await Purchases.restorePurchases();
-      _updateStateFromCustomerInfo(customerInfo);
-    } catch (e) {
-      SecureLogger.error("Restore failed", e, null, "RevenueCat");
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) throw StateError('Sign in before restoring purchases.');
+    await _identifyRevenueCatUser(user);
+    final customerInfo = await Purchases.restorePurchases();
+    await _updateStateFromCustomerInfo(customerInfo);
+    if (!state) {
+      throw StateError(
+          'No server-verified active purchase was found for this account.');
     }
   }
 
@@ -269,11 +348,8 @@ class PremiumNotifier extends _$PremiumNotifier {
   // 🛠️ MOCK UTILITY: Only for Dev/Internal testing to bypass RevenueCat
   Future<void> simulateMockPurchase() async {
     state = true;
-    await UserPreferenceService.updatePremiumStatus(
-      true,
-      plan: 'premium_mock_dev',
-      source: 'mock_internal'
-    );
+    await UserPreferenceService.updatePremiumStatus(true,
+        plan: 'premium_mock_dev', source: 'mock_internal');
     // NOTE: no Firestore write here — users/{uid}.isPremium is blocked for
     // client writes by firestore.rules (see _updateStateFromCustomerInfo).
     // The mock only needs to flip local/in-memory state for dev testing.
@@ -284,6 +360,7 @@ class PremiumNotifier extends _$PremiumNotifier {
   // itself) are reachable again without reinstalling the app.
   Future<void> simulateMockCancel() async {
     state = false;
-    await UserPreferenceService.updatePremiumStatus(false, source: 'mock_internal');
+    await UserPreferenceService.updatePremiumStatus(false,
+        source: 'mock_internal');
   }
 }

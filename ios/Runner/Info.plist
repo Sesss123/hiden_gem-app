@@ -45,6 +45,10 @@
 		<true/>
 		<key>UIApplicationSupportsIndirectInputEvents</key>
 		<true/>
+		<key>UIBackgroundModes</key>
+		<array>
+			<string>remote-notification</string>
+		</array>
 		<key>GADApplicationIdentifier</key>
 		<string>ca-app-pub-4147165628225386~8079139562</string>
 		<key>NSLocationWhenInUseUsageDescription</key>

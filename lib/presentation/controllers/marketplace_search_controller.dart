@@ -15,7 +15,7 @@ class MarketplaceSearchState {
   final bool isLoading;
   final String? error;
   final String normalizedQuery;
-  final bool hasMore;         // Has a next page to load
+  final bool hasMore; // Has a next page to load
   final DateTime? cooldownEndTimestamp; // Cooldown end time
   final SearchMetrics metrics;
 
@@ -29,10 +29,15 @@ class MarketplaceSearchState {
     this.metrics = const SearchMetrics(),
   });
 
-  bool get isEmpty => results.isEmpty && !isLoading && normalizedQuery.isNotEmpty;
+  bool get isEmpty =>
+      results.isEmpty && !isLoading && normalizedQuery.isNotEmpty;
   bool get isBlank => normalizedQuery.isEmpty;
-  bool get isCooldown => cooldownEndTimestamp != null && cooldownEndTimestamp!.isAfter(DateTime.now());
-  int get cooldownSeconds => isCooldown ? cooldownEndTimestamp!.difference(DateTime.now()).inSeconds : 0;
+  bool get isCooldown =>
+      cooldownEndTimestamp != null &&
+      cooldownEndTimestamp!.isAfter(DateTime.now());
+  int get cooldownSeconds => isCooldown
+      ? cooldownEndTimestamp!.difference(DateTime.now()).inSeconds
+      : 0;
 
   MarketplaceSearchState copyWith({
     List<GuideListing>? results,
@@ -50,7 +55,9 @@ class MarketplaceSearchState {
         error: error ?? this.error,
         normalizedQuery: normalizedQuery ?? this.normalizedQuery,
         hasMore: hasMore ?? this.hasMore,
-        cooldownEndTimestamp: clearCooldown ? null : (cooldownEndTimestamp ?? this.cooldownEndTimestamp),
+        cooldownEndTimestamp: clearCooldown
+            ? null
+            : (cooldownEndTimestamp ?? this.cooldownEndTimestamp),
         metrics: metrics ?? this.metrics,
       );
 }
@@ -143,7 +150,8 @@ class MarketplaceSearchController extends _$MarketplaceSearchController {
     }
 
     // D. Cache check
-    final cacheKey = _buildCacheKey(query, region, category, language, vehicleRequired, tourType);
+    final cacheKey = _buildCacheKey(
+        query, region, category, language, vehicleRequired, tourType);
     final cached = _queryCache[cacheKey];
     if (cached != null && DateTime.now().isBefore(cached.expiresAt)) {
       state = state.copyWith(
@@ -184,6 +192,7 @@ class MarketplaceSearchController extends _$MarketplaceSearchController {
     try {
       final page = await _repository
           .searchMarketplace(
+            query: query,
             region: region,
             category: category,
             language: language,
@@ -194,9 +203,11 @@ class MarketplaceSearchController extends _$MarketplaceSearchController {
 
       // G. Stale result guard — discard if a newer request is active
       if (requestId != _activeRequestId) {
-        debugPrint('[Search] Discarding stale result for "$query" (id=$requestId)');
+        debugPrint(
+            '[Search] Discarding stale result for "$query" (id=$requestId)');
         state = state.copyWith(
-          metrics: state.metrics.copyWith(canceledRequests: state.metrics.canceledRequests + 1),
+          metrics: state.metrics
+              .copyWith(canceledRequests: state.metrics.canceledRequests + 1),
         );
         return;
       }
@@ -221,7 +232,8 @@ class MarketplaceSearchController extends _$MarketplaceSearchController {
         ),
       );
 
-      debugPrint('[Search] "$query" → ${page.listings.length} results (id=$requestId)');
+      debugPrint(
+          '[Search] "$query" → ${page.listings.length} results (id=$requestId)');
     } on TimeoutException {
       if (requestId != _activeRequestId) return;
       state = state.copyWith(
@@ -241,8 +253,8 @@ class MarketplaceSearchController extends _$MarketplaceSearchController {
   /// Load the next page of results (infinite scroll).
   Future<void> loadMore() async {
     if (state.isLoading || !state.hasMore) return;
-    final lastDoc = _lastPage?.lastDocument;
-    if (lastDoc == null) return;
+    final nextPage = _lastPage?.nextPage;
+    if (nextPage == null) return;
 
     final requestId = ++_activeRequestId;
     state = state.copyWith(isLoading: true);
@@ -250,7 +262,8 @@ class MarketplaceSearchController extends _$MarketplaceSearchController {
     try {
       final page = await _repository
           .loadNextPage(
-            lastDocument: lastDoc,
+            query: state.normalizedQuery,
+            page: nextPage,
             region: _region,
             category: _category,
             language: _language,
@@ -324,7 +337,8 @@ class MarketplaceSearchController extends _$MarketplaceSearchController {
     final endTime = DateTime.now().add(_cooldownDuration);
     state = state.copyWith(
       cooldownEndTimestamp: endTime,
-      metrics: state.metrics.copyWith(rateLimitHits: state.metrics.rateLimitHits + 1),
+      metrics: state.metrics
+          .copyWith(rateLimitHits: state.metrics.rateLimitHits + 1),
     );
 
     _cooldownTimer?.cancel();
@@ -365,9 +379,8 @@ class SearchMetrics {
     this.paginationDepth = 0,
   });
 
-  double get cacheHitRate => totalSearches == 0
-      ? 0
-      : (cacheHits / (totalSearches + cacheHits) * 100);
+  double get cacheHitRate =>
+      totalSearches == 0 ? 0 : (cacheHits / (totalSearches + cacheHits) * 100);
 
   double get avgDocsPerSearch =>
       totalSearches == 0 ? 0 : totalDocsRead / totalSearches;

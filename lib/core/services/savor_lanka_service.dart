@@ -6,8 +6,10 @@ import 'package:http/http.dart' as http;
 import '../utils/secure_logger.dart';
 import '../../data/models/food_model.dart';
 import '../../core/config/app_config.dart';
+import '../../core/network/secure_http_client.dart';
 
 class SavorLankaService {
+  static final http.Client _client = SecureHttpClient(http.Client());
   // The commercial Gemini path has been removed — food identification now runs
   // exclusively against the self-hosted model (BYOM) endpoint. `apiKey` is
   // retained in the signature only for call-site compatibility and is unused.
@@ -15,7 +17,8 @@ class SavorLankaService {
 
   SavorLankaService({this.apiKey = ''});
 
-  Future<FoodModel?> identifyFood(File imageFile, {
+  Future<FoodModel?> identifyFood(
+    File imageFile, {
     String spicePreference = 'Medium',
     String userMode = 'Tourist',
   }) async {
@@ -23,33 +26,41 @@ class SavorLankaService {
     return _callCustomByomFoodScanner(imageFile, spicePreference, userMode);
   }
 
-
-  Future<FoodModel?> _callCustomByomFoodScanner(File imageFile, String spicePreference, String userMode) async {
+  Future<FoodModel?> _callCustomByomFoodScanner(
+      File imageFile, String spicePreference, String userMode) async {
     try {
       final imageBytes = await imageFile.readAsBytes();
-      
+
       // BUG-099: Validate image file integrity before starting conversions/GZIP encoding
       if (imageBytes.isEmpty || imageBytes.length < 4) {
-        SecureLogger.warning("Custom BYOM Scanner: Image file is empty or corrupted. Aborting scan.");
+        SecureLogger.warning(
+            "Custom BYOM Scanner: Image file is empty or corrupted. Aborting scan.");
+        return null;
+      }
+      if (imageBytes.length > 5 * 1024 * 1024) {
+        SecureLogger.warning(
+            'Food scanner image exceeds the 5 MB safety limit.');
         return null;
       }
 
       final compressedBytes = GZipCodec().encode(imageBytes);
       final base64Image = base64Encode(compressedBytes);
 
-      final response = await http.post(
-        Uri.parse('${AppConfig.pythonUrl}/food/scan'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Content-Encoding': 'gzip', // Signal to server that payload is compressed
-        },
-        body: json.encode({
-          'image_base64': base64Image,
-          'user_mode': userMode,
-          'spice_preference': spicePreference,
-          'compressed': true,
-        }),
-      ).timeout(const Duration(seconds: 15));
+      final response = await _client
+          .post(
+            Uri.parse('${AppConfig.laravelUrl}/ai/food/scan'),
+            headers: {
+              'Content-Type': 'application/json',
+              'X-HiddenGems-Key': AppConfig.hiddenGemsApiKey,
+            },
+            body: json.encode({
+              'image_base64': base64Image,
+              'user_mode': userMode,
+              'spice_preference': spicePreference,
+              'compressed': true,
+            }),
+          )
+          .timeout(const Duration(seconds: 15));
 
       if (response.statusCode == 200) {
         // BUG-139: Validate that the response is actually JSON before decoding.
@@ -71,9 +82,11 @@ class SavorLankaService {
     } on HttpException catch (e) {
       SecureLogger.error('Custom BYOM Food Scanner HTTP protocol error', e);
     } on SocketException catch (e) {
-      SecureLogger.error('Custom BYOM Food Scanner connection failed: Network unreachable', e);
+      SecureLogger.error(
+          'Custom BYOM Food Scanner connection failed: Network unreachable', e);
     } catch (e) {
-      SecureLogger.warning('Custom BYOM Food Scanner offline or unreachable: $e');
+      SecureLogger.warning(
+          'Custom BYOM Food Scanner offline or unreachable: $e');
     }
     return null;
   }

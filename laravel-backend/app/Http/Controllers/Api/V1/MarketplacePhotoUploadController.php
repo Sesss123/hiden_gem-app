@@ -26,8 +26,8 @@ class MarketplacePhotoUploadController extends Controller
     public function upload(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'photo_type' => 'required|string|max:100',
-            'file' => 'required|file|image|max:10240', // 10MB
+            'photo_type' => ['required', 'string', 'max:32', 'regex:/^(cover_[0-9]{13}|vehicle|logo)$/'],
+            'file' => 'required|file|image|mimes:jpeg,jpg,png,webp|max:10240', // 10MB
         ]);
 
         if ($validator->fails()) {

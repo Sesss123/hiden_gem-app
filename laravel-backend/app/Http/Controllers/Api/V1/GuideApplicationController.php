@@ -61,11 +61,38 @@ class GuideApplicationController extends Controller
             $validated
         );
 
+        $firestoreSynced = false;
+        try {
+            $firestore = new FirestoreService();
+            $firestoreSynced = $firestore->patchDocument(
+                'guide_applications',
+                (string) $request->user()->firebase_uid,
+                array_filter([
+                    'user_id' => (string) $request->user()->firebase_uid,
+                    'license_number' => $application->license_number,
+                    'bio' => $application->bio,
+                    'category' => $application->category,
+                    'license_doc_url' => $application->license_doc_url,
+                    'nic_doc_url' => $application->nic_doc_url,
+                    'selfie_doc_url' => $application->selfie_doc_url,
+                    'license_expiry_date' => $application->license_expiry_date?->toIso8601String(),
+                    'status' => 'pending',
+                    'applied_at' => $application->applied_at->toIso8601String(),
+                ], fn ($value) => $value !== null)
+            );
+        } catch (\Throwable $e) {
+            Log::error('Guide application Firestore sync failed', [
+                'user_id' => $application->user_id,
+                'error' => $e->getMessage(),
+            ]);
+        }
+
         return response()->json([
             'status' => 'success',
             'message' => 'Guide application submitted successfully for review.',
+            'firestore_synced' => $firestoreSynced,
             'data' => $application,
-        ], 200);
+        ], $firestoreSynced ? 200 : 503);
     }
 
     /**
@@ -149,18 +176,19 @@ class GuideApplicationController extends Controller
         // this fails (a real admin decision shouldn't roll back over a Firestore
         // hiccup) — instead the failure is surfaced in the response so the calling
         // Flutter admin screen can tell the admin the app-side sync may be delayed.
-        $firestoreSynced = true;
+        $firestoreSynced = false;
         try {
             $firestoreService = new FirestoreService();
-            $firestoreService->updateGuideApplication($application->user_id, [
+            $applicationSynced = $firestoreService->updateGuideApplication($application->user_id, [
                 'status' => 'approved',
                 'reviewedAt' => now()->toIso8601String(),
             ]);
-            $firestoreService->updateGuideUser($application->user_id, [
+            $userSynced = $firestoreService->updateGuideUser($application->user_id, [
                 'role' => 'guide_approved',
                 'guideStatus' => 'approved',
                 'isGuideApproved' => true,
             ]);
+            $firestoreSynced = $applicationSynced && $userSynced;
         } catch (\Exception $e) {
             $firestoreSynced = false;
             Log::error("Firestore sync failed in API approve: " . $e->getMessage());
@@ -217,18 +245,19 @@ class GuideApplicationController extends Controller
 
         // Sync to Firestore synchronously — see approve() above for why this is no
         // longer a fire-and-forget dispatch().
-        $firestoreSynced = true;
+        $firestoreSynced = false;
         try {
             $firestoreService = new FirestoreService();
-            $firestoreService->updateGuideApplication($application->user_id, [
+            $applicationSynced = $firestoreService->updateGuideApplication($application->user_id, [
                 'status' => 'rejected',
                 'adminComment' => $adminComment,
                 'reviewedAt' => now()->toIso8601String(),
             ]);
-            $firestoreService->updateGuideUser($application->user_id, [
+            $userSynced = $firestoreService->updateGuideUser($application->user_id, [
                 'guideStatus' => 'rejected',
                 'guideRejectionReason' => $adminComment,
             ]);
+            $firestoreSynced = $applicationSynced && $userSynced;
         } catch (\Exception $e) {
             $firestoreSynced = false;
             Log::error("Firestore sync failed in API reject: " . $e->getMessage());

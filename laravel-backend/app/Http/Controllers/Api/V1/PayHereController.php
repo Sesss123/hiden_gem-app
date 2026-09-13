@@ -253,18 +253,8 @@ class PayHereController extends Controller
             return response('ok', 200);
         }
 
-        // PayHere retries this callback on timeout/non-200, so the same
-        // successful payment can arrive more than once. payment_id is
-        // PayHere's own unique identifier for the transaction — recording it
-        // before the Firestore write means a replay is a fast no-op instead
-        // of re-running updateBooking() (harmless today since it's a plain
-        // overwrite, but not something to rely on once any one-shot
-        // side-effect — a push notification, a payout trigger — is added).
-        if ($paymentId && !$this->markEventProcessed('payhere', (string) $paymentId)) {
-            Log::info("PayHere notify: payment {$paymentId} already processed, skipping.");
-            return response('ok', 200);
-        }
-
+        // Persist Firestore first so transient failures remain retryable. The
+        // payment event is marked processed only after that write succeeds.
         try {
             $booking = $firestore->getDocument('booking_requests', $orderId);
             if (!$booking) {
@@ -278,7 +268,7 @@ class PayHereController extends Controller
             $commission = round($amount * $rate, 2);
             $guideNet = round($amount - $commission, 2);
 
-            $firestore->updateBooking($orderId, [
+            $updated = $firestore->updateBooking($orderId, [
                 'payoutStatus' => 'paid',
                 'status' => 'confirmed',
                 'paidAt' => date('c'),
@@ -287,12 +277,19 @@ class PayHereController extends Controller
                 'commissionAmount' => $commission,
                 'guideNetAmount' => $guideNet,
             ]);
+            if (!$updated) {
+                throw new \RuntimeException('Firestore did not confirm the payment update.');
+            }
+            if ($paymentId) {
+                $this->markEventProcessed('payhere', (string) $paymentId);
+            }
             Log::info("PayHere notify: booking {$orderId} marked paid (amount {$amount}, commission {$commission}).");
         } catch (\Exception $e) {
             Log::error('PayHere notify: Firestore update failed', [
                 'order_id' => $orderId,
                 'error' => $e->getMessage(),
             ]);
+            return response('retry', 500);
         }
 
         return response('ok', 200);

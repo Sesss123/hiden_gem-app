@@ -26,15 +26,33 @@ class PlanItineraryRequest extends FormRequest
         return [
             // Required
             'days'        => ['required', 'integer', 'min:1', 'max:30'],
-            'style'       => ['required', 'string', 'in:adventure,culture,chill,balanced,nature,family,budget'],
+            'style'       => ['required', 'string', 'max:40'],
 
             // Optional
             'destination' => ['nullable', 'string', 'max:100'],
             'origin'      => ['nullable', 'string', 'max:100'],
             'interests'   => ['nullable', 'array', 'max:10'],
             'interests.*' => ['string', 'max:50'],
-            'transport'   => ['nullable', 'string', 'in:bus,train,car,tuk,mixed'],
-            'budget'      => ['nullable', 'numeric', 'min:0', 'max:1000000'],
+            'from_lat'    => ['nullable', 'numeric', 'between:-90,90'],
+            'from_lng'    => ['nullable', 'numeric', 'between:-180,180'],
+            'start_date'  => ['nullable', 'date_format:Y-m-d'],
+            'group_type'  => ['nullable', 'string', 'max:40'],
+            'pace'        => ['nullable', 'string', 'max:40'],
+            'transport_preference' => ['nullable', 'string', 'max:40'],
+            'budget_lkr'  => ['nullable', 'numeric', 'min:0', 'max:10000000'],
+            'constraints' => ['nullable', 'array', 'max:10'],
+            'constraints.*' => ['string', 'max:100'],
+            'must_include' => ['nullable', 'array', 'max:10'],
+            'must_include.*' => ['string', 'max:100'],
+            'avoid' => ['nullable', 'array', 'max:10'],
+            'avoid.*' => ['string', 'max:100'],
+            'language_code' => ['nullable', 'string', 'in:en,si,ta'],
+            'user_context' => ['nullable', 'array'],
+            'user_context.preferred_vibe' => ['nullable', 'string', 'max:50'],
+            'user_context.memory_context' => ['nullable', 'array'],
+            'user_context.memory_context.visited_recently' => ['nullable', 'array', 'max:5'],
+            'user_context.memory_context.visited_recently.*' => ['string', 'max:100'],
+            'user_context.memory_context.avoid_repeat_destinations' => ['nullable', 'boolean'],
         ];
     }
 

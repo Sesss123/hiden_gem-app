@@ -1260,7 +1260,7 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
     // compact 230px height whenever there's no blurb to show.
     final hasAiReasonRow = isOracle && places.any((p) => p.aiReason.isNotEmpty);
     return SizedBox(
-      height: (hasAiReasonRow || isAR) ? 340 : 230,
+      height: (hasAiReasonRow || isAR) ? 310 : 250,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         physics: const BouncingScrollPhysics(),
@@ -1276,7 +1276,7 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
               child: GestureDetector(
                 onTap: () => _openPlaceDetails(place),
               child: Container(
-                width: isOracle ? 300 : (isAR ? 260 : 180),
+                width: isOracle ? 300 : (isAR ? 260 : 210),
                 margin: const EdgeInsets.symmetric(horizontal: 10),
 
                 child: OracleUI.premiumGlassCard(
@@ -1285,8 +1285,8 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Expanded(
-                        flex: isOracle ? 6 : 5,
+                      SizedBox(
+                        height: isOracle || isAR ? 158 : 138,
                         child: Stack(
                           children: [
                             Positioned.fill(
@@ -1355,48 +1355,93 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
                                   ),
                                 ),
                               ),
+                            Positioned(
+                              left: 12,
+                              bottom: 12,
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                decoration: BoxDecoration(
+                                  color: AppTheme.colors.black.withValues(alpha: 0.62),
+                                  borderRadius: BorderRadius.circular(100),
+                                  border: Border.all(color: AppTheme.colors.white.withValues(alpha: 0.16)),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(Icons.near_me_rounded, size: 12, color: AppTheme.colors.white),
+                                    const SizedBox(width: 5),
+                                    Text(
+                                      "${place.distanceKm.toStringAsFixed(1)} km",
+                                      style: GoogleFonts.inter(color: AppTheme.colors.white, fontSize: 10, fontWeight: FontWeight.w700),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
                           ],
                         ),
                       ),
                       Expanded(
-                        flex: isOracle ? 6 : 4,
                         child: Padding(
-                          padding: const EdgeInsets.all(14),
+                          padding: const EdgeInsets.fromLTRB(14, 12, 12, 12),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: hasAiReasonRow ? MainAxisAlignment.start : MainAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(
-                                place.name,
-                                style: GoogleFonts.outfit(
-                                  fontSize: isOracle ? 16 : 13,
-                                  fontWeight: FontWeight.w800,
-                                  color: AppTheme.textPrimary(context),
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              const SizedBox(height: 6),
-                              Row(
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    "${place.distanceKm.toStringAsFixed(1)} km",
-                                    style: GoogleFonts.inter(
-                                      fontSize: 11,
-                                      color: AppTheme.textSecondary(context),
-                                      fontWeight: FontWeight.w500,
+                                    place.name,
+                                    style: GoogleFonts.outfit(
+                                      fontSize: isOracle ? 17 : 14,
+                                      fontWeight: FontWeight.w800,
+                                      height: 1.12,
+                                      color: AppTheme.textPrimary(context),
                                     ),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  const SizedBox(height: 5),
+                                  Text(
+                                    [
+                                      L10nUtils.getLocalizedCategory(context, place.category),
+                                      _resolveDistrict(place),
+                                    ].where((value) => value.isNotEmpty).join(' • '),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: GoogleFonts.inter(fontSize: 10, color: AppTheme.textSecondary(context), fontWeight: FontWeight.w500),
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  Icon(Icons.star_rounded, size: 15, color: AppPalette.heroOchre),
+                                  const SizedBox(width: 3),
+                                  Text(
+                                    place.rating > 0 ? place.rating.toStringAsFixed(1) : '—',
+                                    style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w700, color: AppTheme.textPrimary(context)),
                                   ),
                                   const Spacer(),
-                                  Flexible(
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+                                    decoration: BoxDecoration(
+                                      color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.10),
+                                      borderRadius: BorderRadius.circular(100),
+                                    ),
                                     child: Text(
                                       place.ticketRange,
-                                      style: GoogleFonts.outfit(
-                                        fontSize: 11,
-                                        color: Theme.of(context).colorScheme.primary,
-                                        fontWeight: FontWeight.w700,
-                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: GoogleFonts.outfit(fontSize: 10, color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.w800),
                                     ),
+                                  ),
+                                  const SizedBox(width: 7),
+                                  Container(
+                                    width: 27,
+                                    height: 27,
+                                    decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary, shape: BoxShape.circle),
+                                    child: Icon(Icons.arrow_forward_rounded, size: 15, color: AppTheme.colors.white),
                                   ),
                                 ],
                               ),

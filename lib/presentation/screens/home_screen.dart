@@ -3,15 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:hidden_gems_sl/l10n/app_localizations.dart';
-import 'package:hidden_gems_sl/presentation/screens/real_time_food_scanner_screen.dart';
 import '../../core/config/app_config.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/theme/oracle_ui_system.dart';
 import '../../core/utils/secure_logger.dart';
 import '../../data/datasources/trip_cache_service.dart';
 import '../../data/datasources/auth_service.dart';
+import '../../data/datasources/weather_service.dart';
 import '../widgets/batik_background.dart';
 import '../widgets/oracle_orb.dart';
 import 'saved_plans_screen.dart';
@@ -45,11 +46,14 @@ class HomeScreen extends ConsumerStatefulWidget {
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   int _selectedIndex = 0; // For bottom navigation
-  String? _discoveryCategoryFilter; // Pending category tapped from "Explore by Category"
+  String?
+      _discoveryCategoryFilter; // Pending category tapped from "Explore by Category"
 
   List<EventModel> _todayEvents = [];
   bool _showEventBanner = true;
   List<DiscoveryPlace> _localGems = [];
+  WeatherSnapshot? _weather;
+  bool _showNearbyNowBanner = true;
 
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = "";
@@ -57,7 +61,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   List<DiscoveryPlace> get _searchResults {
     if (_searchQuery.trim().isEmpty) return [];
     final q = _searchQuery.trim().toLowerCase();
-    return _localGems.where((p) => p.name.toLowerCase().contains(q)).take(5).toList();
+    return _localGems
+        .where((p) => p.name.toLowerCase().contains(q))
+        .take(5)
+        .toList();
   }
 
   void _openPlace(DiscoveryPlace place) {
@@ -67,7 +74,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       _searchController.clear();
       _searchQuery = "";
     });
-    Navigator.push(context, MaterialPageRoute(builder: (_) => PlaceDetailsScreen(place: place)));
+    Navigator.push(context,
+        MaterialPageRoute(builder: (_) => PlaceDetailsScreen(place: place)));
   }
 
   void _onSearchSubmitted(String query) {
@@ -75,11 +83,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       _openPlace(_searchResults.first);
     } else if (query.trim().isNotEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context)!.noPlaceFoundMatching(query))),
+        SnackBar(
+            content: Text(
+                AppLocalizations.of(context)!.noPlaceFoundMatching(query))),
       );
     }
   }
-
 
   @override
   void initState() {
@@ -96,11 +105,28 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Future<void> _loadLocalGems() async {
     try {
       final repo = ref.read(discoveryRepositoryProvider);
-      final result = await repo.getDiscoveryPlaces();
+      // Without a user position, getDiscoveryPlaces() skips its
+      // distance-sort step entirely and returns places in raw backend
+      // order — so "Local Gems Nearby" and the Featured card (which uses
+      // _localGems.first) were effectively showing a random place instead
+      // of the closest one.
+      Position? position;
+      try {
+        position =
+            await repo.getCurrentLocation().timeout(const Duration(seconds: 8));
+      } catch (_) {
+        // Location unavailable/denied — fall through with unsorted places
+        // rather than blocking the home screen on a permission prompt.
+      }
+      final result = await repo.getDiscoveryPlaces(
+          userLat: position?.latitude, userLng: position?.longitude);
       if (mounted) {
         setState(() {
           _localGems = result.valueOrNull ?? [];
         });
+      }
+      if (position != null) {
+        _loadWeather(position.latitude, position.longitude);
       }
     } catch (e) {
       SecureLogger.error("Failed to load local gems in HomeScreen: $e");
@@ -112,6 +138,40 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     }
   }
 
+  Future<void> _loadWeather(double lat, double lng) async {
+    final snapshot = await WeatherService.getCurrentWeather(lat: lat, lng: lng);
+    if (mounted && snapshot != null) {
+      setState(() => _weather = snapshot);
+    }
+  }
+
+  // Maps OpenWeatherMap's icon codes (https://openweathermap.org/weather-conditions)
+  // to a Material icon — the numeric prefix identifies the condition group,
+  // "d"/"n" suffix (day/night) is ignored since we only need the general look.
+  IconData _weatherIcon(String owmCode) {
+    final group =
+        owmCode.isNotEmpty ? owmCode.substring(0, owmCode.length - 1) : '';
+    switch (group) {
+      case '01':
+        return Icons.wb_sunny_rounded;
+      case '02':
+      case '03':
+      case '04':
+        return Icons.cloud_rounded;
+      case '09':
+      case '10':
+        return Icons.water_drop_rounded;
+      case '11':
+        return Icons.thunderstorm_rounded;
+      case '13':
+        return Icons.ac_unit_rounded;
+      case '50':
+        return Icons.foggy;
+      default:
+        return Icons.wb_cloudy_rounded;
+    }
+  }
+
   @override
   void dispose() {
     _searchController.dispose();
@@ -120,7 +180,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   void _checkTodayEvents() async {
     final dynamicEvents = await DynamicContentService.fetchEvents();
-    final events = LiveEventsService.getTodayEvents(dynamicEvents: dynamicEvents);
+    final events =
+        LiveEventsService.getTodayEvents(dynamicEvents: dynamicEvents);
     if (events.isNotEmpty && mounted) {
       setState(() {
         _todayEvents = events;
@@ -141,19 +202,22 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   Widget _buildFeaturedDestinationCard(AppLocalizations l10n) {
     final hasGem = _localGems.isNotEmpty;
-    final String name = hasGem ? _localGems.first.name : "Sigiriya Ancient Fortress";
+    final String name =
+        hasGem ? _localGems.first.name : "Sigiriya Ancient Fortress";
     final String district = hasGem ? _localGems.first.district : "Matale";
-    final String imageUrl = hasGem ? _localGems.first.imageUrl : "https://images.unsplash.com/photo-1588598130782-690a298573ec?q=80&w=600&auto=format&fit=crop";
+    final String imageUrl = hasGem
+        ? _localGems.first.imageUrl
+        : "https://images.unsplash.com/photo-1588598130782-690a298573ec?q=80&w=600&auto=format&fit=crop";
 
     return SizedBox(
-      height: 220,
+      height: 286,
       width: double.infinity,
       child: OracleUI.kineticCard(
         context: context,
         isEvening: false,
         opacity: 0.0,
         child: ClipRRect(
-          borderRadius: const BorderRadius.all(Radius.circular(24)),
+          borderRadius: const BorderRadius.all(Radius.circular(28)),
           child: Stack(
             children: [
               Positioned.fill(
@@ -164,9 +228,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   memCacheHeight: 400,
                   errorWidget: (c, u, e) => Container(
                     color: AppPalette.earth,
-                    child: Icon(Icons.terrain_rounded, color: AppTheme.colors.white24, size: 48),
+                    child: Icon(Icons.terrain_rounded,
+                        color: AppTheme.colors.white24, size: 48),
                   ),
-                  placeholder: (c, u) => Container(color: AppTheme.colors.black26),
+                  placeholder: (c, u) =>
+                      Container(color: AppTheme.colors.black26),
                 ),
               ),
               Positioned.fill(
@@ -184,15 +250,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.all(20),
+                padding: const EdgeInsets.all(22),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 4),
                       decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.secondary.withValues(alpha: 0.8),
-                        borderRadius: const BorderRadius.all(Radius.circular(12)),
+                        color: Theme.of(context)
+                            .colorScheme
+                            .secondary
+                            .withValues(alpha: 0.8),
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(100)),
                       ),
                       child: Text(
                         l10n.featuredLabel,
@@ -209,17 +280,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       name,
                       style: GoogleFonts.outfit(
                         color: AppTheme.colors.white,
-                        fontSize: 20,
+                        fontSize: 28,
                         fontWeight: FontWeight.w800,
                         letterSpacing: -0.2,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 8),
                     Row(
                       children: [
-                        Icon(Icons.location_on_rounded, color: AppTheme.colors.white70, size: 14),
+                        Icon(Icons.location_on_rounded,
+                            color: AppTheme.colors.white70, size: 14),
                         const SizedBox(width: 4),
                         Text(
                           district,
@@ -236,7 +308,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => PlaceDetailsScreen(place: _localGems.first),
+                                  builder: (context) => PlaceDetailsScreen(
+                                      place: _localGems.first),
                                 ),
                               );
                             } else {
@@ -247,8 +320,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             backgroundColor: AppTheme.colors.white,
                             foregroundColor: AppTheme.colors.black,
                             elevation: 0,
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                            shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(100))),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 8),
+                            shape: const RoundedRectangleBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(100))),
                           ),
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
@@ -284,33 +360,42 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         Expanded(
           child: _buildQuickActionItem(
             l10n.planTripAction,
-            Icons.edit_calendar_outlined,
+            Icons.route_rounded,
             AppTheme.colors.teal,
             () {
               Haptics.medium();
-              Navigator.push(context, MaterialPageRoute(builder: (context) => const TripFormScreen()));
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const TripFormScreen()));
             },
           ),
         ),
         Expanded(
           child: _buildQuickActionItem(
             l10n.findGuideAction,
-            Icons.person_search_outlined,
+            Icons.person_pin_circle_rounded,
             AppTheme.colors.amber,
             () {
               Haptics.medium();
-              Navigator.push(context, MaterialPageRoute(builder: (context) => const MarketplaceResultsScreen()));
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const MarketplaceResultsScreen()));
             },
           ),
         ),
         Expanded(
           child: _buildQuickActionItem(
             l10n.foodAiAction,
-            Icons.restaurant_menu_outlined,
+            Icons.ramen_dining_rounded,
             AppTheme.colors.orangeAccent,
             () {
               Haptics.medium();
-              Navigator.push(context, MaterialPageRoute(builder: (context) => const SavorLankaScreen()));
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const SavorLankaScreen()));
             },
           ),
         ),
@@ -337,35 +422,92 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
-  Widget _buildQuickActionItem(String label, IconData icon, Color color, VoidCallback onTap) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        GestureDetector(
-          onTap: onTap,
-          child: Container(
-            width: 52,
-            height: 52,
-            decoration: BoxDecoration(
-              color: color.withValues(alpha: Theme.of(context).brightness == Brightness.dark ? 0.16 : 0.1),
-              borderRadius: BorderRadius.circular(18),
+  Widget _buildQuickActionItem(
+      String label, IconData icon, Color color, VoidCallback onTap) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return Semantics(
+      button: true,
+      label: label,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 4),
+        child: Material(
+          color: color.withValues(alpha: isDark ? 0.18 : 0.11),
+          borderRadius: BorderRadius.circular(22),
+          child: InkWell(
+            onTap: onTap,
+            borderRadius: BorderRadius.circular(22),
+            child: SizedBox(
+              height: 104,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(8, 14, 8, 10),
+                child: Column(
+                  children: [
+                    Container(
+                      width: 46,
+                      height: 46,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            color.withValues(alpha: isDark ? 0.34 : 0.24),
+                            color.withValues(alpha: isDark ? 0.14 : 0.08),
+                          ],
+                        ),
+                        borderRadius: BorderRadius.circular(15),
+                        border: Border.all(
+                          color: color.withValues(alpha: isDark ? 0.38 : 0.24),
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color:
+                                color.withValues(alpha: isDark ? 0.22 : 0.14),
+                            blurRadius: 14,
+                            offset: const Offset(0, 6),
+                          ),
+                        ],
+                      ),
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          Icon(icon, color: color, size: 25),
+                          Positioned(
+                            top: 7,
+                            right: 7,
+                            child: Container(
+                              width: 5,
+                              height: 5,
+                              decoration: BoxDecoration(
+                                color: color.withValues(alpha: 0.75),
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 9),
+                    Expanded(
+                      child: Text(
+                        label,
+                        textAlign: TextAlign.center,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.inter(
+                          fontSize: 10,
+                          height: 1.15,
+                          fontWeight: FontWeight.w700,
+                          color: AppTheme.textPrimary(context),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
-            child: Icon(icon, color: color, size: 22),
           ),
         ),
-        const SizedBox(height: 8),
-        Text(
-          label,
-          textAlign: TextAlign.center,
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
-          style: GoogleFonts.inter(
-            fontSize: 10,
-            fontWeight: FontWeight.w600,
-            color: AppTheme.textPrimary(context),
-          ),
-        ),
-      ],
+      ),
     );
   }
 
@@ -378,13 +520,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             backgroundColor: Theme.of(context).scaffoldBackgroundColor,
             color: Theme.of(context).colorScheme.primary,
             child: CustomScrollView(
-              physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+              physics: const BouncingScrollPhysics(
+                  parent: AlwaysScrollableScrollPhysics()),
               slivers: [
                 _buildAppBar(context),
                 SliverToBoxAdapter(
                   child: AnimationLimiter(
                     child: Padding(
-                      padding: const EdgeInsets.fromLTRB(20, 24, 20, 100),
+                      padding: const EdgeInsets.fromLTRB(16, 18, 16, 112),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: AnimationConfiguration.toStaggeredList(
@@ -396,18 +539,26 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             ),
                           ),
                           children: [
-                            _journalUnfold(child: _buildWelcomeCard(l10n)),
-                            const SizedBox(height: 20),
                             _buildFeaturedDestinationCard(l10n),
-                            const SizedBox(height: 24),
+                            const SizedBox(height: 20),
+                            if (_localGems.isNotEmpty &&
+                                _showNearbyNowBanner &&
+                                _localGems.first.distanceKm > 0 &&
+                                _localGems.first.distanceKm < 100) ...[
+                              _buildNearbyNowBanner(l10n),
+                              const SizedBox(height: 24),
+                            ],
                             _buildQuickActionsRow(l10n),
-                            const SizedBox(height: 32),
-                            if (_todayEvents.isNotEmpty && _showEventBanner) ...[
-                               _buildTodayEventBanner(l10n),
-                               const SizedBox(height: 24),
+                            const SizedBox(height: 28),
+                            if (_todayEvents.isNotEmpty &&
+                                _showEventBanner) ...[
+                              _buildTodayEventBanner(l10n),
+                              const SizedBox(height: 24),
                             ],
                             if (isOffline || _localGems.isNotEmpty) ...[
-                              _buildSectionHeader(isOffline ? l10n.localGemsOffline : l10n.localGemsNearby),
+                              _buildSectionHeader(isOffline
+                                  ? l10n.localGemsOffline
+                                  : l10n.localGemsNearby),
                               const SizedBox(height: 16),
                               _buildLocalGemsScroller(context),
                               const SizedBox(height: 24),
@@ -439,8 +590,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -452,7 +601,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         index: _selectedIndex,
         children: [
           _buildHomeContent(l10n, isOffline),
-          DiscoveryScreen(key: ValueKey('discovery_$_discoveryCategoryFilter'), initialFilter: _discoveryCategoryFilter),
+          DiscoveryScreen(
+              key: ValueKey('discovery_$_discoveryCategoryFilter'),
+              initialFilter: _discoveryCategoryFilter),
           const EventCalendarScreen(),
           const ProfileScreen(),
         ],
@@ -469,6 +620,74 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
+  Widget _buildNearbyNowBanner(AppLocalizations l10n) {
+    final place = _localGems.first;
+    return GestureDetector(
+      onTap: () {
+        HapticFeedback.selectionClick();
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (_) => PlaceDetailsScreen(place: place)));
+      },
+      child: OracleUI.glassContainer(
+        padding: const EdgeInsets.all(16),
+        radius: const BorderRadius.all(Radius.circular(24)),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: Theme.of(context)
+                    .colorScheme
+                    .secondary
+                    .withValues(alpha: 0.12),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(Icons.near_me_rounded,
+                  color: Theme.of(context).colorScheme.secondary, size: 20),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    l10n.nearbyNowLabel(place.distanceKm.toStringAsFixed(1)),
+                    style: GoogleFonts.inter(
+                      color: AppTheme.textSecondary(context),
+                      fontWeight: FontWeight.w600,
+                      fontSize: 11,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    place.name,
+                    style: GoogleFonts.outfit(
+                      color: AppTheme.textPrimary(context),
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
+            GestureDetector(
+              onTap: () {
+                HapticFeedback.selectionClick();
+                setState(() => _showNearbyNowBanner = false);
+              },
+              child: Icon(Icons.close_rounded,
+                  color: AppTheme.textSecondary(context), size: 18),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildTodayEventBanner(AppLocalizations l10n) {
     final event = _todayEvents.first;
     return OracleUI.glassContainer(
@@ -482,10 +701,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+                  color: Theme.of(context)
+                      .colorScheme
+                      .primary
+                      .withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(Icons.celebration, color: Theme.of(context).colorScheme.primary, size: 24),
+                child: Icon(Icons.celebration,
+                    color: Theme.of(context).colorScheme.primary, size: 24),
               ),
               const SizedBox(width: 16),
               Expanded(
@@ -529,7 +752,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         child: Text(
                           (event.location ?? "SRI LANKA").toUpperCase(),
                           style: GoogleFonts.inter(
-                            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.7),
+                            color: Theme.of(context)
+                                .colorScheme
+                                .primary
+                                .withValues(alpha: 0.7),
                             fontSize: 10,
                             fontWeight: FontWeight.bold,
                           ),
@@ -544,7 +770,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             top: -10,
             right: -10,
             child: IconButton(
-              icon: Icon(Icons.close, color: AppTheme.textSecondary(context).withValues(alpha: 0.5), size: 16),
+              icon: Icon(Icons.close,
+                  color: AppTheme.textSecondary(context).withValues(alpha: 0.5),
+                  size: 16),
               onPressed: () {
                 setState(() => _showEventBanner = false);
               },
@@ -569,15 +797,22 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   Widget _buildAppBar(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final user = widget.isOffline ? null : (ref.watch(authStateProvider).value ?? FirebaseAuth.instance.currentUser);
+    final user = widget.isOffline
+        ? null
+        : (ref.watch(authStateProvider).value ??
+            FirebaseAuth.instance.currentUser);
+    final name = user?.displayName?.split(' ').first ?? l10n.travelerFallback;
     return SliverAppBar(
-      expandedHeight: 360,
+      expandedHeight: 300,
       pinned: true,
       stretch: true,
       backgroundColor: AppTheme.colors.transparent,
       elevation: 0,
       flexibleSpace: FlexibleSpaceBar(
-        stretchModes: const [StretchMode.zoomBackground, StretchMode.blurBackground],
+        stretchModes: const [
+          StretchMode.zoomBackground,
+          StretchMode.blurBackground
+        ],
         background: Stack(
           fit: StackFit.expand,
           children: [
@@ -607,42 +842,73 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                    const SizedBox(height: 48),
-                    Text(
-                      l10n.discoverSriLanka,
-                      style: GoogleFonts.outfit(
-                        fontSize: 28,
-                        fontWeight: FontWeight.w800,
-                        color: AppTheme.colors.white,
-                        letterSpacing: -0.5,
+                  const SizedBox(height: 42),
+                  Text(
+                    l10n.ayubowanGreeting(name),
+                    style: GoogleFonts.outfit(
+                      fontSize: 26,
+                      fontWeight: FontWeight.w800,
+                      color: AppTheme.colors.white,
+                      letterSpacing: -0.5,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    l10n.letOracleGuide,
+                    style: GoogleFonts.inter(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                      color: AppTheme.colors.white.withValues(alpha: 0.75),
+                    ),
+                  ),
+                  if (_weather != null) ...[
+                    const SizedBox(height: 10),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 14, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: AppTheme.colors.white.withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(100),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(_weatherIcon(_weather!.iconCode),
+                              color: AppTheme.colors.white, size: 15),
+                          const SizedBox(width: 6),
+                          Text(
+                            "${_weather!.tempC.round()}°C · ${_weather!.condition}",
+                            style: GoogleFonts.inter(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: AppTheme.colors.white,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    const SizedBox(height: 8),
-                    Text(
-                      l10n.letOracleGuide,
-                      style: GoogleFonts.inter(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                        color: AppTheme.colors.white.withValues(alpha: 0.75),
-                      ),
-                    ),
-                  const SizedBox(height: 24),
+                  ],
+                  const SizedBox(height: 20),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 40),
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Column(
                       children: [
                         OracleUI.premiumGlassCard(
-                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 6),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 18, vertical: 7),
                           radius: const BorderRadius.all(Radius.circular(40)),
                           child: Row(
                             children: [
-                              Icon(Icons.search_rounded, color: Theme.of(context).colorScheme.primary, size: 20),
+                              Icon(Icons.search_rounded,
+                                  color: Theme.of(context).colorScheme.primary,
+                                  size: 20),
                               const SizedBox(width: 12),
                               Expanded(
                                 child: TextField(
                                   controller: _searchController,
                                   textInputAction: TextInputAction.search,
-                                  onChanged: (v) => setState(() => _searchQuery = v),
+                                  onChanged: (v) =>
+                                      setState(() => _searchQuery = v),
                                   onSubmitted: _onSearchSubmitted,
                                   style: GoogleFonts.inter(
                                     color: AppTheme.textPrimary(context),
@@ -653,7 +919,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                     border: InputBorder.none,
                                     hintText: l10n.searchSecretLocations,
                                     hintStyle: GoogleFonts.inter(
-                                      color: AppTheme.textSecondary(context).withValues(alpha: 0.6),
+                                      color: AppTheme.textSecondary(context)
+                                          .withValues(alpha: 0.6),
                                       fontSize: 13,
                                     ),
                                   ),
@@ -665,7 +932,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                     _searchController.clear();
                                     _searchQuery = "";
                                   }),
-                                  child: Icon(Icons.close_rounded, color: AppTheme.textSecondary(context), size: 18),
+                                  child: Icon(Icons.close_rounded,
+                                      color: AppTheme.textSecondary(context),
+                                      size: 18),
                                 ),
                             ],
                           ),
@@ -675,41 +944,61 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             padding: const EdgeInsets.only(top: 8),
                             child: OracleUI.premiumGlassCard(
                               padding: const EdgeInsets.symmetric(vertical: 4),
-                              radius: const BorderRadius.all(Radius.circular(20)),
+                              radius:
+                                  const BorderRadius.all(Radius.circular(20)),
                               child: _searchResults.isEmpty
                                   ? Padding(
-                                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 16, vertical: 12),
                                       child: Text(
                                         l10n.noPlaceFoundMatching(_searchQuery),
-                                        style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 12),
+                                        style: GoogleFonts.inter(
+                                            color:
+                                                AppTheme.textSecondary(context),
+                                            fontSize: 12),
                                       ),
                                     )
                                   : Column(
                                       mainAxisSize: MainAxisSize.min,
-                                      children: _searchResults.map((place) => InkWell(
-                                        onTap: () => _openPlace(place),
-                                        child: Padding(
-                                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                                          child: Row(
-                                            children: [
-                                              Icon(Icons.place_rounded, size: 16, color: Theme.of(context).colorScheme.primary),
-                                              const SizedBox(width: 10),
-                                              Expanded(
-                                                child: Text(
-                                                  place.name,
-                                                  style: GoogleFonts.inter(
-                                                    color: AppTheme.textPrimary(context),
-                                                    fontSize: 13,
-                                                    fontWeight: FontWeight.w600,
+                                      children: _searchResults
+                                          .map((place) => InkWell(
+                                                onTap: () => _openPlace(place),
+                                                child: Padding(
+                                                  padding: const EdgeInsets
+                                                      .symmetric(
+                                                      horizontal: 16,
+                                                      vertical: 10),
+                                                  child: Row(
+                                                    children: [
+                                                      Icon(Icons.place_rounded,
+                                                          size: 16,
+                                                          color:
+                                                              Theme.of(context)
+                                                                  .colorScheme
+                                                                  .primary),
+                                                      const SizedBox(width: 10),
+                                                      Expanded(
+                                                        child: Text(
+                                                          place.name,
+                                                          style:
+                                                              GoogleFonts.inter(
+                                                            color: AppTheme
+                                                                .textPrimary(
+                                                                    context),
+                                                            fontSize: 13,
+                                                            fontWeight:
+                                                                FontWeight.w600,
+                                                          ),
+                                                          maxLines: 1,
+                                                          overflow: TextOverflow
+                                                              .ellipsis,
+                                                        ),
+                                                      ),
+                                                    ],
                                                   ),
-                                                  maxLines: 1,
-                                                  overflow: TextOverflow.ellipsis,
                                                 ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      )).toList(),
+                                              ))
+                                          .toList(),
                                     ),
                             ),
                           ),
@@ -743,24 +1032,27 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             fit: BoxFit.cover,
                             width: 36,
                             height: 36,
-                            errorWidget: Icon(Icons.person_rounded, color: AppTheme.textPrimary(context), size: 20),
+                            errorWidget: Icon(Icons.person_rounded,
+                                color: AppTheme.textPrimary(context), size: 20),
                           )
-                        : Icon(Icons.person_rounded, color: AppTheme.textPrimary(context), size: 20),
+                        : Icon(Icons.person_rounded,
+                            color: AppTheme.textPrimary(context), size: 20),
                   ),
                 ),
               ),
             ),
           )
         else
-          _glassActionIcon(Icons.person_outline, () {
+          _glassActionIcon(Icons.person_outline, 'Profile', () {
             setState(() => _selectedIndex = 3);
           }),
-        
-        _glassActionIcon(Icons.bookmark_border_rounded, () {
-           Navigator.push(context, MaterialPageRoute(builder: (_) => const SavedPlansScreen()));
+        _glassActionIcon(Icons.bookmark_border_rounded, 'Saved trips', () {
+          Navigator.push(context,
+              MaterialPageRoute(builder: (_) => const SavedPlansScreen()));
         }),
-        _glassActionIcon(Icons.camera_enhance_outlined, () {
-          Navigator.push(context, MaterialPageRoute(builder: (_) => const RealTimeFoodScannerScreen()));
+        _glassActionIcon(Icons.camera_enhance_outlined, 'Food scanner', () {
+          Navigator.push(context,
+              MaterialPageRoute(builder: (_) => const SavorLankaScreen()));
         }),
         const SizedBox(width: 8),
       ],
@@ -777,11 +1069,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.cloud_off_rounded, color: AppTheme.colors.redAccent, size: 14),
+            Icon(Icons.cloud_off_rounded,
+                color: AppTheme.colors.redAccent, size: 14),
             const SizedBox(width: 6),
             Text(
               AppLocalizations.of(context)!.offlineModeLabel,
-              style: GoogleFonts.outfit(fontSize: 10, fontWeight: FontWeight.bold, color: AppTheme.colors.redAccent),
+              style: GoogleFonts.outfit(
+                  fontSize: 10,
+                  fontWeight: FontWeight.bold,
+                  color: AppTheme.colors.redAccent),
             ),
           ],
         ),
@@ -790,7 +1086,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Widget _buildWelcomeCard(AppLocalizations l10n) {
-    final user = widget.isOffline ? null : (ref.watch(authStateProvider).value ?? FirebaseAuth.instance.currentUser);
+    final user = widget.isOffline
+        ? null
+        : (ref.watch(authStateProvider).value ??
+            FirebaseAuth.instance.currentUser);
     final name = user?.displayName?.split(" ").first ?? l10n.travelerFallback;
 
     return Column(
@@ -801,13 +1100,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+                color: Theme.of(context)
+                    .colorScheme
+                    .primary
+                    .withValues(alpha: 0.1),
                 borderRadius: const BorderRadius.all(Radius.circular(20)),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.auto_awesome, color: Theme.of(context).colorScheme.primary, size: 12),
+                  Icon(Icons.auto_awesome,
+                      color: Theme.of(context).colorScheme.primary, size: 12),
                   const SizedBox(width: 6),
                   Text(
                     l10n.ayubowanGreeting(name),
@@ -843,9 +1146,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       child: Text(
         title,
         style: GoogleFonts.outfit(
-          fontSize: 15,
-          fontWeight: FontWeight.w700,
+          fontSize: 20,
+          fontWeight: FontWeight.w800,
           color: AppTheme.textPrimary(context),
+          letterSpacing: -0.3,
         ),
       ),
     );
@@ -855,10 +1159,38 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     // Label -> the matching DiscoveryScreen filter key (see discovery_screen.dart's _filters/_applyFilter).
     final List<(String, IconData, List<Color>, String)> categories = [
-      (l10n.categoryNatureLabel, Icons.forest_outlined, isDark ? [const Color(0xFF241D15), const Color(0xFF241D15)] : [const Color(0xFF557A4A), const Color(0xFF2C3D24)], "nature"),
-      (l10n.categoryBeachesLabel, Icons.waves_rounded, [const Color(0xFF3A7A8A), const Color(0xFF1C3D44)], "coastal"),
-      (l10n.categoryCultureLabel, Icons.temple_hindu_outlined, [Theme.of(context).colorScheme.primary, isDark ? AppPaletteDark.gemDim : AppPalette.rustDim], "culture"),
-      (l10n.categoryAdventureLabel, Icons.explore_outlined, [AppPalette.heroOchre, const Color(0xFFA97A1E)], "hiking"),
+      (
+        l10n.categoryNatureLabel,
+        Icons.forest_rounded,
+        isDark
+            ? [const Color(0xFF17382F), const Color(0xFF10241F)]
+            : [const Color(0xFFE9F5EC), const Color(0xFFD7ECDE)],
+        "nature"
+      ),
+      (
+        l10n.categoryBeachesLabel,
+        Icons.waves_rounded,
+        isDark
+            ? [const Color(0xFF174552), const Color(0xFF102D37)]
+            : [const Color(0xFFE4F4F7), const Color(0xFFCFEAF0)],
+        "coastal"
+      ),
+      (
+        l10n.categoryCultureLabel,
+        Icons.account_balance_rounded,
+        isDark
+            ? [const Color(0xFF522A20), const Color(0xFF321C17)]
+            : [const Color(0xFFFFEEE7), const Color(0xFFF8D9CC)],
+        "culture"
+      ),
+      (
+        l10n.categoryAdventureLabel,
+        Icons.hiking_rounded,
+        isDark
+            ? [const Color(0xFF534019), const Color(0xFF332811)]
+            : [const Color(0xFFFFF4D7), const Color(0xFFF6E1A9)],
+        "hiking"
+      ),
     ];
 
     return Column(
@@ -879,50 +1211,110 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           itemCount: categories.length,
           itemBuilder: (context, i) {
             final cat = categories[i];
-            return GestureDetector(
-              onTap: () {
-                Haptics.light();
-                setState(() {
-                  _discoveryCategoryFilter = cat.$4;
-                  _selectedIndex = 1;
-                });
-              },
-              child: Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  gradient: LinearGradient(
-                    colors: cat.$3,
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
+            final accent = switch (i) {
+              0 => const Color(0xFF4E9A72),
+              1 => const Color(0xFF3D96AA),
+              2 => const Color(0xFFD46A43),
+              _ => const Color(0xFFD6A52B),
+            };
+            return Semantics(
+              button: true,
+              label: cat.$1,
+              child: Material(
+                color: AppTheme.colors.transparent,
+                child: InkWell(
+                  onTap: () {
+                    Haptics.light();
+                    setState(() {
+                      _discoveryCategoryFilter = cat.$4;
+                      _selectedIndex = 1;
+                    });
+                  },
+                  borderRadius: BorderRadius.circular(24),
+                  child: Ink(
+                    padding: const EdgeInsets.fromLTRB(16, 15, 14, 14),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(24),
+                      gradient: LinearGradient(
+                        colors: cat.$3,
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      border: Border.all(
+                        color: accent.withValues(alpha: isDark ? 0.28 : 0.20),
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: accent.withValues(alpha: isDark ? 0.10 : 0.12),
+                          blurRadius: 18,
+                          offset: const Offset(0, 8),
+                        ),
+                      ],
+                    ),
+                    child: Stack(
+                      children: [
+                        Positioned(
+                          right: -12,
+                          bottom: -18,
+                          child: Icon(
+                            cat.$2,
+                            size: 92,
+                            color:
+                                accent.withValues(alpha: isDark ? 0.09 : 0.10),
+                          ),
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Container(
+                                  width: 40,
+                                  height: 40,
+                                  decoration: BoxDecoration(
+                                    color: accent.withValues(
+                                        alpha: isDark ? 0.20 : 0.16),
+                                    borderRadius: BorderRadius.circular(13),
+                                    border: Border.all(
+                                        color: accent.withValues(alpha: 0.22)),
+                                  ),
+                                  alignment: Alignment.center,
+                                  child: Icon(cat.$2, color: accent, size: 21),
+                                ),
+                                Container(
+                                  width: 28,
+                                  height: 28,
+                                  decoration: BoxDecoration(
+                                    color: (isDark
+                                            ? AppTheme.colors.white
+                                            : AppTheme.colors.black)
+                                        .withValues(alpha: 0.06),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Icon(Icons.arrow_outward_rounded,
+                                      size: 15,
+                                      color: AppTheme.textSecondary(context)),
+                                ),
+                              ],
+                            ),
+                            Text(
+                              cat.$1,
+                              style: GoogleFonts.outfit(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w800,
+                                letterSpacing: -0.1,
+                                color: AppTheme.textPrimary(context),
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                  border: Theme.of(context).brightness == Brightness.dark
-                      ? Border.all(color: AppTheme.colors.white.withValues(alpha: 0.06))
-                      : null,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Container(
-                      width: 34,
-                      height: 34,
-                      decoration: BoxDecoration(
-                        color: AppTheme.colors.white.withValues(alpha: 0.18),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      alignment: Alignment.center,
-                      child: Icon(cat.$2, color: AppTheme.colors.white, size: 18),
-                    ),
-                    Text(
-                      cat.$1,
-                      style: GoogleFonts.outfit(
-                        fontSize: 13,
-                        fontWeight: FontWeight.bold,
-                        color: AppTheme.colors.white,
-                      ),
-                    ),
-                  ],
                 ),
               ),
             );
@@ -942,23 +1334,25 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         _buildSectionHeader(l10n.recentPlans),
         const SizedBox(height: 16),
         ...cachedTrips.take(3).map((trip) => _buildPlanCard(
-          context,
-          trip.destination,
-          trip.humanText,
-          l10n.daysLabel(trip.itinerary.length),
-        )),
+              context,
+              trip.destination,
+              trip.humanText,
+              l10n.daysLabel(trip.itinerary.length),
+            )),
       ],
     );
   }
 
-  Widget _buildPlanCard(BuildContext context, String title, String desc, String duration) {
+  Widget _buildPlanCard(
+      BuildContext context, String title, String desc, String duration) {
     return Container(
       margin: const EdgeInsets.only(bottom: 20),
       height: 160,
       child: OracleUI.kineticCard(
         context: context,
         isEvening: false,
-        opacity: 0.0, // Kinetic card adds its own container, we just use it for the press animation
+        opacity:
+            0.0, // Kinetic card adds its own container, we just use it for the press animation
         child: OracleUI.premiumGlassCard(
           padding: EdgeInsets.zero,
           radius: BorderRadius.circular(24),
@@ -968,59 +1362,72 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 child: Opacity(
                   opacity: 0.4,
                   child: CachedImage(
-                    url: "https://images.unsplash.com/photo-1546708973-b339540b5162?q=80&w=2670&auto=format&fit=crop",
+                    url:
+                        "https://images.unsplash.com/photo-1546708973-b339540b5162?q=80&w=2670&auto=format&fit=crop",
                     fit: BoxFit.cover,
                     maxWidthDiskCache: 300,
                   ),
                 ),
               ),
-                RepaintBoundary(
-                  child: BatikBackground(
-                    opacity: 0.04,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [
-                            AppTheme.colors.orange.withValues(alpha: 0.05),
-                            Colors.transparent,
-                          ],
-                        ),
+              RepaintBoundary(
+                child: BatikBackground(
+                  opacity: 0.04,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          AppTheme.colors.orange.withValues(alpha: 0.05),
+                          Colors.transparent,
+                        ],
                       ),
                     ),
                   ),
                 ),
-            Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              title.toUpperCase(), 
-                              style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 18, color: AppTheme.colors.white, letterSpacing: 1)
-                            ),
-                            const SizedBox(height: 4),
-                            Text(desc, style: GoogleFonts.inter(fontSize: 12, color: AppTheme.colors.white70), maxLines: 1, overflow: TextOverflow.ellipsis),
-                          ],
+              ),
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(title.toUpperCase(),
+                                  style: GoogleFonts.outfit(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18,
+                                      color: AppTheme.colors.white,
+                                      letterSpacing: 1)),
+                              const SizedBox(height: 4),
+                              Text(desc,
+                                  style: GoogleFonts.inter(
+                                      fontSize: 12,
+                                      color: AppTheme.colors.white70),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis),
+                            ],
+                          ),
                         ),
-                      ),
-                      OracleUI.glassContainer(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                        radius: BorderRadius.circular(12),
-                        child: Text(duration, style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: AppTheme.colors.white, fontSize: 10)),
-                      ),
-                    ],
-                  ),
-                ],
+                        OracleUI.glassContainer(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 8),
+                          radius: BorderRadius.circular(12),
+                          child: Text(duration,
+                              style: GoogleFonts.outfit(
+                                  fontWeight: FontWeight.bold,
+                                  color: AppTheme.colors.white,
+                                  fontSize: 10)),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
               ),
             ],
@@ -1030,13 +1437,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
-  Widget _glassActionIcon(IconData icon, VoidCallback onTap) {
+  Widget _glassActionIcon(
+      IconData icon, String semanticLabel, VoidCallback onTap) {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
       child: OracleUI.glassContainer(
         padding: EdgeInsets.zero,
         radius: BorderRadius.circular(12),
         child: IconButton(
+          tooltip: semanticLabel,
           icon: Icon(icon, color: AppTheme.textPrimary(context), size: 20),
           onPressed: onTap,
         ),
@@ -1046,7 +1455,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   Widget _buildBottomNav(BuildContext context, AppLocalizations l10n) {
     final textScaleFactor = MediaQuery.textScalerOf(context).scale(1.0);
-    final double dynamicHeight = (70 * textScaleFactor).clamp(70.0, 110.0);
+    final double dynamicHeight = (70 * textScaleFactor).clamp(70.0, 120.0);
+    final double centerGap =
+        (MediaQuery.sizeOf(context).width * 0.16).clamp(44.0, 60.0).toDouble();
 
     return BottomAppBar(
       color: AppTheme.colors.transparent,
@@ -1058,10 +1469,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         child: Container(
           height: dynamicHeight,
           decoration: BoxDecoration(
-            color: Theme.of(context).brightness == Brightness.dark ? AppPaletteDark.card : AppTheme.colors.white,
+            color: Theme.of(context).brightness == Brightness.dark
+                ? AppPaletteDark.card
+                : AppTheme.colors.white,
             borderRadius: BorderRadius.circular(100),
             border: Theme.of(context).brightness == Brightness.dark
-                ? Border.all(color: AppTheme.colors.white.withValues(alpha: 0.07))
+                ? Border.all(
+                    color: AppTheme.colors.white.withValues(alpha: 0.07))
                 : null,
             boxShadow: [
               BoxShadow(
@@ -1074,9 +1488,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           child: Row(
             children: [
               Expanded(child: _navItem(l10n.home, Icons.home_rounded, 0)),
-              Expanded(child: _navItem(l10n.exploreNavLabel, Icons.travel_explore_rounded, 1)),
-              const SizedBox(width: 60),
-              Expanded(child: _navItem(l10n.eventsNavLabel, Icons.calendar_month_rounded, 2)),
+              Expanded(
+                  child: _navItem(
+                      l10n.exploreNavLabel, Icons.travel_explore_rounded, 1)),
+              SizedBox(width: centerGap),
+              Expanded(
+                  child: _navItem(
+                      l10n.eventsNavLabel, Icons.calendar_month_rounded, 2)),
               Expanded(child: _navItem(l10n.profile, Icons.person_rounded, 3)),
             ],
           ),
@@ -1087,35 +1505,49 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   Widget _navItem(String label, IconData icon, int index) {
     final bool active = _selectedIndex == index;
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: () {
-        HapticFeedback.lightImpact();
-        setState(() => _selectedIndex = index);
-      },
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 8.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-          Icon(
-            icon,
-            color: active ? Theme.of(context).colorScheme.primary : AppTheme.textSecondary(context).withValues(alpha: 0.5),
-            size: 24,
-          ),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: GoogleFonts.inter(
-              color: active ? Theme.of(context).colorScheme.primary : AppTheme.textSecondary(context).withValues(alpha: 0.4),
-              fontSize: 10,
-              fontWeight: active ? FontWeight.bold : FontWeight.normal,
+    return Semantics(
+      button: true,
+      selected: active,
+      label: label,
+      child: Tooltip(
+        message: label,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(24),
+          onTap: () {
+            HapticFeedback.lightImpact();
+            setState(() => _selectedIndex = index);
+          },
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 8.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  icon,
+                  color: active
+                      ? Theme.of(context).colorScheme.primary
+                      : AppTheme.textSecondary(context).withValues(alpha: 0.5),
+                  size: 24,
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  label,
+                  maxLines: 2,
+                  textAlign: TextAlign.center,
+                  overflow: TextOverflow.ellipsis,
+                  style: GoogleFonts.inter(
+                    color: active
+                        ? Theme.of(context).colorScheme.primary
+                        : AppTheme.textSecondary(context)
+                            .withValues(alpha: 0.4),
+                    fontSize: 10,
+                    fontWeight: active ? FontWeight.bold : FontWeight.normal,
+                  ),
+                ),
+              ],
             ),
           ),
-        ],
-      ),
+        ),
       ),
     );
   }
@@ -1133,7 +1565,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     }
 
     return SizedBox(
-      height: 180,
+      height: 218,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         physics: const BouncingScrollPhysics(),
@@ -1150,20 +1582,21 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               );
             },
             child: Container(
-              width: 160,
+              width: 184,
               margin: const EdgeInsets.only(right: 16),
               child: OracleUI.glassContainer(
                 padding: EdgeInsets.zero,
-                radius: BorderRadius.circular(20),
+                radius: BorderRadius.circular(24),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     ClipRRect(
-                      borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+                      borderRadius:
+                          const BorderRadius.vertical(top: Radius.circular(24)),
                       child: CachedImage(
                         url: gem.imageUrl,
                         width: double.infinity,
-                        height: 90,
+                        height: 126,
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -1172,14 +1605,27 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(gem.name.toUpperCase(), style: GoogleFonts.outfit(fontSize: 11, fontWeight: FontWeight.bold, color: AppTheme.textPrimary(context)), maxLines: 1, overflow: TextOverflow.ellipsis),
+                          Text(gem.name.toUpperCase(),
+                              style: GoogleFonts.outfit(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppTheme.textPrimary(context)),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis),
                           const SizedBox(height: 2),
                           Row(
                             children: [
-                              Icon(Icons.location_on_rounded, size: 11, color: Theme.of(context).colorScheme.primary),
+                              Icon(Icons.location_on_rounded,
+                                  size: 11,
+                                  color: Theme.of(context).colorScheme.primary),
                               const SizedBox(width: 3),
                               Expanded(
-                                child: Text(gem.district, style: GoogleFonts.inter(fontSize: 9, color: AppTheme.textSecondary(context)), maxLines: 1, overflow: TextOverflow.ellipsis),
+                                child: Text(gem.district,
+                                    style: GoogleFonts.inter(
+                                        fontSize: 9,
+                                        color: AppTheme.textSecondary(context)),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis),
                               ),
                             ],
                           ),

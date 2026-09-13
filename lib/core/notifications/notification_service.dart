@@ -11,12 +11,14 @@ class NotificationService {
   NotificationService._internal();
 
   final FirebaseMessaging _fcm = FirebaseMessaging.instance;
-  final _foregroundMessageController = StreamController<RemoteMessage>.broadcast();
+  final _foregroundMessageController =
+      StreamController<RemoteMessage>.broadcast();
   StreamSubscription? _notifSub;
   final Set<String> _seenNotifIds = {};
 
   /// Stream of foreground push notifications for UI banners/toasts
-  Stream<RemoteMessage> get onForegroundMessage => _foregroundMessageController.stream;
+  Stream<RemoteMessage> get onForegroundMessage =>
+      _foregroundMessageController.stream;
 
   /// In-memory count of unread 'new_booking' notifications, updated by the
   /// single listener in startWatchingUserNotifications() below. Firestore
@@ -41,7 +43,8 @@ class NotificationService {
     );
 
     if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-      SecureLogger.info("User granted push notification permission.", tag: "Notifications");
+      SecureLogger.info("User granted push notification permission.",
+          tag: "Notifications");
     }
 
     // BUG-N01 Fix: Enable native presentation options for foreground notifications on Apple/Web
@@ -54,15 +57,18 @@ class NotificationService {
     // Get FCM Token for server-side targeting
     String? token = await _fcm.getToken();
     if (token != null) {
-      SecureLogger.info("FCM Token acquired: ${token.length > 8 ? '${token.substring(0, 8)}...' : token}", tag: "Notifications");
+      SecureLogger.info(
+          "FCM Token acquired: ${token.length > 8 ? '${token.substring(0, 8)}...' : token}",
+          tag: "Notifications");
     }
-    
+
     // BUG-N02 Fix: Sync token to backend/Firestore for targeted user pushes
     await syncTokenToServer(token);
 
     // BUG-N03 Fix: Listen for token rotation and re-sync automatically
     _fcm.onTokenRefresh.listen((newToken) {
-      SecureLogger.bgTask("FCM Token refreshed: ${newToken.substring(0, 8)}...", tag: "Notifications");
+      SecureLogger.bgTask("FCM Token refreshed: ${newToken.substring(0, 8)}...",
+          tag: "Notifications");
       syncTokenToServer(newToken);
     });
 
@@ -71,7 +77,9 @@ class NotificationService {
 
     // Handle foreground messages
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      SecureLogger.uiEvent("Foreground Push Received: ${message.notification?.title ?? message.messageId}", tag: "Notifications");
+      SecureLogger.uiEvent(
+          "Foreground Push Received: ${message.notification?.title ?? message.messageId}",
+          tag: "Notifications");
 
       // BUG-N01 Fix: Broadcast to listeners so active screens can show Heads-Up Snackbars/Toasts
       _foregroundMessageController.add(message);
@@ -91,15 +99,19 @@ class NotificationService {
       final user = FirebaseAuth.instance.currentUser;
       if (user != null) {
         await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
+          'fcmTokens': FieldValue.arrayUnion([token]),
+          // Keep the legacy field during rollout for older server workers.
           'fcmToken': token,
           'fcmTokenUpdatedAt': FieldValue.serverTimestamp(),
         }, SetOptions(merge: true));
         startWatchingUserNotifications(user.uid);
         subscribeToTopic('guide_${user.uid}');
-        SecureLogger.info("FCM Token synced to Firestore for user: ${user.uid}", tag: "Notifications", isBackground: true);
+        SecureLogger.info("FCM Token synced to Firestore for user: ${user.uid}",
+            tag: "Notifications", isBackground: true);
       }
     } catch (e) {
-      SecureLogger.warning("Failed to sync FCM token: $e", tag: "Notifications", isBackground: true);
+      SecureLogger.warning("Failed to sync FCM token: $e",
+          tag: "Notifications", isBackground: true);
     }
   }
 
@@ -123,14 +135,18 @@ class NotificationService {
             if (data['type'] == 'new_booking') {
               unreadBookingCount.value++;
             }
-            final createdAt = (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now();
+            final createdAt =
+                (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now();
             // Only trigger alert for notifications created within the last 15 minutes
             if (DateTime.now().difference(createdAt).inMinutes < 15) {
               final title = data['title'] as String? ?? 'New Notification';
               final body = data['body'] as String? ?? '';
               _foregroundMessageController.add(RemoteMessage(
                 notification: RemoteNotification(title: title, body: body),
-                data: {'bookingId': data['bookingId'] ?? '', 'type': data['type'] ?? ''},
+                data: {
+                  'bookingId': data['bookingId'] ?? '',
+                  'type': data['type'] ?? ''
+                },
               ));
             }
             // Mark as read now that it's been surfaced to the user — without
@@ -142,7 +158,8 @@ class NotificationService {
         }
       }
     }, onError: (e) {
-      SecureLogger.warning("Error watching user notifications: $e", tag: "Notifications");
+      SecureLogger.warning("Error watching user notifications: $e",
+          tag: "Notifications");
     });
   }
 
@@ -162,7 +179,10 @@ class NotificationService {
           .doc(notificationId)
           .update({'isRead': true});
     } catch (e) {
-      SecureLogger.warning("Failed to mark notification $notificationId as read: $e", tag: "Notifications", isBackground: true);
+      SecureLogger.warning(
+          "Failed to mark notification $notificationId as read: $e",
+          tag: "Notifications",
+          isBackground: true);
     }
   }
 
@@ -179,8 +199,40 @@ class NotificationService {
     }
   }
 
-  static Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-    SecureLogger.bgTask("Handling background push message: ${message.messageId} (Title: ${message.notification?.title ?? 'No Title'})", tag: "Notifications");
+  /// Detaches this installation from the outgoing account. The transaction
+  /// only removes the profile token if it still belongs to this device, so a
+  /// newer login on another device cannot be accidentally disconnected.
+  Future<void> detachCurrentDevice(String? uid) async {
+    await stopWatchingUserNotifications(uid);
+    if (uid == null) return;
+    try {
+      final token = await _fcm.getToken();
+      if (token != null) {
+        final ref = FirebaseFirestore.instance.collection('users').doc(uid);
+        await FirebaseFirestore.instance.runTransaction((transaction) async {
+          final snapshot = await transaction.get(ref);
+          final update = <String, dynamic>{
+            'fcmTokens': FieldValue.arrayRemove([token]),
+          };
+          if (snapshot.data()?['fcmToken'] == token) {
+            update['fcmToken'] = FieldValue.delete();
+            update['fcmTokenUpdatedAt'] = FieldValue.delete();
+          }
+          transaction.update(ref, update);
+        });
+      }
+      await _fcm.deleteToken();
+    } catch (e) {
+      SecureLogger.warning('Failed to detach FCM token during logout: $e',
+          tag: 'Notifications');
+    }
+  }
+
+  static Future<void> _firebaseMessagingBackgroundHandler(
+      RemoteMessage message) async {
+    SecureLogger.bgTask(
+        "Handling background push message: ${message.messageId} (Title: ${message.notification?.title ?? 'No Title'})",
+        tag: "Notifications");
   }
 
   Future<void> subscribeToTopic(String topic) async {
@@ -191,9 +243,11 @@ class NotificationService {
   Future<void> unsubscribeFromTopic(String topic) async {
     try {
       await _fcm.unsubscribeFromTopic(topic);
-      SecureLogger.info("Unsubscribed from topic: $topic", tag: "Notifications");
+      SecureLogger.info("Unsubscribed from topic: $topic",
+          tag: "Notifications");
     } catch (e) {
-      SecureLogger.warning("Failed to unsubscribe from topic $topic: $e", tag: "Notifications");
+      SecureLogger.warning("Failed to unsubscribe from topic $topic: $e",
+          tag: "Notifications");
     }
   }
 

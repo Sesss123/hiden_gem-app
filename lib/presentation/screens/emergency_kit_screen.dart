@@ -24,7 +24,8 @@ class EmergencyKitScreen extends ConsumerStatefulWidget {
   ConsumerState<EmergencyKitScreen> createState() => _EmergencyKitScreenState();
 }
 
-class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> with SingleTickerProviderStateMixin {
+class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen>
+    with SingleTickerProviderStateMixin {
   bool _isSendingSOS = false;
   bool _isHolding = false;
   late AnimationController _holdController;
@@ -94,16 +95,19 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> with Si
       }
       setState(() => _locationPermission = permission);
 
-      if (permission == LocationPermission.deniedForever || permission == LocationPermission.denied) {
+      if (permission == LocationPermission.deniedForever ||
+          permission == LocationPermission.denied) {
         await launchUrl(
-          Uri.parse('https://www.google.com/maps/search/?api=1&query=hospital+near+me'),
+          Uri.parse(
+              'https://www.google.com/maps/search/?api=1&query=hospital+near+me'),
           mode: LaunchMode.externalApplication,
         );
         return;
       }
 
       final pos = await Geolocator.getCurrentPosition(
-        locationSettings: const LocationSettings(accuracy: LocationAccuracy.medium),
+        locationSettings:
+            const LocationSettings(accuracy: LocationAccuracy.medium),
       );
       // Embedding the live coordinates directly in the query text is the
       // reliable way to location-bias a Maps web search (the `center`
@@ -114,7 +118,8 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> with Si
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     } catch (_) {
       await launchUrl(
-        Uri.parse('https://www.google.com/maps/search/?api=1&query=hospital+near+me'),
+        Uri.parse(
+            'https://www.google.com/maps/search/?api=1&query=hospital+near+me'),
         mode: LaunchMode.externalApplication,
       );
     }
@@ -146,15 +151,18 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> with Si
       // 1. Actually get help: SMS/call fires first and unconditionally, so a
       // failure in the (secondary) incident logging below can never prevent
       // the real-world emergency contact from going out.
-      final String mapLink = "https://www.google.com/maps/search/?api=1&query=${position.latitude},${position.longitude}";
-      final String sosMessage = "EMERGENCY: I need help. My current location is: $mapLink (Sent via AdvanceTravel.me)";
+      final String mapLink =
+          "https://www.google.com/maps/search/?api=1&query=${position.latitude},${position.longitude}";
+      final String sosMessage =
+          "EMERGENCY: I need help. My current location is: $mapLink (Sent via AdvanceTravel.me)";
 
       if (profile.sosContacts.isEmpty) {
         await launchUrl(Uri.parse("tel:119"));
       } else {
         final String separator = Platform.isIOS ? ';' : ',';
         final String contacts = profile.sosContacts.join(separator);
-        final Uri smsUri = Uri.parse("sms:$contacts?body=${Uri.encodeComponent(sosMessage)}");
+        final Uri smsUri =
+            Uri.parse("sms:$contacts?body=${Uri.encodeComponent(sosMessage)}");
         if (await canLaunchUrl(smsUri)) {
           await launchUrl(smsUri);
         }
@@ -204,7 +212,10 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> with Si
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context)!.errorGenericMessage(e.toString())), backgroundColor: AppTheme.colors.red),
+        SnackBar(
+            content: Text(AppLocalizations.of(context)!
+                .errorGenericMessage(e.toString())),
+            backgroundColor: AppTheme.colors.red),
       );
     } finally {
       if (mounted) setState(() => _isSendingSOS = false);
@@ -224,7 +235,9 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> with Si
     if (isPremium) {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (_) => const EmergencyTranslatorScreen(initialType: EmergencySituationType.other)),
+        MaterialPageRoute(
+            builder: (_) => const EmergencyTranslatorScreen(
+                initialType: EmergencySituationType.other)),
       );
       return;
     }
@@ -234,22 +247,32 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> with Si
       builder: (ctx) => AlertDialog(
         backgroundColor: Theme.of(context).cardColor,
         icon: Icon(Icons.translate_rounded, color: AppPalette.rust, size: 32),
-        title: Text(AppLocalizations.of(context)!.emergencyTranslatorTitle, style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: AppTheme.textPrimary(context))),
+        title: Text(AppLocalizations.of(context)!.emergencyTranslatorTitle,
+            style: GoogleFonts.outfit(
+                fontWeight: FontWeight.bold,
+                color: AppTheme.textPrimary(context))),
         content: Text(
           AppLocalizations.of(context)!.emergencyTranslatorPremiumMessage,
-          style: GoogleFonts.inter(fontSize: 13, color: AppTheme.textSecondary(context), height: 1.5),
+          style: GoogleFonts.inter(
+              fontSize: 13,
+              color: AppTheme.textSecondary(context),
+              height: 1.5),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: Text(AppLocalizations.of(context)!.notNowButton, style: TextStyle(color: AppTheme.textSecondary(context))),
+            child: Text(AppLocalizations.of(context)!.notNowButton,
+                style: TextStyle(color: AppTheme.textSecondary(context))),
           ),
           ElevatedButton(
             onPressed: () {
               Navigator.pop(ctx);
-              Navigator.push(context, MaterialPageRoute(builder: (_) => const PremiumHubScreen()));
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (_) => const PremiumHubScreen()));
             },
-            style: ElevatedButton.styleFrom(backgroundColor: AppPalette.rust, foregroundColor: AppTheme.colors.white),
+            style: ElevatedButton.styleFrom(
+                backgroundColor: AppPalette.rust,
+                foregroundColor: AppTheme.colors.white),
             child: Text(AppLocalizations.of(context)!.viewPlansButton),
           ),
         ],
@@ -267,18 +290,20 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> with Si
   @override
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
-    // BUG-063: Clamps the text scaling factor to prevent layout overflows on large font settings
-    final clampedTextScaler = mediaQuery.textScaler.clamp(minScaleFactor: 0.8, maxScaleFactor: 1.25);
+    // Respect the user's full accessibility text scale. Responsive cards below
+    // handle the additional height instead of silently shrinking the text.
+    final accessibilityTextScaler = mediaQuery.textScaler;
 
     return MediaQuery(
-      data: mediaQuery.copyWith(textScaler: clampedTextScaler),
+      data: mediaQuery.copyWith(textScaler: accessibilityTextScaler),
       child: Scaffold(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         appBar: AppBar(
           backgroundColor: AppTheme.colors.transparent,
           elevation: 0,
           leading: IconButton(
-            icon: Icon(Icons.arrow_back_ios_new_rounded, color: AppTheme.textPrimary(context), size: 20),
+            icon: Icon(Icons.arrow_back_ios_new_rounded,
+                color: AppTheme.textPrimary(context), size: 20),
             onPressed: () => Navigator.pop(context),
           ),
           title: Text(
@@ -296,9 +321,11 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> with Si
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildSOSSection().animate().fadeIn(duration: 800.ms).slideY(begin: 0.1),
+              _buildSOSSection()
+                  .animate()
+                  .fadeIn(duration: 800.ms)
+                  .slideY(begin: 0.1),
               SizedBox(height: 32),
-
               Text(
                 AppLocalizations.of(context)!.criticalContactsTitle,
                 style: GoogleFonts.outfit(
@@ -310,10 +337,8 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> with Si
               ),
               SizedBox(height: 16),
               _buildContactGrid(),
-
               SizedBox(height: 32),
               _buildSOSContactManager(),
-
               SizedBox(height: 32),
               Text(
                 AppLocalizations.of(context)!.medicalFacilitiesNearbyTitle,
@@ -352,7 +377,9 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> with Si
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.shield_moon_rounded, color: AppTheme.colors.white.withValues(alpha: 0.85), size: 16),
+              Icon(Icons.shield_moon_rounded,
+                  color: AppTheme.colors.white.withValues(alpha: 0.85),
+                  size: 16),
               const SizedBox(width: 8),
               Text(
                 l10n.emergencyProtocolLabel,
@@ -381,52 +408,74 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> with Si
                     children: [
                       if (!_isHolding)
                         Container(
-                          width: 148, height: 148,
+                          width: 148,
+                          height: 148,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: AppTheme.colors.white.withValues(alpha: 0.08),
+                            color:
+                                AppTheme.colors.white.withValues(alpha: 0.08),
                           ),
-                        ).animate(onPlay: (c) => c.repeat()).scale(
-                          begin: const Offset(0.72, 0.72), end: const Offset(1, 1),
-                          duration: 1800.ms, curve: Curves.easeOut,
-                        ).fadeOut(begin: 0.5),
+                        )
+                            .animate(onPlay: (c) => c.repeat())
+                            .scale(
+                              begin: const Offset(0.72, 0.72),
+                              end: const Offset(1, 1),
+                              duration: 1800.ms,
+                              curve: Curves.easeOut,
+                            )
+                            .fadeOut(begin: 0.5),
                       SizedBox(
                         width: 148,
                         height: 148,
                         child: CircularProgressIndicator(
                           value: _isHolding ? _holdController.value : 0,
                           strokeWidth: 4,
-                          backgroundColor: AppTheme.colors.white.withValues(alpha: 0.15),
-                          valueColor: AlwaysStoppedAnimation(AppPalette.heroOchre),
+                          backgroundColor:
+                              AppTheme.colors.white.withValues(alpha: 0.15),
+                          valueColor:
+                              AlwaysStoppedAnimation(AppPalette.heroOchre),
                         ),
                       ),
                       Container(
                         width: 108,
                         height: 108,
                         decoration: BoxDecoration(
-                          color: _isHolding ? AppTheme.errorRed : AppTheme.errorRed.withValues(alpha: 0.92),
+                          color: _isHolding
+                              ? AppTheme.errorRed
+                              : AppTheme.errorRed.withValues(alpha: 0.92),
                           shape: BoxShape.circle,
                           boxShadow: [
-                            BoxShadow(color: AppTheme.errorRed.withValues(alpha: 0.4), blurRadius: 24, spreadRadius: 2),
+                            BoxShadow(
+                                color: AppTheme.errorRed.withValues(alpha: 0.4),
+                                blurRadius: 24,
+                                spreadRadius: 2),
                           ],
                         ),
                         child: Center(
                           child: _isSendingSOS
-                            ? SizedBox(
-                                width: 26, height: 26,
-                                child: CircularProgressIndicator(color: AppTheme.colors.white, strokeWidth: 3),
-                              )
-                            : Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(Icons.emergency_share_rounded, color: AppTheme.colors.white, size: 26),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    l10n.sosLabel,
-                                    style: TextStyle(color: AppTheme.colors.white, fontWeight: FontWeight.w800, fontSize: 15, letterSpacing: 0.5),
-                                  ),
-                                ],
-                              ),
+                              ? SizedBox(
+                                  width: 26,
+                                  height: 26,
+                                  child: CircularProgressIndicator(
+                                      color: AppTheme.colors.white,
+                                      strokeWidth: 3),
+                                )
+                              : Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(Icons.emergency_share_rounded,
+                                        color: AppTheme.colors.white, size: 26),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      l10n.sosLabel,
+                                      style: TextStyle(
+                                          color: AppTheme.colors.white,
+                                          fontWeight: FontWeight.w800,
+                                          fontSize: 15,
+                                          letterSpacing: 0.5),
+                                    ),
+                                  ],
+                                ),
                         ),
                       ),
                     ],
@@ -443,13 +492,19 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> with Si
                     ? l10n.keepHoldingToConfirmMessage
                     : l10n.pressHoldTwoSecondsMessage,
             textAlign: TextAlign.center,
-            style: GoogleFonts.inter(color: AppTheme.colors.white.withValues(alpha: 0.85), fontSize: 13, fontWeight: FontWeight.w600),
+            style: GoogleFonts.inter(
+                color: AppTheme.colors.white.withValues(alpha: 0.85),
+                fontSize: 13,
+                fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 4),
           Text(
             l10n.preventsAccidentalTriggersMessage,
             textAlign: TextAlign.center,
-            style: GoogleFonts.inter(color: AppTheme.colors.white.withValues(alpha: 0.5), fontSize: 11, fontWeight: FontWeight.w500),
+            style: GoogleFonts.inter(
+                color: AppTheme.colors.white.withValues(alpha: 0.5),
+                fontSize: 11,
+                fontWeight: FontWeight.w500),
           ),
         ],
       ),
@@ -459,10 +514,30 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> with Si
   Widget _buildContactGrid() {
     final l10n = AppLocalizations.of(context)!;
     final List<Map<String, dynamic>> contacts = [
-      {"name": l10n.contactNamePolice, "phone": "119", "icon": Icons.local_police_rounded, "color": AppPalette.earth},
-      {"name": l10n.contactNameAmbulance, "phone": "1990", "icon": Icons.medical_services_rounded, "color": AppPalette.rust},
-      {"name": l10n.contactNameTouristPolice, "phone": "0112421451", "icon": Icons.beach_access_rounded, "color": AppPalette.heroOchre},
-      {"name": l10n.contactNameFireDept, "phone": "110", "icon": Icons.fire_truck_rounded, "color": AppTheme.errorRed},
+      {
+        "name": l10n.contactNamePolice,
+        "phone": "119",
+        "icon": Icons.local_police_rounded,
+        "color": AppPalette.earth
+      },
+      {
+        "name": l10n.contactNameAmbulance,
+        "phone": "1990",
+        "icon": Icons.medical_services_rounded,
+        "color": AppPalette.rust
+      },
+      {
+        "name": l10n.contactNameTouristPolice,
+        "phone": "0112421451",
+        "icon": Icons.beach_access_rounded,
+        "color": AppPalette.heroOchre
+      },
+      {
+        "name": l10n.contactNameFireDept,
+        "phone": "110",
+        "icon": Icons.fire_truck_rounded,
+        "color": AppTheme.errorRed
+      },
     ];
 
     return LayoutBuilder(
@@ -492,7 +567,8 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> with Si
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.surface,
                 borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: color.withValues(alpha: 0.18), width: 1.2),
+                border: Border.all(
+                    color: color.withValues(alpha: 0.18), width: 1.2),
               ),
               // BUG-083: Ensure minimum 48px tap target by using ConstrainedBox
               child: ConstrainedBox(
@@ -506,12 +582,14 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> with Si
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Container(
-                          width: 40, height: 40,
+                          width: 40,
+                          height: 40,
                           decoration: BoxDecoration(
                             color: color.withValues(alpha: 0.14),
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          child: Icon(contact['icon'] as IconData, color: color, size: 20),
+                          child: Icon(contact['icon'] as IconData,
+                              color: color, size: 20),
                         ),
                         const SizedBox(height: 12),
                         // BUG-103: Flexible text prevents overflow at max font scale
@@ -537,7 +615,10 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> with Si
                                 child: Text(
                                   contact['phone'] as String,
                                   overflow: TextOverflow.ellipsis,
-                                  style: GoogleFonts.outfit(fontSize: 15, fontWeight: FontWeight.w800, color: AppTheme.textPrimary(context)),
+                                  style: GoogleFonts.outfit(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w800,
+                                      color: AppTheme.textPrimary(context)),
                                 ),
                               ),
                               const SizedBox(width: 5),
@@ -550,13 +631,15 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> with Si
                   ),
                 ),
               ),
-            ).animate().fadeIn(delay: (index * 100).ms, duration: 400.ms).scale(begin: const Offset(0.9, 0.9));
+            )
+                .animate()
+                .fadeIn(delay: (index * 100).ms, duration: 400.ms)
+                .scale(begin: const Offset(0.9, 0.9));
           },
         );
       },
     );
   }
-
 
   Widget _buildSOSContactManager() {
     final profile = UserPreferenceService.getProfile();
@@ -567,7 +650,10 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> with Si
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
-          BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.05), blurRadius: 16, offset: const Offset(0, 6)),
+          BoxShadow(
+              color: AppTheme.colors.black.withValues(alpha: 0.05),
+              blurRadius: 16,
+              offset: const Offset(0, 6)),
         ],
       ),
       child: Column(
@@ -576,50 +662,60 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> with Si
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                l10n.privateGuardiansTitle,
-                style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontSize: 14, fontWeight: FontWeight.w700, letterSpacing: -0.2)
-              ),
+              Text(l10n.privateGuardiansTitle,
+                  style: GoogleFonts.outfit(
+                      color: AppTheme.textPrimary(context),
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: -0.2)),
               IconButton(
                 onPressed: _showAddContactDialog,
-                icon: Icon(Icons.add_link_rounded, color: Theme.of(context).colorScheme.primary, size: 20),
+                icon: Icon(Icons.add_link_rounded,
+                    color: Theme.of(context).colorScheme.primary, size: 20),
               ),
             ],
           ),
           SizedBox(height: 8),
           if (profile.sosContacts.isEmpty)
-            Text(
-              l10n.noGuardiansAssignedMessage,
-              style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 12)
-            )
+            Text(l10n.noGuardiansAssignedMessage,
+                style: GoogleFonts.inter(
+                    color: AppTheme.textSecondary(context), fontSize: 12))
           else
             Wrap(
               spacing: 8,
               runSpacing: 8,
-              children: profile.sosContacts.map((c) => Container(
-                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: AppTheme.surfaceMuted(context),
-                  borderRadius: BorderRadius.circular(100),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(c, style: GoogleFonts.inter(color: AppTheme.textPrimary(context), fontSize: 12, fontWeight: FontWeight.w600)),
-                    SizedBox(width: 8),
-                    GestureDetector(
-                      onTap: () async {
-                        final p = UserPreferenceService.getProfile();
-                        p.sosContacts.remove(c);
-                        await UserPreferenceService.saveProfile(p);
-                        if (!mounted) return;
-                        setState(() {});
-                      },
-                      child: Icon(Icons.close_rounded, color: AppTheme.colors.redAccent, size: 14),
-                    ),
-                  ],
-                ),
-              )).toList(),
+              children: profile.sosContacts
+                  .map((c) => Container(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: AppTheme.surfaceMuted(context),
+                          borderRadius: BorderRadius.circular(100),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(c,
+                                style: GoogleFonts.inter(
+                                    color: AppTheme.textPrimary(context),
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600)),
+                            SizedBox(width: 8),
+                            GestureDetector(
+                              onTap: () async {
+                                final p = UserPreferenceService.getProfile();
+                                p.sosContacts.remove(c);
+                                await UserPreferenceService.saveProfile(p);
+                                if (!mounted) return;
+                                setState(() {});
+                              },
+                              child: Icon(Icons.close_rounded,
+                                  color: AppTheme.colors.redAccent, size: 14),
+                            ),
+                          ],
+                        ),
+                      ))
+                  .toList(),
             ),
         ],
       ),
@@ -628,7 +724,8 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> with Si
 
   Widget _buildHospitalsList() {
     final l10n = AppLocalizations.of(context)!;
-    final deniedForever = _locationPermission == LocationPermission.deniedForever;
+    final deniedForever =
+        _locationPermission == LocationPermission.deniedForever;
 
     return Container(
       width: double.infinity,
@@ -637,7 +734,10 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> with Si
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
-          BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.05), blurRadius: 16, offset: const Offset(0, 6)),
+          BoxShadow(
+              color: AppTheme.colors.black.withValues(alpha: 0.05),
+              blurRadius: 16,
+              offset: const Offset(0, 6)),
         ],
       ),
       child: Column(
@@ -646,12 +746,14 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> with Si
           Row(
             children: [
               Container(
-                width: 44, height: 44,
+                width: 44,
+                height: 44,
                 decoration: BoxDecoration(
                   color: AppPalette.rust.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(13),
                 ),
-                child: Icon(Icons.local_hospital_rounded, color: AppPalette.rust, size: 22),
+                child: Icon(Icons.local_hospital_rounded,
+                    color: AppPalette.rust, size: 22),
               ),
               const SizedBox(width: 14),
               Expanded(
@@ -660,7 +762,11 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> with Si
                   children: [
                     Text(
                       l10n.nearestHospitalTitle,
-                      style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.w700, fontSize: 14, letterSpacing: -0.2),
+                      style: GoogleFonts.outfit(
+                          color: AppTheme.textPrimary(context),
+                          fontWeight: FontWeight.w700,
+                          fontSize: 14,
+                          letterSpacing: -0.2),
                     ),
                     const SizedBox(height: 3),
                     Text(
@@ -669,7 +775,11 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> with Si
                           : deniedForever
                               ? l10n.locationAccessDeniedGeneralMessage
                               : l10n.hospitalMapsExplanationMessage,
-                      style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 12, fontWeight: FontWeight.w500, height: 1.4),
+                      style: GoogleFonts.inter(
+                          color: AppTheme.textSecondary(context),
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                          height: 1.4),
                     ),
                   ],
                 ),
@@ -682,13 +792,16 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> with Si
             height: 50,
             child: ElevatedButton.icon(
               icon: const Icon(Icons.near_me_rounded, size: 17),
-              label: Text(l10n.findNearestHospitalButton, style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 13)),
+              label: Text(l10n.findNearestHospitalButton,
+                  style: GoogleFonts.inter(
+                      fontWeight: FontWeight.w700, fontSize: 13)),
               onPressed: _openNearbyHospitals,
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppPalette.rust,
                 foregroundColor: AppTheme.colors.white,
                 elevation: 0,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14)),
               ),
             ),
           ),
@@ -709,16 +822,21 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> with Si
             color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(28),
             boxShadow: [
-              BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.15), blurRadius: 30, offset: const Offset(0, 12)),
+              BoxShadow(
+                  color: AppTheme.colors.black.withValues(alpha: 0.15),
+                  blurRadius: 30,
+                  offset: const Offset(0, 12)),
             ],
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
-                AppLocalizations.of(context)!.addGuardianTitle,
-                style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.w700, letterSpacing: -0.3, color: AppTheme.textPrimary(context))
-              ),
+              Text(AppLocalizations.of(context)!.addGuardianTitle,
+                  style: GoogleFonts.outfit(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: -0.3,
+                      color: AppTheme.textPrimary(context))),
               SizedBox(height: 20),
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 16),
@@ -729,8 +847,10 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> with Si
                 child: TextField(
                   style: TextStyle(color: AppTheme.textPrimary(context)),
                   decoration: InputDecoration(
-                    hintText: AppLocalizations.of(context)!.guardianPhoneNumberHint,
-                    hintStyle: TextStyle(color: AppTheme.textSecondary(context), fontSize: 13),
+                    hintText:
+                        AppLocalizations.of(context)!.guardianPhoneNumberHint,
+                    hintStyle: TextStyle(
+                        color: AppTheme.textSecondary(context), fontSize: 13),
                     border: InputBorder.none,
                   ),
                   keyboardType: TextInputType.phone,
@@ -758,12 +878,16 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen> with Si
                       }
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(buttonContext).colorScheme.primary,
+                      backgroundColor:
+                          Theme.of(buttonContext).colorScheme.primary,
                       foregroundColor: AppTheme.colors.white,
                       elevation: 0,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(100)),
                     ),
-                    child: Text(AppLocalizations.of(context)!.addGuardianButton, style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 14)),
+                    child: Text(AppLocalizations.of(context)!.addGuardianButton,
+                        style: GoogleFonts.inter(
+                            fontWeight: FontWeight.w700, fontSize: 14)),
                   ),
                 ),
               ),

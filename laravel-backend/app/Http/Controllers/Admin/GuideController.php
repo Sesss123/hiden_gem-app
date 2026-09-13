@@ -79,18 +79,21 @@ class GuideController extends Controller
 
                 // 2. Sync to Firestore — guide_applications collection
                 // This triggers watchMyApplication stream in Flutter's guide_enrollment_screen.dart
-                $this->firestoreService->updateGuideApplication($userId, [
+                $applicationSynced = $this->firestoreService->updateGuideApplication($userId, [
                     'status' => 'approved',
                     'reviewedAt' => now()->toIso8601String(),
                 ]);
 
                 // 3. Sync to Firestore — users collection
                 // This updates profile role directly so dashboard tiles unlock immediately without restart
-                $this->firestoreService->updateGuideUser($userId, [
+                $userSynced = $this->firestoreService->updateGuideUser($userId, [
                     'role' => 'guide_approved',
                     'guideStatus' => 'approved',
                     'isGuideApproved' => true,
                 ]);
+                if (!$applicationSynced || !$userSynced) {
+                    throw new \RuntimeException('Firestore rejected the guide approval sync.');
+                }
             });
 
             $this->logAdminAction('guide.approved', 'GuideApplication', $id, ['user_id' => $userId]);
@@ -125,17 +128,20 @@ class GuideController extends Controller
                 $application->user->update(['role' => 'tourist']); // demote back to tourist
 
                 // 2. Sync to Firestore — guide_applications collection (includes rejection reason)
-                $this->firestoreService->updateGuideApplication($userId, [
+                $applicationSynced = $this->firestoreService->updateGuideApplication($userId, [
                     'status' => 'rejected',
                     'adminComment' => $adminComment,
                     'reviewedAt' => now()->toIso8601String(),
                 ]);
 
                 // 3. Sync to Firestore — users collection
-                $this->firestoreService->updateGuideUser($userId, [
+                $userSynced = $this->firestoreService->updateGuideUser($userId, [
                     'guideStatus' => 'rejected',
                     'guideRejectionReason' => $adminComment,
                 ]);
+                if (!$applicationSynced || !$userSynced) {
+                    throw new \RuntimeException('Firestore rejected the guide rejection sync.');
+                }
             });
 
             $this->logAdminAction('guide.rejected', 'GuideApplication', $id, ['user_id' => $userId, 'reason' => $adminComment]);
@@ -157,6 +163,7 @@ class GuideController extends Controller
         $application = GuideApplication::findOrFail($id);
         $user = $application->user;
         $user->update(['role' => 'banned']);
+        $user->tokens()->delete();
 
         try {
             // NOTE: must use $application->user_id (the Firebase UID) here,

@@ -15,11 +15,12 @@ import 'dart:async';
 import 'core/theme/app_theme.dart';
 import 'core/services/security_orchestrator.dart';
 import 'core/theme/theme_provider.dart';
-import 'core/localization/locale_provider.dart'; 
+import 'core/localization/locale_provider.dart';
 import 'data/datasources/trip_cache_service.dart';
 import 'data/datasources/user_preference_service.dart';
 import 'data/datasources/monetization_service.dart';
 import 'data/datasources/voice_service.dart';
+import 'data/datasources/auth_service.dart';
 import 'core/analytics/analytics_service.dart';
 import 'core/notifications/notification_service.dart';
 import 'core/network/secure_network.dart';
@@ -52,6 +53,7 @@ import 'core/services/consent_service.dart';
 import 'core/services/explorer_progress_service.dart';
 import 'core/services/family_share_sync_service.dart';
 import 'package:freerasp/freerasp.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 class InitializationResult {
   final bool hiveSuccess;
@@ -70,14 +72,15 @@ class InitializationResult {
     this.error,
   });
 
-  bool get canProceed => hiveSuccess && (kIsWeb || !isCompromised) && !isKillSwitchActive;
+  bool get canProceed =>
+      hiveSuccess && (kIsWeb || !isCompromised) && !isKillSwitchActive;
 }
 
 // SecureNetwork from core/network/secure_network.dart is used instead.
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   // Initialize Global Error Handling
   FlutterError.onError = (errorDetails) {
     // 1. Report to Crashlytics (Mobile Native only)
@@ -88,7 +91,7 @@ void main() async {
     } catch (e) {
       SecureLogger.error("Suppressing Crashlytics error during reporting: $e");
     }
-    
+
     // 2. Log to Analytics (Safe for Web/Mobile)
     try {
       AnalyticsService().logEvent('runtime_error', parameters: {
@@ -96,13 +99,14 @@ void main() async {
         'stack': errorDetails.stack.toString(),
       });
     } catch (e) {
-      SecureLogger.warning("Failed to log runtime_error to AnalyticsService: $e");
+      SecureLogger.warning(
+          "Failed to log runtime_error to AnalyticsService: $e");
     }
 
     // 3. Keep Default Behavior (Show Red Screen/Overflow Indicator)
     FlutterError.presentError(errorDetails);
   };
-  
+
   // BUG-065: PlatformDispatcher.instance.onError is bound here to catch ALL
   // uncaught platform exceptions that bypass FlutterError.onError (e.g., async
   // exceptions in isolates and platform channels). This prevents them from
@@ -117,9 +121,10 @@ void main() async {
     }
     return true;
   };
-  
-  SecureLogger.info("Main Entry: Initializing Firebase and core storage concurrently...");
-  
+
+  SecureLogger.info(
+      "Main Entry: Initializing Firebase and core storage concurrently...");
+
   // 1. Concurrently initialize Firebase and Essential Local Storage (Hive)
   // This satisfies the user requirement to initialize Firebase before runApp (preventing [core/no-app] errors and Firestore GeoHash fetch failures)
   // while running tasks in parallel via Future.wait to eliminate main-thread jank (Skipped 20 frames... warning).
@@ -137,13 +142,14 @@ void main() async {
           // Enable Firestore offline persistence immediately upon initialization
           FirebaseFirestore.instance.settings = Settings(
             persistenceEnabled: true,
-            cacheSizeBytes: kIsWeb ? 20 * 1024 * 1024 : Settings.CACHE_SIZE_UNLIMITED,
+            cacheSizeBytes:
+                kIsWeb ? 20 * 1024 * 1024 : Settings.CACHE_SIZE_UNLIMITED,
           );
         }),
       TripCacheService.init(),
       UserPreferenceService.init(),
     ]);
-    
+
     await UserPreferenceService.ensureProfileLoaded();
     SecureLogger.info("Core storage and Firebase ready.");
   } catch (e) {
@@ -159,11 +165,15 @@ void main() async {
       final config = TalsecConfig(
         androidConfig: AndroidConfig(
           packageName: 'com.hidden.gems.hidden_gems_sl',
-          signingCertHashes: [const String.fromEnvironment('TALSEC_SIGNING_CERT_HASH', defaultValue: 'PLACEHOLDER_HASH')],
+          signingCertHashes: [
+            const String.fromEnvironment('TALSEC_SIGNING_CERT_HASH',
+                defaultValue: 'PLACEHOLDER_HASH')
+          ],
         ),
         iosConfig: IOSConfig(
           bundleIds: ['com.hidden.gems.hiddenGemsSl'],
-          teamId: const String.fromEnvironment('TALSEC_TEAM_ID', defaultValue: 'PLACEHOLDER_TEAM_ID'),
+          teamId: const String.fromEnvironment('TALSEC_TEAM_ID',
+              defaultValue: 'PLACEHOLDER_TEAM_ID'),
         ),
         watcherMail: 'support@hiddengemssl.com',
         isProd: kReleaseMode,
@@ -175,7 +185,9 @@ void main() async {
         // detected. Previously this fired in debug builds too, causing
         // `flutter run` sessions to immediately close the app because freeRASP
         // correctly identifies the debug runtime as a threat.
-        onDebug: () { if (kReleaseMode) SystemNavigator.pop(); },
+        onDebug: () {
+          if (kReleaseMode) SystemNavigator.pop();
+        },
         onDeviceBinding: () => SystemNavigator.pop(),
         onDeviceID: () => SystemNavigator.pop(),
         onHooks: () => SystemNavigator.pop(),
@@ -188,7 +200,7 @@ void main() async {
       Talsec.instance.start(config);
       Talsec.instance.attachListener(callback);
       SecureLogger.info("freeRASP Security Shield Activated");
-    } catch(e) {
+    } catch (e) {
       SecureLogger.error("freeRASP Initialization Error: $e");
     }
   }
@@ -225,7 +237,8 @@ final appInitializationProvider = FutureProvider<AppInitState>((ref) async {
   final result = await performInitialization().timeout(
     const Duration(seconds: 35),
     onTimeout: () {
-      SecureLogger.warning("Initialization timed out. Proceeding in fallback mode.");
+      SecureLogger.warning(
+          "Initialization timed out. Proceeding in fallback mode.");
       return InitializationResult(hiveSuccess: true, firebaseSuccess: false);
     },
   );
@@ -240,13 +253,14 @@ final appInitializationProvider = FutureProvider<AppInitState>((ref) async {
     try {
       await initializeOtherServices().timeout(const Duration(seconds: 30));
     } catch (e) {
-      SecureLogger.warning("initializeOtherServices timed out or failed, continuing to app: $e");
+      SecureLogger.warning(
+          "initializeOtherServices timed out or failed, continuing to app: $e");
     }
     try {
       updateType = await UpdateService().checkUpdate().timeout(
-        const Duration(seconds: 5),
-        onTimeout: () => UpdateType.none,
-      );
+            const Duration(seconds: 5),
+            onTimeout: () => UpdateType.none,
+          );
     } catch (e) {
       SecureLogger.warning("Update check failed or timed out during init: $e");
     }
@@ -263,191 +277,223 @@ Future<InitializationResult> performInitialization() async {
   // BUG-125: Outer catch-all — any unexpected startup anomaly returns a
   // degraded result instead of propagating and halting the application.
   try {
-
-  try {
-    AppConfig.validate();
-  } catch (e) {
-    SecureLogger.error("Validation error: $e");
-    return InitializationResult(
-      hiveSuccess: storageStatus,
-      firebaseSuccess: false,
-      error: e.toString(),
-    );
-  }
-
-  SecureLogger.info("Background initialization started. Web mode: $kIsWeb");
-
-  try {
-    // Initialize Encryption System early
-    await EncryptionUtil.init();
-    SecureLogger.info("Encryption system initialized.");
-
-    // Keeps family-share link status blobs (see FamilyShareScreen) E2E
-    // encrypted and current -- follows auth state internally.
-    FamilyShareSyncService.instance.init();
-
-  } catch (e) {
-    SecureLogger.error("Encryption init error: $e");
-  }
-
-  try {
-    if (!kIsWeb) {
-      // BUG-085: SafeDevice calls can fail on older Android APIs or emulators.
-      // We log platform errors and allow startup to continue safely rather than blocking app launch.
-      final bool jailbroken = await SafeDevice.isJailBroken;
-      if (jailbroken) {
-        isCompromised = true;
-        errorMessage = "Compromised device detected. The Oracle cannot run in this environment.";
-      }
-    }
-  } catch (e, st) {
-    SecureLogger.error("Jailbreak verification failed, continuing safely: $e\n$st");
-  }
-
-  if (isCompromised) {
-    // Log compromised status but allow custom recovery path
-    SecureLogger.warning("Startup alert: $errorMessage");
-  }
-
-
-  try {
-    SecureLogger.info("Verifying Firebase setup...");
-    if (Firebase.apps.isEmpty) {
-      FirebaseOptions? options;
-      try {
-        options = DefaultFirebaseOptions.currentPlatform;
-      } catch (e) {
-        SecureLogger.error("Firebase config not available for this platform: $e");
-      }
-      if (options != null) {
-        await Firebase.initializeApp(
-          options: options,
-        ).timeout(const Duration(seconds: 10));
-
-        FirebaseFirestore.instance.settings = Settings(
-          persistenceEnabled: true,
-          cacheSizeBytes: kIsWeb ? 20 * 1024 * 1024 : Settings.CACHE_SIZE_UNLIMITED,
-        );
-      }
+    // sqflite's global factory is mobile-only by default. Windows/Linux/macOS
+    // builds must select the FFI implementation before any background version
+    // check or delta hydration opens SQLite.
+    if (!kIsWeb &&
+        (Platform.isWindows || Platform.isLinux || Platform.isMacOS)) {
+      sqfliteFfiInit();
+      databaseFactory = databaseFactoryFfi;
     }
 
-    if (Firebase.apps.isNotEmpty) {
-      firebaseStatus = true;
-      try {
-        // 🛡️ App Check — centralized, environment-aware
+    try {
+      AppConfig.validate();
+    } catch (e) {
+      SecureLogger.error("Validation error: $e");
+      return InitializationResult(
+        hiveSuccess: storageStatus,
+        firebaseSuccess: false,
+        error: e.toString(),
+      );
+    }
+
+    SecureLogger.info("Background initialization started. Web mode: $kIsWeb");
+
+    try {
+      // Initialize Encryption System early
+      await EncryptionUtil.init();
+      SecureLogger.info("Encryption system initialized.");
+
+      // Keeps family-share link status blobs (see FamilyShareScreen) E2E
+      // encrypted and current -- follows auth state internally.
+      FamilyShareSyncService.instance.init();
+    } catch (e) {
+      SecureLogger.error("Encryption init error: $e");
+    }
+
+    try {
+      if (!kIsWeb) {
+        // BUG-085: SafeDevice calls can fail on older Android APIs or emulators.
+        // We log platform errors and allow startup to continue safely rather than blocking app launch.
+        final bool jailbroken = await SafeDevice.isJailBroken;
+        if (jailbroken) {
+          isCompromised = true;
+          errorMessage =
+              "Compromised device detected. The Oracle cannot run in this environment.";
+        }
+      }
+    } catch (e, st) {
+      SecureLogger.error(
+          "Jailbreak verification failed, continuing safely: $e\n$st");
+    }
+
+    if (isCompromised) {
+      // Log compromised status but allow custom recovery path
+      SecureLogger.warning("Startup alert: $errorMessage");
+    }
+
+    try {
+      SecureLogger.info("Verifying Firebase setup...");
+      if (Firebase.apps.isEmpty) {
+        FirebaseOptions? options;
         try {
-          await AppCheckConfig.initialize()
-              .timeout(const Duration(seconds: 8));
+          options = DefaultFirebaseOptions.currentPlatform;
         } catch (e) {
-          SecureLogger.error("AppCheck initialization error: $e");
+          SecureLogger.error(
+              "Firebase config not available for this platform: $e");
         }
-        
-        if (!kIsWeb) {
-          try {
-            await FirebaseCrashlytics.instance
-                .setCrashlyticsCollectionEnabled(true)
-                .timeout(const Duration(seconds: 5));
-          } catch (e) {
-            SecureLogger.error("Crashlytics setup error: $e");
-          }
-        }
+        if (options != null) {
+          await Firebase.initializeApp(
+            options: options,
+          ).timeout(const Duration(seconds: 10));
 
-        SecureLogger.info("Firebase verified successfully.");
-
-        // Sync local profile configuration to Firestore now that Firebase is active (Fix silent migration data loss)
-        try {
-          await UserPreferenceService.syncToFirestore();
-        } catch (e) {
-          SecureLogger.error("Failed to sync profile to Firestore at startup: $e");
-        }
-
-        // 🛡️ ZENITH STRESS DEFENSE: FINAL HARDENING (Points 11 & 12)
-        // Initialize forensic shield and remote emergency controls
-        final shield = IntegrityShield();
-        await shield.runFullScan();
-        
-        final emergency = EmergencyControlService();
-        await emergency.init();
-
-        // 🌧️ Phase 5: Initialize Monsoon Broadcast WebSocket & Poller Engine
-        MonsoonBroadcastService().init();
-
-        // 🚨 PANIC ROOM: Check for global kill-switch before mounting UI
-        if (emergency.isKillSwitchActive) {
-          return InitializationResult(
-            hiveSuccess: true,
-            firebaseSuccess: true,
-            isKillSwitchActive: true,
-            maintenanceMessage: emergency.maintenanceMessage,
+          FirebaseFirestore.instance.settings = Settings(
+            persistenceEnabled: true,
+            cacheSizeBytes:
+                kIsWeb ? 20 * 1024 * 1024 : Settings.CACHE_SIZE_UNLIMITED,
           );
         }
+      }
 
-        // 🛡️ Initialize security stack AFTER Firebase is ready
+      if (Firebase.apps.isNotEmpty) {
+        firebaseStatus = true;
         try {
-          await ZenithSecurityFacade().initialize()
-              .timeout(const Duration(seconds: 10));
-          SecureLogger.info("[ZenithSecurity] Stack initialized. Risk: ${ZenithSecurityFacade().shield.riskScore}");
-        } catch (e) {
-          SecureLogger.error("[ZenithSecurity] Init failed (non-critical): $e");
+          // 🛡️ App Check — centralized, environment-aware
+          try {
+            await AppCheckConfig.initialize()
+                .timeout(const Duration(seconds: 8));
+          } catch (e) {
+            SecureLogger.error("AppCheck initialization error: $e");
+          }
+
+          if (!kIsWeb) {
+            try {
+              await FirebaseCrashlytics.instance
+                  .setCrashlyticsCollectionEnabled(true)
+                  .timeout(const Duration(seconds: 5));
+            } catch (e) {
+              SecureLogger.error("Crashlytics setup error: $e");
+            }
+          }
+
+          SecureLogger.info("Firebase verified successfully.");
+
+          // Sync local profile configuration to Firestore now that Firebase is active (Fix silent migration data loss)
+          try {
+            await UserPreferenceService.syncToFirestore();
+          } catch (e) {
+            SecureLogger.error(
+                "Failed to sync profile to Firestore at startup: $e");
+          }
+
+          // 🛡️ ZENITH STRESS DEFENSE: FINAL HARDENING (Points 11 & 12)
+          // Initialize forensic shield and remote emergency controls
+          final shield = IntegrityShield();
+          await shield.runFullScan();
+
+          final emergency = EmergencyControlService();
+          await emergency.init();
+
+          // 🌧️ Phase 5: Initialize Monsoon Broadcast WebSocket & Poller Engine
+          MonsoonBroadcastService().init();
+
+          // 🚨 PANIC ROOM: Check for global kill-switch before mounting UI
+          if (emergency.isKillSwitchActive) {
+            return InitializationResult(
+              hiveSuccess: true,
+              firebaseSuccess: true,
+              isKillSwitchActive: true,
+              maintenanceMessage: emergency.maintenanceMessage,
+            );
+          }
+
+          // 🛡️ Initialize security stack AFTER Firebase is ready
+          try {
+            await ZenithSecurityFacade()
+                .initialize()
+                .timeout(const Duration(seconds: 10));
+            SecureLogger.info(
+                "[ZenithSecurity] Stack initialized. Risk: ${ZenithSecurityFacade().shield.riskScore}");
+          } catch (e) {
+            SecureLogger.error(
+                "[ZenithSecurity] Init failed (non-critical): $e");
+          }
+        } on Exception catch (e) {
+          SecureLogger.error(
+              "Firebase init error. Proceeding in offline mode.: $e");
         }
-      } on Exception catch (e) {
-        SecureLogger.error("Firebase init error. Proceeding in offline mode.: $e");
+      } else {
+        SecureLogger.warning(
+            "Skipping Firebase initialization due to missing config.");
       }
-    } else {
-      SecureLogger.warning("Skipping Firebase initialization due to missing config.");
+
+      if (firebaseStatus) {
+        try {
+          final remoteConfig = await RemoteConfigService.getInstance();
+          await remoteConfig.initialize();
+          SecureLogger.bgTask("Remote Config initialized.",
+              tag: "RemoteConfig");
+        } catch (e) {
+          SecureLogger.warning(
+              "Remote Config init failed: $e. Using default values.",
+              tag: "RemoteConfig",
+              isBackground: true);
+        }
+      }
+    } catch (e) {
+      SecureLogger.warning("Firebase optional init error: $e",
+          tag: "Firebase", isBackground: true);
     }
 
-    if (firebaseStatus) {
+    // Option A: Zero-Bundle Server-Driven Sync Engine. Explicitly capped well
+    // under the outer 20s appInitializationProvider timeout — this is a soft,
+    // non-critical background concern (falls back to existing RAM/SQLite data
+    // on failure), and must never be allowed to run long enough to blow the
+    // outer budget. Previously each retry attempt inside DeltaSyncService
+    // could itself wait up to 15s with backoff between attempts, so 2-3
+    // retries against an unreachable backend could exceed 20s on their own —
+    // which caused the outer timeout to fire and report firebaseSuccess:
+    // false even when Firebase Auth had already initialized successfully,
+    // silently routing every user (not just fresh installs) around the
+    // onboarding/terms/login gate into offline home mode.
+    if (!kIsWeb)
       try {
-        final remoteConfig = await RemoteConfigService.getInstance();
-        await remoteConfig.initialize();
-        SecureLogger.bgTask("Remote Config initialized.", tag: "RemoteConfig");
+        SecureLogger.storage(
+            "Starting Option A Delta Sync & SQLite Hydration...",
+            tag: "DeltaSync",
+            isBackground: true);
+        final deltaSync = DeltaSyncService();
+        await () async {
+          final bool hasUpdates = await deltaSync.checkForUpdates();
+          if (hasUpdates) {
+            await deltaSync.performDeltaSync();
+          }
+          await deltaSync.hydrateMemoryCache();
+        }()
+            .timeout(const Duration(seconds: 8));
+        SecureLogger.storage("Option A Delta Sync & Hydration Complete.",
+            tag: "DeltaSync", isBackground: true);
       } catch (e) {
-        SecureLogger.warning("Remote Config init failed: $e. Using default values.", tag: "RemoteConfig", isBackground: true);
+        SecureLogger.warning(
+            "Option A Delta Sync failed (offline/timeout): $e. Proceeding with existing RAM/SQLite data.",
+            tag: "DeltaSync",
+            isBackground: true);
       }
-    }
-  } catch (e) {
-    SecureLogger.warning("Firebase optional init error: $e", tag: "Firebase", isBackground: true);
-  }
 
-  // Option A: Zero-Bundle Server-Driven Sync Engine. Explicitly capped well
-  // under the outer 20s appInitializationProvider timeout — this is a soft,
-  // non-critical background concern (falls back to existing RAM/SQLite data
-  // on failure), and must never be allowed to run long enough to blow the
-  // outer budget. Previously each retry attempt inside DeltaSyncService
-  // could itself wait up to 15s with backoff between attempts, so 2-3
-  // retries against an unreachable backend could exceed 20s on their own —
-  // which caused the outer timeout to fire and report firebaseSuccess:
-  // false even when Firebase Auth had already initialized successfully,
-  // silently routing every user (not just fresh installs) around the
-  // onboarding/terms/login gate into offline home mode.
-  try {
-    SecureLogger.storage("Starting Option A Delta Sync & SQLite Hydration...", tag: "DeltaSync", isBackground: true);
-    final deltaSync = DeltaSyncService();
-    await () async {
-      final bool hasUpdates = await deltaSync.checkForUpdates();
-      if (hasUpdates) {
-        await deltaSync.performDeltaSync();
-      }
-      await deltaSync.hydrateMemoryCache();
-    }().timeout(const Duration(seconds: 8));
-    SecureLogger.storage("Option A Delta Sync & Hydration Complete.", tag: "DeltaSync", isBackground: true);
-  } catch (e) {
-    SecureLogger.warning("Option A Delta Sync failed (offline/timeout): $e. Proceeding with existing RAM/SQLite data.", tag: "DeltaSync", isBackground: true);
-  }
-
-  SecureLogger.bgTask('Background initialization complete. Firebase: $firebaseStatus', tag: "Startup");
-  return InitializationResult(
-    hiveSuccess: storageStatus,
-    firebaseSuccess: firebaseStatus,
-    isCompromised: isCompromised,
-    error: errorMessage,
-  );
-
+    SecureLogger.bgTask(
+        'Background initialization complete. Firebase: $firebaseStatus',
+        tag: "Startup");
+    return InitializationResult(
+      hiveSuccess: storageStatus,
+      firebaseSuccess: firebaseStatus,
+      isCompromised: isCompromised,
+      error: errorMessage,
+    );
   } catch (e, st) {
     // BUG-125: Catch-all for any unexpected startup anomaly — return a
     // degraded result so the UI can show a fallback screen instead of crashing.
-    SecureLogger.error('Critical unexpected startup error', e, st, 'Startup', true);
+    SecureLogger.error(
+        'Critical unexpected startup error', e, st, 'Startup', true);
     return InitializationResult(
       hiveSuccess: storageStatus,
       firebaseSuccess: false,
@@ -455,8 +501,6 @@ Future<InitializationResult> performInitialization() async {
     );
   }
 }
-
-
 
 // Each service init below is wrapped in its own timeout, not just a
 // try/catch — a try/catch alone doesn't help if the awaited call never
@@ -508,7 +552,6 @@ Future<void> initializeOtherServices() async {
   }
 }
 
-
 // The thin root MaterialApp — just theming + localization, routes to Splash
 class HiddenGemsApp extends ConsumerStatefulWidget {
   const HiddenGemsApp({super.key});
@@ -517,7 +560,8 @@ class HiddenGemsApp extends ConsumerStatefulWidget {
   ConsumerState<HiddenGemsApp> createState() => _HiddenGemsAppState();
 }
 
-class _HiddenGemsAppState extends ConsumerState<HiddenGemsApp> with WidgetsBindingObserver {
+class _HiddenGemsAppState extends ConsumerState<HiddenGemsApp>
+    with WidgetsBindingObserver {
   bool _showMainApp = false;
   bool _userDismissedSoftUpdate = false;
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -527,9 +571,10 @@ class _HiddenGemsAppState extends ConsumerState<HiddenGemsApp> with WidgetsBindi
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    
+
     // BUG-N01 Fix: Listen for foreground push messages and present a floating Snackbar
-    _notifSubscription = NotificationService().onForegroundMessage.listen((message) {
+    _notifSubscription =
+        NotificationService().onForegroundMessage.listen((message) {
       final ctx = navigatorKey.currentContext;
       if (ctx != null && ctx.mounted && message.notification != null) {
         ScaffoldMessenger.of(ctx).showSnackBar(
@@ -540,7 +585,9 @@ class _HiddenGemsAppState extends ConsumerState<HiddenGemsApp> with WidgetsBindi
               children: [
                 Text(
                   message.notification!.title ?? 'New Notification',
-                  style: TextStyle(fontWeight: FontWeight.bold, color: AppTheme.colors.white),
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: AppTheme.colors.white),
                 ),
                 if (message.notification!.body != null)
                   Text(
@@ -551,7 +598,8 @@ class _HiddenGemsAppState extends ConsumerState<HiddenGemsApp> with WidgetsBindi
             ),
             backgroundColor: AppTheme.colors.primary,
             behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             margin: const EdgeInsets.all(16),
             duration: const Duration(seconds: 5),
             action: SnackBarAction(
@@ -560,7 +608,8 @@ class _HiddenGemsAppState extends ConsumerState<HiddenGemsApp> with WidgetsBindi
               onPressed: () {
                 final nav = navigatorKey.currentState;
                 if (nav != null && message.data['type'] == 'new_booking') {
-                  nav.push(MaterialPageRoute(builder: (_) => const BookingInboxScreen()));
+                  nav.push(MaterialPageRoute(
+                      builder: (_) => const BookingInboxScreen()));
                 }
               },
             ),
@@ -625,10 +674,12 @@ class _HiddenGemsAppState extends ConsumerState<HiddenGemsApp> with WidgetsBindi
           if (initState.updateType == UpdateType.force) {
             return UpdateScreen(type: UpdateType.force, onMaybeLater: () {});
           }
-          if (initState.updateType == UpdateType.soft && !_userDismissedSoftUpdate) {
+          if (initState.updateType == UpdateType.soft &&
+              !_userDismissedSoftUpdate) {
             return UpdateScreen(
               type: UpdateType.soft,
-              onMaybeLater: () => setState(() => _userDismissedSoftUpdate = true),
+              onMaybeLater: () =>
+                  setState(() => _userDismissedSoftUpdate = true),
             );
           }
           if (_showMainApp) {
@@ -682,7 +733,8 @@ class _HiddenGemsAppState extends ConsumerState<HiddenGemsApp> with WidgetsBindi
         body: GracefulErrorWidget(
           icon: Icons.storage_rounded,
           title: "Oracle Cannot Start",
-          subtitle: result.error ?? "Critical storage error. The Oracle cannot start.",
+          subtitle: result.error ??
+              "Critical storage error. The Oracle cannot start.",
           buttonLabel: "Retry",
           onRetry: () => ref.invalidate(appInitializationProvider),
         ),
@@ -719,7 +771,7 @@ class _HiddenGemsAppState extends ConsumerState<HiddenGemsApp> with WidgetsBindi
             ),
           );
         }
-        
+
         if (snapshot.hasError) {
           return Scaffold(
             backgroundColor: AppTheme.primaryBlue(context),
@@ -747,7 +799,10 @@ class _HiddenGemsAppState extends ConsumerState<HiddenGemsApp> with WidgetsBindi
           // them on. Sign the stale session out and fall through to the
           // normal new-user flow below.
           if (currentProfile.uid == 'NEW_USER') {
-            FirebaseAuth.instance.signOut();
+            // Use the central sign-out path so push tokens, Sanctum tokens,
+            // entitlement state and private caches cannot survive this stale
+            // Firebase session cleanup.
+            unawaited(AuthService().signOut());
             return const OnboardingScreen();
           }
 
@@ -755,7 +810,8 @@ class _HiddenGemsAppState extends ConsumerState<HiddenGemsApp> with WidgetsBindi
           SecurityOrchestrator().init(user.uid);
 
           // Auto-repair local profile if needed so we don't prompt them again
-          if (!currentProfile.hasCompletedOnboarding || !currentProfile.hasAgreedToTerms) {
+          if (!currentProfile.hasCompletedOnboarding ||
+              !currentProfile.hasAgreedToTerms) {
             UserPreferenceService.updateOnboardingCompletion(true);
             UserPreferenceService.updateTermsAgreement(true);
           }
@@ -781,23 +837,26 @@ class _HiddenGemsAppState extends ConsumerState<HiddenGemsApp> with WidgetsBindi
   }
 }
 
-
 class GlobalScreenshotWrapper extends ConsumerStatefulWidget {
   final Widget child;
   const GlobalScreenshotWrapper({super.key, required this.child});
 
   @override
-  ConsumerState<GlobalScreenshotWrapper> createState() => _GlobalScreenshotWrapperState();
+  ConsumerState<GlobalScreenshotWrapper> createState() =>
+      _GlobalScreenshotWrapperState();
 }
 
-class _GlobalScreenshotWrapperState extends ConsumerState<GlobalScreenshotWrapper> with SingleTickerProviderStateMixin {
+class _GlobalScreenshotWrapperState
+    extends ConsumerState<GlobalScreenshotWrapper>
+    with SingleTickerProviderStateMixin {
   final ScreenshotService _screenshotService = ScreenshotService();
   late AnimationController _flashController;
 
   @override
   void initState() {
     super.initState();
-    _flashController = AnimationController(vsync: this, duration: const Duration(milliseconds: 300));
+    _flashController = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 300));
   }
 
   @override
@@ -845,17 +904,19 @@ class _GlobalScreenshotWrapperState extends ConsumerState<GlobalScreenshotWrappe
                         height: 56,
                         decoration: AppTheme.glassDecoration(
                           context,
-                          opacity: 0.2, 
+                          opacity: 0.2,
                           blur: 30,
                           shape: BoxShape.circle,
                         ).copyWith(
                           border: Border.all(
-                            color: AppTheme.primaryBlue(context).withValues(alpha: 0.5), 
+                            color: AppTheme.primaryBlue(context)
+                                .withValues(alpha: 0.5),
                             width: 2,
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color: AppTheme.primaryBlue(context).withValues(alpha: 0.2),
+                              color: AppTheme.primaryBlue(context)
+                                  .withValues(alpha: 0.2),
                               blurRadius: 20,
                               spreadRadius: 2,
                             )
@@ -879,8 +940,8 @@ class _GlobalScreenshotWrapperState extends ConsumerState<GlobalScreenshotWrappe
               if (_flashController.value == 0) return const SizedBox.shrink();
               return IgnorePointer(
                 child: Opacity(
-                  opacity: _flashController.value < 0.5 
-                      ? _flashController.value * 2 
+                  opacity: _flashController.value < 0.5
+                      ? _flashController.value * 2
                       : (1.0 - _flashController.value) * 2,
                   child: Container(
                     color: AppTheme.colors.white,

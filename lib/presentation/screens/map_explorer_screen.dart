@@ -15,6 +15,7 @@ import '../../data/datasources/user_preference_service.dart';
 import 'dart:ui';
 import '../widgets/cached_image.dart';
 import '../../l10n/app_localizations.dart';
+import 'package:geolocator/geolocator.dart';
 
 class MapExplorerScreen extends ConsumerStatefulWidget {
   final LatLng initialPosition;
@@ -34,12 +35,22 @@ class _MapExplorerScreenState extends ConsumerState<MapExplorerScreen> {
   LatLng? _meetingPointLocation;
   String? _meetingPointName;
   bool _isSosActive = false;
+  bool _canShowUserLocation = false;
 
   @override
   void initState() {
     super.initState();
     _loadData();
+    _checkLocationPermission();
     _setupSessionTracking();
+  }
+
+  Future<void> _checkLocationPermission() async {
+    final permission = await Geolocator.checkPermission();
+    if (!mounted) return;
+    setState(() => _canShowUserLocation =
+        permission == LocationPermission.always ||
+            permission == LocationPermission.whileInUse);
   }
 
   @override
@@ -67,7 +78,8 @@ class _MapExplorerScreenState extends ConsumerState<MapExplorerScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(AppLocalizations.of(context)!.mapLoadErrorMessage(e.toString())),
+            content: Text(AppLocalizations.of(context)!
+                .mapLoadErrorMessage(e.toString())),
             backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
@@ -85,24 +97,30 @@ class _MapExplorerScreenState extends ConsumerState<MapExplorerScreen> {
         .doc(profile.currentBatchId)
         .snapshots()
         .listen((sessionDoc) {
-      if (!sessionDoc.exists) return;
-      
+      if (!mounted || !sessionDoc.exists) return;
+
       final data = sessionDoc.data()!;
       final sosActive = data['sosActive'] ?? false;
-      
+
       setState(() {
         _isSosActive = sosActive;
-        
+
         if (data.containsKey('lastGuideLat') && data['lastGuideLat'] != null) {
-          _guideLocation = LatLng((data['lastGuideLat'] as num).toDouble(), (data['lastGuideLng'] as num).toDouble());
-        }
-        
-        if (data.containsKey('lastVehicleLat') && data['lastVehicleLat'] != null) {
-          _vehicleLocation = LatLng((data['lastVehicleLat'] as num).toDouble(), (data['lastVehicleLng'] as num).toDouble());
+          _guideLocation = LatLng((data['lastGuideLat'] as num).toDouble(),
+              (data['lastGuideLng'] as num).toDouble());
         }
 
-        if (data.containsKey('meetingPointLat') && data['meetingPointLat'] != null) {
-          _meetingPointLocation = LatLng((data['meetingPointLat'] as num).toDouble(), (data['meetingPointLng'] as num).toDouble());
+        if (data.containsKey('lastVehicleLat') &&
+            data['lastVehicleLat'] != null) {
+          _vehicleLocation = LatLng((data['lastVehicleLat'] as num).toDouble(),
+              (data['lastVehicleLng'] as num).toDouble());
+        }
+
+        if (data.containsKey('meetingPointLat') &&
+            data['meetingPointLat'] != null) {
+          _meetingPointLocation = LatLng(
+              (data['meetingPointLat'] as num).toDouble(),
+              (data['meetingPointLng'] as num).toDouble());
           _meetingPointName = data['meetingPointName'];
         }
 
@@ -117,12 +135,12 @@ class _MapExplorerScreenState extends ConsumerState<MapExplorerScreen> {
     for (var place in _places) {
       _markers.add(
         Marker(
-          markerId: MarkerId(place.name),
+          markerId: MarkerId(place.id),
           position: LatLng(place.lat, place.lng),
           onTap: () => setState(() => _selectedPlace = place),
-          icon: BitmapDescriptor.defaultMarkerWithHue(
-            place.arSupported ? BitmapDescriptor.hueYellow : BitmapDescriptor.hueAzure
-          ),
+          icon: BitmapDescriptor.defaultMarkerWithHue(place.arSupported
+              ? BitmapDescriptor.hueYellow
+              : BitmapDescriptor.hueAzure),
         ),
       );
     }
@@ -144,7 +162,8 @@ class _MapExplorerScreenState extends ConsumerState<MapExplorerScreen> {
         Marker(
           markerId: const MarkerId('vehicle_location'),
           position: _vehicleLocation!,
-          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange),
+          icon:
+              BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange),
           infoWindow: InfoWindow(title: l10n.vehicleMarkerLabel),
           zIndexInt: 12,
         ),
@@ -156,8 +175,10 @@ class _MapExplorerScreenState extends ConsumerState<MapExplorerScreen> {
         Marker(
           markerId: const MarkerId('meeting_point'),
           position: _meetingPointLocation!,
-          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
-          infoWindow: InfoWindow(title: l10n.meetingPointMarkerLabel(_meetingPointName ?? '')),
+          icon:
+              BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
+          infoWindow: InfoWindow(
+              title: l10n.meetingPointMarkerLabel(_meetingPointName ?? '')),
           zIndexInt: 10,
         ),
       );
@@ -165,9 +186,24 @@ class _MapExplorerScreenState extends ConsumerState<MapExplorerScreen> {
   }
 
   Future<void> _launchTransport(DiscoveryPlace place) async {
-    final googleMapsUrl = "https://www.google.com/maps/dir/?api=1&destination=${place.lat},${place.lng}&travelmode=driving";
+    if (place.lat < -90 ||
+        place.lat > 90 ||
+        place.lng < -180 ||
+        place.lng > 180 ||
+        (place.lat == 0 && place.lng == 0)) {
+      if (mounted)
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text('This place has invalid map coordinates.')));
+      return;
+    }
+    final googleMapsUrl =
+        "https://www.google.com/maps/dir/?api=1&destination=${place.lat},${place.lng}&travelmode=driving";
     if (await canLaunchUrl(Uri.parse(googleMapsUrl))) {
-      await launchUrl(Uri.parse(googleMapsUrl));
+      await launchUrl(Uri.parse(googleMapsUrl),
+          mode: LaunchMode.externalApplication);
+    } else if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('No map application is available.')));
     }
   }
 
@@ -178,16 +214,17 @@ class _MapExplorerScreenState extends ConsumerState<MapExplorerScreen> {
         children: [
           GoogleMap(
             initialCameraPosition: CameraPosition(
-              target: LatLng(widget.initialPosition.latitude, widget.initialPosition.longitude),
+              target: LatLng(widget.initialPosition.latitude,
+                  widget.initialPosition.longitude),
               zoom: 12,
             ),
             markers: _markers,
-            myLocationEnabled: true,
+            myLocationEnabled: _canShowUserLocation,
             myLocationButtonEnabled: false,
             zoomControlsEnabled: false,
             mapToolbarEnabled: false,
           ),
-          
+
           // Back Button
           Positioned(
             top: 50,
@@ -208,7 +245,8 @@ class _MapExplorerScreenState extends ConsumerState<MapExplorerScreen> {
                   ],
                   border: Border.all(color: AppTheme.secondaryBorder(context)),
                 ),
-                child: Icon(Icons.arrow_back_ios_new, color: AppTheme.textPrimary(context), size: 20),
+                child: Icon(Icons.arrow_back_ios_new,
+                    color: AppTheme.textPrimary(context), size: 20),
               ),
             ),
           ),
@@ -227,8 +265,7 @@ class _MapExplorerScreenState extends ConsumerState<MapExplorerScreen> {
             ),
 
           // 4. SOS Overlay (Zenith Refinement)
-          if (_isSosActive)
-            _buildSosCinematicOverlay(),
+          if (_isSosActive) _buildSosCinematicOverlay(),
         ],
       ),
     );
@@ -245,20 +282,30 @@ class _MapExplorerScreenState extends ConsumerState<MapExplorerScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.warning_amber_rounded, color: AppTheme.colors.white, size: 80)
+            Icon(Icons.warning_amber_rounded,
+                    color: AppTheme.colors.white, size: 80)
                 .animate(onPlay: (c) => c.repeat(reverse: true))
-                .scale(begin: const Offset(1, 1), end: const Offset(1.2, 1.2), duration: 500.ms)
+                .scale(
+                    begin: const Offset(1, 1),
+                    end: const Offset(1.2, 1.2),
+                    duration: 500.ms)
                 .tint(color: AppTheme.colors.redAccent),
             const SizedBox(height: 24),
             Text(
               l10n.sosEmergencySignalTitle,
-              style: GoogleFonts.outfit(fontSize: 28, fontWeight: FontWeight.bold, color: AppTheme.colors.white),
+              style: GoogleFonts.outfit(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: AppTheme.colors.white),
             ),
             const SizedBox(height: 16),
             Text(
               l10n.sosGuideTriggeredMessage,
               textAlign: TextAlign.center,
-              style: GoogleFonts.inter(color: AppTheme.colors.white, fontWeight: FontWeight.bold, letterSpacing: 1),
+              style: GoogleFonts.inter(
+                  color: AppTheme.colors.white,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1),
             ),
             const SizedBox(height: 48),
             Container(
@@ -266,45 +313,55 @@ class _MapExplorerScreenState extends ConsumerState<MapExplorerScreen> {
               decoration: BoxDecoration(
                 color: AppTheme.colors.black.withValues(alpha: 0.7),
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: AppTheme.colors.redAccent.withValues(alpha: 0.5)),
+                border: Border.all(
+                    color: AppTheme.colors.redAccent.withValues(alpha: 0.5)),
               ),
               child: Column(
                 children: [
-                   Text(l10n.sosSafetyProtocolsTitle, style: GoogleFonts.outfit(color: AppTheme.colors.redAccent, fontWeight: FontWeight.bold)),
-                   const SizedBox(height: 16),
-                   _buildProtocolItem(l10n.sosProtocolStayInLocation),
-                   _buildProtocolItem(l10n.sosProtocolOpenLiveMap),
-                   _buildProtocolItem(l10n.sosProtocolWaitForHelp),
+                  Text(l10n.sosSafetyProtocolsTitle,
+                      style: GoogleFonts.outfit(
+                          color: AppTheme.colors.redAccent,
+                          fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 16),
+                  _buildProtocolItem(l10n.sosProtocolStayInLocation),
+                  _buildProtocolItem(l10n.sosProtocolOpenLiveMap),
+                  _buildProtocolItem(l10n.sosProtocolWaitForHelp),
                 ],
               ),
-            ).animate().slideY(begin: 0.5, end: 0, duration: 800.ms, curve: Curves.easeOut),
+            ).animate().slideY(
+                begin: 0.5, end: 0, duration: 800.ms, curve: Curves.easeOut),
             const SizedBox(height: 48),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppTheme.colors.white, 
+                backgroundColor: AppTheme.colors.white,
                 foregroundColor: AppTheme.colors.black,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
               ),
               onPressed: () => setState(() => _isSosActive = false),
               child: Text(l10n.sosAcknowledgeButton),
             ),
           ],
         ),
-      ).animate(onPlay: (c) => c.repeat())
-       .shimmer(color: AppTheme.colors.red.withValues(alpha: 0.3), duration: 2.seconds),
+      ).animate(onPlay: (c) => c.repeat()).shimmer(
+          color: AppTheme.colors.red.withValues(alpha: 0.3),
+          duration: 2.seconds),
     );
   }
 
   Widget _buildProtocolItem(String text) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Text(text, style: GoogleFonts.inter(color: AppTheme.colors.white70, fontSize: 13)),
+      child: Text(text,
+          style:
+              GoogleFonts.inter(color: AppTheme.colors.white70, fontSize: 13)),
     );
   }
 
   Widget _buildPlaceCard(DiscoveryPlace place) {
     return GestureDetector(
-      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => PlaceDetailsScreen(place: place))),
+      onTap: () => Navigator.push(context,
+          MaterialPageRoute(builder: (_) => PlaceDetailsScreen(place: place))),
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
@@ -324,7 +381,8 @@ class _MapExplorerScreenState extends ConsumerState<MapExplorerScreen> {
             ClipRRect(
               borderRadius: BorderRadius.circular(16),
               child: CachedImage(
-                url: "https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?q=80&w=200&auto=format&fit=crop",
+                url:
+                    "https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?q=80&w=200&auto=format&fit=crop",
                 width: 80,
                 height: 80,
                 fit: BoxFit.cover,
@@ -338,20 +396,31 @@ class _MapExplorerScreenState extends ConsumerState<MapExplorerScreen> {
                 children: [
                   Text(
                     place.name,
-                    style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.bold, fontSize: 18),
+                    style: GoogleFonts.outfit(
+                        color: AppTheme.textPrimary(context),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
                   Text(
                     place.category,
-                    style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 12),
+                    style: GoogleFonts.inter(
+                        color: AppTheme.textSecondary(context), fontSize: 12),
                   ),
                   const SizedBox(height: 8),
                   Row(
                     children: [
-                      const Icon(Icons.directions_car_filled, color: AppPalette.rust, size: 14),
+                      const Icon(Icons.directions_car_filled,
+                          color: AppPalette.rust, size: 14),
                       const SizedBox(width: 4),
-                      Text(AppLocalizations.of(context)!.distanceAwayLabel(place.distanceKm.toStringAsFixed(1)), style: GoogleFonts.inter(color: AppPalette.rust, fontSize: 12, fontWeight: FontWeight.bold)),
+                      Text(
+                          AppLocalizations.of(context)!.distanceAwayLabel(
+                              place.distanceKm.toStringAsFixed(1)),
+                          style: GoogleFonts.inter(
+                              color: AppPalette.rust,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold)),
                     ],
                   ),
                 ],
@@ -360,11 +429,13 @@ class _MapExplorerScreenState extends ConsumerState<MapExplorerScreen> {
             Column(
               children: [
                 IconButton(
-                  icon: Icon(Icons.close, color: AppTheme.textSecondary(context), size: 20),
+                  icon: Icon(Icons.close,
+                      color: AppTheme.textSecondary(context), size: 20),
                   onPressed: () => setState(() => _selectedPlace = null),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.navigation_rounded, color: AppPalette.rust),
+                  icon: const Icon(Icons.navigation_rounded,
+                      color: AppPalette.rust),
                   onPressed: () => _launchTransport(place),
                 ),
               ],

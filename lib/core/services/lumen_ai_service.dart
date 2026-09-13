@@ -8,26 +8,33 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../config/app_config.dart';
 import '../../core/utils/secure_logger.dart';
+import '../../core/network/secure_http_client.dart';
 
 /// Lumen-1 AI Modes (matches dashboard modes)
 enum LumenMode {
   defaultMode, // Travel guide assistant
-  analyst,     // Data analysis
-  optimizer,   // Hyperparameter optimization
-  refactor,    // Code review
-  database,    // JSON database queries
-  security,    // Safety profiling
+  analyst, // Data analysis
+  optimizer, // Hyperparameter optimization
+  refactor, // Code review
+  database, // JSON database queries
+  security, // Safety profiling
 }
 
 extension LumenModeExtension on LumenMode {
   String get value {
     switch (this) {
-      case LumenMode.defaultMode: return 'default';
-      case LumenMode.analyst:    return 'analyst';
-      case LumenMode.optimizer:  return 'optimizer';
-      case LumenMode.refactor:   return 'refactor';
-      case LumenMode.database:   return 'database';
-      case LumenMode.security:   return 'security';
+      case LumenMode.defaultMode:
+        return 'default';
+      case LumenMode.analyst:
+        return 'analyst';
+      case LumenMode.optimizer:
+        return 'optimizer';
+      case LumenMode.refactor:
+        return 'refactor';
+      case LumenMode.database:
+        return 'database';
+      case LumenMode.security:
+        return 'security';
     }
   }
 }
@@ -35,10 +42,11 @@ extension LumenModeExtension on LumenMode {
 class LumenAiService {
   // ── Configuration ──────────────────────────────────────────
 
-  static String get _baseUrl => AppConfig.pythonUrl;
-
-  /// Lumen-1 API key (set in LUMEN_API_KEY env var on server)
-  static const String _apiKey = String.fromEnvironment('LUMEN_API_KEY', defaultValue: 'lumen_default_secure_api_key_2026');
+  static String get _baseUrl => AppConfig.laravelUrl;
+  static final http.Client _client = SecureHttpClient(
+    http.Client(),
+    requestTimeout: const Duration(seconds: 65),
+  );
 
   /// Default timeout for inference calls
   static const Duration _timeout = Duration(seconds: 60);
@@ -56,30 +64,31 @@ class LumenAiService {
     required String prompt,
     LumenMode mode = LumenMode.defaultMode,
     bool useRag = true,
-    String systemPrompt = '',
     double temperature = 0.7,
   }) async {
-    final uri = Uri.parse('$_baseUrl/test-model');
+    final uri = Uri.parse('$_baseUrl/ai/chat');
 
     final body = json.encode({
       'prompt': prompt,
       'use_rag': useRag,
       'mode': mode.value,
-      'system_prompt': systemPrompt,
       'temperature': temperature,
     });
 
     try {
-      SecureLogger.info('[Lumen] Sending prompt: ${prompt.substring(0, prompt.length.clamp(0, 50))}...');
+      SecureLogger.info(
+          '[Lumen] Sending prompt: ${prompt.substring(0, prompt.length.clamp(0, 50))}...');
 
-      final response = await http.post(
-        uri,
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-key': _apiKey,
-        },
-        body: body,
-      ).timeout(_timeout);
+      final response = await _client
+          .post(
+            uri,
+            headers: {
+              'Content-Type': 'application/json',
+              'X-HiddenGems-Key': AppConfig.hiddenGemsApiKey,
+            },
+            body: body,
+          )
+          .timeout(_timeout);
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body) as Map<String, dynamic>;
@@ -91,10 +100,11 @@ class LumenAiService {
         throw LumenException('Rate limit reached. Please wait a moment.');
       } else if (response.statusCode == 400) {
         final data = json.decode(response.body) as Map<String, dynamic>;
-        throw LumenException('Safety check: ${data['detail'] ?? 'Invalid request'}');
+        throw LumenException(
+            'Safety check: ${data['detail'] ?? 'Invalid request'}');
       } else if (response.statusCode == 401) {
         SecureLogger.error('[Lumen] Unauthorized — check API key');
-        throw LumenException('Authorization failed. Check Lumen-1 API key.');
+        throw LumenException('Please sign in again to use the AI assistant.');
       } else {
         SecureLogger.error('[Lumen] HTTP ${response.statusCode}');
         throw LumenException('Lumen-1 server error (${response.statusCode}).');
@@ -163,9 +173,10 @@ Please provide:
   /// Check if Lumen-1 server is reachable
   static Future<bool> isServerAlive() async {
     try {
-      final response = await http
-          .get(Uri.parse('$_baseUrl/status'))
-          .timeout(const Duration(seconds: 5));
+      final response =
+          await http.get(Uri.parse('$_baseUrl/ai/status'), headers: {
+        'X-HiddenGems-Key': AppConfig.hiddenGemsApiKey,
+      }).timeout(const Duration(seconds: 5));
       return response.statusCode == 200;
     } catch (e) {
       SecureLogger.warning('[Lumen] Server status check failed: $e');

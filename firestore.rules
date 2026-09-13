@@ -42,8 +42,9 @@ service cloud.firestore {
     // posture, so App Check (Console-enforced) is the real anti-forged-client
     // control; this raises attacker cost on top of it.
     function isNotBlocked() {
-      return !exists(/databases/$(database)/documents/users/$(request.auth.uid)/security/posture)
-        || get(/databases/$(database)/documents/users/$(request.auth.uid)/security/posture).data.isBlocked != true;
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role != 'banned' &&
+        (!exists(/databases/$(database)/documents/users/$(request.auth.uid)/security/posture)
+        || get(/databases/$(database)/documents/users/$(request.auth.uid)/security/posture).data.isBlocked != true);
     }
 
     // ── User Profiles ────────────────────────────────────────────────────────
@@ -111,6 +112,24 @@ service cloud.firestore {
         allow read: if isOwner(userId) || isAdmin();
         allow write: if false; // Admin SDK only
       }
+
+      // Zero-Trust Device-Bound Keys (Phase 1)
+      match /devices/{deviceId} {
+        allow read: if isOwner(userId) || isAdmin();
+        allow write: if false; // Admin SDK only
+      }
+
+      // Zero-Trust Active Sessions & Token Families (Phase 2 & 4)
+      match /sessions/{sessionId} {
+        allow read: if isOwner(userId) || isAdmin();
+        allow write: if false; // Admin SDK only
+      }
+
+      // Zero-Trust Step-Up Authentication Grants (Phase 5)
+      match /step_up_grants/{grantId} {
+        allow read: if isOwner(userId) || isAdmin();
+        allow write: if false; // Admin SDK only
+      }
     }
 
     // Source of truth for guide/operator plan entitlements
@@ -151,8 +170,10 @@ service cloud.firestore {
         (!('isFeatured' in request.resource.data) || request.resource.data.isFeatured == false) &&
         (!('profileViews' in request.resource.data) || request.resource.data.profileViews == 0);
       allow update: if (isOwner(resource.data.guideId) &&
+        request.resource.data.guideId == resource.data.guideId &&
+        request.resource.data.moderationStatus == 'pending' &&
         !request.resource.data.diff(resource.data).affectedKeys()
-          .hasAny(['moderationStatus', 'isFeatured', 'ratingAverage', 'profileViews'])) ||
+          .hasAny(['isFeatured', 'featuredUntil', 'ratingAverage', 'reviewCount', 'profileViews', 'bookingRequestsCount', 'isInsured', 'trustTierPublic'])) ||
         isAdmin();
       allow delete: if isAdmin();
     }
@@ -185,6 +206,16 @@ service cloud.firestore {
     // retains write access for non-status fields (e.g. notes) on their own
     // booking.
     match /booking_requests/{bookingId} {
+      function validGuideStatusTransition() {
+        return request.resource.data.status == resource.data.status ||
+          (resource.data.status == 'pending' && request.resource.data.status == 'declined') ||
+          (resource.data.status in ['accepted', 'session_ready'] &&
+            request.resource.data.status == 'cancelled_by_guide') ||
+          (resource.data.status == 'confirmed' &&
+            request.resource.data.status in ['in_progress', 'cancelled_by_guide', 'completed']) ||
+          (resource.data.status == 'in_progress' &&
+            request.resource.data.status in ['cancelled_by_guide', 'completed']);
+      }
       allow read: if isSignedIn() && (
         resource.data.touristId == request.auth.uid ||
         resource.data.guideId == request.auth.uid ||
@@ -201,6 +232,11 @@ service cloud.firestore {
       // straight into the guide's own earnings dashboard and
       // TourSessionRepository.endSession()'s commission math as if real.
       allow create: if isSignedIn() && isNotBlocked() && request.resource.data.touristId == request.auth.uid &&
+        request.resource.data.guideId is string &&
+        exists(/databases/$(database)/documents/guide_listings/$(request.resource.data.guideId)) &&
+        get(/databases/$(database)/documents/guide_listings/$(request.resource.data.guideId)).data.guideId == request.resource.data.guideId &&
+        get(/databases/$(database)/documents/guide_listings/$(request.resource.data.guideId)).data.status == 'published' &&
+        get(/databases/$(database)/documents/guide_listings/$(request.resource.data.guideId)).data.moderationStatus == 'approved' &&
         request.resource.data.status == 'pending' &&
         (!('payoutStatus' in request.resource.data) || request.resource.data.payoutStatus == 'pending') &&
         (!('quotedPrice' in request.resource.data) || request.resource.data.quotedPrice == null) &&
@@ -218,7 +254,7 @@ service cloud.firestore {
           .hasAny(['quotedPrice', 'commissionAmount', 'guideNetAmount', 'operatorNetAmount', 'payoutStatus',
                    'paidAt', 'paidAmount', 'paymentId', 'guideId', 'touristId']) &&
         (
-          resource.data.guideId == request.auth.uid ||
+          (resource.data.guideId == request.auth.uid && validGuideStatusTransition()) ||
           (resource.data.touristId == request.auth.uid &&
            !request.resource.data.diff(resource.data).affectedKeys().hasAny(['status']))
         )
@@ -238,7 +274,7 @@ service cloud.firestore {
         request.resource.data.ownerId == request.auth.uid &&
         (!('isFeatured' in request.resource.data) || request.resource.data.isFeatured == false);
       allow update: if (isOwner(resource.data.ownerId) &&
-        !request.resource.data.diff(resource.data).affectedKeys().hasAny(['isFeatured'])) ||
+        !request.resource.data.diff(resource.data).affectedKeys().hasAny(['isFeatured', 'ownerId'])) ||
         isAdmin();
       allow delete: if isOwner(resource.data.ownerId) || isAdmin();
     }
@@ -305,8 +341,9 @@ service cloud.firestore {
       // tourist who isn't a participant yet needs to preview the session to
       // join it via code — that window ends (isJoinOpen is cleared) once
       // the tour actually starts, well before trackingEnabled ever turns on.
-      allow read: if resource.data.isJoinOpen == true ||
-        (isSignedIn() && (
+      allow read: if isSignedIn() && (
+        resource.data.isJoinOpen == true ||
+        (
           resource.data.guideId == request.auth.uid ||
           request.auth.uid in resource.data.touristIds ||
           isAdmin()
@@ -314,19 +351,30 @@ service cloud.firestore {
       allow create: if isVerifiedGuide() &&
         request.resource.data.guideId == request.auth.uid;
       allow update: if isSignedIn() && (
-        resource.data.guideId == request.auth.uid ||
-        request.auth.uid in resource.data.touristIds ||
+        (resource.data.guideId == request.auth.uid &&
+         request.resource.data.guideId == resource.data.guideId) ||
+        (request.auth.uid in resource.data.touristIds &&
+         request.resource.data.diff(resource.data).affectedKeys().hasOnly(['sosActive'])) ||
         (!resource.data.isLocked && resource.data.currentPhase == 'assembling' &&
          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['touristIds', 'redeemedCount']) &&
-         request.auth.uid in request.resource.data.touristIds) ||
+         request.auth.uid in request.resource.data.touristIds &&
+         request.resource.data.touristIds.hasAll(resource.data.touristIds) &&
+         request.resource.data.redeemedCount == resource.data.redeemedCount + 1) ||
         isAdmin()
       );
       allow delete: if isAdmin();
 
       match /presence/{presenceId} {
-        allow read: if isSignedIn();
-        allow write: if isSignedIn() &&
-          (presenceId == request.auth.uid || presenceId.matches('^vehicle_.*'));
+        allow read: if isSignedIn() && (
+          get(/databases/$(database)/documents/tour_sessions/$(sessionId)).data.guideId == request.auth.uid ||
+          request.auth.uid in get(/databases/$(database)/documents/tour_sessions/$(sessionId)).data.touristIds ||
+          isAdmin()
+        );
+        allow write: if isSignedIn() && (
+          presenceId == request.auth.uid ||
+          (presenceId.matches('^vehicle_.*') &&
+           get(/databases/$(database)/documents/tour_sessions/$(sessionId)).data.guideId == request.auth.uid)
+        );
       }
 
       // Meeting-point checkpoints — same participants as the parent session.
@@ -338,7 +386,6 @@ service cloud.firestore {
         );
         allow create, update: if isSignedIn() && (
           get(/databases/$(database)/documents/tour_sessions/$(sessionId)).data.guideId == request.auth.uid ||
-          request.auth.uid in get(/databases/$(database)/documents/tour_sessions/$(sessionId)).data.touristIds ||
           isAdmin()
         );
         allow delete: if isAdmin();
@@ -357,7 +404,10 @@ service cloud.firestore {
         allow update: if isSignedIn() && (
           get(/databases/$(database)/documents/tour_sessions/$(sessionId)).data.guideId == request.auth.uid ||
           (request.auth.uid in get(/databases/$(database)/documents/tour_sessions/$(sessionId)).data.touristIds &&
-           request.resource.data.diff(resource.data).affectedKeys().hasOnly(['acknowledgedBy'])) ||
+           request.resource.data.diff(resource.data).affectedKeys().hasOnly(['acknowledgedBy']) &&
+           request.resource.data.acknowledgedBy.hasAll(resource.data.acknowledgedBy) &&
+           request.auth.uid in request.resource.data.acknowledgedBy &&
+           request.resource.data.acknowledgedBy.size() <= resource.data.acknowledgedBy.size() + 1) ||
           isAdmin()
         );
         allow delete: if isAdmin();
@@ -368,10 +418,18 @@ service cloud.firestore {
     // guideId/touristId are immutable after creation to prevent link hijacking.
     match /tour_links/{linkId} {
       allow read: if isSignedIn() && (resource.data.touristId == request.auth.uid || resource.data.guideId == request.auth.uid || isAdmin());
-      allow create: if isSignedIn() && request.resource.data.touristId == request.auth.uid;
+      allow create: if isSignedIn() &&
+        request.resource.data.linkId == linkId &&
+        request.resource.data.touristId == request.auth.uid &&
+        request.resource.data.sessionId is string &&
+        request.resource.data.guideId == getAfter(/databases/$(database)/documents/tour_sessions/$(request.resource.data.sessionId)).data.guideId &&
+        request.auth.uid in getAfter(/databases/$(database)/documents/tour_sessions/$(request.resource.data.sessionId)).data.touristIds;
       allow update: if isSignedIn() && (
         !request.resource.data.diff(resource.data).affectedKeys().hasAny(['guideId', 'touristId']) &&
-        (resource.data.touristId == request.auth.uid || resource.data.guideId == request.auth.uid)
+        ((resource.data.touristId == request.auth.uid &&
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['trackingConsent', 'isActive'])) ||
+         (resource.data.guideId == request.auth.uid &&
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['isActive'])))
       ) || isAdmin();
       allow delete: if isAdmin();
     }
@@ -380,9 +438,7 @@ service cloud.firestore {
     // Owner (tourist) creates/deletes and can deactivate; the anonymous
     // recipient viewing an active link may only ever bump viewCount.
     match /family_share_links/{shareId} {
-      allow get: if (isSignedIn() && resource.data.touristId == request.auth.uid) ||
-        (resource.data.isActive == true && resource.data.expiresAt > request.time);
-      allow list: if isSignedIn() && resource.data.touristId == request.auth.uid;
+      allow get, list: if isSignedIn() && resource.data.touristId == request.auth.uid;
       // Note: expiresAt is stored as a Dart .toIso8601String() (local,
       // non-UTC time — see FamilyShareLink.toJson()), not a Firestore
       // Timestamp, so it can't be safely compared against request.time here
@@ -394,11 +450,19 @@ service cloud.firestore {
       // so both an expiry ceiling and correct anonymous-read gating (the
       // existing `get`/`update` rules below have the same string-vs-timestamp
       // mismatch) can be enforced correctly.
-      allow create: if isSignedIn() && request.resource.data.touristId == request.auth.uid;
-      allow update: if (isSignedIn() && resource.data.touristId == request.auth.uid &&
-          request.resource.data.touristId == resource.data.touristId) ||
-        (resource.data.isActive == true && resource.data.expiresAt > request.time &&
-          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['viewCount']));
+      allow create: if isSignedIn() &&
+        request.resource.data.touristId == request.auth.uid &&
+        request.resource.data.shareId == shareId &&
+        request.resource.data.shareToken == shareId &&
+        request.resource.data.expiresAt is timestamp &&
+        request.resource.data.expiresAt > request.time &&
+        request.resource.data.expiresAt <= request.time + duration.value(24, 'h') &&
+        request.resource.data.sessionId is string &&
+        get(/databases/$(database)/documents/tour_sessions/$(request.resource.data.sessionId)).data.touristIds.hasAny([request.auth.uid]);
+      allow update: if isSignedIn() &&
+        resource.data.touristId == request.auth.uid &&
+        request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['encryptedStatus', 'lastSyncedAt', 'isActive', 'viewCount']);
       allow delete: if isSignedIn() && resource.data.touristId == request.auth.uid;
     }
 
@@ -412,6 +476,9 @@ service cloud.firestore {
     // guide as "their" team member.
     function operatorTeamChangeIsConsented() {
       let diffKeys = request.resource.data.diff(resource.data).affectedKeys();
+      let noTeamChange = !diffKeys.hasAny(['teamGuideIds', 'pendingTeamGuideIds']);
+      let ownerPendingChange = diffKeys.hasOnly(['pendingTeamGuideIds']) &&
+        resource.data.ownerUserId == request.auth.uid;
       // Owner removing a guide from teamGuideIds (dismissal) — always allowed.
       let ownerRemoval = diffKeys.hasOnly(['teamGuideIds']) &&
         resource.data.teamGuideIds.hasAll(request.resource.data.teamGuideIds) &&
@@ -429,7 +496,7 @@ service cloud.firestore {
         request.auth.uid in resource.data.teamGuideIds &&
         !(request.auth.uid in request.resource.data.teamGuideIds) &&
         resource.data.teamGuideIds.hasAll(request.resource.data.teamGuideIds);
-      return !diffKeys.hasAny(['teamGuideIds']) || ownerRemoval || guideAccepts || guideLeaves;
+      return noTeamChange || ownerPendingChange || ownerRemoval || guideAccepts || guideLeaves;
     }
     match /operator_accounts/{operatorId} {
       allow read: if isSignedIn() && (
@@ -449,7 +516,7 @@ service cloud.firestore {
         (!('premiumPlanId' in request.resource.data) || request.resource.data.premiumPlanId == null);
       allow update: if isSignedIn() && (
         !request.resource.data.diff(resource.data).affectedKeys()
-          .hasAny(['isPremium', 'premiumPlanId', 'premiumExpiresAt', 'autoRenew']) &&
+          .hasAny(['isPremium', 'premiumPlanId', 'premiumExpiresAt', 'autoRenew', 'ownerUserId']) &&
         (resource.data.ownerUserId == request.auth.uid || request.auth.uid in resource.data.teamGuideIds || request.auth.uid in resource.data.pendingTeamGuideIds) &&
         operatorTeamChangeIsConsented()
       ) || isAdmin();
@@ -462,8 +529,12 @@ service cloud.firestore {
     // read/write. Create is checked against the incoming doc (no existing
     // resource yet); read/update/delete against the existing doc.
     match /guide_client_notes/{noteId} {
-      allow read, update, delete: if isSignedIn() &&
+      allow read, delete: if isSignedIn() &&
         (resource.data.guideId == request.auth.uid || isAdmin());
+      allow update: if isSignedIn() &&
+        ((resource.data.guideId == request.auth.uid &&
+          request.resource.data.guideId == resource.data.guideId &&
+          request.resource.data.touristId == resource.data.touristId) || isAdmin());
       allow create: if isSignedIn() && request.resource.data.guideId == request.auth.uid;
     }
 
@@ -503,7 +574,9 @@ service cloud.firestore {
     match /saved_plans/{planId} {
       allow read: if isSignedIn() && resource.data.userId == request.auth.uid;
       allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
-      allow update, delete: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow update: if isSignedIn() && resource.data.userId == request.auth.uid &&
+        request.resource.data.userId == resource.data.userId;
+      allow delete: if isSignedIn() && resource.data.userId == request.auth.uid;
     }
 
     // ── Business Partners ────────────────────────────────────────────────────
@@ -517,9 +590,11 @@ service cloud.firestore {
       allow create: if isSignedIn() && request.resource.data.hostUid == request.auth.uid;
       allow read: if isSignedIn() && (resource.data.hostUid == request.auth.uid || request.auth.uid in resource.data.participantUids || isAdmin());
       allow update: if isSignedIn() && (
-        resource.data.hostUid == request.auth.uid ||
+        (resource.data.hostUid == request.auth.uid && request.resource.data.hostUid == resource.data.hostUid) ||
         (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['participantUids']) &&
-         request.auth.uid in request.resource.data.participantUids) ||
+         request.auth.uid in request.resource.data.participantUids &&
+         request.resource.data.participantUids.hasAll(resource.data.participantUids) &&
+         request.resource.data.participantUids.size() == resource.data.participantUids.size() + 1) ||
         isAdmin()
       );
       allow delete: if isSignedIn() && (resource.data.hostUid == request.auth.uid || isAdmin());
@@ -564,8 +639,13 @@ service cloud.firestore {
     // ── SOS Alerts (Safety-Critical) ────────────────────────────────────────
     // Any signed-in tour participant can trigger an SOS; only admins review them.
     match /sos_alerts/{alertId} {
-      allow create: if isSignedIn() &&
-        request.resource.data.triggeredBy == request.auth.uid;
+      allow create: if isSignedIn() && isNotBlocked() &&
+        request.resource.data.triggeredBy == request.auth.uid &&
+        request.resource.data.sessionId is string &&
+        request.resource.data.status == 'triggered' &&
+        request.resource.data.keys().hasOnly(['sessionId', 'triggeredBy', 'timestamp', 'status']) &&
+        (get(/databases/$(database)/documents/tour_sessions/$(request.resource.data.sessionId)).data.guideId == request.auth.uid ||
+         request.auth.uid in get(/databases/$(database)/documents/tour_sessions/$(request.resource.data.sessionId)).data.touristIds);
       allow read, update, delete: if isAdmin();
     }
 
@@ -616,9 +696,7 @@ service cloud.firestore {
     // known shape (topic/status) so a signed-in user can't queue an
     // arbitrary FCM push to admins.
     match /pending_notifications/{notiId} {
-      allow create: if isSignedIn() &&
-        request.resource.data.topic is string &&
-        request.resource.data.status == 'queued';
+      allow create: if false; // Admin SDK / trusted backend only
       allow read: if isAdmin();
       allow update, delete: if false;
     }
@@ -635,10 +713,21 @@ service cloud.firestore {
     // title/body content (a social-engineering/spam vector surfaced
     // directly by NotificationService as an in-app toast/snackbar).
     match /user_notifications/{notiId} {
+      function validBookingNotification() {
+        let booking = get(/databases/$(database)/documents/booking_requests/$(request.resource.data.bookingId)).data;
+        return (request.resource.data.type == 'new_booking' &&
+                  booking.touristId == request.auth.uid &&
+                  request.resource.data.recipientId == booking.guideId) ||
+               (request.resource.data.type == 'booking_response' &&
+                  booking.guideId == request.auth.uid &&
+                  request.resource.data.recipientId == booking.touristId);
+      }
       allow read, update, delete: if isSignedIn() && resource.data.recipientId == request.auth.uid;
       allow create: if isSignedIn() &&
+        request.resource.data.bookingId is string &&
         request.resource.data.recipientId is string &&
-        request.resource.data.type in ['new_booking', 'booking_response', 'subscription_expired', 'subscription_reminder'] &&
+        request.resource.data.type in ['new_booking', 'booking_response'] &&
+        validBookingNotification() &&
         request.resource.data.title is string && request.resource.data.title.size() <= 200 &&
         request.resource.data.body is string && request.resource.data.body.size() <= 1000;
     }
@@ -707,7 +796,9 @@ service cloud.firestore {
     match /community_memories/{memoryId} {
       allow read: if isSignedIn();
       allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
-      allow update, delete: if isOwner(resource.data.userId) || isAdmin();
+      allow update: if (isOwner(resource.data.userId) &&
+        request.resource.data.userId == resource.data.userId) || isAdmin();
+      allow delete: if isOwner(resource.data.userId) || isAdmin();
     }
 
     // ── AR Content Locations (Read-only, admin-managed) ────────────────────
@@ -749,9 +840,13 @@ service cloud.firestore {
     match /threat_notifications/{notiId} {
       allow create: if request.resource.data.keys().hasOnly(
           ['category', 'severity', 'uid', 'signals', 'timestamp', 'appVersion', 'buildNumber', 'status', 'details']) &&
-        request.resource.data.category is string &&
-        request.resource.data.severity in ['low', 'medium', 'high', 'critical'] &&
-        request.resource.data.uid is string &&
+        request.resource.data.category == 'SPECTRE' &&
+        request.resource.data.severity == 'critical' &&
+        request.resource.data.status == 'active' &&
+        request.resource.data.uid is string && request.resource.data.uid.size() <= 128 &&
+        request.resource.data.signals is list && request.resource.data.signals.size() <= 20 &&
+        request.resource.data.appVersion is string && request.resource.data.appVersion.size() <= 40 &&
+        request.resource.data.buildNumber is string && request.resource.data.buildNumber.size() <= 20 &&
         (!isSignedIn() || request.resource.data.uid == request.auth.uid || request.resource.data.uid == 'UNAUTHENTICATED_PROBE');
       allow read, update, delete: if isAdmin();
     }

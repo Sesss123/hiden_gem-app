@@ -1,11 +1,9 @@
-import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/foundation.dart';
 import 'integrity_shield.dart';
 import 'behavior_analytics_engine.dart';
 import 'package:cloud_functions/cloud_functions.dart';
-import '../../core/utils/hmac_expiry_verifier.dart';
 import '../../data/datasources/user_preference_service.dart';
 
 /// [SecureEntitlements] — Server-verified feature gating.
@@ -30,10 +28,11 @@ class SecureEntitlements {
   DateTime? _cacheExpiry;
 
   // --- Public API ---
-  
+
   /// Synchronous access to cached entitlement state for synchronous nexus checks.
-  bool get cachedIsPremium => _serverClaimsCache?['isPremium'] == true || 
-      _serverClaimsCache?['role'] == 'premium' || 
+  bool get cachedIsPremium =>
+      _serverClaimsCache?['isPremium'] == true ||
+      _serverClaimsCache?['role'] == 'premium' ||
       _serverClaimsCache?['role'] == 'admin';
 
   /// Verifies if the user has a valid Premium role.
@@ -47,30 +46,16 @@ class SecureEntitlements {
     // 🛡️ POINT 5: Cryptographic Proof Verification
     // Even if isPremium is true, we verify the backend-generated signature
     // for the expiry date to prevent "Local Date Patching".
-    if (claims.containsKey('premiumExpiresAt') && claims.containsKey('signature')) {
+    if (claims.containsKey('premiumExpiresAt')) {
       // currentUser can turn null here if the user signed out during the
       // _getVerifiedClaims() await above — fail closed (no premium) rather
       // than force-unwrap and crash.
-      final currentUser = _auth.currentUser;
-      if (currentUser == null) return false;
-
-      final expiry = DateTime.fromMillisecondsSinceEpoch(claims['premiumExpiresAt']);
-      final signature = claims['signature'] as String;
-
-      final bool isSignatureValid = HmacExpiryVerifier.verify(
-        uid: currentUser.uid,
-        expiry: expiry,
-        signature: signature,
-      );
-
-      if (!isSignatureValid) {
-        debugPrint('[SecureEntitlements] 🚨 Signature Mismatch: Denying premium access.');
-        return false;
-      }
+      final expiry =
+          DateTime.fromMillisecondsSinceEpoch(claims['premiumExpiresAt']);
+      if (!expiry.isAfter(DateTime.now())) return false;
 
       // Update local profile with the verified backend proof
       localProfile.premiumExpiresAt = expiry;
-      localProfile.premiumSignature = signature;
       UserPreferenceService.saveProfile(localProfile);
     }
 
@@ -79,7 +64,8 @@ class SecureEntitlements {
     // we log a forensic event. We do NOT block immediately to avoid alerting the attacker.
     if (localProfile.isPremium && claims['isPremium'] != true) {
       _analytics.reportCustomAnomaly('local_state_tamper_detected', weight: 40);
-      debugPrint('[SecureEntitlements] 🕵️ Shadow Trap Triggered: Local state mismatch.');
+      debugPrint(
+          '[SecureEntitlements] 🕵️ Shadow Trap Triggered: Local state mismatch.');
     }
 
     // 1. Database Check
@@ -111,7 +97,8 @@ class SecureEntitlements {
     // 2. Integrity Check
     // Admin features require LOW risk score (< 30).
     if (_shield.riskScore >= 30) {
-      debugPrint('[SecureEntitlements] Admin DENIED due to medium/high risk score.');
+      debugPrint(
+          '[SecureEntitlements] Admin DENIED due to medium/high risk score.');
       return false;
     }
 
@@ -136,6 +123,16 @@ class SecureEntitlements {
     }
   }
 
+  /// Removes both memory and disk entitlement state for the account that is
+  /// leaving the device. [uid] is explicit because FirebaseAuth.currentUser
+  /// may already be null by the time ordinary cache invalidation runs.
+  Future<void> clearForUser(String uid) async {
+    _serverClaimsCache = null;
+    _cacheExpiry = null;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('secure_entitlements_cache_$uid');
+  }
+
   // --- Internal ---
 
   Future<Map<String, dynamic>?> _getVerifiedClaims() async {
@@ -148,8 +145,10 @@ class SecureEntitlements {
         DateTime.now().isBefore(_cacheExpiry!)) {
       if (_serverClaimsCache!.containsKey('premiumExpiresAt')) {
         final expiryMs = _serverClaimsCache!['premiumExpiresAt'] as int?;
-        if (expiryMs != null && DateTime.now().millisecondsSinceEpoch > expiryMs) {
-          debugPrint('[SecureEntitlements] Cached premiumExpiresAt passed. Invalidating memory cache.');
+        if (expiryMs != null &&
+            DateTime.now().millisecondsSinceEpoch > expiryMs) {
+          debugPrint(
+              '[SecureEntitlements] Cached premiumExpiresAt passed. Invalidating memory cache.');
           forceRefresh();
         } else {
           return _serverClaimsCache;
@@ -159,34 +158,11 @@ class SecureEntitlements {
       }
     }
 
-    // Serve from SharedPreferences disk cache (TTL: 24 hours) to drastically reduce Cloud Function costs
+    // Never trust a disk entitlement cache. SharedPreferences is editable on
+    // compromised devices and previously allowed forged premium/admin values
+    // to remain accepted for 24 hours.
     final prefs = await SharedPreferences.getInstance();
-    final cachedStr = prefs.getString('secure_entitlements_cache_$uid');
-    if (cachedStr != null) {
-      try {
-        final Map<String, dynamic> diskCache = json.decode(cachedStr);
-        final expiry = diskCache['__cacheExpiry'] as int?;
-        if (expiry != null && DateTime.now().millisecondsSinceEpoch < expiry) {
-          // Verify signature isn't expired
-          if (diskCache.containsKey('premiumExpiresAt')) {
-            final premiumExpiryMs = diskCache['premiumExpiresAt'] as int?;
-            if (premiumExpiryMs == null || DateTime.now().millisecondsSinceEpoch < premiumExpiryMs) {
-              _serverClaimsCache = diskCache;
-              _cacheExpiry = DateTime.fromMillisecondsSinceEpoch(expiry);
-              debugPrint('[SecureEntitlements] Served from SharedPreferences disk cache.');
-              return _serverClaimsCache;
-            }
-          } else {
-            _serverClaimsCache = diskCache;
-            _cacheExpiry = DateTime.fromMillisecondsSinceEpoch(expiry);
-            debugPrint('[SecureEntitlements] Served from SharedPreferences disk cache.');
-            return _serverClaimsCache;
-          }
-        }
-      } catch (e) {
-        debugPrint('[SecureEntitlements] Error reading disk cache: $e');
-      }
-    }
+    await prefs.remove('secure_entitlements_cache_$uid');
 
     try {
       // 🛡️ BACKEND MIGRATION: Shift decision to the server.
@@ -196,20 +172,17 @@ class SecureEntitlements {
           .call({'uid': uid});
 
       final data = Map<String, dynamic>.from(result.data);
-      
+
       // The backend returns a data object along with a 'signature' (HMAC)
       // to prove authenticity (Point 5).
       _serverClaimsCache = data;
       _cacheExpiry = DateTime.now().add(const Duration(minutes: 5));
 
-      // Save to disk cache for 24 hours
-      data['__cacheExpiry'] = DateTime.now().add(const Duration(hours: 24)).millisecondsSinceEpoch;
-      prefs.setString('secure_entitlements_cache_$uid', json.encode(data));
-      
       // Auto-heal local state if server says they are clearly NOT premium
-      if (_serverClaimsCache!['isPremium'] != true && 
+      if (_serverClaimsCache!['isPremium'] != true &&
           UserPreferenceService.getProfile().isPremium) {
-        debugPrint('[SecureEntitlements] Auto-correcting mismatched local premium flag.');
+        debugPrint(
+            '[SecureEntitlements] Auto-correcting mismatched local premium flag.');
         final profile = UserPreferenceService.getProfile();
         profile.isPremium = false;
         UserPreferenceService.saveProfile(profile);

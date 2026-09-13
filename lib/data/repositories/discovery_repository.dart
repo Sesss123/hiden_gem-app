@@ -11,13 +11,15 @@ import '../../core/services/delta_sync_service.dart';
 import '../../core/services/sqlite_storage_service.dart';
 import '../../core/utils/result.dart';
 
-final discoveryRemoteDataSourceProvider = Provider((ref) => DiscoveryRemoteDataSource());
-final discoveryLocalDataSourceProvider = Provider((ref) => DiscoveryLocalDataSource());
+final discoveryRemoteDataSourceProvider =
+    Provider((ref) => DiscoveryRemoteDataSource());
+final discoveryLocalDataSourceProvider =
+    Provider((ref) => DiscoveryLocalDataSource());
 
 final discoveryRepositoryProvider = Provider((ref) => DiscoveryRepository(
-  remoteDataSource: ref.watch(discoveryRemoteDataSourceProvider),
-  localDataSource: ref.watch(discoveryLocalDataSourceProvider),
-));
+      remoteDataSource: ref.watch(discoveryRemoteDataSourceProvider),
+      localDataSource: ref.watch(discoveryLocalDataSourceProvider),
+    ));
 
 class DiscoveryRepository {
   final DiscoveryRemoteDataSource _remoteDataSource;
@@ -26,10 +28,11 @@ class DiscoveryRepository {
   DiscoveryRepository({
     required DiscoveryRemoteDataSource remoteDataSource,
     required DiscoveryLocalDataSource localDataSource,
-  }) : _remoteDataSource = remoteDataSource,
-       _localDataSource = localDataSource;
+  })  : _remoteDataSource = remoteDataSource,
+        _localDataSource = localDataSource;
 
-  Future<Position?> getCurrentLocation() => _remoteDataSource.getCurrentLocation();
+  Future<Position?> getCurrentLocation() =>
+      _remoteDataSource.getCurrentLocation();
 
   Future<Result<List<DiscoveryPlace>, AppError>> getDiscoveryPlaces({
     double? userLat,
@@ -37,7 +40,7 @@ class DiscoveryRepository {
     bool forceRefresh = false,
   }) async {
     List<DiscoveryPlace> places = [];
-    
+
     // 1. Memory Cache check (L0) - Rounded coordinates to 3 decimal places (~110m bucket)
     final latKey = userLat?.toStringAsFixed(3) ?? 'null';
     final lngKey = userLng?.toStringAsFixed(3) ?? 'null';
@@ -55,78 +58,101 @@ class DiscoveryRepository {
     // The app now relies entirely on Level-2 SQLite + Background Delta Sync for all geo-spatial queries.
 
     // 3. SQLite / Delta Sync check (L2)
-    try {
-      final sqliteService = SqliteStorageService();
-      final deltaService = DeltaSyncService();
-      
-      places = await sqliteService.getActivePlaces();
-
-      // Exec #15: If SQLite is empty (first boot) or forceRefresh requested, await delta sync.
-      // Otherwise, serve SQLite data immediately and run delta sync in background unawaited.
-      if (places.isEmpty || forceRefresh) {
-        SecureLogger.info("SQLite empty or forceRefresh requested. Awaiting delta sync...");
-        await deltaService.performDeltaSync(forceFullResync: forceRefresh);
-        places = await sqliteService.getActivePlaces();
-      } else {
-        // Background sync may pull in places added/changed on the server
-        // after this session's RAM cache was already warmed. Once it
-        // completes with real progress, invalidate the L0 memory cache so
-        // the next getDiscoveryPlaces() call re-reads the updated SQLite
-        // data instead of silently serving the pre-sync snapshot forever.
-        final versionBeforeSync = await sqliteService.getLocalSyncVersion();
-        unawaited(deltaService.performDeltaSync().then((newVersion) {
-          if (newVersion != versionBeforeSync) {
-            _localDataSource.invalidateCache();
-            SecureLogger.info("Background delta sync brought new data (v$versionBeforeSync -> v$newVersion). Memory cache invalidated.");
-          }
-          return newVersion;
-        }).catchError((e) {
-          SecureLogger.warning("Background delta sync failed: $e");
-          return 0;
-        }));
-      }
-
-      if (places.isNotEmpty) {
-        SecureLogger.info("Discovery data loaded from Level-2 SQLite Storage.");
-      }
-    } catch (e) {
-      SecureLogger.warning("SQLite / Delta sync fetch failed, falling back to L3 REST: $e");
-    }
-
-    // 4. Fallback to Firestore / Assets if SQLite is completely empty and delta sync failed
-    if (places.isEmpty) {
+    if (!kIsWeb)
       try {
-        SecureLogger.warning("SQLite / Delta Sync empty, falling back to Firestore 'places' collection");
-        places = await _remoteDataSource.fetchAllPlacesFirestore();
-        if (places.isNotEmpty) {
-          SecureLogger.info("Discovery data loaded from Firestore 'places' collection.");
+        final sqliteService = SqliteStorageService();
+        final deltaService = DeltaSyncService();
+
+        places = await sqliteService.getActivePlaces();
+
+        // Exec #15: If SQLite is empty (first boot) or forceRefresh requested, await delta sync.
+        // Otherwise, serve SQLite data immediately and run delta sync in background unawaited.
+        if (places.isEmpty || forceRefresh) {
+          SecureLogger.info(
+              "SQLite empty or forceRefresh requested. Awaiting delta sync...");
+          await deltaService.performDeltaSync(forceFullResync: forceRefresh);
+          places = await sqliteService.getActivePlaces();
         } else {
-          places = await _localDataSource.getAssetPlaces();
+          // Background sync may pull in places added/changed on the server
+          // after this session's RAM cache was already warmed. Once it
+          // completes with real progress, invalidate the L0 memory cache so
+          // the next getDiscoveryPlaces() call re-reads the updated SQLite
+          // data instead of silently serving the pre-sync snapshot forever.
+          final versionBeforeSync = await sqliteService.getLocalSyncVersion();
+          unawaited(deltaService.performDeltaSync().then((newVersion) {
+            if (newVersion != versionBeforeSync) {
+              _localDataSource.invalidateCache();
+              SecureLogger.info(
+                  "Background delta sync brought new data (v$versionBeforeSync -> v$newVersion). Memory cache invalidated.");
+            }
+            return newVersion;
+          }).catchError((e) {
+            SecureLogger.warning("Background delta sync failed: $e");
+            return 0;
+          }));
         }
-      } catch (e2) {
-        SecureLogger.warning("Firestore fetch failed, falling back to assets: $e2");
-        places = await _localDataSource.getAssetPlaces();
+
+        if (places.isNotEmpty) {
+          SecureLogger.info(
+              "Discovery data loaded from Level-2 SQLite Storage.");
+        }
+      } catch (e) {
+        SecureLogger.warning(
+            "SQLite / Delta sync fetch failed, falling back to L3 REST: $e");
       }
+
+    // 4. Last-known-good cache fallback. Do not read the raw Firestore
+    // collection here: it can contain pending/unpublished moderation records,
+    // and pre-auth reads also generated noisy permission-denied failures.
+    // Laravel's sync API is the only public catalogue source of truth.
+    if (places.isEmpty) {
+      places = await _localDataSource.getAssetPlaces();
     }
 
     if (places.isEmpty) {
-      SecureLogger.error("All discovery tiers failed (including asset fallback). No data available.", null);
-      return Failure(AppError("Unable to load discovery places from any data source."));
+      SecureLogger.error(
+          "All discovery tiers failed (including asset fallback). No data available.",
+          null);
+      return Failure(
+          AppError("Unable to load discovery places from any data source."));
+    }
+
+    // Defensive catalogue hygiene: malformed coordinates can send users to
+    // Null Island, and delta/cache overlap can otherwise render duplicates.
+    final unique = <String, DiscoveryPlace>{};
+    for (final place in places) {
+      if (place.id.trim().isEmpty || place.name.trim().isEmpty) continue;
+      if (place.lat < -90 ||
+          place.lat > 90 ||
+          place.lng < -180 ||
+          place.lng > 180) continue;
+      if (place.lat == 0 && place.lng == 0) continue;
+      final key =
+          '${place.name.trim().toLowerCase()}|${place.lat.toStringAsFixed(5)}|${place.lng.toStringAsFixed(5)}';
+      final existing = unique[key];
+      if (existing == null || place.syncVersion > existing.syncVersion)
+        unique[key] = place;
+    }
+    places = unique.values.toList();
+
+    if (places.isEmpty) {
+      return Failure(AppError('No valid published places are available.'));
     }
 
     // 5. Processing (Distance measurement & Sorting)
     places = await _processPlaces(places, userLat, userLng);
-    
+
     // 6. Update Memory Cache
     _localDataSource.cacheInMemory(cacheKey, places);
     return Success(places);
   }
 
-  Future<List<DiscoveryPlace>> getAiRecommendations(List<DiscoveryPlace> places, {String? customQuery}) async {
+  Future<List<DiscoveryPlace>> getAiRecommendations(List<DiscoveryPlace> places,
+      {String? customQuery}) async {
     if (places.isEmpty) return [];
-    
+
     final topNearest = places.take(10).toList();
-    
+
     // 🚧 AI Recommendations Model & API Key in Development — Coming Soon!
     // Skip upstream network call completely to avoid 10s timeout and return local nearest places immediately.
     return topNearest.take(3).toList();
@@ -160,27 +186,32 @@ class DiscoveryRepository {
   }
 
   // --- Nearby Places ---
-  Future<Result<List<DiscoveryPlace>, AppError>> getNearbyPlaces(DiscoveryPlace currentPlace, {double radiusKm = 50.0, int limit = 10}) async {
-    final result = await getDiscoveryPlaces(userLat: currentPlace.lat, userLng: currentPlace.lng);
-    
+  Future<Result<List<DiscoveryPlace>, AppError>> getNearbyPlaces(
+      DiscoveryPlace currentPlace,
+      {double radiusKm = 50.0,
+      int limit = 10}) async {
+    final result = await getDiscoveryPlaces(
+        userLat: currentPlace.lat, userLng: currentPlace.lng);
+
     if (result.isSuccess) {
       final allPlaces = result.valueOrNull!;
-      
+
       // Filter out current place, enforce radius limit, and take top N
       final nearby = allPlaces
           .where((p) => p.id != currentPlace.id && p.distanceKm <= radiusKm)
           .take(limit)
           .toList();
-          
+
       return Success(nearby);
     }
-    
+
     return result;
   }
 
   // --- Private Helpers ---
 
-  Future<List<DiscoveryPlace>> _processPlaces(List<DiscoveryPlace> places, double? lat, double? lng) async {
+  Future<List<DiscoveryPlace>> _processPlaces(
+      List<DiscoveryPlace> places, double? lat, double? lng) async {
     if (lat == null || lng == null) return places;
 
     return await compute(_sortPlacesIsolate, {
@@ -190,13 +221,16 @@ class DiscoveryRepository {
     });
   }
 
-  static double _haversineDistanceKm(double lat1, double lon1, double lat2, double lon2) {
+  static double _haversineDistanceKm(
+      double lat1, double lon1, double lat2, double lon2) {
     const double r = 6371.0; // Earth radius in km
     final double dLat = _toRadians(lat2 - lat1);
     final double dLon = _toRadians(lon2 - lon1);
     final double a = math.sin(dLat / 2) * math.sin(dLat / 2) +
-        math.cos(_toRadians(lat1)) * math.cos(_toRadians(lat2)) *
-        math.sin(dLon / 2) * math.sin(dLon / 2);
+        math.cos(_toRadians(lat1)) *
+            math.cos(_toRadians(lat2)) *
+            math.sin(dLon / 2) *
+            math.sin(dLon / 2);
     final double c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a));
     return r * c;
   }

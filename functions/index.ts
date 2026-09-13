@@ -11,7 +11,52 @@ import * as crypto from 'crypto';
 
 admin.initializeApp();
 
-const HMAC_SECRET = process.env.HMAC_SECRET || 'ZENITH_EXPIRY_SIGN_KEY_2026'; // Security Fix: Using env secrets/config
+export * from './zero_trust';
+
+const HMAC_SECRET = process.env.HMAC_SECRET;
+
+async function sendToAccountDevices(
+    accountId: string,
+    accountData: admin.firestore.DocumentData | undefined,
+    title: string,
+    body: string,
+): Promise<void> {
+    const tokens = new Set<string>();
+    if (typeof accountData?.fcmToken === 'string') tokens.add(accountData.fcmToken);
+    if (Array.isArray(accountData?.fcmTokens)) {
+        for (const token of accountData.fcmTokens) {
+            if (typeof token === 'string' && token.length > 0) tokens.add(token);
+        }
+    }
+    if (tokens.size === 0) return;
+    try {
+        await admin.messaging().sendEachForMulticast({
+            tokens: [...tokens].slice(0, 500),
+            notification: { title, body },
+        });
+    } catch (error) {
+        console.error(`Failed to send FCM to ${accountId}:`, error);
+    }
+}
+
+/** Only trusted server code may deliver to the private administrator topic. */
+export const escalate_security_alert = functions.firestore
+    .document('security_alerts/{alertId}')
+    .onCreate(async (snapshot, context) => {
+        const alert = snapshot.data();
+        const severity = String(alert.severity || 'low');
+        if (!['high', 'critical'].includes(severity)) return null;
+        const code = String(alert.code || 'security_event').slice(0, 120);
+        await admin.messaging().send({
+            topic: 'security-admins',
+            notification: {
+                title: severity === 'critical' ? 'Critical security incident' : 'High severity alert',
+                body: severity === 'critical' ? `Immediate attention required: ${code}` : `Pattern detected: ${code}`,
+            },
+            data: { alertId: context.params.alertId, severity, type: 'security_incident' },
+        });
+        return null;
+    });
 
 /**
  * 🛡️ verify_entitlements
@@ -19,6 +64,10 @@ const HMAC_SECRET = process.env.HMAC_SECRET || 'ZENITH_EXPIRY_SIGN_KEY_2026'; //
  */
 export const verify_entitlements = functions.https.onCall(async (data: any, context: functions.https.CallableContext) => {
     if (!context.auth) throw new functions.https.HttpsError('unauthenticated', 'Nexus login required.');
+    if (!HMAC_SECRET) {
+        console.error('verify_entitlements: HMAC_SECRET is not configured.');
+        throw new functions.https.HttpsError('failed-precondition', 'Entitlement verification is unavailable.');
+    }
     
     const uid = context.auth.uid;
     const userDoc = await admin.firestore().collection('users').doc(uid).get();
@@ -27,7 +76,7 @@ export const verify_entitlements = functions.https.onCall(async (data: any, cont
     if (!userData) return { isPremium: false, role: 'user' };
 
     // Real billing/subscription logic would go here
-    const isPremium = userData.isPremium === true;
+    let isPremium = userData.isPremium === true;
     let premiumExpiresAt = Date.now();
     if (userData.premiumExpiresAt) {
         premiumExpiresAt = typeof userData.premiumExpiresAt.toMillis === 'function' 
@@ -38,6 +87,7 @@ export const verify_entitlements = functions.https.onCall(async (data: any, cont
             ? userData.subExpiresAt.toMillis() 
             : new Date(userData.subExpiresAt).getTime();
     }
+    isPremium = isPremium && premiumExpiresAt > Date.now();
 
     // Generate Cryptographic Proof (Point 5)
     const signature = crypto
@@ -93,6 +143,14 @@ export const report_forensic_signals = functions.https.onCall(async (data: any, 
  * Processes incoming RevenueCat events to securely manage Firestore subscriptions.
  */
 export const revenuecat_webhook = functions.https.onRequest(async (req: functions.https.Request, res: functions.Response) => {
+    // The authoritative webhook is Laravel /api/webhooks/revenuecat, which
+    // applies event ordering, idempotency and atomic account/subscription
+    // updates. Keeping two writers caused split-brain entitlement states.
+    // Leave this deployed endpoint as an explicit tombstone until the
+    // RevenueCat dashboard URL has been migrated, then delete the function.
+    res.status(410).send('RevenueCat webhook moved.');
+    return;
+
     // Security: verify the shared secret RevenueCat sends as "Authorization: Bearer <secret>"
     // (configured in RevenueCat dashboard > Project Settings > Webhooks). Without this check,
     // anyone who knows a user's uid could POST a forged event and grant themselves premium.
@@ -104,7 +162,7 @@ export const revenuecat_webhook = functions.https.onRequest(async (req: function
     }
     const authHeader = req.header('Authorization') || '';
     const providedSecret = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : authHeader;
-    const expectedBuf = Buffer.from(expectedSecret);
+    const expectedBuf = Buffer.from(expectedSecret ?? '');
     const providedBuf = Buffer.from(providedSecret);
     const isValidSecret = expectedBuf.length === providedBuf.length && crypto.timingSafeEqual(expectedBuf, providedBuf);
     if (!providedSecret || !isValidSecret) {
@@ -205,7 +263,7 @@ export const revenuecat_webhook = functions.https.onRequest(async (req: function
         }
 
         if (subDocRef) {
-            await subDocRef.set(subUpdateData, { merge: true });
+            await subDocRef!.set(subUpdateData, { merge: true });
         }
         await admin.firestore().collection(collectionName).doc(appUserId).set(accountUpdateData, { merge: true });
         res.status(200).send("Webhook processed successfully.");
@@ -265,17 +323,7 @@ export const daily_subscription_safety_net = functions.pubsub.schedule('0 0 * * 
                 });
 
                 const userSnap = await accountRef.get();
-                const fcmToken = userSnap.data()?.fcmToken;
-                if (fcmToken) {
-                    try {
-                        await admin.messaging().send({
-                            token: fcmToken,
-                            notification: { title, body }
-                        });
-                    } catch (e) {
-                        console.error(`Failed to send expiration FCM to ${accountId}:`, e);
-                    }
-                }
+                await sendToAccountDevices(accountId, userSnap.data(), title, body);
             }
             continue;
         }
@@ -302,17 +350,7 @@ export const daily_subscription_safety_net = functions.pubsub.schedule('0 0 * * 
             });
 
             const userSnap = await accountRef.get();
-            const fcmToken = userSnap.data()?.fcmToken;
-            if (fcmToken) {
-                try {
-                    await admin.messaging().send({
-                        token: fcmToken,
-                        notification: { title, body }
-                    });
-                } catch (e) {
-                    console.error(`Failed to send reminder FCM to ${accountId}:`, e);
-                }
-            }
+            await sendToAccountDevices(accountId, userSnap.data(), title, body);
         }
     }
 });

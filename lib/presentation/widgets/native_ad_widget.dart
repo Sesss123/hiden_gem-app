@@ -38,7 +38,7 @@ class _NativeAdWidgetState extends State<NativeAdWidget> {
 
   void _loadAd() async {
     if (kIsWeb) return; // Native ads are not supported on web
-    
+
     _nativeAd = await MonetizationService().createNativeAd(
       onAdLoaded: () {
         if (mounted) setState(() => _isLoaded = true);
@@ -72,7 +72,9 @@ class _NativeAdWidgetState extends State<NativeAdWidget> {
     return OracleUI.glassContainer(
       margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
       padding: EdgeInsets.zero,
-      height: 300, // Adjust based on your ad size
+      // The native layout only contains wrap-content headline/body fields.
+      // Keeping a 300dp host produced a large blank block in the feed.
+      height: 88,
       child: AdWidget(ad: _nativeAd!),
     );
   }

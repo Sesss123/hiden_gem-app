@@ -874,6 +874,12 @@ abstract class AppLocalizations {
   /// **'Open in Maps'**
   String get openInMaps;
 
+  /// No description provided for @nearbyNowLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{km} km away — nearby now'**
+  String nearbyNowLabel(String km);
+
   /// No description provided for @photosLabel.
   ///
   /// In en, this message translates to:

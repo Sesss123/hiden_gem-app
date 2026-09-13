@@ -3,10 +3,11 @@ import 'package:flutter/foundation.dart';
 import '../models/forensic_payload.dart';
 
 /// [SecurityAlertService] — Admin Notification & Incident Response Engine.
-/// 
+///
 /// Escalates automated security events into actionable administrative alerts.
 class SecurityAlertService {
-  static final SecurityAlertService _instance = SecurityAlertService._internal();
+  static final SecurityAlertService _instance =
+      SecurityAlertService._internal();
   factory SecurityAlertService() => _instance;
   SecurityAlertService._internal();
 
@@ -38,24 +39,11 @@ class SecurityAlertService {
 
     final docRef = await _firestore.collection('security_alerts').add(alertDoc);
 
-    // 2. Determine Notification Escalation (Point 13 - Push Policy)
-    if (severity == SecuritySeverity.critical) {
-      await _sendPushNotification(
-        id: docRef.id,
-        title: '🔴 CRITICAL SECURITY INCIDENT',
-        body: 'Immediate attention required: $code',
-        severity: severity,
-      );
-    } else if (severity == SecuritySeverity.high) {
-      if (_shouldSendHighAlert(code)) {
-        await _sendPushNotification(
-          id: docRef.id,
-          title: '🟠 High Severity Alert',
-          body: 'Pattern detected: $code',
-          severity: severity,
-        );
-      }
-    }
+    // A trusted Cloud Function watching this document owns FCM delivery.
+    // Client code must never enqueue messages to the administrator topic.
+    if (severity == SecuritySeverity.high) _shouldSendHighAlert(code);
+    debugPrint(
+        '[SecurityAlert] Recorded alert ${docRef.id}; server evaluates escalation.');
   }
 
   // --- Internal ---
@@ -63,42 +51,11 @@ class SecurityAlertService {
   bool _shouldSendHighAlert(String code) {
     final now = DateTime.now();
     final lastTime = _lastAlertSent[code];
-    
+
     if (lastTime == null || now.difference(lastTime) > _highAlertCooldown) {
       _lastAlertSent[code] = now;
       return true;
     }
     return false;
-  }
-
-  Future<void> _sendPushNotification({
-    required String id,
-    required String title,
-    required String body,
-    required SecuritySeverity severity,
-  }) async {
-    try {
-      // 🛡️ POINT 13 Architecture Pattern: Topic-based escalation
-      // NOTE: In production, the actual HTTP send is done via Firebase Admin SDK (Node.js/Go)
-      // because you cannot securely send FCM messages directly from the client.
-      // We log the INTENT here, which a Cloud Function will pick up and execute.
-      
-      await _firestore.collection('pending_notifications').add({
-        'topic': 'security-admins',
-        'title': title,
-        'body': body,
-        'data': {
-          'alertId': id,
-          'severity': severity.name,
-          'type': 'security_incident',
-        },
-        'status': 'queued',
-        'createdAt': FieldValue.serverTimestamp(),
-      });
-
-      debugPrint('[SecurityAlert] Escalated $severity alert to pending_notifications.');
-    } catch (e) {
-      debugPrint('[SecurityAlert] FCM Escalation failed: $e');
-    }
   }
 }
