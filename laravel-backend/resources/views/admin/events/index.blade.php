@@ -37,8 +37,8 @@
         </form>
     </div>
 
-    <!-- Events List Table -->
-    <div class="glass-card rounded-2xl overflow-hidden">
+    <!-- Desktop Events List Table (Hidden on mobile <768px) -->
+    <div class="hidden md:block glass-card rounded-2xl overflow-hidden border border-slate-800 shadow-xl">
         <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse">
                 <thead>
@@ -50,7 +50,7 @@
                         <th class="px-6 py-4">Date/Duration</th>
                         <th class="px-6 py-4">Status</th>
                         <th class="px-6 py-4">Created By</th>
-                        <th class="px-6 py-4 text-right">Actions</th>
+                        <th class="px-6 py-4 text-right sticky right-0 bg-slate-900/90 backdrop-blur">Actions</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-800/40 text-sm">
@@ -88,7 +88,7 @@
                                 @endif
                                 @if($event->passedThisYear ?? false)
                                     <div class="mt-1 inline-flex items-center gap-1 text-[10px] text-slate-500 bg-slate-800/60 px-1.5 py-0.5 rounded border border-slate-700">
-                                        <i class="fa-solid fa-clock-rotate-left"></i> Already happened this year
+                                        <i class="fa-solid fa-clock-rotate-left"></i> Passed this year
                                     </div>
                                 @endif
                             </td>
@@ -110,10 +110,10 @@
                                         <i class="fa-solid fa-user-pen text-slate-500"></i> {{ $event->creator->name }}
                                     </span>
                                 @else
-                                    <span class="text-slate-600 italic">System / Unknown</span>
+                                    <span class="text-slate-600 italic">System</span>
                                 @endif
                             </td>
-                            <td class="px-6 py-5 text-right">
+                            <td class="px-6 py-5 text-right sticky right-0 bg-slate-900/90 backdrop-blur">
                                 <div class="flex items-center justify-end gap-2">
                                     <a href="{{ route('admin.events.edit', $event->id) }}" class="text-slate-400 hover:text-emerald-400 p-1.5 hover:bg-slate-800 rounded-lg transition" title="Edit">
                                         <i class="fa-solid fa-pen-to-square"></i>
@@ -143,6 +143,72 @@
         </div>
         @if($events->hasPages())
             <div class="px-6 py-4 border-t border-slate-800/40 bg-slate-900/10">
+                {{ $events->links() }}
+            </div>
+        @endif
+    </div>
+
+    <!-- Mobile Events Cards View (<768px) -->
+    <div class="md:hidden space-y-4">
+        @forelse($events as $event)
+        <div class="glass-card p-4 rounded-2xl border border-slate-800 space-y-3">
+            <div class="flex items-start gap-3">
+                @php $mthumb = $event->coverImage->thumb_path ?? null; @endphp
+                @if($mthumb)
+                    <img src="{{ $mthumb }}" alt="{{ $event->name }}" class="w-14 h-14 rounded-xl object-cover border border-slate-700 shrink-0">
+                @else
+                    <div class="w-14 h-14 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-500 shrink-0">
+                        <i class="fa-solid fa-calendar-days text-lg"></i>
+                    </div>
+                @endif
+                <div class="min-w-0 flex-1">
+                    <h3 class="font-bold text-white text-base truncate">{{ $event->name }}</h3>
+                    <div class="text-xs text-slate-400 mt-0.5">{{ $event->location ?? 'Island-wide' }}</div>
+                    <div class="flex items-center gap-2 mt-1">
+                        <span class="bg-emerald-500/10 text-emerald-400 text-[11px] px-2 py-0.5 rounded-full font-medium border border-emerald-500/20">
+                            {{ ucfirst($event->category) }}
+                        </span>
+                        @php $mestatus = $event->status ?? 'approved'; @endphp
+                        <span class="text-[10px] px-2 py-0.5 rounded border font-semibold {{ $mestatus === 'approved' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-amber-500/10 text-amber-400 border-amber-500/20' }}">
+                            {{ ucfirst($mestatus) }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-xs text-slate-400 font-mono flex items-center gap-1.5 border-t border-slate-800/60 pt-2">
+                <i class="fa-regular fa-calendar text-slate-500"></i>
+                @if($event->date)
+                    {{ $event->date }}
+                @elseif($event->start && $event->end)
+                    {{ $event->start }} to {{ $event->end }}
+                @else
+                    N/A
+                @endif
+            </div>
+
+            <div class="grid grid-cols-2 gap-2 pt-1 border-t border-slate-800">
+                <a href="{{ route('admin.events.edit', $event->id) }}" class="py-2 text-center rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200">
+                    <i class="fa-solid fa-pen-to-square mr-1"></i> Edit
+                </a>
+                <form action="{{ route('admin.events.destroy', $event->id) }}" method="POST" onsubmit="return confirm('Delete this event?');">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="w-full py-2 text-center rounded-xl bg-red-500/10 hover:bg-red-500/20 text-xs font-semibold text-red-400 border border-red-500/20">
+                        <i class="fa-solid fa-trash mr-1"></i> Delete
+                    </button>
+                </form>
+            </div>
+        </div>
+        @empty
+        <div class="glass-card p-8 rounded-2xl border border-slate-800 text-center text-slate-500">
+            <i class="fa-solid fa-calendar-xmark text-3xl mb-3 block opacity-40"></i>
+            No events registered yet.
+        </div>
+        @endforelse
+
+        @if($events->hasPages())
+            <div class="glass-card p-3 rounded-2xl border border-slate-800">
                 {{ $events->links() }}
             </div>
         @endif

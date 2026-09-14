@@ -6,7 +6,17 @@ use Illuminate\Database\Eloquent\Model;
 
 class DatasetImport extends Model
 {
-    protected $fillable = ['filename', 'record_count', 'user_id'];
+    protected $fillable = [
+        'filename',
+        'file_hash',
+        'batch_id',
+        'record_count',
+        'imported_count',
+        'updated_count',
+        'skipped_count',
+        'duplicate_count',
+        'user_id',
+    ];
 
     public function user()
     {

@@ -155,9 +155,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::delete('images/{id}', [PlaceController::class, 'deleteImage'])->name('images.delete');
             Route::post('images/{id}/cover', [PlaceController::class, 'setCoverImage'])->name('images.cover');
             Route::post('/places/deduplicate', [PlaceController::class, 'deduplicate'])->name('places.deduplicate');
-            Route::post('/places/bulk-deduplicate', [PlaceController::class, 'bulkDeduplicate'])->name('places.bulk_deduplicate');
+            Route::post('/places/bulk-approve', [PlaceController::class, 'bulkApprove'])->name('places.bulk_approve');
             Route::post('/places/{id}/approve', [PlaceController::class, 'approve'])->name('places.approve');
             Route::post('/places/{id}/reject', [PlaceController::class, 'reject'])->name('places.reject');
+            Route::post('/places/{id}/return-to-pending', [PlaceController::class, 'returnToPending'])->name('places.return_to_pending');
 
             Route::post('/events/{id}/approve', [EventController::class, 'approve'])->name('events.approve');
             Route::post('/events/{id}/reject', [EventController::class, 'reject'])->name('events.reject');
@@ -179,6 +180,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
             Route::post('/reviews/{id}/hide', [ReviewController::class, 'hide'])->name('reviews.hide');
             Route::post('/reviews/{id}/restore', [ReviewController::class, 'restore'])->name('reviews.restore');
+            Route::post('/subscriptions/{uid}/revoke', [SubscriptionController::class, 'revoke'])->name('subscriptions.revoke');
             Route::post('/family-share/{shareId}/revoke', [FamilyShareController::class, 'revoke'])->name('family-share.revoke');
             Route::delete('/audit-log/clear', [AuditLogController::class, 'clear'])->name('audit-log.clear');
             Route::delete('/audit-log/{id}', [AuditLogController::class, 'destroy'])->name('audit-log.destroy');

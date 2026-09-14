@@ -347,6 +347,9 @@ class PremiumNotifier extends _$PremiumNotifier {
 
   // 🛠️ MOCK UTILITY: Only for Dev/Internal testing to bypass RevenueCat
   Future<void> simulateMockPurchase() async {
+    if (!kDebugMode) {
+      throw UnsupportedError('Mock purchases are strictly prohibited in production builds.');
+    }
     state = true;
     await UserPreferenceService.updatePremiumStatus(true,
         plan: 'premium_mock_dev', source: 'mock_internal');
@@ -359,6 +362,9 @@ class PremiumNotifier extends _$PremiumNotifier {
   // simulateMockPurchase() so the pricing tiers (and the mock-buy button
   // itself) are reachable again without reinstalling the app.
   Future<void> simulateMockCancel() async {
+    if (!kDebugMode) {
+      throw UnsupportedError('Mock purchase cancellations are strictly prohibited in production builds.');
+    }
     state = false;
     await UserPreferenceService.updatePremiumStatus(false,
         source: 'mock_internal');

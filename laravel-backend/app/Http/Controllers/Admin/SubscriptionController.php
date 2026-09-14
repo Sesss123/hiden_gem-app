@@ -4,11 +4,22 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Services\FirestoreService;
+use App\Traits\LogsAdminActivity;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class SubscriptionController extends Controller
 {
+    use LogsAdminActivity;
+
     private FirestoreService $firestoreService;
+
+    public const ALLOWED_PLANS = [
+        'pro' => 'Guide Pro',
+        'elite' => 'Guide Elite',
+        'explorer' => 'Explorer',
+        'premium' => 'Heritage Premium',
+    ];
 
     public function __construct()
     {
@@ -16,71 +27,196 @@ class SubscriptionController extends Controller
     }
 
     /**
-     * Read-only overview of premium users, sourced from Firestore's
-     * users/{uid}.isPremium — the real-time field RevenueCatWebhookController
-     * is the only trusted writer of (firestore.rules blocks client writes).
-     * This is deliberately read-only: there is no grant/revoke action here,
-     * since a direct admin override would need its own audit trail and
-     * interaction with RevenueCat's own subscription state to avoid drifting
-     * out of sync with the next webhook event.
+     * Overview of premium users with automated Integrity Scanner.
      */
     public function index(Request $request)
     {
         $premiumUsers = $this->firestoreService->queryDocuments('users', 'isPremium', 'EQUAL', true);
 
-        // Newest expiry first isn't meaningful without a common reference —
-        // sort by plan then name for a stable, scannable list instead.
+        // Sort by plan then name for a stable, scannable list
         usort($premiumUsers, function ($a, $b) {
             $planCmp = strcmp($a['premiumPlan'] ?? '', $b['premiumPlan'] ?? '');
             return $planCmp !== 0 ? $planCmp : strcmp($a['displayName'] ?? '', $b['displayName'] ?? '');
         });
 
-        // Stats (total/plan-breakdown/expiring-soon) are computed over the
-        // FULL unfiltered set below, before search narrows the table — a
-        // search for one user shouldn't make the "Total Premium Users" card
-        // look like the whole premium base shrank.
+        $now = now();
+        $invalidOrMockCount = 0;
+        $expiringSoonCount = 0;
+
+        // Perform automated integrity check on all premium records
+        foreach ($premiumUsers as &$u) {
+            $plan = strtolower(trim($u['premiumPlan'] ?? $u['premiumPlanId'] ?? ''));
+            $reasons = [];
+            if (str_contains($plan, 'mock') || str_contains($plan, 'dev') || !array_key_exists($plan, self::ALLOWED_PLANS)) {
+                $reasons[] = 'Unrecognized or development plan';
+            }
+            $hasExpired = false;
+            $isExpiringSoon = false;
+
+            if (!empty($u['premiumExpiresAt'])) {
+                try {
+                    $expiresAt = Carbon::parse($u['premiumExpiresAt']);
+                    if ($expiresAt->isPast()) {
+                        $hasExpired = true;
+                    } elseif ($now->diffInDays($expiresAt) <= 7) {
+                        $isExpiringSoon = true;
+                        $expiringSoonCount++;
+                    }
+                } catch (\Throwable $e) {
+                    $hasExpired = true;
+                    $reasons[] = 'Malformed expiry timestamp';
+                }
+            } else {
+                $reasons[] = 'Missing subscription expiry';
+            }
+
+            if ($hasExpired) $reasons[] = 'Subscription has expired';
+
+            // This record is written only by the authenticated RevenueCat
+            // webhook. It is the backend proof that must agree with the user
+            // profile; a client-side isPremium flag alone is never sufficient.
+            $subscription = $this->firestoreService->findSubscriptionByAccountId((string) ($u['id'] ?? ''));
+            $subscriptionPlan = strtolower(trim((string) ($subscription['planId'] ?? '')));
+            $subscriptionStatus = strtolower(trim((string) ($subscription['status'] ?? '')));
+            if (!$subscription) {
+                $reasons[] = 'No trusted webhook subscription record';
+            } else {
+                if (!in_array($subscriptionStatus, ['active', 'grace_period'], true)) {
+                    $reasons[] = 'Webhook subscription is not active';
+                }
+                if ($subscriptionPlan === '' || $subscriptionPlan !== $plan) {
+                    $reasons[] = 'User plan does not match webhook subscription';
+                }
+            }
+
+            $u['_integrity_reasons'] = array_values(array_unique($reasons));
+            $u['_is_mock_or_invalid'] = !empty($u['_integrity_reasons']);
+            $u['_is_expired'] = $hasExpired;
+            $u['_is_expiring_soon'] = $isExpiringSoon;
+
+            if ($u['_is_mock_or_invalid']) {
+                $invalidOrMockCount++;
+            }
+        }
+        unset($u);
+
         $allPremiumUsers = $premiumUsers;
 
         if ($search = $request->input('search')) {
             $needle = strtolower($search);
             $premiumUsers = array_values(array_filter($premiumUsers, function ($u) use ($needle) {
                 return str_contains(strtolower($u['displayName'] ?? ''), $needle)
-                    || str_contains(strtolower($u['email'] ?? ''), $needle);
+                    || str_contains(strtolower($u['email'] ?? ''), $needle)
+                    || str_contains(strtolower($u['id'] ?? ''), $needle);
             }));
         }
 
         $planCounts = [];
         foreach ($allPremiumUsers as $u) {
+            if (!empty($u['_is_mock_or_invalid'])) continue;
             $plan = $u['premiumPlan'] ?? 'unknown';
             $planCounts[$plan] = ($planCounts[$plan] ?? 0) + 1;
         }
         arsort($planCounts);
 
-        $now = now();
-        $expiringSoonCount = 0;
-        foreach ($allPremiumUsers as $u) {
-            if (!empty($u['premiumExpiresAt'])) {
-                try {
-                    $expiresAt = \Carbon\Carbon::parse($u['premiumExpiresAt']);
-                    // BUG (found while fixing the identical mistake in
-                    // guides/show.blade.php): Carbon's diffInDays() returns a
-                    // SIGNED distance in this version — calling it on the
-                    // future date with $now as the argument yields a
-                    // NEGATIVE number, and "-299 <= 7" is true for every
-                    // future date, not just ones actually within 7 days.
-                    // now()->diffInDays($expiresAt) gives the correct
-                    // unsigned distance.
-                    if ($expiresAt->isFuture() && $now->diffInDays($expiresAt) <= 7) {
-                        $expiringSoonCount++;
-                    }
-                } catch (\Exception $e) {
-                    // Malformed timestamp on a legacy/manually-edited doc — skip, don't crash the page.
-                }
-            }
+        $totalPremiumCount = count($allPremiumUsers);
+        $verifiedPremiumCount = $totalPremiumCount - $invalidOrMockCount;
+
+        return view('admin.subscriptions.index', compact(
+            'premiumUsers',
+            'planCounts',
+            'expiringSoonCount',
+            'totalPremiumCount',
+            'verifiedPremiumCount',
+            'invalidOrMockCount'
+        ));
+    }
+
+    /**
+     * Revoke unverified or mock premium entitlement with full audit trail.
+     */
+    public function revoke(Request $request, string $uid)
+    {
+        $user = auth()->user();
+        if (!$user || !$user->isFullAdmin()) {
+            abort(403, 'Unauthorized. Only Full Administrators can revoke premium entitlements.');
         }
 
-        $totalPremiumCount = count($allPremiumUsers);
+        $request->validate([
+            'reason' => 'required|string|max:500',
+        ]);
 
-        return view('admin.subscriptions.index', compact('premiumUsers', 'planCounts', 'expiringSoonCount', 'totalPremiumCount'));
+        $reason = $request->input('reason');
+
+        // Fetch existing document to verify previous state
+        $existing = $this->firestoreService->getDocument('users', $uid);
+        if (!$existing) {
+            return back()->with('error', "User {$uid} not found in Firestore.");
+        }
+
+        $previousPlan = $existing['premiumPlan'] ?? $existing['premiumPlanId'] ?? 'unknown';
+        $normalizedPlan = strtolower(trim((string) $previousPlan));
+        $sub = $this->firestoreService->findSubscriptionByAccountId($uid);
+        $subPlan = strtolower(trim((string) ($sub['planId'] ?? '')));
+        $subStatus = strtolower(trim((string) ($sub['status'] ?? '')));
+        $isInvalid = !array_key_exists($normalizedPlan, self::ALLOWED_PLANS)
+            || !$sub
+            || $subPlan !== $normalizedPlan
+            || !in_array($subStatus, ['active', 'grace_period'], true)
+            || empty($existing['premiumExpiresAt']);
+        if (!$isInvalid) {
+            return back()->withErrors(['subscription' => 'This entitlement matches an active webhook subscription and cannot be removed by the anomaly-cleanup action. Cancel it through RevenueCat first.']);
+        }
+
+        $this->logAdminAction('subscription.revoke_requested', 'User', $uid, [
+            'previous_plan' => $previousPlan,
+            'reason' => $reason,
+        ]);
+
+        $userUpdate = [
+            'isPremium' => false,
+            'premiumPlan' => null,
+            'premiumPlanId' => null,
+            'premiumExpiresAt' => null,
+            'autoRenew' => false,
+            'revokedAt' => now()->toIso8601String(),
+            'revokedBy' => $user->email,
+            'revocationReason' => $reason,
+        ];
+        $writes = [[
+            'collection' => 'users', 'id' => $uid, 'data' => $userUpdate,
+            'updateMask' => array_keys($userUpdate), 'exists' => true,
+        ]];
+        if ($sub && !empty($sub['id'])) {
+            $subUpdate = ['status' => 'revoked_by_admin', 'autoRenew' => false, 'revokedAt' => now()->toIso8601String()];
+            $writes[] = [
+                'collection' => 'subscriptions', 'id' => $sub['id'], 'data' => $subUpdate,
+                'updateMask' => array_keys($subUpdate), 'exists' => true,
+            ];
+        }
+        try {
+            $committed = $this->firestoreService->commitDocuments($writes);
+        } catch (\Throwable $e) {
+            $committed = false;
+        }
+        if (!$committed) {
+            $this->logAdminAction('subscription.revoke_failed', 'User', $uid, ['reason' => $reason]);
+            return back()->withErrors(['subscription' => "Failed revoking subscription for {$uid}; Firestore made no changes."]);
+        }
+
+        // Record security audit log
+        $this->logAdminAction(
+            'subscription.revoked',
+            'User',
+            $uid,
+            [
+                'previous_plan' => $previousPlan,
+                'reason' => $reason,
+                'target_uid' => $uid,
+                'admin_email' => $user->email,
+            ]
+        );
+
+        return back()->with('success', "Premium subscription successfully revoked for UID: {$uid} (Audit logged).");
     }
 }

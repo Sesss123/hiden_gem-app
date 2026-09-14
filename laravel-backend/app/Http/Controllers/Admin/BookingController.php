@@ -35,6 +35,20 @@ class BookingController extends Controller
             ? $this->firestoreService->listDocuments('booking_requests')
             : $this->firestoreService->queryDocuments('booking_requests', 'status', 'EQUAL', $status);
 
+        // Collect tourist and guide UIDs to hydrate profiles in batch
+        $uids = [];
+        foreach ($bookings as $b) {
+            if (!empty($b['touristId'])) $uids[$b['touristId']] = true;
+            if (!empty($b['guideId'])) $uids[$b['guideId']] = true;
+        }
+
+        $userProfiles = $this->hydrateUserIdentities(array_keys($uids));
+
+        foreach ($bookings as &$booking) {
+            $this->enrichBookingData($booking, $userProfiles);
+        }
+        unset($booking);
+
         usort($bookings, fn ($a, $b) => strcmp($b['createdAt'] ?? '', $a['createdAt'] ?? ''));
 
         return view('admin.bookings.index', compact('bookings', 'status'));
@@ -45,12 +59,142 @@ class BookingController extends Controller
         $booking = $this->firestoreService->getDocument('booking_requests', $id);
         abort_if($booking === null, 404);
 
+        $uids = array_filter([$booking['touristId'] ?? null, $booking['guideId'] ?? null]);
+        $userProfiles = $this->hydrateUserIdentities($uids);
+        $this->enrichBookingData($booking, $userProfiles);
+
         $session = null;
         if (!empty($booking['linkedSessionId'])) {
             $session = $this->firestoreService->getDocument('tour_sessions', $booking['linkedSessionId']);
         }
 
         return view('admin.bookings.show', compact('booking', 'session'));
+    }
+
+    /**
+     * Batch resolve user profiles from MySQL users or Firestore users cache.
+     */
+    private function hydrateUserIdentities(array $uids): array
+    {
+        if (empty($uids)) return [];
+
+        $profiles = [];
+
+        // 1. Check local MySQL users first
+        try {
+            $localUsers = \App\Models\User::whereIn('firebase_uid', $uids)->get();
+            foreach ($localUsers as $lu) {
+                $profiles[$lu->firebase_uid] = [
+                    'name' => $lu->name,
+                    'email' => $lu->email,
+                    'role' => $lu->role,
+                ];
+            }
+        } catch (\Throwable $e) {
+            // Non-blocking
+        }
+
+        // 2. Lookup remaining from Firestore
+        foreach ($uids as $uid) {
+            if (!isset($profiles[$uid])) {
+                $cacheKey = "fs_user_identity_{$uid}";
+                $profiles[$uid] = Cache::remember($cacheKey, 600, function () use ($uid) {
+                    $doc = $this->firestoreService->getDocument('users', $uid);
+                    if ($doc) {
+                        return [
+                            'name' => $doc['displayName'] ?? $doc['name'] ?? null,
+                            'email' => $doc['email'] ?? null,
+                            'role' => $doc['role'] ?? 'tourist',
+                        ];
+                    }
+                    return null;
+                });
+            }
+        }
+
+        return $profiles;
+    }
+
+    /**
+     * Formats Colombo local time, masks emails, and computes human-readable pricing states.
+     */
+    private function enrichBookingData(array &$b, array $userProfiles): void
+    {
+        $tUid = $b['touristId'] ?? '';
+        $gUid = $b['guideId'] ?? '';
+
+        $tProfile = $userProfiles[$tUid] ?? null;
+        $gProfile = $userProfiles[$gUid] ?? null;
+
+        $b['touristName'] = $tProfile['name'] ?? (strlen($tUid) > 10 ? substr($tUid, 0, 6) . '...' . substr($tUid, -4) : ($tUid ?: 'Unknown'));
+        $b['touristEmailMasked'] = !empty($tProfile['email']) ? $this->maskEmail($tProfile['email']) : null;
+        $b['touristRole'] = $tProfile['role'] ?? 'tourist';
+
+        $b['guideName'] = $gProfile['name'] ?? (strlen($gUid) > 10 ? substr($gUid, 0, 6) . '...' . substr($gUid, -4) : ($gUid ?: 'Unknown'));
+        $b['guideEmailMasked'] = !empty($gProfile['email']) ? $this->maskEmail($gProfile['email']) : null;
+        $b['guideRole'] = $gProfile['role'] ?? 'guide';
+
+        // Formats Colombo local time
+        if (!empty($b['createdAt'])) {
+            try {
+                $b['createdAtColombo'] = \Carbon\Carbon::parse($b['createdAt'])->setTimezone('Asia/Colombo')->format('M d, Y · h:i A');
+            } catch (\Throwable $e) {
+                $b['createdAtColombo'] = $b['createdAt'];
+            }
+        } else {
+            $b['createdAtColombo'] = 'N/A';
+        }
+        $b['requestedDateColombo'] = $this->formatColomboDate($b['requestedDate'] ?? null, true);
+
+        // Price & Payment State resolution
+        $payoutStatus = $b['payoutStatus'] ?? 'pending';
+        $paymentStatus = strtolower((string) ($b['paymentStatus'] ?? ''));
+        $quotedPrice = $b['quotedPrice'] ?? null;
+        $st = $b['status'] ?? 'pending';
+        $paymentVerified = $payoutStatus === 'paid'
+            || in_array($paymentStatus, ['paid', 'completed', 'success', 'verified'], true)
+            || !empty($b['paidAt']);
+
+        if ($quotedPrice === null || $quotedPrice <= 0) {
+            $b['priceStateLabel'] = 'Quote Pending';
+            $b['priceStateClass'] = 'text-slate-500 bg-slate-800/40 border-slate-700';
+        } elseif ($payoutStatus === 'refunded') {
+            $b['priceStateLabel'] = 'Refunded';
+            $b['priceStateClass'] = 'text-orange-400 bg-orange-500/10 border-orange-500/30';
+        } elseif ($paymentVerified) {
+            $b['priceStateLabel'] = 'Payment Verified';
+            $b['priceStateClass'] = 'text-emerald-400 bg-emerald-500/10 border-emerald-500/30';
+        } elseif ($st === 'completed') {
+            $b['priceStateLabel'] = 'Payment Record Missing';
+            $b['priceStateClass'] = 'text-red-400 bg-red-500/10 border-red-500/30';
+        } else {
+            $b['priceStateLabel'] = 'Quoted (Payment Pending)';
+            $b['priceStateClass'] = 'text-amber-400 bg-amber-500/10 border-amber-500/30';
+        }
+        $b['currencyLabel'] = !empty($b['currency']) ? strtoupper((string) $b['currency']) : null;
+    }
+
+    private function formatColomboDate($value, bool $preserveDateOnly = false): string
+    {
+        if (empty($value)) return 'N/A';
+        if ($preserveDateOnly && preg_match('/^\d{4}-\d{2}-\d{2}$/', (string) $value)) {
+            return \Carbon\Carbon::parse($value, 'Asia/Colombo')->format('M d, Y');
+        }
+        try {
+            return \Carbon\Carbon::parse($value)->setTimezone('Asia/Colombo')->format('M d, Y · h:i A');
+        } catch (\Throwable $e) {
+            return 'Invalid date';
+        }
+    }
+
+    private function maskEmail(string $email): string
+    {
+        $parts = explode('@', $email);
+        if (count($parts) !== 2) return $email;
+        $name = $parts[0];
+        $domain = $parts[1];
+        $maskedName = strlen($name) > 2 ? substr($name, 0, 2) . '***' : $name . '***';
+        return $maskedName . '@' . $domain;
     }
 
     /**
@@ -176,17 +320,7 @@ class BookingController extends Controller
         }
     }
 
-    /**
-     * PayHere merchant API refund call. Authenticates via OAuth client-
-     * credentials (app_id/app_secret, distinct from the checkout
-     * merchant_id/merchant_secret used by PayHereController) to get a
-     * bearer token, then POSTs the refund request.
-     *
-     * NOTE: verify this endpoint/payload shape against PayHere's current
-     * merchant API docs before relying on it in production — it is not
-     * exercised anywhere else in this codebase and PayHere's API has
-     * changed shape between versions historically.
-     */
+    
     private function callPayHereRefund(string $paymentId, string $appId, string $appSecret): void
     {
         $sandbox = config('services.payhere.sandbox');

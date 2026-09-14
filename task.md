@@ -1,3 +1,16 @@
+## Completed: Enterprise Admin Panel Fix Plan (P0/P1/P2) (2026-09-14)
+- [x] 1. P0 Mock Entitlement Security: Added `!kDebugMode` check throwing `UnsupportedError` in Flutter `premium_service.dart` (`simulateMockPurchase` & `simulateMockCancel`).
+- [x] 2. P0 Subscription Integrity Scanner: Implemented automated scan in `SubscriptionController.php` with `ALLOWED_PLANS = ['pro', 'elite', 'explorer', 'premium']`. Displayed red warning badge for unverified/mock plans and added secure modal revocation updating Firestore and recording in `admin_audit_logs`.
+- [x] 3. P1 Booking Information & State Progression: Implemented `hydrateUserIdentities()` with MySQL and Firestore caching, enriched Colombo local timestamps (`Asia/Colombo`), masked emails, escrow states, and built multi-step visual lifecycle timeline (`Requested ➔ Quoted ➔ Payment Verified ➔ Tour Completed`) in `show.blade.php`.
+- [x] 4. P1 Moderation Queue & Rejected Places Workflow: Added `returnToPending()` and `bulkApprove()` in `PlaceController.php`. Overhauled `rejected.blade.php` to remove redundant reject button, display reviewer and rejection reasons, and provide 1-tap "Return to Pending" and "Approve". Enhanced `pending.blade.php` with source badges (`JSON Import` vs `CMS Admin`) and floating safe bulk approval bar.
+- [x] 5. P1 Duplicate Import Prevention: Added `file_hash` (SHA-256), `batch_id`, and record breakdown counts (`imported_count`, `duplicate_count`, `skipped_count`) to `dataset_imports` schema and model. Enforced duplicate detection warning in `PlaceController::importJson()` with 1-tap force re-import option.
+- [x] 6. P1 Responsive UI Matrix (360px - 1440px): Upgraded Bookings, Pending Places, Rejected Places, and Events index & pending views with desktop sticky action columns and mobile `<768px` card layouts.
+- [x] 7. Automated Testing & Verification:
+  - `SubscriptionIntegrityTest.php` (whitelisted plan verification, mock plan flagging, expiry detection).
+  - `PlaceModerationTransitionTest.php` (status constants, SHA-256 deduplication logic, smart ID regex validation).
+  - 100% passing PHPUnit test suite (8/8 tests, 28 assertions).
+  - Clean `flutter analyze` with 0 issues on Flutter code.
+
 ## Completed: Admin Panel Mobile Ads ON/OFF Toggle (2026-09-14)
 - [x] 1. Laravel Database & Model: Created `app_settings` migration and `AppSetting` model with caching and helper methods.
 - [x] 2. Laravel Admin Controller & Routes: Implemented `SettingController` with `index` and `toggleAds` actions, audit logging, and web routes.

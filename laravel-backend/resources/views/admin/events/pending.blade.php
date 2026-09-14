@@ -9,7 +9,8 @@
         <p class="text-sm text-slate-400">Events submitted by content managers, awaiting your approval before they go live to app users.</p>
     </div>
 
-    <div class="glass-card rounded-2xl overflow-hidden border border-slate-800 shadow-xl">
+    <!-- Desktop Table View (Hidden on mobile <768px) -->
+    <div class="hidden md:block glass-card rounded-2xl overflow-hidden border border-slate-800 shadow-xl">
         <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse">
                 <thead>
@@ -19,7 +20,7 @@
                         <th class="py-4 px-6">Category</th>
                         <th class="py-4 px-6">Submitted By</th>
                         <th class="py-4 px-6">Submitted</th>
-                        <th class="py-4 px-6 text-right">Actions</th>
+                        <th class="py-4 px-6 text-right sticky right-0 bg-slate-900/90 backdrop-blur">Actions</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-800/60 text-sm">
@@ -50,7 +51,7 @@
                         <td class="py-3 px-6 text-slate-400 font-mono text-xs">
                             {{ $event->created_at ? $event->created_at->diffForHumans() : 'N/A' }}
                         </td>
-                        <td class="py-3 px-6 text-right">
+                        <td class="py-3 px-6 text-right sticky right-0 bg-slate-900/90 backdrop-blur">
                             <div class="flex items-center justify-end gap-2">
                                 <a href="{{ route('admin.events.edit', $event->id) }}" class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition shadow" title="Review Details">
                                     <i class="fa-solid fa-eye text-xs"></i>
@@ -87,7 +88,7 @@
                     @empty
                     <tr>
                         <td colspan="6" class="py-12 text-center text-slate-500">
-                            <i class="fa-solid fa-circle-check text-3xl mb-3 block opacity-40"></i>
+                            <i class="fa-solid fa-circle-check text-3xl mb-3 block opacity-40 text-emerald-500"></i>
                             No events awaiting review. All caught up.
                         </td>
                     </tr>
@@ -97,6 +98,62 @@
         </div>
         @if($events->hasPages())
             <div class="p-4 border-t border-slate-800 bg-slate-900/40">
+                {{ $events->links() }}
+            </div>
+        @endif
+    </div>
+
+    <!-- Mobile Cards View (<768px) -->
+    <div class="md:hidden space-y-4">
+        @forelse($events as $event)
+        <div class="glass-card p-4 rounded-2xl border border-slate-800 space-y-3">
+            <div class="flex items-start justify-between gap-2">
+                <div>
+                    <h3 class="font-bold text-white text-base">{{ $event->name }}</h3>
+                    <div class="text-xs text-slate-400 mt-0.5">{{ $event->location ?? 'Island-wide' }}</div>
+                </div>
+                <span class="inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                    {{ ucfirst($event->category) }}
+                </span>
+            </div>
+
+            <div class="text-[11px] text-slate-500 flex items-center justify-between border-t border-slate-800/60 pt-2">
+                <span>By {{ $event->creator ? $event->creator->name : 'Unknown' }}</span>
+                <span>{{ optional($event->created_at)->diffForHumans() }}</span>
+            </div>
+
+            <div class="grid grid-cols-3 gap-2 pt-1 border-t border-slate-800">
+                <a href="{{ route('admin.events.edit', $event->id) }}" class="py-2 text-center rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200">
+                    <i class="fa-solid fa-pen-to-square mr-1"></i> Edit
+                </a>
+                <button type="button" onclick="document.getElementById('mobile-event-reject-{{ $event->id }}').classList.toggle('hidden')" class="py-2 text-center rounded-xl bg-red-500/20 hover:bg-red-500/30 text-xs font-semibold text-red-300 border border-red-500/30">
+                    <i class="fa-solid fa-xmark mr-1"></i> Reject
+                </button>
+                <form action="{{ route('admin.events.approve', $event->id) }}" method="POST" onsubmit="return confirm('Approve {{ $event->name }}?')">
+                    @csrf
+                    <button type="submit" class="w-full py-2 text-center rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-xs font-semibold text-emerald-300 border border-emerald-500/30">
+                        <i class="fa-solid fa-check mr-1"></i> Approve
+                    </button>
+                </form>
+            </div>
+
+            <div id="mobile-event-reject-{{ $event->id }}" class="hidden pt-2 border-t border-slate-800">
+                <form action="{{ route('admin.events.reject', $event->id) }}" method="POST" class="space-y-2">
+                    @csrf
+                    <input type="text" name="review_reason" required maxlength="1000" placeholder="Reason for rejection..." class="w-full bg-slate-950 border border-slate-800 rounded-xl py-2 px-3 text-xs text-white placeholder-slate-500">
+                    <button type="submit" class="w-full bg-red-600 hover:bg-red-500 text-white py-1.5 rounded-xl text-xs font-semibold">Confirm Reject</button>
+                </form>
+            </div>
+        </div>
+        @empty
+        <div class="glass-card p-8 rounded-2xl border border-slate-800 text-center text-slate-500">
+            <i class="fa-solid fa-circle-check text-3xl mb-3 block opacity-40 text-emerald-500"></i>
+            No events awaiting review. All caught up.
+        </div>
+        @endforelse
+
+        @if($events->hasPages())
+            <div class="glass-card p-3 rounded-2xl border border-slate-800">
                 {{ $events->links() }}
             </div>
         @endif

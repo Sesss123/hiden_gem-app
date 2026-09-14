@@ -17,6 +17,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Database\QueryException;
 use Carbon\Carbon;
 
 class PlaceController extends Controller
@@ -372,7 +374,7 @@ class PlaceController extends Controller
         $search = session('admin_places_rejected_search');
         $category = session('admin_places_rejected_category');
 
-        $query = Place::with('creator')
+        $query = Place::with(['creator', 'reviewer'])
             ->where('status', Place::STATUS_REJECTED);
 
         if ($search) {
@@ -388,46 +390,125 @@ class PlaceController extends Controller
         }
 
         $places = $query->orderBy('updated_at', 'desc')->paginate(15);
+        $categories = Cache::remember('admin_places_categories', 300, function () {
+            try {
+                return Place::select('category')->distinct()->whereNotNull('category')->orderBy('category')->pluck('category');
+            } catch (\Throwable $e) {
+                return collect();
+            }
+        });
 
-        return view('admin.places.rejected', compact('places', 'search', 'category'));
+        return view('admin.places.rejected', compact('places', 'search', 'category', 'categories'));
     }
 
     public function approve($id)
     {
-        $place = Place::findOrFail($id);
-
-        // Re-triggers PlaceObserver::saving -> bumps sync_version, which is what
-        // makes this place actually appear in the next Flutter delta sync.
-        $place->update([
-            'status' => Place::STATUS_APPROVED,
-            'reviewed_by' => Auth::id(),
-            'review_reason' => null,
-            'verified_at' => now(),
-        ]);
+        $place = DB::transaction(function () use ($id) {
+            $place = Place::lockForUpdate()->findOrFail($id);
+            if (!in_array($place->status, [Place::STATUS_PENDING, Place::STATUS_REJECTED], true)) {
+                throw ValidationException::withMessages(['status' => 'Only pending or rejected places can be approved.']);
+            }
+            $place->update([
+                'status' => Place::STATUS_APPROVED,
+                'reviewed_by' => Auth::id(),
+                'review_reason' => null,
+                'verified_at' => now(),
+            ]);
+            $this->logAdminAction('place.approved', 'Place', $id, ['name' => $place->name]);
+            return $place;
+        });
 
         Cache::forget('admin_pending_place_count');
-        $this->logAdminAction('place.approved', 'Place', $id, ['name' => $place->name]);
 
-        return redirect()->route('admin.places.pending')
+        return redirect()->back()
             ->with('success', "Place '{$place->name}' approved and is now live.");
     }
 
+    public function returnToPending($id)
+    {
+        $place = DB::transaction(function () use ($id) {
+            $place = Place::lockForUpdate()->findOrFail($id);
+            if ($place->status !== Place::STATUS_REJECTED) {
+                throw ValidationException::withMessages(['status' => 'Only rejected places can be returned to pending review.']);
+            }
+            $oldReason = $place->review_reason;
+            $place->update([
+                'status' => Place::STATUS_PENDING,
+                'reviewed_by' => null,
+                'review_reason' => null,
+                'verified_at' => null,
+            ]);
+            $this->logAdminAction('place.returned_to_pending', 'Place', $id, [
+                'name' => $place->name,
+                'previous_rejection_reason' => $oldReason,
+            ]);
+            return $place;
+        });
+
+        Cache::forget('admin_pending_place_count');
+
+        return redirect()->back()
+            ->with('success', "Place '{$place->name}' returned to pending review queue.");
+    }
+
+    public function bulkApprove(Request $request)
+    {
+        $request->validate([
+            'ids' => 'required|array',
+            'ids.*' => 'required|string',
+        ]);
+
+        $ids = array_values(array_unique($request->input('ids')));
+        [$approvedCount, $approvedNames] = DB::transaction(function () use ($ids) {
+            $places = Place::whereIn('id', $ids)
+                ->where('status', Place::STATUS_PENDING)
+                ->lockForUpdate()->get();
+            if ($places->count() !== count($ids)) {
+                throw ValidationException::withMessages(['ids' => 'One or more selected places no longer exist or are not pending. Refresh the queue and try again.']);
+            }
+            $approvedNames = [];
+            foreach ($places as $place) {
+                $place->update([
+                    'status' => Place::STATUS_APPROVED,
+                    'reviewed_by' => Auth::id(),
+                    'review_reason' => null,
+                    'verified_at' => now(),
+                ]);
+                $approvedNames[] = $place->name;
+            }
+            $this->logAdminAction('place.bulk_approved', 'Place', 'bulk', [
+                'count' => $places->count(),
+                'places' => array_slice($approvedNames, 0, 10),
+            ]);
+            return [$places->count(), $approvedNames];
+        });
+
+        Cache::forget('admin_pending_place_count');
+
+        return redirect()->back()->with('success', "{$approvedCount} place(s) approved and are now live.");
+    }
 
     public function reject(Request $request, $id)
     {
         $request->validate(['review_reason' => 'required|string|max:1000']);
-        $place = Place::findOrFail($id);
-
-        $place->update([
-            'status' => Place::STATUS_REJECTED,
-            'reviewed_by' => Auth::id(),
-            'review_reason' => $request->input('review_reason'),
-        ]);
+        $place = DB::transaction(function () use ($request, $id) {
+            $place = Place::lockForUpdate()->findOrFail($id);
+            if ($place->status !== Place::STATUS_PENDING) {
+                throw ValidationException::withMessages(['status' => 'Only pending places can be rejected.']);
+            }
+            $place->update([
+                'status' => Place::STATUS_REJECTED,
+                'reviewed_by' => Auth::id(),
+                'review_reason' => $request->input('review_reason'),
+                'verified_at' => null,
+            ]);
+            $this->logAdminAction('place.rejected', 'Place', $id, ['name' => $place->name, 'reason' => $request->input('review_reason')]);
+            return $place;
+        });
 
         Cache::forget('admin_pending_place_count');
-        $this->logAdminAction('place.rejected', 'Place', $id, ['name' => $place->name, 'reason' => $request->input('review_reason')]);
 
-        return redirect()->route('admin.places.pending')
+        return redirect()->back()
             ->with('success', "Place '{$place->name}' rejected.");
     }
 
@@ -479,6 +560,21 @@ class PlaceController extends Controller
             return back()->with('error', 'Invalid file type. Please upload a .json or .jsonl file.');
         }
 
+        $fileHash = hash_file('sha256', $file->getRealPath());
+        $isForce = $request->boolean('force_reimport');
+
+        // Check for duplicate file import if schema supports file_hash
+        if (!$isForce && Schema::hasTable('dataset_imports') && Schema::hasColumn('dataset_imports', 'file_hash')) {
+            $existingImport = DatasetImport::where('file_hash', $fileHash)->latest()->first();
+            if ($existingImport) {
+                $importedAt = optional($existingImport->created_at)->format('M d, Y · h:i A') ?? 'previously';
+                return back()->with('duplicate_file_warning', [
+                    'message' => "Duplicate Detected: An identical dataset ('{$existingImport->filename}') was already imported on {$importedAt} ({$existingImport->record_count} records).",
+                    'filename' => $file->getClientOriginalName(),
+                ]);
+            }
+        }
+
         $jsonStr = trim(file_get_contents($file->getRealPath()));
 
         // Fix concatenated JSON objects (e.g. `} {` or `}\n{` -> `},{`) 
@@ -496,10 +592,18 @@ class PlaceController extends Controller
             return back()->with('error', 'Invalid JSON format. Please upload a valid JSON array or concatenated JSON objects.');
         }
 
-        $count = 0;
-        DB::transaction(function () use ($data, &$count) {
+        $newCount = 0;
+        $updatedCount = 0;
+        $skippedCount = 0;
+        $batchId = (string) Str::uuid();
+
+        try {
+        DB::transaction(function () use ($data, $file, $fileHash, $batchId, $isForce, &$newCount, &$updatedCount, &$skippedCount) {
             foreach ($data as $item) {
-                if (!isset($item['name'])) continue;
+                if (!isset($item['name']) || empty(trim($item['name']))) {
+                    $skippedCount++;
+                    continue;
+                }
 
                 $rawId = $item['id'] ?? null;
                 $category = $item['category'] ?? $item['category_id'] ?? 'General';
@@ -509,6 +613,13 @@ class PlaceController extends Controller
                     $id = $rawId;
                 } else {
                     $id = $this->generateSmartId($category, $district);
+                }
+
+                $exists = Place::where('id', $id)->exists();
+                if ($exists) {
+                    $updatedCount++;
+                } else {
+                    $newCount++;
                 }
 
                 Place::updateOrCreate(
@@ -563,27 +674,66 @@ class PlaceController extends Controller
                     'status' => Place::STATUS_PENDING,
                     'created_by' => Auth::id(),
                 ]);
-                $count++;
             }
-        });
 
-        try {
+            $totalProcessed = $newCount + $updatedCount;
             if (Schema::hasTable('dataset_imports')) {
-                DatasetImport::create([
+                $importPayload = [
                     'filename' => $file->getClientOriginalName(),
-                    'record_count' => $count,
-                    'user_id' => Auth::id()
+                    'record_count' => $totalProcessed,
+                    'user_id' => Auth::id(),
+                ];
+
+                if (Schema::hasColumn('dataset_imports', 'file_hash')) {
+                    // The original non-forced import retains the unique hash.
+                    // Forced audit/history rows remain identifiable by batch ID
+                    // without defeating the concurrency constraint.
+                    $importPayload['file_hash'] = $isForce ? null : $fileHash;
+                }
+                if (Schema::hasColumn('dataset_imports', 'batch_id')) {
+                    $importPayload['batch_id'] = $batchId;
+                }
+                if (Schema::hasColumn('dataset_imports', 'imported_count')) {
+                    $importPayload['imported_count'] = $newCount;
+                }
+                if (Schema::hasColumn('dataset_imports', 'skipped_count')) {
+                    $importPayload['skipped_count'] = $skippedCount;
+                }
+                if (Schema::hasColumn('dataset_imports', 'updated_count')) {
+                    $importPayload['updated_count'] = $updatedCount;
+                }
+                if (Schema::hasColumn('dataset_imports', 'duplicate_count')) {
+                    $importPayload['duplicate_count'] = 0;
+                }
+
+                DatasetImport::create($importPayload);
+            }
+
+            $this->logAdminAction('place.imported', 'Place', null, [
+                'total' => $totalProcessed,
+                'new' => $newCount,
+                'updated' => $updatedCount,
+                'skipped' => $skippedCount,
+                'filename' => $file->getClientOriginalName(),
+                'file_hash' => $fileHash,
+                'batch_id' => $batchId,
+            ]);
+        });
+        } catch (QueryException $e) {
+            if ((string) $e->getCode() === '23000' && !$isForce) {
+                return back()->with('duplicate_file_warning', [
+                    'message' => 'This identical dataset was imported concurrently by another request. No records from this attempt were committed.',
+                    'filename' => $file->getClientOriginalName(),
                 ]);
             }
-        } catch (\Throwable $e) {
-            \Illuminate\Support\Facades\Log::warning('Failed logging dataset import: ' . $e->getMessage());
+            throw $e;
         }
 
-        $this->logAdminAction('place.imported', 'Place', null, ['count' => $count, 'filename' => $file->getClientOriginalName()]);
+        $totalProcessed = $newCount + $updatedCount;
 
         $redirectRoute = Auth::user()->isFullAdmin() ? 'admin.places.pending' : 'admin.places.my-submissions';
 
-        return redirect()->route($redirectRoute)->with('success', "Successfully imported/updated {$count} places from JSON.");
+        return redirect()->route($redirectRoute)->with('success', "Processed {$totalProcessed} places from JSON: {$newCount} created, {$updatedCount} updated, {$skippedCount} skipped.");
     }
 
     protected function validatePlace(Request $request, $isUpdate = false)

@@ -143,6 +143,11 @@ class Place extends Model
         return $this->belongsTo(User::class, 'created_by');
     }
 
+    public function reviewer()
+    {
+        return $this->belongsTo(User::class, 'reviewed_by');
+    }
+
     /**
      * Scope a query to only include places close to a given coordinate.
      * Uses the Haversine formula. Returns places within the given radius (in km).
