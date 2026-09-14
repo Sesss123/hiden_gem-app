@@ -69,12 +69,18 @@ class PriceCatalogController extends Controller
         }
         $before = $priceCatalogItem->toArray();
         $data = $this->validated($request, $priceCatalogItem->id);
-        DB::transaction(function () use ($priceCatalogItem, $data, $before) {
-            $priceCatalogItem->update($data + ['updated_by' => auth()->id()]);
+        $priceCatalogItem->fill($data + ['updated_by' => auth()->id()]);
+
+        if (!$priceCatalogItem->isDirty()) {
+            return back()->with('success', $this->statusMessage($priceCatalogItem, false));
+        }
+
+        DB::transaction(function () use ($priceCatalogItem, $before) {
+            $priceCatalogItem->save();
             $this->logAdminAction('update_price_catalog_item', 'price_catalog', $priceCatalogItem->id,
                 ['before' => $before, 'after' => $priceCatalogItem->fresh()->toArray()]);
         });
-        return back()->with('success', "Price configuration {$priceCatalogItem->key} updated.");
+        return back()->with('success', $this->statusMessage($priceCatalogItem, true));
     }
 
     public function destroy(PriceCatalogItem $priceCatalogItem)
@@ -115,5 +121,21 @@ class PriceCatalogController extends Controller
             $data['amount'] = $data['max_amount'] = $data['currency'] = null;
         }
         return $data;
+    }
+
+    private function statusMessage(PriceCatalogItem $item, bool $changed): string
+    {
+        $action = $changed ? 'updated' : 'was unchanged';
+        $result = match ($item->display_mode) {
+            'unavailable' => 'The mobile app will show “Price unavailable”.',
+            'contact' => 'The mobile app will ask the traveler to contact the provider.',
+            'free' => 'The mobile app will show “Free”.',
+            'fixed' => 'The mobile app will show the configured fixed price.',
+            'from' => 'The mobile app will show the configured starting price.',
+            'range' => 'The mobile app will show the configured price range.',
+            default => 'The mobile app will use the saved display mode.',
+        };
+
+        return "Price configuration {$item->key} {$action}. {$result}";
     }
 }
