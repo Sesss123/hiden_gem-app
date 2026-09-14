@@ -178,7 +178,7 @@ Route::prefix('v1')->group(function () {
         $version = (int) \Illuminate\Support\Facades\Cache::get('public_price_catalog_version', 1);
         $items = \Illuminate\Support\Facades\Cache::remember('public_price_catalog_v1', 300, function () {
             return \App\Models\PriceCatalogItem::currentlyAvailable()->orderBy('key')->get()
-                ->mapWithKeys(fn ($item) => [$item->key => $item->toPublicArray()])->all();
+                ->mapWithKeys(fn (\App\Models\PriceCatalogItem $item) => [$item->key => $item->toPublicArray()])->all();
         });
         return response()->json(['success' => true, 'version' => $version, 'prices' => $items, 'updated_at' => now()->toIso8601String()])
             ->header('Cache-Control', 'public, max-age=60, stale-if-error=86400')
