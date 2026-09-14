@@ -7,6 +7,7 @@ use App\Services\FirestoreService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use App\Models\User;
 
 /**
  * Admin moderation queue for guide_listings (marketplace listings).
@@ -67,6 +68,13 @@ class GuideListingController extends Controller
                 'status' => 'error',
                 'message' => 'Listing not found.',
             ], 404);
+        }
+        $guide = User::where('firebase_uid', $listing['guideId'] ?? $listingId)->first();
+        if (!$guide || !$guide->phone_verified_at || !$guide->phone_number) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Guide phone OTP verification is required before listing approval.',
+            ], 422);
         }
 
         $featured = (bool) $request->input('featured', false);

@@ -9,6 +9,53 @@ class AppLocalizationsJa extends AppLocalizations {
   AppLocalizationsJa([String locale = 'ja']) : super(locale);
 
   @override
+  String get guidePhoneVerified => '電話番号確認済み';
+
+  @override
+  String get guidePhoneVerificationRequired => '電話番号の確認が必要です';
+
+  @override
+  String get guidePhoneVerificationReason => '公開または予約承認の前にOTPで確認してください。';
+
+  @override
+  String get changePhoneAction => '変更';
+
+  @override
+  String get verifyPhoneAction => '確認';
+
+  @override
+  String get verifyGuidePhoneTitle => 'ガイドの電話番号を確認';
+
+  @override
+  String get phoneWithCountryCodeLabel => '国番号付き電話番号';
+
+  @override
+  String get sendOtpAction => 'OTPを送信';
+
+  @override
+  String get enterOtpTitle => 'SMSコードを入力';
+
+  @override
+  String get otpCodeLabel => '6桁のコード';
+
+  @override
+  String get phoneVerifiedSuccess => '電話番号を確認しました。';
+
+  @override
+  String phoneVerificationFailed(String error) {
+    return '電話番号の確認に失敗しました：$error';
+  }
+
+  @override
+  String get verifyPhoneBeforePublish => '公開前に電話番号を確認してください。';
+
+  @override
+  String get validPriceRequired => '有効な価格を入力してください';
+
+  @override
+  String get guideRateRangeError => '料金は0より大きく1,000,000以下にしてください';
+
+  @override
   String get retryAction => '再試行';
 
   @override

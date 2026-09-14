@@ -29,6 +29,10 @@ service cloud.firestore {
       );
     }
 
+    function hasVerifiedPhone() {
+      return isSignedIn() && request.auth.token.phone_number is string;
+    }
+
     // Server-side enforcement of the forensic risk posture. The
     // report_forensic_signals Cloud Function writes
     // users/{uid}/security/posture {isBlocked} when a client reports
@@ -102,7 +106,12 @@ service cloud.firestore {
                             'reviewCount', 'ratingAverage', 'ratingRecalcNeededAt',
                             'tier', 'dailyAiScans', 'scanQuotaResetAt', 'tokensUsed', 'aiQuotaLimit'
                           ]) &&
-                        guideStatusWriteMatchesApplication(userId)) ||
+                        guideStatusWriteMatchesApplication(userId) &&
+                        (!request.resource.data.diff(resource.data).affectedKeys()
+                          .hasAny(['phoneNumber', 'phoneVerified', 'phoneVerifiedAt']) ||
+                          (hasVerifiedPhone() &&
+                           request.resource.data.phoneNumber == request.auth.token.phone_number &&
+                           request.resource.data.phoneVerified == true))) ||
                        isAdmin();
       allow delete: if isAdmin();
 
@@ -166,11 +175,19 @@ service cloud.firestore {
       // false, ratingAverage:5.0, profileViews:0).
       allow create: if isVerifiedGuide() &&
         request.resource.data.guideId == request.auth.uid &&
+        request.resource.data.hourlyRate is number && request.resource.data.hourlyRate > 0 &&
+        request.resource.data.hourlyRate <= 1000000 &&
+        request.resource.data.currency in ['LKR', 'USD', 'EUR', 'GBP'] &&
+        (request.resource.data.status != 'published' || hasVerifiedPhone()) &&
         (!('moderationStatus' in request.resource.data) || request.resource.data.moderationStatus == 'pending') &&
         (!('isFeatured' in request.resource.data) || request.resource.data.isFeatured == false) &&
         (!('profileViews' in request.resource.data) || request.resource.data.profileViews == 0);
       allow update: if (isOwner(resource.data.guideId) &&
         request.resource.data.guideId == resource.data.guideId &&
+        request.resource.data.hourlyRate is number && request.resource.data.hourlyRate > 0 &&
+        request.resource.data.hourlyRate <= 1000000 &&
+        request.resource.data.currency in ['LKR', 'USD', 'EUR', 'GBP'] &&
+        (request.resource.data.status != 'published' || hasVerifiedPhone()) &&
         request.resource.data.moderationStatus == 'pending' &&
         !request.resource.data.diff(resource.data).affectedKeys()
           .hasAny(['isFeatured', 'featuredUntil', 'ratingAverage', 'reviewCount', 'profileViews', 'bookingRequestsCount', 'isInsured', 'trustTierPublic'])) ||

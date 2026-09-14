@@ -68,6 +68,8 @@ class User extends Authenticatable implements MustVerifyEmail
         'role',
         'subscription_tier',
         'firebase_uid',
+        'phone_number',
+        'phone_verified_at',
     ];
 
     /**
@@ -87,6 +89,7 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'phone_verified_at' => 'datetime',
     ];
 
     /**
@@ -105,4 +108,3 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->belongsToMany(Place::class, 'wishlists')->withTimestamps();
     }
 }
-

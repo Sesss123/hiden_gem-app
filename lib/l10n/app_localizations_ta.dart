@@ -9,6 +9,57 @@ class AppLocalizationsTa extends AppLocalizations {
   AppLocalizationsTa([String locale = 'ta']) : super(locale);
 
   @override
+  String get guidePhoneVerified => 'தொலைபேசி சரிபார்க்கப்பட்டது';
+
+  @override
+  String get guidePhoneVerificationRequired => 'தொலைபேசி சரிபார்ப்பு தேவை';
+
+  @override
+  String get guidePhoneVerificationReason =>
+      'வெளியிட அல்லது முன்பதிவை ஏற்க முன் OTP மூலம் சரிபார்க்கவும்.';
+
+  @override
+  String get changePhoneAction => 'மாற்று';
+
+  @override
+  String get verifyPhoneAction => 'சரிபார்';
+
+  @override
+  String get verifyGuidePhoneTitle => 'வழிகாட்டி தொலைபேசியை சரிபார்';
+
+  @override
+  String get phoneWithCountryCodeLabel => 'நாட்டுக் குறியீட்டுடன் தொலைபேசி எண்';
+
+  @override
+  String get sendOtpAction => 'OTP அனுப்பு';
+
+  @override
+  String get enterOtpTitle => 'SMS குறியீட்டை உள்ளிடவும்';
+
+  @override
+  String get otpCodeLabel => '6 இலக்க குறியீடு';
+
+  @override
+  String get phoneVerifiedSuccess =>
+      'தொலைபேசி எண் வெற்றிகரமாக சரிபார்க்கப்பட்டது.';
+
+  @override
+  String phoneVerificationFailed(String error) {
+    return 'தொலைபேசி சரிபார்ப்பு தோல்வி: $error';
+  }
+
+  @override
+  String get verifyPhoneBeforePublish =>
+      'வெளியிட முன் தொலைபேசியை சரிபார்க்கவும்.';
+
+  @override
+  String get validPriceRequired => 'செல்லுபடியான விலையை உள்ளிடவும்';
+
+  @override
+  String get guideRateRangeError =>
+      'கட்டணம் 0க்கு மேல், 1,000,000க்கு மிகாமல் இருக்க வேண்டும்';
+
+  @override
   String get retryAction => 'மீண்டும் முயற்சிக்கவும்';
 
   @override

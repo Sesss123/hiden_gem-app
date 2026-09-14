@@ -9,6 +9,57 @@ class AppLocalizationsRu extends AppLocalizations {
   AppLocalizationsRu([String locale = 'ru']) : super(locale);
 
   @override
+  String get guidePhoneVerified => 'Телефон подтверждён';
+
+  @override
+  String get guidePhoneVerificationRequired =>
+      'Требуется подтверждение телефона';
+
+  @override
+  String get guidePhoneVerificationReason =>
+      'Подтвердите OTP перед публикацией или принятием бронирований.';
+
+  @override
+  String get changePhoneAction => 'Изменить';
+
+  @override
+  String get verifyPhoneAction => 'Подтвердить';
+
+  @override
+  String get verifyGuidePhoneTitle => 'Подтвердить телефон гида';
+
+  @override
+  String get phoneWithCountryCodeLabel => 'Телефон с кодом страны';
+
+  @override
+  String get sendOtpAction => 'Отправить OTP';
+
+  @override
+  String get enterOtpTitle => 'Введите код из SMS';
+
+  @override
+  String get otpCodeLabel => '6-значный код';
+
+  @override
+  String get phoneVerifiedSuccess => 'Телефон успешно подтверждён.';
+
+  @override
+  String phoneVerificationFailed(String error) {
+    return 'Не удалось подтвердить телефон: $error';
+  }
+
+  @override
+  String get verifyPhoneBeforePublish =>
+      'Подтвердите телефон перед публикацией.';
+
+  @override
+  String get validPriceRequired => 'Введите корректную цену';
+
+  @override
+  String get guideRateRangeError =>
+      'Ставка должна быть больше 0 и не выше 1 000 000';
+
+  @override
   String get retryAction => 'Повторить';
 
   @override

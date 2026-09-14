@@ -9,6 +9,56 @@ class AppLocalizationsSi extends AppLocalizations {
   AppLocalizationsSi([String locale = 'si']) : super(locale);
 
   @override
+  String get guidePhoneVerified => 'දුරකථනය තහවුරු කර ඇත';
+
+  @override
+  String get guidePhoneVerificationRequired => 'දුරකථන තහවුරු කිරීම අවශ්‍යයි';
+
+  @override
+  String get guidePhoneVerificationReason =>
+      'Publish කිරීමට හෝ bookings භාරගැනීමට පෙර OTP මඟින් තහවුරු කරන්න.';
+
+  @override
+  String get changePhoneAction => 'වෙනස් කරන්න';
+
+  @override
+  String get verifyPhoneAction => 'තහවුරු කරන්න';
+
+  @override
+  String get verifyGuidePhoneTitle => 'Guide දුරකථනය තහවුරු කරන්න';
+
+  @override
+  String get phoneWithCountryCodeLabel => 'රටේ කේතය සමඟ දුරකථන අංකය';
+
+  @override
+  String get sendOtpAction => 'OTP යවන්න';
+
+  @override
+  String get enterOtpTitle => 'SMS කේතය ඇතුළත් කරන්න';
+
+  @override
+  String get otpCodeLabel => 'අංක 6 කේතය';
+
+  @override
+  String get phoneVerifiedSuccess => 'දුරකථන අංකය සාර්ථකව තහවුරු කළා.';
+
+  @override
+  String phoneVerificationFailed(String error) {
+    return 'දුරකථන තහවුරු කිරීම අසාර්ථකයි: $error';
+  }
+
+  @override
+  String get verifyPhoneBeforePublish =>
+      'Publish කිරීමට පෙර දුරකථන අංකය තහවුරු කරන්න.';
+
+  @override
+  String get validPriceRequired => 'වලංගු මිලක් ඇතුළත් කරන්න';
+
+  @override
+  String get guideRateRangeError =>
+      'ගාස්තුව 0ට වැඩි සහ 1,000,000ට නොවැඩි විය යුතුයි';
+
+  @override
   String get retryAction => 'නැවත උත්සාහ කරන්න';
 
   @override

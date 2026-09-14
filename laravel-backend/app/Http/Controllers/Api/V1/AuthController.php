@@ -191,6 +191,16 @@ class AuthController extends Controller
                     $user->update(['firebase_uid' => $uid]);
                 }
             }
+            if ($phoneNumber) {
+                $phoneOwner = User::where('phone_number', $phoneNumber)->first();
+                if ($phoneOwner && (!$user || $phoneOwner->id !== $user->id)) {
+                    return response()->json([
+                        'status' => 'error',
+                        'message' => 'This verified phone number is already linked to another account.',
+                        'code' => 'phone_already_linked',
+                    ], 409);
+                }
+            }
             if (!$user) {
                 // The legacy users table requires a unique non-null email.
                 // Phone-only Firebase accounts therefore receive a stable,
@@ -206,6 +216,8 @@ class AuthController extends Controller
                     'role' => 'tourist',
                     'subscription_tier' => 'Free',
                     'email_verified_at' => $emailVerified ? now() : null,
+                    'phone_number' => $phoneNumber,
+                    'phone_verified_at' => $phoneNumber ? now() : null,
                 ]);
             } elseif ($emailVerified && !$user->email_verified_at) {
                 // Track verification even for pre-existing rows — Firebase's
@@ -213,6 +225,9 @@ class AuthController extends Controller
                 // so a user who verifies their email after initial signup
                 // gets credit for it without a separate endpoint.
                 $user->update(['email_verified_at' => now()]);
+            }
+            if ($phoneNumber && ($user->phone_number !== $phoneNumber || !$user->phone_verified_at)) {
+                $user->update(['phone_number' => $phoneNumber, 'phone_verified_at' => now()]);
             }
 
             if ($user->role === User::ROLE_BANNED) {

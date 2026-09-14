@@ -11,9 +11,7 @@ import '../../core/network/secure_http_client.dart';
 import '../../core/services/brute_force_service.dart';
 import '../../core/utils/secure_logger.dart';
 import '../../core/notifications/notification_service.dart';
-import '../../core/services/secure_entitlements.dart';
 import '../../core/services/zenith_security_facade.dart';
-import '../../core/services/vault_service.dart';
 import 'trip_cache_service.dart';
 import 'user_preference_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -246,6 +244,75 @@ class AuthService {
     }
     if (result.user != null) await _syncUserData(result.user!);
     return result;
+  }
+
+  /// Sends an OTP for linking a verified phone number to the currently
+  /// signed-in account. This never signs into a different phone-only account.
+  Future<PhoneSignInChallenge> startGuidePhoneLink(String phoneNumber) async {
+    final current = _auth.currentUser;
+    if (current == null) throw StateError('Sign in before verifying a phone number.');
+    if (kIsWeb) {
+      throw UnsupportedError('Guide phone linking is available in the Android/iOS app.');
+    }
+    final normalized = phoneNumber.replaceAll(RegExp(r'[\s()-]'), '');
+    if (!RegExp(r'^\+[1-9]\d{7,14}$').hasMatch(normalized)) {
+      throw FirebaseAuthException(code: 'invalid-phone-number',
+          message: 'Enter a valid phone number including the country code.');
+    }
+    final completer = Completer<PhoneSignInChallenge>();
+    await _auth.verifyPhoneNumber(
+      phoneNumber: normalized,
+      timeout: const Duration(seconds: 60),
+      verificationCompleted: (credential) async {
+        try {
+          await _linkPhoneCredential(current, credential);
+          if (!completer.isCompleted) completer.complete(const PhoneSignInChallenge());
+        } catch (error, stack) {
+          if (!completer.isCompleted) completer.completeError(error, stack);
+        }
+      },
+      verificationFailed: (error) {
+        if (!completer.isCompleted) completer.completeError(error);
+      },
+      codeSent: (verificationId, _) {
+        if (!completer.isCompleted) completer.complete(PhoneSignInChallenge(verificationId: verificationId));
+      },
+      codeAutoRetrievalTimeout: (verificationId) {
+        if (!completer.isCompleted) completer.complete(PhoneSignInChallenge(verificationId: verificationId));
+      },
+    );
+    return completer.future.timeout(const Duration(seconds: 75));
+  }
+
+  Future<void> confirmGuidePhoneLink(PhoneSignInChallenge challenge, String smsCode) async {
+    if (challenge.verificationId == null) return; // Android auto-verification completed.
+    final code = smsCode.trim();
+    if (!RegExp(r'^\d{6}$').hasMatch(code)) {
+      throw FirebaseAuthException(code: 'invalid-verification-code', message: 'Enter the 6-digit SMS code.');
+    }
+    final current = _auth.currentUser;
+    if (current == null) throw StateError('Your sign-in session has ended.');
+    await _linkPhoneCredential(current, PhoneAuthProvider.credential(
+      verificationId: challenge.verificationId!, smsCode: code));
+  }
+
+  Future<void> _linkPhoneCredential(User user, PhoneAuthCredential credential) async {
+    if (user.providerData.any((provider) => provider.providerId == PhoneAuthProvider.PROVIDER_ID)) {
+      await user.updatePhoneNumber(credential);
+    } else {
+      await user.linkWithCredential(credential);
+    }
+    await user.reload();
+    final refreshed = _auth.currentUser!;
+    await refreshed.getIdToken(true);
+    final phone = refreshed.phoneNumber;
+    if (phone == null) throw StateError('Firebase did not confirm the phone number.');
+    await FirebaseFirestore.instance.collection('users').doc(refreshed.uid).set({
+      'phoneNumber': phone,
+      'phoneVerified': true,
+      'phoneVerifiedAt': FieldValue.serverTimestamp(),
+    }, SetOptions(merge: true));
+    await _syncWithLaravelSanctum(refreshed);
   }
 
   String _generateNonce([int length = 32]) {

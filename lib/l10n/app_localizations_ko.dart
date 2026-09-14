@@ -9,6 +9,53 @@ class AppLocalizationsKo extends AppLocalizations {
   AppLocalizationsKo([String locale = 'ko']) : super(locale);
 
   @override
+  String get guidePhoneVerified => '전화번호 인증됨';
+
+  @override
+  String get guidePhoneVerificationRequired => '전화번호 인증 필요';
+
+  @override
+  String get guidePhoneVerificationReason => '게시하거나 예약을 수락하기 전에 OTP로 인증하세요.';
+
+  @override
+  String get changePhoneAction => '변경';
+
+  @override
+  String get verifyPhoneAction => '인증';
+
+  @override
+  String get verifyGuidePhoneTitle => '가이드 전화번호 인증';
+
+  @override
+  String get phoneWithCountryCodeLabel => '국가 코드가 포함된 전화번호';
+
+  @override
+  String get sendOtpAction => 'OTP 전송';
+
+  @override
+  String get enterOtpTitle => 'SMS 코드 입력';
+
+  @override
+  String get otpCodeLabel => '6자리 코드';
+
+  @override
+  String get phoneVerifiedSuccess => '전화번호가 인증되었습니다.';
+
+  @override
+  String phoneVerificationFailed(String error) {
+    return '전화번호 인증 실패: $error';
+  }
+
+  @override
+  String get verifyPhoneBeforePublish => '게시하기 전에 전화번호를 인증하세요.';
+
+  @override
+  String get validPriceRequired => '올바른 가격을 입력하세요';
+
+  @override
+  String get guideRateRangeError => '요금은 0보다 크고 1,000,000 이하여야 합니다';
+
+  @override
   String get retryAction => '다시 시도';
 
   @override

@@ -17,6 +17,7 @@ import 'guide_availability_screen.dart';
 import 'package:hidden_gems_sl/core/utils/secure_logger.dart';
 import '../../l10n/app_localizations.dart';
 import '../../core/constants/tour_types.dart';
+import '../../data/datasources/auth_service.dart';
 
 class GuideListingEditorScreen extends ConsumerStatefulWidget {
   final bool embedded;
@@ -103,7 +104,6 @@ class _GuideListingEditorScreenState
         }
         _languagesController.text = 'English, Sinhala';
         _regionsController.text = 'Central, Southern, Western';
-        _hourlyRateController.text = '25';
       }
 
       // The license number is a verified credential set at enrollment time
@@ -235,6 +235,12 @@ class _GuideListingEditorScreenState
 
   Future<void> _saveListing({required String status}) async {
     if (!_formKey.currentState!.validate()) return;
+    if (status == 'published' && FirebaseAuth.instance.currentUser?.phoneNumber == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(AppLocalizations.of(context)!.verifyPhoneBeforePublish)),
+      );
+      return;
+    }
 
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid == null) return;
@@ -259,7 +265,7 @@ class _GuideListingEditorScreenState
           .where((e) => e.isNotEmpty)
           .toList();
 
-      final hourlyRate = double.tryParse(_hourlyRateController.text) ?? 0.0;
+      final hourlyRate = double.parse(_hourlyRateController.text.trim());
 
       final updatedListing = GuideListing(
         listingId: uid,
@@ -402,6 +408,8 @@ class _GuideListingEditorScreenState
                   _buildVerifiedLicenseTile(),
                   const SizedBox(height: 16),
                 ],
+                _buildPhoneVerificationCard(l10n),
+                const SizedBox(height: 16),
                 _buildTextField(
                   controller: _displayNameController,
                   label: l10n.displayNameLabel,
@@ -467,9 +475,12 @@ class _GuideListingEditorScreenState
                         hint: l10n.hourlyRateHint,
                         icon: Icons.attach_money,
                         keyboardType: TextInputType.number,
-                        validator: (v) => v == null || v.isEmpty
-                            ? l10n.requiredFieldMessage
-                            : null,
+                        validator: (v) {
+                          final rate = double.tryParse(v?.trim() ?? '');
+                          if (rate == null) return l10n.validPriceRequired;
+                          if (rate <= 0 || rate > 1000000) return l10n.guideRateRangeError;
+                          return null;
+                        },
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -819,6 +830,79 @@ class _GuideListingEditorScreenState
         ),
       ],
     );
+  }
+
+  Widget _buildPhoneVerificationCard(AppLocalizations l10n) {
+    final phone = FirebaseAuth.instance.currentUser?.phoneNumber;
+    final verified = phone != null && phone.isNotEmpty;
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: (verified ? AppTheme.colors.greenAccent : AppTheme.warningAmber).withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: (verified ? AppTheme.colors.greenAccent : AppTheme.warningAmber).withValues(alpha: 0.35)),
+      ),
+      child: Row(children: [
+        Icon(verified ? Icons.verified_user_rounded : Icons.phone_android_rounded,
+          color: verified ? AppTheme.colors.greenAccent : AppTheme.warningAmber),
+        const SizedBox(width: 12),
+        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text(verified ? l10n.guidePhoneVerified : l10n.guidePhoneVerificationRequired,
+            style: GoogleFonts.outfit(fontWeight: FontWeight.w700, color: AppTheme.textPrimary(context))),
+          const SizedBox(height: 3),
+          Text(verified ? _maskedPhone(phone) : l10n.guidePhoneVerificationReason,
+            style: GoogleFonts.inter(fontSize: 11, color: AppTheme.textSecondary(context))),
+        ])),
+        TextButton(onPressed: _isSaving ? null : _verifyGuidePhone,
+          child: Text(verified ? l10n.changePhoneAction : l10n.verifyPhoneAction)),
+      ]),
+    );
+  }
+
+  String _maskedPhone(String phone) => phone.length < 7
+      ? phone : '${phone.substring(0, 4)}••••${phone.substring(phone.length - 3)}';
+
+  Future<void> _verifyGuidePhone() async {
+    final l10n = AppLocalizations.of(context)!;
+    final phoneController = TextEditingController(text: FirebaseAuth.instance.currentUser?.phoneNumber ?? '+94');
+    final phone = await showDialog<String>(context: context, builder: (dialogContext) => AlertDialog(
+      title: Text(l10n.verifyGuidePhoneTitle),
+      content: TextField(controller: phoneController, keyboardType: TextInputType.phone,
+        autofillHints: const [AutofillHints.telephoneNumber],
+        decoration: InputDecoration(labelText: l10n.phoneWithCountryCodeLabel)),
+      actions: [TextButton(onPressed: () => Navigator.pop(dialogContext), child: Text(l10n.cancel)),
+        FilledButton(onPressed: () => Navigator.pop(dialogContext, phoneController.text.trim()), child: Text(l10n.sendOtpAction))],
+    ));
+    phoneController.dispose();
+    if (phone == null || phone.isEmpty || !mounted) return;
+    setState(() => _isSaving = true);
+    try {
+      final auth = AuthService();
+      final challenge = await auth.startGuidePhoneLink(phone);
+      if (challenge.verificationId != null && mounted) {
+        final codeController = TextEditingController();
+        final code = await showDialog<String>(context: context, barrierDismissible: false,
+          builder: (dialogContext) => AlertDialog(title: Text(l10n.enterOtpTitle),
+            content: TextField(controller: codeController, keyboardType: TextInputType.number,
+              maxLength: 6, inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+              decoration: InputDecoration(labelText: l10n.otpCodeLabel)),
+            actions: [TextButton(onPressed: () => Navigator.pop(dialogContext), child: Text(l10n.cancel)),
+              FilledButton(onPressed: () => Navigator.pop(dialogContext, codeController.text.trim()), child: Text(l10n.verifyPhoneAction))]));
+        codeController.dispose();
+        if (code == null) return;
+        await auth.confirmGuidePhoneLink(challenge, code);
+      }
+      if (mounted) {
+        setState(() {});
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.phoneVerifiedSuccess)));
+      }
+    } on FirebaseAuthException catch (error) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.phoneVerificationFailed(error.message ?? error.code))));
+    } catch (error) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.phoneVerificationFailed(error.toString()))));
+    } finally {
+      if (mounted) setState(() => _isSaving = false);
+    }
   }
 
   Widget _buildVerifiedLicenseTile() {

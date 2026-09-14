@@ -49,6 +49,10 @@
                 </div>
                 <h3 class="font-bold text-white text-lg">{{ $application->user->name ?? 'Unknown User' }}</h3>
                 <p class="text-xs text-slate-400 mt-1 mb-4">{{ $application->user->email ?? 'No email' }}</p>
+                <div class="mb-4 text-xs rounded-xl border px-3 py-2 {{ $application->user?->phone_verified_at ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300' : 'border-red-500/30 bg-red-500/10 text-red-300' }}">
+                    <i class="fa-solid {{ $application->user?->phone_verified_at ? 'fa-phone-circle-check' : 'fa-phone-slash' }} mr-1"></i>
+                    {{ $application->user?->phone_verified_at ? ('OTP verified: ' . substr($application->user->phone_number, 0, 4) . '••••' . substr($application->user->phone_number, -3)) : 'Phone OTP not verified — approval blocked' }}
+                </div>
                 <div class="text-xs text-slate-500 bg-slate-900/60 border border-slate-800/80 px-3 py-2 rounded-xl text-left space-y-1.5">
                     <div><span class="text-slate-400">Current Role:</span> <span class="font-bold text-emerald-400">{{ ucfirst($application->user->role ?? 'tourist') }}</span></div>
                     <div><span class="text-slate-400">Subs Tier:</span> <span class="font-semibold text-slate-300">{{ $application->user->subscription_tier ?? 'Free' }}</span></div>

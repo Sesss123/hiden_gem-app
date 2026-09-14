@@ -106,6 +106,96 @@ abstract class AppLocalizations {
     Locale('ta')
   ];
 
+  /// No description provided for @guidePhoneVerified.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone verified'**
+  String get guidePhoneVerified;
+
+  /// No description provided for @guidePhoneVerificationRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone verification required'**
+  String get guidePhoneVerificationRequired;
+
+  /// No description provided for @guidePhoneVerificationReason.
+  ///
+  /// In en, this message translates to:
+  /// **'Verify by OTP before publishing or accepting bookings.'**
+  String get guidePhoneVerificationReason;
+
+  /// No description provided for @changePhoneAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Change'**
+  String get changePhoneAction;
+
+  /// No description provided for @verifyPhoneAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Verify'**
+  String get verifyPhoneAction;
+
+  /// No description provided for @verifyGuidePhoneTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Verify guide phone'**
+  String get verifyGuidePhoneTitle;
+
+  /// No description provided for @phoneWithCountryCodeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone number with country code'**
+  String get phoneWithCountryCodeLabel;
+
+  /// No description provided for @sendOtpAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Send OTP'**
+  String get sendOtpAction;
+
+  /// No description provided for @enterOtpTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter SMS code'**
+  String get enterOtpTitle;
+
+  /// No description provided for @otpCodeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'6-digit code'**
+  String get otpCodeLabel;
+
+  /// No description provided for @phoneVerifiedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone number verified successfully.'**
+  String get phoneVerifiedSuccess;
+
+  /// No description provided for @phoneVerificationFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone verification failed: {error}'**
+  String phoneVerificationFailed(String error);
+
+  /// No description provided for @verifyPhoneBeforePublish.
+  ///
+  /// In en, this message translates to:
+  /// **'Verify your phone number before publishing.'**
+  String get verifyPhoneBeforePublish;
+
+  /// No description provided for @validPriceRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid price'**
+  String get validPriceRequired;
+
+  /// No description provided for @guideRateRangeError.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate must be greater than 0 and no more than 1,000,000'**
+  String get guideRateRangeError;
+
   /// No description provided for @retryAction.
   ///
   /// In en, this message translates to:

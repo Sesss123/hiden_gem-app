@@ -9,6 +9,56 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get guidePhoneVerified => 'Phone verified';
+
+  @override
+  String get guidePhoneVerificationRequired => 'Phone verification required';
+
+  @override
+  String get guidePhoneVerificationReason =>
+      'Verify by OTP before publishing or accepting bookings.';
+
+  @override
+  String get changePhoneAction => 'Change';
+
+  @override
+  String get verifyPhoneAction => 'Verify';
+
+  @override
+  String get verifyGuidePhoneTitle => 'Verify guide phone';
+
+  @override
+  String get phoneWithCountryCodeLabel => 'Phone number with country code';
+
+  @override
+  String get sendOtpAction => 'Send OTP';
+
+  @override
+  String get enterOtpTitle => 'Enter SMS code';
+
+  @override
+  String get otpCodeLabel => '6-digit code';
+
+  @override
+  String get phoneVerifiedSuccess => 'Phone number verified successfully.';
+
+  @override
+  String phoneVerificationFailed(String error) {
+    return 'Phone verification failed: $error';
+  }
+
+  @override
+  String get verifyPhoneBeforePublish =>
+      'Verify your phone number before publishing.';
+
+  @override
+  String get validPriceRequired => 'Enter a valid price';
+
+  @override
+  String get guideRateRangeError =>
+      'Rate must be greater than 0 and no more than 1,000,000';
+
+  @override
   String get retryAction => 'Retry';
 
   @override

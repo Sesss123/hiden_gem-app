@@ -12,6 +12,9 @@ class BookingController extends Controller
 {
     public function acceptWithSession(Request $request, string $bookingId, FirestoreService $firestore)
     {
+        if (!$request->user()->phone_verified_at || !$request->user()->phone_number) {
+            return response()->json(['error' => 'Verify your guide phone number before accepting bookings.', 'code' => 'guide_phone_unverified'], 403);
+        }
         $validator = Validator::make($request->all(), [
             'amount' => 'required|numeric|min:0.01',
             'currency' => 'nullable|string|max:10',
