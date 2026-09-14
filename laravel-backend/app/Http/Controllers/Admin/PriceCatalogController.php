@@ -8,6 +8,7 @@ use App\Traits\LogsAdminActivity;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 
 class PriceCatalogController extends Controller
 {
@@ -30,8 +31,42 @@ class PriceCatalogController extends Controller
         return back()->with('success', "Price configuration {$item->key} created.");
     }
 
+    /** Create the known app keys without inventing numeric prices. */
+    public function initialize()
+    {
+        $templates = [
+            ['key' => 'drinks.thambili', 'category' => 'Local drinks', 'label' => 'King Coconut (Thambili)'],
+            ['key' => 'drinks.palmyrah', 'category' => 'Local drinks', 'label' => 'Palmyrah drink'],
+            ['key' => 'drinks.herbal_tea', 'category' => 'Local drinks', 'label' => 'Belimal / Ranawara herbal tea'],
+            ['key' => 'subscriptions.smart_traveler.monthly', 'category' => 'Subscriptions', 'label' => 'Smart Traveler monthly'],
+            ['key' => 'subscriptions.heritage.monthly', 'category' => 'Subscriptions', 'label' => 'Heritage Premium monthly'],
+            ['key' => 'subscriptions.heritage.annual', 'category' => 'Subscriptions', 'label' => 'Heritage Premium annual'],
+        ];
+        $created = DB::transaction(function () use ($templates) {
+            $created = 0;
+            foreach ($templates as $template) {
+                $item = PriceCatalogItem::firstOrCreate(['key' => $template['key']], $template + [
+                    'display_mode' => 'unavailable', 'is_active' => true, 'updated_by' => auth()->id(),
+                    'source' => 'Awaiting administrator configuration',
+                ]);
+                if ($item->wasRecentlyCreated) $created++;
+            }
+            $this->logAdminAction('initialize_price_catalog', 'price_catalog', null,
+                ['created_count' => $created, 'template_count' => count($templates)]);
+            return $created;
+        });
+        return back()->with('success', $created
+            ? "Created {$created} safe price templates. Enter values and save each item."
+            : 'All standard price templates already exist.');
+    }
+
     public function update(Request $request, PriceCatalogItem $priceCatalogItem)
     {
+        if ($request->input('key') !== $priceCatalogItem->key) {
+            throw ValidationException::withMessages([
+                'key' => 'Stable app keys cannot be renamed. Create a new custom key instead.',
+            ]);
+        }
         $before = $priceCatalogItem->toArray();
         $data = $this->validated($request, $priceCatalogItem->id);
         DB::transaction(function () use ($priceCatalogItem, $data, $before) {
@@ -68,10 +103,13 @@ class PriceCatalogController extends Controller
         $data['is_active'] = $request->boolean('is_active');
         if (in_array($data['display_mode'], ['fixed', 'from', 'range'], true)) {
             if (!isset($data['amount']) || empty($data['currency'])) {
-                abort(422, 'Numeric price modes require amount and ISO currency.');
+                throw ValidationException::withMessages([
+                    'amount' => 'Fixed, From and Range modes require an amount.',
+                    'currency' => 'Choose a 3-letter currency for numeric prices.',
+                ]);
             }
             if ($data['display_mode'] === 'range' && !isset($data['max_amount'])) {
-                abort(422, 'Range mode requires a maximum amount.');
+                throw ValidationException::withMessages(['max_amount' => 'Range mode requires a maximum amount.']);
             }
         } else {
             $data['amount'] = $data['max_amount'] = $data['currency'] = null;

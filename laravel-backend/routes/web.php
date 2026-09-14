@@ -148,6 +148,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::middleware(['throttle:30,1', 'admin_recent:10'])->group(function () {
             Route::post('/settings/ads', [SettingController::class, 'toggleAds'])->name('settings.ads.toggle');
             Route::post('/prices', [PriceCatalogController::class, 'store'])->name('prices.store');
+            Route::post('/prices/initialize', [PriceCatalogController::class, 'initialize'])->name('prices.initialize');
             Route::patch('/prices/{priceCatalogItem}', [PriceCatalogController::class, 'update'])->name('prices.update');
             Route::delete('/prices/{priceCatalogItem}', [PriceCatalogController::class, 'destroy'])->name('prices.destroy');
             Route::resource('places', PlaceController::class)->only(['destroy']);
