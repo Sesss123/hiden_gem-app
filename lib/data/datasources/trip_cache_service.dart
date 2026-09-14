@@ -185,8 +185,9 @@ class TripCacheService {
     try {
       final box = Hive.box<String>(_lastPlanBox);
       final raw = box.get(cacheKey);
-      if (raw == null)
+      if (raw == null) {
         return const CachedPlanResult(state: CacheReadResult.miss);
+      }
 
       final data = json.decode(raw) as Map<String, dynamic>;
       if (!_isValidSchema(data)) {

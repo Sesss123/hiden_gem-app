@@ -150,8 +150,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
       if (lastCheckMs != null) {
         final elapsed = DateTime.now()
             .difference(DateTime.fromMillisecondsSinceEpoch(lastCheckMs));
-        if (elapsed < _roleCheckWindow)
+        if (elapsed < _roleCheckWindow) {
           return; // Still fresh — skip the Firestore read.
+        }
       }
       await prefs.setInt(
           _lastRoleCheckPrefsKey, DateTime.now().millisecondsSinceEpoch);
@@ -367,8 +368,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
           await picker.pickImage(source: source, maxWidth: 800);
       if (image != null) {
         await UserPreferenceService.updateProfileImagePath(image.path);
-        if (mounted)
+        if (mounted) {
           setState(() => profile = UserPreferenceService.getProfile());
+        }
       }
     }
   }
@@ -1803,8 +1805,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
     );
     if (confirm != true) return;
     await AuthService().signOut();
-    if (mounted)
+    if (mounted) {
       Navigator.of(context).pushNamedAndRemoveUntil('/login', (_) => false);
+    }
   }
 
   Future<bool?> _showConfirmDialog({

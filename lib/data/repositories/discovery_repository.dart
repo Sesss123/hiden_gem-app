@@ -58,7 +58,7 @@ class DiscoveryRepository {
     // The app now relies entirely on Level-2 SQLite + Background Delta Sync for all geo-spatial queries.
 
     // 3. SQLite / Delta Sync check (L2)
-    if (!kIsWeb)
+    if (!kIsWeb) {
       try {
         final sqliteService = SqliteStorageService();
         final deltaService = DeltaSyncService();
@@ -100,6 +100,7 @@ class DiscoveryRepository {
         SecureLogger.warning(
             "SQLite / Delta sync fetch failed, falling back to L3 REST: $e");
       }
+    }
 
     // 4. Last-known-good cache fallback. Do not read the raw Firestore
     // collection here: it can contain pending/unpublished moderation records,
@@ -125,13 +126,16 @@ class DiscoveryRepository {
       if (place.lat < -90 ||
           place.lat > 90 ||
           place.lng < -180 ||
-          place.lng > 180) continue;
+          place.lng > 180) {
+        continue;
+      }
       if (place.lat == 0 && place.lng == 0) continue;
       final key =
           '${place.name.trim().toLowerCase()}|${place.lat.toStringAsFixed(5)}|${place.lng.toStringAsFixed(5)}';
       final existing = unique[key];
-      if (existing == null || place.syncVersion > existing.syncVersion)
+      if (existing == null || place.syncVersion > existing.syncVersion) {
         unique[key] = place;
+      }
     }
     places = unique.values.toList();
 

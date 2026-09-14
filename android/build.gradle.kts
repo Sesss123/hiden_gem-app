@@ -15,6 +15,17 @@ buildscript {
     }
 }
 
+// Keep every Android subproject under Flutter's workspace-level build tree.
+// This is configured from the root project before :app is evaluated, so the
+// Flutter plugin and AGP agree on both native-library inputs and final AAB/APK
+// outputs. A late redirect inside app/build.gradle.kts would break that.
+val flutterBuildDir = rootProject.layout.buildDirectory.dir("../../build").get()
+rootProject.layout.buildDirectory.value(flutterBuildDir)
+
+subprojects {
+    project.layout.buildDirectory.value(flutterBuildDir.dir(project.name))
+}
+
 allprojects {
     buildscript {
         repositories {

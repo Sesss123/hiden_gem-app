@@ -130,7 +130,9 @@ class _SavorLankaScreenState extends ConsumerState<SavorLankaScreen>
   Future<void> _analyzeFood() async {
     if (_isAnalyzing ||
         _controller == null ||
-        !_controller!.value.isInitialized) return;
+        !_controller!.value.isInitialized) {
+      return;
+    }
 
     setState(() {
       _isAnalyzing = true;

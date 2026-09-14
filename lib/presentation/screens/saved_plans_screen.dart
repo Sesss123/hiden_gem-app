@@ -4,16 +4,13 @@ import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hidden_gems_sl/data/datasources/trip_cache_service.dart';
-import '../../core/config/app_config.dart';
 import '../../core/theme/oracle_ui_system.dart';
 import '../../data/models/trip_plan_model.dart';
 import '../widgets/interested_events_hub.dart';
-import 'ar_viewer_screen.dart';
 import 'ar_coming_soon_screen.dart';
 import 'results_screen.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:collection/collection.dart';
-import '../../data/models/ar_place_data.dart';
 import '../../l10n/app_localizations.dart';
 
 class SavedPlansScreen extends ConsumerStatefulWidget {
@@ -38,10 +35,17 @@ class _SavedPlansScreenState extends ConsumerState<SavedPlansScreen> {
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(AppLocalizations.of(context)!.planRemovedSnackbar, style: GoogleFonts.inter(color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.w600)),
+          content: Text(AppLocalizations.of(context)!.planRemovedSnackbar,
+              style: GoogleFonts.inter(
+                  color: Theme.of(context).colorScheme.onSurface,
+                  fontWeight: FontWeight.w600)),
           behavior: SnackBarBehavior.floating,
           backgroundColor: Theme.of(context).cardTheme.color,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12), side: BorderSide(color: Theme.of(context).dividerColor.withValues(alpha: 0.2))),
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+              side: BorderSide(
+                  color:
+                      Theme.of(context).dividerColor.withValues(alpha: 0.2))),
         ),
       );
     }
@@ -51,13 +55,15 @@ class _SavedPlansScreenState extends ConsumerState<SavedPlansScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => ResultsScreen(plan: plan, cacheState: CacheReadResult.fresh),
+        builder: (_) =>
+            ResultsScreen(plan: plan, cacheState: CacheReadResult.fresh),
       ),
     );
   }
 
   Widget _buildARSwipeBackground(TripPlan plan) {
-    final hasAR = plan.itinerary.expand((d) => d.items).any((i) => i.arSupported);
+    final hasAR =
+        plan.itinerary.expand((d) => d.items).any((i) => i.arSupported);
     return Container(
       alignment: Alignment.centerLeft,
       padding: const EdgeInsets.only(left: 20),
@@ -91,43 +97,13 @@ class _SavedPlansScreenState extends ConsumerState<SavedPlansScreen> {
 
   void _launchARShortcut(BuildContext context, String name) {
     // TripPlan items currently carry only an AR flag, not verified model
-    // URLs. Keep this shortcut closed until that metadata is persisted.
-    final hasVerifiedAssetMetadata = false;
-    // AR content isn't live yet — see AppConfig.arFeatureEnabled.
-    if (!AppConfig.arFeatureEnabled || !hasVerifiedAssetMetadata) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => ARComingSoonScreen(placeName: name)),
-      );
-      return;
-    }
-
-    final l10n = AppLocalizations.of(context)!;
-    final arData = ARPlaceData(
-      arSupported: true,
-      arTier: 1,
-      arBrandName: l10n.arBrandNameHeritage,
-      arModelUrl: "",
-      arHistoricalModelUrl: "",
-      arModelScale: 0.05,
-      historicalPeriod: l10n.ancientHeritageSite,
-      audioUrlSi: "",
-      audioUrlEn: "",
-      fallbackVideoUrl: "",
-      arContentVersion: 1,
-      hotspots: [],
-      artifacts: [],
-      targetLat: 7.9575,
-      targetLng: 80.7603,
-    );
-
+    // URLs. Keep this shortcut closed until that metadata is persisted and
+    // open the localized coming-soon experience instead of constructing fake
+    // coordinates or empty AR assets.
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ARViewerScreen(
-          arData: arData,
-          placeName: name,
-        ),
+        builder: (_) => ARComingSoonScreen(placeName: name),
       ),
     );
   }
@@ -142,7 +118,8 @@ class _SavedPlansScreenState extends ConsumerState<SavedPlansScreen> {
         backgroundColor: AppTheme.colors.transparent,
         elevation: 0,
         centerTitle: false,
-        iconTheme: IconThemeData(color: Theme.of(context).colorScheme.onSurface),
+        iconTheme:
+            IconThemeData(color: Theme.of(context).colorScheme.onSurface),
         title: Text(
           l10n.savedTripsTitle,
           style: GoogleFonts.outfit(
@@ -155,22 +132,41 @@ class _SavedPlansScreenState extends ConsumerState<SavedPlansScreen> {
         actions: [
           if (_plans.isNotEmpty)
             IconButton(
-              icon: Icon(Icons.delete_sweep_rounded, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4), size: 22),
+              icon: Icon(Icons.delete_sweep_rounded,
+                  color: Theme.of(context)
+                      .colorScheme
+                      .onSurface
+                      .withValues(alpha: 0.4),
+                  size: 22),
               onPressed: () async {
                 final confirm = await showDialog<bool>(
                   context: context,
                   builder: (_) => AlertDialog(
                     backgroundColor: Theme.of(context).colorScheme.surface,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-                    title: Text(l10n.clearSavedTripsTitle, style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.w700, letterSpacing: -0.3, color: AppTheme.textPrimary(context))),
-                    content: Text(l10n.clearSavedTripsMessage, style: GoogleFonts.inter(color: AppTheme.textSecondary(context))),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(24)),
+                    title: Text(l10n.clearSavedTripsTitle,
+                        style: GoogleFonts.outfit(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: -0.3,
+                            color: AppTheme.textPrimary(context))),
+                    content: Text(l10n.clearSavedTripsMessage,
+                        style: GoogleFonts.inter(
+                            color: AppTheme.textSecondary(context))),
                     actions: [
                       TextButton(
                           onPressed: () => Navigator.pop(context, false),
-                          child: Text(l10n.cancel, style: TextStyle(color: AppTheme.textSecondary(context), fontWeight: FontWeight.w600))),
+                          child: Text(l10n.cancel,
+                              style: TextStyle(
+                                  color: AppTheme.textSecondary(context),
+                                  fontWeight: FontWeight.w600))),
                       TextButton(
                           onPressed: () => Navigator.pop(context, true),
-                          child: Text(l10n.eraseAllButton, style: TextStyle(color: AppTheme.colors.redAccent, fontWeight: FontWeight.w700))),
+                          child: Text(l10n.eraseAllButton,
+                              style: TextStyle(
+                                  color: AppTheme.colors.redAccent,
+                                  fontWeight: FontWeight.w700))),
                     ],
                   ),
                 );
@@ -209,14 +205,21 @@ class _SavedPlansScreenState extends ConsumerState<SavedPlansScreen> {
               color: AppTheme.surfaceMuted(context),
               shape: BoxShape.circle,
             ),
-            child: Icon(Icons.bookmark_outline_rounded, size: 56, color: Theme.of(context).colorScheme.primary),
+            child: Icon(Icons.bookmark_outline_rounded,
+                size: 56, color: Theme.of(context).colorScheme.primary),
           ),
           const SizedBox(height: 24),
-          Text(AppLocalizations.of(context)!.noSavedTripsTitle, style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.w700, letterSpacing: -0.3, color: AppTheme.textPrimary(context))),
+          Text(AppLocalizations.of(context)!.noSavedTripsTitle,
+              style: GoogleFonts.outfit(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: -0.3,
+                  color: AppTheme.textPrimary(context))),
           const SizedBox(height: 8),
           Text(AppLocalizations.of(context)!.noSavedTripsSubtitle,
               textAlign: TextAlign.center,
-              style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 13)),
+              style: GoogleFonts.inter(
+                  color: AppTheme.textSecondary(context), fontSize: 13)),
         ],
       ).animate().fadeIn(duration: 600.ms).slideY(begin: 0.1),
     );
@@ -233,7 +236,9 @@ class _SavedPlansScreenState extends ConsumerState<SavedPlansScreen> {
         final l10n = AppLocalizations.of(context)!;
         final (:id, :plan) = _plans[i];
         final summary = plan.tripSummary;
-        final cachedAgo = plan.cachedAt != null ? _timeAgo(plan.cachedAt!, l10n) : l10n.unknownDateLabel;
+        final cachedAgo = plan.cachedAt != null
+            ? _timeAgo(plan.cachedAt!, l10n)
+            : l10n.unknownDateLabel;
 
         return Dismissible(
           key: Key(id),
@@ -258,8 +263,7 @@ class _SavedPlansScreenState extends ConsumerState<SavedPlansScreen> {
                 _launchARShortcut(context, arItem.title);
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(l10n.noArSpotsSnackbar))
-                );
+                    SnackBar(content: Text(l10n.noArSpotsSnackbar)));
               }
               return false;
             }
@@ -297,10 +301,14 @@ class _SavedPlansScreenState extends ConsumerState<SavedPlansScreen> {
                     width: 52,
                     height: 52,
                     decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.07),
+                      color: Theme.of(context)
+                          .colorScheme
+                          .primary
+                          .withValues(alpha: 0.07),
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: Icon(Icons.map_rounded, color: Theme.of(context).colorScheme.primary, size: 24),
+                    child: Icon(Icons.map_rounded,
+                        color: Theme.of(context).colorScheme.primary, size: 24),
                   ),
                   const SizedBox(width: 14),
                   Expanded(
@@ -308,7 +316,8 @@ class _SavedPlansScreenState extends ConsumerState<SavedPlansScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          l10n.tripRouteLabel(summary.fromCity, summary.destinationCity),
+                          l10n.tripRouteLabel(
+                              summary.fromCity, summary.destinationCity),
                           style: GoogleFonts.outfit(
                             fontWeight: FontWeight.bold,
                             fontSize: 16,
@@ -320,26 +329,40 @@ class _SavedPlansScreenState extends ConsumerState<SavedPlansScreen> {
                           spacing: 12,
                           runSpacing: 4,
                           children: [
-                            _chip(Icons.nights_stay_outlined, l10n.tripDaysChip(summary.days)),
+                            _chip(Icons.nights_stay_outlined,
+                                l10n.tripDaysChip(summary.days)),
                             _chip(Icons.people_outline, summary.groupType),
-                            _chip(Icons.account_balance_wallet_outlined,
-                                l10n.tripBudgetChip(_fmt(summary.userBudgetLkr))),
-                            if (plan.itinerary.any((day) => day.items.any((item) => item.arSupported)))
+                            _chip(
+                                Icons.account_balance_wallet_outlined,
+                                l10n.tripBudgetChip(
+                                    _fmt(summary.userBudgetLkr))),
+                            if (plan.itinerary.any((day) =>
+                                day.items.any((item) => item.arSupported)))
                               Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 8, vertical: 4),
                                 decoration: BoxDecoration(
-                                  color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .primary
+                                      .withValues(alpha: 0.1),
                                   borderRadius: BorderRadius.circular(100),
                                 ),
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    Icon(Icons.view_in_ar_rounded, size: 10, color: Theme.of(context).colorScheme.primary),
+                                    Icon(Icons.view_in_ar_rounded,
+                                        size: 10,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .primary),
                                     SizedBox(width: 4),
                                     Text(
                                       l10n.arBadgeLabel,
                                       style: TextStyle(
-                                        color: Theme.of(context).colorScheme.primary,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .primary,
                                         fontWeight: FontWeight.w700,
                                         fontSize: 10,
                                       ),
@@ -354,14 +377,19 @@ class _SavedPlansScreenState extends ConsumerState<SavedPlansScreen> {
                           l10n.savedTimeAgoLabel(cachedAgo),
                           style: GoogleFonts.inter(
                             fontSize: 9,
-                            color: AppTheme.textSecondary(context).withValues(alpha: 0.6),
+                            color: AppTheme.textSecondary(context)
+                                .withValues(alpha: 0.6),
                             fontWeight: FontWeight.w500,
                           ),
                         ),
                       ],
                     ),
                   ),
-                  Icon(Icons.chevron_right_rounded, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.2)),
+                  Icon(Icons.chevron_right_rounded,
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onSurface
+                          .withValues(alpha: 0.2)),
                 ],
               ),
             ),
@@ -375,7 +403,10 @@ class _SavedPlansScreenState extends ConsumerState<SavedPlansScreen> {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(icon, size: 12, color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5)),
+        Icon(icon,
+            size: 12,
+            color:
+                Theme.of(context).colorScheme.primary.withValues(alpha: 0.5)),
         const SizedBox(width: 5),
         Text(
           label,

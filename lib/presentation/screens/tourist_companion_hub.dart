@@ -578,14 +578,16 @@ class _TouristCompanionHubState extends State<TouristCompanionHub> {
     return StreamBuilder<List<BroadcastMessage>>(
       stream: _broadcastRepo.getActiveBroadcasts(widget.sessionId),
       builder: (context, snapshot) {
-        if (!snapshot.hasData || snapshot.data!.isEmpty)
+        if (!snapshot.hasData || snapshot.data!.isEmpty) {
           return const SizedBox.shrink();
+        }
 
         final l10n = AppLocalizations.of(context)!;
         final latest = snapshot.data!.first;
         // Only show if it was sent in the last 2 minutes
-        if (DateTime.now().difference(latest.createdAt).inMinutes > 2)
+        if (DateTime.now().difference(latest.createdAt).inMinutes > 2) {
           return const SizedBox.shrink();
+        }
 
         final myUid = AuthService().currentUser?.uid;
         final alreadyAcked =

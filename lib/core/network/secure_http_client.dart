@@ -132,8 +132,9 @@ class SecureHttpClient extends http.BaseClient {
       http.BaseRequest request, http.StreamedResponse response) {
     if (response.statusCode != 401) return false;
     if (request.headers['X-Zenith-Retried'] == '1') return false;
-    if (request is http.MultipartRequest)
+    if (request is http.MultipartRequest) {
       return false; // v1: skip multipart retry
+    }
     if (request.url.host != Uri.parse(AppConfig.laravelUrl).host) return false;
     if (!request.headers.containsKey('Authorization')) return false;
     return true;

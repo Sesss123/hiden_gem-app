@@ -30,7 +30,9 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
       context: context,
       action: 'subscription_change',
       reason: 'Confirm your identity before changing your subscription.',
-    )) return;
+    )) {
+      return;
+    }
     setState(() => _isProcessing = true);
 
     try {
@@ -91,10 +93,11 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
-    if (user == null)
+    if (user == null) {
       return Scaffold(
           body: Center(
               child: Text(AppLocalizations.of(context)!.accessDeniedMessage)));
+    }
 
     final activeSubFuture =
         ref.watch(subscriptionServiceProvider).getActiveSubscription(user.uid);
@@ -309,8 +312,9 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
       } else {
         final url =
             Uri.parse("https://play.google.com/store/account/subscriptions");
-        if (await canLaunchUrl(url))
+        if (await canLaunchUrl(url)) {
           await launchUrl(url, mode: LaunchMode.externalApplication);
+        }
       }
     } catch (e, st) {
       SecureLogger.error("Could not launch store", e, st, "SubscriptionScreen");

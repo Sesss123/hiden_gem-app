@@ -10,8 +10,7 @@ void main() {
         title: 'Unawatuna Beach',
       );
       expect(drink.id, equals('thambili'));
-      expect(drink.fairPriceLkr, contains('100 – 150'));
-      expect(drink.sinhalaTitle, equals('තැඹිලි වතුර'));
+      expect(drink.emoji, equals('🥥'));
     });
 
     test('Returns Palmyrah juice for Northern and Eastern districts', () {
@@ -20,8 +19,7 @@ void main() {
         title: 'Nallur Kandaswamy Kovil',
       );
       expect(drink.id, equals('palmyrah'));
-      expect(drink.fairPriceLkr, contains('80 – 120'));
-      expect(drink.sinhalaTitle, equals('නැවුම් තල් බීම'));
+      expect(drink.emoji, equals('🌴'));
     });
 
     test('Returns Herbal Tea for Hill Country and sacred locations', () {
@@ -30,8 +28,7 @@ void main() {
         title: 'Horton Plains',
       );
       expect(drink.id, equals('herbal_tea'));
-      expect(drink.fairPriceLkr, contains('60 – 100'));
-      expect(drink.sinhalaTitle, contains('බෙලිමල්'));
+      expect(drink.emoji, equals('☕'));
     });
 
     test('Evaluates water safety levels properly', () {
@@ -54,16 +51,21 @@ void main() {
       expect(standard, equals(WaterSafetyLevel.carrySealedWater));
     });
 
-    test('Essential water safety rules include SLS 894, tube ice and Jeewani', () {
+    test('Essential water safety rules expose stable localization IDs', () {
       final rules = HealthSafetyService.essentialWaterSafetyRules;
       expect(rules.length, greaterThanOrEqualTo(4));
-      final slsRule = rules.firstWhere((r) => r['title']!.contains('SLS 894'));
-      expect(slsRule['body'], contains('SLS 894'));
+      expect(
+        rules.map((rule) => rule.id),
+        containsAll(<String>['sealed_water', 'ice', 'tap_water', 'ors']),
+      );
+      expect(rules.every((rule) => rule.icon.isNotEmpty), isTrue);
     });
   });
 
   group('DisasterAlertService Tests', () {
-    test('Flags NBRO Level 1/2 landslide warnings for Badulla during heavy rain', () {
+    test(
+        'Flags NBRO Level 1/2 landslide warnings for Badulla during heavy rain',
+        () {
       final alert = DisasterAlertService.instance.evaluateLocationHazard(
         district: 'Badulla',
         locationTitle: 'Ella Rock Pass',
@@ -75,11 +77,12 @@ void main() {
       expect(alert.helplineNumber, equals('117'));
     });
 
-    test('Flags river basin flood advisory for Kelani river during storm', () {
+    test('Flags river basin flood advisory with measured heavy rainfall', () {
       final alert = DisasterAlertService.instance.evaluateLocationHazard(
         district: 'Colombo',
         locationTitle: 'Kelaniya Temple Access Road',
         weatherCondition: 'Thunderstorm',
+        rainfall24hMm: 80.0,
       );
       expect(alert, isNotNull);
       expect(alert!.type, equals(HazardType.riverFlood));
@@ -98,7 +101,8 @@ void main() {
 
     test('Includes standard emergency DMC and ambulance hotlines', () {
       expect(DisasterAlertService.emergencyHotlines['117'], contains('DMC'));
-      expect(DisasterAlertService.emergencyHotlines['1990'], contains('Suwa Seriya'));
+      expect(DisasterAlertService.emergencyHotlines['1990'],
+          contains('Suwa Seriya'));
     });
   });
 }
