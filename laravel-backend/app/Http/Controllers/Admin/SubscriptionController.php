@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Services\FirestoreService;
 use App\Traits\LogsAdminActivity;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 
 class SubscriptionController extends Controller
@@ -24,6 +25,20 @@ class SubscriptionController extends Controller
     public function __construct()
     {
         $this->firestoreService = new FirestoreService();
+    }
+
+    /** Missing, malformed, or elapsed entitlement expiries are invalid. */
+    public static function hasInvalidExpiry(mixed $value, ?Carbon $now = null): bool
+    {
+        if ($value === null || trim((string) $value) === '') {
+            return true;
+        }
+
+        try {
+            return Carbon::parse($value)->lte($now ?? Carbon::now());
+        } catch (\Throwable $e) {
+            return true;
+        }
     }
 
     /**
@@ -159,11 +174,12 @@ class SubscriptionController extends Controller
         $sub = $this->firestoreService->findSubscriptionByAccountId($uid);
         $subPlan = strtolower(trim((string) ($sub['planId'] ?? '')));
         $subStatus = strtolower(trim((string) ($sub['status'] ?? '')));
+        $expiryInvalid = self::hasInvalidExpiry($existing['premiumExpiresAt'] ?? null);
         $isInvalid = !array_key_exists($normalizedPlan, self::ALLOWED_PLANS)
             || !$sub
             || $subPlan !== $normalizedPlan
             || !in_array($subStatus, ['active', 'grace_period'], true)
-            || empty($existing['premiumExpiresAt']);
+            || $expiryInvalid;
         if (!$isInvalid) {
             return back()->withErrors(['subscription' => 'This entitlement matches an active webhook subscription and cannot be removed by the anomaly-cleanup action. Cancel it through RevenueCat first.']);
         }
@@ -204,18 +220,31 @@ class SubscriptionController extends Controller
             return back()->withErrors(['subscription' => "Failed revoking subscription for {$uid}; Firestore made no changes."]);
         }
 
-        // Record security audit log
-        $this->logAdminAction(
-            'subscription.revoked',
-            'User',
-            $uid,
-            [
-                'previous_plan' => $previousPlan,
-                'reason' => $reason,
+        // Firestore and MySQL cannot share a transaction. The earlier
+        // revoke_requested entry guarantees a durable intent record; report
+        // final-audit failure truthfully instead of showing a false success.
+        try {
+            $this->logAdminAction(
+                'subscription.revoked',
+                'User',
+                $uid,
+                [
+                    'previous_plan' => $previousPlan,
+                    'reason' => $reason,
+                    'target_uid' => $uid,
+                    'admin_email' => $user->email,
+                ]
+            );
+        } catch (\Throwable $e) {
+            Log::critical('Premium entitlement was revoked but the final audit entry failed.', [
                 'target_uid' => $uid,
-                'admin_email' => $user->email,
-            ]
-        );
+                'admin_id' => $user->id,
+                'error' => $e->getMessage(),
+            ]);
+            return back()->withErrors([
+                'subscription' => "Premium was revoked for {$uid}, but the final audit entry failed. The earlier revoke request remains logged; investigate the server log.",
+            ]);
+        }
 
         return back()->with('success', "Premium subscription successfully revoked for UID: {$uid} (Audit logged).");
     }

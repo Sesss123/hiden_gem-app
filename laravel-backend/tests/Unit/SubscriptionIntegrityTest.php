@@ -52,10 +52,13 @@ class SubscriptionIntegrityTest extends TestCase
      */
     public function test_expired_subscription_detection()
     {
-        $pastDate = Carbon::now()->subDays(5)->toIso8601String();
-        $futureDate = Carbon::now()->addDays(30)->toIso8601String();
+        $now = Carbon::parse('2026-09-14T12:00:00+05:30');
 
-        $this->assertTrue(Carbon::parse($pastDate)->isPast());
-        $this->assertFalse(Carbon::parse($futureDate)->isPast());
+        $this->assertTrue(SubscriptionController::hasInvalidExpiry(null, $now));
+        $this->assertTrue(SubscriptionController::hasInvalidExpiry('', $now));
+        $this->assertTrue(SubscriptionController::hasInvalidExpiry('not-a-date', $now));
+        $this->assertTrue(SubscriptionController::hasInvalidExpiry($now->copy()->subSecond()->toIso8601String(), $now));
+        $this->assertTrue(SubscriptionController::hasInvalidExpiry($now->toIso8601String(), $now));
+        $this->assertFalse(SubscriptionController::hasInvalidExpiry($now->copy()->addSecond()->toIso8601String(), $now));
     }
 }
