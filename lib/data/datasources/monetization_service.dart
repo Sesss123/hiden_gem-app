@@ -22,8 +22,9 @@ class MonetizationService {
 
   // ── Remote Ad Switch & Offline Cache ─────────────────────────────────────
   static const String _prefAdsEnabledKey = 'app_ads_enabled_master';
-  bool _isAdsEnabled = true;
-  final ValueNotifier<bool> adsEnabledListenable = ValueNotifier<bool>(true);
+  // Ads stay off until a cached or remote administrator decision enables them.
+  bool _isAdsEnabled = false;
+  final ValueNotifier<bool> adsEnabledListenable = ValueNotifier<bool>(false);
   Timer? _remoteConfigTimer;
 
   /// Whether ads are remotely enabled by the administrator.
@@ -50,7 +51,7 @@ class MonetizationService {
       // 1. Read locally cached state first (instant, non-blocking)
       final prefs = await SharedPreferences.getInstance();
       if (prefs.containsKey(_prefAdsEnabledKey)) {
-        _applyAdsEnabled(prefs.getBool(_prefAdsEnabledKey) ?? true);
+        _applyAdsEnabled(prefs.getBool(_prefAdsEnabledKey) ?? false);
       }
 
       // 2. Query remote endpoint with a quick 4s timeout

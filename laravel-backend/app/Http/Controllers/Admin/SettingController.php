@@ -20,7 +20,7 @@ class SettingController extends Controller
     public function index()
     {
         $adsSetting = null;
-        $isAdsEnabled = true;
+        $isAdsEnabled = false;
 
         try {
             $adsSetting = AppSetting::with('updater')->where('key', 'ads_enabled')->first();
@@ -28,7 +28,7 @@ class SettingController extends Controller
                 $isAdsEnabled = filter_var($adsSetting->value, FILTER_VALIDATE_BOOLEAN);
             }
         } catch (\Throwable $e) {
-            // Fallback gracefully if database table is being migrated
+            // Fail closed while settings storage is unavailable.
         }
 
         $recentSettingsLogs = collect();

@@ -209,7 +209,7 @@
                 <h3 class="font-bold text-base text-white flex items-center gap-2">
                     <i class="fa-solid fa-map-pin text-emerald-400"></i> All Districts Breakdown (Sri Lanka)
                 </h3>
-                <span class="text-xs text-slate-400 font-medium">All 25 Districts</span>
+                <span class="text-xs text-slate-400 font-medium">{{ $byDistrict->count() }} Districts with Places</span>
             </div>
             
             <div class="space-y-4">

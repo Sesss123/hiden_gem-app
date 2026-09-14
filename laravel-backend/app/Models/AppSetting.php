@@ -87,7 +87,9 @@ class AppSetting extends Model
      */
     public static function isAdsEnabled(): bool
     {
-        return (bool) static::get('ads_enabled', true);
+        // Fail closed: ads may only run after an administrator explicitly
+        // enables them. A missing table/row must never become implicit consent.
+        return (bool) static::get('ads_enabled', false);
     }
 
     /**

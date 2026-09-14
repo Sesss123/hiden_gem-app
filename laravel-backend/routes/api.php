@@ -159,11 +159,11 @@ Route::prefix('v1')->group(function () {
 
     // Remote App Configuration & Ads Master Switch (Public, high performance)
     Route::get('/config/ads', function () {
-        $adsEnabled = true;
+        $adsEnabled = false;
         try {
             $adsEnabled = \App\Models\AppSetting::isAdsEnabled();
         } catch (\Throwable $e) {
-            // Safe fallback if database is updating
+            // Fail closed if settings storage is unavailable.
         }
 
         return response()->json([
