@@ -11,7 +11,6 @@
       </form>
     @endif
   </div>
-  @if(session('success'))<div class="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400">{{ session('success') }}</div>@endif
   @if($errors->any())<div class="p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-300"><ul class="list-disc pl-5">@foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul></div>@endif
 
   <details class="glass-card rounded-2xl border border-slate-800/80" {{ $errors->any() ? 'open' : '' }}>
