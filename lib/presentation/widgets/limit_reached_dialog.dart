@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/theme/app_theme.dart';
 import '../screens/premium_hub_screen.dart';
+import '../../l10n/app_localizations.dart';
+import '../../data/datasources/price_catalog_service.dart';
+import '../../core/localization/price_localization.dart';
 
 class LimitReachedDialog extends StatelessWidget {
   final String featureName;
@@ -10,30 +13,31 @@ class LimitReachedDialog extends StatelessWidget {
   /// The concrete value the user unlocks by upgrading — shown as bullet points
   /// so the upsell sells a specific outcome, not a vague "upgrade your plan".
   /// Defaults to the Heritage Premium value prop.
-  final List<String> perks;
+  final List<String>? perks;
 
   /// Headline plan + price shown on the upgrade button's subtitle. Defaults to
   /// the recommended tier. This is the price anchor at the exact moment of
   /// highest intent (the user just hit a wall wanting to do the thing).
-  final String planName;
-  final String planPrice;
+  final String? planName;
+  final String? planPrice;
 
   const LimitReachedDialog({
     super.key,
     required this.featureName,
     this.onWatchAd,
-    this.perks = const [
-      '50 AI trip plans every month',
-      'Unlimited AR heritage experiences',
-      'Unlimited offline maps',
-      'No ads, ever',
-    ],
-    this.planName = 'Heritage Premium',
-    this.planPrice = 'Rs. 999/mo',
+    this.perks,
+    this.planName,
+    this.planPrice,
   });
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final effectivePlanName = planName ?? l10n.heritagePremiumTitle;
+    final effectivePrice = planPrice ?? PriceLocalization.display(l10n,
+        PriceCatalogService.instance.price('subscriptions.heritage.monthly'));
+    final effectivePerks = perks ?? [l10n.featureUnlimitedAiItineraries,
+      l10n.featureFullHeritageArAccess, l10n.featureAllOfflineFeatures];
     return Dialog(
       backgroundColor: AppTheme.colors.transparent,
       insetPadding: const EdgeInsets.symmetric(horizontal: 24),
@@ -60,7 +64,7 @@ class LimitReachedDialog extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             Text(
-              "Usage Limit Reached",
+              l10n.usageLimitReachedTitle,
               style: GoogleFonts.outfit(
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
@@ -70,7 +74,7 @@ class LimitReachedDialog extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             Text(
-              "You've used all your $featureName for this month. Go unlimited with $planName:",
+              l10n.usageLimitReachedMessage(featureName, effectivePlanName),
               style: GoogleFonts.inter(
                 fontSize: 14,
                 color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
@@ -87,7 +91,7 @@ class LimitReachedDialog extends StatelessWidget {
                 borderRadius: BorderRadius.circular(14),
               ),
               child: Column(
-                children: perks
+                children: effectivePerks
                     .map((perk) => Padding(
                           padding: const EdgeInsets.symmetric(vertical: 4),
                           child: Row(
@@ -133,11 +137,11 @@ class LimitReachedDialog extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      "Get $planName",
+                      l10n.getPlanButton(effectivePlanName),
                       style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 16),
                     ),
                     Text(
-                      planPrice,
+                      effectivePrice,
                       style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 12),
                     ),
                   ],
@@ -157,7 +161,7 @@ class LimitReachedDialog extends StatelessWidget {
                   },
                   icon: Icon(Icons.play_circle_outline_rounded, size: 18, color: Theme.of(context).colorScheme.primary),
                   label: Text(
-                    "Watch an ad for one more",
+                    l10n.watchAdForOneMore,
                     style: GoogleFonts.outfit(fontWeight: FontWeight.w700, fontSize: 13, color: Theme.of(context).colorScheme.primary),
                   ),
                   style: OutlinedButton.styleFrom(
@@ -172,7 +176,7 @@ class LimitReachedDialog extends StatelessWidget {
             TextButton(
               onPressed: () => Navigator.pop(context),
               child: Text(
-                "Maybe Later",
+                l10n.maybeLater,
                 style: GoogleFonts.inter(
                   color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
                   fontWeight: FontWeight.w600,

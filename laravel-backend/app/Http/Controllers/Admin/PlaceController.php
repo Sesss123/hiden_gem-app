@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Carbon\Carbon;
 
 class PlaceController extends Controller
 {
@@ -41,7 +42,9 @@ class PlaceController extends Controller
         $search = session('admin_places_index_search');
         $category = session('admin_places_index_category');
 
-        $query = Place::with('coverImage')->where('is_deleted', false);
+        $query = Place::with('coverImage');
+        $hasCreatedBy = Schema::hasColumn('places', Place::COL_CREATED_BY);
+        $hasStatus = Schema::hasColumn('places', Place::COL_STATUS);
 
         // content_manager sees places they personally created plus unclaimed
         // drafts (created_by null — e.g. bulk-imported data awaiting first
@@ -49,10 +52,13 @@ class PlaceController extends Controller
         // managers' submissions. Edit access follows the same scoping (see
         // authorizePlaceOwner()); destroy stays full_admin-only regardless.
         if (!Auth::user()->isFullAdmin()) {
+            if (!$hasCreatedBy) {
+                abort(503, 'Database upgrade in progress. Please run pending migrations.');
+            }
             $query->where(function ($q) {
                 $q->where('created_by', Auth::id())->orWhereNull('created_by');
             });
-        } else {
+        } elseif ($hasStatus) {
             // Full admins should only see Approved places in the main list.
             // Pending places are reviewed in the Pending tab.
             $query->where('status', Place::STATUS_APPROVED);
@@ -129,13 +135,29 @@ class PlaceController extends Controller
         }
 
         try {
-            $response = \Illuminate\Support\Facades\Http::withOptions(['allow_redirects' => ['track_redirects' => true]])
-                ->timeout(6)
-                ->get($url);
+            $resolvedUrl = $url;
+            for ($redirects = 0; $redirects < 5; $redirects++) {
+                $response = \Illuminate\Support\Facades\Http::withOptions(['allow_redirects' => false])
+                    ->timeout(6)
+                    ->get($resolvedUrl);
 
-            // Guzzle exposes the final resolved URL after following redirects
-            // via this header when track_redirects is enabled.
-            $resolvedUrl = $response->effectiveUri() ? (string) $response->effectiveUri() : $url;
+                if (!$response->redirect()) {
+                    break;
+                }
+
+                $next = $response->header('Location');
+                $nextHost = $next ? strtolower((string) parse_url($next, PHP_URL_HOST)) : '';
+                $nextScheme = $next ? strtolower((string) parse_url($next, PHP_URL_SCHEME)) : '';
+                if ($nextScheme !== 'https' || !in_array($nextHost, $allowedHosts, true)) {
+                    return response()->json(['error' => 'Google Maps redirected to an unsupported destination.'], 422);
+                }
+                $resolvedUrl = $next;
+            }
+
+            $resolvedHost = strtolower((string) parse_url($resolvedUrl, PHP_URL_HOST));
+            if (!in_array($resolvedHost, $allowedHosts, true)) {
+                return response()->json(['error' => 'Resolved URL is not a permitted Google Maps host.'], 422);
+            }
 
             return response()->json(['resolved_url' => $resolvedUrl]);
         } catch (\Exception $e) {
@@ -148,10 +170,10 @@ class PlaceController extends Controller
         $data = $this->validatePlace($request);
         $isContentManager = Auth::user()->isContentManager();
 
-        // Rating input was removed from the admin form (never fed by a real
-        // review system) — seed new places with the same 4.8 default the
-        // form used to prefill, instead of the raw DB column default of 0.
-        $data['rating'] = $data['rating'] ?? 4.8;
+        // Ratings are review-derived. Never manufacture a positive score for
+        // a place that has not received any verified traveler reviews.
+        $data['rating'] = 0.0;
+        $data['verified_at'] = $isContentManager ? null : now();
         $data['created_by'] = Auth::id();
         // Places submitted by a content_manager need a real admin's sign-off before
         // going live; places created by a full admin keep today's behavior (live immediately).
@@ -219,6 +241,7 @@ class PlaceController extends Controller
         $this->authorizePlaceOwner($place);
         $data = $this->validatePlace($request, true);
         $isContentManager = Auth::user()->isContentManager();
+        $data['verified_at'] = $isContentManager ? null : now();
 
         // A content_manager editing an already-approved place sends it back
         // for re-review rather than letting the edit go live unreviewed —
@@ -228,12 +251,14 @@ class PlaceController extends Controller
             $data['status'] = Place::STATUS_PENDING;
             $data['reviewed_by'] = null;
             $data['review_reason'] = null;
+            $data['verified_at'] = null;
             Cache::forget('admin_pending_place_count');
         } elseif (!$isContentManager && $place->status !== Place::STATUS_APPROVED) {
             // If a Full Admin edits a pending/rejected place, automatically approve it
             $data['status'] = Place::STATUS_APPROVED;
             $data['reviewed_by'] = Auth::id();
             $data['review_reason'] = null;
+            $data['verified_at'] = now();
             Cache::forget('admin_pending_place_count');
         }
 
@@ -377,6 +402,7 @@ class PlaceController extends Controller
             'status' => Place::STATUS_APPROVED,
             'reviewed_by' => Auth::id(),
             'review_reason' => null,
+            'verified_at' => now(),
         ]);
 
         Cache::forget('admin_pending_place_count');
@@ -584,6 +610,14 @@ class PlaceController extends Controller
             'description' => 'nullable|string',
             'province' => 'nullable|string|max:100',
             'opening_hours' => 'nullable|string|max:255',
+            'weekly_hours' => 'nullable|array',
+            'weekly_hours.*.closed' => 'nullable|boolean',
+            'weekly_hours.*.open' => ['nullable', 'date_format:H:i'],
+            'weekly_hours.*.close' => ['nullable', 'date_format:H:i'],
+            'temporarily_closed' => 'nullable|boolean',
+            'closure_note' => 'nullable|string|max:255',
+            'closure_until' => 'nullable|date',
+            'holiday_hours_note' => 'nullable|string|max:255',
             'mobile_signal' => 'nullable|string|max:100',
             'activities_selected' => 'nullable|array',
             'activities_selected.*' => 'string|max:100',
@@ -638,6 +672,25 @@ class PlaceController extends Controller
         // explicitly set it to false so that we can turn off AR support after
         // it was previously turned on.
         $data['ar_supported'] = $request->has('ar_supported');
+        $data['temporarily_closed'] = $request->boolean('temporarily_closed');
+        if (!empty($data['closure_until'])) {
+            $data['closure_until'] = Carbon::parse(
+                $data['closure_until'],
+                'Asia/Colombo'
+            )->utc();
+        }
+
+        $weekly = [];
+        foreach (['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'] as $day) {
+            $row = $data['weekly_hours'][$day] ?? [];
+            $closed = filter_var($row['closed'] ?? false, FILTER_VALIDATE_BOOLEAN);
+            $open = $row['open'] ?? null;
+            $close = $row['close'] ?? null;
+            if ($closed || ($open && $close)) {
+                $weekly[$day] = ['closed' => $closed, 'open' => $open, 'close' => $close];
+            }
+        }
+        $data['weekly_hours'] = $weekly ?: null;
 
         return $data;
     }

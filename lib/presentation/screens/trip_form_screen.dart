@@ -7,6 +7,7 @@ import '../../core/theme/app_theme.dart';
 import '../widgets/custom_buttons.dart';
 import '../widgets/limit_reached_dialog.dart';
 import '../../core/services/usage_limiter_service.dart';
+import '../../core/services/disaster_alert_service.dart';
 import '../../data/datasources/monetization_service.dart';
 import '../../l10n/app_localizations.dart';
 import 'loading_plan_screen.dart';
@@ -625,6 +626,27 @@ class _TripFormScreenState extends State<TripFormScreen> {
     // trip-generation network calls from a single accidental double-tap.
     if (_isSubmitting) return;
     _isSubmitting = true;
+
+    final routeAdvice = await DisasterAlertService.instance.activeRouteRiskAdvice(
+      origin: _origin,
+      destination: _destination,
+    );
+    if (!mounted) { _isSubmitting = false; return; }
+    if (routeAdvice != null) {
+      final proceed = await showDialog<bool>(
+            context: context,
+            builder: (dialogContext) => AlertDialog(
+              title: Text(AppLocalizations.of(context)!.routeSafetyAdvisory),
+              content: Text(routeAdvice),
+              actions: [
+                TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: Text(AppLocalizations.of(context)!.reviewRouteAction)),
+                FilledButton(onPressed: () => Navigator.pop(dialogContext, true), child: Text(AppLocalizations.of(context)!.continueAction)),
+              ],
+            ),
+          ) ?? false;
+      if (!proceed) { _isSubmitting = false; return; }
+    }
+    if (!mounted) { _isSubmitting = false; return; }
 
     // Show a small processing overlay
     showDialog(

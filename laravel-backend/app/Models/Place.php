@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Schema;
 
 class Place extends Model
 {
@@ -30,6 +31,11 @@ class Place extends Model
     public const COL_DESCRIPTION = 'description';
     public const COL_PROVINCE = 'province';
     public const COL_OPENING_HOURS = 'opening_hours';
+    public const COL_WEEKLY_HOURS = 'weekly_hours';
+    public const COL_TEMPORARILY_CLOSED = 'temporarily_closed';
+    public const COL_CLOSURE_NOTE = 'closure_note';
+    public const COL_CLOSURE_UNTIL = 'closure_until';
+    public const COL_HOLIDAY_HOURS_NOTE = 'holiday_hours_note';
     public const COL_MOBILE_SIGNAL = 'mobile_signal';
     public const COL_ACTIVITIES = 'activities';
     public const COL_TOURIST_POPULARITY = 'tourist_popularity';
@@ -66,6 +72,7 @@ class Place extends Model
     public const COL_REVIEWED_BY = 'reviewed_by';
     public const COL_REVIEW_REASON = 'review_reason';
     public const COL_CREATED_BY = 'created_by';
+    public const COL_VERIFIED_AT = 'verified_at';
 
     public const STATUS_PENDING = 'pending';
     public const STATUS_APPROVED = 'approved';
@@ -78,7 +85,9 @@ class Place extends Model
         self::COL_ID, self::COL_NAME, self::COL_DISTRICT, self::COL_CATEGORY, self::COL_LAT, self::COL_LNG, self::COL_RATING,
         self::COL_TICKET_RANGE, self::COL_TICKET_PRICE, self::COL_ROAD_TYPE, self::COL_ROAD_CONDITION, self::COL_VEHICLE_ACCESS, self::COL_RISK_TAGS,
         self::COL_PARKING_RANGE, self::COL_PARKING_AVAIL, self::COL_BEST_TIME, self::COL_BEST_TIME_TO_VISIT, self::COL_FACILITIES,
-        self::COL_DESCRIPTION, self::COL_PROVINCE, self::COL_OPENING_HOURS, self::COL_MOBILE_SIGNAL, self::COL_ACTIVITIES,
+        self::COL_DESCRIPTION, self::COL_PROVINCE, self::COL_OPENING_HOURS, self::COL_WEEKLY_HOURS,
+        self::COL_TEMPORARILY_CLOSED, self::COL_CLOSURE_NOTE, self::COL_CLOSURE_UNTIL,
+        self::COL_HOLIDAY_HOURS_NOTE, self::COL_MOBILE_SIGNAL, self::COL_ACTIVITIES,
         self::COL_TOURIST_POPULARITY, self::COL_FAMILY_FRIENDLY, self::COL_BUDGET_CATEGORY, self::COL_TOILETS,
         self::COL_FOOD_NEARBY, self::COL_WHEELCHAIR_ACCESS, self::COL_CAMPING_ALLOWED, self::COL_SAFETY_LEVEL,
         self::COL_WILDLIFE_HAZARD, self::COL_GUIDE_REQUIRED, self::COL_RAIN_SENSITIVITY, self::COL_MONSOON_NOTE,
@@ -86,7 +95,8 @@ class Place extends Model
         self::COL_AR_SUPPORTED, self::COL_AR_TIER, self::COL_AR_BRAND_NAME, self::COL_AR_MODEL_URL, self::COL_AR_HISTORICAL_MODEL_URL,
         self::COL_AR_MODEL_SCALE, self::COL_HISTORICAL_PERIOD, self::COL_AR_FILE_SIZE_MB,
         self::COL_AUDIO_GUIDE_URL_SI, self::COL_AUDIO_GUIDE_URL_EN, self::COL_GEOHASH, self::COL_IMAGE_URL,
-        self::COL_ACCESS_TIER, self::COL_STATUS, self::COL_REVIEWED_BY, self::COL_REVIEW_REASON, self::COL_CREATED_BY
+        self::COL_ACCESS_TIER, self::COL_STATUS, self::COL_REVIEWED_BY, self::COL_REVIEW_REASON, self::COL_CREATED_BY,
+        self::COL_VERIFIED_AT
     ];
 
     protected $casts = [
@@ -100,13 +110,21 @@ class Place extends Model
         self::COL_IS_DELETED => 'boolean',
         self::COL_RISK_TAGS => 'array',
         self::COL_FACILITIES => 'array',
-        self::COL_SYNC_VERSION => 'integer'
+        self::COL_SYNC_VERSION => 'integer',
+        self::COL_VERIFIED_AT => 'datetime'
+        ,self::COL_WEEKLY_HOURS => 'array'
+        ,self::COL_TEMPORARILY_CLOSED => 'boolean'
+        ,self::COL_CLOSURE_UNTIL => 'datetime'
     ];
 
     protected static function booted()
     {
         static::addGlobalScope('active', function (Builder $builder) {
-            $builder->where('is_deleted', false);
+            // Keep the admin usable during rolling deploys where application
+            // code may become live a few seconds before migrations finish.
+            if (Schema::hasColumn($builder->getModel()->getTable(), self::COL_IS_DELETED)) {
+                $builder->where(self::COL_IS_DELETED, false);
+            }
         });
     }
 

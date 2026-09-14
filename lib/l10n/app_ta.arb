@@ -1,4 +1,23 @@
 {
+  "retryAction": "மீண்டும் முயற்சிக்கவும்",
+  "invalidMapCoordinates": "இந்த இடத்தின் வரைபட ஆயங்கள் தவறானவை.", "mapAppUnavailable": "வரைபடச் செயலி கிடைக்கவில்லை.", "routeSafetyAdvisory": "பாதை பாதுகாப்பு ஆலோசனை", "reviewRouteAction": "பாதையை பார்க்கவும்", "continueAction": "தொடரவும்",
+  "savedJourneyHubTitle": "சேமித்த இடங்கள் மற்றும் பயண மையம்", "bookmarkedCount": "புக்மார்க் ({count})", "@bookmarkedCount":{"placeholders":{"count":{"type":"int"}}}, "wantToVisitCount": "செல்ல விருப்பம் ({count})", "@wantToVisitCount":{"placeholders":{"count":{"type":"int"}}}, "recentCount": "சமீபம் ({count})", "@recentCount":{"placeholders":{"count":{"type":"int"}}},
+  "savedPlacesLoadError": "சேமித்த இடங்களை ஏற்ற முடியவில்லை.", "noBookmarkedPlaces": "புக்மார்க் செய்த இடங்கள் இல்லை", "noBookmarkedPlacesHint": "ஒரு இடத்தைச் சேமிக்க புக்மார்க் குறியைத் தட்டவும்.", "wantToVisitEmpty": "செல்ல விருப்பப் பட்டியல் காலியாக உள்ளது", "wantToVisitEmptyHint": "இட விவரப் பக்கத்திலிருந்து இடங்களைச் சேர்க்கவும்.", "noRecentlyViewedPlaces": "சமீபத்தில் பார்த்த இடங்கள் இல்லை", "noRecentlyViewedPlacesHint": "நீங்கள் பார்க்கும் இடங்கள் இங்கே தோன்றும்.", "browsingHistoryCount": "பார்வை வரலாறு ({count})", "@browsingHistoryCount":{"placeholders":{"count":{"type":"int"}}},
+  "usageLimitReachedTitle": "பயன்பாட்டு வரம்பு முடிந்தது",
+  "usageLimitReachedMessage": "இந்த மாதத்திற்கான {feature} அனைத்தையும் பயன்படுத்திவிட்டீர்கள். {plan} உடன் தொடரவும்:",
+  "@usageLimitReachedMessage": {"placeholders":{"feature":{"type":"String"},"plan":{"type":"String"}}},
+  "getPlanButton": "{plan} பெறுக",
+  "@getPlanButton": {"placeholders":{"plan":{"type":"String"}}},
+  "watchAdForOneMore": "மேலும் ஒன்றுக்கு விளம்பரம் பார்க்கவும்",
+  "priceUnavailable": "விலை கிடைக்கவில்லை",
+  "contactForPrice": "விலைக்கு தொடர்பு கொள்ளவும்",
+  "freePriceLabel": "இலவசம்",
+  "fromPriceLabel": "{price} முதல்",
+  "@fromPriceLabel": {"placeholders":{"price":{"type":"String"}}},
+  "priceRangeLabel": "{minimum} – {maximum}",
+  "@priceRangeLabel": {"placeholders":{"minimum":{"type":"String"},"maximum":{"type":"String"}}},
+  "serverManagedPriceNote": "விலைகள் சேவையால் வழங்கப்படுகின்றன; மாறலாம். வாங்கும் முன் உறுதிசெய்யவும்.",
+  "hydrationSummary": "உள்ளூர் பானங்கள் · மூடிய குடிநீர் வழிகாட்டல் · பாதுகாப்பான பனி வழிகாட்டல்",
   "appTitle": "Hidden Gems SL",
   "goodMorningAdmin": "காலை வணக்கம், நிர்வாகி",
   "oracleToday": "இன்று ஆரக்கிளுடன் என்ன நடக்கிறது என்பது இங்கே.",
@@ -124,7 +143,6 @@
   "initiateTravel": "பயணத்தை தொடங்கு",
   "selectOracleLanguage": "உங்கள் ஆரக்கிள் மொழியைத் தேர்ந்தெடுக்கவும்",
   "skipForNow": "தற்போதைக்குத் தவிர்",
-
   "privacyPolicyTitle": "தனியுரிமைக் கொள்கை & சட்டம்",
   "dataProtectionProtocol": "தரவு பாதுகாப்பு நெறிமுறை",
   "lastUpdatedDate": "கடைசியாகப் புதுப்பிக்கப்பட்டது: ஜூலை 5, 2026",
@@ -168,7 +186,6 @@
   "privacySection9Body": "இந்தக் கொள்கை பொதுவான தகவல் நோக்கங்களுக்காக வழங்கப்படுகிறது மற்றும் முறையான சட்ட ஆலோசனையை உள்ளடக்கவில்லை. தனிப்பட்ட தரவு பாதுகாப்புச் சட்டம் இலக்கம் 9 of 2022, சுற்றுலாச் சட்டம் இலக்கம் 38 of 2005, மற்றும் பொருந்தக்கூடிய பிற சட்டரீதியான ஒழுங்குமுறைகளுடன் முழு இணக்கத்தை உறுதிப்படுத்த இலங்கையில் சுயாதீன சட்ட ஆலோசகரை நாடுமாறு Hidden Gems Sri Lanka (Pvt) Ltd / TripMe.ai பயனர்கள் மற்றும் சுற்றுலாப் பங்குதாரர்களுக்குப் பரிந்துரைக்கிறது.",
   "privacyFooterCompany": "HIDDEN GEMS SRI LANKA (PVT) LTD",
   "privacyFooterAddress": "பதிவு செய்யப்பட்ட அலுவலகம்: கொழும்பு, இலங்கை • support@hiddengems.lk",
-
   "termsAndPrivacyTitle": "விதிமுறைகள் & தனியுரிமை",
   "reviewBeforeContinuing": "தொடர்வதற்கு முன் மதிப்பாய்வு செய்யவும்",
   "dataPrivacySectionTitle": "தரவு & தனியுரிமை",
@@ -181,7 +198,6 @@
   "acceptTermsCheckbox": "நான் சேவை விதிமுறைகள் & தனியுரிமைக் கொள்கையை ஏற்கிறேன்",
   "acceptAiPolicyCheckbox": "AI திட்டமிடுபவரின் வரம்புகளை நான் புரிந்துகொள்கிறேன்",
   "continueLabel": "தொடரவும்",
-
   "updateRequiredTitle": "ஒரு புதுப்பிப்பு தேவை",
   "updateReadyTitle": "புதிய பதிப்பு தயார்",
   "updateRequiredBody": "உங்கள் பயணத்தைத் தொடர செயலியைப் புதுப்பிக்கவும்.",
@@ -189,11 +205,9 @@
   "updateNow": "இப்போது புதுப்பிக்கவும்",
   "maybeLater": "பின்னர் ஒருவேளை",
   "couldNotOpenStore": "ஸ்டோரைத் திறக்க முடியவில்லை. கைமுறையாகப் புதுப்பிக்கவும்.",
-
   "brandTagline": "இலங்கையின் முதன்மை AI பயண ஆரக்கிள்",
   "oracleConnected": "ஆரக்கிள் இணைக்கப்பட்டது",
   "initializingExperience": "பயண அனுபவம் தொடங்கப்படுகிறது...",
-
   "welcomeToApp": "Hidden Gems க்கு வரவேற்கிறோம்",
   "createYourAccount": "உங்கள் கணக்கை உருவாக்குங்கள்",
   "loginSubtitle": "இலங்கையின் AI பயணத் துணை",
@@ -217,24 +231,44 @@
   "googleSignInCancelled": "Google உள்நுழைவு ரத்து செய்யப்பட்டது.",
   "authFailedPrefix": "அங்கீகாரம் தோல்வியடைந்தது: {reason}",
   "@authFailedPrefix": {
-    "placeholders": { "reason": { "type": "String" } }
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
   },
   "googleSignInFailedPrefix": "Google உள்நுழைவு தோல்வியடைந்தது: {reason}",
   "@googleSignInFailedPrefix": {
-    "placeholders": { "reason": { "type": "String" } }
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
   },
   "appleSignInFailedPrefix": "Apple உள்நுழைவு தோல்வியடைந்தது: {reason}",
   "@appleSignInFailedPrefix": {
-    "placeholders": { "reason": { "type": "String" } }
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
   },
   "enterEmailFirst": "முதலில் உங்கள் பதிவு செய்யப்பட்ட மின்னஞ்சல் முகவரியை உள்ளிடவும்.",
   "passwordResetSent": "கடவுச்சொல் மீட்டமைப்பு வழிமுறைகள் {email} க்கு அனுப்பப்பட்டன.",
   "@passwordResetSent": {
-    "placeholders": { "email": { "type": "String" } }
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
   },
   "resetEmailFailedPrefix": "மீட்டமைப்பு மின்னஞ்சலை அனுப்ப முடியவில்லை: {reason}",
   "@resetEmailFailedPrefix": {
-    "placeholders": { "reason": { "type": "String" } }
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
   },
   "authErrorInvalidCredential": "தவறான மின்னஞ்சல் அல்லது கடவுச்சொல். மீண்டும் முயற்சிக்கவும்.",
   "authErrorUserDisabled": "இந்தக் கணக்கு முடக்கப்பட்டுள்ளது.",
@@ -245,10 +279,13 @@
   "authErrorTooManyRequests": "அதிக கோரிக்கைகள். பின்னர் மீண்டும் முயற்சிக்கவும்.",
   "authErrorNotAllowed": "இந்த செயல்பாடு அனுமதிக்கப்படவில்லை.",
   "authErrorGeneric": "ஒரு அங்கீகாரப் பிழை ஏற்பட்டது.",
-
   "noPlaceFoundMatching": "\"{query}\" உடன் பொருந்தும் இடம் எதுவும் கிடைக்கவில்லை",
   "@noPlaceFoundMatching": {
-    "placeholders": { "query": { "type": "String" } }
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
   },
   "featuredLabel": "சிறப்பம்சம்",
   "exploreLabel": "ஆராயுங்கள்",
@@ -264,7 +301,11 @@
   "offlineModeLabel": "ஆஃப்லைன் பயன்முறை",
   "ayubowanGreeting": "ஆயுபோவன், {name}!",
   "@ayubowanGreeting": {
-    "placeholders": { "name": { "type": "String" } }
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   },
   "travelerFallback": "பயணி",
   "exploreByCategory": "வகை வாரியாக ஆராயுங்கள்",
@@ -276,19 +317,33 @@
   "eventsNavLabel": "நிகழ்வுகள்",
   "daysLabel": "{count} நாட்கள்",
   "@daysLabel": {
-    "placeholders": { "count": { "type": "int" } }
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
-
   "originRequiredError": "தயவுசெய்து புறப்படும் இடத்தைத் தேர்ந்தெடுக்கவும் அல்லது உள்ளிடவும்.",
   "destinationRequiredError": "தயவுசெய்து சேருமிடத்தைத் தேர்ந்தெடுக்கவும் அல்லது உள்ளிடவும்.",
   "unsupportedCityError": "\"{city}\" ஆதரிக்கப்படும் இலங்கை நகரம் அல்ல. கீழ்விழும் பட்டியலிலிருந்து தேர்ந்தெடுக்கவும்.",
   "@unsupportedCityError": {
-    "placeholders": { "city": { "type": "String" } }
+    "placeholders": {
+      "city": {
+        "type": "String"
+      }
+    }
   },
   "originDestinationSameError": "புறப்படும் இடமும் சேருமிடமும் ஒரே இடமாக இருக்க முடியாது.",
   "stepProgressLabel": "படி {current} / {total}",
   "@stepProgressLabel": {
-    "placeholders": { "current": { "type": "int" }, "total": { "type": "int" } }
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
   },
   "step1Title": "நாங்கள் உங்களை எங்கு வழிநடத்த வேண்டும்?",
   "step1Subtitle": "அடிப்படைத் தேவைகள்",
@@ -302,7 +357,11 @@
   "tripLengthLabel": "பயண காலம்",
   "tripLengthDaysValue": "{days} நாட்கள்",
   "@tripLengthDaysValue": {
-    "placeholders": { "days": { "type": "int" } }
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
   },
   "travelStandardLabel": "பயண தரம்",
   "step3Title": "யாருடன் பயணிக்கிறீர்கள்?",
@@ -316,7 +375,6 @@
   "consultTheOracleButton": "ஆரக்கிளை அணுகவும்",
   "aiTripsFeatureName": "AI பயணங்கள்",
   "bonusTripUnlockedMessage": "போனஸ் பயணம் திறக்கப்பட்டது! மீண்டும் சமர்ப்பிக்க முயற்சிக்கவும்.",
-
   "groupTypeSolo": "தனியாக",
   "groupTypeCouple": "ஜோடி",
   "groupTypeFamily": "குடும்பம்",
@@ -332,16 +390,23 @@
   "interestWildlife": "வனவிலங்கு",
   "interestPhotography": "புகைப்படம்",
   "interestVillageExperiences": "கிராம அனுபவங்கள்",
-
   "oracleConnectionDisrupted": "ஆரக்கிள் இணைப்பு தடைபட்டது: {error}",
   "@oracleConnectionDisrupted": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "discoveryFiltersTitle": "கண்டுபிடிப்பு வடிப்பான்கள்",
   "resetButton": "மீட்டமை",
   "maximumRadiusKm": "அதிகபட்ச ஆரம்: {radius} கி.மீ",
   "@maximumRadiusKm": {
-    "placeholders": { "radius": { "type": "int" } }
+    "placeholders": {
+      "radius": {
+        "type": "int"
+      }
+    }
   },
   "budgetLevelLabel": "பட்ஜெட் நிலை",
   "priceRangeAll": "அனைத்தும்",
@@ -353,26 +418,44 @@
   "revealDestinies": "பயண இலக்குகளை வெளிப்படுத்து",
   "hostedByName": "{hostName} நடத்துகிறார்",
   "@hostedByName": {
-    "placeholders": { "hostName": { "type": "String" } }
+    "placeholders": {
+      "hostName": {
+        "type": "String"
+      }
+    }
   },
   "priceInLkr": "LKR {price}",
   "@priceInLkr": {
-    "placeholders": { "price": { "type": "String" } }
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
   },
   "resetAllFilters": "அனைத்து வடிப்பான்களையும் மீட்டமை",
   "seeAll": "அனைத்தையும் காண்க",
   "arBadge": "AR",
   "heritageArBadge": "பாரம்பரிய AR",
-
   "tripDurationStyleLabel": "{days}-நாள் {style} பயணம்",
   "@tripDurationStyleLabel": {
-    "placeholders": { "days": { "type": "int" }, "style": { "type": "String" } }
+    "placeholders": {
+      "days": {
+        "type": "int"
+      },
+      "style": {
+        "type": "String"
+      }
+    }
   },
   "budgetTabLabel": "பட்ஜெட்",
   "mapTabLabel": "வரைபடம்",
   "premiumFeatureSnackbar": "{featureName} ஒரு பிரீமியம் அம்சமாகும்.",
   "@premiumFeatureSnackbar": {
-    "placeholders": { "featureName": { "type": "String" } }
+    "placeholders": {
+      "featureName": {
+        "type": "String"
+      }
+    }
   },
   "savedPlansFeatureName": "சேமிக்கப்பட்ட திட்டங்கள்",
   "noPathFoundTitle": "பாதை எதுவும் கிடைக்கவில்லை",
@@ -383,15 +466,27 @@
   "estimatedTotalLabel": "மதிப்பிடப்பட்ட மொத்தம்",
   "userBudgetLabel": "பயனர் பட்ஜெட்: {amount}",
   "@userBudgetLabel": {
-    "placeholders": { "amount": { "type": "String" } }
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
   },
   "percentUsedLabel": "{percent}% பயன்படுத்தப்பட்டது",
   "@percentUsedLabel": {
-    "placeholders": { "percent": { "type": "int" } }
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
   },
   "percentOfTotalLabel": "மொத்தத்தில் {percent}%",
   "@percentOfTotalLabel": {
-    "placeholders": { "percent": { "type": "int" } }
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
   },
   "visualTourRouteTitle": "காட்சி சுற்றுலா பாதை",
   "visualTourRouteDescription": "கண்ணீர்த்துளி தீவு முழுவதும் உங்கள் முழுப் பயணத்தையும் திட்டமிடுங்கள். விரிவான பாதைப் பிரிவுகள் மற்றும் பயண நேரங்களைக் காணுங்கள்.",
@@ -418,20 +513,33 @@
   "budgetCategoryHotel": "ஹோட்டல்",
   "budgetCategoryAttractions": "சுற்றுலா இடங்கள்",
   "budgetCategoryOther": "மற்றவை",
-
   "profilePhoto": "சுயவிவரப் படம்",
   "localizationError": "மொழிபெயர்ப்புப் பிழை",
   "appearance": "தோற்றம்",
   "settingsSectionLabel": "அமைப்புகள்",
   "profileErrorDetails": "சுயவிவரப் பிழை:\n{error}\n\n{stack}",
   "@profileErrorDetails": {
-    "placeholders": { "error": { "type": "String" }, "stack": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      },
+      "stack": {
+        "type": "String"
+      }
+    }
   },
   "premiumTraveler": "பிரீமியம் பயணி",
   "oracleTraveler": "ஆரக்கிள் பயணி",
   "levelBadgeLabel": "{levelTitle} · நிலை {levelNumber}",
   "@levelBadgeLabel": {
-    "placeholders": { "levelTitle": { "type": "String" }, "levelNumber": { "type": "int" } }
+    "placeholders": {
+      "levelTitle": {
+        "type": "String"
+      },
+      "levelNumber": {
+        "type": "int"
+      }
+    }
   },
   "statLabelTrips": "பயணங்கள்",
   "statLabelPlaces": "இடங்கள்",
@@ -451,12 +559,26 @@
   "ethicalTravelMeter": "நெறிமுறை பயண மீட்டர்",
   "ethicalRankScore": "தரவரிசை: {rank} • மதிப்பெண்: {score}",
   "@ethicalRankScore": {
-    "placeholders": { "rank": { "type": "String" }, "score": { "type": "int" } }
+    "placeholders": {
+      "rank": {
+        "type": "String"
+      },
+      "score": {
+        "type": "int"
+      }
+    }
   },
   "ethicalTravelMeterDialogTitle": "நெறிமுறை பயண மீட்டர்",
   "ethicalRankScorePoints": "தரவரிசை: {rank} • மதிப்பெண்: {score} புள்ளிகள்",
   "@ethicalRankScorePoints": {
-    "placeholders": { "rank": { "type": "String" }, "score": { "type": "int" } }
+    "placeholders": {
+      "rank": {
+        "type": "String"
+      },
+      "score": {
+        "type": "int"
+      }
+    }
   },
   "ethicalScoreDescription": "உங்கள் நெறிமுறை பயண மதிப்பெண், இலங்கை முழுவதும் உள்ளூர் சமூகங்கள் மற்றும் பாரம்பரியப் பாதுகாப்பில் உங்கள் நேர்மறையான தாக்கத்தை அளவிடுகிறது.",
   "howToEarnPointsHeading": "புள்ளிகளைப் பெறுவது எப்படி:",
@@ -492,7 +614,11 @@
   "tourRequests": "சுற்றுலா கோரிக்கைகள்",
   "unreadRequestsCount": "{count, plural, one{{count} புதிய கோரிக்கை} other{{count} புதிய கோரிக்கைகள்}}",
   "@unreadRequestsCount": {
-    "placeholders": { "count": { "type": "int" } }
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "packages": "தொகுப்புகள்",
   "customTourPricingSubtitle": "தனிப்பயன் சுற்றுலா விலைநிர்ணயம்",
@@ -513,14 +639,17 @@
   "deleteButtonLabel": "நீக்கு",
   "genericErrorWithDetails": "பிழை: {error}",
   "@genericErrorWithDetails": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "signOutDialogTitle": "வெளியேறு",
   "confirmSignOutMessage": "நீங்கள் நிச்சயமாக வெளியேற விரும்புகிறீர்களா?",
   "shareAppMessage": "Hidden Gems SL இல் சேருங்கள்! 🌍 https://hiddengems.lk",
   "shareAppSubject": "Hidden Gems SL இல் என்னுடன் சேருங்கள்!",
   "somethingWentWrong": "ஏதோ தவறு நடந்தது. செயலியை மறுதொடக்கம் செய்யவும்.",
-
   "cameraPermissionRequiredTitle": "கேமரா அனுமதி தேவை",
   "cameraPermissionRequiredMessage": "ஸ்கேனரைப் பயன்படுத்த, செயலி அமைப்புகளில் கேமரா அணுகலை இயக்கவும்.",
   "openSettings": "அமைப்புகளைத் திற",
@@ -531,16 +660,23 @@
   "unlockLandmarkScanningTitle": "நில அடையாள ஸ்கேனிங்கை திறக்கவும்",
   "unlockLandmarkScanningSubtitle": "எந்த தளத்திலும் உங்கள் கேமராவை நோக்கி, அதன் மறைந்த வரலாற்றை வெளிப்படுத்துங்கள்.",
   "oracleVerifiedLabel": "ஆரக்கிள் சரிபார்க்கப்பட்டது",
-
   "mapLoadErrorMessage": "வரைபடத் தரவை ஏற்ற முடியவில்லை: {error}",
   "@mapLoadErrorMessage": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "guideLiveMarkerLabel": "உங்கள் வழிகாட்டி (நேரடி)",
   "vehicleMarkerLabel": "உங்கள் வாகனம்",
   "meetingPointMarkerLabel": "சந்திப்பு இடம்: {pointName}",
   "@meetingPointMarkerLabel": {
-    "placeholders": { "pointName": { "type": "String" } }
+    "placeholders": {
+      "pointName": {
+        "type": "String"
+      }
+    }
   },
   "sosEmergencySignalTitle": "அவசர சிக்னல்",
   "sosGuideTriggeredMessage": "உங்கள் வழிகாட்டி SOS ஐ இயக்கியுள்ளார்",
@@ -551,29 +687,49 @@
   "sosAcknowledgeButton": "உறுதிப்படுத்தவும்",
   "distanceAwayLabel": "{distance} கி.மீ தொலைவில்",
   "@distanceAwayLabel": {
-    "placeholders": { "distance": { "type": "String" } }
+    "placeholders": {
+      "distance": {
+        "type": "String"
+      }
+    }
   },
-
   "offlineRouteMapSavedSuccess": "ஆஃப்லைன் வழித்தட வரைபடம் வெற்றிகரமாக சேமிக்கப்பட்டது!",
   "cannotSaveMapSaveTripFirst": "வரைபடத்தை சேமிக்க முடியவில்லை. முதலில் பயணத் திட்டத்தை சேமிக்கவும்!",
   "saveTripAction": "பயணத்தை சேமி",
   "failedToSaveMapError": "வரைபடத்தை சேமிக்க முடியவில்லை: {error}",
   "@failedToSaveMapError": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "mapMarkerDaySnippet": "நாள் {day} • {time}",
   "@mapMarkerDaySnippet": {
-    "placeholders": { "day": { "type": "int" }, "time": { "type": "String" } }
+    "placeholders": {
+      "day": {
+        "type": "int"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
   },
   "visualRouteTitle": "காட்சி வழித்தடம்",
   "journeyVisualizerTitle": "பயண காட்சிப்படுத்தி",
   "journeyVisualizerSubtitle": "{destination} முழுவதும் {dayCount} நாட்கள்",
   "@journeyVisualizerSubtitle": {
-    "placeholders": { "dayCount": { "type": "int" }, "destination": { "type": "String" } }
+    "placeholders": {
+      "dayCount": {
+        "type": "int"
+      },
+      "destination": {
+        "type": "String"
+      }
+    }
   },
   "saveOfflineMapTooltip": "ஆஃப்லைன் வரைபடத்தை சேமி",
   "focusButtonLabel": "குவி",
-
   "planRemovedSnackbar": "திட்டம் ஆரக்கிள் தேக்கத்திலிருந்து அகற்றப்பட்டது",
   "viewInArLabel": "AR இல் பார்க்க",
   "savedTripsTitle": "சேமிக்கப்பட்ட பயணங்கள்",
@@ -586,38 +742,72 @@
   "noArSpotsSnackbar": "இந்தத் திட்டத்தில் AR இடங்கள் இல்லை",
   "tripRouteLabel": "{fromCity} → {destinationCity}",
   "@tripRouteLabel": {
-    "placeholders": { "fromCity": { "type": "String" }, "destinationCity": { "type": "String" } }
+    "placeholders": {
+      "fromCity": {
+        "type": "String"
+      },
+      "destinationCity": {
+        "type": "String"
+      }
+    }
   },
   "tripDaysChip": "{days, plural, one{1 நாள்} other{{days} நாட்கள்}}",
   "@tripDaysChip": {
-    "placeholders": { "days": { "type": "int" } }
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
   },
   "tripBudgetChip": "Rs {amount}",
   "@tripBudgetChip": {
-    "placeholders": { "amount": { "type": "String" } }
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
   },
   "arBadgeLabel": "AR",
   "savedTimeAgoLabel": "{timeAgo} சேமிக்கப்பட்டது",
   "@savedTimeAgoLabel": {
-    "placeholders": { "timeAgo": { "type": "String" } }
+    "placeholders": {
+      "timeAgo": {
+        "type": "String"
+      }
+    }
   },
   "minutesAgoShort": "{minutes} நிமி முன்",
   "@minutesAgoShort": {
-    "placeholders": { "minutes": { "type": "int" } }
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
   },
   "hoursAgoShort": "{hours} மணி முன்",
   "@hoursAgoShort": {
-    "placeholders": { "hours": { "type": "int" } }
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
   },
   "daysAgoShort": "{days} நாள் முன்",
   "@daysAgoShort": {
-    "placeholders": { "days": { "type": "int" } }
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
   },
   "weeksAgoShort": "{weeks} வாரம் முன்",
   "@weeksAgoShort": {
-    "placeholders": { "weeks": { "type": "int" } }
+    "placeholders": {
+      "weeks": {
+        "type": "int"
+      }
+    }
   },
-
   "loadingConsultingBrain": "HiddenGems.lk மூளையை கலந்தாலோசிக்கிறது...",
   "loadingTipTrainSchedules": "இலங்கை ரயில் அட்டவணைகளை பகுப்பாய்வு செய்கிறது...",
   "loadingTipWeatherPatterns": "பருவகால வானிலை முறைகளை சரிபார்க்கிறது...",
@@ -633,7 +823,6 @@
   "loadingRetryStatus": "ஆரக்கிளை மீண்டும் கலந்தாலோசிக்கிறது...",
   "loadingErrorRetryButton": "மீண்டும் முயற்சி செய்",
   "loadingErrorRefineButton": "கோரிக்கையை மேம்படுத்து",
-
   "fieldNotesTitle": "கள குறிப்புகள்",
   "heritageSiteLocked": "பாரம்பரிய தளம் பூட்டப்பட்டுள்ளது",
   "lockOverlayDescription": "இந்த ஆரக்கிள் தரிசனம் பிரீமியம் ஆய்வாளர்களுக்காக ஒதுக்கப்பட்டுள்ளது. இன்று இந்த இடத்தைத் திறக்க ஒரு குறுகிய விளம்பரத்தைப் பாருங்கள்.",
@@ -681,7 +870,11 @@
   "bookmarkRemovedSnackbar": "புக்மார்க்குகளிலிருந்து அகற்றப்பட்டது.",
   "itineraryAddedSnackbar": "🗺️ {placeName} உங்கள் தலைவிதியில் சேர்க்கப்பட்டது!",
   "@itineraryAddedSnackbar": {
-    "placeholders": { "placeName": { "type": "String" } }
+    "placeholders": {
+      "placeName": {
+        "type": "String"
+      }
+    }
   },
   "itineraryRemovedSnackbar": "பயணத் திட்டத்திலிருந்து அகற்றப்பட்டது.",
   "featureNameHeritageSessions": "பாரம்பரிய அமர்வுகள்",
@@ -692,14 +885,17 @@
   "arBrandNameExplore": "ஆய்வு AR",
   "bonusDownloadUnlockedSnackbar": "போனஸ் பதிவிறக்கம் திறக்கப்பட்டது! மீண்டும் பதிவிறக்க முயற்சிக்கவும்.",
   "featureNameOfflineDownloads": "ஆஃப்லைன் பதிவிறக்கங்கள்",
-
   "myBookingsTitle": "எனது முன்பதிவுகள்",
   "myBookingsEmptyTitle": "இதுவரை முன்பதிவுகள் இல்லை",
   "myBookingsEmptySubtitle": "நீங்கள் வழிகாட்டிகளுக்கு அனுப்பும் கோரிக்கைகள் அவற்றின் நிலையுடன் இங்கே தோன்றும்.",
   "guideFallbackName": "வழிகாட்டி",
   "guestCountLabel": "{count, plural, one{1 விருந்தினர்} other{{count} விருந்தினர்கள்}}",
   "@guestCountLabel": {
-    "placeholders": { "count": { "type": "int" } }
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "paymentPaidLabel": "செலுத்தப்பட்டது",
   "payGuideDirectlyLabel": "வழிகாட்டிக்கு நேரடியாக பணம் செலுத்தவும்",
@@ -711,7 +907,6 @@
   "bookingStatusCancelledLabel": "ரத்து செய்யப்பட்டது",
   "bookingStatusCompletedLabel": "நிறைவடைந்தது",
   "bookingStatusDefaultLabel": "நிலுவையில் உள்ளது",
-
   "requestBookingTitle": "முன்பதிவு கோரவும்",
   "dateLabel": "தேதி",
   "guestsLabel": "விருந்தினர்கள்",
@@ -724,46 +919,80 @@
   "requestSentTitle": "கோரிக்கை அனுப்பப்பட்டது",
   "requestSentMessage": "உங்கள் முன்பதிவு கோரிக்கை வழிகாட்டிக்கு அனுப்பப்பட்டுள்ளது. அவர்கள் பதிலளித்தவுடன் உங்களுக்கு அறிவிப்பு கிடைக்கும்.",
   "closeButton": "மூடு",
-
   "noBookingsToSyncMessage": "ஒத்திசைக்க ஏற்றுக்கொள்ளப்பட்ட முன்பதிவுகள் இதுவரை இல்லை.",
   "calendarEventTitle": "சுற்றுலா: {touristName} ({guestCount} விருந்தினர்கள்)",
   "@calendarEventTitle": {
-    "placeholders": { "touristName": { "type": "String" }, "guestCount": { "type": "int" } }
+    "placeholders": {
+      "touristName": {
+        "type": "String"
+      },
+      "guestCount": {
+        "type": "int"
+      }
+    }
   },
   "defaultTouristName": "பயணி",
   "calendarSyncSuccessMessage": "{count, plural, one{1 முன்பதிவு உங்கள் நாட்காட்டியுடன் ஒத்திசைக்கப்பட்டது.} other{{count} முன்பதிவுகள் உங்கள் நாட்காட்டியுடன் ஒத்திசைக்கப்பட்டன.}}",
   "@calendarSyncSuccessMessage": {
-    "placeholders": { "count": { "type": "int" } }
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "calendarSyncFailedMessage": "நாட்காட்டி ஒத்திசைவு தோல்வியடைந்தது: {error}",
   "@calendarSyncFailedMessage": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "loginRequiredMessage": "முன்பதிவு கோரிக்கைகளைப் பார்க்க உள்நுழையவும்.",
   "bookingsScreenTitle": "முன்பதிவுகள்",
   "syncToCalendarTooltip": "நாட்காட்டியுடன் ஒத்திசைக்கவும்",
   "inboxLoadErrorMessage": "இன்பாக்ஸை ஏற்றுவதில் பிழை: {error}",
   "@inboxLoadErrorMessage": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "filterReadyForTour": "சுற்றுலாவிற்குத் தயார்",
   "emptyBookingsMessage": "{filter} முன்பதிவு கோரிக்கைகள் இல்லை.",
   "@emptyBookingsMessage": {
-    "placeholders": { "filter": { "type": "String" } }
+    "placeholders": {
+      "filter": {
+        "type": "String"
+      }
+    }
   },
   "touristIdLabel": "பயணி #{touristId}",
   "@touristIdLabel": {
-    "placeholders": { "touristId": { "type": "String" } }
+    "placeholders": {
+      "touristId": {
+        "type": "String"
+      }
+    }
   },
   "requestedAtLabel": "கோரப்பட்டது {time}",
   "@requestedAtLabel": {
-    "placeholders": { "time": { "type": "String" } }
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
   },
   "priorityBadgeLabel": "முன்னுரிமை",
   "tourDateLabel": "சுற்றுலா தேதி",
   "guestsCountValue": "{count, plural, one{1 நபர்} other{{count} நபர்(கள்)}}",
   "@guestsCountValue": {
-    "placeholders": { "count": { "type": "int" } }
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "quotedPriceLabel": "மேற்கோள் காட்டப்பட்ட விலை",
   "netPayoutLabel": "உங்கள் நிகர கொடுப்பனவு",
@@ -771,7 +1000,11 @@
   "tourNotesLabel": "சுற்றுலா குறிப்புகள் / தேவைகள்",
   "responseNoteLabel": "உங்கள் பதில் குறிப்பு: {note}",
   "@responseNoteLabel": {
-    "placeholders": { "note": { "type": "String" } }
+    "placeholders": {
+      "note": {
+        "type": "String"
+      }
+    }
   },
   "declineButtonLabel": "நிராகரி",
   "acceptButtonLabel": "ஏற்றுக்கொள்",
@@ -779,7 +1012,11 @@
   "bookingAcceptedMessage": "🎉 முன்பதிவு ஏற்றுக்கொள்ளப்பட்டது & சுற்றுலா அமர்வு உருவாக்கப்பட்டது!",
   "acceptBookingErrorMessage": "முன்பதிவை ஏற்றுக்கொள்வதில் பிழை: {error}",
   "@acceptBookingErrorMessage": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "declineBookingDialogTitle": "முன்பதிவை நிராகரிக்கவா?",
   "declineReasonPrompt": "நிராகரிப்பதற்கான காரணத்தை வழங்கவும் (விருப்பத்திற்குரியது):",
@@ -788,18 +1025,25 @@
   "bookingDeclinedMessage": "முன்பதிவு நிராகரிக்கப்பட்டது.",
   "declineBookingErrorMessage": "முன்பதிவை நிராகரிப்பதில் பிழை: {error}",
   "@declineBookingErrorMessage": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "meetingPointPendingLabel": "அரட்டையில் உறுதிப்படுத்தப்படும்",
   "bookingAcceptedResponseNote": "முன்பதிவு ஏற்றுக்கொள்ளப்பட்டது! அமர்வு தயார்.",
   "bookingDeclinedDefaultNote": "வழிகாட்டியால் நிராகரிக்கப்பட்டது.",
   "statusLabelCancelledByTourist": "பயணியால் ரத்து செய்யப்பட்டது",
   "statusLabelCancelledByGuide": "வழிகாட்டியால் ரத்து செய்யப்பட்டது",
-
   "reviewSubmitSuccessMessage": "அனுப்புதல் முடிந்தது. உங்கள் கருத்துக்கு நன்றி.",
   "reviewSubmitErrorMessage": "அனுப்புதல் பிழை: {error}",
   "@reviewSubmitErrorMessage": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "overallExperienceLabel": "ஒட்டுமொத்த அனுபவம்",
   "missionFeedbackEyebrow": "பணி கருத்து",
@@ -814,16 +1058,23 @@
   "fieldNotesLabelUppercase": "கள குறிப்புகள்",
   "commentFieldHint": "உங்களை எது கவர்ந்தது? அவர்கள் எங்கு மேம்படலாம்?",
   "transmitFeedbackButton": "கருத்தை அனுப்பு",
-
   "familyShareLinkLimitReached": "⚠️ {maxLinks} செயலில் உள்ள பகிர்வு இணைப்புகளின் வரம்பை அடைந்துவிட்டீர்கள். மற்றொன்றை உருவாக்க ஒன்றை அகற்றவும்.",
   "@familyShareLinkLimitReached": {
-    "placeholders": { "maxLinks": { "type": "int" } }
+    "placeholders": {
+      "maxLinks": {
+        "type": "int"
+      }
+    }
   },
   "familyShareRecipientNameRequired": "⚠️ பெறுநரின் பெயரை உள்ளிடவும்.",
   "familyShareNoActiveSessionError": "⚠️ முதலில் ஒரு செயலில் உள்ள சுற்றுலா அமர்வைத் தொடங்கவும் — பகிர எதுவும் இல்லை.",
   "familyShareLinkGeneratedSuccess": "✅ \"{name}\" க்காக பணி இணைப்பு உருவாக்கப்பட்டது!",
   "@familyShareLinkGeneratedSuccess": {
-    "placeholders": { "name": { "type": "String" } }
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   },
   "familyShareActiveLinksTitle": "செயலில் உள்ள இணைப்புகள்",
   "familyShareNewLinkButton": "+ புதியது",
@@ -834,22 +1085,38 @@
   "familyShareExpiredBadge": "காலாவதியானது",
   "familyShareViewedCountBadge": "{count} முறை பார்க்கப்பட்டது",
   "@familyShareViewedCountBadge": {
-    "placeholders": { "count": { "type": "int" } }
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "familyShareLinkNoLongerValid": "இனி செல்லுபடியாகாது",
   "familyShareLinkExpiresAt": "{time} அன்று காலாவதியாகும்",
   "@familyShareLinkExpiresAt": {
-    "placeholders": { "time": { "type": "String" } }
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
   },
   "familyShareCopyLinkSnackbar": "📋 அழைப்புக் குறியீடு கிளிப்போர்டுக்கு நகலெடுக்கப்பட்டது!",
   "familyShareRemoveLinkDialogTitle": "இணைப்பை அகற்றவா?",
   "familyShareRemoveLinkDialogBody": "இது \"{recipientName}\" இன் பகிரப்பட்ட அணுகலை ரத்து செய்யும்.",
   "@familyShareRemoveLinkDialogBody": {
-    "placeholders": { "recipientName": { "type": "String" } }
+    "placeholders": {
+      "recipientName": {
+        "type": "String"
+      }
+    }
   },
   "familyShareLinkRemovedSnackbar": "\"{recipientName}\" க்கான இணைப்பு அகற்றப்பட்டது.",
   "@familyShareLinkRemovedSnackbar": {
-    "placeholders": { "recipientName": { "type": "String" } }
+    "placeholders": {
+      "recipientName": {
+        "type": "String"
+      }
+    }
   },
   "familyShareRemoveButton": "அகற்று",
   "familyShareCreateSheetTitle": "பகிர்வு இணைப்பை உருவாக்கவும்",
@@ -864,7 +1131,6 @@
   "familyShareToggleMeetingPointLabel": "சந்திப்பு இடத்தைப் பகிரவும்",
   "familyShareToggleEmergencyLabel": "அவசர எச்சரிக்கைகளைப் பகிரவும்",
   "familyShareGenerateLinkButton": "இணைப்பை உருவாக்கவும்",
-
   "categoryAll": "அனைத்தும்",
   "categoryChauffeur": "ஓட்டுநர்",
   "categorySiteGuide": "இடம் வழிகாட்டி",
@@ -878,30 +1144,57 @@
   "noVerifiedGuidesEmptyState": "இதுவரை சரிபார்க்கப்பட்ட வழிகாட்டிகள் வெளியிடப்படவில்லை.",
   "noGuidesFoundForQuery": "'{query}' உடன் பொருந்தும் வழிகாட்டிகள் இல்லை",
   "@noGuidesFoundForQuery": {
-    "placeholders": { "query": { "type": "String" } }
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
   },
   "signInToBrowseGuidesError": "சரிபார்க்கப்பட்ட வழிகாட்டிகளை உலாவ உள்நுழையவும்.",
   "genericLoadGuidesError": "வழிகாட்டிகளை ஏற்றுவதில் ஏதோ தவறு நடந்தது. மீண்டும் முயற்சிக்கவும்.",
   "tryAgainButton": "மீண்டும் முயற்சிக்கவும்",
   "reviewCountSuffix": " ({count})",
   "@reviewCountSuffix": {
-    "placeholders": { "count": { "type": "int" } }
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "hourlyRateLabel": "{currency} {rate}/மணி",
   "@hourlyRateLabel": {
-    "placeholders": { "currency": { "type": "String" }, "rate": { "type": "String" } }
+    "placeholders": {
+      "currency": {
+        "type": "String"
+      },
+      "rate": {
+        "type": "String"
+      }
+    }
   },
   "zenithPresenceSyncErrorMessage": "Zenith Presence ஒத்திசைவு பிழை: {error}",
   "@zenithPresenceSyncErrorMessage": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "couldNotGetLocationMessage": "உங்கள் இருப்பிடத்தைப் பெற முடியவில்லை. இயல்புநிலை ஆயத்தொலைவுகள் பயன்படுத்தப்படுகின்றன. ({error})",
   "@couldNotGetLocationMessage": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "failedToUpdatePhaseMessage": "கட்டத்தைப் புதுப்பிக்க முடியவில்லை: {error}",
   "@failedToUpdatePhaseMessage": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "setMeetingPointDialogTitle": "சந்திப்பு இடத்தை அமைக்கவும்",
   "meetingPointHintText": "எ.கா., கோவில் நுழைவாயில், பஸ் நிலையம்",
@@ -910,16 +1203,28 @@
   "meetingPointUpdatedTitle": "சந்திப்பு இடம் புதுப்பிக்கப்பட்டது",
   "meetingPointUpdatedBody": "புதிய சந்திப்பு இடம்: {name}",
   "@meetingPointUpdatedBody": {
-    "placeholders": { "name": { "type": "String" } }
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   },
   "failedToSetMeetingPointMessage": "சந்திப்பு இடத்தை அமைக்க முடியவில்லை: {error}",
   "@failedToSetMeetingPointMessage": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "vehiclePositionMarkedMessage": "வாகன இருப்பிடம் குறிக்கப்பட்டது",
   "failedToUpdateVehicleLocationMessage": "வாகன இருப்பிடத்தைப் புதுப்பிக்க முடியவில்லை: {error}",
   "@failedToUpdateVehicleLocationMessage": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "tourDashboardTitle": "சுற்றுலா டாஷ்போர்டு",
   "bottomNavTour": "சுற்றுலா",
@@ -952,7 +1257,11 @@
   "connectedTravelersLabel": "இணைக்கப்பட்ட பயணிகள்",
   "activeCountLabel": "{count} செயலில்",
   "@activeCountLabel": {
-    "placeholders": { "count": { "type": "int" } }
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "waitingForScansLabel": "ஸ்கேன்களுக்காகக் காத்திருக்கிறது...",
   "phaseLabelAssembly": "கூடுதல்",
@@ -964,29 +1273,44 @@
   "selectVehicleTitle": "வாகனத்தைத் தேர்ந்தெடுக்கவும்",
   "travelerTileLabel": "பயணி {shortId}",
   "@travelerTileLabel": {
-    "placeholders": { "shortId": { "type": "String" } }
+    "placeholders": {
+      "shortId": {
+        "type": "String"
+      }
+    }
   },
   "weatherHazardLoggedMessage": "✅ வானிலை ஆபத்து பாதுகாப்பு கன்சோலில் பதிவு செய்யப்பட்டது!",
   "errorLoggingIncidentMessage": "சம்பவத்தைப் பதிவு செய்வதில் பிழை: {error}",
   "@errorLoggingIncidentMessage": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "logIncidentButtonUppercase": "சம்பவத்தைப் பதிவு செய்யவும்",
   "safetyConsoleButtonUppercase": "பாதுகாப்பு கன்சோல்",
   "defaultMonsoonAlertTitle": "🚨 அவசர பருவமழை எச்சரிக்கை",
   "defaultMonsoonAlertMessage": "உங்கள் சுற்றுலா மாவட்டத்தில் கடுமையான வானிலை எச்சரிக்கை.",
-
   "earningsTitle": "வருவாய்",
   "pleaseLogInViewEarningsMessage": "வருவாயைக் காண உள்நுழையவும்.",
   "errorLoadingFinancialDataMessage": "நிதித் தரவை ஏற்றுவதில் பிழை: {error}",
   "@errorLoadingFinancialDataMessage": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "totalNetEarningsLabel": "மொத்த நிகர வருவாய்",
   "netPercentageLabel": "90% நிகரம்",
   "lkrAmountLabel": "LKR {amount}",
   "@lkrAmountLabel": {
-    "placeholders": { "amount": { "type": "String" } }
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
   },
   "subStatPending": "நிலுவையில்",
   "subStatPaidOut": "செலுத்தப்பட்டது",
@@ -1009,19 +1333,38 @@
   "payoutStatusPending": "நிலுவையில்",
   "tourBookingIdLabel": "சுற்றுலா முன்பதிவு #{id}",
   "@tourBookingIdLabel": {
-    "placeholders": { "id": { "type": "String" } }
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
   },
   "guestCountDateLabel": "{count} விருந்தினர்கள் · {date}",
   "@guestCountDateLabel": {
-    "placeholders": { "count": { "type": "int" }, "date": { "type": "String" } }
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
   },
   "viaPayHereDateLabel": "PayHere வழியாக · {date}",
   "@viaPayHereDateLabel": {
-    "placeholders": { "date": { "type": "String" } }
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
   },
   "grossLkrLabel": "மொத்தம் LKR {amount}",
   "@grossLkrLabel": {
-    "placeholders": { "amount": { "type": "String" } }
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
   },
   "noTransactionsFoundTitle": "பரிவர்த்தனைகள் எதுவும் இல்லை",
   "noTransactionsFoundSubtitle": "நீங்கள் சுற்றுலா முன்பதிவுகளை முடித்தவுடன், உங்கள் நிகர கொடுப்பனவுகள்\nஇங்கே தானாகவே தோன்றும்.",
@@ -1029,7 +1372,11 @@
   "requestPayoutDialogTitle": "பணம் செலுத்தக் கோரவும்",
   "requestPayoutDialogMessage": "நீங்கள் உங்கள் பதிவுசெய்யப்பட்ட வங்கிக் கணக்கு / மொபைல் மணி வாலட்டிற்கு LKR {amount} பரிமாற்றத்தைக் கோருகிறீர்கள்.\n\nபரிமாற்றங்கள் Oracle நிதிக் குழுவால் 24 வணிக மணி நேரத்திற்குள் செயலாக்கப்படும்.",
   "@requestPayoutDialogMessage": {
-    "placeholders": { "amount": { "type": "String" } }
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
   },
   "cancelButton": "ரத்துசெய்",
   "confirmPayoutButton": "கொடுப்பனவை உறுதிப்படுத்தவும்",
@@ -1039,7 +1386,6 @@
   "accountPhoneNumberLabel": "கணக்கு / தொலைபேசி எண்",
   "saveButtonLabel": "சேமி",
   "payoutAccountSettingsUpdatedMessage": "கொடுப்பனவு கணக்கு அமைப்புகள் புதுப்பிக்கப்பட்டன!",
-
   "availabilityScheduleTitle": "கிடைக்கும் தன்மை மற்றும் அட்டவணை",
   "whenYoureFreeToGuideTitle": "நீங்கள் வழிகாட்ட எப்போது ஓய்வாக இருக்கிறீர்கள்",
   "touristsOnlySeeOpenSlotsMessage": "நீங்கள் திறந்ததாகக் குறிக்கும் நேரவெளிகளை மட்டுமே சுற்றுலாப் பயணிகள் காண்பார்கள்.",
@@ -1050,7 +1396,11 @@
   "advanceNoticeSubtitle": "சுற்றுலா தொடங்குவதற்கு முன் குறைந்தபட்ச முன்னறிவிப்பு நேரம்",
   "hoursShortLabel": "{count} மணி",
   "@hoursShortLabel": {
-    "placeholders": { "count": { "type": "String" } }
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
   },
   "weeklyScheduleTitle": "வாராந்திர அட்டவணை",
   "weeklyScheduleSubtitle": "நீங்கள் வேலை செய்யும் நாட்களை மாற்றி உங்கள் நேரங்களை அமைக்கவும்",
@@ -1058,7 +1408,11 @@
   "blackoutDatesTitle": "விலக்கப்பட்ட தேதிகள்",
   "blackoutDatesCountSuffix": " ({count})",
   "@blackoutDatesCountSuffix": {
-    "placeholders": { "count": { "type": "int" } }
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "addDateButtonLabel": "தேதியைச் சேர்க்கவும்",
   "noBlackoutDatesMessage": "இன்னும் விலக்கப்பட்ட தேதிகள் இல்லை — உங்கள் வாராந்திர அட்டவணையின்படி நீங்கள் கிடைக்கிறீர்கள்.",
@@ -1070,18 +1424,28 @@
   "dayFriday": "வெள்ளி",
   "daySaturday": "சனி",
   "daySunday": "ஞாயிறு",
-
   "clientsTitle": "வாடிக்கையாளர்கள்",
   "pleaseLogInMessage": "தயவுசெய்து உள்நுழையவும்.",
   "noClientsYetTitle": "இன்னும் வாடிக்கையாளர்கள் இல்லை",
   "noClientsYetSubtitle": "பயணிகள் உங்கள் சுற்றுலாக்களை முன்பதிவு செய்தவுடன், அவர்கள் இங்கே தோன்றுவார்கள்.",
   "travelerShortIdLabel": "பயணி {shortId}",
   "@travelerShortIdLabel": {
-    "placeholders": { "shortId": { "type": "String" } }
+    "placeholders": {
+      "shortId": {
+        "type": "String"
+      }
+    }
   },
   "tourCountCompletedLabel": "{count, plural, one{1 சுற்றுலா} other{{count} சுற்றுலாக்கள்}} முடிக்கப்பட்டது · கடைசி: {date}",
   "@tourCountCompletedLabel": {
-    "placeholders": { "count": { "type": "int" }, "date": { "type": "String" } }
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
   },
   "clientStatTours": "சுற்றுலாக்கள்",
   "clientStatTotalSpent": "மொத்தம் செலவழிக்கப்பட்டது",
@@ -1093,9 +1457,12 @@
   "bookingHistoryTitle": "முன்பதிவு வரலாறு",
   "guestCountParenthesesLabel": "{count} விருந்தினர்(கள்)",
   "@guestCountParenthesesLabel": {
-    "placeholders": { "count": { "type": "int" } }
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
-
   "becomeAGuideTitle": "வழிகாட்டியாக மாறுங்கள்",
   "fieldsMissingMessage": "விடுபட்ட புலங்கள்: அனைத்தையும் நிரப்பி ஆவணங்களைப் பதிவேற்றவும்.",
   "uploadingDocumentsMessage": "ஆவணங்கள் பதிவேற்றப்படுகின்றன...",
@@ -1106,7 +1473,11 @@
   "authRequiredMessage": "அங்கீகாரம் தேவை. தயவுசெய்து மீண்டும் உள்நுழையவும்.",
   "cameraAccessDeniedMessage": "கேமரா அணுகல் மறுக்கப்பட்டது அல்லது பிழை: {error}",
   "@cameraAccessDeniedMessage": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "takeASelfieTitle": "செல்ஃபி எடுக்கவும்",
   "uploadDocumentTitle": "ஆவணத்தைப் பதிவேற்றவும்",
@@ -1114,7 +1485,11 @@
   "galleryOptionLabel": "கேலரி",
   "errorGenericMessage": "பிழை: {error}",
   "@errorGenericMessage": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "verifyingYourDetailsMessage": "உங்கள் விவரங்கள் சரிபார்க்கப்படுகின்றன...",
   "credentialsBeingVerifiedMessage": "உங்கள் சான்றுகள் பாதுகாப்பாக சரிபார்க்கப்படுகின்றன.",
@@ -1126,7 +1501,11 @@
   "applicationRejectedTitle": "விண்ணப்பம் நிராகரிக்கப்பட்டது",
   "applicationRejectedMessage": "காரணம்: {reason}\n\nதேவையான உருப்படிகளைச் சரிசெய்த பிறகு கீழே உங்கள் விண்ணப்பத்தை மீண்டும் சமர்ப்பிக்கலாம்.",
   "@applicationRejectedMessage": {
-    "placeholders": { "reason": { "type": "String" } }
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
   },
   "defaultRejectionReason": "ஆவணங்கள் முழுமையடையவில்லை அல்லது தெளிவற்றவை.",
   "guidePollRejectionReason": "உங்கள் உரிம ஆவணங்களும் புகைப்படங்களும் தெளிவாகவும் செல்லுபடியாகவும் இருப்பதை உறுதிசெய்யவும்.",
@@ -1147,24 +1526,41 @@
   "nicPassportLabel": "NIC / கடவுச்சீட்டு",
   "selfieForIdentityLabel": "அடையாளச் செல்ஃபி",
   "submitApplicationButton": "விண்ணப்பத்தைச் சமர்ப்பிக்கவும்",
-
   "tourPackagesTitle": "சுற்றுலா தொகுப்புகள்",
   "noPackagesYetTitle": "இன்னும் தொகுப்புகள் இல்லை",
   "noPackagesYetSubtitle": "நிலையான விலையுடன் அரை நாள், முழு நாள் அல்லது பல நாள் சுற்றுலா தொகுப்புகளை வழங்கவும்.",
   "inactiveLabel": "செயலற்றது",
   "durationGuestsLabel": "{hours}மணி · {guests} விருந்தினர்கள் வரை",
   "@durationGuestsLabel": {
-    "placeholders": { "hours": { "type": "String" }, "guests": { "type": "String" } }
+    "placeholders": {
+      "hours": {
+        "type": "String"
+      },
+      "guests": {
+        "type": "String"
+      }
+    }
   },
   "currencyPriceLabel": "{currency} {price}",
   "@currencyPriceLabel": {
-    "placeholders": { "currency": { "type": "String" }, "price": { "type": "String" } }
+    "placeholders": {
+      "currency": {
+        "type": "String"
+      },
+      "price": {
+        "type": "String"
+      }
+    }
   },
   "newPackageTitle": "புதிய தொகுப்பு",
   "editPackageTitle": "தொகுப்பைத் திருத்து",
   "failedToSavePackageMessage": "தொகுப்பைச் சேமிக்க முடியவில்லை: {error}",
   "@failedToSavePackageMessage": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "packageTitleLabel": "தொகுப்புத் தலைப்பு",
   "packageTitleHint": "எ.கா. முழு நாள் சிகிரியா & தம்புள்ளை",
@@ -1183,9 +1579,12 @@
   "availabilityScheduleUpdatedMessage": "கிடைக்கும் தன்மை மற்றும் அட்டவணை புதுப்பிக்கப்பட்டது",
   "errorSavingAvailabilityMessage": "கிடைக்கும் தன்மையைச் சேமிப்பதில் பிழை: {error}",
   "@errorSavingAvailabilityMessage": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
-
   "broadcastSentSuccessMessage": "ஒளிபரப்பு வெற்றிகரமாக அனுப்பப்பட்டது",
   "broadcastTitle": "ஒளிபரப்பு",
   "activeBroadcastsTitle": "செயலில் உள்ள ஒளிபரப்புகள்",
@@ -1196,7 +1595,11 @@
   "noActiveBroadcastsMessage": "செயலில் உள்ள ஒளிபரப்புகள் இல்லை",
   "acksCountLabel": "{count} உறுதிப்படுத்தல்கள்",
   "@acksCountLabel": {
-    "placeholders": { "count": { "type": "int" } }
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "expireButtonLabel": "காலாவதி செய்",
   "broadcastTypeGeneral": "பொது",
@@ -1210,7 +1613,6 @@
   "broadcastPriorityNormal": "சாதாரண",
   "broadcastPriorityHigh": "அதிகம்",
   "broadcastPriorityCritical": "மிக முக்கியமான",
-
   "writeReviewButton": "மதிப்பாய்வு எழுதுங்கள்",
   "reviewsTitle": "மதிப்பாய்வுகள்",
   "failedToLoadReviewsMessage": "மதிப்பாய்வுகளை ஏற்ற முடியவில்லை. மீண்டும் முயற்சிக்கவும்.",
@@ -1228,11 +1630,14 @@
   "verifiedTripBadge": "சரிபார்க்கப்பட்ட பயணம்",
   "touristShortIdLabel": "சுற்றுலாப் பயணி {shortId}",
   "@touristShortIdLabel": {
-    "placeholders": { "shortId": { "type": "String" } }
+    "placeholders": {
+      "shortId": {
+        "type": "String"
+      }
+    }
   },
   "noReviewsYetTitle": "இன்னும் மதிப்பாய்வுகள் இல்லை",
   "noReviewsYetSubtitle": "சரிபார்க்கப்பட்ட பங்கேற்பாளர்கள் அமர்வு முடிந்த பிறகு கருத்து தெரிவிக்கலாம்.",
-
   "guideProfileNotFoundMessage": "வழிகாட்டி சுயவிவரம் கிடைக்கவில்லை",
   "aboutSectionTitle": "பற்றி",
   "noBioProvidedMessage": "சுயவிவரம் வழங்கப்படவில்லை.",
@@ -1244,27 +1649,42 @@
   "standardPackageLabel": "நிலையான தொகுப்பு",
   "durationHoursShortLabel": "{hours} மணி",
   "@durationHoursShortLabel": {
-    "placeholders": { "hours": { "type": "String" } }
+    "placeholders": {
+      "hours": {
+        "type": "String"
+      }
+    }
   },
   "guestsCountShortLabel": "{count} விருந்தினர்கள்",
   "@guestsCountShortLabel": {
-    "placeholders": { "count": { "type": "String" } }
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
   },
   "totalLabel": "மொத்தம்",
   "requestThisGuideButton": "இந்த வழிகாட்டியை கோரவும்",
   "experienceStatLabel": "அனுபவம்",
   "yearsExperienceLabel": "{years} ஆண்டுகள்",
   "@yearsExperienceLabel": {
-    "placeholders": { "years": { "type": "String" } }
+    "placeholders": {
+      "years": {
+        "type": "String"
+      }
+    }
   },
   "ratingStatLabel": "மதிப்பீடு",
   "rankStatLabel": "தரவரிசை",
   "licensedGuideLabel": "உரிமம் பெற்ற வழிகாட்டி • {licenseNumber}",
   "@licensedGuideLabel": {
-    "placeholders": { "licenseNumber": { "type": "String" } }
+    "placeholders": {
+      "licenseNumber": {
+        "type": "String"
+      }
+    }
   },
   "platformVerifiedInsuredLabel": "தளத்தால் சரிபார்க்கப்பட்டு காப்பீடு செய்யப்பட்டுள்ளது",
-
   "yourListingTitle": "உங்கள் பட்டியல்",
   "basicInformationTitle": "அடிப்படை தகவல்",
   "displayNameLabel": "காட்சிப் பெயர்",
@@ -1288,7 +1708,11 @@
   "vehicleTypeModelHint": "எ.கா. Toyota Prius Hybrid / லக்சரி வேன்",
   "coverPhotosCountTitle": "அட்டைப்படங்கள் ({count})",
   "@coverPhotosCountTitle": {
-    "placeholders": { "count": { "type": "int" } }
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "availabilityCalendarTitle": "கிடைக்கும் தன்மை நாட்காட்டி",
   "visibilityBoostTitle": "தெரிவுநிலை மேம்பாடு",
@@ -1303,7 +1727,11 @@
   "draftSavedMessage": "💾 வரைவு வெற்றிகரமாக சேமிக்கப்பட்டது",
   "failedToSaveListingMessage": "பட்டியலைச் சேமிக்க முடியவில்லை: {error}",
   "@failedToSaveListingMessage": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "addPhotoLabel": "படத்தைச் சேர்",
   "verifiedLicenseLabel": "சரிபார்க்கப்பட்ட உரிமம்",
@@ -1315,11 +1743,14 @@
   "featureRequestedMessage": "கோரப்பட்டது — நிர்வாகி இதை மதிப்பாய்வு செய்து விரைவில் இயக்குவார்",
   "featureRequestPromptMessage": "சந்தையில் சிறப்பம்சப்படுத்தக் கோரவும் (நிர்வாக மதிப்பாய்வுக்கு உட்பட்டது)",
   "upgradeToProFeatureMessage": "சந்தையில் உங்கள் தெரிவுநிலையை அதிகரிக்க Pro க்கு மேம்படுத்தவும்",
-
   "safetyConsoleTitle": "பாதுகாப்பு கட்டுப்பாட்டு பலகை",
   "offlineErrorMessage": "இணைப்பு இல்லா பிழை: {error}",
   "@offlineErrorMessage": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "secureOperationsTitle": "பாதுகாப்பான செயல்பாடுகள்",
   "allIncidentsLoggedMessage": "அனைத்து சம்பவங்களும் தணிக்கை பாதையுடன் பதிவு செய்யப்பட்டுள்ளன",
@@ -1329,7 +1760,11 @@
   "priorityBadgeText": "முன்னுரிமை",
   "updatesCountLabel": "{count} புதுப்பிப்புகள்",
   "@updatesCountLabel": {
-    "placeholders": { "count": { "type": "int" } }
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "noCriticalIncidentsTitle": "முக்கியமான சம்பவங்கள் இல்லை",
   "sessionWithinSafetyParamsMessage": "அமர்வு செயல்பாடுகள் பாதுகாப்பு அளவுருக்களுக்குள் உள்ளன.",
@@ -1348,23 +1783,38 @@
   "resolutionNoteLabel": "Resolution",
   "resolvedByLabel": "Resolved by {name}",
   "@resolvedByLabel": {
-    "placeholders": { "name": { "type": "String" } }
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   },
-
   "manageTeamTitle": "குழுவை நிர்வகி",
   "signInToManageTeamMessage": "உங்கள் குழுவை நிர்வகிக்க உள்நுழையவும்.",
   "guideAddedToTeamMessage": "வழிகாட்டி உங்கள் குழுவில் சேர்க்கப்பட்டார்",
   "failedToInviteGuideMessage": "வழிகாட்டியை அழைக்க முடியவில்லை: {error}",
   "@failedToInviteGuideMessage": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "failedToRemoveGuideMessage": "வழிகாட்டியை அகற்ற முடியவில்லை: {error}",
   "@failedToRemoveGuideMessage": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "failedToUploadLogoMessage": "லோகோவைப் பதிவேற்ற முடியவில்லை: {error}",
   "@failedToUploadLogoMessage": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "tabOverview": "மேலோட்டம்",
   "tabTeam": "குழு",
@@ -1376,13 +1826,16 @@
   "guideUserIdToInviteHint": "அழைக்க வழிகாட்டி பயனர் ஐடி",
   "teamMembersCountTitle": "குழு உறுப்பினர்கள் ({count})",
   "@teamMembersCountTitle": {
-    "placeholders": { "count": { "type": "int" } }
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "roleMember": "உறுப்பினர்",
   "logoLabel": "லோகோ",
   "brandColorLabel": "பிராண்ட் நிறம்",
   "brandColorAppliedMessage": "உங்கள் நிறுவனத்திற்கான இந்த குழு டாஷ்போர்டில் உங்கள் பிராண்ட் நிறம் பயன்படுத்தப்பட்டுள்ளது.",
-
   "incidentNotFoundTitle": "சம்பவம் கிடைக்கவில்லை",
   "incidentNotFoundDescription": "பதிவு சுத்தப்படுத்தப்பட்டது அல்லது நகர்த்தப்பட்டது.",
   "statusLabel": "நிலை",
@@ -1392,14 +1845,17 @@
   "noTimelineActiveMessage": "செயலில் காலவரிசை இல்லை.",
   "minutesAgoLabel": "{minutes} நிமிடங்களுக்கு முன்",
   "@minutesAgoLabel": {
-    "placeholders": { "minutes": { "type": "int" } }
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
   },
   "verifiedAuditLogLabel": "சரிபார்க்கப்பட்ட தணிக்கை பதிவு",
   "forensicIntegrityLockedMessage": "தடயவியல் நேர்மைக்காக இந்த அறிக்கை பூட்டப்பட்டுள்ளது. அங்கீகரிக்கப்பட்ட நிர்வாகிகள் மட்டுமே நிலையை மாற்ற முடியும்.",
   "addEvidenceButton": "ஆதாரம் சேர்க்க",
   "escalateButton": "மேலிடம் கொண்டு செல்",
   "timelineTypeSosTriggered": "SOS தூண்டப்பட்டது",
-
   "invalidQrCodeFormatMessage": "தவறான QR குறியீடு வடிவம்",
   "unrecognizedQrCodeMessage": "அடையாளம் காணப்படாத QR குறியீடு",
   "sessionNotFoundClosedMessage": "அமர்வு கிடைக்கவில்லை அல்லது மூடப்பட்டுள்ளது",
@@ -1408,7 +1864,11 @@
   "localGuideFallback": "உள்ளூர் வழிகாட்டி",
   "vehicleNumberLabel": "வாகனம்: {vehicleNumber}",
   "@vehicleNumberLabel": {
-    "placeholders": { "vehicleNumber": { "type": "String" } }
+    "placeholders": {
+      "vehicleNumber": {
+        "type": "String"
+      }
+    }
   },
   "consentTrackingMessage": "இந்த சுற்றுலா அமர்வுக்கான நேரடி இருப்பிடக் கண்காணிப்பு மற்றும் பாதுகாப்பு கண்காணிப்புக்கு நான் ஒப்புதல் அளிக்கிறேன்.",
   "connectSyncButton": "இணைத்து ஒத்திசை",
@@ -1417,17 +1877,22 @@
   "enterHubButton": "மையத்தில் நுழை",
   "decryptingTokenMessage": "டோக்கன் மறைகுறியாக்கம் நீக்கப்படுகிறது…",
   "scanGuideTourCodeMessage": "உங்கள் வழிகாட்டியின் சுற்றுலா குறியீட்டை ஸ்கேன் செய்யவும்",
-
   "emergencyTranslatorTitle": "அவசர மொழிபெயர்ப்பாளர்",
   "showScreenToBystanderMessage": "இந்த திரையை அருகிலுள்ளவர், காவல் அதிகாரி அல்லது மருத்துவமனை ஊழியரிடம் காட்டவும் — இது உங்களுக்காக சிங்களத்தில் பேசுகிறது.",
   "locationCoordinatesTapMapsLabel": "{lat}, {lng} — வரைபடத்தில் திறக்க தட்டவும்",
   "@locationCoordinatesTapMapsLabel": {
-    "placeholders": { "lat": { "type": "String" }, "lng": { "type": "String" } }
+    "placeholders": {
+      "lat": {
+        "type": "String"
+      },
+      "lng": {
+        "type": "String"
+      }
+    }
   },
   "locationUnavailableMessage": "இருப்பிடம் கிடைக்கவில்லை",
   "speakingEllipsisMessage": "பேசுகிறது…",
   "playAgainButton": "மீண்டும் இயக்கு",
-
   "emergencyTitle": "அவசரநிலை",
   "criticalContactsTitle": "முக்கியமான தொடர்புகள்",
   "medicalFacilitiesNearbyTitle": "அருகிலுள்ள மருத்துவ வசதிகள்",
@@ -1451,25 +1916,32 @@
   "addGuardianTitle": "பாதுகாவலரைச் சேர்",
   "guardianPhoneNumberHint": "பாதுகாவலரின் தொலைபேசி எண்",
   "addGuardianButton": "பாதுகாவலரைச் சேர்",
-  "sosAlertsPreparedLoggedMessage": "SOS எச்சரிக்கைகள் தயார் செய்யப்பட்டு பாதுகாப்பு பெட்டகத்தில் பதிவு செய்யப்பட்டன!",
+  "sosAlertsPreparedLoggedMessage": "தொலைபேசி/SMS செயலி திறக்கப்பட்டது. அழைப்பை முடிக்கவும் அல்லது Send அழுத்தவும்; அவசர சேவைகள் தானாக தொடர்புகொள்ளப்படாது.",
   "sosCriticalAlertTitle": "மிக முக்கியமான SOS எச்சரிக்கை",
   "sosDistressSignalDescription": "பாதுகாவலர் அமைப்பிலிருந்து அவசர துயர சமிக்ஞை தூண்டப்பட்டது.",
   "locationPermissionsPermanentlyDeniedMessage": "இருப்பிட அனுமதிகள் நிரந்தரமாக மறுக்கப்பட்டுள்ளன.",
   "emergencyTranslatorPremiumMessage": "இலங்கை காவல்துறை அல்லது மருத்துவமனை ஊழியர்களுக்கு உங்கள் சூழ்நிலையை பேசும் சிங்களத்தில் உடனடியாக விளக்குங்கள் — ஒரு பிரீமியம் பாதுகாப்பு அம்சம்.",
   "notNowButton": "இப்போது வேண்டாம்",
   "viewPlansButton": "திட்டங்களைக் காண்க",
-
   "monsoonHazardAlertTitle": "பருவமழை ஆபத்து எச்சரிக்கை",
   "districtLabel": "மாவட்டம்: {district}",
   "@districtLabel": {
-    "placeholders": { "district": { "type": "String" } }
+    "placeholders": {
+      "district": {
+        "type": "String"
+      }
+    }
   },
   "districtGeneralFallback": "பொது",
   "severeMonsoonWeatherDetectedMessage": "கடுமையான பருவமழை வானிலை கண்டறியப்பட்டது.",
   "acknowledgeButton": "ஒப்புக்கொள்",
   "offlineErrorGenericMessage": "ஆஃப்லைன் பிழை: {error}",
   "@offlineErrorGenericMessage": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "sessionNotFoundMessage": "அமர்வு கிடைக்கவில்லை",
   "yourTourTitle": "உங்கள் சுற்றுலா",
@@ -1478,7 +1950,11 @@
   "everythingOnTrackMessage": "எல்லாம் சரியாக நடக்கிறது",
   "statusColonValueLabel": "நிலை: {status}",
   "@statusColonValueLabel": {
-    "placeholders": { "status": { "type": "String" } }
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
   },
   "phaseAssemblingGroup": "குழு கூடுகிறது",
   "phaseEnRoute": "வழியில் உள்ளது",
@@ -1504,21 +1980,24 @@
   "buildReputationLabel": "நற்பெயரை உருவாக்கு",
   "helpImLostButton": "உதவி, நான் வழி தவறிவிட்டேன்",
   "emergencySosButton": "அவசர SOS",
-  "instantAlertAdminPoliceMessage": "நிர்வாகி, காவல்துறை மற்றும் மையத்திற்கு உடனடி எச்சரிக்கை.",
+  "instantAlertAdminPoliceMessage": "வழிகாட்டி/நிர்வாக மையத்திற்கு எச்சரிக்கை அனுப்பும். காவல்துறை தானாக தொடர்புகொள்ளப்படாது; 119 அல்லது 1990 ஐ அழைக்கவும்.",
   "signalSentStayMessage": "சமிக்ஞை அனுப்பப்பட்டது! நீங்கள் இருக்கும் இடத்திலேயே இருங்கள்.",
   "travelerLostBroadcastTitle": "பயணி வழி தவறிவிட்டார்",
   "travelerLostBroadcastBody": "ஒரு பயணி வழி தவறியதாக சமிக்ஞை அனுப்பியுள்ளார்! இருப்பிடம் வரைபடத்தில் பகிரப்பட்டது.",
   "sosCooledDownMessage": "SOS குளிர்ந்தது. {seconds} வினாடிகள் காத்திருக்கவும்.",
   "@sosCooledDownMessage": {
-    "placeholders": { "seconds": { "type": "int" } }
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
   },
-  "sosBroadcastedAuthoritiesMessage": "SOS எச்சரிக்கை அனைத்து அதிகாரிகளுக்கும் அனுப்பப்பட்டது!",
+  "sosBroadcastedAuthoritiesMessage": "SOS செயலியின் வழிகாட்டி/நிர்வாக மையத்துடன் பகிரப்பட்டது. 119 அல்லது 1990 ஐ அழைக்கவும்.",
   "tourCompletedTitle": "சுற்றுலா முடிந்தது!",
   "tourCompletedRateMessage": "நீங்கள் ஒரு அற்புதமான அனுபவத்தைப் பெற்றிருப்பீர்கள் என நம்புகிறோம்! இப்போது உங்கள் வழிகாட்டியை மதிப்பிட விரும்புகிறீர்களா? உங்கள் கருத்து வழிகாட்டிகள் உயர் தரத்தை பராமரிக்க உதவுகிறது.",
   "remindLaterButton": "பின்னர் நினைவூட்டு",
   "reminderSetMessage": "⏰ நினைவூட்டல் அமைக்கப்பட்டது! நாளை நாங்கள் ஒரு அறிவிப்பு அனுப்புவோம்.",
   "rateNowButton": "இப்போது மதிப்பிடு ⭐",
-
   "eventsTitle": "நிகழ்வுகள்",
   "topPicksForYouTitle": "உங்களுக்கான சிறந்த தேர்வுகள்",
   "categoryAllFilter": "அனைத்தும்",
@@ -1540,17 +2019,32 @@
   "syncPreferencesButton": "விருப்பத்தேர்வுகளை ஒத்திசை",
   "failedToShareTimelineMessage": "காலவரிசையைப் பகிர முடியவில்லை: {error}",
   "@failedToShareTimelineMessage": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "hazardWarningMessage": "🚨 ஆபத்து எச்சரிக்கை: {message}",
   "@hazardWarningMessage": {
-    "placeholders": { "message": { "type": "String" } }
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
   },
   "extremeWeatherAlertFallback": "கடுமையான வானிலை எச்சரிக்கை!",
   "recommendedForYouLabel": "உங்களுக்குப் பரிந்துரைக்கப்படுகிறது",
   "eventLocationCategoryLabel": "{location} · {category}",
   "@eventLocationCategoryLabel": {
-    "placeholders": { "location": { "type": "String" }, "category": { "type": "String" } }
+    "placeholders": {
+      "location": {
+        "type": "String"
+      },
+      "category": {
+        "type": "String"
+      }
+    }
   },
   "budgetTitle": "பட்ஜெட்",
   "addExpenseTitle": "செலவைச் சேர்க்கவும்",
@@ -1563,7 +2057,11 @@
   "expenseLedgerTitle": "செலவுப் பதிவேடு",
   "entriesCountLabel": "{count} பதிவுகள்",
   "@entriesCountLabel": {
-    "placeholders": { "count": { "type": "int" } }
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "noEntriesYetMessage": "இதுவரை பதிவுகள் இல்லை",
   "addFirstEntryButton": "முதல் பதிவைச் சேர்க்கவும்",
@@ -1571,7 +2069,6 @@
   "expenseCategoryTransport": "போக்குவரத்து",
   "expenseCategoryTickets": "டிக்கெட்டுகள்",
   "expenseCategoryMisc": "இதர",
-
   "budgetConciergeTitle": "பட்ஜெட் ஆலோசகர்",
   "analyzingSpendingPatternsMessage": "உங்கள் செலவுப் போக்குகளை பகுப்பாய்வு செய்கிறது...",
   "localAdviceMessage": "உங்கள் செலவின வேகம் தீவு சுற்றுலா தரநிலைகளுடன் நன்கு பொருந்துகிறது. வெளிப்படையான போக்குவரத்து கட்டணங்களுக்கு PickMe அல்லது Uber-ஐப் பயன்படுத்தவும், உங்கள் மதிப்பை அதிகரிக்க உள்ளூர் உணவகங்களை முயற்சிக்கவும் பரிந்துரைக்கிறோம்.",
@@ -1579,7 +2076,11 @@
   "totalSpentSoFarLabel": "இதுவரை செலவிட்ட மொத்தம்",
   "approxUsdLabel": "≈ US$ {amount}",
   "@approxUsdLabel": {
-    "placeholders": { "amount": { "type": "String" } }
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
   },
   "oracleAdviceLabel": "ஓரக்கிள் ஆலோசனை",
   "logTransactionTitle": "பரிவர்த்தனையைப் பதிவு செய்க",
@@ -1588,40 +2089,62 @@
   "expenseCategoryAttraction": "சுற்றுலா தலம்",
   "expenseCategoryLodging": "தங்குமிடம்",
   "expenseCategoryOther": "மற்றவை",
-
   "billingHistoryTitle": "பில்லிங் வரலாறு",
   "errorGenericColonMessage": "பிழை: {error}",
   "@errorGenericColonMessage": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "noBillingHistoryFoundMessage": "பில்லிங் வரலாறு எதுவும் கிடைக்கவில்லை.",
   "planLabel": "திட்டம்: {planId}",
   "@planLabel": {
-    "placeholders": { "planId": { "type": "String" } }
+    "placeholders": {
+      "planId": {
+        "type": "String"
+      }
+    }
   },
   "startedLabel": "தொடங்கியது",
   "expiresLabel": "காலாவதியாகும்",
   "idLabel": "ஐடி: {subscriptionId}",
   "@idLabel": {
-    "placeholders": { "subscriptionId": { "type": "String" } }
+    "placeholders": {
+      "subscriptionId": {
+        "type": "String"
+      }
+    }
   },
   "subscriptionStatusCancelled": "ரத்து செய்யப்பட்டது",
   "subscriptionStatusExpired": "காலாவதியானது",
   "subscriptionStatusActive": "செயலில் உள்ளது",
-
   "accessDeniedMessage": "அணுகல் மறுக்கப்பட்டது",
   "subscribedToPlanMessage": "✅ \"{planId}\" திட்டத்திற்கு குழுசேர்ந்தீர்கள்!",
   "@subscribedToPlanMessage": {
-    "placeholders": { "planId": { "type": "String" } }
+    "placeholders": {
+      "planId": {
+        "type": "String"
+      }
+    }
   },
   "subscriptionFailedMessage": "குழுசேர்க்கை தோல்வியடைந்தது: {error}",
   "@subscriptionFailedMessage": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "purchasesRestoredMessage": "✅ கொள்முதல்கள் வெற்றிகரமாக மீட்டமைக்கப்பட்டன.",
   "restoreFailedMessage": "மீட்டமைப்பு தோல்வியடைந்தது: {error}",
   "@restoreFailedMessage": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "serviceTiersTitle": "சேவை நிலைகள்",
   "freeTierTitle": "இலவச நிலை",
@@ -1646,7 +2169,11 @@
   "freeTierLabel": "இலவச நிலை",
   "expiresColonDateLabel": "காலாவதி: {date}",
   "@expiresColonDateLabel": {
-    "placeholders": { "date": { "type": "String" } }
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
   },
   "upgradeButton": "மேம்படுத்து",
   "manageButton": "நிர்வகி",
@@ -1654,7 +2181,6 @@
   "perMonthSlashLabel": "/மாதம்",
   "currentPlanButton": "தற்போதைய திட்டம்",
   "selectThisPlanButton": "இந்த திட்டத்தைத் தேர்ந்தெடுக்கவும்",
-
   "goPremiumTitle": "பிரீமியத்திற்கு மாறுங்கள்",
   "fullArUnlimitedAiTripsMessage": "முழு AR மற்றும் வரம்பற்ற AI பயணங்கள்",
   "heritageArModeTitle": "பாரம்பரிய AR முறை",
@@ -1669,16 +2195,28 @@
   "guardianEmergencyTranslatorDescription": "SOS நேரத்தில் உங்கள் நிலைமையை இலங்கை காவல்துறை அல்லது மருத்துவமனை ஊழியர்களுக்கு பேசும் சிங்களத்தில் உடனடியாக விளக்குகிறது.",
   "premiumActiveLabel": "{plan} செயலில் உள்ளது",
   "@premiumActiveLabel": {
-    "placeholders": { "plan": { "type": "String" } }
+    "placeholders": {
+      "plan": {
+        "type": "String"
+      }
+    }
   },
   "premiumFallback": "பிரீமியம்",
   "renewingOnLabel": "{date} அன்று புதுப்பிக்கப்படும்",
   "@renewingOnLabel": {
-    "placeholders": { "date": { "type": "String" } }
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
   },
   "viaSourceLabel": "{source} வழியாக",
   "@viaSourceLabel": {
-    "placeholders": { "source": { "type": "String" } }
+    "placeholders": {
+      "source": {
+        "type": "String"
+      }
+    }
   },
   "storeFallback": "ஸ்டோர்",
   "resetPremiumDevButton": "பிரீமியத்தை மீட்டமை (டெவ் மட்டும்)",
@@ -1712,40 +2250,71 @@
   "upgradeNowLongButton": "இப்போது மேம்படுத்தவும்",
   "trialDaysLabel": "{count, plural, one{1 நாள்} other{{count} நாட்கள்}} இலவச சோதனை",
   "@trialDaysLabel": {
-    "placeholders": { "count": { "type": "int" } }
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "trialWeeksLabel": "{count, plural, one{1 வாரம்} other{{count} வாரங்கள்}} இலவச சோதனை",
   "@trialWeeksLabel": {
-    "placeholders": { "count": { "type": "int" } }
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "trialMonthsLabel": "{count, plural, one{1 மாதம்} other{{count} மாதங்கள்}} இலவச சோதனை",
   "@trialMonthsLabel": {
-    "placeholders": { "count": { "type": "int" } }
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "trialYearsLabel": "{count, plural, one{1 ஆண்டு} other{{count} ஆண்டுகள்}} இலவச சோதனை",
   "@trialYearsLabel": {
-    "placeholders": { "count": { "type": "int" } }
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "trialPeriodLabel": "{count} காலப்பகுதி இலவச சோதனை",
   "@trialPeriodLabel": {
-    "placeholders": { "count": { "type": "int" } }
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
-
   "oracleLostFocusMessage": "ஓரக்கிள் கவனம் இழந்தது: {error}",
   "@oracleLostFocusMessage": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "savorLankaAiTitle": "சேவர்லங்கா AI",
   "culinaryVisionEngineLabel": "சமையல் தரிசன இயந்திரம் V2",
   "liveRealTimeScannerLabel": "நேரலை உண்மை-நேர ஸ்கேனர்",
   "nutritionReliabilityLabel": "ஊட்டச்சத்து நம்பகத்தன்மை: {reliability}",
   "@nutritionReliabilityLabel": {
-    "placeholders": { "reliability": { "type": "String" } }
+    "placeholders": {
+      "reliability": {
+        "type": "String"
+      }
+    }
   },
   "neuralReasoningLabel": "நரம்பியல் தர்க்கம்",
   "aiVisualMarkersFallback": "AI {label}-உடன் ஒத்துப்போகும் காட்சி சமையல் அடையாளங்களை கண்டறிந்தது.",
   "@aiVisualMarkersFallback": {
-    "placeholders": { "label": { "type": "String" } }
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
   },
   "authenticityIntelligenceTitle": "நம்பகத்தன்மை நுண்ணறிவு",
   "ingredientCertaintyTitle": "பொருட்கள் உறுதித்தன்மை",
@@ -1758,21 +2327,37 @@
   "ingredientTierOptional": "விருப்பத்தேர்வு / பக்க உணவுகள்",
   "mealContextLabel": "உணவு சூழல்: {context}",
   "@mealContextLabel": {
-    "placeholders": { "context": { "type": "String" } }
+    "placeholders": {
+      "context": {
+        "type": "String"
+      }
+    }
   },
   "supportingElementsLabel": "துணை கூறுகள்:",
   "influencesLabel": "தாக்கங்கள்: {influences}",
   "@influencesLabel": {
-    "placeholders": { "influences": { "type": "String" } }
+    "placeholders": {
+      "influences": {
+        "type": "String"
+      }
+    }
   },
   "visualFreshnessQualityLabel": "காட்சி புத்துணர்ச்சி & தரம்",
   "qualityColonLabel": "தரம்: {quality}",
   "@qualityColonLabel": {
-    "placeholders": { "quality": { "type": "String" } }
+    "placeholders": {
+      "quality": {
+        "type": "String"
+      }
+    }
   },
   "textureColonLabel": "மேற்பரப்பு: {texture}",
   "@textureColonLabel": {
-    "placeholders": { "texture": { "type": "String" } }
+    "placeholders": {
+      "texture": {
+        "type": "String"
+      }
+    }
   },
   "heritageNarrativeEngineTitle": "பாரம்பரிய கதை இயந்திரம்",
   "verifiedLegacyTitle": "சரிபார்க்கப்பட்ட பாரம்பரியம்",
@@ -1794,7 +2379,11 @@
   "healthRatingLabel": "ஆரோக்கிய மதிப்பீடு",
   "healthRatingValueLabel": "{rating}/10",
   "@healthRatingValueLabel": {
-    "placeholders": { "rating": { "type": "int" } }
+    "placeholders": {
+      "rating": {
+        "type": "int"
+      }
+    }
   },
   "sinhalaLabel": "சிங்களம்",
   "englishLabel": "ஆங்கிலம்",
@@ -1809,7 +2398,14 @@
   "voiceGuideLabel": "குரல் வழிகாட்டி",
   "savorLankaShareText": "Hidden Gems SL.ai-இல் நான் கண்டறிந்த இந்த {name} செய்முறையைப் பாருங்கள்! இது ஒரு உண்மையான இலங்கை சிற்றுண்டி. \n\nஓரக்கிள் மதிப்பெண்: {score}%",
   "@savorLankaShareText": {
-    "placeholders": { "name": { "type": "String" }, "score": { "type": "String" } }
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "score": {
+        "type": "String"
+      }
+    }
   },
   "savorLankaShareSubject": "Hidden Gems SL.ai - சேவர் லங்கா செய்முறை",
   "phase3CrossMatchTitle": "கட்டம் 3: குறுக்கு-பொருத்த மாற்று",
@@ -1819,38 +2415,46 @@
   "presentationLabel": "வழங்கல்",
   "integrityLabel": "ஒருமைப்பாடு",
   "popularLabel": "பிரபலமானது",
-
   "curatorDealsTitle": "க்யூரேட்டர் சலுகைகள்",
   "noDealsRightNowTitle": "இப்போது சலுகைகள் இல்லை",
   "newPartnerDiscountsMessage": "புதிய பங்குதாரர் தள்ளுபடிகள் தொடர்ந்து சேர்க்கப்படுகின்றன — விரைவில் மீண்டும் பாருங்கள்.",
   "percentOffLabel": "{percent}% தள்ளுபடி",
   "@percentOffLabel": {
-    "placeholders": { "percent": { "type": "int" } }
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
   },
   "validUntilLabel": "{date} வரை செல்லுபடியாகும்",
   "@validUntilLabel": {
-    "placeholders": { "date": { "type": "String" } }
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
   },
   "claimDealButton": "சலுகையைப் பெறு",
-
   "passportTitle": "பாஸ்போர்ட்",
   "verifiedVisitCollectionSubtitle": "உங்கள் சரிபார்க்கப்பட்ட வருகைத் தொகுப்பு",
   "passportIsEmptyTitle": "பாஸ்போர்ட் காலியாக உள்ளது",
   "exploreHistoricalGemsMessage": "உங்கள் தனித்துவமான டிஜிட்டல் முத்திரைகளைப்\nபெற வரலாற்று மாணிக்கங்களை ஆராயுங்கள்.",
   "claimedOnLabel": "{date} அன்று பெறப்பட்டது",
   "@claimedOnLabel": {
-    "placeholders": { "date": { "type": "String" } }
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
   },
   "verifiableHashLabel": "சரிபார்க்கக்கூடிய ஹாஷ்",
   "shareCollectibleButton": "சேகரிப்புப் பொருளைப் பகிர்",
   "stampRarityCommon": "பொதுவானது",
   "stampRarityRare": "அரியது",
   "stampRarityMythic": "புராணமானது",
-
   "audioGuideLabel": "ஆடியோ வழிகாட்டி",
   "sinhalaShortLabel": "සිංහල",
   "englishShortLabel": "ஆங்கிலம்",
-
   "joinGroupTourTitle": "குழு சுற்றுலாவில் சேரவும்",
   "enterSixDigitCodeMessage": "உங்கள் வழிகாட்டி வழங்கிய 6-இலக்க குறியீட்டை உள்ளிடவும்.",
   "cancelButtonUppercaseThird": "ரத்துசெய்",
@@ -1858,18 +2462,30 @@
   "tapFlatSurfaceMessage": "👆 மாதிரியை வைக்க ஒரு தட்டையான மேற்பரப்பைத் தட்டவும்",
   "groupTourStartedCodeLabel": "குழு சுற்றுலா தொடங்கியது! குறியீடு: {code}",
   "@groupTourStartedCodeLabel": {
-    "placeholders": { "code": { "type": "String" } }
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
   },
   "invalidSessionCodeMessage": "தவறான அமர்வு குறியீடு",
   "couldNotLoadAudioMessage": "ஆடியோ விளக்கத்தை ஏற்ற முடியவில்லை.",
   "galleryPermissionDeniedMessage": "கேலரி அனுமதி மறுக்கப்பட்டது",
   "failedToCapturePhotoMessage": "புகைப்படத்தை பிடிக்க முடியவில்லை: {error}",
   "@failedToCapturePhotoMessage": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "codeColonLabel": "குறியீடு: {code}",
   "@codeColonLabel": {
-    "placeholders": { "code": { "type": "String" } }
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
   },
   "thenLabel": "முன்பு",
   "nowLabel": "இப்போது",
@@ -1883,27 +2499,53 @@
   "preparingHeritageAssetsMessage": "பாரம்பரிய சொத்துகளைத் தயார்படுத்துகிறது...",
   "progressSizeLabel": "{progress}% • {size} MB",
   "@progressSizeLabel": {
-    "placeholders": { "progress": { "type": "int" }, "size": { "type": "String" } }
+    "placeholders": {
+      "progress": {
+        "type": "int"
+      },
+      "size": {
+        "type": "String"
+      }
+    }
   },
   "modelColonNameLabel": "மாதிரி: {name}",
   "@modelColonNameLabel": {
-    "placeholders": { "name": { "type": "String" } }
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   },
   "authorColonNameLabel": "ஆசிரியர்: {name}",
   "@authorColonNameLabel": {
-    "placeholders": { "name": { "type": "String" } }
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   },
   "moveSlowlyToScanMessage": "ஒரு தட்டையான மேற்பரப்பை ஸ்கேன் செய்ய\nஉங்கள் தொலைபேசியை மெதுவாக நகர்த்தவும்",
   "tapPlaceToPlaceModelMessage": "👇 \"வை\" என்பதைத் தட்டிய பின் ஒரு தட்டையான மேற்பரப்பைத் தட்டவும்",
   "demoModeSecondsRemainingLabel": "டெமோ முறை: {seconds} மீதம்",
   "@demoModeSecondsRemainingLabel": {
-    "placeholders": { "seconds": { "type": "int" } }
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
   },
   "premiumHeritageSessionLabel": "பிரீமியம் பாரம்பரிய அமர்வு",
   "artifactDiscoveredLabel": "கலைப்பொருள் கண்டுபிடிக்கப்பட்டது!",
   "ptsRarityLabel": "+{points} புள்ளிகள் • {rarity}",
   "@ptsRarityLabel": {
-    "placeholders": { "points": { "type": "int" }, "rarity": { "type": "String" } }
+    "placeholders": {
+      "points": {
+        "type": "int"
+      },
+      "rarity": {
+        "type": "String"
+      }
+    }
   },
   "hiddenGemsSlWatermark": "ஹிட்டன் ஜெம்ஸ் எஸ்எல்",
   "heritageArWatermark": "பாரம்பரிய ஏஆர்",
@@ -1914,19 +2556,37 @@
   "savedLabelShort": "சேமிக்கப்பட்டது",
   "sharePlatformCaptionInstagram": "#HiddenGemsSL உடன் {placeName}-ஐ ஏஆரில் ஆராய்கிறேன்",
   "@sharePlatformCaptionInstagram": {
-    "placeholders": { "placeName": { "type": "String" } }
+    "placeholders": {
+      "placeName": {
+        "type": "String"
+      }
+    }
   },
   "sharePlatformCaptionTiktok": "வரலாறு உயிர்பெறுகிறது! #HiddenGemsSL #HeritageAR",
   "photoSavedGalleryMessage": "புகைப்படம் உங்கள் கேலரியில் சேமிக்கப்பட்டது!",
   "backToArButton": "ஏஆருக்குத் திரும்பு",
   "distanceToTargetLabel": "{placeName}-க்கு {distance}மீ",
   "@distanceToTargetLabel": {
-    "placeholders": { "distance": { "type": "String" }, "placeName": { "type": "String" } }
+    "placeholders": {
+      "distance": {
+        "type": "String"
+      },
+      "placeName": {
+        "type": "String"
+      }
+    }
   },
   "recommendedLabel": "பரிந்துரைக்கப்படுகிறது",
   "categoryRatingLabel": "{category} • {rating} ★",
   "@categoryRatingLabel": {
-    "placeholders": { "category": { "type": "String" }, "rating": { "type": "String" } }
+    "placeholders": {
+      "category": {
+        "type": "String"
+      },
+      "rating": {
+        "type": "String"
+      }
+    }
   },
   "viewButtonUppercase": "காண்க",
   "loginToLeaveMemoryMessage": "ஏஆர் நினைவை விட உள்நுழையவும்!",
@@ -1938,10 +2598,13 @@
   "explorerFallback": "ஆய்வாளர்",
   "signalPercentLabel": "சிக்னல்: {percent}%",
   "@signalPercentLabel": {
-    "placeholders": { "percent": { "type": "int" } }
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
   },
   "searchingLabel": "தேடுகிறது...",
-
   "cameraAccessNeededTitle": "கேமரா அணுகல் தேவை",
   "arNotAvailableDeviceTitle": "இந்த சாதனத்தில் ஏஆர் கிடைக்கவில்லை",
   "arCouldntLoadTitle": "இந்த முறை ஏஆரை ஏற்ற முடியவில்லை",
@@ -1958,11 +2621,19 @@
   "historicalStoryLabel": "வரலாற்றுக் கதை",
   "unveilingEraTitle": "{era}-ஐ வெளிப்படுத்துகிறது",
   "@unveilingEraTitle": {
-    "placeholders": { "era": { "type": "String" } }
+    "placeholders": {
+      "era": {
+        "type": "String"
+      }
+    }
   },
   "heritageStoryBody": "இலங்கையின் பாரம்பரியம் காலத்தின் அமைப்பில் ஆழமாக ஓடுகிறது. {era}-ஐச் சேர்ந்த இந்த தளம், நீர்ப்பாசன பொறியியல் மற்றும் ஆன்மீக கட்டிடக்கலையில் முன்னோடியாக விளங்கிய ஒரு செழிப்பான நாகரிகத்தின் மையமாக ஒரு காலத்தில் இருந்தது.\n\nஇன்று நாம் காணும் தூபி 100 மில்லியனுக்கும் அதிகமான வெயிலில் காயவைத்த செங்கற்களைப் பயன்படுத்தி கட்டப்பட்டது, இது பண்டைய மன்னர்களின் பொறியியல் அற்புதங்களுக்குச் சான்றாக நிற்கிறது...",
   "@heritageStoryBody": {
-    "placeholders": { "era": { "type": "String" } }
+    "placeholders": {
+      "era": {
+        "type": "String"
+      }
+    }
   },
   "listenToNarrationLabel": "விளக்கத்தைக் கேளுங்கள்",
   "sinhalaEnglishAvailableLabel": "சிங்களம் & ஆங்கிலம் கிடைக்கிறது",
@@ -1970,19 +2641,17 @@
   "mode360Label": "360°",
   "mode3dLabel": "3D",
   "modeStoryLabel": "கதை",
-
   "unlockArHeritageModeTitle": "ஏஆர் பாரம்பரிய முறையைத் திறக்கவும்",
   "arHeritageModeSubtitle": "ஆயிரக்கணக்கான ஆண்டுகளுக்கு முன்பு இருந்தது போல் இலங்கையை அனுபவியுங்கள்.",
   "featureAncient3dReconstruction": "பண்டைய 3D மறுகட்டமைப்பு",
   "featureAudioNarrationBilingual": "ஆடியோ விளக்கம் (සිංහල / English)",
   "featureArPhotoCapture": "ஏஆர் புகைப்பட பிடிப்பு & சமூக பகிர்வு",
-  "pricingTrialLabel": "ரூ. 299/மாதம் முதல்  ·  7-நாள் இலவச சோதனை",
+  "pricingTrialLabel": "Store வழங்கும்போது இலவச சோதனை",
   "upgradeToPremiumButton": "பிரீமியத்திற்கு மேம்படுத்து",
   "watch10SecPreviewButton": "10-வினாடி முன்னோட்டத்தைப் பார்க்கவும்",
   "watchAdUnlockSessionButton": "அமர்வைத் திறக்க விளம்பரத்தைப் பார்க்கவும்",
   "notNowButtonLabel": "இப்போது வேண்டாம்",
   "ancientArtifactsLabel": "பண்டைய பொருட்கள்",
-
   "adminGuideVerificationTile": "வழிகாட்டி சரிபார்ப்புகள்",
   "adminVerificationConsoleTitle": "சரிபார்ப்பு கட்டுப்பாட்டு பலகை",
   "pendingReviewsSubtitle": "சமர்ப்பிக்கப்பட்ட வழிகாட்டி விண்ணப்பங்கள் மற்றும் ஆவணங்களை மதிப்பாய்வு செய்யவும்.",
@@ -1993,15 +2662,27 @@
   "filterExpired": "காலாவதியானது",
   "noApplicationsFoundMessage": "{filter} விண்ணப்பங்கள் எதுவும் இல்லை.",
   "@noApplicationsFoundMessage": {
-    "placeholders": { "filter": { "type": "String" } }
+    "placeholders": {
+      "filter": {
+        "type": "String"
+      }
+    }
   },
   "appliedOnLabel": "{date} அன்று விண்ணப்பிக்கப்பட்டது",
   "@appliedOnLabel": {
-    "placeholders": { "date": { "type": "String" } }
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
   },
   "licenseNumberDisplayLabel": "உரிம எண். {number}",
   "@licenseNumberDisplayLabel": {
-    "placeholders": { "number": { "type": "String" } }
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
   },
   "applicantDetailsTitle": "விண்ணப்பதாரர் விவரங்கள்",
   "bioLabel": "சுயவிவரம்",
@@ -2018,7 +2699,11 @@
   "applicationRejectedNoticeMessage": "விண்ணப்பம் நிராகரிக்கப்பட்டது.",
   "reviewActionFailedMessage": "மதிப்பாய்வைச் சமர்ப்பிக்க முடியவில்லை: {error}",
   "@reviewActionFailedMessage": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "licenseExpiryLabel": "உரிமத்தின் காலாவதி",
   "notProvidedLabel": "வழங்கப்படவில்லை",
@@ -2026,7 +2711,6 @@
   "expiryStatusExpiringSoon": "விரைவில் காலாவதியாகிறது",
   "expiryStatusExpired": "காலாவதியானது",
   "selectExpiryDateButton": "உரிமத்தின் காலாவதி தேதியைத் தேர்ந்தெடுக்கவும்",
-
   "languagesSectionTitle": "பேசும் மொழிகள்",
   "tourTypesSectionTitle": "வழங்கப்படும் சுற்றுலாக்கள்",
   "tourTypeBoatSafari": "படகு சபாரி",
@@ -2058,6 +2742,61 @@
   "arComingSoonTitle": "AR Experience Coming Soon",
   "arComingSoonMessage": "We're putting the finishing touches on the AR experience for {placeName}. Check back in a future update.",
   "@arComingSoonMessage": {
-    "placeholders": { "placeName": { "type": "String" } }
-  }
+    "placeholders": {
+      "placeName": {
+        "type": "String"
+      }
+    }
+  },
+  "sosDispatchMessage": "அவசரம்: எனக்கு உதவி தேவை. எனது தற்போதைய இடம்: {mapUrl} (Hidden Gems SL மூலம் அனுப்பப்பட்டது)",
+  "sosFailedAppLaunch": "தொலைபேசி அல்லது SMS செயலியை திறக்க முடியவில்லை. உடனடியாக 119 அல்லது 1990 ஐ அழைக்கவும்.",
+  "weatherConditionClear": "தெளிவான வானம்",
+  "weatherConditionClouds": "மேகமூட்டம்",
+  "weatherConditionRain": "மழை",
+  "weatherConditionThunderstorm": "இடியுடன் கூடிய மழை",
+  "weatherConditionDrizzle": "தூறல்",
+  "weatherConditionMist": "பனிமூட்டம்",
+  "rainSafetyAdvisory": "மழை / இடியுடன் கூடிய மழை எச்சரிக்கை: குடை எடுத்துச் செல்லவும், வளைந்த சாலைகளில் எச்சரிக்கையாக இருக்கவும்.",
+  "moreToolsTitle": "கூடுதல் கருவிகள் & அனுபவங்கள்",
+  "moreToolsSubtitle": "உணவு AI, AR, தரவுத்தளம் & பட்ஜெட்",
+  "savedPlacesHubTitle": "சேமிக்கப்பட்ட இடங்கள் & விருப்பப்பட்டியல்",
+  "savedPlacesHubSubtitle": "புக்மார்க்குகள், பார்க்க விரும்புபவை & வரலாறு",
+  "mapActionLabel": "வரைபடம்",
+  "safetyActionLabel": "பாதுகாப்பு",
+  "foodScannerTooltip": "உணவு ஸ்கேனர்",
+  "familyShareTitle": "குடும்ப பகிர்வு",
+  "waterSafetyTitle": "குடிநீர் & உள்ளூர் பானங்கள்",
+  "waterSafetySubtitle": "உள்ளூர் பானங்கள் மற்றும் எச்சரிக்கையான குடிநீர் பாதுகாப்பு வழிகாட்டல்",
+  "drinkLocalHeroTitle": "இலங்கையின் இயற்கையான புத்துணர்ச்சி பானங்கள்",
+  "drinkLocalHeroSubtitle": "சுத்தமான விற்பனையாளரைத் தேர்ந்தெடுத்து ஆர்டர் முன் தற்போதைய விலையை உறுதி செய்யுங்கள்",
+  "thambiliTitle": "தம்பிலி / செவ்விளநீர் (King Coconut)",
+  "thambiliFairPrice": "தற்போதைய LKR விலையை உறுதி செய்யுங்கள்",
+  "palmyrahTitle": "பனம்பழச்சாறு & பதநீர் (Palmyrah)",
+  "palmyrahFairPrice": "தற்போதைய LKR விலையை உறுதி செய்யுங்கள்",
+  "herbalTeaTitle": "பெலிமல் & ரணவரா மூலிகை தேநீர்",
+  "herbalTeaFairPrice": "தற்போதைய LKR விலையை உறுதி செய்யுங்கள்",
+  "slsCertificationTip": "பாட்டில் தண்ணீரில் SLS 894 முத்திரை மற்றும் மூடி சீலை சரிபார்க்கவும்",
+  "iceSafetyTip": "பனியின் வடிவம் பாதுகாப்பை உறுதி செய்யாது; குடிநீரில் செய்ததா கேளுங்கள் அல்லது பனியைத் தவிருங்கள்",
+  "tapWaterWarning": "நீர்தரம் இடத்துக்கு இடம் மாறும்; சந்தேகம் இருந்தால் கொதிக்கவைத்த, வடிகட்டிய அல்லது சீலிட்ட நீரைப் பயன்படுத்துங்கள்",
+  "jeewaniTip": "பதிவுசெய்யப்பட்ட ORS பற்றி மருந்தாளரிடம் கேட்டு பொதி வழிமுறைகளைப் பின்பற்றுங்கள்; கடுமையான அறிகுறிகளுக்கு சிகிச்சை பெறுங்கள்",
+  "findSafeWaterAction": "அருகிலுள்ள பாதுகாப்பான குடிநீர் கடைகளைக் கண்டறியவும்",
+  "landslideAlertTitle": "NBRO நிலச்சரிவு பயண எச்சரிக்கை",
+  "landslideLevel1Msg": "நிலை 1: மலைப்பாதைகளில் சரிவுகள் மற்றும் பாறை வீழ்ச்சி குறித்து கவனமாக இருங்கள்",
+  "landslideLevel2Msg": "நிலை 2: பலத்த மழை. இரவு நேரங்களில் மலைப்பாதைகளில் பயணிப்பதைத் தவிர்க்கவும்",
+  "landslideLevel3Msg": "நிலை 3: சிவப்பு எச்சரிக்கை. மலைப்பாதைகள் துண்டிக்கப்படலாம்",
+  "floodRiskTitle": "ஆற்றுப் படுகை வெள்ளப் பயண ஆலோசனை",
+  "floodRiskMsg": "தாழ்வான சாலைகளில் நீர் மட்டம் உயரக்கூடும். பிரதான நெடுஞ்சாலைகளைப் பயன்படுத்தவும்",
+  "disasterHelplineTitle": "அனர்த்த முகாமைத்துவ அவசர உதவி (DMC): 117",
+  "arModelPlacementFailedMessage": "இந்த மாதிரியை வைக்க முடியவில்லை — அது காணாமல் போயிருக்கலாம் அல்லது சேதமடைந்திருக்கலாம். மீண்டும் முயலுங்கள்.",
+  "arSessionErrorMessage": "AR பிழை: {message}",
+  "audioGuideUnavailable": "இந்த ஒலி வழிகாட்டி இப்போது கிடைக்கவில்லை. மீண்டும் முயல தட்டுங்கள்.",
+  "downloadAnywayButtonLabel": "எப்படியும் பதிவிறக்கு",
+  "largeDownloadWarningMessage": "இந்த 3D மாதிரி சுமார் {size} MB. பதிவிறக்கம் மொபைல் தரவைப் பயன்படுத்தும். தொடரவா?",
+  "largeDownloadWarningTitle": "பெரிய பதிவிறக்கம்",
+  "noGuideListingError": "இந்த வழிகாட்டி இன்னும் சுயவிவரத்தை அமைக்கவில்லை. வேறு வழிகாட்டியை முயலுங்கள்.",
+  "payNowButtonLabel": "இப்போது செலுத்து",
+  "paymentUnavailableError": "இந்த முன்பதிவுக்கு இப்போது பணம் செலுத்த முடியாது. புதுப்பித்து மீண்டும் முயலுங்கள்.",
+  "sendQuoteAmountLabel": "தொகை",
+  "sendQuoteConfirmButtonLabel": "ஏற்று விலைமதிப்பை அனுப்பு",
+  "sendQuoteDialogTitle": "உங்கள் விலையை அமைக்கவும்"
 }

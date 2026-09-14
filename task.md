@@ -1,3 +1,87 @@
+## Completed: Admin Panel Mobile Ads ON/OFF Toggle (2026-09-14)
+- [x] 1. Laravel Database & Model: Created `app_settings` migration and `AppSetting` model with caching and helper methods.
+- [x] 2. Laravel Admin Controller & Routes: Implemented `SettingController` with `index` and `toggleAds` actions, audit logging, and web routes.
+- [x] 3. Laravel Admin UI View: Created premium dark-glass `admin/settings/index.blade.php` and added navigation item in `layout.blade.php`.
+- [x] 4. Public REST API Endpoint: Exposed `GET /api/v1/config/ads` with cache headers.
+- [x] 5. Flutter Monetization Service Sync: Updated `MonetizationService` with remote fetch, local persistence (`SharedPreferences`), and graceful reward bypass when ads are off.
+- [x] 6. Banner & Native Ad Widget Guards: Ensured `BannerAdWidget` and `NativeAdWidget` respect `isAdsEnabled`.
+- [x] 7. Automated Tests & Verification: Built `test/monetization_remote_toggle_test.dart` (4/4 passed) and verified 0 warnings in `flutter analyze`.
+
+## Completed: Local Hydration, Safe Drinking Water & Disaster Travel Alerts (2026-09-14)
+- [x] 1. Core Health & Local Hydration Service (`health_safety_service.dart`):
+  - [x] Spotlight on Sri Lanka's 100% natural, sterile drinks: Thambili (King Coconut), Fresh Palmyrah Juice, Herbal Infusions (Belimal/Ranawara).
+  - [x] Fair Price Transparency guide (Thambili ~ LKR 100-150 / $0.35-$0.50, Palmyrah ~ LKR 80-120, Herbal Tea ~ LKR 60-100) to protect tourists and directly support local roadside vendors.
+  - [x] Bottled water safety rules (SLS 894 seal verification, tube ice vs block ice, untreated tap water warning, Jeewani ORS pharmacy tip).
+- [x] 2. Disaster, Landslide & Flood Alert Service (`disaster_alert_service.dart`):
+  - [x] NBRO Landslide Hazard district mapping (Badulla, Nuwara Eliya, Ratnapura, Kegalle, Kandy, Matale, Kalutara, Galle, Matara, Kurunegala).
+  - [x] 3 Alert levels based on 24h rainfall & mountain road risks (Yellow Watch >75mm, Amber Caution >100mm, Red Evacuation >150mm).
+  - [x] Major river basin flood warnings (Kelani, Kalu, Nilwala, Gin) and 117 DMC helpline integration.
+- [x] 3. Localization Across 6 Languages:
+  - [x] Added 21 localized keys across English, Sinhala, Tamil, Japanese, Korean, and Russian (`app_{en,si,ta,ja,ko,ru}.arb`).
+  - [x] Compiled cleanly with `flutter gen-l10n`.
+- [x] 4. UI Screen Integrations:
+  - [x] `PlaceDetailsScreen`: Added contextual drinking water / local drink prompt badge under Essential Facilities + interactive bottom sheet + NBRO/river hazard warnings.
+  - [x] `EmergencyKitScreen`: Added interactive "Drinking Water & Local Drinks Guide" card + "Landslide & Flood Travel Alerts" section with 1-tap 117 DMC call.
+  - [x] `HomeScreen`: Added dynamic Landslide/Flood road alert banner during severe rain/mountain hazards.
+- [x] 5. Automated Testing & Verification:
+  - [x] Created `test/health_and_disaster_safety_test.dart` covering 9 unit tests — 100% passing.
+  - [x] Verified zero analyzer warnings or errors via `flutter analyze`.
+
+
+## Completed: UI & Content Issues Remediation (P1/P2) (2026-09-14)
+- [x] 1. UTF-8 Encoding & Mojibake Eradication:
+  - Audited full repository using custom byte-level scanner; eradicated 100% of corrupted characters (`â ³`, `ðŸ ›ï¸ `, `â€“`, `Â°C`, `Â·`).
+  - Safe Unicode escapes applied in `place_details_screen.dart` (`\u23F3`, `\u{1F3DB}`, `\u{1F3AC}`, `\u2013`).
+  - Replaced literal temperature and separator on `home_screen.dart` line 880 with explicit `\u00B0C \u00B7`.
+  - Added explicit `Content-Type: text/html; charset=UTF-8` in Laravel `ApiSecurityHeaders.php`.
+- [x] 2. Hardcoded English Strings Localization:
+  - Localized SOS emergency dispatch message and app failure message in `emergency_kit_screen.dart` across all 6 languages (`app_en.arb`, `app_si.arb`, `app_ta.arb`, `app_ja.arb`, `app_ko.arb`, `app_ru.arb`).
+  - Localized action bar tooltips (`Profile`, `Saved places`, `Food scanner`) in `home_screen.dart`.
+  - Localized Saved Places Hub title & subtitle in `profile_screen.dart`.
+- [x] 3. Weather Condition & Rain Advisory Localization:
+  - Created `WeatherLocalizationService` (`lib/core/services/weather_localization_service.dart`) mapping raw API weather conditions (`Clear`, `Clouds`, `Rain`, `Thunderstorm`, `Drizzle`, `Mist`, `Fog`) to traveler language.
+  - Added localized Severe Weather / Rain Advisory banner on Home screen warning travelers about mountain road cautions.
+- [x] 4. Feature Overload Streamlining:
+  - Redesigned Home Screen quick action row to prioritize the 4 core actions for first-time travelers:
+    1. 🧭 **Explore** (`exploreNavLabel`)
+    2. 🗺️ **Plan Trip** (`planTripAction`)
+    3. 📍 **Map** (`mapActionLabel` -> `MapExplorerScreen`)
+    4. 🛡️ **Safety** (`safetyActionLabel` -> `EmergencyKitScreen`)
+  - Consolidated power traveler tools into an elegant, interactive **"More Tools"** modal hub (Food AI, AR Portals, Heritage Passport, Family Share, Budget Concierge, Find Guide).
+
+## Completed: Traveler Experience — P1 (2026-09-14)
+- [x] 1. “Open now” and Structured Opening Hours:
+  - Built `OpeningHoursService` (`lib/core/services/opening_hours_service.dart`) evaluating current time vs structured place hours.
+  - Formatted dynamic badges (OPEN NOW, CLOSING SOON, CLOSED, 24 HOURS), live closing/opening countdown, Poya/public holiday special alerts, and temporary closure warnings.
+- [x] 2. Route-Based Travel Time (Terrain & Road Condition Weighted):
+  - Built `TravelTimeService` (`lib/core/services/travel_time_service.dart`) with realistic Sri Lankan terrain curvature factors (1.4x hill-country / winding roads, 1.25x general).
+  - Multi-modal vehicle ETAs: Car/Van (35 km/h), Tuk-Tuk (26 km/h), Scooter (28 km/h), Hike/Walk (4.2 km/h).
+  - Explicit labeling ("Estimated Route Travel Time · Terrain-Weighted"), terrain notes, and 1-tap live turn-by-turn navigation launch via Google/Apple Maps.
+- [x] 3. Place Details Screen Essential Priority Reordering:
+  - Reordered `PlaceDetailsScreen` (`lib/presentation/screens/place_details_screen.dart`) to match traveler decision hierarchy:
+    1. Photos & Place Name (Hero Header)
+    2. Open / Closed & Structured Opening Hours Banner
+    3. Distance & Route-Based Travel Time (Terrain-Weighted)
+    4. Ticket Price & Admission Budget Card
+    5. Safety & Weather Advisory (Monsoon, wildlife, risk tags)
+    6. Essential Facilities (Toilets, Parking, Mobile Signal, Food, Wheelchair)
+    7. Nearby Essentials 1-Tap Live Map Search
+    8. Community Reviews & Traveler Ratings
+    9. Story, AI Insights, AR Experience & Cultural Etiquette
+- [x] 4. Nearby Essentials 1-Tap Search:
+  - Quick-action launcher for 7 essentials: Hospitals (රෝහල්), Police (පොලිසිය), Fuel (ඉන්ධන), ATM (ATM), Food (ආපනශාලා), Public Toilets (වැසිකිළි), Transport/Bus (ප්‍රවාහන) using zero-cost geo-search queries.
+- [x] 5. Dedicated Saved Places Hub:
+  - Created `SavedPlacesScreen` (`lib/presentation/screens/saved_places_screen.dart`) with 3 tabs: Bookmarked, Want to Visit, Recently Viewed.
+  - Added recently viewed tracking in `UserPreferenceService` and `UserProfile`.
+  - Linked entry points from Home Screen top action bar and Profile Journey Hub.
+
+## Completed: Admin Audit Log Delete & Cleanup Feature (2026-09-13)
+- [x] Implemented single log deletion (`destroy()`) and bulk timeframe cleanup (`clear()`) in `AuditLogController.php`
+- [x] Registered routes `DELETE /admin/audit-log/clear` and `DELETE /admin/audit-log/{id}` in `routes/web.php` with throttle protection
+- [x] Overhauled `resources/views/admin/audit-log/index.blade.php` with timeframe cleanup dropdown (7d, 30d, 60d, 90d, All) and row-level trash delete actions
+- [x] Gated delete actions strictly to Super Admin (`isFullAdmin()`) with confirmation alerts
+- [x] Added flash alert support for errors in `layout.blade.php`
+
 ## Completed: Fix Admin Places 500 Server Error (2026-09-13)
 - [x] Resilient dataset imports querying in `PlaceController.php` (Schema::hasTable guard + try-catch fallback)
 - [x] Guard `DatasetImport::create` in `PlaceController::importDataset`
@@ -14,15 +98,6 @@
 
 ## Completed: App Security Architecture Review (2026-09-13)
 - [x] Comprehensive review of Zenith Stress Defense, IntegrityShield, Network Hardening, Cloud Functions & Firestore Security Nexus
-
-## Active Milestone: Guide Verification & Booking System - Phase 1
-- [ ] Update Firestore data model (users, guides, bookings) and rules
-- [ ] Set up Firebase Storage rules for certificates and ID documents
-- [ ] Create Laravel backend endpoint for draft-save application
-- [ ] Create Laravel backend endpoints for verification and tracking
-- [ ] Create Laravel backend endpoints for booking management
-- [ ] Setup notifications (Email/Push) for verification and summary
-
 ## Active Milestone: Enterprise Audit Bug Remediation
 - [x] Phase 1: Automated Remediation (Flutter Frontend - Null checks, empty catch, UI hardcoded colors) — Completed 2026-07-11
 - [ ] Phase 2: Manual Remediation (Laravel & Python Backend - security, code smells)

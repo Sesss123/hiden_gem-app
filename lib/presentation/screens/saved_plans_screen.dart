@@ -90,8 +90,11 @@ class _SavedPlansScreenState extends ConsumerState<SavedPlansScreen> {
   }
 
   void _launchARShortcut(BuildContext context, String name) {
+    // TripPlan items currently carry only an AR flag, not verified model
+    // URLs. Keep this shortcut closed until that metadata is persisted.
+    final hasVerifiedAssetMetadata = false;
     // AR content isn't live yet — see AppConfig.arFeatureEnabled.
-    if (!AppConfig.arFeatureEnabled) {
+    if (!AppConfig.arFeatureEnabled || !hasVerifiedAssetMetadata) {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (_) => ARComingSoonScreen(placeName: name)),
@@ -104,8 +107,8 @@ class _SavedPlansScreenState extends ConsumerState<SavedPlansScreen> {
       arSupported: true,
       arTier: 1,
       arBrandName: l10n.arBrandNameHeritage,
-      arModelUrl: "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/AntiqueCamera/glTF-Binary/AntiqueCamera.glb",
-      arHistoricalModelUrl: "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/AntiqueCamera/glTF-Binary/AntiqueCamera.glb",
+      arModelUrl: "",
+      arHistoricalModelUrl: "",
       arModelScale: 0.05,
       historicalPeriod: l10n.ancientHeritageSite,
       audioUrlSi: "",

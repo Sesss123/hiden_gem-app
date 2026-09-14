@@ -9,6 +9,110 @@ class AppLocalizationsKo extends AppLocalizations {
   AppLocalizationsKo([String locale = 'ko']) : super(locale);
 
   @override
+  String get retryAction => '다시 시도';
+
+  @override
+  String get invalidMapCoordinates => '이 장소의 지도 좌표가 올바르지 않습니다.';
+
+  @override
+  String get mapAppUnavailable => '사용 가능한 지도 앱이 없습니다.';
+
+  @override
+  String get routeSafetyAdvisory => '경로 안전 안내';
+
+  @override
+  String get reviewRouteAction => '경로 검토';
+
+  @override
+  String get continueAction => '계속';
+
+  @override
+  String get savedJourneyHubTitle => '저장한 장소와 여행';
+
+  @override
+  String bookmarkedCount(int count) {
+    return '북마크 ($count)';
+  }
+
+  @override
+  String wantToVisitCount(int count) {
+    return '가고 싶은 곳 ($count)';
+  }
+
+  @override
+  String recentCount(int count) {
+    return '최근 ($count)';
+  }
+
+  @override
+  String get savedPlacesLoadError => '저장한 장소를 불러오지 못했습니다.';
+
+  @override
+  String get noBookmarkedPlaces => '북마크한 장소가 없습니다';
+
+  @override
+  String get noBookmarkedPlacesHint => '장소의 북마크 아이콘을 눌러 저장하세요.';
+
+  @override
+  String get wantToVisitEmpty => '가고 싶은 곳 목록이 비어 있습니다';
+
+  @override
+  String get wantToVisitEmptyHint => '장소 상세 페이지에서 추가하세요.';
+
+  @override
+  String get noRecentlyViewedPlaces => '최근 본 장소가 없습니다';
+
+  @override
+  String get noRecentlyViewedPlacesHint => '둘러본 장소가 자동으로 표시됩니다.';
+
+  @override
+  String browsingHistoryCount(int count) {
+    return '검색 기록 ($count)';
+  }
+
+  @override
+  String get usageLimitReachedTitle => '사용 한도에 도달했습니다';
+
+  @override
+  String usageLimitReachedMessage(String feature, String plan) {
+    return '이번 달 $feature을(를) 모두 사용했습니다. $plan으로 계속하세요:';
+  }
+
+  @override
+  String getPlanButton(String plan) {
+    return '$plan 이용하기';
+  }
+
+  @override
+  String get watchAdForOneMore => '광고를 보고 한 번 더 사용';
+
+  @override
+  String get priceUnavailable => '가격 정보 없음';
+
+  @override
+  String get contactForPrice => '가격 문의';
+
+  @override
+  String get freePriceLabel => '무료';
+
+  @override
+  String fromPriceLabel(String price) {
+    return '$price부터';
+  }
+
+  @override
+  String priceRangeLabel(String minimum, String maximum) {
+    return '$minimum~$maximum';
+  }
+
+  @override
+  String get serverManagedPriceNote =>
+      '가격은 서비스에서 제공되며 변경될 수 있습니다. 구매 전에 확인하세요.';
+
+  @override
+  String get hydrationSummary => '현지 음료 · 밀봉 생수 · 안전한 얼음 안내';
+
+  @override
   String get appTitle => 'Hidden Gems SL';
 
   @override
@@ -1841,24 +1945,22 @@ class AppLocalizationsKo extends AppLocalizations {
       '이 가이드는 이번 달 최대 예약 한도에 도달했습니다. 다음 달에 다시 시도하거나 다른 가이드를 선택해 주세요.';
 
   @override
-  String get noGuideListingError =>
-      'This guide hasn\'t set up their profile yet, so they can\'t accept bookings right now. Please try another guide.';
+  String get noGuideListingError => '이 가이드는 아직 프로필을 설정하지 않았습니다. 다른 가이드를 선택하세요.';
 
   @override
-  String get sendQuoteDialogTitle => 'Set your price';
+  String get sendQuoteDialogTitle => '가격 설정';
 
   @override
-  String get sendQuoteAmountLabel => 'Amount';
+  String get sendQuoteAmountLabel => '금액';
 
   @override
-  String get sendQuoteConfirmButtonLabel => 'Accept & send quote';
+  String get sendQuoteConfirmButtonLabel => '승인하고 견적 보내기';
 
   @override
-  String get payNowButtonLabel => 'Pay Now';
+  String get payNowButtonLabel => '지금 결제';
 
   @override
-  String get paymentUnavailableError =>
-      'This booking can\'t be paid right now — it may already be paid, or the price may have changed. Pull to refresh and try again.';
+  String get paymentUnavailableError => '현재 이 예약을 결제할 수 없습니다. 새로고침 후 다시 시도하세요.';
 
   @override
   String get receiptTitleLabel => 'Payment Receipt';
@@ -3579,7 +3681,8 @@ class AppLocalizationsKo extends AppLocalizations {
   String get addGuardianButton => '보호자 추가';
 
   @override
-  String get sosAlertsPreparedLoggedMessage => 'SOS 경보가 준비되어 보안 저장소에 기록되었습니다!';
+  String get sosAlertsPreparedLoggedMessage =>
+      '전화/SMS 앱을 열었습니다. 통화를 완료하거나 전송을 누르세요. 긴급 서비스에 자동으로 연락되지는 않습니다.';
 
   @override
   String get sosCriticalAlertTitle => '긴급 SOS 경보';
@@ -3716,7 +3819,8 @@ class AppLocalizationsKo extends AppLocalizations {
   String get emergencySosButton => '긴급 SOS';
 
   @override
-  String get instantAlertAdminPoliceMessage => '관리자, 경찰, 허브에 즉시 경보가 전송됩니다.';
+  String get instantAlertAdminPoliceMessage =>
+      '가이드/관리 허브에 알립니다. 경찰에 자동으로 연락되지는 않습니다. 필요하면 119 또는 1990으로 전화하세요.';
 
   @override
   String get signalSentStayMessage => '신호가 전송되었습니다! 그 자리에서 기다리세요.';
@@ -3734,7 +3838,8 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String get sosBroadcastedAuthoritiesMessage => 'SOS 경보가 모든 관계 당국에 전송되었습니다!';
+  String get sosBroadcastedAuthoritiesMessage =>
+      'SOS가 앱 내 가이드/관리 허브에 공유되었습니다. 119 또는 1990으로 전화하세요.';
 
   @override
   String get tourCompletedTitle => '투어 완료!';
@@ -4524,8 +4629,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get audioGuideLabel => '오디오 가이드';
 
   @override
-  String get audioGuideUnavailable =>
-      'This audio guide isn\'t available right now. Tap to retry.';
+  String get audioGuideUnavailable => '현재 이 오디오 가이드를 사용할 수 없습니다. 탭하여 다시 시도하세요.';
 
   @override
   String get sinhalaShortLabel => 'සිංහල';
@@ -4609,23 +4713,23 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get arModelPlacementFailedMessage =>
-      'This model couldn\'t be placed — it may be missing or corrupted. Try again or pick another location.';
+      '이 모델을 배치할 수 없습니다. 파일이 없거나 손상되었을 수 있습니다. 다시 시도하세요.';
 
   @override
   String arSessionErrorMessage(String message) {
-    return 'AR error: $message';
+    return 'AR 오류: $message';
   }
 
   @override
-  String get largeDownloadWarningTitle => 'Large download';
+  String get largeDownloadWarningTitle => '대용량 다운로드';
 
   @override
   String largeDownloadWarningMessage(String size) {
-    return 'This 3D model is about $size MB. Downloading it now will use your mobile data. Continue?';
+    return '이 3D 모델은 약 $size MB입니다. 모바일 데이터를 사용하여 계속할까요?';
   }
 
   @override
-  String get downloadAnywayButtonLabel => 'Download anyway';
+  String get downloadAnywayButtonLabel => '그래도 다운로드';
 
   @override
   String modelColonNameLabel(String name) {
@@ -4830,7 +4934,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get featureArPhotoCapture => 'AR 사진 캡처 및 소셜 공유';
 
   @override
-  String get pricingTrialLabel => '월 Rs. 299부터  ·  7일 무료 체험';
+  String get pricingTrialLabel => '스토어에서 제공하는 경우 무료 체험';
 
   @override
   String get upgradeToPremiumButton => '프리미엄으로 업그레이드';
@@ -5010,4 +5114,126 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get filterLanguageLabel => '언어';
+
+  @override
+  String sosDispatchMessage(String mapUrl) {
+    return '긴급 상황: 도움이 필요합니다. 저의 현재 위치: $mapUrl (Hidden Gems SL을 통해 전송됨)';
+  }
+
+  @override
+  String get sosFailedAppLaunch =>
+      '전화 또는 SMS 앱을 열 수 없습니다. 지금 119 또는 1990으로 전화하십시오.';
+
+  @override
+  String get weatherConditionClear => '맑음';
+
+  @override
+  String get weatherConditionClouds => '구름 많음';
+
+  @override
+  String get weatherConditionRain => '비';
+
+  @override
+  String get weatherConditionThunderstorm => '뇌우';
+
+  @override
+  String get weatherConditionDrizzle => '이슬비';
+
+  @override
+  String get weatherConditionMist => '안개';
+
+  @override
+  String get rainSafetyAdvisory => '호우/뇌우 주의보: 우산을 지참하고 굽은 도로에서 서행하십시오.';
+
+  @override
+  String get moreToolsTitle => '추가 도구 및 경험';
+
+  @override
+  String get moreToolsSubtitle => '음식 AI, AR 포털, 오라클, 패스포트 및 예산 관리';
+
+  @override
+  String get savedPlacesHubTitle => '저장된 장소 및 위시리스트';
+
+  @override
+  String get savedPlacesHubSubtitle => '북마크, 가고 싶은 곳 및 방문 기록';
+
+  @override
+  String get mapActionLabel => '지도';
+
+  @override
+  String get safetyActionLabel => '안전';
+
+  @override
+  String get foodScannerTooltip => '음식 스캐너';
+
+  @override
+  String get familyShareTitle => '가족 공유';
+
+  @override
+  String get waterSafetyTitle => '식수 및 현지 천연 음료';
+
+  @override
+  String get waterSafetySubtitle => '현지 음료와 신중한 식수 안전 안내';
+
+  @override
+  String get drinkLocalHeroTitle => '스리랑카의 천연 전해질 슈퍼 음료';
+
+  @override
+  String get drinkLocalHeroSubtitle => '위생적인 판매자를 선택하고 주문 전에 현재 가격을 확인하세요';
+
+  @override
+  String get thambiliTitle => '킹 코코넛 (탐빌리)';
+
+  @override
+  String get thambiliFairPrice => '현재 LKR 가격 확인';
+
+  @override
+  String get palmyrahTitle => '신선한 팔미라 야자 주스 (Palmyrah)';
+
+  @override
+  String get palmyrahFairPrice => '현재 LKR 가격 확인';
+
+  @override
+  String get herbalTeaTitle => '벨리말 & 라나와라 전통 허브차';
+
+  @override
+  String get herbalTeaFairPrice => '현재 LKR 가격 확인';
+
+  @override
+  String get slsCertificationTip => '생수 구매 시 반드시 SLS 894 인증 마크와 미개봉 캡 링을 확인하세요';
+
+  @override
+  String get iceSafetyTip =>
+      '얼음 모양만으로 안전을 보장할 수 없습니다. 식수로 만들었는지 확인하거나 얼음을 피하세요';
+
+  @override
+  String get tapWaterWarning =>
+      '수질은 장소마다 다릅니다. 확실하지 않으면 끓이거나 여과한 물 또는 밀봉 생수를 사용하세요';
+
+  @override
+  String get jeewaniTip => '등록된 ORS를 약사에게 문의하고 포장 지침을 따르세요. 심한 증상은 진료를 받으세요';
+
+  @override
+  String get findSafeWaterAction => '가까운 안전 생수 판매처 찾기';
+
+  @override
+  String get landslideAlertTitle => 'NBRO 산사태 여행 주의보';
+
+  @override
+  String get landslideLevel1Msg => '1단계: 산악 비탈길 낙석 및 흙탕물 쏠림에 유의하세요';
+
+  @override
+  String get landslideLevel2Msg => '2단계: 호우 지속. 야간 산간 고갯길 운전을 자제하세요';
+
+  @override
+  String get landslideLevel3Msg => '3단계: 대피 경보 (적색). 산악 도로가 통제될 수 있습니다';
+
+  @override
+  String get floodRiskTitle => '하천 유역 홍수 여행 권고';
+
+  @override
+  String get floodRiskMsg => '저지대 진입로가 침수될 수 있습니다. 국도 간선도로를 이용하세요';
+
+  @override
+  String get disasterHelplineTitle => '재난관리청 헬프라인 (DMC): 117';
 }

@@ -12,6 +12,12 @@ import '../../core/services/ar_service.dart';
 import '../../data/models/ar_place_data.dart';
 import '../../core/services/ar_support_service.dart';
 import '../../core/services/asset_cache_service.dart';
+import '../../core/services/opening_hours_service.dart';
+import '../../core/services/travel_time_service.dart';
+import '../../core/services/health_safety_service.dart';
+import '../../core/localization/health_safety_localization.dart';
+import '../../core/services/food_safety_guidance.dart';
+import '../../core/services/disaster_alert_service.dart';
 import '../../core/utils/result.dart';
 import 'package:hidden_gems_sl/data/repositories/discovery_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -67,6 +73,9 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
     final profile = UserPreferenceService.getProfile();
     _isBookmarked = profile.bookmarkedPlaces.contains(widget.place.id);
 
+    // Track recently viewed place for traveler hub
+    UserPreferenceService.addRecentlyViewedPlace(widget.place.id);
+
     // Record the visit only once GPS confirms real-world proximity — fixes
     // "Places" stat and Level progress without letting casual in-app browsing
     // (opening lots of detail pages from the couch) inflate them.
@@ -78,14 +87,7 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
   Future<void> _recordVisitIfNearby() async {
     final placeId = widget.place.id;
     try {
-      // Security: a GPS proximity check alone is spoofable by any
-      // mock-location app — this can't be made server-verified without new
-      // attestation infrastructure, but IntegrityShield's existing
-      // device-tamper/mock-location signal set (already used to gate
-      // premium features) is a reasonable proportionate check to reuse
-      // here, rather than trusting an unconditioned on-device GPS reading
-      // to award heritage-passport stamps / explorer badges / level
-      // progress.
+      
       if (IntegrityShield().riskScore >= 60) return;
 
       final repository = ref.read(discoveryRepositoryProvider);
@@ -135,8 +137,37 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            // 1. Open / Closed & Structured Opening Hours
+                            _buildOpeningHoursBanner(context, l10n).animate().fadeIn(duration: 500.ms),
+                            const SizedBox(height: 18),
+
+                            // 2. Distance & Route-Based Travel Time (Terrain-Weighted)
+                            _buildRouteTravelTimeSection(context, l10n).animate().fadeIn(duration: 550.ms),
+                            const SizedBox(height: 18),
+
+                            // 3. Ticket Price & Admission
+                            _buildTicketAndBudgetCard(context, l10n).animate().fadeIn(duration: 600.ms),
+                            const SizedBox(height: 18),
+
+                            // 4. Safety & Weather Warning
+                            _buildSafetyAndWeatherCard(context, l10n).animate().fadeIn(duration: 650.ms),
+                            const SizedBox(height: 18),
+
+                            // 5. Toilets, Parking, Mobile Signal & Facilities
+                            _buildEssentialFacilitiesCard(context, l10n).animate().fadeIn(duration: 700.ms),
+                            const SizedBox(height: 18),
+
+                            // 6. Nearby Essentials (1-Tap Search)
+                            _buildNearbyEssentialsSection(context, l10n).animate().fadeIn(duration: 750.ms),
+                            const SizedBox(height: 18),
+
+                            // 7. Reviews & Ratings
+                            _buildReviewsSection(context, l10n).animate().fadeIn(duration: 800.ms),
+                            const SizedBox(height: 22),
+
+                            // 8. Description, Curated Story, Media & Interactive AR
                             _buildStatPillStrip(context, l10n).animate().fadeIn(duration: 600.ms),
-                            const SizedBox(height: 26),
+                            const SizedBox(height: 24),
                             _buildDescription(context, l10n).animate().fadeIn(duration: 600.ms),
                             const SizedBox(height: 24),
                             _buildPhotoGallery(context, l10n).animate().fadeIn(duration: 600.ms),
@@ -234,6 +265,1354 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildOpeningHoursBanner(BuildContext context, AppLocalizations l10n) {
+    final status = OpeningHoursService.evaluate(
+      widget.place.openingHours,
+      weeklyHours: widget.place.weeklyHours,
+      temporarilyClosed: widget.place.temporarilyClosed,
+      closureNote: widget.place.closureNote,
+      closureUntil: widget.place.closureUntil,
+      holidayHoursNote: widget.place.holidayHoursNote,
+      riskTags: widget.place.riskTags,
+      monsoonNote: widget.place.monsoonNote,
+    );
+
+    Color statusColor = AppTheme.colors.green;
+    IconData statusIcon = Icons.check_circle_outline_rounded;
+    switch (status.status) {
+      case OpenStatus.open:
+      case OpenStatus.alwaysOpen:
+        statusColor = AppTheme.colors.green;
+        statusIcon = Icons.check_circle_outline_rounded;
+        break;
+      case OpenStatus.closingSoon:
+        statusColor = Colors.orange;
+        statusIcon = Icons.access_time_rounded;
+        break;
+      case OpenStatus.closed:
+        statusColor = AppTheme.errorRed;
+        statusIcon = Icons.cancel_outlined;
+        break;
+      case OpenStatus.unknown:
+        statusColor = Theme.of(context).colorScheme.primary;
+        statusIcon = Icons.access_time_rounded;
+        break;
+    }
+
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: statusColor.withValues(alpha: isDark ? 0.12 : 0.08),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(
+          color: statusColor.withValues(alpha: isDark ? 0.35 : 0.25),
+          width: 1.2,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: statusColor.withValues(alpha: 0.18),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(statusIcon, color: statusColor, size: 18),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          status.statusLabel.toUpperCase(),
+                          style: GoogleFonts.outfit(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w800,
+                            color: statusColor,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                        if (status.hoursToday.isNotEmpty) ...[
+                          const SizedBox(width: 8),
+                          Text(
+                            "·",
+                            style: TextStyle(color: AppTheme.textSecondary(context)),
+                          ),
+                          const SizedBox(width: 8),
+                          Flexible(
+                            child: Text(
+                              status.hoursToday,
+                              style: GoogleFonts.inter(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                color: AppTheme.textPrimary(context),
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      status.closingOrOpeningTime,
+                      style: GoogleFonts.inter(
+                        fontSize: 12,
+                        color: AppTheme.textSecondary(context),
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          if (status.closureReason != null) ...[
+            const SizedBox(height: 10),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              decoration: BoxDecoration(
+                color: AppTheme.errorRed.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: AppTheme.errorRed.withValues(alpha: 0.3)),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.warning_amber_rounded, size: 14, color: AppTheme.errorRed),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      status.closureReason!,
+                      style: GoogleFonts.inter(
+                        fontSize: 11.5,
+                        fontWeight: FontWeight.w600,
+                        color: AppTheme.errorRed,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+          if (status.poyaNotice != null) ...[
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                const Icon(Icons.brightness_2_outlined, size: 13, color: AppPalette.sigiriyaOchre),
+                const SizedBox(width: 6),
+                Expanded(
+                  child: Text(
+                    status.poyaNotice!,
+                    style: GoogleFonts.inter(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w500,
+                      color: AppTheme.textSecondary(context),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRouteTravelTimeSection(BuildContext context, AppLocalizations l10n) {
+    final result = TravelTimeService.calculate(
+      distanceKm: widget.place.distanceKm,
+      district: widget.place.district,
+      roadType: widget.place.roadType,
+      roadCondition: widget.place.roadCondition,
+    );
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: AppTheme.surfaceMuted(context),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppTheme.primaryBorder(context)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  Icon(Icons.directions_car_filled_outlined,
+                      size: 20, color: Theme.of(context).colorScheme.primary),
+                  const SizedBox(width: 8),
+                  Text(
+                    "APPROXIMATE TRAVEL TIME",
+                    style: GoogleFonts.outfit(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: 1,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                  ),
+                ],
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(100),
+                ),
+                child: Text(
+                  "${result.straightLineKm.toStringAsFixed(1)} km straight-line",
+                  style: GoogleFonts.inter(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          Text(
+            result.isStraightLineEstimate
+                ? "Based on straight-line distance—not a live route, traffic, or navigation ETA. Open Directions for a current route."
+                : "Sri Lanka terrain-weighted route estimate (${widget.place.district})",
+            style: GoogleFonts.inter(
+              fontSize: 11.5,
+              color: AppTheme.textSecondary(context),
+            ),
+          ),
+          const SizedBox(height: 14),
+          Row(
+            children: [
+              Expanded(
+                child: _travelModeCard(
+                  context,
+                  icon: Icons.directions_car_rounded,
+                  label: "Car / Van",
+                  time: result.carTime,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: _travelModeCard(
+                  context,
+                  icon: Icons.electric_rickshaw_rounded,
+                  label: "Tuk-Tuk",
+                  time: result.tukTukTime,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: _travelModeCard(
+                  context,
+                  icon: Icons.two_wheeler_rounded,
+                  label: "Scooter",
+                  time: result.bikeTime,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: _travelModeCard(
+                  context,
+                  icon: Icons.hiking_rounded,
+                  label: "Hike",
+                  time: result.walkTime,
+                ),
+              ),
+            ],
+          ),
+          if (result.terrainNote.isNotEmpty) ...[
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                const Icon(Icons.terrain_rounded, size: 14, color: AppPalette.sigiriyaOchre),
+                const SizedBox(width: 6),
+                Expanded(
+                  child: Text(
+                    result.terrainNote,
+                    style: GoogleFonts.inter(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w500,
+                      color: AppTheme.textSecondary(context),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+          const SizedBox(height: 14),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed: () => TravelTimeService.launchLiveDirections(
+                lat: widget.place.lat,
+                lng: widget.place.lng,
+                placeName: widget.place.name,
+              ),
+              icon: const Icon(Icons.turn_right_rounded, size: 18),
+              label: Text(
+                "Open Turn-by-Turn Navigation",
+                style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w700),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _travelModeCard(BuildContext context,
+      {required IconData icon, required String label, required String time}) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppTheme.primaryBorder(context)),
+      ),
+      child: Column(
+        children: [
+          Icon(icon, size: 18, color: Theme.of(context).colorScheme.primary),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: GoogleFonts.inter(
+              fontSize: 10,
+              fontWeight: FontWeight.w600,
+              color: AppTheme.textSecondary(context),
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            time,
+            style: GoogleFonts.outfit(
+              fontSize: 12,
+              fontWeight: FontWeight.w700,
+              color: AppTheme.textPrimary(context),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTicketAndBudgetCard(BuildContext context, AppLocalizations l10n) {
+    final ticket = widget.place.ticketRange.trim();
+    final budget = widget.place.budgetCategory.trim();
+    final guide = widget.place.guideRequired.trim();
+
+    final hasTicket = ticket.isNotEmpty;
+    final hasBudget = budget.isNotEmpty;
+    final hasGuide = guide.isNotEmpty;
+
+    if (!hasTicket && !hasBudget && !hasGuide) {
+      return const SizedBox.shrink();
+    }
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppTheme.surfaceMuted(context),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: AppTheme.primaryBorder(context)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: AppPalette.sigiriyaOchre.withValues(alpha: 0.15),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Icon(Icons.confirmation_number_outlined,
+                color: AppPalette.sigiriyaOchre, size: 22),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "ADMISSION & BUDGET",
+                      style: GoogleFonts.outfit(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 1,
+                        color: AppPalette.sigiriyaOchre,
+                      ),
+                    ),
+                    if (hasBudget)
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: AppPalette.sigiriyaOchre.withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(100),
+                        ),
+                        child: Text(
+                          budget.toUpperCase(),
+                          style: GoogleFonts.inter(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w700,
+                            color: AppPalette.sigiriyaOchre,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  hasTicket ? ticket : "Free Entry / No Admission Fee",
+                  style: GoogleFonts.outfit(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: AppTheme.textPrimary(context),
+                  ),
+                ),
+                if (hasGuide) ...[
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      const Icon(Icons.person_pin_circle_outlined, size: 13, color: AppPalette.rust),
+                      const SizedBox(width: 5),
+                      Text(
+                        "Guide: $guide",
+                        style: GoogleFonts.inter(
+                          fontSize: 11.5,
+                          fontWeight: FontWeight.w600,
+                          color: AppPalette.rust,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSafetyAndWeatherCard(BuildContext context, AppLocalizations l10n) {
+    final safety = widget.place.safetyLevel.trim();
+    final wildlife = widget.place.wildlifeHazard.trim();
+    final rain = widget.place.rainSensitivity.trim();
+    final monsoon = widget.place.monsoonNote.trim();
+    final riskTags = widget.place.riskTags;
+
+    final hazard = DisasterAlertService.instance.evaluateLocationHazard(
+      district: widget.place.district,
+      locationTitle: widget.place.name,
+      // rainSensitivity is static place metadata, not a live observation.
+      // Passing it here created false NBRO alerts on every rainy-sensitive
+      // destination. Live weather must be supplied by the weather service.
+      weatherCondition: null,
+    );
+
+    final hasRisk = safety.isNotEmpty ||
+        wildlife.isNotEmpty ||
+        rain.isNotEmpty ||
+        monsoon.isNotEmpty ||
+        riskTags.isNotEmpty ||
+        hazard != null;
+
+    if (!hasRisk) return const SizedBox.shrink();
+
+    final isSevere = riskTags.any((t) =>
+            t.toLowerCase().contains("high") ||
+            t.toLowerCase().contains("danger") ||
+            t.toLowerCase().contains("flood")) ||
+        safety.toLowerCase().contains("high") ||
+        safety.toLowerCase().contains("extreme");
+
+    final cardColor = isSevere ? AppTheme.errorRed : Colors.amber.shade700;
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: cardColor.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: cardColor.withValues(alpha: 0.3), width: 1.2),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.shield_outlined, size: 18, color: cardColor),
+              const SizedBox(width: 8),
+              Text(
+                "SAFETY & WEATHER ADVISORY",
+                style: GoogleFonts.outfit(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 1,
+                  color: cardColor,
+                ),
+              ),
+              const Spacer(),
+              if (safety.isNotEmpty)
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: cardColor.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(100),
+                  ),
+                  child: Text(
+                    "Safety: $safety",
+                    style: GoogleFonts.inter(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w700,
+                      color: cardColor,
+                    ),
+                  ),
+                ),
+            ],
+          ),
+          if (wildlife.isNotEmpty) ...[
+            const SizedBox(height: 8),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Icon(Icons.pets_rounded, size: 14, color: AppPalette.rust),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    "Wildlife: $wildlife",
+                    style: GoogleFonts.inter(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: AppTheme.textPrimary(context),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+          if (rain.isNotEmpty || monsoon.isNotEmpty) ...[
+            const SizedBox(height: 6),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Icon(Icons.cloud_outlined, size: 14, color: Colors.lightBlue),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    monsoon.isNotEmpty ? monsoon : "Rain Sensitivity: $rain",
+                    style: GoogleFonts.inter(
+                      fontSize: 12,
+                      color: AppTheme.textSecondary(context),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+          if (riskTags.isNotEmpty) ...[
+            const SizedBox(height: 10),
+            Wrap(
+              spacing: 8,
+              runSpacing: 6,
+              children: riskTags.map((tag) {
+                return Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: cardColor.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: cardColor.withValues(alpha: 0.25)),
+                  ),
+                  child: Text(
+                    tag,
+                    style: GoogleFonts.inter(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                      color: cardColor,
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+          ],
+          if (hazard != null) ...[
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: hazard.badgeColor.withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: hazard.badgeColor.withValues(alpha: 0.4)),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(Icons.warning_rounded, size: 16, color: hazard.badgeColor),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          hazard.title,
+                          style: GoogleFonts.outfit(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w700,
+                            color: hazard.badgeColor,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    hazard.subtitle,
+                    style: GoogleFonts.inter(
+                      fontSize: 11,
+                      color: AppTheme.textPrimary(context),
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    hazard.message,
+                    style: GoogleFonts.inter(
+                      fontSize: 11,
+                      color: AppTheme.textSecondary(context),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEssentialFacilitiesCard(BuildContext context, AppLocalizations l10n) {
+    final toilets = widget.place.toilets.trim();
+    final parking = widget.place.parkingRange.trim();
+    final signal = widget.place.mobileSignal.trim();
+    final wheelchair = widget.place.wheelchairAccess.trim();
+    final food = widget.place.foodNearby.trim();
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppTheme.surfaceMuted(context),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppTheme.primaryBorder(context)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.inventory_2_outlined,
+                  size: 18, color: Theme.of(context).colorScheme.primary),
+              const SizedBox(width: 8),
+              Text(
+                "FACILITIES & ACCESSIBILITY",
+                style: GoogleFonts.outfit(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 1,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              _facilityBadge(
+                context,
+                icon: Icons.wc_rounded,
+                label: "Toilets",
+                value: toilets.isNotEmpty ? toilets : "Not reported",
+                isPositive: toilets.isEmpty ? null : !toilets.toLowerCase().contains("no"),
+              ),
+              _facilityBadge(
+                context,
+                icon: Icons.local_parking_rounded,
+                label: "Parking",
+                value: parking.isNotEmpty ? parking : "Not reported",
+                isPositive: parking.isEmpty ? null : !parking.toLowerCase().contains("no"),
+              ),
+              _facilityBadge(
+                context,
+                icon: Icons.signal_cellular_alt_rounded,
+                label: "Mobile Signal",
+                value: signal.isNotEmpty ? signal : "Not reported",
+                isPositive: signal.isEmpty ? null : !signal.toLowerCase().contains("no") && !signal.toLowerCase().contains("poor"),
+              ),
+              if (food.isNotEmpty)
+                _facilityBadge(
+                  context,
+                  icon: Icons.restaurant_rounded,
+                  label: "Food",
+                  value: food,
+                  isPositive: !food.toLowerCase().contains("no"),
+                ),
+              if (wheelchair.isNotEmpty)
+                _facilityBadge(
+                  context,
+                  icon: Icons.accessible_rounded,
+                  label: "Wheelchair",
+                  value: wheelchair,
+                  isPositive: wheelchair.toLowerCase().contains("yes") || wheelchair.toLowerCase().contains("full"),
+                ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          _buildLocalDrinkPrompt(context, l10n),
+        ],
+      ),
+    );
+  }
+
+  Widget _facilityBadge(
+    BuildContext context, {
+    required IconData icon,
+    required String label,
+    required String value,
+    required bool? isPositive,
+  }) {
+    final color = isPositive == null
+        ? AppTheme.textSecondary(context)
+        : isPositive
+            ? Theme.of(context).colorScheme.primary
+            : AppTheme.errorRed;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppTheme.primaryBorder(context)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 16, color: color),
+          const SizedBox(width: 8),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                label.toUpperCase(),
+                style: GoogleFonts.inter(
+                  fontSize: 9,
+                  fontWeight: FontWeight.w700,
+                  color: AppTheme.textSecondary(context),
+                  letterSpacing: 0.5,
+                ),
+              ),
+              Text(
+                value,
+                style: GoogleFonts.outfit(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: AppTheme.textPrimary(context),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLocalDrinkPrompt(BuildContext context, AppLocalizations l10n) {
+    final localDrink = HealthSafetyService.instance.getRecommendationForLocation(
+      district: widget.place.district,
+      title: widget.place.name,
+      category: widget.place.category,
+    );
+    final waterStatus = HealthSafetyService.instance.getWaterSafetyLevel(
+      category: widget.place.category,
+      terrain: widget.place.safetyLevel,
+      title: widget.place.name,
+    );
+
+    return InkWell(
+      onTap: () => _showWaterAndHydrationSheet(context, l10n),
+      borderRadius: BorderRadius.circular(14),
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: localDrink.themeColor.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: localDrink.themeColor.withValues(alpha: 0.3)),
+        ),
+        child: Row(
+          children: [
+            Text(localDrink.emoji, style: const TextStyle(fontSize: 24)),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        l10n.waterSafetyTitle,
+                        style: GoogleFonts.outfit(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                          color: localDrink.themeColor,
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: localDrink.themeColor.withValues(alpha: 0.2),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Text(
+                          waterStatus == WaterSafetyLevel.remoteWilderness
+                              ? "Carry Water"
+                              : "Safe Hydration",
+                          style: GoogleFonts.inter(
+                            fontSize: 9,
+                            fontWeight: FontWeight.w700,
+                            color: localDrink.themeColor,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    "${HealthSafetyLocalization.drinkTitle(l10n, localDrink.id)} (${HealthSafetyLocalization.drinkPrice(l10n, localDrink.id)})",
+                    style: GoogleFonts.inter(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: AppTheme.textPrimary(context),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(Icons.arrow_forward_ios_rounded, size: 14, color: localDrink.themeColor),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showWaterAndHydrationSheet(BuildContext context, AppLocalizations l10n) {
+    final drinks = HealthSafetyService.instance.getAllLocalDrinks();
+    final rules = HealthSafetyService.essentialWaterSafetyRules;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => DraggableScrollableSheet(
+        initialChildSize: 0.75,
+        maxChildSize: 0.92,
+        minChildSize: 0.45,
+        builder: (_, scrollController) => Container(
+          decoration: BoxDecoration(
+            color: Theme.of(context).scaffoldBackgroundColor,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+          ),
+          child: ListView(
+            controller: scrollController,
+            padding: const EdgeInsets.all(20),
+            children: [
+              Center(
+                child: Container(
+                  width: 44,
+                  height: 4,
+                  margin: const EdgeInsets.only(bottom: 16),
+                  decoration: BoxDecoration(
+                    color: AppTheme.textSecondary(context).withValues(alpha: 0.3),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+              ),
+              Row(
+                children: [
+                  const Text("🥥", style: TextStyle(fontSize: 28)),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          l10n.drinkLocalHeroTitle,
+                          style: GoogleFonts.outfit(
+                            fontSize: 17,
+                            fontWeight: FontWeight.w800,
+                            color: AppTheme.textPrimary(context),
+                          ),
+                        ),
+                        Text(
+                          l10n.drinkLocalHeroSubtitle,
+                          style: GoogleFonts.inter(
+                            fontSize: 11,
+                            color: AppTheme.textSecondary(context),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 18),
+              // Regional Hero Drinks
+              ...drinks.map((drink) => Container(
+                    margin: const EdgeInsets.only(bottom: 12),
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      color: drink.themeColor.withValues(alpha: 0.08),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: drink.themeColor.withValues(alpha: 0.25)),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Text(drink.emoji, style: const TextStyle(fontSize: 20)),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                HealthSafetyLocalization.drinkTitle(l10n, drink.id),
+                                style: GoogleFonts.outfit(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w700,
+                                  color: drink.themeColor,
+                                ),
+                              ),
+                            ),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                              decoration: BoxDecoration(
+                                color: drink.themeColor.withValues(alpha: 0.18),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text(
+                                HealthSafetyLocalization.drinkPrice(l10n, drink.id),
+                                style: GoogleFonts.inter(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w700,
+                                  color: drink.themeColor,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  )),
+              Text(
+                l10n.waterSafetySubtitle,
+                style: GoogleFonts.inter(
+                  fontSize: 10,
+                  height: 1.3,
+                  color: AppTheme.textSecondary(context),
+                ),
+              ),
+              const SizedBox(height: 14),
+              Text(
+                l10n.waterSafetyTitle,
+                style: GoogleFonts.outfit(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w800,
+                  color: AppTheme.textPrimary(context),
+                ),
+              ),
+              const SizedBox(height: 10),
+              _buildFoodSafetyTips(context),
+              const SizedBox(height: 12),
+              // Bottled water & food safety rules
+              ...rules.map((rule) => Container(
+                    margin: const EdgeInsets.only(bottom: 10),
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: AppTheme.surfaceMuted(context),
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(color: AppTheme.primaryBorder(context)),
+                    ),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Icon(
+                          rule.icon == 'verified'
+                              ? Icons.verified_rounded
+                              : rule.icon == 'ac_unit'
+                                  ? Icons.ac_unit_rounded
+                                  : rule.icon == 'no_drinks'
+                                      ? Icons.no_drinks_rounded
+                                      : Icons.medical_services_rounded,
+                          size: 20,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                HealthSafetyLocalization.ruleText(l10n, rule.id),
+                                style: GoogleFonts.outfit(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w700,
+                                  color: AppTheme.textPrimary(context),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  )),
+              const SizedBox(height: 12),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    final uri = Uri.parse(
+                      'https://www.google.com/maps/search/?api=1&query=supermarket+water+near+${widget.place.lat},${widget.place.lng}',
+                    );
+                    launchUrl(uri, mode: LaunchMode.externalApplication);
+                  },
+                  icon: const Icon(Icons.storefront_rounded, size: 18),
+                  label: Text(
+                    l10n.findSafeWaterAction,
+                    style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w700),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                    foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFoodSafetyTips(BuildContext context) {
+    final tips = FoodSafetyGuidance.tips(context);
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: AppTheme.surfaceMuted(context),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppTheme.primaryBorder(context)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Food safety tips', style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.w800, color: AppTheme.textPrimary(context))),
+          const SizedBox(height: 8),
+          ...tips.map((tip) => Padding(
+                padding: const EdgeInsets.only(bottom: 6),
+                child: Text('• $tip', style: GoogleFonts.inter(fontSize: 11.5, height: 1.3, color: AppTheme.textSecondary(context))),
+              )),
+          Text('General guidance only; seek professional care for persistent or severe symptoms.', style: GoogleFonts.inter(fontSize: 10, color: AppTheme.textSecondary(context))),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildNearbyEssentialsSection(BuildContext context, AppLocalizations l10n) {
+    final essentials = [
+      (Icons.local_hospital_rounded, "Hospital", "රෝහල්", "hospital"),
+      (Icons.local_police_rounded, "Police", "පොලිසිය", "police station"),
+      (Icons.local_gas_station_rounded, "Fuel", "ඉන්ධන", "petrol station"),
+      (Icons.atm_rounded, "ATM", "ATM", "atm"),
+      (Icons.restaurant_rounded, "Food", "ආපනශාලා", "restaurant"),
+      (Icons.wc_rounded, "Toilets", "වැසිකිළි", "public toilet"),
+      (Icons.directions_bus_rounded, "Transport", "ප්‍රවාහන", "bus stand train station"),
+    ];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.near_me_rounded,
+                    size: 18, color: Theme.of(context).colorScheme.primary),
+                const SizedBox(width: 8),
+                Text(
+                  "NEARBY ESSENTIALS (1-TAP)",
+                  style: GoogleFonts.outfit(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 1,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                ),
+              ],
+            ),
+            Text(
+              "Live Map Search",
+              style: GoogleFonts.inter(
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+                color: AppTheme.textSecondary(context),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            children: essentials.map((item) {
+              return Padding(
+                padding: const EdgeInsets.only(right: 10),
+                child: Material(
+                  color: AppTheme.surfaceMuted(context),
+                  borderRadius: BorderRadius.circular(14),
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(14),
+                    onTap: () {
+                      HapticFeedback.selectionClick();
+                      TravelTimeService.launchNearbySearch(
+                        lat: widget.place.lat,
+                        lng: widget.place.lng,
+                        query: item.$4,
+                      );
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(14),
+                        border: Border.all(color: AppTheme.primaryBorder(context)),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(item.$1, size: 16, color: Theme.of(context).colorScheme.primary),
+                          const SizedBox(width: 8),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                item.$2,
+                                style: GoogleFonts.outfit(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w700,
+                                  color: AppTheme.textPrimary(context),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildReviewsSection(BuildContext context, AppLocalizations l10n) {
+    final ratingValue = widget.place.rating;
+    final popularity = widget.place.touristPopularity.isNotEmpty
+        ? widget.place.touristPopularity
+        : "Curated Heritage Gem";
+
+    if (ratingValue <= 0) {
+      return Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(18),
+        decoration: BoxDecoration(
+          color: AppTheme.surfaceMuted(context),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: AppTheme.primaryBorder(context)),
+        ),
+        child: Row(
+          children: [
+            Icon(Icons.rate_review_outlined,
+                color: AppTheme.textSecondary(context)),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                'No verified traveler reviews yet',
+                style: GoogleFonts.outfit(
+                  fontWeight: FontWeight.w700,
+                  color: AppTheme.textPrimary(context),
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: AppTheme.surfaceMuted(context),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppTheme.primaryBorder(context)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                "TRAVELER REVIEWS & RATINGS",
+                style: GoogleFonts.outfit(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 1,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                decoration: BoxDecoration(
+                  color: AppTheme.colors.green.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(100),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.verified_rounded, size: 12, color: AppTheme.colors.green),
+                    const SizedBox(width: 4),
+                    Text(
+                      "Community Verified",
+                      style: GoogleFonts.inter(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w700,
+                        color: AppTheme.colors.green,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          Row(
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.baseline,
+                    textBaseline: TextBaseline.alphabetic,
+                    children: [
+                      Text(
+                        ratingValue.toStringAsFixed(1),
+                        style: GoogleFonts.outfit(
+                          fontSize: 34,
+                          fontWeight: FontWeight.w900,
+                          color: AppTheme.textPrimary(context),
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        "/ 5.0",
+                        style: GoogleFonts.inter(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: AppTheme.textSecondary(context),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    children: List.generate(5, (index) {
+                      return Icon(
+                        index < ratingValue.round()
+                            ? Icons.star_rounded
+                            : Icons.star_border_rounded,
+                        size: 16,
+                        color: AppPalette.sigiriyaOchre,
+                      );
+                    }),
+                  ),
+                ],
+              ),
+              const SizedBox(width: 24),
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surface,
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: AppTheme.primaryBorder(context)),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        popularity,
+                        style: GoogleFonts.outfit(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                          color: AppTheme.textPrimary(context),
+                        ),
+                      ),
+                      const SizedBox(height: 3),
+                      Text(
+                        "Based on real explorer feedback and local cultural curators.",
+                        style: GoogleFonts.inter(
+                          fontSize: 11,
+                          color: AppTheme.textSecondary(context),
+                          height: 1.3,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -1560,7 +2939,7 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
     if (!context.mounted) return;
     final arData = _getARPlaceData(context);
 
-    // ðŸŽ¬ Cinematic "AR Portal" bottom sheet before launch
+    // Cinematic "AR Portal" bottom sheet before launch
     showModalBottomSheet(
       context: context,
       backgroundColor: AppTheme.colors.transparent,
@@ -1772,7 +3151,7 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
   }
 }
 
-/// ðŸŽ¬ Cinematic AR Portal Sheet â€“ shows before AR launches
+/// Cinematic AR Portal Sheet - shows before AR launches
 class _ARPortalSheet extends StatefulWidget {
   final DiscoveryPlace place;
   final bool isDemo;
@@ -1806,7 +3185,7 @@ class _ARPortalSheetState extends State<_ARPortalSheet> with SingleTickerProvide
     final l10n = AppLocalizations.of(context)!;
     final Color accentColor = widget.isDemo ? AppTheme.colors.primary : AppTheme.colors.primary;
     final String tierLabel = widget.isDemo ? l10n.arDemoLabel : l10n.fullHeritageAr;
-    final String tierIcon = widget.isDemo ? "â³" : "ðŸ›ï¸";
+    final String tierIcon = widget.isDemo ? '\u23F3' : '\u{1F3DB}';
 
     return Container(
       margin: EdgeInsets.all(16),
@@ -2167,12 +3546,6 @@ enum _TravelMode { walk, bike, car }
 
 class _VehicleEtaSheetState extends State<_VehicleEtaSheet> {
   _TravelMode _selected = _TravelMode.bike;
-
-  double get _speedForSelected => switch (_selected) {
-        _TravelMode.walk => widget.walkSpeedKmh,
-        _TravelMode.bike => widget.bikeSpeedKmh,
-        _TravelMode.car => widget.carSpeedKmh,
-      };
 
   @override
   Widget build(BuildContext context) {

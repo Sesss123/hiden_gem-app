@@ -44,6 +44,7 @@ class AuthController extends Controller
             $request->session()->regenerate();
 
             if (Auth::user()->is_admin) {
+                $request->session()->put('admin_authenticated_at', time());
                 $this->logAdminAction('auth.login_success');
                 return redirect()->intended(route('admin.places.index'));
             }

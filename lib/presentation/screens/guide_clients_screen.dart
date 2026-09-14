@@ -353,6 +353,8 @@ class _ClientDetailScreenState extends ConsumerState<_ClientDetailScreen> {
         return l10n.statusLabelCancelledByTourist;
       case 'cancelled_by_guide':
         return l10n.statusLabelCancelledByGuide;
+      case 'cancelled_by_admin':
+        return l10n.bookingStatusCancelledLabel;
       default:
         return l10n.bookingStatusDefaultLabel;
     }

@@ -48,6 +48,12 @@ class ApiSecurityHeaders
                 "base-uri 'self'",
                 "form-action 'self'",
             ]));
+
+            // Enforce explicit UTF-8 encoding for HTML web views to prevent browser mojibake
+            $contentType = $response->headers->get('Content-Type');
+            if ($contentType && str_contains($contentType, 'text/html') && !str_contains($contentType, 'charset')) {
+                $response->header('Content-Type', 'text/html; charset=UTF-8');
+            }
         }
 
         return $response;

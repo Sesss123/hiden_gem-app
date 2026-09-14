@@ -12,6 +12,7 @@ import '../../core/services/usage_limiter_service.dart';
 import '../widgets/cached_image.dart';
 import '../widgets/limit_reached_dialog.dart';
 import '../../l10n/app_localizations.dart';
+import '../../core/localization/traveler_safety_copy.dart';
 
 class MapRouteScreen extends StatefulWidget {
   final TripPlan plan;
@@ -92,7 +93,9 @@ class _MapRouteScreenState extends State<MapRouteScreen> {
             });
             await TripCacheService.updateSavedPlan(id, _plan);
             if (mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.offlineRouteMapSavedSuccess)));
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: Text(TravelerSafetyCopy.offlinePreviewSaved(context)),
+              ));
             }
           }
         } else {
@@ -125,7 +128,7 @@ class _MapRouteScreenState extends State<MapRouteScreen> {
                           await TripCacheService.updateSavedPlan(id, _plan);
                           if (mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text(AppLocalizations.of(context)!.offlineRouteMapSavedSuccess)),
+                              SnackBar(content: Text(TravelerSafetyCopy.offlinePreviewSaved(context))),
                             );
                           }
                         }
@@ -264,6 +267,24 @@ class _MapRouteScreenState extends State<MapRouteScreen> {
             mapToolbarEnabled: true,
             style: _mapStyle,
           ),
+          if (_isOfflineMapMode)
+            Positioned(
+              top: MediaQuery.paddingOf(context).top + kToolbarHeight + 8,
+              left: 16,
+              right: 16,
+              child: Material(
+                color: AppTheme.colors.black.withValues(alpha: 0.82),
+                borderRadius: BorderRadius.circular(12),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                  child: Text(
+                    TravelerSafetyCopy.offlinePreviewWarning(context),
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w700),
+                  ),
+                ),
+              ),
+            ),
           
           // Bottom Info Card
           Positioned(
@@ -313,7 +334,7 @@ class _MapRouteScreenState extends State<MapRouteScreen> {
                         ? SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: AppPalette.rust, strokeWidth: 2))
                         : Icon(Icons.download, color: AppPalette.rust),
                       onPressed: _saveOfflineMap,
-                      tooltip: l10n.saveOfflineMapTooltip,
+                      tooltip: TravelerSafetyCopy.offlinePreviewSaved(context),
                     ),
                     const SizedBox(width: 8),
                     ElevatedButton.icon(

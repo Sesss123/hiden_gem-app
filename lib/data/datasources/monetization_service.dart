@@ -1,7 +1,12 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
+import '../../core/config/app_config.dart';
+import '../../core/utils/secure_logger.dart';
 
 class MonetizationService {
   static final MonetizationService _instance = MonetizationService._internal();
@@ -14,6 +19,74 @@ class MonetizationService {
   int _interstitialRetryCount = 0;
   int _rewardedRetryCount = 0;
   final Set<String> _verifiedReceiptSignatures = {};
+
+  // ── Remote Ad Switch & Offline Cache ─────────────────────────────────────
+  static const String _prefAdsEnabledKey = 'app_ads_enabled_master';
+  bool _isAdsEnabled = true;
+  final ValueNotifier<bool> adsEnabledListenable = ValueNotifier<bool>(true);
+  Timer? _remoteConfigTimer;
+
+  /// Whether ads are remotely enabled by the administrator.
+  bool get isAdsEnabled => _isAdsEnabled;
+
+  void _applyAdsEnabled(bool enabled) {
+    if (_isAdsEnabled == enabled) return;
+    _isAdsEnabled = enabled;
+    adsEnabledListenable.value = enabled;
+    if (!enabled) {
+      _interstitialAd?.dispose();
+      _rewardedAd?.dispose();
+      _interstitialAd = null;
+      _rewardedAd = null;
+    } else {
+      loadInterstitialAd();
+      loadRewardedAd();
+    }
+  }
+
+  /// Fetches remote configuration from Laravel backend and caches locally.
+  Future<void> syncRemoteAdConfig({http.Client? client}) async {
+    try {
+      // 1. Read locally cached state first (instant, non-blocking)
+      final prefs = await SharedPreferences.getInstance();
+      if (prefs.containsKey(_prefAdsEnabledKey)) {
+        _applyAdsEnabled(prefs.getBool(_prefAdsEnabledKey) ?? true);
+      }
+
+      // 2. Query remote endpoint with a quick 4s timeout
+      final remoteUrl = Uri.parse('${AppConfig.laravelUrl}/config/ads');
+      final response = await (client?.get(remoteUrl) ?? http.get(remoteUrl)).timeout(const Duration(seconds: 4));
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data is Map && data.containsKey('ads_enabled')) {
+          final remoteEnabled = data['ads_enabled'] == true;
+          _applyAdsEnabled(remoteEnabled);
+          await prefs.setBool(_prefAdsEnabledKey, remoteEnabled);
+          debugPrint("[MonetizationService] Remote Ads Master Switch: ${_isAdsEnabled ? 'ENABLED (ON)' : 'DISABLED (OFF)'}");
+        }
+      }
+    } catch (e) {
+      SecureLogger.info("[MonetizationService] Remote ads config fetch fallback to cache: $e");
+    }
+  }
+
+  void startRemoteConfigPolling({Duration interval = const Duration(seconds: 30)}) {
+    _remoteConfigTimer?.cancel();
+    _remoteConfigTimer = Timer.periodic(interval, (_) => syncRemoteAdConfig());
+  }
+
+  void stopRemoteConfigPolling() {
+    _remoteConfigTimer?.cancel();
+    _remoteConfigTimer = null;
+  }
+
+  @visibleForTesting
+  void resetForTesting({bool enabled = true}) {
+    stopRemoteConfigPolling();
+    _isAdsEnabled = enabled;
+    adsEnabledListenable.value = enabled;
+  }
 
   // ── Interstitial frequency cap ──────────────────────────────────────────
   // Interstitials earn well but annoy users and drive churn if shown too
@@ -31,6 +104,7 @@ class MonetizationService {
   /// Whether an interstitial is allowed to show right now under the frequency
   /// caps. Callers can check this to decide the flow without triggering a show.
   bool get canShowInterstitial {
+    if (!_isAdsEnabled) return false;
     if (_interstitialShownThisSession >= _interstitialSessionCap) return false;
     if (_lastInterstitialShownAt != null &&
         DateTime.now().difference(_lastInterstitialShownAt!) < _interstitialMinGap) {
@@ -58,6 +132,10 @@ class MonetizationService {
 
   // --- Banner Ads ---
   Future<BannerAd> createBannerAd() async {
+    if (!_isAdsEnabled) {
+      throw Exception("Advertisements are remotely paused by administrator.");
+    }
+
     int retryCount = 0;
     while (retryCount < 3) {
       final completer = Completer<BannerAd>();
@@ -93,6 +171,11 @@ class MonetizationService {
 
   // --- Native Ads ---
   Future<NativeAd> createNativeAd({required Function() onAdLoaded, required Function() onAdFailed}) async {
+    if (!_isAdsEnabled) {
+      onAdFailed();
+      throw Exception("Advertisements are remotely paused by administrator.");
+    }
+
     int retryCount = 0;
     while (retryCount < 3) {
       final completer = Completer<NativeAd>();
@@ -135,6 +218,8 @@ class MonetizationService {
 
   // --- Interstitial Ads ---
   void loadInterstitialAd() {
+    if (!_isAdsEnabled) return;
+
     InterstitialAd.load(
       adUnitId: interstitialAdUnitId,
       request: const AdRequest(),
@@ -160,11 +245,14 @@ class MonetizationService {
     );
   }
 
-  /// Shows an interstitial IF the frequency caps allow AND one is preloaded.
-  /// Returns false (and shows nothing) when capped — callers should treat a
-  /// false as "carry on, no ad" rather than an error. Pass respectFrequencyCap:
-  /// false only for a deliberate, rare full-screen moment that must always show.
+  /// Shows an interstitial IF ads are active, frequency caps allow, AND one is preloaded.
+  /// Returns false (and shows nothing) when capped or ads disabled — callers should treat a
+  /// false as "carry on, no ad" rather than an error.
   Future<bool> showInterstitialAd({BuildContext? context, bool respectFrequencyCap = true}) async {
+    if (!_isAdsEnabled) {
+      return false; // Zero ads shown when toggled off
+    }
+
     if (respectFrequencyCap && !canShowInterstitial) {
       return false; // Too soon / session cap hit — skip silently, no annoyance.
     }
@@ -204,6 +292,8 @@ class MonetizationService {
 
   // --- Rewarded Ads ---
   void loadRewardedAd() {
+    if (!_isAdsEnabled) return;
+
     RewardedAd.load(
       adUnitId: rewardedAdUnitId,
       request: const AdRequest(),
@@ -229,7 +319,16 @@ class MonetizationService {
     );
   }
 
+  /// Shows a rewarded ad. If ads are turned OFF from the Admin Panel, automatically
+  /// grants the reward immediately so the tourist is never locked out of AR/AI features!
   Future<bool> showRewardedAd({required Function(RewardItem) onRewardEarned, BuildContext? context}) async {
+    // If ads are remotely turned OFF, automatically grant reward without showing an ad!
+    if (!_isAdsEnabled) {
+      debugPrint("[MonetizationService] Ads are turned OFF: Granting reward automatically without ad!");
+      onRewardEarned(RewardItem(1, 'bonus_unlocked'));
+      return true;
+    }
+
     if (_rewardedAd != null) {
       final completer = Completer<bool>();
       _rewardedAd!.fullScreenContentCallback = FullScreenContentCallback(
@@ -278,8 +377,6 @@ class MonetizationService {
 
     try {
       return await Future<bool>(() async {
-        // await Future.delayed(const Duration(milliseconds: 300));
-        
         if (receiptId.isEmpty || signature.isEmpty || payload.isEmpty) {
           return false;
         }

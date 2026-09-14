@@ -240,6 +240,8 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
         return l10n.statusLabelCancelledByTourist;
       case 'cancelled_by_guide':
         return l10n.statusLabelCancelledByGuide;
+      case 'cancelled_by_admin':
+        return l10n.bookingStatusCancelledLabel;
       case 'all':
         return l10n.priceRangeAll;
       default:
@@ -594,6 +596,7 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
       case 'cancelled':
       case 'cancelled_by_tourist':
       case 'cancelled_by_guide':
+      case 'cancelled_by_admin':
         return AppTheme.colors.redAccent;
       default:
         return AppTheme.textSecondary(context);
@@ -613,6 +616,7 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
       case 'cancelled':
       case 'cancelled_by_tourist':
       case 'cancelled_by_guide':
+      case 'cancelled_by_admin':
         return Icons.cancel_outlined;
       default:
         return Icons.info_outline;

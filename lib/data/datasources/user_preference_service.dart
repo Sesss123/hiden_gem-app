@@ -215,6 +215,24 @@ class UserPreferenceService {
     return isNowAdded;
   }
 
+  /// Records a place as recently viewed (capped at 20 most recent).
+  static Future<void> addRecentlyViewedPlace(String placeId) async {
+    _mutate((p) {
+      p.recentlyViewedPlaces.remove(placeId);
+      p.recentlyViewedPlaces.insert(0, placeId);
+      if (p.recentlyViewedPlaces.length > 20) {
+        p.recentlyViewedPlaces.removeLast();
+      }
+    });
+    await _flushToDisk();
+  }
+
+  /// Clears recently viewed places history.
+  static Future<void> clearRecentlyViewedPlaces() async {
+    _mutate((p) => p.recentlyViewedPlaces.clear());
+    await _flushToDisk(force: true);
+  }
+
   /// Debounces syncToFirestore() — cost fix: toggleBookmark()/
   /// toggleItinerary() previously called syncToFirestore() directly and
   /// immediately on every single tap, with no rate limiting (unlike the
@@ -373,8 +391,9 @@ class UserPreferenceService {
 
   /// Forces sync of the local profile configuration to Firestore if Firebase is ready and user is logged in
   static Future<void> syncToFirestore() async {
-    if (_cachedProfile == null || _syncInFlight || !_hasPendingMutations)
+    if (_cachedProfile == null || _syncInFlight || !_hasPendingMutations) {
       return;
+    }
 
     if (Firebase.apps.isNotEmpty) {
       _syncInFlight = true;

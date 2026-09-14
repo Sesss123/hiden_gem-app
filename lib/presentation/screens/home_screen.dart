@@ -15,7 +15,7 @@ import '../../data/datasources/auth_service.dart';
 import '../../data/datasources/weather_service.dart';
 import '../widgets/batik_background.dart';
 import '../widgets/oracle_orb.dart';
-import 'saved_plans_screen.dart';
+import 'saved_places_screen.dart';
 import 'trip_form_screen.dart';
 import 'discovery_screen.dart';
 import 'profile_screen.dart';
@@ -35,6 +35,15 @@ import '../../data/repositories/discovery_repository.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../widgets/cached_image.dart';
 import 'marketplace_results_screen.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'map_explorer_screen.dart';
+import 'emergency_kit_screen.dart';
+import '../../core/services/disaster_alert_service.dart';
+import 'heritage_passport_screen.dart';
+import 'family_share_screen.dart';
+import 'budget_tracker_screen.dart';
+import 'budget_concierge_screen.dart';
+import '../../core/services/weather_localization_service.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   final bool isOffline;
@@ -353,72 +362,520 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
-  Widget _buildQuickActionsRow(AppLocalizations l10n) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Expanded(
-          child: _buildQuickActionItem(
-            l10n.planTripAction,
-            Icons.route_rounded,
-            AppTheme.colors.teal,
-            () {
-              Haptics.medium();
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const TripFormScreen()));
-            },
-          ),
+  Widget _buildDisasterHazardAlertBanner(AppLocalizations l10n) {
+    final place = _localGems.isNotEmpty ? _localGems.first : null;
+    // Do not infer a live disaster alert from a place's static rain-sensitivity
+    // text.  Alerts require an actual weather observation or an admin alert.
+    final liveCondition = _weather?.condition;
+    if (liveCondition == null || liveCondition.trim().isEmpty) {
+      return Container(
+        margin: const EdgeInsets.only(bottom: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        decoration: BoxDecoration(
+          color: AppTheme.surfaceMuted(context),
+          borderRadius: BorderRadius.circular(14),
         ),
-        Expanded(
-          child: _buildQuickActionItem(
-            l10n.findGuideAction,
-            Icons.person_pin_circle_rounded,
-            AppTheme.colors.amber,
-            () {
-              Haptics.medium();
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const MarketplaceResultsScreen()));
-            },
-          ),
+        child: Row(
+          children: [
+            Icon(Icons.cloud_off_rounded, size: 17, color: AppTheme.textSecondary(context)),
+            const SizedBox(width: 8),
+            Expanded(child: Text('Live hazard data unavailable', style: GoogleFonts.inter(fontSize: 11, color: AppTheme.textSecondary(context)))),
+          ],
         ),
-        Expanded(
-          child: _buildQuickActionItem(
-            l10n.foodAiAction,
-            Icons.ramen_dining_rounded,
-            AppTheme.colors.orangeAccent,
-            () {
-              Haptics.medium();
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const SavorLankaScreen()));
-            },
+      );
+    }
+    final hazard = DisasterAlertService.instance.evaluateLocationHazard(
+      district: place?.district,
+      locationTitle: place?.name ?? '',
+      weatherCondition: liveCondition,
+    );
+
+    if (hazard == null) return const SizedBox.shrink();
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: hazard.badgeColor.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: hazard.badgeColor.withValues(alpha: 0.35)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: hazard.badgeColor.withValues(alpha: 0.18),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(Icons.warning_amber_rounded,
+                color: hazard.badgeColor, size: 20),
           ),
-        ),
-        Expanded(
-          child: _buildQuickActionItem(
-            l10n.arPortalsAction,
-            Icons.view_in_ar_rounded,
-            AppTheme.colors.indigoAccent,
-            () {
-              Haptics.medium();
-              // AR content isn't live yet — see AppConfig.arFeatureEnabled.
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  hazard.title,
+                  style: GoogleFonts.outfit(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    color: hazard.badgeColor,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                Text(
+                  hazard.subtitle,
+                  style: GoogleFonts.inter(
+                    fontSize: 11,
+                    color: AppTheme.textSecondary(context),
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  '${hazard.source} · ${hazard.updatedAt == null ? 'Live check' : 'Updated ${hazard.updatedAt}'}${hazard.expiresAt == null ? '' : ' · Expires ${hazard.expiresAt}'}',
+                  style: GoogleFonts.inter(fontSize: 9, color: AppTheme.textSecondary(context)),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 8),
+          TextButton(
+            onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                  builder: (context) => AppConfig.arFeatureEnabled
-                      ? const ARVideoLibraryScreen()
-                      : ARComingSoonScreen(placeName: l10n.arPortalsAction),
-                ),
+                MaterialPageRoute(builder: (_) => const EmergencyKitScreen()),
               );
             },
+            style: TextButton.styleFrom(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              backgroundColor: hazard.badgeColor.withValues(alpha: 0.15),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+            ),
+            child: Text(
+              l10n.safetyActionLabel,
+              style: GoogleFonts.inter(
+                fontSize: 11,
+                fontWeight: FontWeight.w800,
+                color: hazard.badgeColor,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildQuickActionsRow(AppLocalizations l10n) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // 1. Explore
+            Expanded(
+              child: _buildQuickActionItem(
+                l10n.exploreNavLabel,
+                Icons.travel_explore_rounded,
+                AppTheme.colors.teal,
+                () {
+                  Haptics.medium();
+                  setState(() => _selectedIndex = 1);
+                },
+              ),
+            ),
+            // 2. Plan Trip
+            Expanded(
+              child: _buildQuickActionItem(
+                l10n.planTripAction,
+                Icons.route_rounded,
+                AppPalette.sigiriyaOchre,
+                () {
+                  Haptics.medium();
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const TripFormScreen(),
+                    ),
+                  );
+                },
+              ),
+            ),
+            // 3. Map
+            Expanded(
+              child: _buildQuickActionItem(
+                l10n.mapActionLabel,
+                Icons.map_rounded,
+                const Color(0xFF29B6F6),
+                () {
+                  Haptics.medium();
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const MapExplorerScreen(
+                        initialPosition: LatLng(6.9271, 79.8612),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            // 4. Safety
+            Expanded(
+              child: _buildQuickActionItem(
+                l10n.safetyActionLabel,
+                Icons.health_and_safety_rounded,
+                AppPalette.error,
+                () {
+                  Haptics.medium();
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const EmergencyKitScreen(),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+        _buildMoreToolsBanner(l10n),
+      ],
+    );
+  }
+
+  Widget _buildMoreToolsBanner(AppLocalizations l10n) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 12),
+      child: Material(
+        color: AppTheme.surfaceMuted(context),
+        borderRadius: BorderRadius.circular(18),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(18),
+          onTap: () {
+            Haptics.medium();
+            _showMoreToolsSheet(context, l10n);
+          },
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 11),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(
+                color: Theme.of(context)
+                    .colorScheme
+                    .primary
+                    .withValues(alpha: 0.25),
+              ),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(7),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context)
+                        .colorScheme
+                        .primary
+                        .withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Icon(
+                    Icons.auto_awesome_rounded,
+                    size: 16,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        l10n.moreToolsTitle,
+                        style: GoogleFonts.outfit(
+                          fontSize: 12.5,
+                          fontWeight: FontWeight.w700,
+                          color: AppTheme.textPrimary(context),
+                        ),
+                      ),
+                      Text(
+                        l10n.moreToolsSubtitle,
+                        style: GoogleFonts.inter(
+                          fontSize: 10.5,
+                          color: AppTheme.textSecondary(context),
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
+                Icon(
+                  Icons.arrow_forward_ios_rounded,
+                  size: 13,
+                  color: AppTheme.textSecondary(context).withValues(alpha: 0.6),
+                ),
+              ],
+            ),
           ),
         ),
-      ],
+      ),
+    );
+  }
+
+  void _openBudgetTool() {
+    final trips = TripCacheService.getAllTrips();
+    if (trips.isNotEmpty) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => BudgetTrackerScreen(plan: trips.first),
+        ),
+      );
+    } else {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => const BudgetConciergeScreen(),
+        ),
+      );
+    }
+  }
+
+  void _showMoreToolsSheet(BuildContext context, AppLocalizations l10n) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) {
+        return Container(
+          decoration: BoxDecoration(
+            color: Theme.of(context).scaffoldBackgroundColor,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+            border: Border.all(
+              color: AppTheme.primaryBorder(context),
+              width: 1.5,
+            ),
+          ),
+          padding: const EdgeInsets.fromLTRB(20, 14, 20, 32),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color:
+                        AppTheme.textSecondary(context).withValues(alpha: 0.3),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 18),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          l10n.moreToolsTitle,
+                          style: GoogleFonts.outfit(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w800,
+                            color: AppTheme.textPrimary(context),
+                          ),
+                        ),
+                        Text(
+                          l10n.moreToolsSubtitle,
+                          style: GoogleFonts.inter(
+                            fontSize: 12,
+                            color: AppTheme.textSecondary(context),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close_rounded),
+                    onPressed: () => Navigator.pop(ctx),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              GridView.count(
+                crossAxisCount: 2,
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                mainAxisSpacing: 12,
+                crossAxisSpacing: 12,
+                childAspectRatio: 2.1,
+                children: [
+                  _moreToolItem(
+                    title: l10n.foodAiAction,
+                    subtitle: "Savor Lanka AI",
+                    icon: Icons.ramen_dining_rounded,
+                    color: AppTheme.colors.orangeAccent,
+                    onTap: () {
+                      Navigator.pop(ctx);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => const SavorLankaScreen()),
+                      );
+                    },
+                  ),
+                  _moreToolItem(
+                    title: l10n.arPortalsAction,
+                    subtitle: "Immersive 3D/Video",
+                    icon: Icons.view_in_ar_rounded,
+                    color: AppTheme.colors.indigoAccent,
+                    onTap: () {
+                      Navigator.pop(ctx);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => AppConfig.arFeatureEnabled
+                              ? const ARVideoLibraryScreen()
+                              : ARComingSoonScreen(
+                                  placeName: l10n.arPortalsAction),
+                        ),
+                      );
+                    },
+                  ),
+                  _moreToolItem(
+                    title: l10n.heritagePassport,
+                    subtitle: "Digital Collectibles",
+                    icon: Icons.workspace_premium_outlined,
+                    color: AppPalette.heroOchre,
+                    onTap: () {
+                      Navigator.pop(ctx);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => const HeritagePassportScreen()),
+                      );
+                    },
+                  ),
+                  _moreToolItem(
+                    title: l10n.familyShareTitle,
+                    subtitle: "Live Explorer Tracking",
+                    icon: Icons.family_restroom_rounded,
+                    color: const Color(0xFF4CAF50),
+                    onTap: () {
+                      Navigator.pop(ctx);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => const FamilyShareScreen()),
+                      );
+                    },
+                  ),
+                  _moreToolItem(
+                    title: l10n.aiBudgetConcierge,
+                    subtitle: "Expense Management",
+                    icon: Icons.account_balance_wallet_outlined,
+                    color: AppPalette.rust,
+                    onTap: () {
+                      Navigator.pop(ctx);
+                      _openBudgetTool();
+                    },
+                  ),
+                  _moreToolItem(
+                    title: l10n.findGuideAction,
+                    subtitle: "Licensed Experts",
+                    icon: Icons.person_pin_circle_rounded,
+                    color: AppTheme.colors.amber,
+                    onTap: () {
+                      Navigator.pop(ctx);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => const MarketplaceResultsScreen()),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _moreToolItem({
+    required String title,
+    required String subtitle,
+    required IconData icon,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    return Material(
+      color: AppTheme.surfaceMuted(context),
+      borderRadius: BorderRadius.circular(16),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: AppTheme.primaryBorder(context)),
+          ),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.16),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(icon, color: color, size: 20),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      title,
+                      style: GoogleFonts.outfit(
+                        fontSize: 11.5,
+                        fontWeight: FontWeight.w700,
+                        color: AppTheme.textPrimary(context),
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    Text(
+                      subtitle,
+                      style: GoogleFonts.inter(
+                        fontSize: 9.5,
+                        color: AppTheme.textSecondary(context),
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
@@ -540,7 +997,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           ),
                           children: [
                             _buildFeaturedDestinationCard(l10n),
-                            const SizedBox(height: 20),
+                            const SizedBox(height: 16),
+                            _buildDisasterHazardAlertBanner(l10n),
                             if (_localGems.isNotEmpty &&
                                 _showNearbyNowBanner &&
                                 _localGems.first.distanceKm > 0 &&
@@ -783,18 +1241,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
-  Widget _journalUnfold({required Widget child}) {
-    return AnimationConfiguration.synchronized(
-      duration: const Duration(milliseconds: 1000),
-      child: SlideAnimation(
-        verticalOffset: 50.0,
-        child: FadeInAnimation(
-          child: child,
-        ),
-      ),
-    );
-  }
-
   Widget _buildAppBar(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final user = widget.isOffline
@@ -877,7 +1323,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                               color: AppTheme.colors.white, size: 15),
                           const SizedBox(width: 6),
                           Text(
-                            "${_weather!.tempC.round()}°C · ${_weather!.condition}",
+                            "${_weather!.tempC.round()}\u00B0C \u00B7 ${WeatherLocalizationService.getLocalizedCondition(context, _weather!.condition)}",
                             style: GoogleFonts.inter(
                               fontSize: 12,
                               fontWeight: FontWeight.w600,
@@ -887,6 +1333,44 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         ],
                       ),
                     ),
+                    if (WeatherLocalizationService.isSevereWeather(
+                        _weather!.condition)) ...[
+                      const SizedBox(height: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 14, vertical: 7),
+                        margin: const EdgeInsets.symmetric(horizontal: 20),
+                        decoration: BoxDecoration(
+                          color: AppTheme.colors.white.withValues(alpha: 0.18),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                              color:
+                                  AppTheme.colors.white.withValues(alpha: 0.3)),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(Icons.thunderstorm_rounded,
+                                size: 15, color: Colors.amberAccent),
+                            const SizedBox(width: 8),
+                            Flexible(
+                              child: Text(
+                                WeatherLocalizationService
+                                        .getSevereWeatherAdvisory(
+                                            context, _weather!.condition) ??
+                                    '',
+                                style: GoogleFonts.inter(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w600,
+                                  color: AppTheme.colors.white,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ],
                   const SizedBox(height: 20),
                   Padding(
@@ -1043,14 +1527,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
           )
         else
-          _glassActionIcon(Icons.person_outline, 'Profile', () {
+          _glassActionIcon(Icons.person_outline, l10n.profile, () {
             setState(() => _selectedIndex = 3);
           }),
-        _glassActionIcon(Icons.bookmark_border_rounded, 'Saved trips', () {
+        _glassActionIcon(
+            Icons.bookmark_border_rounded, l10n.savedPlacesHubTitle, () {
           Navigator.push(context,
-              MaterialPageRoute(builder: (_) => const SavedPlansScreen()));
+              MaterialPageRoute(builder: (_) => const SavedPlacesScreen()));
         }),
-        _glassActionIcon(Icons.camera_enhance_outlined, 'Food scanner', () {
+        _glassActionIcon(Icons.camera_enhance_outlined, l10n.foodScannerTooltip,
+            () {
           Navigator.push(context,
               MaterialPageRoute(builder: (_) => const SavorLankaScreen()));
         }),
@@ -1082,61 +1568,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildWelcomeCard(AppLocalizations l10n) {
-    final user = widget.isOffline
-        ? null
-        : (ref.watch(authStateProvider).value ??
-            FirebaseAuth.instance.currentUser);
-    final name = user?.displayName?.split(" ").first ?? l10n.travelerFallback;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              decoration: BoxDecoration(
-                color: Theme.of(context)
-                    .colorScheme
-                    .primary
-                    .withValues(alpha: 0.1),
-                borderRadius: const BorderRadius.all(Radius.circular(20)),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(Icons.auto_awesome,
-                      color: Theme.of(context).colorScheme.primary, size: 12),
-                  const SizedBox(width: 6),
-                  Text(
-                    l10n.ayubowanGreeting(name),
-                    style: GoogleFonts.outfit(
-                      fontSize: 11,
-                      color: Theme.of(context).colorScheme.primary,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 0.2,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        Text(
-          l10n.letOracleGuide,
-          style: GoogleFonts.outfit(
-            fontSize: 22,
-            fontWeight: FontWeight.w800,
-            color: AppTheme.textPrimary(context),
-            letterSpacing: -0.3,
-          ),
-        ),
-      ],
     );
   }
 

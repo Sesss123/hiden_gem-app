@@ -57,6 +57,11 @@ class DiscoveryPlace {
   final String bestTime;
   final List<String> facilities;
   final String openingHours;
+  final Map<String, dynamic> weeklyHours;
+  final bool temporarilyClosed;
+  final String closureNote;
+  final String closureUntil;
+  final String holidayHoursNote;
 
   // Curated travel/safety/access field notes (Laravel `places` table columns
   // that were previously dropped by this model even though the backend
@@ -81,6 +86,7 @@ class DiscoveryPlace {
   final String surfing;
 
   final String updatedAt;
+  final String verifiedAt;
   final int syncVersion;
   final bool arSupported;
   final int arTier;
@@ -133,6 +139,11 @@ class DiscoveryPlace {
     required this.bestTime,
     required this.facilities,
     this.openingHours = '',
+    this.weeklyHours = const {},
+    this.temporarilyClosed = false,
+    this.closureNote = '',
+    this.closureUntil = '',
+    this.holidayHoursNote = '',
     this.mobileSignal = '',
     this.roadCondition = '',
     this.activities = '',
@@ -152,6 +163,7 @@ class DiscoveryPlace {
     this.lengthKm = '',
     this.surfing = '',
     this.updatedAt = '',
+    this.verifiedAt = '',
     this.syncVersion = 0,
     this.arSupported = false,
     this.arTier = 3,
@@ -198,12 +210,12 @@ class DiscoveryPlace {
     }
 
     String parseUtcTimestamp(dynamic val) {
-      if (val == null || val.toString().isEmpty) return DateTime.now().toUtc().toIso8601String();
+      if (val == null || val.toString().isEmpty) return '';
       try {
         if (val is Timestamp) return val.toDate().toUtc().toIso8601String();
         return DateTime.parse(val.toString()).toUtc().toIso8601String();
       } catch (_) {
-        return DateTime.now().toUtc().toIso8601String();
+        return '';
       }
     }
 
@@ -241,6 +253,11 @@ class DiscoveryPlace {
       bestTime: json['bestTime'] as String? ?? json['best_time'] as String? ?? '',
       facilities: List<String>.from(json['facilities'] ?? []),
       openingHours: json['openingHours'] as String? ?? json['opening_hours'] as String? ?? '',
+      weeklyHours: Map<String, dynamic>.from(json['weeklyHours'] ?? json['weekly_hours'] ?? const {}),
+      temporarilyClosed: json['temporarilyClosed'] as bool? ?? json['temporarily_closed'] as bool? ?? false,
+      closureNote: json['closureNote'] as String? ?? json['closure_note'] as String? ?? '',
+      closureUntil: parseUtcTimestamp(json['closureUntil'] ?? json['closure_until']),
+      holidayHoursNote: json['holidayHoursNote'] as String? ?? json['holiday_hours_note'] as String? ?? '',
       mobileSignal: json['mobile_signal'] as String? ?? '',
       roadCondition: json['road_condition'] as String? ?? '',
       activities: json['activities'] as String? ?? '',
@@ -260,6 +277,7 @@ class DiscoveryPlace {
       lengthKm: json['length_km']?.toString() ?? '',
       surfing: json['surfing'] as String? ?? '',
       updatedAt: parseUtcTimestamp(json['updatedAt'] ?? json['updated_at']),
+      verifiedAt: parseUtcTimestamp(json['verifiedAt'] ?? json['verified_at']),
       syncVersion: (json['syncVersion'] as num?)?.toInt() ?? (json['sync_version'] as num?)?.toInt() ?? 0,
       arSupported: json['arSupported'] as bool? ?? json['ar_supported'] as bool? ?? false,
       // Fail closed: a payload missing this field defaults to Tier 1
@@ -314,12 +332,12 @@ class DiscoveryPlace {
     }
 
     String parseUtcTimestamp(dynamic val) {
-      if (val == null || val.toString().isEmpty) return DateTime.now().toUtc().toIso8601String();
+      if (val == null || val.toString().isEmpty) return '';
       try {
         if (val is Timestamp) return val.toDate().toUtc().toIso8601String();
         return DateTime.parse(val.toString()).toUtc().toIso8601String();
       } catch (_) {
-        return DateTime.now().toUtc().toIso8601String();
+        return '';
       }
     }
 
@@ -340,6 +358,11 @@ class DiscoveryPlace {
       bestTime: data['bestTime'] ?? data['best_time'] ?? '',
       facilities: List<String>.from(data['facilities'] ?? []),
       openingHours: data['openingHours'] ?? data['opening_hours'] ?? '',
+      weeklyHours: Map<String, dynamic>.from(data['weeklyHours'] ?? data['weekly_hours'] ?? const {}),
+      temporarilyClosed: data['temporarilyClosed'] ?? data['temporarily_closed'] ?? false,
+      closureNote: data['closureNote'] ?? data['closure_note'] ?? '',
+      closureUntil: parseUtcTimestamp(data['closureUntil'] ?? data['closure_until']),
+      holidayHoursNote: data['holidayHoursNote'] ?? data['holiday_hours_note'] ?? '',
       mobileSignal: data['mobile_signal'] ?? '',
       roadCondition: data['road_condition'] ?? '',
       activities: data['activities'] ?? '',
@@ -359,6 +382,7 @@ class DiscoveryPlace {
       lengthKm: data['length_km']?.toString() ?? '',
       surfing: data['surfing'] ?? '',
       updatedAt: parseUtcTimestamp(data['updatedAt'] ?? data['updated_at']),
+      verifiedAt: parseUtcTimestamp(data['verifiedAt'] ?? data['verified_at']),
       syncVersion: (data['syncVersion'] as num?)?.toInt() ?? (data['sync_version'] as num?)?.toInt() ?? 0,
       arSupported: data['arSupported'] ?? false,
       // Fail closed — see matching comment in fromJson() above.
@@ -413,6 +437,16 @@ class DiscoveryPlace {
       'facilities': facilities,
       'openingHours': openingHours,
       'opening_hours': openingHours,
+      'weeklyHours': weeklyHours,
+      'weekly_hours': weeklyHours,
+      'temporarilyClosed': temporarilyClosed,
+      'temporarily_closed': temporarilyClosed,
+      'closureNote': closureNote,
+      'closure_note': closureNote,
+      'closureUntil': closureUntil,
+      'closure_until': closureUntil,
+      'holidayHoursNote': holidayHoursNote,
+      'holiday_hours_note': holidayHoursNote,
       'mobile_signal': mobileSignal,
       'road_condition': roadCondition,
       'activities': activities,
@@ -433,6 +467,8 @@ class DiscoveryPlace {
       'surfing': surfing,
       'updatedAt': updatedAt,
       'updated_at': updatedAt,
+      'verifiedAt': verifiedAt,
+      'verified_at': verifiedAt,
       'syncVersion': syncVersion,
       'sync_version': syncVersion,
       'arSupported': arSupported,

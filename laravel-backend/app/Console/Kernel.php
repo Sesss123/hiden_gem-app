@@ -35,6 +35,10 @@ class Kernel extends ConsoleKernel
                  ->everyFiveMinutes()
                  ->withoutOverlapping();
 
+        $schedule->command('travel-alerts:expire')
+                 ->everyMinute()
+                 ->withoutOverlapping();
+
         $schedule->command('db:backup')
                  ->dailyAt('03:00')
                  ->withoutOverlapping();

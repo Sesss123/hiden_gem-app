@@ -49,7 +49,12 @@ class FirestoreService
             }
         } catch (\Exception $e) {
             Log::error("FirestoreService initialization failed: " . $e->getMessage());
-            throw $e;
+            // Keep read-only admin pages available even when Firebase is
+            // temporarily misconfigured. Individual operations will fail in
+            // their existing guarded paths instead of crashing controller
+            // construction and turning the whole panel into a 500 page.
+            $this->credentials = [];
+            $this->projectId = '';
         }
     }
 
@@ -58,6 +63,9 @@ class FirestoreService
      */
     private function getToken(): string
     {
+        if ($this->projectId === '' || empty($this->credentials)) {
+            throw new \RuntimeException('Firestore is not configured.');
+        }
         $scopes = ['https://www.googleapis.com/auth/datastore'];
         $credentials = new ServiceAccountCredentials($scopes, $this->credentials);
         $token = $credentials->fetchAuthToken();
@@ -181,6 +189,34 @@ class FirestoreService
         } catch (\Exception $e) {
             Log::error("Firestore REST exception deleting {$collection}/{$documentId}: " . $e->getMessage());
             throw $e;
+        }
+    }
+
+    /** Send a data-first FCM message to a subscribed topic via HTTP v1. */
+    public function sendFcmTopic(string $topic, string $title, string $body, array $data = [], bool $showNotification = true): bool
+    {
+        try {
+            $token = $this->getToken();
+            $message = [
+                    'topic' => $topic,
+                    'data' => array_map(fn ($value) => (string) $value, $data),
+                    'android' => ['priority' => 'high'],
+            ];
+            if ($showNotification) {
+                $message['notification'] = ['title' => $title, 'body' => $body];
+            }
+            $payload = ['message' => $message];
+            $response = $this->client($token)->post(
+                "https://fcm.googleapis.com/v1/projects/{$this->projectId}/messages:send",
+                $payload
+            );
+            if (!$response->successful()) {
+                Log::error("FCM topic send failed ({$response->status()}): " . $response->body());
+            }
+            return $response->successful();
+        } catch (\Throwable $e) {
+            Log::error('FCM topic send exception: ' . $e->getMessage());
+            return false;
         }
     }
 
@@ -474,7 +510,7 @@ class FirestoreService
      * rarely-changing reference collections where a single-field equality
      * filter isn't expressive enough (e.g. a non-empty-string check).
      */
-    public function listDocuments(string $collection): array
+    public function listDocuments(string $collection, int $maxDocuments = 500): array
     {
         try {
             $token = $this->getToken();
@@ -483,7 +519,7 @@ class FirestoreService
             $results = [];
             $pageToken = null;
             do {
-                $query = ['pageSize' => 1000];
+                $query = ['pageSize' => min(100, max(1, $maxDocuments - count($results)))];
                 if ($pageToken) $query['pageToken'] = $pageToken;
                 $response = $this->client($token)->get($url, $query);
                 if (!$response->successful()) {
@@ -498,6 +534,9 @@ class FirestoreService
                         $fields[$k] = $this->decodeValue($v);
                     }
                     $results[] = array_merge(['id' => $id], $fields);
+                    if (count($results) >= $maxDocuments) {
+                        break 2;
+                    }
                 }
                 $pageToken = $response->json('nextPageToken');
             } while ($pageToken);

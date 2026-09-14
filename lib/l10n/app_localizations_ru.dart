@@ -9,6 +9,113 @@ class AppLocalizationsRu extends AppLocalizations {
   AppLocalizationsRu([String locale = 'ru']) : super(locale);
 
   @override
+  String get retryAction => 'Повторить';
+
+  @override
+  String get invalidMapCoordinates => 'У места неверные координаты.';
+
+  @override
+  String get mapAppUnavailable => 'Нет доступного приложения карт.';
+
+  @override
+  String get routeSafetyAdvisory => 'Безопасность маршрута';
+
+  @override
+  String get reviewRouteAction => 'Проверить маршрут';
+
+  @override
+  String get continueAction => 'Продолжить';
+
+  @override
+  String get savedJourneyHubTitle => 'Сохранённые места и поездки';
+
+  @override
+  String bookmarkedCount(int count) {
+    return 'Закладки ($count)';
+  }
+
+  @override
+  String wantToVisitCount(int count) {
+    return 'Хочу посетить ($count)';
+  }
+
+  @override
+  String recentCount(int count) {
+    return 'Недавние ($count)';
+  }
+
+  @override
+  String get savedPlacesLoadError => 'Не удалось загрузить сохранённые места.';
+
+  @override
+  String get noBookmarkedPlaces => 'Закладок пока нет';
+
+  @override
+  String get noBookmarkedPlacesHint =>
+      'Нажмите значок закладки у места, чтобы сохранить его.';
+
+  @override
+  String get wantToVisitEmpty => 'Список желаемых мест пуст';
+
+  @override
+  String get wantToVisitEmptyHint => 'Добавьте места со страницы сведений.';
+
+  @override
+  String get noRecentlyViewedPlaces => 'Недавно просмотренных мест нет';
+
+  @override
+  String get noRecentlyViewedPlacesHint =>
+      'Просмотренные места появятся здесь автоматически.';
+
+  @override
+  String browsingHistoryCount(int count) {
+    return 'История просмотров ($count)';
+  }
+
+  @override
+  String get usageLimitReachedTitle => 'Лимит исчерпан';
+
+  @override
+  String usageLimitReachedMessage(String feature, String plan) {
+    return 'Вы использовали все возможности $feature за этот месяц. Продолжите с $plan:';
+  }
+
+  @override
+  String getPlanButton(String plan) {
+    return 'Подключить $plan';
+  }
+
+  @override
+  String get watchAdForOneMore => 'Посмотреть рекламу для ещё одной попытки';
+
+  @override
+  String get priceUnavailable => 'Цена недоступна';
+
+  @override
+  String get contactForPrice => 'Уточните цену';
+
+  @override
+  String get freePriceLabel => 'Бесплатно';
+
+  @override
+  String fromPriceLabel(String price) {
+    return 'От $price';
+  }
+
+  @override
+  String priceRangeLabel(String minimum, String maximum) {
+    return '$minimum–$maximum';
+  }
+
+  @override
+  String get serverManagedPriceNote =>
+      'Цены предоставляются сервисом и могут меняться. Уточняйте перед покупкой.';
+
+  @override
+  String get hydrationSummary =>
+      'Местные напитки · бутилированная вода · безопасный лёд';
+
+  @override
   String get appTitle => 'Hidden Gems SL';
 
   @override
@@ -1915,23 +2022,23 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get noGuideListingError =>
-      'This guide hasn\'t set up their profile yet, so they can\'t accept bookings right now. Please try another guide.';
+      'Гид ещё не настроил профиль. Выберите другого гида.';
 
   @override
-  String get sendQuoteDialogTitle => 'Set your price';
+  String get sendQuoteDialogTitle => 'Установить цену';
 
   @override
-  String get sendQuoteAmountLabel => 'Amount';
+  String get sendQuoteAmountLabel => 'Сумма';
 
   @override
-  String get sendQuoteConfirmButtonLabel => 'Accept & send quote';
+  String get sendQuoteConfirmButtonLabel => 'Принять и отправить предложение';
 
   @override
-  String get payNowButtonLabel => 'Pay Now';
+  String get payNowButtonLabel => 'Оплатить сейчас';
 
   @override
   String get paymentUnavailableError =>
-      'This booking can\'t be paid right now — it may already be paid, or the price may have changed. Pull to refresh and try again.';
+      'Сейчас оплатить бронирование нельзя. Обновите данные и повторите попытку.';
 
   @override
   String get receiptTitleLabel => 'Payment Receipt';
@@ -3731,7 +3838,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get sosAlertsPreparedLoggedMessage =>
-      'Сигналы SOS подготовлены и записаны в защищённом хранилище!';
+      'Открыто приложение телефона/SMS. Завершите звонок или нажмите «Отправить»; экстренные службы не вызываются автоматически.';
 
   @override
   String get sosCriticalAlertTitle => 'КРИТИЧЕСКИЙ СИГНАЛ SOS';
@@ -3872,7 +3979,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get instantAlertAdminPoliceMessage =>
-      'Мгновенный сигнал администратору, полиции и хабу.';
+      'Оповещает гида/администратора в приложении. Полиция не вызывается автоматически; звоните 119 или 1990.';
 
   @override
   String get signalSentStayMessage => 'СИГНАЛ ОТПРАВЛЕН! ОСТАВАЙТЕСЬ НА МЕСТЕ.';
@@ -3891,7 +3998,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get sosBroadcastedAuthoritiesMessage =>
-      'СИГНАЛ SOS ОТПРАВЛЕН ВСЕМ СЛУЖБАМ!';
+      'SOS передан гиду/администратору в приложении. Звоните 119 или 1990.';
 
   @override
   String get tourCompletedTitle => 'Тур завершён!';
@@ -4710,7 +4817,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get audioGuideUnavailable =>
-      'This audio guide isn\'t available right now. Tap to retry.';
+      'Аудиогид сейчас недоступен. Нажмите, чтобы повторить попытку.';
 
   @override
   String get sinhalaShortLabel => 'සිංහල';
@@ -4798,23 +4905,23 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get arModelPlacementFailedMessage =>
-      'This model couldn\'t be placed — it may be missing or corrupted. Try again or pick another location.';
+      'Не удалось разместить модель — файл может отсутствовать или быть повреждён. Повторите попытку.';
 
   @override
   String arSessionErrorMessage(String message) {
-    return 'AR error: $message';
+    return 'Ошибка AR: $message';
   }
 
   @override
-  String get largeDownloadWarningTitle => 'Large download';
+  String get largeDownloadWarningTitle => 'Большая загрузка';
 
   @override
   String largeDownloadWarningMessage(String size) {
-    return 'This 3D model is about $size MB. Downloading it now will use your mobile data. Continue?';
+    return 'Размер этой 3D-модели около $size МБ. Загрузка использует мобильный интернет. Продолжить?';
   }
 
   @override
-  String get downloadAnywayButtonLabel => 'Download anyway';
+  String get downloadAnywayButtonLabel => 'Всё равно скачать';
 
   @override
   String modelColonNameLabel(String name) {
@@ -5032,7 +5139,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get pricingTrialLabel =>
-      'От 299 рупий/месяц  ·  7-дневная бесплатная пробная версия';
+      'Бесплатный пробный период, если доступен в магазине';
 
   @override
   String get upgradeToPremiumButton => 'Перейти на Премиум';
@@ -5218,4 +5325,137 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get filterLanguageLabel => 'Язык';
+
+  @override
+  String sosDispatchMessage(String mapUrl) {
+    return 'ЭКСТРЕННАЯ СИТУАЦИЯ: Мне нужна помощь. Мое местоположение: $mapUrl (Отправлено через Hidden Gems SL)';
+  }
+
+  @override
+  String get sosFailedAppLaunch =>
+      'Не удалось открыть приложение телефона или SMS. Позвоните 119 или 1990 прямо сейчас.';
+
+  @override
+  String get weatherConditionClear => 'Ясно';
+
+  @override
+  String get weatherConditionClouds => 'Облачно';
+
+  @override
+  String get weatherConditionRain => 'Дождь';
+
+  @override
+  String get weatherConditionThunderstorm => 'Гроза';
+
+  @override
+  String get weatherConditionDrizzle => 'Морось';
+
+  @override
+  String get weatherConditionMist => 'Туман';
+
+  @override
+  String get rainSafetyAdvisory =>
+      'Предупреждение о дожде и грозе: возьмите зонт и соблюдайте осторожность на извилистых дорогах.';
+
+  @override
+  String get moreToolsTitle => 'Дополнительные инструменты';
+
+  @override
+  String get moreToolsSubtitle => 'Food AI, AR, Оракул, Паспорт и Бюджет';
+
+  @override
+  String get savedPlacesHubTitle => 'Сохраненные места и список желаний';
+
+  @override
+  String get savedPlacesHubSubtitle => 'Закладки, хочу посетить и история';
+
+  @override
+  String get mapActionLabel => 'Карта';
+
+  @override
+  String get safetyActionLabel => 'Безопасность';
+
+  @override
+  String get foodScannerTooltip => 'Сканер еды';
+
+  @override
+  String get familyShareTitle => 'Семейный доступ';
+
+  @override
+  String get waterSafetyTitle => 'Питьевая вода и местные напитки';
+
+  @override
+  String get waterSafetySubtitle =>
+      'Местные напитки и осторожные рекомендации по воде';
+
+  @override
+  String get drinkLocalHeroTitle =>
+      'Натуральные электролитные напитки Шри-Ланки';
+
+  @override
+  String get drinkLocalHeroSubtitle =>
+      'Выбирайте чистого продавца и уточняйте текущую цену до заказа';
+
+  @override
+  String get thambiliTitle => 'Королевский кокос (Тамбили)';
+
+  @override
+  String get thambiliFairPrice => 'Уточните текущую цену в LKR';
+
+  @override
+  String get palmyrahTitle => 'Свежий сок пальмиры (Пальмира)';
+
+  @override
+  String get palmyrahFairPrice => 'Уточните текущую цену в LKR';
+
+  @override
+  String get herbalTeaTitle => 'Травяной чай Белимал и Ранавара';
+
+  @override
+  String get herbalTeaFairPrice => 'Уточните текущую цену в LKR';
+
+  @override
+  String get slsCertificationTip =>
+      'Проверяйте знак сертификации SLS 894 и целостность кольца на крышке бутылки';
+
+  @override
+  String get iceSafetyTip =>
+      'Форма льда не гарантирует безопасность; уточните источник воды или откажитесь от льда';
+
+  @override
+  String get tapWaterWarning =>
+      'Качество воды различается; при сомнении используйте кипячёную, фильтрованную или запечатанную воду';
+
+  @override
+  String get jeewaniTip =>
+      'Спросите фармацевта о зарегистрированном ОРС и следуйте инструкции; при тяжёлых симптомах обратитесь к врачу';
+
+  @override
+  String get findSafeWaterAction => 'Найти безопасную питьевую воду поблизости';
+
+  @override
+  String get landslideAlertTitle => 'Предупреждение об оползнях NBRO';
+
+  @override
+  String get landslideLevel1Msg =>
+      'Уровень 1: Будьте внимательны к осыпям и камнепадам на горных склонах';
+
+  @override
+  String get landslideLevel2Msg =>
+      'Уровень 2: Сильные дожди. Избегайте ночных поездок по горным перевалам';
+
+  @override
+  String get landslideLevel3Msg =>
+      'Уровень 3: Красный уровень эвакуации. Горные дороги могут быть перекрыты';
+
+  @override
+  String get floodRiskTitle => 'Предупреждение о паводках в бассейнах рек';
+
+  @override
+  String get floodRiskMsg =>
+      'Низменные подъездные дороги могут быть затоплены. Пользуйтесь главными шоссе';
+
+  @override
+  String get disasterHelplineTitle =>
+      'Горячая линия Центра управления стихийными бедствиями (DMC): 117';
 }

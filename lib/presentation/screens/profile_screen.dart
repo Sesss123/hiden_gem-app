@@ -35,6 +35,7 @@ import 'qr_scanner_screen.dart';
 import 'heritage_passport_screen.dart';
 import 'budget_concierge_screen.dart';
 import 'budget_tracker_screen.dart';
+import 'saved_places_screen.dart';
 import '../../data/datasources/trip_cache_service.dart';
 import 'login_screen.dart';
 import 'booking_inbox_screen.dart';
@@ -842,6 +843,17 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
       children: [
         _sectionLabel(l10n.journeyHub),
         const SizedBox(height: 10),
+        _hubCard(
+          Icons.bookmark_added_outlined,
+          l10n.savedPlacesHubTitle,
+          l10n.savedPlacesHubSubtitle,
+          AppPalette.sigiriyaOchre,
+          () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (_) => const SavedPlacesScreen())),
+        ),
+        const SizedBox(height: 8),
         _hubCard(
           Icons.account_balance_wallet_outlined,
           l10n.aiBudgetConcierge,

@@ -9,6 +9,110 @@ class AppLocalizationsJa extends AppLocalizations {
   AppLocalizationsJa([String locale = 'ja']) : super(locale);
 
   @override
+  String get retryAction => '再試行';
+
+  @override
+  String get invalidMapCoordinates => 'この場所の地図座標は無効です。';
+
+  @override
+  String get mapAppUnavailable => '利用できる地図アプリがありません。';
+
+  @override
+  String get routeSafetyAdvisory => 'ルート安全情報';
+
+  @override
+  String get reviewRouteAction => 'ルートを確認';
+
+  @override
+  String get continueAction => '続行';
+
+  @override
+  String get savedJourneyHubTitle => '保存した場所と旅';
+
+  @override
+  String bookmarkedCount(int count) {
+    return 'ブックマーク（$count）';
+  }
+
+  @override
+  String wantToVisitCount(int count) {
+    return '行きたい（$count）';
+  }
+
+  @override
+  String recentCount(int count) {
+    return '最近（$count）';
+  }
+
+  @override
+  String get savedPlacesLoadError => '保存した場所を読み込めませんでした。';
+
+  @override
+  String get noBookmarkedPlaces => 'ブックマークはまだありません';
+
+  @override
+  String get noBookmarkedPlacesHint => '場所のブックマークをタップして保存できます。';
+
+  @override
+  String get wantToVisitEmpty => '行きたいリストは空です';
+
+  @override
+  String get wantToVisitEmptyHint => '場所の詳細ページから追加してください。';
+
+  @override
+  String get noRecentlyViewedPlaces => '最近見た場所はありません';
+
+  @override
+  String get noRecentlyViewedPlacesHint => '閲覧した場所が自動的に表示されます。';
+
+  @override
+  String browsingHistoryCount(int count) {
+    return '閲覧履歴（$count）';
+  }
+
+  @override
+  String get usageLimitReachedTitle => '利用上限に達しました';
+
+  @override
+  String usageLimitReachedMessage(String feature, String plan) {
+    return '今月の$featureをすべて使用しました。$planで続行できます：';
+  }
+
+  @override
+  String getPlanButton(String plan) {
+    return '$planを入手';
+  }
+
+  @override
+  String get watchAdForOneMore => '広告を見てもう1回利用';
+
+  @override
+  String get priceUnavailable => '価格情報なし';
+
+  @override
+  String get contactForPrice => '価格はお問い合わせください';
+
+  @override
+  String get freePriceLabel => '無料';
+
+  @override
+  String fromPriceLabel(String price) {
+    return '$priceから';
+  }
+
+  @override
+  String priceRangeLabel(String minimum, String maximum) {
+    return '$minimum～$maximum';
+  }
+
+  @override
+  String get serverManagedPriceNote =>
+      '価格はサービスから提供され、変更される場合があります。購入前にご確認ください。';
+
+  @override
+  String get hydrationSummary => '地元の飲み物・密封水・安全な氷の案内';
+
+  @override
   String get appTitle => 'Hidden Gems SL';
 
   @override
@@ -1837,24 +1941,22 @@ class AppLocalizationsJa extends AppLocalizations {
       'このガイドは今月の予約上限に達しています。来月に再度お試しいただくか、別のガイドをお選びください。';
 
   @override
-  String get noGuideListingError =>
-      'This guide hasn\'t set up their profile yet, so they can\'t accept bookings right now. Please try another guide.';
+  String get noGuideListingError => 'このガイドはまだプロフィールを設定していません。別のガイドをお試しください。';
 
   @override
-  String get sendQuoteDialogTitle => 'Set your price';
+  String get sendQuoteDialogTitle => '価格を設定';
 
   @override
-  String get sendQuoteAmountLabel => 'Amount';
+  String get sendQuoteAmountLabel => '金額';
 
   @override
-  String get sendQuoteConfirmButtonLabel => 'Accept & send quote';
+  String get sendQuoteConfirmButtonLabel => '承認して見積もりを送信';
 
   @override
-  String get payNowButtonLabel => 'Pay Now';
+  String get payNowButtonLabel => '今すぐ支払う';
 
   @override
-  String get paymentUnavailableError =>
-      'This booking can\'t be paid right now — it may already be paid, or the price may have changed. Pull to refresh and try again.';
+  String get paymentUnavailableError => '現在この予約の支払いはできません。更新して再試行してください。';
 
   @override
   String get receiptTitleLabel => 'Payment Receipt';
@@ -3572,7 +3674,8 @@ class AppLocalizationsJa extends AppLocalizations {
   String get addGuardianButton => '保護者を追加';
 
   @override
-  String get sosAlertsPreparedLoggedMessage => 'SOSアラートが準備され、セキュアボルトに記録されました！';
+  String get sosAlertsPreparedLoggedMessage =>
+      '電話／SMSアプリを開きました。通話を完了するか送信を押してください。緊急機関へ自動送信はされません。';
 
   @override
   String get sosCriticalAlertTitle => '緊急SOSアラート';
@@ -3709,7 +3812,8 @@ class AppLocalizationsJa extends AppLocalizations {
   String get emergencySosButton => '緊急SOS';
 
   @override
-  String get instantAlertAdminPoliceMessage => '管理者、警察、ハブに即座にアラートを送信します。';
+  String get instantAlertAdminPoliceMessage =>
+      'ガイド／管理ハブへ通知します。警察には自動連絡されません。必要なら119または1990へ電話してください。';
 
   @override
   String get signalSentStayMessage => '信号を送信しました！その場から動かないでください。';
@@ -3727,7 +3831,8 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get sosBroadcastedAuthoritiesMessage => 'SOSアラートがすべての関係当局に送信されました！';
+  String get sosBroadcastedAuthoritiesMessage =>
+      'SOSをアプリ内のガイド／管理ハブへ共有しました。119または1990へ電話してください。';
 
   @override
   String get tourCompletedTitle => 'ツアー完了！';
@@ -4517,8 +4622,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get audioGuideLabel => '音声ガイド';
 
   @override
-  String get audioGuideUnavailable =>
-      'This audio guide isn\'t available right now. Tap to retry.';
+  String get audioGuideUnavailable => 'この音声ガイドは現在利用できません。タップして再試行してください。';
 
   @override
   String get sinhalaShortLabel => 'සිංහල';
@@ -4602,23 +4706,23 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get arModelPlacementFailedMessage =>
-      'This model couldn\'t be placed — it may be missing or corrupted. Try again or pick another location.';
+      'このモデルを配置できませんでした。データがないか破損している可能性があります。再試行してください。';
 
   @override
   String arSessionErrorMessage(String message) {
-    return 'AR error: $message';
+    return 'ARエラー：$message';
   }
 
   @override
-  String get largeDownloadWarningTitle => 'Large download';
+  String get largeDownloadWarningTitle => '大容量ダウンロード';
 
   @override
   String largeDownloadWarningMessage(String size) {
-    return 'This 3D model is about $size MB. Downloading it now will use your mobile data. Continue?';
+    return 'この3Dモデルは約$size MBです。モバイルデータを使用して続行しますか？';
   }
 
   @override
-  String get downloadAnywayButtonLabel => 'Download anyway';
+  String get downloadAnywayButtonLabel => 'それでもダウンロード';
 
   @override
   String modelColonNameLabel(String name) {
@@ -4821,7 +4925,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get featureArPhotoCapture => 'AR写真撮影とSNSシェア';
 
   @override
-  String get pricingTrialLabel => '月額 Rs. 299から　・　7日間無料トライアル';
+  String get pricingTrialLabel => 'ストアで提供される場合は無料トライアル';
 
   @override
   String get upgradeToPremiumButton => 'プレミアムにアップグレード';
@@ -5001,4 +5105,124 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get filterLanguageLabel => '言語';
+
+  @override
+  String sosDispatchMessage(String mapUrl) {
+    return '緊急事態：助けが必要です。私の現在地：$mapUrl (Hidden Gems SLより送信)';
+  }
+
+  @override
+  String get sosFailedAppLaunch =>
+      '電話またはSMSアプリを開けませんでした。今すぐ 119 または 1990 に電話してください。';
+
+  @override
+  String get weatherConditionClear => '快晴';
+
+  @override
+  String get weatherConditionClouds => '曇り';
+
+  @override
+  String get weatherConditionRain => '雨';
+
+  @override
+  String get weatherConditionThunderstorm => '雷雨';
+
+  @override
+  String get weatherConditionDrizzle => '霧雨';
+
+  @override
+  String get weatherConditionMist => '霧';
+
+  @override
+  String get rainSafetyAdvisory => '大雨・雷雨注意報：傘を携帯し、曲がりくねった山道では運転・歩行にご注意ください。';
+
+  @override
+  String get moreToolsTitle => 'その他のツールと体験';
+
+  @override
+  String get moreToolsSubtitle => 'グルメAI、ARポータル、オラクル、パスポート、予算管理';
+
+  @override
+  String get savedPlacesHubTitle => '保存した場所と行きたい場所';
+
+  @override
+  String get savedPlacesHubSubtitle => 'ブックマーク、訪問希望、閲覧履歴';
+
+  @override
+  String get mapActionLabel => 'マップ';
+
+  @override
+  String get safetyActionLabel => '安全';
+
+  @override
+  String get foodScannerTooltip => 'フードスキャナー';
+
+  @override
+  String get familyShareTitle => 'ファミリー共有';
+
+  @override
+  String get waterSafetyTitle => '飲料水と地元の天然ドリンク';
+
+  @override
+  String get waterSafetySubtitle => '地元の飲み物と慎重な飲料水安全ガイド';
+
+  @override
+  String get drinkLocalHeroTitle => 'スリランカの天然電解質スーパー飲料';
+
+  @override
+  String get drinkLocalHeroSubtitle => '清潔な販売者を選び、注文前に現在価格を確認してください';
+
+  @override
+  String get thambiliTitle => 'キングココナッツ (タンビリ)';
+
+  @override
+  String get thambiliFairPrice => '現在のLKR価格を確認';
+
+  @override
+  String get palmyrahTitle => '新鮮なパルミラヤシ果汁 (Palmyrah)';
+
+  @override
+  String get palmyrahFairPrice => '現在のLKR価格を確認';
+
+  @override
+  String get herbalTeaTitle => 'ベリマル・ラナワラハーブティー';
+
+  @override
+  String get herbalTeaFairPrice => '現在のLKR価格を確認';
+
+  @override
+  String get slsCertificationTip => 'ペットボトル水は必ずSLS 894認証印と未開封キャップを確認してください';
+
+  @override
+  String get iceSafetyTip => '氷の形だけでは安全性を確認できません。飲用水製か確認するか氷を避けてください';
+
+  @override
+  String get tapWaterWarning => '水質は場所により異なります。不明な場合は煮沸・ろ過済みまたは密封水を使用してください';
+
+  @override
+  String get jeewaniTip => '登録済みORSについて薬剤師に相談し、包装の指示に従ってください。重い症状は受診してください';
+
+  @override
+  String get findSafeWaterAction => '近くの安全な飲料水取扱店を探す';
+
+  @override
+  String get landslideAlertTitle => 'NBRO 土砂崩れ注意報';
+
+  @override
+  String get landslideLevel1Msg => 'レベル1：山道沿いの法面崩落や落石に注意してください';
+
+  @override
+  String get landslideLevel2Msg => 'レベル2：大雨。夜間の峠道走行は避けてください';
+
+  @override
+  String get landslideLevel3Msg => 'レベル3：避難警報（赤）。山岳道路が寸断される恐れがあります';
+
+  @override
+  String get floodRiskTitle => '河川流域洪水トラベルアドバイザリー';
+
+  @override
+  String get floodRiskMsg => '低地の進入路が冠水する恐れがあります。主要幹線道路をご利用ください';
+
+  @override
+  String get disasterHelplineTitle => '災害管理局ヘルプライン (DMC): 117';
 }

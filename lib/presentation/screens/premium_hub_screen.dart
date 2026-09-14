@@ -11,6 +11,8 @@ import 'curator_deals_screen.dart';
 import 'emergency_translator_screen.dart';
 import '../../core/services/emergency_translator_service.dart';
 import '../../l10n/app_localizations.dart';
+import '../../data/datasources/price_catalog_service.dart';
+import '../../core/localization/price_localization.dart';
 
 class PremiumHubScreen extends ConsumerStatefulWidget {
   const PremiumHubScreen({super.key});
@@ -349,7 +351,8 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
           _buildTierOption(
             context: context,
             title: l10n.smartTravelerTitle,
-            priceStr: "Rs. 499",
+            priceStr: PriceLocalization.display(l10n,
+                PriceCatalogService.instance.price('subscriptions.smart_traveler.monthly')),
             billingCycle: l10n.billedMonthlyLabel,
             features: [l10n.featureAiItineraries20, l10n.featureSelectedArPlaces, l10n.featureOfflineMapsBasic],
             color: AppTheme.colors.primary,
@@ -360,10 +363,10 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
           SizedBox(height: 16),
           Builder(builder: (context) {
             final l10n = AppLocalizations.of(context)!;
-            // Real store price if RevenueCat is configured, else the static
-            // fallback so pricing is never blank in dev/example-key builds.
-            final annualPrice = _annualPackage?.storeProduct.priceString ?? "Rs. 9,999";
-            final monthlyPrice = _monthlyPackage?.storeProduct.priceString ?? "Rs. 999";
+            final annualPrice = _annualPackage?.storeProduct.priceString ??
+                PriceLocalization.display(l10n, PriceCatalogService.instance.price('subscriptions.heritage.annual'));
+            final monthlyPrice = _monthlyPackage?.storeProduct.priceString ??
+                PriceLocalization.display(l10n, PriceCatalogService.instance.price('subscriptions.heritage.monthly'));
             final trialLabel = _trialLabel(_isAnnual ? _annualPackage : _monthlyPackage, l10n);
 
             return _buildTierOption(

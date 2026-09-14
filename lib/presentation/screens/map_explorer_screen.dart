@@ -30,6 +30,10 @@ class _MapExplorerScreenState extends ConsumerState<MapExplorerScreen> {
   List<DiscoveryPlace> _places = [];
   DiscoveryPlace? _selectedPlace;
   StreamSubscription? _guideSubscription;
+  StreamSubscription? _alertSubscription;
+  final Set<Polygon> _hazardPolygons = {};
+  final Set<Polyline> _closedRoadLines = {};
+  bool _hazardFeedOffline = false;
   LatLng? _guideLocation;
   LatLng? _vehicleLocation;
   LatLng? _meetingPointLocation;
@@ -43,6 +47,7 @@ class _MapExplorerScreenState extends ConsumerState<MapExplorerScreen> {
     _loadData();
     _checkLocationPermission();
     _setupSessionTracking();
+    _setupHazardTracking();
   }
 
   Future<void> _checkLocationPermission() async {
@@ -56,7 +61,53 @@ class _MapExplorerScreenState extends ConsumerState<MapExplorerScreen> {
   @override
   void dispose() {
     _guideSubscription?.cancel();
+    _alertSubscription?.cancel();
     super.dispose();
+  }
+
+  void _setupHazardTracking() {
+    _alertSubscription = FirebaseFirestore.instance
+        .collection('travel_alerts')
+        .where('isActive', isEqualTo: true)
+        .snapshots()
+        .listen((snapshot) {
+      final polygons = <Polygon>{};
+      final closedRoads = <Polyline>{};
+      for (final doc in snapshot.docs) {
+        final data = doc.data();
+        final expiresAt = DateTime.tryParse('${data['expiresAt'] ?? ''}');
+        if (expiresAt != null && expiresAt.isBefore(DateTime.now().toUtc())) continue;
+        final geometry = data['hazard_geometry'] ?? data['hazardGeometry'];
+        if (geometry is! List) continue;
+        final points = geometry.whereType<Map>().map((point) => LatLng(
+              (point['lat'] as num).toDouble(),
+              (point['lng'] as num).toDouble(),
+            )).toList();
+        final level = (data['level'] as num?)?.toInt() ?? 1;
+        final color = level >= 3 ? Colors.red : level == 2 ? Colors.orange : Colors.yellow.shade700;
+        if (data['type'] == 'closed_road' && points.length >= 2) {
+          closedRoads.add(Polyline(
+            polylineId: PolylineId('closed_${doc.id}'),
+            points: points,
+            color: Colors.red.shade800,
+            width: 6,
+            patterns: [PatternItem.dash(18), PatternItem.gap(8)],
+          ));
+          continue;
+        }
+        if (points.length < 3) continue;
+        polygons.add(Polygon(
+          polygonId: PolygonId('hazard_${doc.id}'),
+          points: points,
+          fillColor: color.withValues(alpha: 0.22),
+          strokeColor: color,
+          strokeWidth: 2,
+        ));
+      }
+      if (mounted) setState(() { _hazardPolygons..clear()..addAll(polygons); _closedRoadLines..clear()..addAll(closedRoads); _hazardFeedOffline = false; });
+    }, onError: (_) {
+      if (mounted) setState(() => _hazardFeedOffline = true);
+    });
   }
 
   Future<void> _loadData() async {
@@ -191,9 +242,10 @@ class _MapExplorerScreenState extends ConsumerState<MapExplorerScreen> {
         place.lng < -180 ||
         place.lng > 180 ||
         (place.lat == 0 && place.lng == 0)) {
-      if (mounted)
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content: Text('This place has invalid map coordinates.')));
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(AppLocalizations.of(context)!.invalidMapCoordinates)));
+      }
       return;
     }
     final googleMapsUrl =
@@ -203,7 +255,7 @@ class _MapExplorerScreenState extends ConsumerState<MapExplorerScreen> {
           mode: LaunchMode.externalApplication);
     } else if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('No map application is available.')));
+          SnackBar(content: Text(AppLocalizations.of(context)!.mapAppUnavailable)));
     }
   }
 
@@ -219,10 +271,25 @@ class _MapExplorerScreenState extends ConsumerState<MapExplorerScreen> {
               zoom: 12,
             ),
             markers: _markers,
+            polygons: _hazardPolygons,
+            polylines: _closedRoadLines,
             myLocationEnabled: _canShowUserLocation,
             myLocationButtonEnabled: false,
             zoomControlsEnabled: false,
             mapToolbarEnabled: false,
+          ),
+
+          Positioned(
+            top: 50,
+            right: 16,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+              decoration: BoxDecoration(color: AppTheme.colors.white, borderRadius: BorderRadius.circular(12)),
+              child: Text(
+                _hazardFeedOffline ? 'Hazards: offline/cache' : 'Hazards  🟡 Watch  🟠 Warning  🔴 Stop',
+                style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.w600, color: AppTheme.textPrimary(context)),
+              ),
+            ),
           ),
 
           // Back Button

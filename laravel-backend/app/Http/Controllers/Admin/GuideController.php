@@ -92,6 +92,12 @@ class GuideController extends Controller
                     'isGuideApproved' => true,
                 ]);
                 if (!$applicationSynced || !$userSynced) {
+                    if ($applicationSynced && !$userSynced) {
+                        $this->firestoreService->updateGuideApplication($userId, [
+                            'status' => $application->getOriginal('status'),
+                            'reviewedAt' => null,
+                        ]);
+                    }
                     throw new \RuntimeException('Firestore rejected the guide approval sync.');
                 }
             });
@@ -140,6 +146,13 @@ class GuideController extends Controller
                     'guideRejectionReason' => $adminComment,
                 ]);
                 if (!$applicationSynced || !$userSynced) {
+                    if ($applicationSynced && !$userSynced) {
+                        $this->firestoreService->updateGuideApplication($userId, [
+                            'status' => $application->getOriginal('status'),
+                            'adminComment' => $application->getOriginal('admin_comment'),
+                            'reviewedAt' => null,
+                        ]);
+                    }
                     throw new \RuntimeException('Firestore rejected the guide rejection sync.');
                 }
             });
@@ -162,21 +175,25 @@ class GuideController extends Controller
     {
         $application = GuideApplication::findOrFail($id);
         $user = $application->user;
-        $user->update(['role' => 'banned']);
-        $user->tokens()->delete();
-
         try {
             // NOTE: must use $application->user_id (the Firebase UID) here,
             // not $user->id (MySQL auto-increment PK) — every Firestore
             // users/{uid} doc is keyed by the Firebase UID, same as
             // approve()/reject() above already do correctly.
-            $this->firestoreService->updateGuideUser($application->user_id, [
+            $synced = $this->firestoreService->updateGuideUser($application->user_id, [
                 'role' => 'banned',
                 'guideStatus' => 'banned'
             ]);
+            if (!$synced) {
+                throw new \RuntimeException('Firestore rejected the ban.');
+            }
         } catch (\Exception $e) {
-            Log::warning("Firestore sync for ban failed: " . $e->getMessage());
+            Log::error("Firestore sync for ban failed: " . $e->getMessage());
+            return back()->withErrors(['error' => 'Ban was not applied because Firebase synchronization failed.']);
         }
+
+        $user->update(['role' => 'banned']);
+        $user->tokens()->delete();
 
         $this->logAdminAction('guide.banned', 'User', $user->id, ['application_id' => $id]);
 
@@ -190,23 +207,26 @@ class GuideController extends Controller
     {
         $application = GuideApplication::findOrFail($id);
         $user = $application->user;
-        $user->update(['role' => 'tourist']);
-
         try {
             // NOTE: must use $application->user_id (the Firebase UID), not
             // $user->id (MySQL PK) — see comment in ban() above.
-            $this->firestoreService->updateGuideUser($application->user_id, [
+            $userSynced = $this->firestoreService->updateGuideUser($application->user_id, [
                 'role' => 'tourist',
                 'guideStatus' => 'removed',
                 'isGuideApproved' => false
             ]);
-            $this->firestoreService->updateGuideApplication($application->user_id, [
+            $applicationSynced = $this->firestoreService->updateGuideApplication($application->user_id, [
                 'status' => 'removed'
             ]);
+            if (!$userSynced || !$applicationSynced) {
+                throw new \RuntimeException('Firestore rejected the guide removal.');
+            }
         } catch (\Exception $e) {
-            Log::warning("Firestore sync for remove failed: " . $e->getMessage());
+            Log::error("Firestore sync for remove failed: " . $e->getMessage());
+            return back()->withErrors(['error' => 'Guide removal was not applied because Firebase synchronization failed.']);
         }
 
+        $user->update(['role' => 'tourist']);
         $application->delete();
 
         $this->logAdminAction('guide.removed', 'GuideApplication', $id, ['user_id' => $user->id]);

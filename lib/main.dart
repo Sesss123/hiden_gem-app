@@ -19,6 +19,7 @@ import 'core/localization/locale_provider.dart';
 import 'data/datasources/trip_cache_service.dart';
 import 'data/datasources/user_preference_service.dart';
 import 'data/datasources/monetization_service.dart';
+import 'data/datasources/price_catalog_service.dart';
 import 'data/datasources/voice_service.dart';
 import 'data/datasources/auth_service.dart';
 import 'core/analytics/analytics_service.dart';
@@ -33,6 +34,7 @@ import 'presentation/screens/home_screen.dart';
 import 'presentation/screens/splash_screen.dart';
 import 'presentation/screens/onboarding_screen.dart';
 import 'presentation/screens/booking_inbox_screen.dart';
+import 'presentation/screens/emergency_kit_screen.dart';
 import 'presentation/screens/language_selection_screen.dart';
 import 'presentation/screens/terms_screen.dart';
 import 'presentation/widgets/graceful_error_widget.dart';
@@ -456,7 +458,7 @@ Future<InitializationResult> performInitialization() async {
     // false even when Firebase Auth had already initialized successfully,
     // silently routing every user (not just fresh installs) around the
     // onboarding/terms/login gate into offline home mode.
-    if (!kIsWeb)
+    if (!kIsWeb) {
       try {
         SecureLogger.storage(
             "Starting Option A Delta Sync & SQLite Hydration...",
@@ -479,6 +481,7 @@ Future<InitializationResult> performInitialization() async {
             tag: "DeltaSync",
             isBackground: true);
       }
+    }
 
     SecureLogger.bgTask(
         'Background initialization complete. Firebase: $firebaseStatus',
@@ -531,9 +534,24 @@ Future<void> initializeOtherServices() async {
     SecureLogger.warning("Failed to log app_opened event: $e");
   }
 
-  // Ads & Voice Pre-load
-  MonetizationService().loadInterstitialAd();
-  MonetizationService().loadRewardedAd();
+  // Remote Ad Settings & Voice Pre-load
+  try {
+    await MonetizationService().syncRemoteAdConfig().timeout(const Duration(seconds: 4));
+  } catch (e) {
+    debugPrint("[main] Remote ad config sync error: $e");
+  }
+
+  if (MonetizationService().isAdsEnabled) {
+    MonetizationService().loadInterstitialAd();
+    MonetizationService().loadRewardedAd();
+  }
+  MonetizationService().startRemoteConfigPolling();
+
+  try {
+    await PriceCatalogService.instance.sync().timeout(const Duration(seconds: 6));
+  } catch (e) {
+    debugPrint('[main] Price catalog sync error: $e');
+  }
 
   try {
     await VoiceService().init().timeout(const Duration(seconds: 10));
@@ -566,6 +584,7 @@ class _HiddenGemsAppState extends ConsumerState<HiddenGemsApp>
   bool _userDismissedSoftUpdate = false;
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
   StreamSubscription? _notifSubscription;
+  StreamSubscription? _openedNotifSubscription;
 
   @override
   void initState() {
@@ -575,6 +594,10 @@ class _HiddenGemsAppState extends ConsumerState<HiddenGemsApp>
     // BUG-N01 Fix: Listen for foreground push messages and present a floating Snackbar
     _notifSubscription =
         NotificationService().onForegroundMessage.listen((message) {
+      if (message.data['type'] == 'app_config') {
+        MonetizationService().syncRemoteAdConfig();
+        return;
+      }
       final ctx = navigatorKey.currentContext;
       if (ctx != null && ctx.mounted && message.notification != null) {
         ScaffoldMessenger.of(ctx).showSnackBar(
@@ -607,9 +630,11 @@ class _HiddenGemsAppState extends ConsumerState<HiddenGemsApp>
               textColor: AppTheme.colors.amber,
               onPressed: () {
                 final nav = navigatorKey.currentState;
-                if (nav != null && message.data['type'] == 'new_booking') {
-                  nav.push(MaterialPageRoute(
-                      builder: (_) => const BookingInboxScreen()));
+                if (nav == null) return;
+                if (message.data['type'] == 'travel_alert' || message.data.containsKey('alertId')) {
+                  nav.push(MaterialPageRoute(builder: (_) => const EmergencyKitScreen()));
+                } else if (message.data['type'] == 'new_booking') {
+                  nav.push(MaterialPageRoute(builder: (_) => const BookingInboxScreen()));
                 }
               },
             ),
@@ -617,17 +642,31 @@ class _HiddenGemsAppState extends ConsumerState<HiddenGemsApp>
         );
       }
     });
+    _openedNotifSubscription = NotificationService().onOpenedMessage.listen((message) {
+      final nav = navigatorKey.currentState;
+      if (nav == null) return;
+      if (message.data['type'] == 'travel_alert' || message.data.containsKey('alertId')) {
+        nav.push(MaterialPageRoute(builder: (_) => const EmergencyKitScreen()));
+      } else if (message.data['type'] == 'new_booking') {
+        nav.push(MaterialPageRoute(builder: (_) => const BookingInboxScreen()));
+      }
+    });
   }
 
   @override
   void dispose() {
     _notifSubscription?.cancel();
+    _openedNotifSubscription?.cancel();
+    MonetizationService().stopRemoteConfigPolling();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      MonetizationService().syncRemoteAdConfig();
+    }
     // Flush any debounced bookmark/itinerary Firestore sync immediately on
     // pause/detach/hidden, so backgrounding or closing the app doesn't
     // silently drop a toggle still waiting out its 3s debounce window.

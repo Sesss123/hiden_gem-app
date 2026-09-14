@@ -1,4 +1,23 @@
 {
+  "retryAction": "Повторить",
+  "invalidMapCoordinates": "У места неверные координаты.", "mapAppUnavailable": "Нет доступного приложения карт.", "routeSafetyAdvisory": "Безопасность маршрута", "reviewRouteAction": "Проверить маршрут", "continueAction": "Продолжить",
+  "savedJourneyHubTitle": "Сохранённые места и поездки", "bookmarkedCount": "Закладки ({count})", "@bookmarkedCount":{"placeholders":{"count":{"type":"int"}}}, "wantToVisitCount": "Хочу посетить ({count})", "@wantToVisitCount":{"placeholders":{"count":{"type":"int"}}}, "recentCount": "Недавние ({count})", "@recentCount":{"placeholders":{"count":{"type":"int"}}},
+  "savedPlacesLoadError": "Не удалось загрузить сохранённые места.", "noBookmarkedPlaces": "Закладок пока нет", "noBookmarkedPlacesHint": "Нажмите значок закладки у места, чтобы сохранить его.", "wantToVisitEmpty": "Список желаемых мест пуст", "wantToVisitEmptyHint": "Добавьте места со страницы сведений.", "noRecentlyViewedPlaces": "Недавно просмотренных мест нет", "noRecentlyViewedPlacesHint": "Просмотренные места появятся здесь автоматически.", "browsingHistoryCount": "История просмотров ({count})", "@browsingHistoryCount":{"placeholders":{"count":{"type":"int"}}},
+  "usageLimitReachedTitle": "Лимит исчерпан",
+  "usageLimitReachedMessage": "Вы использовали все возможности {feature} за этот месяц. Продолжите с {plan}:",
+  "@usageLimitReachedMessage": {"placeholders":{"feature":{"type":"String"},"plan":{"type":"String"}}},
+  "getPlanButton": "Подключить {plan}",
+  "@getPlanButton": {"placeholders":{"plan":{"type":"String"}}},
+  "watchAdForOneMore": "Посмотреть рекламу для ещё одной попытки",
+  "priceUnavailable": "Цена недоступна",
+  "contactForPrice": "Уточните цену",
+  "freePriceLabel": "Бесплатно",
+  "fromPriceLabel": "От {price}",
+  "@fromPriceLabel": {"placeholders":{"price":{"type":"String"}}},
+  "priceRangeLabel": "{minimum}–{maximum}",
+  "@priceRangeLabel": {"placeholders":{"minimum":{"type":"String"},"maximum":{"type":"String"}}},
+  "serverManagedPriceNote": "Цены предоставляются сервисом и могут меняться. Уточняйте перед покупкой.",
+  "hydrationSummary": "Местные напитки · бутилированная вода · безопасный лёд",
   "appTitle": "Hidden Gems SL",
   "goodMorningAdmin": "Доброе утро, администратор",
   "oracleToday": "Вот что происходит сегодня с Оракулом.",
@@ -123,7 +142,6 @@
   "initiateTravel": "НАЧАТЬ ПОСЛЕДОВАТЕЛЬНОСТЬ ПУТЕШЕСТВИЯ",
   "selectOracleLanguage": "ВЫБЕРИТЕ ЯЗЫК ОРАКУЛА",
   "skipForNow": "ПОКА ПРОПУСТИТЬ",
-
   "privacyPolicyTitle": "ПОЛИТИКА КОНФИДЕНЦИАЛЬНОСТИ И ПРАВОВАЯ ИНФОРМАЦИЯ",
   "dataProtectionProtocol": "ПРОТОКОЛ ЗАЩИТЫ ДАННЫХ",
   "lastUpdatedDate": "ПОСЛЕДНЕЕ ОБНОВЛЕНИЕ: 5 ИЮЛЯ 2026 Г.",
@@ -167,7 +185,6 @@
   "privacySection9Body": "Настоящая политика предоставляется в общих информационных целях и не является официальной юридической консультацией. Hidden Gems Sri Lanka (Pvt) Ltd / TripMe.ai рекомендует пользователям и участникам туристической отрасли обращаться за независимой юридической консультацией в Шри-Ланке для подтверждения полного соответствия Закону о защите личных данных № 9 от 2022 года, Закону о туризме № 38 от 2005 года и любым другим применимым нормативным актам.",
   "privacyFooterCompany": "HIDDEN GEMS SRI LANKA (PVT) LTD",
   "privacyFooterAddress": "Юридический адрес: Коломбо, Шри-Ланка • support@hiddengems.lk",
-
   "termsAndPrivacyTitle": "Условия и конфиденциальность",
   "reviewBeforeContinuing": "Пожалуйста, ознакомьтесь перед продолжением",
   "dataPrivacySectionTitle": "Данные и конфиденциальность",
@@ -180,7 +197,6 @@
   "acceptTermsCheckbox": "Я принимаю Условия использования и Политику конфиденциальности",
   "acceptAiPolicyCheckbox": "Я понимаю ограничения ИИ-планировщика",
   "continueLabel": "Продолжить",
-
   "updateRequiredTitle": "Требуется обновление",
   "updateReadyTitle": "Готова новая версия",
   "updateRequiredBody": "Пожалуйста, обновите приложение, чтобы продолжить путешествие.",
@@ -188,11 +204,9 @@
   "updateNow": "Обновить сейчас",
   "maybeLater": "Может быть позже",
   "couldNotOpenStore": "Не удалось открыть магазин приложений. Пожалуйста, обновите вручную.",
-
   "brandTagline": "ГЛАВНЫЙ ИИ-ОРАКУЛ ПУТЕШЕСТВИЙ ШРИ-ЛАНКИ",
   "oracleConnected": "ОРАКУЛ ПОДКЛЮЧЁН",
   "initializingExperience": "ИНИЦИАЛИЗАЦИЯ ПУТЕШЕСТВИЯ...",
-
   "welcomeToApp": "Добро пожаловать в Hidden Gems",
   "createYourAccount": "Создайте свой аккаунт",
   "loginSubtitle": "ИИ-спутник путешествий по Шри-Ланке",
@@ -216,24 +230,44 @@
   "googleSignInCancelled": "Вход через Google был отменён.",
   "authFailedPrefix": "Ошибка аутентификации: {reason}",
   "@authFailedPrefix": {
-    "placeholders": { "reason": { "type": "String" } }
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
   },
   "googleSignInFailedPrefix": "Ошибка входа через Google: {reason}",
   "@googleSignInFailedPrefix": {
-    "placeholders": { "reason": { "type": "String" } }
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
   },
   "appleSignInFailedPrefix": "Ошибка входа через Apple: {reason}",
   "@appleSignInFailedPrefix": {
-    "placeholders": { "reason": { "type": "String" } }
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
   },
   "enterEmailFirst": "Пожалуйста, сначала введите ваш зарегистрированный адрес электронной почты.",
   "passwordResetSent": "Инструкции по сбросу пароля отправлены на {email}.",
   "@passwordResetSent": {
-    "placeholders": { "email": { "type": "String" } }
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
   },
   "resetEmailFailedPrefix": "Не удалось отправить письмо для сброса пароля: {reason}",
   "@resetEmailFailedPrefix": {
-    "placeholders": { "reason": { "type": "String" } }
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
   },
   "authErrorInvalidCredential": "Неверный адрес электронной почты или пароль. Попробуйте ещё раз.",
   "authErrorUserDisabled": "Этот аккаунт отключён.",
@@ -244,10 +278,13 @@
   "authErrorTooManyRequests": "Слишком много запросов. Попробуйте позже.",
   "authErrorNotAllowed": "Эта операция не разрешена.",
   "authErrorGeneric": "Произошла ошибка аутентификации.",
-
   "noPlaceFoundMatching": "Не найдено мест, соответствующих \"{query}\"",
   "@noPlaceFoundMatching": {
-    "placeholders": { "query": { "type": "String" } }
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
   },
   "featuredLabel": "Рекомендуемое",
   "exploreLabel": "Исследовать",
@@ -263,7 +300,11 @@
   "offlineModeLabel": "ОФЛАЙН РЕЖИМ",
   "ayubowanGreeting": "Аюбован, {name}!",
   "@ayubowanGreeting": {
-    "placeholders": { "name": { "type": "String" } }
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   },
   "travelerFallback": "Путешественник",
   "exploreByCategory": "Исследовать по категориям",
@@ -275,19 +316,33 @@
   "eventsNavLabel": "События",
   "daysLabel": "{count} дн.",
   "@daysLabel": {
-    "placeholders": { "count": { "type": "int" } }
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
-
   "originRequiredError": "Пожалуйста, выберите или укажите точку отправления.",
   "destinationRequiredError": "Пожалуйста, выберите или укажите пункт назначения.",
   "unsupportedCityError": "\"{city}\" не является поддерживаемым городом Шри-Ланки. Пожалуйста, выберите из списка.",
   "@unsupportedCityError": {
-    "placeholders": { "city": { "type": "String" } }
+    "placeholders": {
+      "city": {
+        "type": "String"
+      }
+    }
   },
   "originDestinationSameError": "Точка отправления и пункт назначения не могут совпадать.",
   "stepProgressLabel": "Шаг {current} из {total}",
   "@stepProgressLabel": {
-    "placeholders": { "current": { "type": "int" }, "total": { "type": "int" } }
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
   },
   "step1Title": "Куда вас направить?",
   "step1Subtitle": "Основные данные",
@@ -301,7 +356,11 @@
   "tripLengthLabel": "Продолжительность поездки",
   "tripLengthDaysValue": "{days} дн.",
   "@tripLengthDaysValue": {
-    "placeholders": { "days": { "type": "int" } }
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
   },
   "travelStandardLabel": "Уровень путешествия",
   "step3Title": "С кем вы путешествуете?",
@@ -315,7 +374,6 @@
   "consultTheOracleButton": "Спросить Оракула",
   "aiTripsFeatureName": "ИИ-поездки",
   "bonusTripUnlockedMessage": "Бонусная поездка разблокирована! Попробуйте отправить снова.",
-
   "groupTypeSolo": "Один",
   "groupTypeCouple": "Пара",
   "groupTypeFamily": "Семья",
@@ -331,16 +389,23 @@
   "interestWildlife": "Дикая природа",
   "interestPhotography": "Фотография",
   "interestVillageExperiences": "Деревенские впечатления",
-
   "oracleConnectionDisrupted": "Связь с Оракулом прервана: {error}",
   "@oracleConnectionDisrupted": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "discoveryFiltersTitle": "ФИЛЬТРЫ ПОИСКА",
   "resetButton": "СБРОС",
   "maximumRadiusKm": "МАКСИМАЛЬНЫЙ РАДИУС: {radius} КМ",
   "@maximumRadiusKm": {
-    "placeholders": { "radius": { "type": "int" } }
+    "placeholders": {
+      "radius": {
+        "type": "int"
+      }
+    }
   },
   "budgetLevelLabel": "УРОВЕНЬ БЮДЖЕТА",
   "priceRangeAll": "Все",
@@ -352,26 +417,44 @@
   "revealDestinies": "ПОКАЗАТЬ МАРШРУТЫ",
   "hostedByName": "Организатор: {hostName}",
   "@hostedByName": {
-    "placeholders": { "hostName": { "type": "String" } }
+    "placeholders": {
+      "hostName": {
+        "type": "String"
+      }
+    }
   },
   "priceInLkr": "LKR {price}",
   "@priceInLkr": {
-    "placeholders": { "price": { "type": "String" } }
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
   },
   "resetAllFilters": "СБРОСИТЬ ВСЕ ФИЛЬТРЫ",
   "seeAll": "Смотреть все",
   "arBadge": "AR",
   "heritageArBadge": "AR НАСЛЕДИЕ",
-
   "tripDurationStyleLabel": "Поездка на {days} дн. в стиле «{style}»",
   "@tripDurationStyleLabel": {
-    "placeholders": { "days": { "type": "int" }, "style": { "type": "String" } }
+    "placeholders": {
+      "days": {
+        "type": "int"
+      },
+      "style": {
+        "type": "String"
+      }
+    }
   },
   "budgetTabLabel": "Бюджет",
   "mapTabLabel": "Карта",
   "premiumFeatureSnackbar": "{featureName} — это функция Premium.",
   "@premiumFeatureSnackbar": {
-    "placeholders": { "featureName": { "type": "String" } }
+    "placeholders": {
+      "featureName": {
+        "type": "String"
+      }
+    }
   },
   "savedPlansFeatureName": "Сохранённые планы",
   "noPathFoundTitle": "Маршрут не найден",
@@ -382,15 +465,27 @@
   "estimatedTotalLabel": "Предполагаемая сумма",
   "userBudgetLabel": "Бюджет пользователя: {amount}",
   "@userBudgetLabel": {
-    "placeholders": { "amount": { "type": "String" } }
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
   },
   "percentUsedLabel": "Использовано {percent}%",
   "@percentUsedLabel": {
-    "placeholders": { "percent": { "type": "int" } }
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
   },
   "percentOfTotalLabel": "{percent}% от общей суммы",
   "@percentOfTotalLabel": {
-    "placeholders": { "percent": { "type": "int" } }
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
   },
   "visualTourRouteTitle": "Визуальный маршрут тура",
   "visualTourRouteDescription": "Проложите весь ваш путь по острову-слезинке. Просматривайте детальные участки маршрута и время в пути.",
@@ -417,7 +512,6 @@
   "budgetCategoryHotel": "Отель",
   "budgetCategoryAttractions": "Достопримечательности",
   "budgetCategoryOther": "Другое",
-
   "profilePhoto": "ФОТО ПРОФИЛЯ",
   "removePhoto": "УДАЛИТЬ ФОТО",
   "localizationError": "Ошибка локализации",
@@ -425,13 +519,27 @@
   "settingsSectionLabel": "Настройки",
   "profileErrorDetails": "ОШИБКА ПРОФИЛЯ:\n{error}\n\n{stack}",
   "@profileErrorDetails": {
-    "placeholders": { "error": { "type": "String" }, "stack": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      },
+      "stack": {
+        "type": "String"
+      }
+    }
   },
   "premiumTraveler": "Premium путешественник",
   "oracleTraveler": "Путешественник Оракула",
   "levelBadgeLabel": "{levelTitle} · Уровень {levelNumber}",
   "@levelBadgeLabel": {
-    "placeholders": { "levelTitle": { "type": "String" }, "levelNumber": { "type": "int" } }
+    "placeholders": {
+      "levelTitle": {
+        "type": "String"
+      },
+      "levelNumber": {
+        "type": "int"
+      }
+    }
   },
   "statLabelTrips": "Поездки",
   "statLabelPlaces": "Места",
@@ -451,12 +559,26 @@
   "ethicalTravelMeter": "Индикатор этичного туризма",
   "ethicalRankScore": "Ранг: {rank} • Очки: {score}",
   "@ethicalRankScore": {
-    "placeholders": { "rank": { "type": "String" }, "score": { "type": "int" } }
+    "placeholders": {
+      "rank": {
+        "type": "String"
+      },
+      "score": {
+        "type": "int"
+      }
+    }
   },
   "ethicalTravelMeterDialogTitle": "ИНДИКАТОР ЭТИЧНОГО ТУРИЗМА",
   "ethicalRankScorePoints": "Ранг: {rank} • Очки: {score} очк.",
   "@ethicalRankScorePoints": {
-    "placeholders": { "rank": { "type": "String" }, "score": { "type": "int" } }
+    "placeholders": {
+      "rank": {
+        "type": "String"
+      },
+      "score": {
+        "type": "int"
+      }
+    }
   },
   "ethicalScoreDescription": "Ваш показатель этичного туризма измеряет ваше положительное влияние на местные сообщества и сохранение наследия по всей Шри-Ланке.",
   "howToEarnPointsHeading": "КАК ЗАРАБОТАТЬ ОЧКИ:",
@@ -492,7 +614,11 @@
   "tourRequests": "Запросы на тур",
   "unreadRequestsCount": "{count, plural, one{{count} новый запрос} few{{count} новых запроса} many{{count} новых запросов} other{{count} новых запроса}}",
   "@unreadRequestsCount": {
-    "placeholders": { "count": { "type": "int" } }
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "packages": "Пакеты",
   "customTourPricingSubtitle": "Индивидуальные цены на туры",
@@ -513,14 +639,17 @@
   "deleteButtonLabel": "УДАЛИТЬ",
   "genericErrorWithDetails": "Ошибка: {error}",
   "@genericErrorWithDetails": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "signOutDialogTitle": "ВЫЙТИ ИЗ АККАУНТА",
   "confirmSignOutMessage": "Вы уверены, что хотите выйти из аккаунта?",
   "shareAppMessage": "Присоединяйтесь к Hidden Gems SL! 🌍 https://hiddengems.lk",
   "shareAppSubject": "Присоединяйтесь ко мне в Hidden Gems SL!",
   "somethingWentWrong": "Что-то пошло не так. Пожалуйста, перезапустите приложение.",
-
   "cameraPermissionRequiredTitle": "Требуется разрешение на использование камеры",
   "cameraPermissionRequiredMessage": "Пожалуйста, разрешите доступ к камере в настройках приложения, чтобы использовать сканер.",
   "openSettings": "Открыть настройки",
@@ -531,16 +660,23 @@
   "unlockLandmarkScanningTitle": "Разблокировать сканирование достопримечательностей",
   "unlockLandmarkScanningSubtitle": "Наведите камеру на любое место, чтобы раскрыть его скрытую историю.",
   "oracleVerifiedLabel": "Проверено Оракулом",
-
   "mapLoadErrorMessage": "Не удалось загрузить данные карты: {error}",
   "@mapLoadErrorMessage": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "guideLiveMarkerLabel": "ВАШ ГИД (В РЕАЛЬНОМ ВРЕМЕНИ)",
   "vehicleMarkerLabel": "ВАШ ТРАНСПОРТ",
   "meetingPointMarkerLabel": "МЕСТО ВСТРЕЧИ: {pointName}",
   "@meetingPointMarkerLabel": {
-    "placeholders": { "pointName": { "type": "String" } }
+    "placeholders": {
+      "pointName": {
+        "type": "String"
+      }
+    }
   },
   "sosEmergencySignalTitle": "СИГНАЛ ТРЕВОГИ",
   "sosGuideTriggeredMessage": "ВАШ ГИД АКТИВИРОВАЛ СИГНАЛ SOS",
@@ -551,29 +687,49 @@
   "sosAcknowledgeButton": "ПОДТВЕРДИТЬ",
   "distanceAwayLabel": "в {distance} км",
   "@distanceAwayLabel": {
-    "placeholders": { "distance": { "type": "String" } }
+    "placeholders": {
+      "distance": {
+        "type": "String"
+      }
+    }
   },
-
   "offlineRouteMapSavedSuccess": "Офлайн-карта маршрута успешно сохранена!",
   "cannotSaveMapSaveTripFirst": "Невозможно сохранить карту. Сначала сохраните план поездки!",
   "saveTripAction": "СОХРАНИТЬ ПОЕЗДКУ",
   "failedToSaveMapError": "Не удалось сохранить карту: {error}",
   "@failedToSaveMapError": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "mapMarkerDaySnippet": "День {day} • {time}",
   "@mapMarkerDaySnippet": {
-    "placeholders": { "day": { "type": "int" }, "time": { "type": "String" } }
+    "placeholders": {
+      "day": {
+        "type": "int"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
   },
   "visualRouteTitle": "Визуальный маршрут",
   "journeyVisualizerTitle": "Визуализатор путешествия",
   "journeyVisualizerSubtitle": "{dayCount} дн. по региону {destination}",
   "@journeyVisualizerSubtitle": {
-    "placeholders": { "dayCount": { "type": "int" }, "destination": { "type": "String" } }
+    "placeholders": {
+      "dayCount": {
+        "type": "int"
+      },
+      "destination": {
+        "type": "String"
+      }
+    }
   },
   "saveOfflineMapTooltip": "Сохранить офлайн-карту",
   "focusButtonLabel": "ФОКУС",
-
   "planRemovedSnackbar": "План удалён из кэша Оракула",
   "viewInArLabel": "Смотреть в AR",
   "savedTripsTitle": "Сохранённые поездки",
@@ -586,38 +742,72 @@
   "noArSpotsSnackbar": "В этом плане нет мест с AR",
   "tripRouteLabel": "{fromCity} → {destinationCity}",
   "@tripRouteLabel": {
-    "placeholders": { "fromCity": { "type": "String" }, "destinationCity": { "type": "String" } }
+    "placeholders": {
+      "fromCity": {
+        "type": "String"
+      },
+      "destinationCity": {
+        "type": "String"
+      }
+    }
   },
   "tripDaysChip": "{days, plural, one{1 день} few{{days} дня} many{{days} дней} other{{days} дня}}",
   "@tripDaysChip": {
-    "placeholders": { "days": { "type": "int" } }
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
   },
   "tripBudgetChip": "Rs {amount}",
   "@tripBudgetChip": {
-    "placeholders": { "amount": { "type": "String" } }
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
   },
   "arBadgeLabel": "AR",
   "savedTimeAgoLabel": "Сохранено {timeAgo}",
   "@savedTimeAgoLabel": {
-    "placeholders": { "timeAgo": { "type": "String" } }
+    "placeholders": {
+      "timeAgo": {
+        "type": "String"
+      }
+    }
   },
   "minutesAgoShort": "{minutes} мин. назад",
   "@minutesAgoShort": {
-    "placeholders": { "minutes": { "type": "int" } }
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
   },
   "hoursAgoShort": "{hours} ч. назад",
   "@hoursAgoShort": {
-    "placeholders": { "hours": { "type": "int" } }
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
   },
   "daysAgoShort": "{days} дн. назад",
   "@daysAgoShort": {
-    "placeholders": { "days": { "type": "int" } }
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
   },
   "weeksAgoShort": "{weeks} нед. назад",
   "@weeksAgoShort": {
-    "placeholders": { "weeks": { "type": "int" } }
+    "placeholders": {
+      "weeks": {
+        "type": "int"
+      }
+    }
   },
-
   "loadingConsultingBrain": "Обращаемся к разуму HiddenGems.lk...",
   "loadingTipTrainSchedules": "Анализируем расписание поездов Шри-Ланки...",
   "loadingTipWeatherPatterns": "Проверяем сезонные погодные условия...",
@@ -633,7 +823,6 @@
   "loadingRetryStatus": "Повторное обращение к Оракулу...",
   "loadingErrorRetryButton": "ПОВТОРИТЬ",
   "loadingErrorRefineButton": "УТОЧНИТЬ ЗАПРОС",
-
   "fieldNotesTitle": "Полевые заметки",
   "heritageSiteLocked": "Объект наследия заблокирован",
   "lockOverlayDescription": "Это видение Оракула доступно только для Premium-путешественников. Посмотрите короткую рекламу, чтобы открыть это место на сегодня.",
@@ -681,7 +870,11 @@
   "bookmarkRemovedSnackbar": "Удалено из закладок.",
   "itineraryAddedSnackbar": "🗺️ {placeName} добавлено в ваш маршрут судьбы!",
   "@itineraryAddedSnackbar": {
-    "placeholders": { "placeName": { "type": "String" } }
+    "placeholders": {
+      "placeName": {
+        "type": "String"
+      }
+    }
   },
   "itineraryRemovedSnackbar": "Удалено из маршрута.",
   "featureNameHeritageSessions": "Сеансы наследия",
@@ -692,14 +885,17 @@
   "arBrandNameExplore": "Исследование AR",
   "bonusDownloadUnlockedSnackbar": "Бонусная загрузка разблокирована! Попробуйте загрузить снова.",
   "featureNameOfflineDownloads": "Офлайн-загрузки",
-
   "myBookingsTitle": "Мои бронирования",
   "myBookingsEmptyTitle": "Пока нет бронирований",
   "myBookingsEmptySubtitle": "Запросы, отправленные гидам, будут отображаться здесь вместе с их статусом.",
   "guideFallbackName": "Гид",
   "guestCountLabel": "{count, plural, one{{count} гость} few{{count} гостя} many{{count} гостей} other{{count} гостя}}",
   "@guestCountLabel": {
-    "placeholders": { "count": { "type": "int" } }
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "paymentPaidLabel": "Оплачено",
   "payGuideDirectlyLabel": "Оплатить гиду напрямую",
@@ -711,7 +907,6 @@
   "bookingStatusCancelledLabel": "Отменено",
   "bookingStatusCompletedLabel": "Завершено",
   "bookingStatusDefaultLabel": "В ожидании",
-
   "requestBookingTitle": "Запросить бронирование",
   "dateLabel": "Дата",
   "guestsLabel": "Гости",
@@ -724,46 +919,80 @@
   "requestSentTitle": "Запрос отправлен",
   "requestSentMessage": "Ваш запрос на бронирование отправлен гиду. Вы получите уведомление, как только он ответит.",
   "closeButton": "Закрыть",
-
   "noBookingsToSyncMessage": "Пока нет принятых бронирований для синхронизации.",
   "calendarEventTitle": "Тур: {touristName} ({guestCount} гостей)",
   "@calendarEventTitle": {
-    "placeholders": { "touristName": { "type": "String" }, "guestCount": { "type": "int" } }
+    "placeholders": {
+      "touristName": {
+        "type": "String"
+      },
+      "guestCount": {
+        "type": "int"
+      }
+    }
   },
   "defaultTouristName": "Путешественник",
   "calendarSyncSuccessMessage": "{count, plural, one{Синхронизировано {count} бронирование с вашим календарём.} few{Синхронизировано {count} бронирования с вашим календарём.} many{Синхронизировано {count} бронирований с вашим календарём.} other{Синхронизировано {count} бронирования с вашим календарём.}}",
   "@calendarSyncSuccessMessage": {
-    "placeholders": { "count": { "type": "int" } }
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "calendarSyncFailedMessage": "Не удалось синхронизировать календарь: {error}",
   "@calendarSyncFailedMessage": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "loginRequiredMessage": "Пожалуйста, войдите в аккаунт, чтобы просмотреть запросы на бронирование.",
   "bookingsScreenTitle": "Бронирования",
   "syncToCalendarTooltip": "Синхронизировать с календарём",
   "inboxLoadErrorMessage": "Ошибка загрузки входящих: {error}",
   "@inboxLoadErrorMessage": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "filterReadyForTour": "Готово к туру",
   "emptyBookingsMessage": "Нет запросов на бронирование со статусом «{filter}».",
   "@emptyBookingsMessage": {
-    "placeholders": { "filter": { "type": "String" } }
+    "placeholders": {
+      "filter": {
+        "type": "String"
+      }
+    }
   },
   "touristIdLabel": "Турист №{touristId}",
   "@touristIdLabel": {
-    "placeholders": { "touristId": { "type": "String" } }
+    "placeholders": {
+      "touristId": {
+        "type": "String"
+      }
+    }
   },
   "requestedAtLabel": "Запрошено {time}",
   "@requestedAtLabel": {
-    "placeholders": { "time": { "type": "String" } }
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
   },
   "priorityBadgeLabel": "ПРИОРИТЕТ",
   "tourDateLabel": "Дата тура",
   "guestsCountValue": "{count, plural, one{{count} человек} few{{count} человека} many{{count} человек} other{{count} человека}}",
   "@guestsCountValue": {
-    "placeholders": { "count": { "type": "int" } }
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "quotedPriceLabel": "Заявленная цена",
   "netPayoutLabel": "Ваша чистая выплата",
@@ -771,7 +1000,11 @@
   "tourNotesLabel": "Заметки / требования к туру",
   "responseNoteLabel": "Ваш комментарий к ответу: {note}",
   "@responseNoteLabel": {
-    "placeholders": { "note": { "type": "String" } }
+    "placeholders": {
+      "note": {
+        "type": "String"
+      }
+    }
   },
   "declineButtonLabel": "Отклонить",
   "acceptButtonLabel": "Принять",
@@ -779,7 +1012,11 @@
   "bookingAcceptedMessage": "🎉 Бронирование принято, тур-сеанс создан!",
   "acceptBookingErrorMessage": "Ошибка при принятии бронирования: {error}",
   "@acceptBookingErrorMessage": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "declineBookingDialogTitle": "Отклонить бронирование?",
   "declineReasonPrompt": "Укажите причину отказа (необязательно):",
@@ -788,18 +1025,25 @@
   "bookingDeclinedMessage": "Бронирование отклонено.",
   "declineBookingErrorMessage": "Ошибка при отклонении бронирования: {error}",
   "@declineBookingErrorMessage": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "meetingPointPendingLabel": "Будет уточнено в чате",
   "bookingAcceptedResponseNote": "Бронирование принято! Сеанс готов.",
   "bookingDeclinedDefaultNote": "Отклонено гидом.",
   "statusLabelCancelledByTourist": "Отменено туристом",
   "statusLabelCancelledByGuide": "Отменено гидом",
-
   "reviewSubmitSuccessMessage": "Передача завершена. Благодарим за отзыв.",
   "reviewSubmitErrorMessage": "Ошибка передачи: {error}",
   "@reviewSubmitErrorMessage": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "overallExperienceLabel": "ОБЩЕЕ ВПЕЧАТЛЕНИЕ",
   "missionFeedbackEyebrow": "ОТЗЫВ О ПОЕЗДКЕ",
@@ -814,16 +1058,23 @@
   "fieldNotesLabelUppercase": "ПОЛЕВЫЕ ЗАМЕТКИ",
   "commentFieldHint": "Что вас впечатлило? Что можно улучшить?",
   "transmitFeedbackButton": "ОТПРАВИТЬ ОТЗЫВ",
-
   "familyShareLinkLimitReached": "⚠️ Вы достигли лимита в {maxLinks} активных ссылок для доступа. Удалите одну, чтобы создать новую.",
   "@familyShareLinkLimitReached": {
-    "placeholders": { "maxLinks": { "type": "int" } }
+    "placeholders": {
+      "maxLinks": {
+        "type": "int"
+      }
+    }
   },
   "familyShareRecipientNameRequired": "⚠️ Пожалуйста, введите имя получателя.",
   "familyShareNoActiveSessionError": "⚠️ Сначала начните активный тур-сеанс — пока делиться нечем.",
   "familyShareLinkGeneratedSuccess": "✅ Ссылка создана для «{name}»!",
   "@familyShareLinkGeneratedSuccess": {
-    "placeholders": { "name": { "type": "String" } }
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   },
   "familyShareActiveLinksTitle": "Активные ссылки",
   "familyShareNewLinkButton": "+ Новая",
@@ -834,22 +1085,38 @@
   "familyShareExpiredBadge": "Истекла",
   "familyShareViewedCountBadge": "Просмотрено {count} раз",
   "@familyShareViewedCountBadge": {
-    "placeholders": { "count": { "type": "int" } }
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "familyShareLinkNoLongerValid": "Больше не действительна",
   "familyShareLinkExpiresAt": "Истекает {time}",
   "@familyShareLinkExpiresAt": {
-    "placeholders": { "time": { "type": "String" } }
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
   },
   "familyShareCopyLinkSnackbar": "📋 Код приглашения скопирован в буфер обмена!",
   "familyShareRemoveLinkDialogTitle": "Удалить ссылку?",
   "familyShareRemoveLinkDialogBody": "Это отзовёт общий доступ у «{recipientName}».",
   "@familyShareRemoveLinkDialogBody": {
-    "placeholders": { "recipientName": { "type": "String" } }
+    "placeholders": {
+      "recipientName": {
+        "type": "String"
+      }
+    }
   },
   "familyShareLinkRemovedSnackbar": "Ссылка для «{recipientName}» удалена.",
   "@familyShareLinkRemovedSnackbar": {
-    "placeholders": { "recipientName": { "type": "String" } }
+    "placeholders": {
+      "recipientName": {
+        "type": "String"
+      }
+    }
   },
   "familyShareRemoveButton": "Удалить",
   "familyShareCreateSheetTitle": "Создать ссылку для доступа",
@@ -864,7 +1131,6 @@
   "familyShareToggleMeetingPointLabel": "Делиться местом встречи",
   "familyShareToggleEmergencyLabel": "Делиться экстренными оповещениями",
   "familyShareGenerateLinkButton": "Создать ссылку",
-
   "categoryAll": "Все",
   "categoryChauffeur": "Водитель",
   "categorySiteGuide": "Гид по месту",
@@ -878,30 +1144,57 @@
   "noVerifiedGuidesEmptyState": "Проверенные гиды пока не опубликованы.",
   "noGuidesFoundForQuery": "Гиды по запросу «{query}» не найдены",
   "@noGuidesFoundForQuery": {
-    "placeholders": { "query": { "type": "String" } }
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
   },
   "signInToBrowseGuidesError": "Войдите в аккаунт, чтобы просматривать проверенных гидов.",
   "genericLoadGuidesError": "Что-то пошло не так при загрузке гидов. Пожалуйста, попробуйте снова.",
   "tryAgainButton": "Попробовать снова",
   "reviewCountSuffix": " ({count})",
   "@reviewCountSuffix": {
-    "placeholders": { "count": { "type": "int" } }
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "hourlyRateLabel": "{currency} {rate}/ч",
   "@hourlyRateLabel": {
-    "placeholders": { "currency": { "type": "String" }, "rate": { "type": "String" } }
+    "placeholders": {
+      "currency": {
+        "type": "String"
+      },
+      "rate": {
+        "type": "String"
+      }
+    }
   },
   "zenithPresenceSyncErrorMessage": "Ошибка синхронизации Zenith Presence: {error}",
   "@zenithPresenceSyncErrorMessage": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "couldNotGetLocationMessage": "Не удалось определить ваше местоположение. Используются координаты по умолчанию. ({error})",
   "@couldNotGetLocationMessage": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "failedToUpdatePhaseMessage": "Не удалось обновить этап: {error}",
   "@failedToUpdatePhaseMessage": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "setMeetingPointDialogTitle": "УКАЗАТЬ МЕСТО ВСТРЕЧИ",
   "meetingPointHintText": "например, вход в храм, автовокзал",
@@ -910,16 +1203,28 @@
   "meetingPointUpdatedTitle": "Место встречи обновлено",
   "meetingPointUpdatedBody": "Новое место встречи: {name}",
   "@meetingPointUpdatedBody": {
-    "placeholders": { "name": { "type": "String" } }
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   },
   "failedToSetMeetingPointMessage": "Не удалось указать место встречи: {error}",
   "@failedToSetMeetingPointMessage": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "vehiclePositionMarkedMessage": "Местоположение транспорта отмечено",
   "failedToUpdateVehicleLocationMessage": "Не удалось обновить местоположение транспорта: {error}",
   "@failedToUpdateVehicleLocationMessage": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "tourDashboardTitle": "Панель тура",
   "bottomNavTour": "Тур",
@@ -952,7 +1257,11 @@
   "connectedTravelersLabel": "Подключённые путешественники",
   "activeCountLabel": "{count} активно",
   "@activeCountLabel": {
-    "placeholders": { "count": { "type": "int" } }
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "waitingForScansLabel": "Ожидание сканирований...",
   "phaseLabelAssembly": "СБОР",
@@ -964,29 +1273,44 @@
   "selectVehicleTitle": "Выбрать транспорт",
   "travelerTileLabel": "Путешественник {shortId}",
   "@travelerTileLabel": {
-    "placeholders": { "shortId": { "type": "String" } }
+    "placeholders": {
+      "shortId": {
+        "type": "String"
+      }
+    }
   },
   "weatherHazardLoggedMessage": "✅ Погодная опасность зафиксирована в Консоли безопасности!",
   "errorLoggingIncidentMessage": "Ошибка регистрации инцидента: {error}",
   "@errorLoggingIncidentMessage": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "logIncidentButtonUppercase": "ЗАРЕГИСТРИРОВАТЬ ИНЦИДЕНТ",
   "safetyConsoleButtonUppercase": "КОНСОЛЬ БЕЗОПАСНОСТИ",
   "defaultMonsoonAlertTitle": "🚨 ЭКСТРЕННОЕ ПРЕДУПРЕЖДЕНИЕ О МУССОНЕ",
   "defaultMonsoonAlertMessage": "Предупреждение о суровой погоде в районе вашего тура.",
-
   "earningsTitle": "Доходы",
   "pleaseLogInViewEarningsMessage": "Войдите в аккаунт, чтобы просматривать доходы.",
   "errorLoadingFinancialDataMessage": "Ошибка загрузки финансовых данных: {error}",
   "@errorLoadingFinancialDataMessage": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "totalNetEarningsLabel": "Общий чистый доход",
   "netPercentageLabel": "90% чистыми",
   "lkrAmountLabel": "LKR {amount}",
   "@lkrAmountLabel": {
-    "placeholders": { "amount": { "type": "String" } }
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
   },
   "subStatPending": "В ожидании",
   "subStatPaidOut": "Выплачено",
@@ -1009,19 +1333,38 @@
   "payoutStatusPending": "В ожидании",
   "tourBookingIdLabel": "Бронирование тура №{id}",
   "@tourBookingIdLabel": {
-    "placeholders": { "id": { "type": "String" } }
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
   },
   "guestCountDateLabel": "{count} гостей · {date}",
   "@guestCountDateLabel": {
-    "placeholders": { "count": { "type": "int" }, "date": { "type": "String" } }
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
   },
   "viaPayHereDateLabel": "через PayHere · {date}",
   "@viaPayHereDateLabel": {
-    "placeholders": { "date": { "type": "String" } }
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
   },
   "grossLkrLabel": "Валовая сумма LKR {amount}",
   "@grossLkrLabel": {
-    "placeholders": { "amount": { "type": "String" } }
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
   },
   "noTransactionsFoundTitle": "Транзакции не найдены",
   "noTransactionsFoundSubtitle": "Когда вы завершите бронирования туров, ваши чистые выплаты\nбудут отображаться здесь автоматически.",
@@ -1029,7 +1372,11 @@
   "requestPayoutDialogTitle": "Запрос выплаты",
   "requestPayoutDialogMessage": "Вы запрашиваете перевод LKR {amount} на ваш зарегистрированный банковский счёт / кошелёк мобильных денег.\n\nПереводы обрабатываются финансовой командой Oracle в течение 24 рабочих часов.",
   "@requestPayoutDialogMessage": {
-    "placeholders": { "amount": { "type": "String" } }
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
   },
   "cancelButton": "Отмена",
   "confirmPayoutButton": "Подтвердить выплату",
@@ -1039,7 +1386,6 @@
   "accountPhoneNumberLabel": "Номер счёта / телефона",
   "saveButtonLabel": "Сохранить",
   "payoutAccountSettingsUpdatedMessage": "Настройки платёжного счёта обновлены!",
-
   "availabilityScheduleTitle": "Доступность и расписание",
   "whenYoureFreeToGuideTitle": "Когда вы свободны для проведения туров",
   "touristsOnlySeeOpenSlotsMessage": "Туристы видят только отмеченные вами открытые слоты.",
@@ -1050,7 +1396,11 @@
   "advanceNoticeSubtitle": "Минимальное время до начала тура",
   "hoursShortLabel": "{count} ч",
   "@hoursShortLabel": {
-    "placeholders": { "count": { "type": "String" } }
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
   },
   "weeklyScheduleTitle": "Недельное расписание",
   "weeklyScheduleSubtitle": "Включите дни, в которые вы работаете, и укажите часы",
@@ -1058,7 +1408,11 @@
   "blackoutDatesTitle": "Недоступные даты",
   "blackoutDatesCountSuffix": " ({count})",
   "@blackoutDatesCountSuffix": {
-    "placeholders": { "count": { "type": "int" } }
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "addDateButtonLabel": "Добавить дату",
   "noBlackoutDatesMessage": "Пока нет недоступных дат — вы доступны согласно вашему недельному расписанию.",
@@ -1070,18 +1424,28 @@
   "dayFriday": "Пятница",
   "daySaturday": "Суббота",
   "daySunday": "Воскресенье",
-
   "clientsTitle": "Клиенты",
   "pleaseLogInMessage": "Пожалуйста, войдите в аккаунт.",
   "noClientsYetTitle": "Пока нет клиентов",
   "noClientsYetSubtitle": "Как только путешественники забронируют ваши туры, они появятся здесь.",
   "travelerShortIdLabel": "Путешественник {shortId}",
   "@travelerShortIdLabel": {
-    "placeholders": { "shortId": { "type": "String" } }
+    "placeholders": {
+      "shortId": {
+        "type": "String"
+      }
+    }
   },
   "tourCountCompletedLabel": "{count, plural, one{{count} тур завершён} few{{count} тура завершено} many{{count} туров завершено} other{{count} тура завершено}} · Последний: {date}",
   "@tourCountCompletedLabel": {
-    "placeholders": { "count": { "type": "int" }, "date": { "type": "String" } }
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
   },
   "clientStatTours": "Туры",
   "clientStatTotalSpent": "Всего потрачено",
@@ -1093,9 +1457,12 @@
   "bookingHistoryTitle": "История бронирований",
   "guestCountParenthesesLabel": "{count} гостей",
   "@guestCountParenthesesLabel": {
-    "placeholders": { "count": { "type": "int" } }
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
-
   "becomeAGuideTitle": "Стать гидом",
   "fieldsMissingMessage": "Отсутствуют поля: пожалуйста, заполните все поля и загрузите документы.",
   "uploadingDocumentsMessage": "Загрузка документов...",
@@ -1106,7 +1473,11 @@
   "authRequiredMessage": "Требуется авторизация. Пожалуйста, войдите снова.",
   "cameraAccessDeniedMessage": "Доступ к камере запрещён или произошла ошибка: {error}",
   "@cameraAccessDeniedMessage": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "takeASelfieTitle": "Сделать селфи",
   "uploadDocumentTitle": "Загрузить документ",
@@ -1114,7 +1485,11 @@
   "galleryOptionLabel": "Галерея",
   "errorGenericMessage": "Ошибка: {error}",
   "@errorGenericMessage": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "verifyingYourDetailsMessage": "Проверка ваших данных...",
   "credentialsBeingVerifiedMessage": "Ваши учётные данные надёжно проверяются.",
@@ -1126,7 +1501,11 @@
   "applicationRejectedTitle": "Заявка отклонена",
   "applicationRejectedMessage": "Причина: {reason}\n\nВы можете повторно подать заявку ниже после исправления необходимых пунктов.",
   "@applicationRejectedMessage": {
-    "placeholders": { "reason": { "type": "String" } }
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
   },
   "defaultRejectionReason": "Документы неполные или нечёткие.",
   "guidePollRejectionReason": "Пожалуйста, убедитесь, что ваши лицензионные документы и фотографии чёткие и действительные.",
@@ -1147,24 +1526,41 @@
   "nicPassportLabel": "NIC / паспорт",
   "selfieForIdentityLabel": "Селфи для подтверждения личности",
   "submitApplicationButton": "Отправить заявку",
-
   "tourPackagesTitle": "Туристические пакеты",
   "noPackagesYetTitle": "Пока нет пакетов",
   "noPackagesYetSubtitle": "Предлагайте туристические пакеты на полдня, полный день или несколько дней с фиксированной ценой.",
   "inactiveLabel": "Неактивен",
   "durationGuestsLabel": "{hours} ч · до {guests} гостей",
   "@durationGuestsLabel": {
-    "placeholders": { "hours": { "type": "String" }, "guests": { "type": "String" } }
+    "placeholders": {
+      "hours": {
+        "type": "String"
+      },
+      "guests": {
+        "type": "String"
+      }
+    }
   },
   "currencyPriceLabel": "{currency} {price}",
   "@currencyPriceLabel": {
-    "placeholders": { "currency": { "type": "String" }, "price": { "type": "String" } }
+    "placeholders": {
+      "currency": {
+        "type": "String"
+      },
+      "price": {
+        "type": "String"
+      }
+    }
   },
   "newPackageTitle": "Новый пакет",
   "editPackageTitle": "Редактировать пакет",
   "failedToSavePackageMessage": "Не удалось сохранить пакет: {error}",
   "@failedToSavePackageMessage": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "packageTitleLabel": "Название пакета",
   "packageTitleHint": "например, тур на весь день Сигирия и Дамбулла",
@@ -1183,9 +1579,12 @@
   "availabilityScheduleUpdatedMessage": "Расписание и доступность обновлены",
   "errorSavingAvailabilityMessage": "Ошибка сохранения доступности: {error}",
   "@errorSavingAvailabilityMessage": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
-
   "broadcastSentSuccessMessage": "Рассылка успешно отправлена",
   "broadcastTitle": "Рассылка",
   "activeBroadcastsTitle": "Активные рассылки",
@@ -1196,7 +1595,11 @@
   "noActiveBroadcastsMessage": "Нет активных рассылок",
   "acksCountLabel": "Подтверждений: {count}",
   "@acksCountLabel": {
-    "placeholders": { "count": { "type": "int" } }
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "expireButtonLabel": "Завершить",
   "broadcastTypeGeneral": "Общее",
@@ -1210,7 +1613,6 @@
   "broadcastPriorityNormal": "Обычный",
   "broadcastPriorityHigh": "Высокий",
   "broadcastPriorityCritical": "Критический",
-
   "writeReviewButton": "НАПИСАТЬ ОТЗЫВ",
   "reviewsTitle": "Отзывы",
   "failedToLoadReviewsMessage": "Не удалось загрузить отзывы. Попробуйте снова.",
@@ -1228,11 +1630,14 @@
   "verifiedTripBadge": "Подтверждённая поездка",
   "touristShortIdLabel": "Турист {shortId}",
   "@touristShortIdLabel": {
-    "placeholders": { "shortId": { "type": "String" } }
+    "placeholders": {
+      "shortId": {
+        "type": "String"
+      }
+    }
   },
   "noReviewsYetTitle": "Пока нет отзывов",
   "noReviewsYetSubtitle": "Подтверждённые участники смогут оставить отзыв после завершения сессии.",
-
   "guideProfileNotFoundMessage": "Профиль гида не найден",
   "aboutSectionTitle": "О гиде",
   "noBioProvidedMessage": "Биография не указана.",
@@ -1244,27 +1649,42 @@
   "standardPackageLabel": "Стандартный пакет",
   "durationHoursShortLabel": "{hours} ч",
   "@durationHoursShortLabel": {
-    "placeholders": { "hours": { "type": "String" } }
+    "placeholders": {
+      "hours": {
+        "type": "String"
+      }
+    }
   },
   "guestsCountShortLabel": "{count} гостей",
   "@guestsCountShortLabel": {
-    "placeholders": { "count": { "type": "String" } }
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
   },
   "totalLabel": "Итого",
   "requestThisGuideButton": "Запросить этого гида",
   "experienceStatLabel": "Опыт",
   "yearsExperienceLabel": "{years} лет",
   "@yearsExperienceLabel": {
-    "placeholders": { "years": { "type": "String" } }
+    "placeholders": {
+      "years": {
+        "type": "String"
+      }
+    }
   },
   "ratingStatLabel": "Рейтинг",
   "rankStatLabel": "Ранг",
   "licensedGuideLabel": "Лицензированный гид • {licenseNumber}",
   "@licensedGuideLabel": {
-    "placeholders": { "licenseNumber": { "type": "String" } }
+    "placeholders": {
+      "licenseNumber": {
+        "type": "String"
+      }
+    }
   },
   "platformVerifiedInsuredLabel": "Проверено платформой и застраховано",
-
   "yourListingTitle": "Ваше объявление",
   "basicInformationTitle": "Основная информация",
   "displayNameLabel": "Отображаемое имя",
@@ -1288,7 +1708,11 @@
   "vehicleTypeModelHint": "напр. Toyota Prius Hybrid / Люксовый минивэн",
   "coverPhotosCountTitle": "Обложки ({count})",
   "@coverPhotosCountTitle": {
-    "placeholders": { "count": { "type": "int" } }
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "availabilityCalendarTitle": "Календарь доступности",
   "visibilityBoostTitle": "Повышение видимости",
@@ -1303,7 +1727,11 @@
   "draftSavedMessage": "💾 Черновик успешно сохранён",
   "failedToSaveListingMessage": "Не удалось сохранить объявление: {error}",
   "@failedToSaveListingMessage": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "addPhotoLabel": "Добавить фото",
   "verifiedLicenseLabel": "Подтверждённая лицензия",
@@ -1315,11 +1743,14 @@
   "featureRequestedMessage": "Запрошено — администратор рассмотрит и вскоре активирует",
   "featureRequestPromptMessage": "Запросить продвижение на платформе (требуется проверка администратором)",
   "upgradeToProFeatureMessage": "Перейдите на Pro, чтобы повысить видимость на платформе",
-
   "safetyConsoleTitle": "Консоль безопасности",
   "offlineErrorMessage": "Ошибка соединения: {error}",
   "@offlineErrorMessage": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "secureOperationsTitle": "Безопасные операции",
   "allIncidentsLoggedMessage": "Все инциденты фиксируются с аудиторским следом",
@@ -1329,7 +1760,11 @@
   "priorityBadgeText": "ПРИОРИТЕТ",
   "updatesCountLabel": "Обновлений: {count}",
   "@updatesCountLabel": {
-    "placeholders": { "count": { "type": "int" } }
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "noCriticalIncidentsTitle": "Критических инцидентов нет",
   "sessionWithinSafetyParamsMessage": "Работа сессии находится в пределах параметров безопасности.",
@@ -1348,23 +1783,38 @@
   "resolutionNoteLabel": "Resolution",
   "resolvedByLabel": "Resolved by {name}",
   "@resolvedByLabel": {
-    "placeholders": { "name": { "type": "String" } }
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   },
-
   "manageTeamTitle": "Управление командой",
   "signInToManageTeamMessage": "Войдите, чтобы управлять своей командой.",
   "guideAddedToTeamMessage": "Гид добавлен в вашу команду",
   "failedToInviteGuideMessage": "Не удалось пригласить гида: {error}",
   "@failedToInviteGuideMessage": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "failedToRemoveGuideMessage": "Не удалось удалить гида: {error}",
   "@failedToRemoveGuideMessage": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "failedToUploadLogoMessage": "Не удалось загрузить логотип: {error}",
   "@failedToUploadLogoMessage": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "tabOverview": "Обзор",
   "tabTeam": "Команда",
@@ -1376,13 +1826,16 @@
   "guideUserIdToInviteHint": "ID пользователя гида для приглашения",
   "teamMembersCountTitle": "Участники команды ({count})",
   "@teamMembersCountTitle": {
-    "placeholders": { "count": { "type": "int" } }
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "roleMember": "участник",
   "logoLabel": "Логотип",
   "brandColorLabel": "Цвет бренда",
   "brandColorAppliedMessage": "Цвет вашего бренда применяется на этой панели управления командой вашей организации.",
-
   "incidentNotFoundTitle": "Инцидент не найден",
   "incidentNotFoundDescription": "Запись была очищена или перемещена.",
   "statusLabel": "Статус",
@@ -1392,14 +1845,17 @@
   "noTimelineActiveMessage": "Активная хронология отсутствует.",
   "minutesAgoLabel": "{minutes} мин. назад",
   "@minutesAgoLabel": {
-    "placeholders": { "minutes": { "type": "int" } }
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
   },
   "verifiedAuditLogLabel": "Проверенный журнал аудита",
   "forensicIntegrityLockedMessage": "Этот отчёт заблокирован для сохранения криминалистической целостности. Изменять статус могут только уполномоченные администраторы.",
   "addEvidenceButton": "Добавить доказательства",
   "escalateButton": "Эскалировать",
   "timelineTypeSosTriggered": "Сигнал SOS активирован",
-
   "invalidQrCodeFormatMessage": "Неверный формат QR-кода",
   "unrecognizedQrCodeMessage": "Нераспознанный QR-код",
   "sessionNotFoundClosedMessage": "Сессия не найдена или закрыта",
@@ -1408,7 +1864,11 @@
   "localGuideFallback": "Местный гид",
   "vehicleNumberLabel": "Транспорт: {vehicleNumber}",
   "@vehicleNumberLabel": {
-    "placeholders": { "vehicleNumber": { "type": "String" } }
+    "placeholders": {
+      "vehicleNumber": {
+        "type": "String"
+      }
+    }
   },
   "consentTrackingMessage": "Я согласен(на) на отслеживание местоположения в реальном времени и мониторинг безопасности во время этого тура.",
   "connectSyncButton": "Подключить и синхронизировать",
@@ -1417,17 +1877,22 @@
   "enterHubButton": "Войти в хаб",
   "decryptingTokenMessage": "Расшифровка токена…",
   "scanGuideTourCodeMessage": "Отсканируйте код тура вашего гида",
-
   "emergencyTranslatorTitle": "Экстренный переводчик",
   "showScreenToBystanderMessage": "Покажите этот экран прохожему, полицейскому или персоналу больницы — он говорит за вас на сингальском.",
   "locationCoordinatesTapMapsLabel": "{lat}, {lng} — нажмите, чтобы открыть в Картах",
   "@locationCoordinatesTapMapsLabel": {
-    "placeholders": { "lat": { "type": "String" }, "lng": { "type": "String" } }
+    "placeholders": {
+      "lat": {
+        "type": "String"
+      },
+      "lng": {
+        "type": "String"
+      }
+    }
   },
   "locationUnavailableMessage": "Местоположение недоступно",
   "speakingEllipsisMessage": "Говорю…",
   "playAgainButton": "Воспроизвести снова",
-
   "emergencyTitle": "Экстренная помощь",
   "criticalContactsTitle": "Важные контакты",
   "medicalFacilitiesNearbyTitle": "Медицинские учреждения поблизости",
@@ -1451,25 +1916,32 @@
   "addGuardianTitle": "Добавить опекуна",
   "guardianPhoneNumberHint": "Номер телефона опекуна",
   "addGuardianButton": "Добавить опекуна",
-  "sosAlertsPreparedLoggedMessage": "Сигналы SOS подготовлены и записаны в защищённом хранилище!",
+  "sosAlertsPreparedLoggedMessage": "Открыто приложение телефона/SMS. Завершите звонок или нажмите «Отправить»; экстренные службы не вызываются автоматически.",
   "sosCriticalAlertTitle": "КРИТИЧЕСКИЙ СИГНАЛ SOS",
   "sosDistressSignalDescription": "Сигнал бедствия активирован системой опекунов.",
   "locationPermissionsPermanentlyDeniedMessage": "Разрешения на использование местоположения запрещены навсегда.",
   "emergencyTranslatorPremiumMessage": "Мгновенно объясните вашу ситуацию шри-ланкийской полиции или персоналу больницы на сингальском языке — эксклюзивная функция Premium.",
   "notNowButton": "Не сейчас",
   "viewPlansButton": "Посмотреть тарифы",
-
   "monsoonHazardAlertTitle": "ПРЕДУПРЕЖДЕНИЕ О МУССОННОЙ ОПАСНОСТИ",
   "districtLabel": "Округ: {district}",
   "@districtLabel": {
-    "placeholders": { "district": { "type": "String" } }
+    "placeholders": {
+      "district": {
+        "type": "String"
+      }
+    }
   },
   "districtGeneralFallback": "Общий",
   "severeMonsoonWeatherDetectedMessage": "Обнаружена сильная муссонная погода.",
   "acknowledgeButton": "ПОДТВЕРДИТЬ",
   "offlineErrorGenericMessage": "Ошибка офлайн-режима: {error}",
   "@offlineErrorGenericMessage": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "sessionNotFoundMessage": "Сессия не найдена",
   "yourTourTitle": "Ваш тур",
@@ -1478,7 +1950,11 @@
   "everythingOnTrackMessage": "Всё идёт по плану",
   "statusColonValueLabel": "Статус: {status}",
   "@statusColonValueLabel": {
-    "placeholders": { "status": { "type": "String" } }
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
   },
   "phaseAssemblingGroup": "Сбор группы",
   "phaseEnRoute": "В пути",
@@ -1504,21 +1980,24 @@
   "buildReputationLabel": "Повысить репутацию",
   "helpImLostButton": "Помогите, я потерялся",
   "emergencySosButton": "Экстренный SOS",
-  "instantAlertAdminPoliceMessage": "Мгновенный сигнал администратору, полиции и хабу.",
+  "instantAlertAdminPoliceMessage": "Оповещает гида/администратора в приложении. Полиция не вызывается автоматически; звоните 119 или 1990.",
   "signalSentStayMessage": "СИГНАЛ ОТПРАВЛЕН! ОСТАВАЙТЕСЬ НА МЕСТЕ.",
   "travelerLostBroadcastTitle": "ПУТЕШЕСТВЕННИК ПОТЕРЯЛСЯ",
   "travelerLostBroadcastBody": "Путешественник сообщил, что потерялся! Местоположение показано на карте.",
   "sosCooledDownMessage": "SOS на перезарядке. Подождите {seconds} сек.",
   "@sosCooledDownMessage": {
-    "placeholders": { "seconds": { "type": "int" } }
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
   },
-  "sosBroadcastedAuthoritiesMessage": "СИГНАЛ SOS ОТПРАВЛЕН ВСЕМ СЛУЖБАМ!",
+  "sosBroadcastedAuthoritiesMessage": "SOS передан гиду/администратору в приложении. Звоните 119 или 1990.",
   "tourCompletedTitle": "Тур завершён!",
   "tourCompletedRateMessage": "Надеемся, вы получили незабываемые впечатления! Хотите оценить своего гида прямо сейчас? Ваш отзыв помогает гидам поддерживать высокий уровень качества.",
   "remindLaterButton": "Напомнить позже",
   "reminderSetMessage": "⏰ Напоминание установлено! Мы отправим уведомление завтра.",
   "rateNowButton": "Оценить сейчас ⭐",
-
   "eventsTitle": "События",
   "topPicksForYouTitle": "Лучший выбор для вас",
   "categoryAllFilter": "Все",
@@ -1540,19 +2019,33 @@
   "syncPreferencesButton": "Синхронизировать предпочтения",
   "failedToShareTimelineMessage": "Не удалось поделиться хронологией: {error}",
   "@failedToShareTimelineMessage": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "hazardWarningMessage": "🚨 ПРЕДУПРЕЖДЕНИЕ ОБ ОПАСНОСТИ: {message}",
   "@hazardWarningMessage": {
-    "placeholders": { "message": { "type": "String" } }
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
   },
   "extremeWeatherAlertFallback": "Предупреждение об экстремальной погоде!",
   "recommendedForYouLabel": "Рекомендовано для вас",
   "eventLocationCategoryLabel": "{location} · {category}",
   "@eventLocationCategoryLabel": {
-    "placeholders": { "location": { "type": "String" }, "category": { "type": "String" } }
+    "placeholders": {
+      "location": {
+        "type": "String"
+      },
+      "category": {
+        "type": "String"
+      }
+    }
   },
-
   "budgetTitle": "Бюджет",
   "addExpenseTitle": "Добавить расход",
   "resourceDescriptionLabel": "Описание расхода",
@@ -1564,7 +2057,11 @@
   "expenseLedgerTitle": "Журнал расходов",
   "entriesCountLabel": "{count} записей",
   "@entriesCountLabel": {
-    "placeholders": { "count": { "type": "int" } }
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "noEntriesYetMessage": "Записей пока нет",
   "addFirstEntryButton": "Добавить первую запись",
@@ -1572,7 +2069,6 @@
   "expenseCategoryTransport": "Транспорт",
   "expenseCategoryTickets": "Билеты",
   "expenseCategoryMisc": "Разное",
-
   "budgetConciergeTitle": "Бюджетный консьерж",
   "analyzingSpendingPatternsMessage": "Анализируем ваши траты...",
   "localAdviceMessage": "Темп ваших расходов хорошо соответствует стандартам путешествий по острову. Рекомендуем пользоваться PickMe или Uber для прозрачных тарифов на транспорт и пробовать местные закусочные, чтобы получить максимум пользы.",
@@ -1580,7 +2076,11 @@
   "totalSpentSoFarLabel": "Всего потрачено на данный момент",
   "approxUsdLabel": "≈ US$ {amount}",
   "@approxUsdLabel": {
-    "placeholders": { "amount": { "type": "String" } }
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
   },
   "oracleAdviceLabel": "Совет оракула",
   "logTransactionTitle": "Записать транзакцию",
@@ -1589,40 +2089,62 @@
   "expenseCategoryAttraction": "Достопримечательности",
   "expenseCategoryLodging": "Проживание",
   "expenseCategoryOther": "Другое",
-
   "billingHistoryTitle": "ИСТОРИЯ ПЛАТЕЖЕЙ",
   "errorGenericColonMessage": "Ошибка: {error}",
   "@errorGenericColonMessage": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "noBillingHistoryFoundMessage": "История платежей не найдена.",
   "planLabel": "ПЛАН: {planId}",
   "@planLabel": {
-    "placeholders": { "planId": { "type": "String" } }
+    "placeholders": {
+      "planId": {
+        "type": "String"
+      }
+    }
   },
   "startedLabel": "НАЧАЛО",
   "expiresLabel": "ОКОНЧАНИЕ",
   "idLabel": "ID: {subscriptionId}",
   "@idLabel": {
-    "placeholders": { "subscriptionId": { "type": "String" } }
+    "placeholders": {
+      "subscriptionId": {
+        "type": "String"
+      }
+    }
   },
   "subscriptionStatusCancelled": "ОТМЕНЕНО",
   "subscriptionStatusExpired": "ИСТЕКЛО",
   "subscriptionStatusActive": "АКТИВНО",
-
   "accessDeniedMessage": "Доступ запрещён",
   "subscribedToPlanMessage": "✅ Вы подписались на план «{planId}»!",
   "@subscribedToPlanMessage": {
-    "placeholders": { "planId": { "type": "String" } }
+    "placeholders": {
+      "planId": {
+        "type": "String"
+      }
+    }
   },
   "subscriptionFailedMessage": "Ошибка подписки: {error}",
   "@subscriptionFailedMessage": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "purchasesRestoredMessage": "✅ Покупки успешно восстановлены.",
   "restoreFailedMessage": "Ошибка восстановления: {error}",
   "@restoreFailedMessage": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "serviceTiersTitle": "Уровни обслуживания",
   "freeTierTitle": "Бесплатный уровень",
@@ -1647,7 +2169,11 @@
   "freeTierLabel": "Бесплатный уровень",
   "expiresColonDateLabel": "Истекает: {date}",
   "@expiresColonDateLabel": {
-    "placeholders": { "date": { "type": "String" } }
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
   },
   "upgradeButton": "Улучшить",
   "manageButton": "Управлять",
@@ -1655,7 +2181,6 @@
   "perMonthSlashLabel": "/месяц",
   "currentPlanButton": "Текущий план",
   "selectThisPlanButton": "Выбрать этот план",
-
   "goPremiumTitle": "Перейти на Premium",
   "fullArUnlimitedAiTripsMessage": "Полный AR и неограниченные AI-поездки",
   "heritageArModeTitle": "Режим AR «Наследие»",
@@ -1670,16 +2195,28 @@
   "guardianEmergencyTranslatorDescription": "Мгновенно объясните вашу ситуацию шри-ланкийской полиции или персоналу больницы на разговорном сингальском во время SOS.",
   "premiumActiveLabel": "{plan} активен",
   "@premiumActiveLabel": {
-    "placeholders": { "plan": { "type": "String" } }
+    "placeholders": {
+      "plan": {
+        "type": "String"
+      }
+    }
   },
   "premiumFallback": "Premium",
   "renewingOnLabel": "Продление {date}",
   "@renewingOnLabel": {
-    "placeholders": { "date": { "type": "String" } }
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
   },
   "viaSourceLabel": "Через {source}",
   "@viaSourceLabel": {
-    "placeholders": { "source": { "type": "String" } }
+    "placeholders": {
+      "source": {
+        "type": "String"
+      }
+    }
   },
   "storeFallback": "магазин",
   "resetPremiumDevButton": "СБРОСИТЬ PREMIUM (ТОЛЬКО ДЛЯ РАЗРАБОТКИ)",
@@ -1713,40 +2250,71 @@
   "upgradeNowLongButton": "Улучшить сейчас",
   "trialDaysLabel": "{count, plural, one{Бесплатная пробная версия на 1 день} few{Бесплатная пробная версия на {count} дня} many{Бесплатная пробная версия на {count} дней} other{Бесплатная пробная версия на {count} дня}}",
   "@trialDaysLabel": {
-    "placeholders": { "count": { "type": "int" } }
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "trialWeeksLabel": "{count, plural, one{Бесплатная пробная версия на 1 неделю} few{Бесплатная пробная версия на {count} недели} many{Бесплатная пробная версия на {count} недель} other{Бесплатная пробная версия на {count} недели}}",
   "@trialWeeksLabel": {
-    "placeholders": { "count": { "type": "int" } }
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "trialMonthsLabel": "{count, plural, one{Бесплатная пробная версия на 1 месяц} few{Бесплатная пробная версия на {count} месяца} many{Бесплатная пробная версия на {count} месяцев} other{Бесплатная пробная версия на {count} месяца}}",
   "@trialMonthsLabel": {
-    "placeholders": { "count": { "type": "int" } }
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "trialYearsLabel": "{count, plural, one{Бесплатная пробная версия на 1 год} few{Бесплатная пробная версия на {count} года} many{Бесплатная пробная версия на {count} лет} other{Бесплатная пробная версия на {count} года}}",
   "@trialYearsLabel": {
-    "placeholders": { "count": { "type": "int" } }
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "trialPeriodLabel": "Бесплатная пробная версия на {count} период",
   "@trialPeriodLabel": {
-    "placeholders": { "count": { "type": "int" } }
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
-
   "oracleLostFocusMessage": "Оракул потерял фокус: {error}",
   "@oracleLostFocusMessage": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "savorLankaAiTitle": "SAVORLANKA AI",
   "culinaryVisionEngineLabel": "КУЛИНАРНЫЙ ВИЖН-ДВИЖОК V2",
   "liveRealTimeScannerLabel": "СКАНЕР В РЕАЛЬНОМ ВРЕМЕНИ",
   "nutritionReliabilityLabel": "ДОСТОВЕРНОСТЬ ПИЩЕВОЙ ЦЕННОСТИ: {reliability}",
   "@nutritionReliabilityLabel": {
-    "placeholders": { "reliability": { "type": "String" } }
+    "placeholders": {
+      "reliability": {
+        "type": "String"
+      }
+    }
   },
   "neuralReasoningLabel": "НЕЙРОННЫЕ РАССУЖДЕНИЯ",
   "aiVisualMarkersFallback": "ИИ определил визуальные кулинарные признаки, соответствующие {label}.",
   "@aiVisualMarkersFallback": {
-    "placeholders": { "label": { "type": "String" } }
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
   },
   "authenticityIntelligenceTitle": "ИНТЕЛЛЕКТ ПОДЛИННОСТИ",
   "ingredientCertaintyTitle": "ТОЧНОСТЬ ИНГРЕДИЕНТОВ",
@@ -1759,21 +2327,37 @@
   "ingredientTierOptional": "НЕОБЯЗАТЕЛЬНО / ДОПОЛНЕНИЯ",
   "mealContextLabel": "КОНТЕКСТ БЛЮДА: {context}",
   "@mealContextLabel": {
-    "placeholders": { "context": { "type": "String" } }
+    "placeholders": {
+      "context": {
+        "type": "String"
+      }
+    }
   },
   "supportingElementsLabel": "СОПУТСТВУЮЩИЕ ЭЛЕМЕНТЫ:",
   "influencesLabel": "ВЛИЯНИЯ: {influences}",
   "@influencesLabel": {
-    "placeholders": { "influences": { "type": "String" } }
+    "placeholders": {
+      "influences": {
+        "type": "String"
+      }
+    }
   },
   "visualFreshnessQualityLabel": "ВИЗУАЛЬНАЯ СВЕЖЕСТЬ И КАЧЕСТВО",
   "qualityColonLabel": "КАЧЕСТВО: {quality}",
   "@qualityColonLabel": {
-    "placeholders": { "quality": { "type": "String" } }
+    "placeholders": {
+      "quality": {
+        "type": "String"
+      }
+    }
   },
   "textureColonLabel": "ТЕКСТУРА: {texture}",
   "@textureColonLabel": {
-    "placeholders": { "texture": { "type": "String" } }
+    "placeholders": {
+      "texture": {
+        "type": "String"
+      }
+    }
   },
   "heritageNarrativeEngineTitle": "ДВИЖОК ИСТОРИЧЕСКОГО ПОВЕСТВОВАНИЯ",
   "verifiedLegacyTitle": "ПОДТВЕРЖДЁННОЕ НАСЛЕДИЕ",
@@ -1795,7 +2379,11 @@
   "healthRatingLabel": "ОЦЕНКА ПОЛЬЗЫ ДЛЯ ЗДОРОВЬЯ",
   "healthRatingValueLabel": "{rating}/10",
   "@healthRatingValueLabel": {
-    "placeholders": { "rating": { "type": "int" } }
+    "placeholders": {
+      "rating": {
+        "type": "int"
+      }
+    }
   },
   "sinhalaLabel": "СИНГАЛЬСКИЙ",
   "englishLabel": "АНГЛИЙСКИЙ",
@@ -1810,7 +2398,14 @@
   "voiceGuideLabel": "ГОЛОСОВОЙ ГИД",
   "savorLankaShareText": "Посмотрите рецепт {name}, который я нашёл в Hidden Gems SL.ai! Это настоящий шри-ланкийский деликатес. \n\nОценка оракула: {score}%",
   "@savorLankaShareText": {
-    "placeholders": { "name": { "type": "String" }, "score": { "type": "String" } }
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "score": {
+        "type": "String"
+      }
+    }
   },
   "savorLankaShareSubject": "Hidden Gems SL.ai — рецепт Savor Lanka",
   "phase3CrossMatchTitle": "ЭТАП 3: ПЕРЕКРЁСТНАЯ ЗАМЕНА ПО СХОДСТВУ",
@@ -1820,38 +2415,46 @@
   "presentationLabel": "ПОДАЧА",
   "integrityLabel": "ЦЕЛОСТНОСТЬ",
   "popularLabel": "Популярный",
-
   "curatorDealsTitle": "Предложения куратора",
   "noDealsRightNowTitle": "Сейчас нет предложений",
   "newPartnerDiscountsMessage": "Новые скидки от партнёров добавляются регулярно — загляните позже.",
   "percentOffLabel": "-{percent}%",
   "@percentOffLabel": {
-    "placeholders": { "percent": { "type": "int" } }
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
   },
   "validUntilLabel": "Действительно до {date}",
   "@validUntilLabel": {
-    "placeholders": { "date": { "type": "String" } }
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
   },
   "claimDealButton": "Получить предложение",
-
   "passportTitle": "Паспорт",
   "verifiedVisitCollectionSubtitle": "Ваша коллекция подтверждённых визитов",
   "passportIsEmptyTitle": "Паспорт пуст",
   "exploreHistoricalGemsMessage": "Исследуйте исторические жемчужины,\nчтобы получить уникальные цифровые штампы.",
   "claimedOnLabel": "Получено {date}",
   "@claimedOnLabel": {
-    "placeholders": { "date": { "type": "String" } }
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
   },
   "verifiableHashLabel": "Проверяемый хеш",
   "shareCollectibleButton": "Поделиться коллекционным предметом",
   "stampRarityCommon": "Обычный",
   "stampRarityRare": "Редкий",
   "stampRarityMythic": "Мифический",
-
   "audioGuideLabel": "Аудиогид",
   "sinhalaShortLabel": "සිංහල",
   "englishShortLabel": "Английский",
-
   "joinGroupTourTitle": "Присоединиться к групповому туру",
   "enterSixDigitCodeMessage": "Введите 6-значный код, предоставленный вашим гидом.",
   "cancelButtonUppercaseThird": "ОТМЕНА",
@@ -1859,18 +2462,30 @@
   "tapFlatSurfaceMessage": "👆 Коснитесь ровной поверхности, чтобы разместить модель",
   "groupTourStartedCodeLabel": "Групповой тур начался! Код: {code}",
   "@groupTourStartedCodeLabel": {
-    "placeholders": { "code": { "type": "String" } }
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
   },
   "invalidSessionCodeMessage": "Неверный код сессии",
   "couldNotLoadAudioMessage": "Не удалось загрузить аудионарратив.",
   "galleryPermissionDeniedMessage": "Доступ к галерее запрещён",
   "failedToCapturePhotoMessage": "Не удалось сделать снимок: {error}",
   "@failedToCapturePhotoMessage": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "codeColonLabel": "КОД: {code}",
   "@codeColonLabel": {
-    "placeholders": { "code": { "type": "String" } }
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
   },
   "thenLabel": "ТОГДА",
   "nowLabel": "СЕЙЧАС",
@@ -1884,27 +2499,53 @@
   "preparingHeritageAssetsMessage": "Подготовка объектов наследия...",
   "progressSizeLabel": "{progress}% • {size} МБ",
   "@progressSizeLabel": {
-    "placeholders": { "progress": { "type": "int" }, "size": { "type": "String" } }
+    "placeholders": {
+      "progress": {
+        "type": "int"
+      },
+      "size": {
+        "type": "String"
+      }
+    }
   },
   "modelColonNameLabel": "Модель: {name}",
   "@modelColonNameLabel": {
-    "placeholders": { "name": { "type": "String" } }
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   },
   "authorColonNameLabel": "Автор: {name}",
   "@authorColonNameLabel": {
-    "placeholders": { "name": { "type": "String" } }
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   },
   "moveSlowlyToScanMessage": "Медленно двигайте телефоном,\nчтобы отсканировать ровную поверхность",
   "tapPlaceToPlaceModelMessage": "👇 Нажмите «Разместить», затем коснитесь ровной поверхности",
   "demoModeSecondsRemainingLabel": "ДЕМО-РЕЖИМ: ОСТАЛОСЬ {seconds}",
   "@demoModeSecondsRemainingLabel": {
-    "placeholders": { "seconds": { "type": "int" } }
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
   },
   "premiumHeritageSessionLabel": "ПРЕМИУМ-СЕССИЯ НАСЛЕДИЯ",
   "artifactDiscoveredLabel": "АРТЕФАКТ ОБНАРУЖЕН!",
   "ptsRarityLabel": "+{points} ОЧК • {rarity}",
   "@ptsRarityLabel": {
-    "placeholders": { "points": { "type": "int" }, "rarity": { "type": "String" } }
+    "placeholders": {
+      "points": {
+        "type": "int"
+      },
+      "rarity": {
+        "type": "String"
+      }
+    }
   },
   "hiddenGemsSlWatermark": "HIDDEN GEMS SL",
   "heritageArWatermark": "HERITAGE AR",
@@ -1915,19 +2556,37 @@
   "savedLabelShort": "Сохранено",
   "sharePlatformCaptionInstagram": "Исследую {placeName} в AR с #HiddenGemsSL",
   "@sharePlatformCaptionInstagram": {
-    "placeholders": { "placeName": { "type": "String" } }
+    "placeholders": {
+      "placeName": {
+        "type": "String"
+      }
+    }
   },
   "sharePlatformCaptionTiktok": "История оживает! #HiddenGemsSL #HeritageAR",
   "photoSavedGalleryMessage": "Фото сохранено в вашу галерею!",
   "backToArButton": "Назад к AR",
   "distanceToTargetLabel": "{distance} м до {placeName}",
   "@distanceToTargetLabel": {
-    "placeholders": { "distance": { "type": "String" }, "placeName": { "type": "String" } }
+    "placeholders": {
+      "distance": {
+        "type": "String"
+      },
+      "placeName": {
+        "type": "String"
+      }
+    }
   },
   "recommendedLabel": "РЕКОМЕНДУЕТСЯ",
   "categoryRatingLabel": "{category} • {rating} ★",
   "@categoryRatingLabel": {
-    "placeholders": { "category": { "type": "String" }, "rating": { "type": "String" } }
+    "placeholders": {
+      "category": {
+        "type": "String"
+      },
+      "rating": {
+        "type": "String"
+      }
+    }
   },
   "viewButtonUppercase": "СМОТРЕТЬ",
   "loginToLeaveMemoryMessage": "Войдите, чтобы оставить AR-воспоминание!",
@@ -1939,10 +2598,13 @@
   "explorerFallback": "Исследователь",
   "signalPercentLabel": "СИГНАЛ: {percent}%",
   "@signalPercentLabel": {
-    "placeholders": { "percent": { "type": "int" } }
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
   },
   "searchingLabel": "ПОИСК...",
-
   "cameraAccessNeededTitle": "Требуется доступ к камере",
   "arNotAvailableDeviceTitle": "AR недоступен на этом устройстве",
   "arCouldntLoadTitle": "На этот раз AR не загрузился",
@@ -1959,11 +2621,19 @@
   "historicalStoryLabel": "Историческая история",
   "unveilingEraTitle": "Открывая {era}",
   "@unveilingEraTitle": {
-    "placeholders": { "era": { "type": "String" } }
+    "placeholders": {
+      "era": {
+        "type": "String"
+      }
+    }
   },
   "heritageStoryBody": "Наследие Шри-Ланки уходит глубоко в ткань времени. Это место, датируемое {era}, было когда-то центром процветающей цивилизации, которая стала пионером в гидротехнике и духовной архитектуре.\n\nСтупа, которую мы видим сегодня, была построена из более чем 100 миллионов кирпичей высушенных на солнце, свидетельствуя об инженерных чудесах древних царей...",
   "@heritageStoryBody": {
-    "placeholders": { "era": { "type": "String" } }
+    "placeholders": {
+      "era": {
+        "type": "String"
+      }
+    }
   },
   "listenToNarrationLabel": "Слушать нарратив",
   "sinhalaEnglishAvailableLabel": "Доступны сингальский и английский",
@@ -1971,19 +2641,17 @@
   "mode360Label": "360°",
   "mode3dLabel": "3D",
   "modeStoryLabel": "История",
-
   "unlockArHeritageModeTitle": "Разблокировать режим AR-наследия",
   "arHeritageModeSubtitle": "Ощутите Шри-Ланку такой, какой она выглядела тысячи лет назад.",
   "featureAncient3dReconstruction": "Древняя 3D-реконструкция",
   "featureAudioNarrationBilingual": "Аудионарратив (සිංහල / English)",
   "featureArPhotoCapture": "AR-фотосъёмка и обмен в соцсетях",
-  "pricingTrialLabel": "От 299 рупий/месяц  ·  7-дневная бесплатная пробная версия",
+  "pricingTrialLabel": "Бесплатный пробный период, если доступен в магазине",
   "upgradeToPremiumButton": "Перейти на Премиум",
   "watch10SecPreviewButton": "Посмотреть 10-секундный превью",
   "watchAdUnlockSessionButton": "Посмотреть рекламу, чтобы разблокировать сессию",
   "notNowButtonLabel": "Не сейчас",
   "ancientArtifactsLabel": "ДРЕВНИЕ АРТЕФАКТЫ",
-
   "adminGuideVerificationTile": "Верификация гидов",
   "adminVerificationConsoleTitle": "Консоль верификации",
   "pendingReviewsSubtitle": "Просмотр поданных заявок гидов и документов.",
@@ -1994,15 +2662,27 @@
   "filterExpired": "Истёк срок",
   "noApplicationsFoundMessage": "Нет заявок со статусом «{filter}».",
   "@noApplicationsFoundMessage": {
-    "placeholders": { "filter": { "type": "String" } }
+    "placeholders": {
+      "filter": {
+        "type": "String"
+      }
+    }
   },
   "appliedOnLabel": "Подано {date}",
   "@appliedOnLabel": {
-    "placeholders": { "date": { "type": "String" } }
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
   },
   "licenseNumberDisplayLabel": "№ лицензии {number}",
   "@licenseNumberDisplayLabel": {
-    "placeholders": { "number": { "type": "String" } }
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
   },
   "applicantDetailsTitle": "Данные заявителя",
   "bioLabel": "Биография",
@@ -2019,7 +2699,11 @@
   "applicationRejectedNoticeMessage": "Заявка отклонена.",
   "reviewActionFailedMessage": "Не удалось отправить решение: {error}",
   "@reviewActionFailedMessage": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "licenseExpiryLabel": "Срок действия лицензии",
   "notProvidedLabel": "Не указано",
@@ -2027,7 +2711,6 @@
   "expiryStatusExpiringSoon": "Скоро истекает",
   "expiryStatusExpired": "Истёк срок",
   "selectExpiryDateButton": "Выбрать дату окончания лицензии",
-
   "languagesSectionTitle": "Разговорные языки",
   "tourTypesSectionTitle": "Предлагаемые туры",
   "tourTypeBoatSafari": "Лодочное сафари",
@@ -2059,6 +2742,61 @@
   "arComingSoonTitle": "AR Experience Coming Soon",
   "arComingSoonMessage": "We're putting the finishing touches on the AR experience for {placeName}. Check back in a future update.",
   "@arComingSoonMessage": {
-    "placeholders": { "placeName": { "type": "String" } }
-  }
+    "placeholders": {
+      "placeName": {
+        "type": "String"
+      }
+    }
+  },
+  "sosDispatchMessage": "ЭКСТРЕННАЯ СИТУАЦИЯ: Мне нужна помощь. Мое местоположение: {mapUrl} (Отправлено через Hidden Gems SL)",
+  "sosFailedAppLaunch": "Не удалось открыть приложение телефона или SMS. Позвоните 119 или 1990 прямо сейчас.",
+  "weatherConditionClear": "Ясно",
+  "weatherConditionClouds": "Облачно",
+  "weatherConditionRain": "Дождь",
+  "weatherConditionThunderstorm": "Гроза",
+  "weatherConditionDrizzle": "Морось",
+  "weatherConditionMist": "Туман",
+  "rainSafetyAdvisory": "Предупреждение о дожде и грозе: возьмите зонт и соблюдайте осторожность на извилистых дорогах.",
+  "moreToolsTitle": "Дополнительные инструменты",
+  "moreToolsSubtitle": "Food AI, AR, Оракул, Паспорт и Бюджет",
+  "savedPlacesHubTitle": "Сохраненные места и список желаний",
+  "savedPlacesHubSubtitle": "Закладки, хочу посетить и история",
+  "mapActionLabel": "Карта",
+  "safetyActionLabel": "Безопасность",
+  "foodScannerTooltip": "Сканер еды",
+  "familyShareTitle": "Семейный доступ",
+  "waterSafetyTitle": "Питьевая вода и местные напитки",
+  "waterSafetySubtitle": "Местные напитки и осторожные рекомендации по воде",
+  "drinkLocalHeroTitle": "Натуральные электролитные напитки Шри-Ланки",
+  "drinkLocalHeroSubtitle": "Выбирайте чистого продавца и уточняйте текущую цену до заказа",
+  "thambiliTitle": "Королевский кокос (Тамбили)",
+  "thambiliFairPrice": "Уточните текущую цену в LKR",
+  "palmyrahTitle": "Свежий сок пальмиры (Пальмира)",
+  "palmyrahFairPrice": "Уточните текущую цену в LKR",
+  "herbalTeaTitle": "Травяной чай Белимал и Ранавара",
+  "herbalTeaFairPrice": "Уточните текущую цену в LKR",
+  "slsCertificationTip": "Проверяйте знак сертификации SLS 894 и целостность кольца на крышке бутылки",
+  "iceSafetyTip": "Форма льда не гарантирует безопасность; уточните источник воды или откажитесь от льда",
+  "tapWaterWarning": "Качество воды различается; при сомнении используйте кипячёную, фильтрованную или запечатанную воду",
+  "jeewaniTip": "Спросите фармацевта о зарегистрированном ОРС и следуйте инструкции; при тяжёлых симптомах обратитесь к врачу",
+  "findSafeWaterAction": "Найти безопасную питьевую воду поблизости",
+  "landslideAlertTitle": "Предупреждение об оползнях NBRO",
+  "landslideLevel1Msg": "Уровень 1: Будьте внимательны к осыпям и камнепадам на горных склонах",
+  "landslideLevel2Msg": "Уровень 2: Сильные дожди. Избегайте ночных поездок по горным перевалам",
+  "landslideLevel3Msg": "Уровень 3: Красный уровень эвакуации. Горные дороги могут быть перекрыты",
+  "floodRiskTitle": "Предупреждение о паводках в бассейнах рек",
+  "floodRiskMsg": "Низменные подъездные дороги могут быть затоплены. Пользуйтесь главными шоссе",
+  "disasterHelplineTitle": "Горячая линия Центра управления стихийными бедствиями (DMC): 117",
+  "arModelPlacementFailedMessage": "Не удалось разместить модель — файл может отсутствовать или быть повреждён. Повторите попытку.",
+  "arSessionErrorMessage": "Ошибка AR: {message}",
+  "audioGuideUnavailable": "Аудиогид сейчас недоступен. Нажмите, чтобы повторить попытку.",
+  "downloadAnywayButtonLabel": "Всё равно скачать",
+  "largeDownloadWarningMessage": "Размер этой 3D-модели около {size} МБ. Загрузка использует мобильный интернет. Продолжить?",
+  "largeDownloadWarningTitle": "Большая загрузка",
+  "noGuideListingError": "Гид ещё не настроил профиль. Выберите другого гида.",
+  "payNowButtonLabel": "Оплатить сейчас",
+  "paymentUnavailableError": "Сейчас оплатить бронирование нельзя. Обновите данные и повторите попытку.",
+  "sendQuoteAmountLabel": "Сумма",
+  "sendQuoteConfirmButtonLabel": "Принять и отправить предложение",
+  "sendQuoteDialogTitle": "Установить цену"
 }

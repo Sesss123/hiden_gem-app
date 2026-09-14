@@ -225,9 +225,10 @@ class ARService {
       final absY = parentPosition.y + artifact.relativePosition[1];
       final absZ = parentPosition.z + artifact.relativePosition[2];
 
-      final url = artifact.modelUrl.isNotEmpty
-          ? artifact.modelUrl
-          : "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Box/glTF-Binary/Box.glb";
+      final url = artifact.modelUrl.trim();
+      // Missing production content is not replaced with an unrelated demo
+      // cube: omit the artifact so travelers never see fake heritage media.
+      if (url.isEmpty) continue;
 
       final node = ARNode(
         type: _nodeTypeFor(url),

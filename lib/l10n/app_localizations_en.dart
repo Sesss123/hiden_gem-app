@@ -9,6 +9,113 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get retryAction => 'Retry';
+
+  @override
+  String get invalidMapCoordinates => 'This place has invalid map coordinates.';
+
+  @override
+  String get mapAppUnavailable => 'No map application is available.';
+
+  @override
+  String get routeSafetyAdvisory => 'Route safety advisory';
+
+  @override
+  String get reviewRouteAction => 'Review route';
+
+  @override
+  String get continueAction => 'Continue';
+
+  @override
+  String get savedJourneyHubTitle => 'Saved Places & Journey Hub';
+
+  @override
+  String bookmarkedCount(int count) {
+    return 'Bookmarked ($count)';
+  }
+
+  @override
+  String wantToVisitCount(int count) {
+    return 'Want to Visit ($count)';
+  }
+
+  @override
+  String recentCount(int count) {
+    return 'Recent ($count)';
+  }
+
+  @override
+  String get savedPlacesLoadError => 'Saved places could not be loaded.';
+
+  @override
+  String get noBookmarkedPlaces => 'No bookmarked places yet';
+
+  @override
+  String get noBookmarkedPlacesHint =>
+      'Tap the bookmark icon on a place to save it here.';
+
+  @override
+  String get wantToVisitEmpty => 'Your Want to Visit list is empty';
+
+  @override
+  String get wantToVisitEmptyHint => 'Add places from their details page.';
+
+  @override
+  String get noRecentlyViewedPlaces => 'No recently viewed places';
+
+  @override
+  String get noRecentlyViewedPlacesHint =>
+      'Places you explore will appear here automatically.';
+
+  @override
+  String browsingHistoryCount(int count) {
+    return 'Browsing history ($count)';
+  }
+
+  @override
+  String get usageLimitReachedTitle => 'Usage limit reached';
+
+  @override
+  String usageLimitReachedMessage(String feature, String plan) {
+    return 'You have used all your $feature for this month. Continue with $plan:';
+  }
+
+  @override
+  String getPlanButton(String plan) {
+    return 'Get $plan';
+  }
+
+  @override
+  String get watchAdForOneMore => 'Watch an ad for one more';
+
+  @override
+  String get priceUnavailable => 'Price unavailable';
+
+  @override
+  String get contactForPrice => 'Contact for price';
+
+  @override
+  String get freePriceLabel => 'Free';
+
+  @override
+  String fromPriceLabel(String price) {
+    return 'From $price';
+  }
+
+  @override
+  String priceRangeLabel(String minimum, String maximum) {
+    return '$minimum – $maximum';
+  }
+
+  @override
+  String get serverManagedPriceNote =>
+      'Prices are supplied by the service and may change. Confirm before purchase.';
+
+  @override
+  String get hydrationSummary =>
+      'Local drinks · sealed water guidance · safer ice guidance';
+
+  @override
   String get appTitle => 'Hidden Gems SL';
 
   @override
@@ -3667,7 +3774,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get sosAlertsPreparedLoggedMessage =>
-      'SOS Alerts Prepared & Logged in Secure Vault!';
+      'Phone/SMS app opened. Complete the call or tap Send; emergency services are not contacted automatically. The incident was logged where possible.';
 
   @override
   String get sosCriticalAlertTitle => 'CRITICAL SOS ALERT';
@@ -3808,7 +3915,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get instantAlertAdminPoliceMessage =>
-      'Instant alert to admin, police, and hub.';
+      'Alerts your guide/admin hub. Police are not contacted automatically—call 119 or 1990 if needed.';
 
   @override
   String get signalSentStayMessage => 'SIGNAL SENT! STAY WHERE YOU ARE.';
@@ -3827,7 +3934,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get sosBroadcastedAuthoritiesMessage =>
-      'SOS ALERT BROADCASTED TO ALL AUTHORITIES!';
+      'SOS shared with the in-app guide/admin hub. Call 119 or 1990 for emergency services.';
 
   @override
   String get tourCompletedTitle => 'Tour Completed!';
@@ -4944,7 +5051,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get featureArPhotoCapture => 'AR Photo Capture & Social Share';
 
   @override
-  String get pricingTrialLabel => 'From Rs. 299/month  ·  7-day free trial';
+  String get pricingTrialLabel => 'Free trial when offered by the store';
 
   @override
   String get upgradeToPremiumButton => 'Upgrade to Premium';
@@ -5128,4 +5235,136 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get filterLanguageLabel => 'Language';
+
+  @override
+  String sosDispatchMessage(String mapUrl) {
+    return 'EMERGENCY: I need help. My current location is: $mapUrl (Sent via Hidden Gems SL)';
+  }
+
+  @override
+  String get sosFailedAppLaunch =>
+      'Could not open the phone or SMS app. Call 119 or 1990 now.';
+
+  @override
+  String get weatherConditionClear => 'Clear Sky';
+
+  @override
+  String get weatherConditionClouds => 'Cloudy';
+
+  @override
+  String get weatherConditionRain => 'Rain';
+
+  @override
+  String get weatherConditionThunderstorm => 'Thunderstorm';
+
+  @override
+  String get weatherConditionDrizzle => 'Drizzle';
+
+  @override
+  String get weatherConditionMist => 'Mist / Fog';
+
+  @override
+  String get rainSafetyAdvisory =>
+      'Rain / Thunderstorm Alert: Carry an umbrella and exercise caution on winding roads.';
+
+  @override
+  String get moreToolsTitle => 'More Tools & Experiences';
+
+  @override
+  String get moreToolsSubtitle =>
+      'Food AI, AR Portals, Oracle, Passport & Budget';
+
+  @override
+  String get savedPlacesHubTitle => 'Saved Places & Wishlist';
+
+  @override
+  String get savedPlacesHubSubtitle => 'Bookmarks, Want to Visit & History';
+
+  @override
+  String get mapActionLabel => 'Map';
+
+  @override
+  String get safetyActionLabel => 'Safety';
+
+  @override
+  String get foodScannerTooltip => 'Food scanner';
+
+  @override
+  String get familyShareTitle => 'Family Share';
+
+  @override
+  String get waterSafetyTitle => 'Drinking Water & Local Drinks';
+
+  @override
+  String get waterSafetySubtitle =>
+      'Local drinks and cautious water-safety guidance';
+
+  @override
+  String get drinkLocalHeroTitle => 'Sri Lankan Local Drinks';
+
+  @override
+  String get drinkLocalHeroSubtitle =>
+      'Choose a clean vendor and confirm the current price before ordering';
+
+  @override
+  String get thambiliTitle => 'King Coconut (Thambili)';
+
+  @override
+  String get thambiliFairPrice => 'Confirm current LKR price';
+
+  @override
+  String get palmyrahTitle => 'Fresh Palmyrah Juice & Nectar';
+
+  @override
+  String get palmyrahFairPrice => 'Confirm current LKR price';
+
+  @override
+  String get herbalTeaTitle => 'Belimal & Ranawara Herbal Tea';
+
+  @override
+  String get herbalTeaFairPrice => 'Confirm current LKR price';
+
+  @override
+  String get slsCertificationTip =>
+      'Prefer sealed water from a reputable seller; check the label, expiry date and cap ring';
+
+  @override
+  String get iceSafetyTip =>
+      'Ice shape does not prove safety; ask whether potable water was used or avoid ice';
+
+  @override
+  String get tapWaterWarning =>
+      'Water quality varies; when unsure use properly boiled, filtered or sealed water';
+
+  @override
+  String get jeewaniTip =>
+      'Ask a pharmacist about registered ORS and follow the packet instructions; seek care for severe symptoms';
+
+  @override
+  String get findSafeWaterAction => 'Find Safe Bottled Water Nearby';
+
+  @override
+  String get landslideAlertTitle => 'NBRO Landslide Travel Alert';
+
+  @override
+  String get landslideLevel1Msg =>
+      'Level 1: Be watchful of roadside slips and rockfalls along cutting slopes';
+
+  @override
+  String get landslideLevel2Msg =>
+      'Level 2: Heavy rainfall. Avoid night driving across mountain passes';
+
+  @override
+  String get landslideLevel3Msg =>
+      'Level 3: Red Evacuation Alert. Mountain roads may be impassable';
+
+  @override
+  String get floodRiskTitle => 'River Basin Flood Travel Advisory';
+
+  @override
+  String get floodRiskMsg =>
+      'Low-lying access roads may experience rising water. Use main highways';
+
+  @override
+  String get disasterHelplineTitle => 'Disaster Helpline (DMC): 117';
 }

@@ -153,7 +153,7 @@ class PayHereController extends Controller
             . '<form method="post" action="' . e($action) . '">' . $inputs . '</form>'
             . '</body></html>';
 
-        return response($html)->header('Content-Type', 'text/html');
+        return response($html)->header('Content-Type', 'text/html; charset=UTF-8');
     }
 
     private function checkoutUrl(): string

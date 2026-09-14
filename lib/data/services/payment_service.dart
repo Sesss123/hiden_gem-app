@@ -45,9 +45,14 @@ class PaymentService {
       final data = jsonDecode(res.body) as Map<String, dynamic>;
       final params = data['params'] as Map<String, dynamic>?;
       if (params == null) return null;
+      final amount = double.tryParse('${params['amount']}');
+      final currency = params['currency'] as String?;
+      if (amount == null || amount < 0 || currency == null || currency.length != 3) {
+        throw const FormatException('Checkout response did not contain a valid server price.');
+      }
       return PaymentQuote(
-        amount: double.tryParse('${params['amount']}') ?? 0,
-        currency: '${params['currency'] ?? 'LKR'}',
+        amount: amount,
+        currency: currency,
         redirectUrl: Uri.parse(data['redirect_url'] as String),
       );
     } catch (e) {

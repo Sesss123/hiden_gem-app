@@ -8,6 +8,7 @@ class UserProfile {
   List<String> visitedPlaces;
   List<String> bookmarkedPlaces;   // Persisted bookmarks (Bug #19)
   List<String> itineraryPlaceIds;  // "Add to Destiny" itinerary (Bug #19b)
+  List<String> recentlyViewedPlaces; // Traveler experience P1: recently viewed history
   String vibe; // "luxury", "explorer", "photographer", "budget"
   int totalTripsGenerated;
   String? languageCode;
@@ -88,11 +89,13 @@ class UserProfile {
     this.premiumSignature,
     List<String>? bookmarkedPlaces,
     List<String>? itineraryPlaceIds,
+    List<String>? recentlyViewedPlaces,
   })  : sosContacts = sosContacts ?? [],
         tripHistory = tripHistory ?? [],
         ownedArPacks = ownedArPacks ?? [],
         bookmarkedPlaces = bookmarkedPlaces ?? [],
-        itineraryPlaceIds = itineraryPlaceIds ?? [];
+        itineraryPlaceIds = itineraryPlaceIds ?? [],
+        recentlyViewedPlaces = recentlyViewedPlaces ?? [];
 
   factory UserProfile.defaultProfile({String uid = 'TEMP'}) {
     return UserProfile(
@@ -158,6 +161,7 @@ class UserProfile {
         'premiumSignature': premiumSignature,
         'bookmarkedPlaces': bookmarkedPlaces,
         'itineraryPlaceIds': itineraryPlaceIds,
+        'recentlyViewedPlaces': recentlyViewedPlaces,
       };
 
   factory UserProfile.fromJson(Map<String, dynamic> json) {
@@ -203,6 +207,7 @@ class UserProfile {
         premiumSignature: json['premiumSignature'],
         bookmarkedPlaces: List<String>.from(json['bookmarkedPlaces'] ?? []),
         itineraryPlaceIds: List<String>.from(json['itineraryPlaceIds'] ?? []),
+        recentlyViewedPlaces: List<String>.from(json['recentlyViewedPlaces'] ?? []),
       );
   }
 

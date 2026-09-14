@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_functions/cloud_functions.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import '../config/app_config.dart';
+import '../network/secure_http_client.dart';
 import 'vault_service.dart';
 import '../utils/secure_logger.dart';
 
@@ -43,7 +46,6 @@ class StepUpAuthService {
   StepUpAuthService._internal();
 
   final _auth = FirebaseAuth.instance;
-  final _functions = FirebaseFunctions.instance;
 
   final Map<String, StepUpGrant> _activeGrants = {};
 
@@ -103,12 +105,10 @@ class StepUpAuthService {
     // Request Step-Up Grant from Backend
     try {
       final deviceId = await VaultService.getDeviceId();
-      final result = await _functions.httpsCallable('issue_step_up_grant').call({
-        'action': action,
-        'deviceId': deviceId,
-      });
-
-      final data = Map<String, dynamic>.from(result.data as Map);
+      final firebaseToken=await user.getIdToken(true);
+      final response=await SecureHttpClient(http.Client()).post(Uri.parse('${AppConfig.laravelUrl}/security/step-up'),headers:{'Content-Type':'application/json','Accept':'application/json','X-API-KEY':AppConfig.hiddenGemsApiKey},body:jsonEncode({'action':action,'deviceId':deviceId,'firebaseIdToken':firebaseToken})).timeout(const Duration(seconds:15));
+      if(response.statusCode!=200) throw StateError('Step-up request failed (${response.statusCode}).');
+      final data=jsonDecode(response.body) as Map<String,dynamic>;
       final grantId = data['grantId'] as String;
       final grantToken = data['grantToken'] as String;
       final expiresAtMs = data['expiresAt'] as int;

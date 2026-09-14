@@ -30,6 +30,7 @@ import '../../data/repositories/marketplace_repository.dart';
 import '../../data/repositories/broadcast_repository.dart';
 import '../../data/models/broadcast_message.dart';
 import '../../l10n/app_localizations.dart';
+import '../../core/localization/traveler_safety_copy.dart';
 import '../../core/utils/secure_logger.dart';
 
 class GuideDashboardScreen extends StatefulWidget {
@@ -1029,7 +1030,7 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
                   }
                   if (mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(l10n.sosAlertBroadcastedMessage)),
+                      SnackBar(content: Text(TravelerSafetyCopy.hubShared(context))),
                     );
                   }
                 },

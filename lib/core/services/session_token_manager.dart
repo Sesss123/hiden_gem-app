@@ -1,11 +1,12 @@
 import 'dart:convert';
 
-import 'package:cloud_functions/cloud_functions.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:http/http.dart' as http;
 import 'package:uuid/uuid.dart';
 
 import 'vault_service.dart';
+import '../config/app_config.dart';
 
 /// Maintains the short-lived, device-bound token used in addition to the
 /// Firebase/Sanctum identity token. The plaintext never leaves secure storage
@@ -45,14 +46,15 @@ class SessionTokenManager {
         ? ''
         : sha256.convert(utf8.encode(currentToken)).toString();
 
-    final result = await FirebaseFunctions.instance
-        .httpsCallable('rotate_session_token')
-        .call(<String, dynamic>{
-      'sessionId': sessionId,
-      'presentedTokenHash': presentedHash,
-      'deviceId': deviceId,
-    });
-    final data = Map<String, dynamic>.from(result.data as Map);
+    final bearer = await _storage.read(key: 'auth_token');
+    if (bearer == null) throw StateError('Laravel session is unavailable.');
+    final response = await http.post(
+      Uri.parse('${AppConfig.laravelUrl}/security/session/rotate'),
+      headers: {'Content-Type':'application/json','Accept':'application/json','Authorization':'Bearer $bearer','X-API-KEY':AppConfig.hiddenGemsApiKey},
+      body: jsonEncode({'sessionId':sessionId,'presentedTokenHash':presentedHash,'deviceId':deviceId}),
+    ).timeout(const Duration(seconds: 15));
+    if (response.statusCode != 200) throw StateError('Session rotation failed (${response.statusCode}).');
+    final data = jsonDecode(response.body) as Map<String,dynamic>;
     final newToken = data['newToken'] as String?;
     if (newToken == null || newToken.isEmpty) {
       throw StateError('Session rotation returned no token.');

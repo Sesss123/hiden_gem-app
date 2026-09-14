@@ -148,11 +148,16 @@
                         ],
                         'Safety' => [
                             ['route' => 'admin.incidents.index', 'match' => 'admin.incidents.*', 'icon' => 'fa-triangle-exclamation', 'label' => 'Incidents', 'color' => 'text-red-400', 'badgeKey' => 'openIncidentCount'],
+                            ['route' => 'admin.travel-alerts.index', 'match' => 'admin.travel-alerts.*', 'icon' => 'fa-cloud-bolt', 'label' => 'Travel Alerts', 'color' => 'text-orange-400'],
                             ['route' => 'admin.family-share.index', 'match' => 'admin.family-share.*', 'icon' => 'fa-people-arrows', 'label' => 'Family Share', 'color' => 'text-sky-400'],
                         ],
                         'People' => [
                             ['route' => 'admin.guides.index', 'match' => 'admin.guides.*', 'icon' => 'fa-user-tie', 'label' => 'Guides', 'color' => 'text-indigo-400'],
                             ['route' => 'admin.users.index', 'match' => 'admin.users.*', 'icon' => 'fa-users', 'label' => 'Users', 'color' => 'text-indigo-400'],
+                        ],
+                        'System' => [
+                            ['route' => 'admin.prices.index', 'match' => 'admin.prices.*', 'icon' => 'fa-tags', 'label' => 'Price Management', 'color' => 'text-amber-400'],
+                            ['route' => 'admin.settings.index', 'match' => 'admin.settings.*', 'icon' => 'fa-sliders', 'label' => 'App Settings', 'color' => 'text-emerald-400'],
                             ['route' => 'admin.audit-log.index', 'match' => 'admin.audit-log.*', 'icon' => 'fa-shield-halved', 'label' => 'Audit Log', 'color' => 'text-slate-400'],
                         ],
                     ];
@@ -206,6 +211,13 @@
                 <div class="mb-6 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 flex items-center gap-3 shadow-lg">
                     <i class="fa-solid fa-circle-check text-emerald-400 text-lg"></i>
                     <span class="text-sm font-medium">{{ session('success') }}</span>
+                </div>
+            @endif
+
+            @if(session('error'))
+                <div class="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-300 flex items-center gap-3 shadow-lg">
+                    <i class="fa-solid fa-triangle-exclamation text-red-400 text-lg"></i>
+                    <span class="text-sm font-medium">{{ session('error') }}</span>
                 </div>
             @endif
 

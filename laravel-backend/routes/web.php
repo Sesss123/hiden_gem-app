@@ -25,6 +25,8 @@ use App\Http\Controllers\Admin\ReviewController;
 use App\Http\Controllers\Admin\SubscriptionController;
 use App\Http\Controllers\Admin\AuditLogController;
 use App\Http\Controllers\Admin\FamilyShareController;
+use App\Http\Controllers\Admin\SettingController;
+use App\Http\Controllers\Admin\PriceCatalogController;
 use App\Http\Controllers\JoinController;
 use App\Http\Controllers\Api\V1\GuideDocumentUploadController;
 
@@ -82,7 +84,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         // Mutating writes throttled (30/min) — content_manager mutates events
         // directly with no approval gate, same abuse risk as full-admin writes.
-        Route::middleware('throttle:30,1')->group(function () {
+        Route::middleware(['throttle:30,1', 'admin_recent:10'])->group(function () {
             Route::post('places/import', [PlaceController::class, 'importJson'])->name('places.import');
             Route::resource('places', PlaceController::class)->only(['store', 'update']);
             Route::resource('events', EventController::class)->only(['store', 'update', 'destroy']);
@@ -101,6 +103,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
     });
 
     Route::middleware(['auth', 'full_admin'])->group(function () {
+        Route::get('/travel-alerts', [\App\Http\Controllers\Admin\TravelAlertController::class, 'index'])->name('travel-alerts.index');
+        Route::post('/travel-alerts', [\App\Http\Controllers\Admin\TravelAlertController::class, 'store'])->name('travel-alerts.store');
+        Route::patch('/travel-alerts/{travelAlert}', [\App\Http\Controllers\Admin\TravelAlertController::class, 'update'])->name('travel-alerts.update');
+        Route::post('/travel-alerts/{travelAlert}/publish', [\App\Http\Controllers\Admin\TravelAlertController::class, 'publish'])->name('travel-alerts.publish');
+        Route::delete('/travel-alerts/{travelAlert}', [\App\Http\Controllers\Admin\TravelAlertController::class, 'destroy'])->name('travel-alerts.destroy');
         Route::get('/', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
         Route::get('/dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard.index');
 
@@ -132,11 +139,17 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/subscriptions', [SubscriptionController::class, 'index'])->name('subscriptions.index');
         Route::get('/family-share', [FamilyShareController::class, 'index'])->name('family-share.index');
         Route::get('/audit-log', [AuditLogController::class, 'index'])->name('audit-log.index');
+        Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
+        Route::get('/prices', [PriceCatalogController::class, 'index'])->name('prices.index');
 
         // Mutating actions (approve/reject/destroy/ban/cancel/hide) throttled
         // to 30/min — friction against a compromised session or scripted abuse,
         // loose enough not to interfere with normal admin clicking.
-        Route::middleware('throttle:30,1')->group(function () {
+        Route::middleware(['throttle:30,1', 'admin_recent:10'])->group(function () {
+            Route::post('/settings/ads', [SettingController::class, 'toggleAds'])->name('settings.ads.toggle');
+            Route::post('/prices', [PriceCatalogController::class, 'store'])->name('prices.store');
+            Route::patch('/prices/{priceCatalogItem}', [PriceCatalogController::class, 'update'])->name('prices.update');
+            Route::delete('/prices/{priceCatalogItem}', [PriceCatalogController::class, 'destroy'])->name('prices.destroy');
             Route::resource('places', PlaceController::class)->only(['destroy']);
             Route::delete('images/{id}', [PlaceController::class, 'deleteImage'])->name('images.delete');
             Route::post('images/{id}/cover', [PlaceController::class, 'setCoverImage'])->name('images.cover');
@@ -166,6 +179,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::post('/reviews/{id}/hide', [ReviewController::class, 'hide'])->name('reviews.hide');
             Route::post('/reviews/{id}/restore', [ReviewController::class, 'restore'])->name('reviews.restore');
             Route::post('/family-share/{shareId}/revoke', [FamilyShareController::class, 'revoke'])->name('family-share.revoke');
+            Route::delete('/audit-log/clear', [AuditLogController::class, 'clear'])->name('audit-log.clear');
+            Route::delete('/audit-log/{id}', [AuditLogController::class, 'destroy'])->name('audit-log.destroy');
         });
     });
 });

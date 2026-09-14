@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rules\Password;
 use App\Services\FirestoreService;
+use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
@@ -106,7 +107,9 @@ class UserController extends Controller
             unset($data['password']);
         }
 
-        $user->update($data);
+        try {
+            DB::transaction(function () use ($user, $data, $firestore) {
+                $user->update($data);
 
         // is_admin isn't mass-assignable (see store()) and must stay in sync
         // with role: promoting someone to content_manager/admin/super_admin
@@ -123,13 +126,13 @@ class UserController extends Controller
                 'role' => $user->role,
                 'isBanned' => $user->role === User::ROLE_BANNED,
             ])) {
-                // Do not claim success while MySQL and Firebase authorization
-                // disagree. The transaction can be retried by the admin.
-                $user->role = $roleFrom;
-                $user->is_admin = $user->isFullAdmin() || $user->isContentManager();
-                $user->save();
-                return back()->withErrors(['error' => 'Role change was rolled back because Firebase synchronization failed. Please retry.']);
+                throw new \RuntimeException('Firebase synchronization failed.');
             }
+        }
+            });
+        } catch (\Throwable $e) {
+            report($e);
+            return back()->withInput()->withErrors(['error' => 'No changes were saved because Firebase synchronization failed. Please retry.']);
         }
 
         $this->logAdminAction('user.updated', 'User', $user->id, ['role_from' => $roleFrom, 'role_to' => $user->role]);
@@ -144,6 +147,14 @@ class UserController extends Controller
 
         if ($user->id === Auth::id()) {
             return back()->withErrors(['error' => 'You cannot delete your own admin account.']);
+        }
+
+        // A Firebase-backed account owns data across Auth, Firestore and
+        // Storage. Deleting only this SQL row would leave personal data and
+        // an active login behind. Require the complete in-app deletion flow
+        // until the shared deletion service is exposed to this panel.
+        if ($user->firebase_uid) {
+            return back()->withErrors(['error' => 'This Firebase-linked account cannot be deleted from the admin table alone. Ban it here, or use the complete account-deletion workflow.']);
         }
 
         $userName = $user->name;

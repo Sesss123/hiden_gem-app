@@ -12,7 +12,7 @@ class BookingRequest {
   final String? notes;
   
   // Status Lifecycle
-  final String status; // pending, accepted, declined, expired, cancelled_by_tourist, cancelled_by_guide, session_ready, completed
+  final String status; // pending, accepted, declined, expired, cancelled_by_tourist, cancelled_by_guide, cancelled_by_admin, session_ready, completed
   
   // Pricing & Snapshot (Frozen at booking time)
   final double? quotedPrice;

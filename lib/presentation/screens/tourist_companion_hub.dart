@@ -27,6 +27,7 @@ import '../../core/services/emergency_translator_service.dart';
 import 'emergency_translator_screen.dart';
 import 'premium_hub_screen.dart';
 import '../../l10n/app_localizations.dart';
+import '../../core/localization/traveler_safety_copy.dart';
 
 class TouristCompanionHub extends StatefulWidget {
   final String sessionId;
@@ -806,7 +807,7 @@ class _TouristCompanionHubState extends State<TouristCompanionHub> {
             color: AppTheme.colors.white.withValues(alpha: 0.2)),
         const SizedBox(height: 16),
         Text(
-          l10n.instantAlertAdminPoliceMessage,
+          TravelerSafetyCopy.hubDisclosure(context),
           style: GoogleFonts.inter(
               color: AppTheme.textSecondary(context), fontSize: 11),
         ),
@@ -910,7 +911,7 @@ class _TouristCompanionHubState extends State<TouristCompanionHub> {
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(l10n.sosBroadcastedAuthoritiesMessage),
+          content: Text(TravelerSafetyCopy.hubShared(context)),
           backgroundColor: AppTheme.colors.redAccent,
         ),
       );

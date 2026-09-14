@@ -9,6 +9,113 @@ class AppLocalizationsSi extends AppLocalizations {
   AppLocalizationsSi([String locale = 'si']) : super(locale);
 
   @override
+  String get retryAction => 'නැවත උත්සාහ කරන්න';
+
+  @override
+  String get invalidMapCoordinates => 'මෙම ස්ථානයේ සිතියම් ඛණ්ඩාංක වලංගු නොවේ.';
+
+  @override
+  String get mapAppUnavailable => 'සිතියම් යෙදුමක් ලබාගත නොහැක.';
+
+  @override
+  String get routeSafetyAdvisory => 'මාර්ග ආරක්ෂණ උපදේශනය';
+
+  @override
+  String get reviewRouteAction => 'මාර්ගය බලන්න';
+
+  @override
+  String get continueAction => 'ඉදිරියට';
+
+  @override
+  String get savedJourneyHubTitle => 'සුරැකි ස්ථාන සහ ගමන් හබ්';
+
+  @override
+  String bookmarkedCount(int count) {
+    return 'සලකුණු කළ ($count)';
+  }
+
+  @override
+  String wantToVisitCount(int count) {
+    return 'යන්න කැමති ($count)';
+  }
+
+  @override
+  String recentCount(int count) {
+    return 'මෑත ($count)';
+  }
+
+  @override
+  String get savedPlacesLoadError => 'සුරැකි ස්ථාන load කළ නොහැකි විය.';
+
+  @override
+  String get noBookmarkedPlaces => 'තවම සලකුණු කළ ස්ථාන නැත';
+
+  @override
+  String get noBookmarkedPlacesHint =>
+      'ස්ථානයක් මෙහි සුරැකීමට bookmark ලකුණ ඔබන්න.';
+
+  @override
+  String get wantToVisitEmpty => 'යන්න කැමති ලැයිස්තුව හිස්ය';
+
+  @override
+  String get wantToVisitEmptyHint => 'ස්ථාන විස්තර පිටුවෙන් ස්ථාන එක් කරන්න.';
+
+  @override
+  String get noRecentlyViewedPlaces => 'මෑතක බැලූ ස්ථාන නැත';
+
+  @override
+  String get noRecentlyViewedPlacesHint =>
+      'ඔබ බලන ස්ථාන මෙහි ස්වයංක්‍රීයව දිස්වේ.';
+
+  @override
+  String browsingHistoryCount(int count) {
+    return 'බැලූ ඉතිහාසය ($count)';
+  }
+
+  @override
+  String get usageLimitReachedTitle => 'භාවිත සීමාව අවසන්';
+
+  @override
+  String usageLimitReachedMessage(String feature, String plan) {
+    return 'මෙම මාසය සඳහා ඔබගේ $feature සියල්ල භාවිත කර ඇත. $plan සමඟ දිගටම යන්න:';
+  }
+
+  @override
+  String getPlanButton(String plan) {
+    return '$plan ලබාගන්න';
+  }
+
+  @override
+  String get watchAdForOneMore => 'තවත් එකක් සඳහා දැන්වීමක් බලන්න';
+
+  @override
+  String get priceUnavailable => 'මිල ලබාගත නොහැක';
+
+  @override
+  String get contactForPrice => 'මිල සඳහා සම්බන්ධ වන්න';
+
+  @override
+  String get freePriceLabel => 'නොමිලේ';
+
+  @override
+  String fromPriceLabel(String price) {
+    return '$price සිට';
+  }
+
+  @override
+  String priceRangeLabel(String minimum, String maximum) {
+    return '$minimum – $maximum';
+  }
+
+  @override
+  String get serverManagedPriceNote =>
+      'මිල සේවාවෙන් සපයන අතර වෙනස් විය හැක. මිලදී ගැනීමට පෙර තහවුරු කරන්න.';
+
+  @override
+  String get hydrationSummary =>
+      'දේශීය පාන · මුද්‍රා කළ ජල උපදෙස් · ආරක්ෂිත අයිස් උපදෙස්';
+
+  @override
   String get appTitle => 'Hidden Gems SL';
 
   @override
@@ -3708,7 +3815,7 @@ class AppLocalizationsSi extends AppLocalizations {
 
   @override
   String get sosAlertsPreparedLoggedMessage =>
-      'SOS අනතුරු ඇඟවීම් සූදානම් කර ආරක්ෂිත ගබඩාවේ වාර්තා කරන ලදී!';
+      'දුරකථන/SMS app එක විවෘත කළා. ඇමතුම සම්පූර්ණ කරන්න හෝ Send ඔබන්න; හදිසි සේවා ස්වයංක්‍රීයව සම්බන්ධ නොවේ.';
 
   @override
   String get sosCriticalAlertTitle => 'විවේචනාත්මක SOS අනතුරු ඇඟවීම';
@@ -3849,7 +3956,7 @@ class AppLocalizationsSi extends AppLocalizations {
 
   @override
   String get instantAlertAdminPoliceMessage =>
-      'පරිපාලක, පොලීසිය, සහ කේන්ද්‍රස්ථානයට ක්ෂණික අනතුරු ඇඟවීම.';
+      'Guide/admin hub එකට alert කරයි. පොලිසිය ස්වයංක්‍රීයව සම්බන්ධ නොවේ—අවශ්‍ය නම් 119 හෝ 1990 අමතන්න.';
 
   @override
   String get signalSentStayMessage =>
@@ -3869,7 +3976,7 @@ class AppLocalizationsSi extends AppLocalizations {
 
   @override
   String get sosBroadcastedAuthoritiesMessage =>
-      'SOS අනතුරු ඇඟවීම සියලුම බලධාරීන්ට විකාශනය කරන ලදී!';
+      'SOS එක app guide/admin hub එකට යවා ඇත. හදිසි සේවයට 119 හෝ 1990 අමතන්න.';
 
   @override
   String get tourCompletedTitle => 'සංචාරය සම්පූර්ණයි!';
@@ -4992,8 +5099,7 @@ class AppLocalizationsSi extends AppLocalizations {
   String get featureArPhotoCapture => 'AR ඡායාරූප ග්‍රහණය සහ සමාජ බෙදාගැනීම';
 
   @override
-  String get pricingTrialLabel =>
-      'රු. 299/මාසයේ සිට  ·  දින 7ක නොමිලේ අත්හදා බැලීම';
+  String get pricingTrialLabel => 'Store එකෙන් ලබාදෙන විට නොමිලේ අත්හදා බැලීම';
 
   @override
   String get upgradeToPremiumButton => 'වාරික වෙත උසස් කරන්න';
@@ -5180,4 +5286,137 @@ class AppLocalizationsSi extends AppLocalizations {
 
   @override
   String get filterLanguageLabel => 'භාෂාව';
+
+  @override
+  String sosDispatchMessage(String mapUrl) {
+    return 'හදිසි අවස්ථාවකි: මට උදව් අවශ්‍යයි. මගේ වත්මන් ස්ථානය: $mapUrl (Hidden Gems SL මඟින් එවන ලදී)';
+  }
+
+  @override
+  String get sosFailedAppLaunch =>
+      'දුරකථන හෝ SMS යෙදුම විවෘත කළ නොහැකි විය. කරුණාකර දැන්ම 119 හෝ 1990 අමතන්න.';
+
+  @override
+  String get weatherConditionClear => 'පැහැදිලි අහස';
+
+  @override
+  String get weatherConditionClouds => 'වලාකුළු සහිතයි';
+
+  @override
+  String get weatherConditionRain => 'වැසි සහිතයි';
+
+  @override
+  String get weatherConditionThunderstorm => 'ගිගුරුම් සහිත වැසි';
+
+  @override
+  String get weatherConditionDrizzle => 'පොද වැසි';
+
+  @override
+  String get weatherConditionMist => 'මීදුම සහිතයි';
+
+  @override
+  String get rainSafetyAdvisory =>
+      'වැසි / ගිගුරුම් අනතුරු ඇඟවීම: කුඩයක් රැගෙන යන්න, කඳුකර වංගු සහිත මාර්ග වල ප්‍රවේශම් වන්න.';
+
+  @override
+  String get moreToolsTitle => 'තවත් මෙවලම් සහ විශේෂාංග';
+
+  @override
+  String get moreToolsSubtitle =>
+      'Food AI, AR Portals, Oracle, Passport සහ Budget';
+
+  @override
+  String get savedPlacesHubTitle => 'සුරැකි ස්ථාන සහ ප්‍රාර්ථනා ලැයිස්තුව';
+
+  @override
+  String get savedPlacesHubSubtitle =>
+      'පිටු සලකුණු, යාමට කැමති ස්ථාන සහ ඉතිහාසය';
+
+  @override
+  String get mapActionLabel => 'සිතියම';
+
+  @override
+  String get safetyActionLabel => 'ආරක්ෂාව';
+
+  @override
+  String get foodScannerTooltip => 'ආහාර ස්කෑනරය';
+
+  @override
+  String get familyShareTitle => 'පවුලේ බෙදාගැනීම';
+
+  @override
+  String get waterSafetyTitle => 'පානීය ජලය සහ දේශීය ස්වභාවික පාන';
+
+  @override
+  String get waterSafetySubtitle =>
+      'දේශීය පාන සහ ප්‍රවේශම්කාරී ජල ආරක්ෂණ උපදෙස්';
+
+  @override
+  String get drinkLocalHeroTitle => 'ශ්‍රී ලංකාවේ දේශීය පාන';
+
+  @override
+  String get drinkLocalHeroSubtitle =>
+      'පිරිසිදු වෙළෙන්දෙකු තෝරා ඇණවුමට පෙර වත්මන් මිල තහවුරු කරන්න';
+
+  @override
+  String get thambiliTitle => 'තැඹිලි වතුර (King Coconut)';
+
+  @override
+  String get thambiliFairPrice => 'වත්මන් රුපියල් මිල තහවුරු කරන්න';
+
+  @override
+  String get palmyrahTitle => 'නැවුම් තල් බීම සහ පැණි';
+
+  @override
+  String get palmyrahFairPrice => 'වත්මන් රුපියල් මිල තහවුරු කරන්න';
+
+  @override
+  String get herbalTeaTitle => 'බෙලිමල් සහ රණවරා ඖෂධීය පානය';
+
+  @override
+  String get herbalTeaFairPrice => 'වත්මන් රුපියල් මිල තහවුරු කරන්න';
+
+  @override
+  String get slsCertificationTip =>
+      'බෝතල් කළ ජලය මිලදී ගැනීමේදී SLS 894 ප්‍රමිති මුද්‍රාව සහ මුද්‍රිත මූඩිය පරීක්ෂා කරන්න';
+
+  @override
+  String get iceSafetyTip =>
+      'අයිස් හැඩය ආරක්ෂාව තහවුරු නොකරයි; පානීය ජලය භාවිත කළාද විමසන්න හෝ අයිස් නොගන්න';
+
+  @override
+  String get tapWaterWarning =>
+      'ජල තත්ත්වය ස්ථානය අනුව වෙනස් වේ; සැකයක් ඇත්නම් උණු කළ, පෙරූ හෝ මුද්‍රා තැබූ ජලය භාවිතා කරන්න';
+
+  @override
+  String get jeewaniTip =>
+      'ලියාපදිංචි ORS ගැන ඖෂධවේදියෙකුගෙන් විමසා පැකට් උපදෙස් පිළිපදින්න; බරපතළ ලක්ෂණ සඳහා වෛද්‍ය උපකාර ගන්න';
+
+  @override
+  String get findSafeWaterAction => 'ආසන්නයේ ඇති ආරක්ෂිත ජල අලෙවිසැල් සොයන්න';
+
+  @override
+  String get landslideAlertTitle => 'NBRO නායයෑම් සංචාරක අනතුරු ඇඟවීම';
+
+  @override
+  String get landslideLevel1Msg =>
+      'අදියර 1: කඳුකර බෑවුම් සහ ගල් පෙරළීමේ අවදානම ගැන විමසිලිමත් වන්න';
+
+  @override
+  String get landslideLevel2Msg =>
+      'අදියර 2: අධික වර්ෂාව. රාත්‍රී කාලයේ කඳුකර මාර්ග භාවිතා කිරීමෙන් වළකින්න';
+
+  @override
+  String get landslideLevel3Msg =>
+      'අදියර 3: නායයෑම් රතු නිවේදනය. කඳුකර මාර්ග අවහිර විය හැක';
+
+  @override
+  String get floodRiskTitle => 'ගංගා නිම්න ගංවතුර සංචාරක උපදේශනය';
+
+  @override
+  String get floodRiskMsg =>
+      'පහත්බිම් මාර්ග ජලයෙන් යටවීමේ අවදානමක් පවතී. ප්‍රධාන මහාමාර්ග භාවිතා කරන්න';
+
+  @override
+  String get disasterHelplineTitle => 'ආපදා සහන හදිසි ඇමතුම් (DMC): 117';
 }

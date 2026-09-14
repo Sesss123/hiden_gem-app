@@ -8,6 +8,7 @@ use App\Traits\LogsAdminActivity;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Cache;
 
 class BookingController extends Controller
 {
@@ -55,9 +56,8 @@ class BookingController extends Controller
     /**
      * Admin-initiated cancellation — used for disputes/no-shows/fraud where
      * neither party cancels through the normal app flow. Mirrors the status
-     * value the app itself already understands (cancelled_by_guide is reused
-     * here since the app has no dedicated "cancelled_by_admin" status yet;
-     * the admin's reason is recorded separately in responseNote).
+     * Uses a distinct status so guide performance metrics and dispute history
+     * never misattribute an administrator action to the guide.
      */
     public function cancel(Request $request, string $id)
     {
@@ -69,7 +69,7 @@ class BookingController extends Controller
         abort_if($booking === null, 404);
 
         $ok = $this->firestoreService->patchDocument('booking_requests', $id, [
-            'status' => 'cancelled_by_guide',
+            'status' => 'cancelled_by_admin',
             'responseNote' => '[Admin cancellation] ' . $request->input('reason'),
             'respondedAt' => now()->toIso8601String(),
         ]);
@@ -102,8 +102,19 @@ class BookingController extends Controller
             'reason' => 'required|string|max:1000',
         ]);
 
+        $lock = Cache::lock("admin-refund:{$id}", 120);
+        if (!$lock->get()) {
+            return back()->withErrors(['error' => 'A refund for this booking is already being processed.']);
+        }
+
+        try {
         $booking = $this->firestoreService->getDocument('booking_requests', $id);
         abort_if($booking === null, 404);
+
+        if (in_array($booking['refundStatus'] ?? null, ['processing', 'completed', 'manual_reconciliation_required'], true)
+            || ($booking['payoutStatus'] ?? null) === 'refunded') {
+            return back()->withErrors(['error' => 'This refund was already started or completed. Check PayHere before any manual retry.']);
+        }
 
         if (($booking['payoutStatus'] ?? 'pending') !== 'paid') {
             return back()->withErrors(['error' => 'Only a paid booking can be refunded.']);
@@ -120,9 +131,18 @@ class BookingController extends Controller
             return back()->withErrors(['error' => 'PayHere merchant API credentials are not configured — refunds are not available yet.']);
         }
 
+        if (!$this->firestoreService->patchDocument('booking_requests', $id, [
+            'refundStatus' => 'processing',
+            'refundStartedAt' => now()->toIso8601String(),
+            'refundReason' => $request->input('reason'),
+        ])) {
+            return back()->withErrors(['error' => 'Could not reserve this refund safely. No payment action was made.']);
+        }
+
         try {
             $this->callPayHereRefund($paymentId, $appId, $appSecret);
         } catch (\Exception $e) {
+            $this->firestoreService->patchDocument('booking_requests', $id, ['refundStatus' => 'failed']);
             Log::error('Admin refund: PayHere refund call failed', [
                 'booking_id' => $id,
                 'payment_id' => $paymentId,
@@ -135,6 +155,7 @@ class BookingController extends Controller
             'payoutStatus' => 'refunded',
             'responseNote' => '[Admin refund] ' . $request->input('reason'),
             'refundedAt' => now()->toIso8601String(),
+            'refundStatus' => 'completed',
         ]);
 
         if (!$ok) {
@@ -142,13 +163,17 @@ class BookingController extends Controller
             // Firestore write here is a bookkeeping-only problem, not a
             // failed refund. Surface it clearly rather than silently
             // retrying the PayHere call (which would double-refund).
-            return back()->withErrors(['error' => 'PayHere refund succeeded, but updating the booking record failed. Refund the Firestore status manually and check logs.']);
+            $this->firestoreService->patchDocument('booking_requests', $id, ['refundStatus' => 'manual_reconciliation_required']);
+            return back()->withErrors(['error' => 'PayHere refund succeeded, but updating the booking record failed. Do not retry the gateway refund; reconcile Firestore manually.']);
         }
 
         $this->logAdminAction('booking.refunded', 'Booking', $id, ['reason' => $request->input('reason'), 'payment_id' => $paymentId]);
 
         return redirect()->route('admin.bookings.show', $id)
             ->with('success', 'Booking refunded.');
+        } finally {
+            optional($lock)->release();
+        }
     }
 
     /**

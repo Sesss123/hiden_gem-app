@@ -13,12 +13,14 @@ class NotificationService {
   final FirebaseMessaging _fcm = FirebaseMessaging.instance;
   final _foregroundMessageController =
       StreamController<RemoteMessage>.broadcast();
+  final _openedMessageController = StreamController<RemoteMessage>.broadcast();
   StreamSubscription? _notifSub;
   final Set<String> _seenNotifIds = {};
 
   /// Stream of foreground push notifications for UI banners/toasts
   Stream<RemoteMessage> get onForegroundMessage =>
       _foregroundMessageController.stream;
+  Stream<RemoteMessage> get onOpenedMessage => _openedMessageController.stream;
 
   /// In-memory count of unread 'new_booking' notifications, updated by the
   /// single listener in startWatchingUserNotifications() below. Firestore
@@ -84,6 +86,16 @@ class NotificationService {
       // BUG-N01 Fix: Broadcast to listeners so active screens can show Heads-Up Snackbars/Toasts
       _foregroundMessageController.add(message);
     });
+    FirebaseMessaging.onMessageOpenedApp.listen(_openedMessageController.add);
+    final initialMessage = await _fcm.getInitialMessage();
+    if (initialMessage != null) {
+      Future.microtask(() => _openedMessageController.add(initialMessage));
+    }
+
+    // Country-wide, non-personal safety announcements. Topic payloads contain
+    // only alert metadata and no user data.
+    await subscribeToTopic('travel_alerts');
+    await subscribeToTopic('app_config');
 
     final currentUser = FirebaseAuth.instance.currentUser;
     if (currentUser != null) {
@@ -253,5 +265,6 @@ class NotificationService {
 
   void dispose() {
     _foregroundMessageController.close();
+    _openedMessageController.close();
   }
 }

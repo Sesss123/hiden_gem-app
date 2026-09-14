@@ -78,7 +78,7 @@ class PlaceSeeder extends Seeder
                 'category' => 'architecture',
                 'lat' => 6.8768,
                 'lng' => 81.0608,
-                'rating' => 4.8,
+                'rating' => 0.0,
                 'ticket_range' => 'Free',
                 'ticket_price' => 'Free Access',
                 'opening_hours' => '24 Hours (Best sunrise to sunset)',

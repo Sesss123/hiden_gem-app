@@ -813,6 +813,13 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    // Published travel-safety alerts are server/admin authored. Clients may
+    // read active records but can never create, edit or publish them.
+    match /travel_alerts/{alertId} {
+      allow read: if isSignedIn() && resource.data.isActive == true;
+      allow write: if false;
+    }
+
     // ── Risk Config (Fraud/Abuse Detection Rules — admin-managed) ─────────
     match /config/{configId} {
       allow read: if isSignedIn();

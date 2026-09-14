@@ -9,6 +9,114 @@ class AppLocalizationsTa extends AppLocalizations {
   AppLocalizationsTa([String locale = 'ta']) : super(locale);
 
   @override
+  String get retryAction => 'மீண்டும் முயற்சிக்கவும்';
+
+  @override
+  String get invalidMapCoordinates => 'இந்த இடத்தின் வரைபட ஆயங்கள் தவறானவை.';
+
+  @override
+  String get mapAppUnavailable => 'வரைபடச் செயலி கிடைக்கவில்லை.';
+
+  @override
+  String get routeSafetyAdvisory => 'பாதை பாதுகாப்பு ஆலோசனை';
+
+  @override
+  String get reviewRouteAction => 'பாதையை பார்க்கவும்';
+
+  @override
+  String get continueAction => 'தொடரவும்';
+
+  @override
+  String get savedJourneyHubTitle => 'சேமித்த இடங்கள் மற்றும் பயண மையம்';
+
+  @override
+  String bookmarkedCount(int count) {
+    return 'புக்மார்க் ($count)';
+  }
+
+  @override
+  String wantToVisitCount(int count) {
+    return 'செல்ல விருப்பம் ($count)';
+  }
+
+  @override
+  String recentCount(int count) {
+    return 'சமீபம் ($count)';
+  }
+
+  @override
+  String get savedPlacesLoadError => 'சேமித்த இடங்களை ஏற்ற முடியவில்லை.';
+
+  @override
+  String get noBookmarkedPlaces => 'புக்மார்க் செய்த இடங்கள் இல்லை';
+
+  @override
+  String get noBookmarkedPlacesHint =>
+      'ஒரு இடத்தைச் சேமிக்க புக்மார்க் குறியைத் தட்டவும்.';
+
+  @override
+  String get wantToVisitEmpty => 'செல்ல விருப்பப் பட்டியல் காலியாக உள்ளது';
+
+  @override
+  String get wantToVisitEmptyHint =>
+      'இட விவரப் பக்கத்திலிருந்து இடங்களைச் சேர்க்கவும்.';
+
+  @override
+  String get noRecentlyViewedPlaces => 'சமீபத்தில் பார்த்த இடங்கள் இல்லை';
+
+  @override
+  String get noRecentlyViewedPlacesHint =>
+      'நீங்கள் பார்க்கும் இடங்கள் இங்கே தோன்றும்.';
+
+  @override
+  String browsingHistoryCount(int count) {
+    return 'பார்வை வரலாறு ($count)';
+  }
+
+  @override
+  String get usageLimitReachedTitle => 'பயன்பாட்டு வரம்பு முடிந்தது';
+
+  @override
+  String usageLimitReachedMessage(String feature, String plan) {
+    return 'இந்த மாதத்திற்கான $feature அனைத்தையும் பயன்படுத்திவிட்டீர்கள். $plan உடன் தொடரவும்:';
+  }
+
+  @override
+  String getPlanButton(String plan) {
+    return '$plan பெறுக';
+  }
+
+  @override
+  String get watchAdForOneMore => 'மேலும் ஒன்றுக்கு விளம்பரம் பார்க்கவும்';
+
+  @override
+  String get priceUnavailable => 'விலை கிடைக்கவில்லை';
+
+  @override
+  String get contactForPrice => 'விலைக்கு தொடர்பு கொள்ளவும்';
+
+  @override
+  String get freePriceLabel => 'இலவசம்';
+
+  @override
+  String fromPriceLabel(String price) {
+    return '$price முதல்';
+  }
+
+  @override
+  String priceRangeLabel(String minimum, String maximum) {
+    return '$minimum – $maximum';
+  }
+
+  @override
+  String get serverManagedPriceNote =>
+      'விலைகள் சேவையால் வழங்கப்படுகின்றன; மாறலாம். வாங்கும் முன் உறுதிசெய்யவும்.';
+
+  @override
+  String get hydrationSummary =>
+      'உள்ளூர் பானங்கள் · மூடிய குடிநீர் வழிகாட்டல் · பாதுகாப்பான பனி வழிகாட்டல்';
+
+  @override
   String get appTitle => 'Hidden Gems SL';
 
   @override
@@ -1912,23 +2020,23 @@ class AppLocalizationsTa extends AppLocalizations {
 
   @override
   String get noGuideListingError =>
-      'This guide hasn\'t set up their profile yet, so they can\'t accept bookings right now. Please try another guide.';
+      'இந்த வழிகாட்டி இன்னும் சுயவிவரத்தை அமைக்கவில்லை. வேறு வழிகாட்டியை முயலுங்கள்.';
 
   @override
-  String get sendQuoteDialogTitle => 'Set your price';
+  String get sendQuoteDialogTitle => 'உங்கள் விலையை அமைக்கவும்';
 
   @override
-  String get sendQuoteAmountLabel => 'Amount';
+  String get sendQuoteAmountLabel => 'தொகை';
 
   @override
-  String get sendQuoteConfirmButtonLabel => 'Accept & send quote';
+  String get sendQuoteConfirmButtonLabel => 'ஏற்று விலைமதிப்பை அனுப்பு';
 
   @override
-  String get payNowButtonLabel => 'Pay Now';
+  String get payNowButtonLabel => 'இப்போது செலுத்து';
 
   @override
   String get paymentUnavailableError =>
-      'This booking can\'t be paid right now — it may already be paid, or the price may have changed. Pull to refresh and try again.';
+      'இந்த முன்பதிவுக்கு இப்போது பணம் செலுத்த முடியாது. புதுப்பித்து மீண்டும் முயலுங்கள்.';
 
   @override
   String get receiptTitleLabel => 'Payment Receipt';
@@ -3740,7 +3848,7 @@ class AppLocalizationsTa extends AppLocalizations {
 
   @override
   String get sosAlertsPreparedLoggedMessage =>
-      'SOS எச்சரிக்கைகள் தயார் செய்யப்பட்டு பாதுகாப்பு பெட்டகத்தில் பதிவு செய்யப்பட்டன!';
+      'தொலைபேசி/SMS செயலி திறக்கப்பட்டது. அழைப்பை முடிக்கவும் அல்லது Send அழுத்தவும்; அவசர சேவைகள் தானாக தொடர்புகொள்ளப்படாது.';
 
   @override
   String get sosCriticalAlertTitle => 'மிக முக்கியமான SOS எச்சரிக்கை';
@@ -3881,7 +3989,7 @@ class AppLocalizationsTa extends AppLocalizations {
 
   @override
   String get instantAlertAdminPoliceMessage =>
-      'நிர்வாகி, காவல்துறை மற்றும் மையத்திற்கு உடனடி எச்சரிக்கை.';
+      'வழிகாட்டி/நிர்வாக மையத்திற்கு எச்சரிக்கை அனுப்பும். காவல்துறை தானாக தொடர்புகொள்ளப்படாது; 119 அல்லது 1990 ஐ அழைக்கவும்.';
 
   @override
   String get signalSentStayMessage =>
@@ -3901,7 +4009,7 @@ class AppLocalizationsTa extends AppLocalizations {
 
   @override
   String get sosBroadcastedAuthoritiesMessage =>
-      'SOS எச்சரிக்கை அனைத்து அதிகாரிகளுக்கும் அனுப்பப்பட்டது!';
+      'SOS செயலியின் வழிகாட்டி/நிர்வாக மையத்துடன் பகிரப்பட்டது. 119 அல்லது 1990 ஐ அழைக்கவும்.';
 
   @override
   String get tourCompletedTitle => 'சுற்றுலா முடிந்தது!';
@@ -4713,7 +4821,7 @@ class AppLocalizationsTa extends AppLocalizations {
 
   @override
   String get audioGuideUnavailable =>
-      'This audio guide isn\'t available right now. Tap to retry.';
+      'இந்த ஒலி வழிகாட்டி இப்போது கிடைக்கவில்லை. மீண்டும் முயல தட்டுங்கள்.';
 
   @override
   String get sinhalaShortLabel => 'සිංහල';
@@ -4801,23 +4909,23 @@ class AppLocalizationsTa extends AppLocalizations {
 
   @override
   String get arModelPlacementFailedMessage =>
-      'This model couldn\'t be placed — it may be missing or corrupted. Try again or pick another location.';
+      'இந்த மாதிரியை வைக்க முடியவில்லை — அது காணாமல் போயிருக்கலாம் அல்லது சேதமடைந்திருக்கலாம். மீண்டும் முயலுங்கள்.';
 
   @override
   String arSessionErrorMessage(String message) {
-    return 'AR error: $message';
+    return 'AR பிழை: $message';
   }
 
   @override
-  String get largeDownloadWarningTitle => 'Large download';
+  String get largeDownloadWarningTitle => 'பெரிய பதிவிறக்கம்';
 
   @override
   String largeDownloadWarningMessage(String size) {
-    return 'This 3D model is about $size MB. Downloading it now will use your mobile data. Continue?';
+    return 'இந்த 3D மாதிரி சுமார் $size MB. பதிவிறக்கம் மொபைல் தரவைப் பயன்படுத்தும். தொடரவா?';
   }
 
   @override
-  String get downloadAnywayButtonLabel => 'Download anyway';
+  String get downloadAnywayButtonLabel => 'எப்படியும் பதிவிறக்கு';
 
   @override
   String modelColonNameLabel(String name) {
@@ -5032,7 +5140,7 @@ class AppLocalizationsTa extends AppLocalizations {
   String get featureArPhotoCapture => 'ஏஆர் புகைப்பட பிடிப்பு & சமூக பகிர்வு';
 
   @override
-  String get pricingTrialLabel => 'ரூ. 299/மாதம் முதல்  ·  7-நாள் இலவச சோதனை';
+  String get pricingTrialLabel => 'Store வழங்கும்போது இலவச சோதனை';
 
   @override
   String get upgradeToPremiumButton => 'பிரீமியத்திற்கு மேம்படுத்து';
@@ -5221,4 +5329,139 @@ class AppLocalizationsTa extends AppLocalizations {
 
   @override
   String get filterLanguageLabel => 'மொழி';
+
+  @override
+  String sosDispatchMessage(String mapUrl) {
+    return 'அவசரம்: எனக்கு உதவி தேவை. எனது தற்போதைய இடம்: $mapUrl (Hidden Gems SL மூலம் அனுப்பப்பட்டது)';
+  }
+
+  @override
+  String get sosFailedAppLaunch =>
+      'தொலைபேசி அல்லது SMS செயலியை திறக்க முடியவில்லை. உடனடியாக 119 அல்லது 1990 ஐ அழைக்கவும்.';
+
+  @override
+  String get weatherConditionClear => 'தெளிவான வானம்';
+
+  @override
+  String get weatherConditionClouds => 'மேகமூட்டம்';
+
+  @override
+  String get weatherConditionRain => 'மழை';
+
+  @override
+  String get weatherConditionThunderstorm => 'இடியுடன் கூடிய மழை';
+
+  @override
+  String get weatherConditionDrizzle => 'தூறல்';
+
+  @override
+  String get weatherConditionMist => 'பனிமூட்டம்';
+
+  @override
+  String get rainSafetyAdvisory =>
+      'மழை / இடியுடன் கூடிய மழை எச்சரிக்கை: குடை எடுத்துச் செல்லவும், வளைந்த சாலைகளில் எச்சரிக்கையாக இருக்கவும்.';
+
+  @override
+  String get moreToolsTitle => 'கூடுதல் கருவிகள் & அனுபவங்கள்';
+
+  @override
+  String get moreToolsSubtitle => 'உணவு AI, AR, தரவுத்தளம் & பட்ஜெட்';
+
+  @override
+  String get savedPlacesHubTitle => 'சேமிக்கப்பட்ட இடங்கள் & விருப்பப்பட்டியல்';
+
+  @override
+  String get savedPlacesHubSubtitle =>
+      'புக்மார்க்குகள், பார்க்க விரும்புபவை & வரலாறு';
+
+  @override
+  String get mapActionLabel => 'வரைபடம்';
+
+  @override
+  String get safetyActionLabel => 'பாதுகாப்பு';
+
+  @override
+  String get foodScannerTooltip => 'உணவு ஸ்கேனர்';
+
+  @override
+  String get familyShareTitle => 'குடும்ப பகிர்வு';
+
+  @override
+  String get waterSafetyTitle => 'குடிநீர் & உள்ளூர் பானங்கள்';
+
+  @override
+  String get waterSafetySubtitle =>
+      'உள்ளூர் பானங்கள் மற்றும் எச்சரிக்கையான குடிநீர் பாதுகாப்பு வழிகாட்டல்';
+
+  @override
+  String get drinkLocalHeroTitle =>
+      'இலங்கையின் இயற்கையான புத்துணர்ச்சி பானங்கள்';
+
+  @override
+  String get drinkLocalHeroSubtitle =>
+      'சுத்தமான விற்பனையாளரைத் தேர்ந்தெடுத்து ஆர்டர் முன் தற்போதைய விலையை உறுதி செய்யுங்கள்';
+
+  @override
+  String get thambiliTitle => 'தம்பிலி / செவ்விளநீர் (King Coconut)';
+
+  @override
+  String get thambiliFairPrice => 'தற்போதைய LKR விலையை உறுதி செய்யுங்கள்';
+
+  @override
+  String get palmyrahTitle => 'பனம்பழச்சாறு & பதநீர் (Palmyrah)';
+
+  @override
+  String get palmyrahFairPrice => 'தற்போதைய LKR விலையை உறுதி செய்யுங்கள்';
+
+  @override
+  String get herbalTeaTitle => 'பெலிமல் & ரணவரா மூலிகை தேநீர்';
+
+  @override
+  String get herbalTeaFairPrice => 'தற்போதைய LKR விலையை உறுதி செய்யுங்கள்';
+
+  @override
+  String get slsCertificationTip =>
+      'பாட்டில் தண்ணீரில் SLS 894 முத்திரை மற்றும் மூடி சீலை சரிபார்க்கவும்';
+
+  @override
+  String get iceSafetyTip =>
+      'பனியின் வடிவம் பாதுகாப்பை உறுதி செய்யாது; குடிநீரில் செய்ததா கேளுங்கள் அல்லது பனியைத் தவிருங்கள்';
+
+  @override
+  String get tapWaterWarning =>
+      'நீர்தரம் இடத்துக்கு இடம் மாறும்; சந்தேகம் இருந்தால் கொதிக்கவைத்த, வடிகட்டிய அல்லது சீலிட்ட நீரைப் பயன்படுத்துங்கள்';
+
+  @override
+  String get jeewaniTip =>
+      'பதிவுசெய்யப்பட்ட ORS பற்றி மருந்தாளரிடம் கேட்டு பொதி வழிமுறைகளைப் பின்பற்றுங்கள்; கடுமையான அறிகுறிகளுக்கு சிகிச்சை பெறுங்கள்';
+
+  @override
+  String get findSafeWaterAction =>
+      'அருகிலுள்ள பாதுகாப்பான குடிநீர் கடைகளைக் கண்டறியவும்';
+
+  @override
+  String get landslideAlertTitle => 'NBRO நிலச்சரிவு பயண எச்சரிக்கை';
+
+  @override
+  String get landslideLevel1Msg =>
+      'நிலை 1: மலைப்பாதைகளில் சரிவுகள் மற்றும் பாறை வீழ்ச்சி குறித்து கவனமாக இருங்கள்';
+
+  @override
+  String get landslideLevel2Msg =>
+      'நிலை 2: பலத்த மழை. இரவு நேரங்களில் மலைப்பாதைகளில் பயணிப்பதைத் தவிர்க்கவும்';
+
+  @override
+  String get landslideLevel3Msg =>
+      'நிலை 3: சிவப்பு எச்சரிக்கை. மலைப்பாதைகள் துண்டிக்கப்படலாம்';
+
+  @override
+  String get floodRiskTitle => 'ஆற்றுப் படுகை வெள்ளப் பயண ஆலோசனை';
+
+  @override
+  String get floodRiskMsg =>
+      'தாழ்வான சாலைகளில் நீர் மட்டம் உயரக்கூடும். பிரதான நெடுஞ்சாலைகளைப் பயன்படுத்தவும்';
+
+  @override
+  String get disasterHelplineTitle =>
+      'அனர்த்த முகாமைத்துவ அவசர உதவி (DMC): 117';
 }

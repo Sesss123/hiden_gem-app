@@ -36,21 +36,12 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-// RevenueCat Webhook (server-to-server; no Sanctum token — authenticated via
-// its own shared-secret Authorization header instead. See VerifyRevenueCatWebhook.)
 Route::post('/webhooks/revenuecat', [RevenueCatWebhookController::class, 'handle'])
     ->middleware(VerifyRevenueCatWebhook::class);
 
-// PayHere payment callbacks (server-to-server + browser redirects; NO Sanctum
-// token — the notify callback is authenticated by PayHere's own md5 signature,
-// verified inside the controller). These must be public so PayHere's servers
-// and the user's browser can reach them.
 Route::post('/v1/payments/notify', [PayHereController::class, 'notify'])->name('payments.notify');
 Route::get('/v1/payments/return', [PayHereController::class, 'paymentReturn'])->name('payments.return');
 Route::get('/v1/payments/cancel', [PayHereController::class, 'paymentCancel'])->name('payments.cancel');
-// Signed browser redirect that auto-submits the PayHere form. Auth is the
-// signed URL itself (issued by /payments/checkout after ownership check), so
-// no Sanctum token is needed for this plain browser navigation.
 Route::get('/v1/payments/redirect/{bookingId}', [PayHereController::class, 'redirect'])
     ->name('payments.redirect')
     ->middleware('signed');
@@ -74,14 +65,6 @@ Route::prefix('v1')->group(function () {
         Route::post('/places/{id}/bookmark', [WishlistController::class, 'toggle']);
     });
 
-    // Place Sync API Routes (API Key & Rate Limiting — intentionally NOT
-    // behind auth:sanctum: the app calls this during first-launch boot sync,
-    // before any account/token exists, and every response here is identical
-    // for any caller — PlaceSyncController's methods never read $request->user()
-    // or any per-user state, only public approved-place data. Requiring
-    // Sanctum here 401s every fresh install's initial sync, which
-    // delta_sync_service.dart silently treats as "no update" — the app is
-    // left with a permanently empty local catalog and no visible error.)
     Route::prefix('places')->middleware([VerifyApiKey::class, 'throttle:60,1'])->group(function () {
         Route::get('/', [PlaceSyncController::class, 'allPlaces']);
         Route::get('/check-version', [PlaceSyncController::class, 'checkVersion']);
@@ -89,9 +72,6 @@ Route::prefix('v1')->group(function () {
         Route::get('/{id}/nearby', [PlaceSyncController::class, 'nearby']);
     });
 
-    // Guide Applications API Routes (Protected by Sanctum Auth, API Key & Rate Limiting)
-    // 'zenith' verifies the X-Zenith-* request signature on non-multipart
-    // requests (the middleware self-skips the multipart /documents upload).
     Route::prefix('guide-applications')->middleware(['auth:sanctum', VerifyApiKey::class, 'zenith', 'throttle:30,1'])->group(function () {
         Route::post('/', [GuideApplicationController::class, 'submit']);
         Route::get('/status/{userId}', [GuideApplicationController::class, 'myStatus']);
@@ -144,9 +124,6 @@ Route::prefix('v1')->group(function () {
         Route::post('/{bookingId}/accept-with-session', [BookingController::class, 'acceptWithSession']);
     });
 
-    // Payment checkout (tourist-initiated; returns signed PayHere params).
-    // The notify/return/cancel callbacks are public (registered above) since
-    // PayHere's servers / the user's browser hit them without a Sanctum token.
     Route::prefix('payments')->middleware(['auth:sanctum', VerifyApiKey::class, 'zenith', 'throttle:30,1'])->group(function () {
         Route::post('/checkout', [PayHereController::class, 'checkout']);
     });
@@ -155,11 +132,19 @@ Route::prefix('v1')->group(function () {
     Route::prefix('security')->middleware(['auth:sanctum', VerifyApiKey::class, 'zenith', 'throttle:30,1'])->group(function () {
         Route::get('/device-account-count', [SecurityController::class, 'deviceAccountCount']);
     });
+    Route::prefix('security')->middleware(['auth:sanctum', VerifyApiKey::class, 'throttle:30,1'])->group(function () {
+        Route::post('/device-key', [SecurityController::class, 'registerDeviceKey']);
+        Route::post('/session/rotate', [SecurityController::class, 'rotateSession']);
+    });
+    Route::post('/security/step-up', [SecurityController::class, 'issueStepUpGrant'])
+        ->middleware(['auth:sanctum', VerifyApiKey::class, 'zenith', 'throttle:10,1']);
+    Route::prefix('security')->middleware(['auth:sanctum', VerifyApiKey::class, 'zenith', 'throttle:30,1'])->group(function () {
+        Route::post('/posture', [SecurityController::class, 'evaluatePosture']);
+        Route::post('/session/revoke', [SecurityController::class, 'revokeSession']);
+        Route::post('/sessions/revoke-all', [SecurityController::class, 'revokeAllSessions']);
+    });
 
-    // AI Subsystem Proxy Routes (Protected by Sanctum Auth, API Key, and Throttling)
-    // BUG-Q006 / BUG-Q010 / BUG-Q011: Replaced inline closures with AiProxyController.
-    // All requests are now validated via FormRequest before being forwarded to Python.
-    // Python upstream errors are sanitised — raw error bodies are never returned to clients.
+
     Route::middleware(['auth:sanctum', VerifyApiKey::class, 'zenith', 'throttle:10,1'])->group(function () {
         Route::post('/ai/plan-itinerary', [AiProxyController::class, 'planItinerary']);
         Route::post('/ai/recommendations', [AiProxyController::class, 'recommendations']);
@@ -168,16 +153,35 @@ Route::prefix('v1')->group(function () {
         Route::get('/ai/status', [AiProxyController::class, 'status']);
     });
 
-    // Discovery API — public content feeds consumed by the app's discovery/
-    // content screens. Same reasoning as the Place Sync group above: called
-    // during app boot before any account/token exists, and the response is
-    // identical for any caller, so it's API-key gated rather than
-    // auth:sanctum-gated. AppConfig.baseUrl (Flutter) is laravelUrl, which
-    // already ends in "/api/v1" — DynamicContentService.fetchEvents() calls
-    // "{baseUrl}/discovery/events", so this must live under the /v1 prefix
-    // (unlike PlaceSyncController's /v1/places group, which is also under
-    // /v1 — every existing sync-style endpoint here is).
     Route::prefix('discovery')->middleware([VerifyApiKey::class, 'throttle:60,1'])->group(function () {
         Route::get('/events', [EventSyncController::class, 'events']);
     });
+
+    // Remote App Configuration & Ads Master Switch (Public, high performance)
+    Route::get('/config/ads', function () {
+        $adsEnabled = true;
+        try {
+            $adsEnabled = \App\Models\AppSetting::isAdsEnabled();
+        } catch (\Throwable $e) {
+            // Safe fallback if database is updating
+        }
+
+        return response()->json([
+            'success' => true,
+            'ads_enabled' => $adsEnabled,
+            'network' => 'admob',
+            'timestamp' => now()->timestamp,
+        ])->header('Cache-Control', 'no-store, max-age=0');
+    })->middleware('throttle:120,1');
+
+    Route::get('/config/prices', function () {
+        $version = (int) \Illuminate\Support\Facades\Cache::get('public_price_catalog_version', 1);
+        $items = \Illuminate\Support\Facades\Cache::remember('public_price_catalog_v1', 300, function () {
+            return \App\Models\PriceCatalogItem::currentlyAvailable()->orderBy('key')->get()
+                ->mapWithKeys(fn ($item) => [$item->key => $item->toPublicArray()])->all();
+        });
+        return response()->json(['success' => true, 'version' => $version, 'prices' => $items, 'updated_at' => now()->toIso8601String()])
+            ->header('Cache-Control', 'public, max-age=60, stale-if-error=86400')
+            ->header('ETag', '"prices-' . $version . '"');
+    })->middleware('throttle:120,1');
 });

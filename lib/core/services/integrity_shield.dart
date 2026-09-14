@@ -2,7 +2,9 @@ import 'package:flutter/foundation.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:safe_device/safe_device.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:cloud_functions/cloud_functions.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import '../network/secure_http_client.dart';
 import 'package:hidden_gems_sl/core/services/threat_reporter.dart';
 import 'package:hidden_gems_sl/core/config/app_config.dart';
 import 'package:hidden_gems_sl/core/utils/secure_logger.dart';
@@ -28,7 +30,6 @@ class IntegrityShield {
   int _riskScore = 0;
   final List<String> _activeSignals = [];
   IntegrityResult? _lastResult;
-  final _functions = FirebaseFunctions.instance;
 
   // --- Configuration ---
   static const String _expectedPackageName = 'com.hidden.gems.hidden_gems_sl';
@@ -101,16 +102,14 @@ class IntegrityShield {
 
       // We upload all locally detected signals to the backend.
       final deviceId = await VaultService.getDeviceId();
-      final result = await _functions
-          .httpsCallable('evaluate_security_posture')
-          .call({
+      final response=await SecureHttpClient(http.Client()).post(Uri.parse('${AppConfig.laravelUrl}/security/posture'),headers:{'Content-Type':'application/json','Accept':'application/json','X-API-KEY':AppConfig.hiddenGemsApiKey},body:jsonEncode({
             'signals': _activeSignals,
             'deviceId': deviceId, 
             'isSpectre': isSpectre,
             'timestamp': DateTime.now().millisecondsSinceEpoch
-          });
-      
-      final data = Map<String, dynamic>.from(result.data);
+          })).timeout(const Duration(seconds:15));
+      if(response.statusCode!=200) throw StateError('Posture evaluation failed (${response.statusCode}).');
+      final data=jsonDecode(response.body) as Map<String,dynamic>;
       
       // If the server returns a higher risk score than local, we adopt it.
       if (data.containsKey('riskScore')) {

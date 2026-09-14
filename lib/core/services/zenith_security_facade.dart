@@ -1,5 +1,8 @@
 import 'package:flutter/foundation.dart';
-import 'package:cloud_functions/cloud_functions.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import '../config/app_config.dart';
 import 'integrity_shield.dart';
 import 'secure_entitlements.dart';
 import 'behavior_analytics_engine.dart';
@@ -44,7 +47,7 @@ class ZenithSecurityFacade {
   final SessionQuarantine quarantine = SessionQuarantine();
   final StepUpAuthService stepUp = StepUpAuthService();
 
-  final _functions = FirebaseFunctions.instance;
+  static const _storage = FlutterSecureStorage();
   bool _initialized = false;
 
   // --- Lifecycle ---
@@ -76,11 +79,9 @@ class ZenithSecurityFacade {
     try {
       final deviceId = await VaultService.getDeviceId();
       final pubKeyPem = await VaultService.getDevicePublicKeyPem();
-      await _functions.httpsCallable('register_device_key').call({
-        'deviceId': deviceId,
-        'publicKeyPem': pubKeyPem,
-        'platform': platform,
-      });
+      final token=await _storage.read(key:'auth_token');
+      final response=await http.post(Uri.parse('${AppConfig.laravelUrl}/security/device-key'),headers:{'Content-Type':'application/json','Authorization':'Bearer $token','X-API-KEY':AppConfig.hiddenGemsApiKey},body:jsonEncode({'deviceId':deviceId,'publicKeyPem':pubKeyPem,'platform':platform})).timeout(const Duration(seconds:15));
+      if(response.statusCode!=200) throw StateError('Device registration failed (${response.statusCode}).');
       debugPrint('[ZenithSecurity] Device key registered successfully.');
       await SessionTokenManager.startNewSession();
     } catch (e) {
@@ -111,7 +112,7 @@ class ZenithSecurityFacade {
   /// Revoke current session on server.
   Future<void> revokeCurrentSession(String sessionId) async {
     try {
-      await _functions.httpsCallable('revoke_session').call({'sessionId': sessionId});
+      await _postSecurity('/security/session/revoke', {'sessionId':sessionId});
     } catch (e) {
       debugPrint('[ZenithSecurity] Session revocation error: $e');
     }
@@ -120,11 +121,17 @@ class ZenithSecurityFacade {
   /// Revoke all sessions across all devices (Remote Kill / Force Logout).
   Future<void> revokeAllSessions() async {
     try {
-      await _functions.httpsCallable('revoke_all_sessions').call({});
+      await _postSecurity('/security/sessions/revoke-all', const {});
       onUserLogout();
     } catch (e) {
       debugPrint('[ZenithSecurity] Revoke all sessions error: $e');
     }
+  }
+
+  Future<void> _postSecurity(String path, Map<String,dynamic> body) async {
+    final token=await _storage.read(key:'auth_token');
+    final response=await http.post(Uri.parse('${AppConfig.laravelUrl}$path'),headers:{'Content-Type':'application/json','Authorization':'Bearer $token','X-API-KEY':AppConfig.hiddenGemsApiKey},body:jsonEncode(body)).timeout(const Duration(seconds:15));
+    if(response.statusCode!=200) throw StateError('Security request failed (${response.statusCode}).');
   }
 
   // --- Quick Access Guards (Synchronous) ---

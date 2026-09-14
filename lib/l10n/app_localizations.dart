@@ -106,6 +106,180 @@ abstract class AppLocalizations {
     Locale('ta')
   ];
 
+  /// No description provided for @retryAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get retryAction;
+
+  /// No description provided for @invalidMapCoordinates.
+  ///
+  /// In en, this message translates to:
+  /// **'This place has invalid map coordinates.'**
+  String get invalidMapCoordinates;
+
+  /// No description provided for @mapAppUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No map application is available.'**
+  String get mapAppUnavailable;
+
+  /// No description provided for @routeSafetyAdvisory.
+  ///
+  /// In en, this message translates to:
+  /// **'Route safety advisory'**
+  String get routeSafetyAdvisory;
+
+  /// No description provided for @reviewRouteAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Review route'**
+  String get reviewRouteAction;
+
+  /// No description provided for @continueAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get continueAction;
+
+  /// No description provided for @savedJourneyHubTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved Places & Journey Hub'**
+  String get savedJourneyHubTitle;
+
+  /// No description provided for @bookmarkedCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Bookmarked ({count})'**
+  String bookmarkedCount(int count);
+
+  /// No description provided for @wantToVisitCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Want to Visit ({count})'**
+  String wantToVisitCount(int count);
+
+  /// No description provided for @recentCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent ({count})'**
+  String recentCount(int count);
+
+  /// No description provided for @savedPlacesLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved places could not be loaded.'**
+  String get savedPlacesLoadError;
+
+  /// No description provided for @noBookmarkedPlaces.
+  ///
+  /// In en, this message translates to:
+  /// **'No bookmarked places yet'**
+  String get noBookmarkedPlaces;
+
+  /// No description provided for @noBookmarkedPlacesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap the bookmark icon on a place to save it here.'**
+  String get noBookmarkedPlacesHint;
+
+  /// No description provided for @wantToVisitEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Want to Visit list is empty'**
+  String get wantToVisitEmpty;
+
+  /// No description provided for @wantToVisitEmptyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Add places from their details page.'**
+  String get wantToVisitEmptyHint;
+
+  /// No description provided for @noRecentlyViewedPlaces.
+  ///
+  /// In en, this message translates to:
+  /// **'No recently viewed places'**
+  String get noRecentlyViewedPlaces;
+
+  /// No description provided for @noRecentlyViewedPlacesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Places you explore will appear here automatically.'**
+  String get noRecentlyViewedPlacesHint;
+
+  /// No description provided for @browsingHistoryCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Browsing history ({count})'**
+  String browsingHistoryCount(int count);
+
+  /// No description provided for @usageLimitReachedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Usage limit reached'**
+  String get usageLimitReachedTitle;
+
+  /// No description provided for @usageLimitReachedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'You have used all your {feature} for this month. Continue with {plan}:'**
+  String usageLimitReachedMessage(String feature, String plan);
+
+  /// No description provided for @getPlanButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Get {plan}'**
+  String getPlanButton(String plan);
+
+  /// No description provided for @watchAdForOneMore.
+  ///
+  /// In en, this message translates to:
+  /// **'Watch an ad for one more'**
+  String get watchAdForOneMore;
+
+  /// No description provided for @priceUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Price unavailable'**
+  String get priceUnavailable;
+
+  /// No description provided for @contactForPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact for price'**
+  String get contactForPrice;
+
+  /// No description provided for @freePriceLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Free'**
+  String get freePriceLabel;
+
+  /// No description provided for @fromPriceLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'From {price}'**
+  String fromPriceLabel(String price);
+
+  /// No description provided for @priceRangeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{minimum} – {maximum}'**
+  String priceRangeLabel(String minimum, String maximum);
+
+  /// No description provided for @serverManagedPriceNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Prices are supplied by the service and may change. Confirm before purchase.'**
+  String get serverManagedPriceNote;
+
+  /// No description provided for @hydrationSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Local drinks · sealed water guidance · safer ice guidance'**
+  String get hydrationSummary;
+
   /// The title of the application
   ///
   /// In en, this message translates to:
@@ -6619,7 +6793,7 @@ abstract class AppLocalizations {
   /// No description provided for @sosAlertsPreparedLoggedMessage.
   ///
   /// In en, this message translates to:
-  /// **'SOS Alerts Prepared & Logged in Secure Vault!'**
+  /// **'Phone/SMS app opened. Complete the call or tap Send; emergency services are not contacted automatically. The incident was logged where possible.'**
   String get sosAlertsPreparedLoggedMessage;
 
   /// No description provided for @sosCriticalAlertTitle.
@@ -6877,7 +7051,7 @@ abstract class AppLocalizations {
   /// No description provided for @instantAlertAdminPoliceMessage.
   ///
   /// In en, this message translates to:
-  /// **'Instant alert to admin, police, and hub.'**
+  /// **'Alerts your guide/admin hub. Police are not contacted automatically—call 119 or 1990 if needed.'**
   String get instantAlertAdminPoliceMessage;
 
   /// No description provided for @signalSentStayMessage.
@@ -6907,7 +7081,7 @@ abstract class AppLocalizations {
   /// No description provided for @sosBroadcastedAuthoritiesMessage.
   ///
   /// In en, this message translates to:
-  /// **'SOS ALERT BROADCASTED TO ALL AUTHORITIES!'**
+  /// **'SOS shared with the in-app guide/admin hub. Call 119 or 1990 for emergency services.'**
   String get sosBroadcastedAuthoritiesMessage;
 
   /// No description provided for @tourCompletedTitle.
@@ -8827,7 +9001,7 @@ abstract class AppLocalizations {
   /// No description provided for @pricingTrialLabel.
   ///
   /// In en, this message translates to:
-  /// **'From Rs. 299/month  ·  7-day free trial'**
+  /// **'Free trial when offered by the store'**
   String get pricingTrialLabel;
 
   /// No description provided for @upgradeToPremiumButton.
@@ -9171,6 +9345,240 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Language'**
   String get filterLanguageLabel;
+
+  /// No description provided for @sosDispatchMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'EMERGENCY: I need help. My current location is: {mapUrl} (Sent via Hidden Gems SL)'**
+  String sosDispatchMessage(String mapUrl);
+
+  /// No description provided for @sosFailedAppLaunch.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open the phone or SMS app. Call 119 or 1990 now.'**
+  String get sosFailedAppLaunch;
+
+  /// No description provided for @weatherConditionClear.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear Sky'**
+  String get weatherConditionClear;
+
+  /// No description provided for @weatherConditionClouds.
+  ///
+  /// In en, this message translates to:
+  /// **'Cloudy'**
+  String get weatherConditionClouds;
+
+  /// No description provided for @weatherConditionRain.
+  ///
+  /// In en, this message translates to:
+  /// **'Rain'**
+  String get weatherConditionRain;
+
+  /// No description provided for @weatherConditionThunderstorm.
+  ///
+  /// In en, this message translates to:
+  /// **'Thunderstorm'**
+  String get weatherConditionThunderstorm;
+
+  /// No description provided for @weatherConditionDrizzle.
+  ///
+  /// In en, this message translates to:
+  /// **'Drizzle'**
+  String get weatherConditionDrizzle;
+
+  /// No description provided for @weatherConditionMist.
+  ///
+  /// In en, this message translates to:
+  /// **'Mist / Fog'**
+  String get weatherConditionMist;
+
+  /// No description provided for @rainSafetyAdvisory.
+  ///
+  /// In en, this message translates to:
+  /// **'Rain / Thunderstorm Alert: Carry an umbrella and exercise caution on winding roads.'**
+  String get rainSafetyAdvisory;
+
+  /// No description provided for @moreToolsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'More Tools & Experiences'**
+  String get moreToolsTitle;
+
+  /// No description provided for @moreToolsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Food AI, AR Portals, Oracle, Passport & Budget'**
+  String get moreToolsSubtitle;
+
+  /// No description provided for @savedPlacesHubTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved Places & Wishlist'**
+  String get savedPlacesHubTitle;
+
+  /// No description provided for @savedPlacesHubSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Bookmarks, Want to Visit & History'**
+  String get savedPlacesHubSubtitle;
+
+  /// No description provided for @mapActionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Map'**
+  String get mapActionLabel;
+
+  /// No description provided for @safetyActionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Safety'**
+  String get safetyActionLabel;
+
+  /// No description provided for @foodScannerTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Food scanner'**
+  String get foodScannerTooltip;
+
+  /// No description provided for @familyShareTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Family Share'**
+  String get familyShareTitle;
+
+  /// No description provided for @waterSafetyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Drinking Water & Local Drinks'**
+  String get waterSafetyTitle;
+
+  /// No description provided for @waterSafetySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Local drinks and cautious water-safety guidance'**
+  String get waterSafetySubtitle;
+
+  /// No description provided for @drinkLocalHeroTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sri Lankan Local Drinks'**
+  String get drinkLocalHeroTitle;
+
+  /// No description provided for @drinkLocalHeroSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a clean vendor and confirm the current price before ordering'**
+  String get drinkLocalHeroSubtitle;
+
+  /// No description provided for @thambiliTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'King Coconut (Thambili)'**
+  String get thambiliTitle;
+
+  /// No description provided for @thambiliFairPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm current LKR price'**
+  String get thambiliFairPrice;
+
+  /// No description provided for @palmyrahTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Fresh Palmyrah Juice & Nectar'**
+  String get palmyrahTitle;
+
+  /// No description provided for @palmyrahFairPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm current LKR price'**
+  String get palmyrahFairPrice;
+
+  /// No description provided for @herbalTeaTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Belimal & Ranawara Herbal Tea'**
+  String get herbalTeaTitle;
+
+  /// No description provided for @herbalTeaFairPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm current LKR price'**
+  String get herbalTeaFairPrice;
+
+  /// No description provided for @slsCertificationTip.
+  ///
+  /// In en, this message translates to:
+  /// **'Prefer sealed water from a reputable seller; check the label, expiry date and cap ring'**
+  String get slsCertificationTip;
+
+  /// No description provided for @iceSafetyTip.
+  ///
+  /// In en, this message translates to:
+  /// **'Ice shape does not prove safety; ask whether potable water was used or avoid ice'**
+  String get iceSafetyTip;
+
+  /// No description provided for @tapWaterWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Water quality varies; when unsure use properly boiled, filtered or sealed water'**
+  String get tapWaterWarning;
+
+  /// No description provided for @jeewaniTip.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask a pharmacist about registered ORS and follow the packet instructions; seek care for severe symptoms'**
+  String get jeewaniTip;
+
+  /// No description provided for @findSafeWaterAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Find Safe Bottled Water Nearby'**
+  String get findSafeWaterAction;
+
+  /// No description provided for @landslideAlertTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'NBRO Landslide Travel Alert'**
+  String get landslideAlertTitle;
+
+  /// No description provided for @landslideLevel1Msg.
+  ///
+  /// In en, this message translates to:
+  /// **'Level 1: Be watchful of roadside slips and rockfalls along cutting slopes'**
+  String get landslideLevel1Msg;
+
+  /// No description provided for @landslideLevel2Msg.
+  ///
+  /// In en, this message translates to:
+  /// **'Level 2: Heavy rainfall. Avoid night driving across mountain passes'**
+  String get landslideLevel2Msg;
+
+  /// No description provided for @landslideLevel3Msg.
+  ///
+  /// In en, this message translates to:
+  /// **'Level 3: Red Evacuation Alert. Mountain roads may be impassable'**
+  String get landslideLevel3Msg;
+
+  /// No description provided for @floodRiskTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'River Basin Flood Travel Advisory'**
+  String get floodRiskTitle;
+
+  /// No description provided for @floodRiskMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'Low-lying access roads may experience rising water. Use main highways'**
+  String get floodRiskMsg;
+
+  /// No description provided for @disasterHelplineTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Disaster Helpline (DMC): 117'**
+  String get disasterHelplineTitle;
 }
 
 class _AppLocalizationsDelegate

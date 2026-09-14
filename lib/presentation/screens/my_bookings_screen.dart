@@ -450,6 +450,7 @@ class _StatusInfo {
             l10n.bookingStatusExpiredLabel, AppPalette.textMuted);
       case 'cancelled_by_tourist':
       case 'cancelled_by_guide':
+      case 'cancelled_by_admin':
         return _StatusInfo(
             l10n.bookingStatusCancelledLabel, AppPalette.textMuted);
       case 'completed':

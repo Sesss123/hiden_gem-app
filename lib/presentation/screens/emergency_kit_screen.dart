@@ -13,6 +13,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/models/incident_report.dart';
 import '../../core/services/secure_entitlements.dart';
 import '../../core/services/emergency_translator_service.dart';
+import '../../core/services/health_safety_service.dart';
+import '../../core/localization/health_safety_localization.dart';
+import '../../core/services/food_safety_guidance.dart';
+import '../../core/services/disaster_alert_service.dart';
 import 'emergency_translator_screen.dart';
 import 'premium_hub_screen.dart';
 import '../../l10n/app_localizations.dart';
@@ -153,8 +157,7 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen>
       // the real-world emergency contact from going out.
       final String mapLink =
           "https://www.google.com/maps/search/?api=1&query=${position.latitude},${position.longitude}";
-      final String sosMessage =
-          "EMERGENCY: I need help. My current location is: $mapLink (Sent via AdvanceTravel.me)";
+      final String sosMessage = l10n.sosDispatchMessage(mapLink);
 
       if (profile.sosContacts.isEmpty) {
         await launchUrl(Uri.parse("tel:119"));
@@ -337,7 +340,11 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen>
               ),
               SizedBox(height: 16),
               _buildContactGrid(),
-              SizedBox(height: 32),
+              const SizedBox(height: 24),
+              _buildWaterAndLocalDrinksCard(AppLocalizations.of(context)!),
+              const SizedBox(height: 20),
+              _buildDisasterAlertsCard(AppLocalizations.of(context)!),
+              const SizedBox(height: 28),
               _buildSOSContactManager(),
               SizedBox(height: 32),
               Text(
@@ -638,6 +645,458 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen>
           },
         );
       },
+    );
+  }
+
+  Widget _buildWaterAndLocalDrinksCard(AppLocalizations l10n) {
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: AppTheme.surfaceMuted(context),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: const Color(0xFFF59E0B).withValues(alpha: 0.3)),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () => _showWaterGuideBottomSheet(l10n),
+          borderRadius: BorderRadius.circular(24),
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF59E0B).withValues(alpha: 0.15),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Text("🥥", style: TextStyle(fontSize: 22)),
+                    ),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            l10n.waterSafetyTitle,
+                            style: GoogleFonts.outfit(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w800,
+                              color: AppTheme.textPrimary(context),
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            l10n.waterSafetySubtitle,
+                            style: GoogleFonts.inter(
+                              fontSize: 12,
+                              color: AppTheme.textSecondary(context),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Icon(Icons.arrow_forward_ios_rounded, size: 16, color: Color(0xFFF59E0B)),
+                  ],
+                ),
+                const SizedBox(height: 14),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surface,
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: AppTheme.primaryBorder(context)),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.verified_rounded, size: 16, color: Color(0xFF10B981)),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          l10n.hydrationSummary,
+                          style: GoogleFonts.inter(
+                            fontSize: 11.5,
+                            fontWeight: FontWeight.w600,
+                            color: AppTheme.textPrimary(context),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDisasterAlertsCard(AppLocalizations l10n) {
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: AppTheme.surfaceMuted(context),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: const Color(0xFFEF4444).withValues(alpha: 0.25)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFEF4444).withValues(alpha: 0.12),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.landslide_rounded, color: Color(0xFFEF4444), size: 22),
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        l10n.landslideAlertTitle,
+                        style: GoogleFonts.outfit(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800,
+                          color: AppTheme.textPrimary(context),
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        "NBRO Landslide Guidance & River Flood Safety",
+                        style: GoogleFonts.inter(
+                          fontSize: 12,
+                          color: AppTheme.textSecondary(context),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 14),
+            _disasterLevelPill(
+              context,
+              level: "Level 1",
+              label: l10n.landslideLevel1Msg,
+              color: const Color(0xFFEAB308),
+            ),
+            const SizedBox(height: 8),
+            _disasterLevelPill(
+              context,
+              level: "Level 2",
+              label: l10n.landslideLevel2Msg,
+              color: const Color(0xFFF97316),
+            ),
+            const SizedBox(height: 8),
+            _disasterLevelPill(
+              context,
+              level: "Level 3",
+              label: l10n.landslideLevel3Msg,
+              color: const Color(0xFFEF4444),
+            ),
+            const SizedBox(height: 14),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: () => launchUrl(Uri.parse('tel:117')),
+                icon: const Icon(Icons.call_rounded, size: 16, color: Color(0xFFEF4444)),
+                label: Text(
+                  '${l10n.disasterHelplineTitle} · ${DisasterAlertService.emergencyHotlines["117"] ?? ""}',
+                  style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w700, color: const Color(0xFFEF4444)),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                style: OutlinedButton.styleFrom(
+                  side: const BorderSide(color: Color(0xFFEF4444)),
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _disasterLevelPill(
+    BuildContext context, {
+    required String level,
+    required String label,
+    required Color color,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: color.withValues(alpha: 0.25)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+            decoration: BoxDecoration(
+              color: color.withValues(alpha: 0.2),
+              borderRadius: BorderRadius.circular(6),
+            ),
+            child: Text(
+              level,
+              style: GoogleFonts.inter(
+                fontSize: 10,
+                fontWeight: FontWeight.w800,
+                color: color,
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              label,
+              style: GoogleFonts.inter(
+                fontSize: 11,
+                color: AppTheme.textPrimary(context),
+                height: 1.25,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFoodSafetyTips(BuildContext context) {
+    final tips = FoodSafetyGuidance.tips(context);
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: AppTheme.surfaceMuted(context),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppTheme.primaryBorder(context)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Food safety tips', style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.w800, color: AppTheme.textPrimary(context))),
+          const SizedBox(height: 8),
+          ...tips.map((tip) => Padding(
+                padding: const EdgeInsets.only(bottom: 6),
+                child: Text('• $tip', style: GoogleFonts.inter(fontSize: 11.5, height: 1.3, color: AppTheme.textSecondary(context))),
+              )),
+          Text('General guidance only; seek professional care for persistent or severe symptoms.', style: GoogleFonts.inter(fontSize: 10, color: AppTheme.textSecondary(context))),
+        ],
+      ),
+    );
+  }
+
+  void _showWaterGuideBottomSheet(AppLocalizations l10n) {
+    final drinks = HealthSafetyService.instance.getAllLocalDrinks();
+    final rules = HealthSafetyService.essentialWaterSafetyRules;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => DraggableScrollableSheet(
+        initialChildSize: 0.8,
+        maxChildSize: 0.95,
+        minChildSize: 0.5,
+        builder: (_, scrollController) => Container(
+          decoration: BoxDecoration(
+            color: Theme.of(context).scaffoldBackgroundColor,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+          ),
+          child: ListView(
+            controller: scrollController,
+            padding: const EdgeInsets.all(20),
+            children: [
+              Center(
+                child: Container(
+                  width: 44,
+                  height: 4,
+                  margin: const EdgeInsets.only(bottom: 16),
+                  decoration: BoxDecoration(
+                    color: AppTheme.textSecondary(context).withValues(alpha: 0.3),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+              ),
+              Row(
+                children: [
+                  const Text("🥥", style: TextStyle(fontSize: 28)),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          l10n.drinkLocalHeroTitle,
+                          style: GoogleFonts.outfit(
+                            fontSize: 17,
+                            fontWeight: FontWeight.w800,
+                            color: AppTheme.textPrimary(context),
+                          ),
+                        ),
+                        Text(
+                          l10n.drinkLocalHeroSubtitle,
+                          style: GoogleFonts.inter(
+                            fontSize: 11,
+                            color: AppTheme.textSecondary(context),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 18),
+              ...drinks.map((drink) => Container(
+                    margin: const EdgeInsets.only(bottom: 12),
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      color: drink.themeColor.withValues(alpha: 0.08),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: drink.themeColor.withValues(alpha: 0.25)),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Text(drink.emoji, style: const TextStyle(fontSize: 20)),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                HealthSafetyLocalization.drinkTitle(l10n, drink.id),
+                                style: GoogleFonts.outfit(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w700,
+                                  color: drink.themeColor,
+                                ),
+                              ),
+                            ),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                              decoration: BoxDecoration(
+                                color: drink.themeColor.withValues(alpha: 0.18),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text(
+                                HealthSafetyLocalization.drinkPrice(l10n, drink.id),
+                                style: GoogleFonts.inter(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w700,
+                                  color: drink.themeColor,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  )),
+              Text(
+                l10n.waterSafetySubtitle,
+                style: GoogleFonts.inter(
+                  fontSize: 10,
+                  height: 1.3,
+                  color: AppTheme.textSecondary(context),
+                ),
+              ),
+              const SizedBox(height: 14),
+              Text(
+                l10n.waterSafetyTitle,
+                style: GoogleFonts.outfit(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w800,
+                  color: AppTheme.textPrimary(context),
+                ),
+              ),
+              const SizedBox(height: 10),
+              _buildFoodSafetyTips(ctx),
+              const SizedBox(height: 12),
+              ...rules.map((rule) => Container(
+                    margin: const EdgeInsets.only(bottom: 10),
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: AppTheme.surfaceMuted(context),
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(color: AppTheme.primaryBorder(context)),
+                    ),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Icon(
+                          rule.icon == 'verified'
+                              ? Icons.verified_rounded
+                              : rule.icon == 'ac_unit'
+                                  ? Icons.ac_unit_rounded
+                                  : rule.icon == 'no_drinks'
+                                      ? Icons.no_drinks_rounded
+                                      : Icons.medical_services_rounded,
+                          size: 20,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                HealthSafetyLocalization.ruleText(l10n, rule.id),
+                                style: GoogleFonts.outfit(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w700,
+                                  color: AppTheme.textPrimary(context),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  )),
+              const SizedBox(height: 12),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    final uri = Uri.parse(
+                      'https://www.google.com/maps/search/?api=1&query=supermarket+water+near+me',
+                    );
+                    launchUrl(uri, mode: LaunchMode.externalApplication);
+                  },
+                  icon: const Icon(Icons.storefront_rounded, size: 18),
+                  label: Text(
+                    l10n.findSafeWaterAction,
+                    style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w700),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                    foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+            ],
+          ),
+        ),
+      ),
     );
   }
 

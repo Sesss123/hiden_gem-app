@@ -21,16 +21,28 @@ class _NativeAdWidgetState extends State<NativeAdWidget> {
   @override
   void initState() {
     super.initState();
+    MonetizationService().adsEnabledListenable.addListener(_onAdsToggleChanged);
     _checkEntitlements();
+  }
+
+  void _onAdsToggleChanged() {
+    if (!mounted) return;
+    if (!MonetizationService().isAdsEnabled) {
+      _nativeAd?.dispose();
+      setState(() { _nativeAd = null; _isLoaded = false; });
+    } else if (!_isPremium && _nativeAd == null) {
+      _loadAd();
+    }
   }
 
   Future<void> _checkEntitlements() async {
     final isPremium = await SecureEntitlements().verifyPremium();
+    final isAdsEnabled = MonetizationService().isAdsEnabled;
     if (mounted) {
       setState(() {
         _isPremium = isPremium;
       });
-      if (!isPremium) {
+      if (!isPremium && isAdsEnabled) {
         _loadAd();
       }
     }
@@ -38,26 +50,32 @@ class _NativeAdWidgetState extends State<NativeAdWidget> {
 
   void _loadAd() async {
     if (kIsWeb) return; // Native ads are not supported on web
+    if (!MonetizationService().isAdsEnabled) return;
 
-    _nativeAd = await MonetizationService().createNativeAd(
-      onAdLoaded: () {
-        if (mounted) setState(() => _isLoaded = true);
-      },
-      onAdFailed: () {
-        if (mounted) setState(() => _isLoaded = false);
-      },
-    );
+    try {
+      _nativeAd = await MonetizationService().createNativeAd(
+        onAdLoaded: () {
+          if (mounted) setState(() => _isLoaded = true);
+        },
+        onAdFailed: () {
+          if (mounted) setState(() => _isLoaded = false);
+        },
+      );
+    } catch (_) {
+      // Graceful fallback
+    }
   }
 
   @override
   void dispose() {
+    MonetizationService().adsEnabledListenable.removeListener(_onAdsToggleChanged);
     _nativeAd?.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_isPremium) {
+    if (!MonetizationService().isAdsEnabled || _isPremium) {
       return const SizedBox.shrink();
     }
 

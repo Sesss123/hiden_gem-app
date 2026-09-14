@@ -20,39 +20,58 @@ class _BannerAdWidgetState extends ConsumerState<BannerAdWidget> {
   @override
   void initState() {
     super.initState();
+    MonetizationService().adsEnabledListenable.addListener(_onAdsToggleChanged);
     _checkEntitlements();
+  }
+
+  void _onAdsToggleChanged() {
+    if (!mounted) return;
+    if (!MonetizationService().isAdsEnabled) {
+      _bannerAd?.dispose();
+      setState(() { _bannerAd = null; _isLoaded = false; });
+    } else if (!_isPremium && _bannerAd == null) {
+      _loadAd();
+    }
   }
 
   Future<void> _checkEntitlements() async {
     final isPremium = await SecureEntitlements().verifyPremium();
+    final isAdsEnabled = MonetizationService().isAdsEnabled;
     if (mounted) {
       setState(() {
         _isPremium = isPremium;
       });
-      if (!isPremium) {
+      if (!isPremium && isAdsEnabled) {
         _loadAd();
       }
     }
   }
 
   void _loadAd() async {
-    _bannerAd = await MonetizationService().createBannerAd();
-    if (mounted) {
-      setState(() {
-        _isLoaded = true;
-      });
+    if (!MonetizationService().isAdsEnabled) return;
+    try {
+      final ad = await MonetizationService().createBannerAd();
+      if (mounted) {
+        setState(() {
+          _bannerAd = ad;
+          _isLoaded = true;
+        });
+      }
+    } catch (_) {
+      // Graceful fallback
     }
   }
 
   @override
   void dispose() {
+    MonetizationService().adsEnabledListenable.removeListener(_onAdsToggleChanged);
     _bannerAd?.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_isPremium || !_isLoaded || _bannerAd == null) {
+    if (!MonetizationService().isAdsEnabled || _isPremium || !_isLoaded || _bannerAd == null) {
       return const SizedBox.shrink();
     }
 
