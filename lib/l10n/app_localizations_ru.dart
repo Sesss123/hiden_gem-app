@@ -5509,4 +5509,15 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get disasterHelplineTitle =>
       'Горячая линия Центра управления стихийными бедствиями (DMC): 117';
+
+  @override
+  String get landslideAlertSubtitle =>
+      'Руководство NBRO по оползням и безопасность при наводнениях';
+
+  @override
+  String get foodSafetyTipsTitle => 'Советы по безопасности пищевых продуктов';
+
+  @override
+  String get foodSafetyDisclaimer =>
+      'Только общее руководство; при сохранении симптомов обратитесь к врачу.';
 }

@@ -233,47 +233,129 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
 
   // ── Language Picker ─────────────────────────────────────────────────────────
 
+  String _getLanguageDisplayName(String code) {
+    switch (code) {
+      case 'si':
+        return 'සිංහල';
+      case 'ta':
+        return 'தமிழ்';
+      case 'ja':
+        return '日本語';
+      case 'ru':
+        return 'Русский';
+      case 'ko':
+        return '한국어';
+      case 'en':
+      default:
+        return 'English';
+    }
+  }
+
   void _showLanguagePicker(BuildContext context) {
     final languages = [
-      {'name': 'English', 'code': 'en', 'flag': '🇺🇸'},
-      {'name': 'සිංහල', 'code': 'si', 'flag': '🇱🇰'},
-      {'name': 'தமிழ்', 'code': 'ta', 'flag': '🇱🇰'},
-      {'name': '日本語', 'code': 'ja', 'flag': '🇯🇵'},
-      {'name': 'Русский', 'code': 'ru', 'flag': '🇷🇺'},
-      {'name': '한국어', 'code': 'ko', 'flag': '🇰🇷'},
+      {'name': 'English', 'native': 'English', 'code': 'en', 'flag': '🇺🇸'},
+      {'name': 'Sinhala', 'native': 'සිංහල', 'code': 'si', 'flag': '🇱🇰'},
+      {'name': 'Tamil', 'native': 'தமிழ்', 'code': 'ta', 'flag': '🇱🇰'},
+      {'name': 'Japanese', 'native': '日本語', 'code': 'ja', 'flag': '🇯🇵'},
+      {'name': 'Russian', 'native': 'Русский', 'code': 'ru', 'flag': '🇷🇺'},
+      {'name': 'Korean', 'native': '한국어', 'code': 'ko', 'flag': '🇰🇷'},
     ];
 
     showModalBottomSheet(
       context: context,
       backgroundColor: AppTheme.colors.transparent,
+      isScrollControlled: true,
       constraints:
-          BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.8),
-      builder: (context) => _BottomSheet(
-        title: AppLocalizations.of(context)!.selectLanguage.toUpperCase(),
-        child: Flexible(
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: languages.map((lang) {
-                return ListTile(
-                  leading:
-                      Text(lang['flag']!, style: const TextStyle(fontSize: 24)),
-                  title: Text(
-                    lang['name']!,
-                    style: GoogleFonts.inter(
-                        color: Theme.of(context).colorScheme.onSurface),
-                  ),
-                  onTap: () {
-                    ref
-                        .read(localeProvider.notifier)
-                        .setLocale(Locale(lang['code']!));
-                    Navigator.pop(context);
-                  },
-                );
-              }).toList(),
+          BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.85),
+      builder: (context) => Consumer(
+        builder: (context, ref, _) {
+          final l10n = AppLocalizations.of(context)!;
+          final currentLocale = ref.watch(localeProvider);
+          final currentCode = currentLocale?.languageCode ?? 'en';
+          return _BottomSheet(
+            title: l10n.selectLanguage.toUpperCase(),
+            child: Flexible(
+              child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 4),
+                    // ── All Languages List ────────────────────────────────────
+                    ...languages.map((lang) {
+                      final isSelected = currentCode == lang['code'];
+                      return Container(
+                        margin: const EdgeInsets.only(bottom: 6),
+                        decoration: BoxDecoration(
+                          color: isSelected
+                              ? AppPalette.rust.withValues(alpha: 0.08)
+                              : Colors.transparent,
+                          borderRadius: BorderRadius.circular(14),
+                          border: Border.all(
+                            color: isSelected
+                                ? AppPalette.rust.withValues(alpha: 0.25)
+                                : Colors.transparent,
+                          ),
+                        ),
+                        child: ListTile(
+                          contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 14, vertical: 2),
+                          leading: Text(
+                            lang['flag']!,
+                            style: const TextStyle(fontSize: 24),
+                          ),
+                          title: Row(
+                            children: [
+                              Text(
+                                lang['native']!,
+                                style: GoogleFonts.inter(
+                                  fontSize: 14,
+                                  fontWeight: isSelected
+                                      ? FontWeight.w700
+                                      : FontWeight.w500,
+                                  color: isSelected
+                                      ? AppPalette.rust
+                                      : Theme.of(context)
+                                          .colorScheme
+                                          .onSurface,
+                                ),
+                              ),
+                              if (lang['native'] != lang['name']) ...[
+                                const SizedBox(width: 8),
+                                Text(
+                                  '(${lang['name']})',
+                                  style: GoogleFonts.inter(
+                                    fontSize: 12,
+                                    color: AppTheme.textSecondary(context),
+                                  ),
+                                ),
+                              ],
+                            ],
+                          ),
+                          trailing: isSelected
+                              ? const Icon(
+                                  Icons.check_circle_rounded,
+                                  color: AppPalette.rust,
+                                  size: 20,
+                                )
+                              : null,
+                          onTap: () {
+                            HapticFeedback.selectionClick();
+                            ref
+                                .read(localeProvider.notifier)
+                                .setLocale(Locale(lang['code']!));
+                            Navigator.pop(context);
+                          },
+                        ),
+                      );
+                    }),
+                  ],
+                ),
+              ),
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }
@@ -1698,17 +1780,26 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
             )),
 
         _tile(Icons.language_rounded, l10n.language,
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  _getLanguageDisplayName(
+                      ref.watch(localeProvider)?.languageCode ?? 'en'),
+                  style: GoogleFonts.inter(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                    color: AppTheme.textSecondary(context),
+                  ),
+                ),
+                const SizedBox(width: 6),
+                Icon(Icons.arrow_forward_ios_rounded,
+                    size: 13,
+                    color: AppTheme.textSecondary(context)
+                        .withValues(alpha: 0.35)),
+              ],
+            ),
             onTap: () => _showLanguagePicker(context)),
-
-        _tile(Icons.translate_rounded, l10n.bilingualToggle,
-            trailing: Switch(
-              value: ref.watch(localeProvider)?.languageCode == 'si',
-              onChanged: (_) {
-                HapticFeedback.selectionClick();
-                ref.read(localeProvider.notifier).toggleBilingual();
-              },
-              activeThumbColor: AppPalette.rust,
-            )),
 
         _tile(Icons.sos_rounded, l10n.emergencyProtocol,
             iconColor: AppTheme.colors.red[600],

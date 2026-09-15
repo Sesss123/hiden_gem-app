@@ -774,7 +774,7 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen>
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        "NBRO Landslide Guidance & River Flood Safety",
+                        l10n.landslideAlertSubtitle,
                         style: GoogleFonts.inter(
                           fontSize: 12,
                           color: AppTheme.textSecondary(context),
@@ -788,21 +788,21 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen>
             const SizedBox(height: 14),
             _disasterLevelPill(
               context,
-              level: "Level 1",
+              level: "${l10n.statLabelLevel} 1",
               label: l10n.landslideLevel1Msg,
               color: const Color(0xFFEAB308),
             ),
             const SizedBox(height: 8),
             _disasterLevelPill(
               context,
-              level: "Level 2",
+              level: "${l10n.statLabelLevel} 2",
               label: l10n.landslideLevel2Msg,
               color: const Color(0xFFF97316),
             ),
             const SizedBox(height: 8),
             _disasterLevelPill(
               context,
-              level: "Level 3",
+              level: "${l10n.statLabelLevel} 3",
               label: l10n.landslideLevel3Msg,
               color: const Color(0xFFEF4444),
             ),
@@ -879,6 +879,7 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen>
   }
 
   Widget _buildFoodSafetyTips(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final tips = FoodSafetyGuidance.tips(context);
     return Container(
       padding: const EdgeInsets.all(14),
@@ -890,13 +891,13 @@ class _EmergencyKitScreenState extends ConsumerState<EmergencyKitScreen>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Food safety tips', style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.w800, color: AppTheme.textPrimary(context))),
+          Text(l10n?.foodSafetyTipsTitle ?? 'Food safety tips', style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.w800, color: AppTheme.textPrimary(context))),
           const SizedBox(height: 8),
           ...tips.map((tip) => Padding(
                 padding: const EdgeInsets.only(bottom: 6),
                 child: Text('• $tip', style: GoogleFonts.inter(fontSize: 11.5, height: 1.3, color: AppTheme.textSecondary(context))),
               )),
-          Text('General guidance only; seek professional care for persistent or severe symptoms.', style: GoogleFonts.inter(fontSize: 10, color: AppTheme.textSecondary(context))),
+          Text(l10n?.foodSafetyDisclaimer ?? 'General guidance only; seek professional care for persistent or severe symptoms.', style: GoogleFonts.inter(fontSize: 10, color: AppTheme.textSecondary(context))),
         ],
       ),
     );

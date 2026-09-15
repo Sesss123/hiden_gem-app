@@ -33,6 +33,7 @@ return [
 
     'revenuecat' => [
         'webhook_secret' => env('REVENUECAT_WEBHOOK_SECRET'),
+        'secret_key' => env('REVENUECAT_SECRET_KEY'),
     ],
 
     // Operational alerts (health-check state changes, backup failures) — see

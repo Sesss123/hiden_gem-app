@@ -5417,4 +5417,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get disasterHelplineTitle => 'Disaster Helpline (DMC): 117';
+
+  @override
+  String get landslideAlertSubtitle =>
+      'NBRO Landslide Guidance & River Flood Safety';
+
+  @override
+  String get foodSafetyTipsTitle => 'Food Safety Tips';
+
+  @override
+  String get foodSafetyDisclaimer =>
+      'General guidance only; seek professional care for persistent or severe symptoms.';
 }

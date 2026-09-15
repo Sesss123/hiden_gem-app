@@ -9669,6 +9669,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Disaster Helpline (DMC): 117'**
   String get disasterHelplineTitle;
+
+  /// No description provided for @landslideAlertSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'NBRO Landslide Guidance & River Flood Safety'**
+  String get landslideAlertSubtitle;
+
+  /// No description provided for @foodSafetyTipsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Food Safety Tips'**
+  String get foodSafetyTipsTitle;
+
+  /// No description provided for @foodSafetyDisclaimer.
+  ///
+  /// In en, this message translates to:
+  /// **'General guidance only; seek professional care for persistent or severe symptoms.'**
+  String get foodSafetyDisclaimer;
 }
 
 class _AppLocalizationsDelegate

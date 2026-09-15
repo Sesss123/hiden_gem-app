@@ -1,22 +1,115 @@
 {
-  "guidePhoneVerified": "දුරකථනය තහවුරු කර ඇත", "guidePhoneVerificationRequired": "දුරකථන තහවුරු කිරීම අවශ්‍යයි", "guidePhoneVerificationReason": "Publish කිරීමට හෝ bookings භාරගැනීමට පෙර OTP මඟින් තහවුරු කරන්න.", "changePhoneAction": "වෙනස් කරන්න", "verifyPhoneAction": "තහවුරු කරන්න", "verifyGuidePhoneTitle": "Guide දුරකථනය තහවුරු කරන්න", "phoneWithCountryCodeLabel": "රටේ කේතය සමඟ දුරකථන අංකය", "sendOtpAction": "OTP යවන්න", "enterOtpTitle": "SMS කේතය ඇතුළත් කරන්න", "otpCodeLabel": "අංක 6 කේතය", "phoneVerifiedSuccess": "දුරකථන අංකය සාර්ථකව තහවුරු කළා.", "phoneVerificationFailed": "දුරකථන තහවුරු කිරීම අසාර්ථකයි: {error}", "@phoneVerificationFailed":{"placeholders":{"error":{"type":"String"}}}, "verifyPhoneBeforePublish": "Publish කිරීමට පෙර දුරකථන අංකය තහවුරු කරන්න.", "validPriceRequired": "වලංගු මිලක් ඇතුළත් කරන්න", "guideRateRangeError": "ගාස්තුව 0ට වැඩි සහ 1,000,000ට නොවැඩි විය යුතුයි",
+  "guidePhoneVerified": "දුරකථනය තහවුරු කර ඇත",
+  "guidePhoneVerificationRequired": "දුරකථන තහවුරු කිරීම අවශ්‍යයි",
+  "guidePhoneVerificationReason": "Publish කිරීමට හෝ bookings භාරගැනීමට පෙර OTP මඟින් තහවුරු කරන්න.",
+  "changePhoneAction": "වෙනස් කරන්න",
+  "verifyPhoneAction": "තහවුරු කරන්න",
+  "verifyGuidePhoneTitle": "Guide දුරකථනය තහවුරු කරන්න",
+  "phoneWithCountryCodeLabel": "රටේ කේතය සමඟ දුරකථන අංකය",
+  "sendOtpAction": "OTP යවන්න",
+  "enterOtpTitle": "SMS කේතය ඇතුළත් කරන්න",
+  "otpCodeLabel": "අංක 6 කේතය",
+  "phoneVerifiedSuccess": "දුරකථන අංකය සාර්ථකව තහවුරු කළා.",
+  "phoneVerificationFailed": "දුරකථන තහවුරු කිරීම අසාර්ථකයි: {error}",
+  "@phoneVerificationFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "verifyPhoneBeforePublish": "Publish කිරීමට පෙර දුරකථන අංකය තහවුරු කරන්න.",
+  "validPriceRequired": "වලංගු මිලක් ඇතුළත් කරන්න",
+  "guideRateRangeError": "ගාස්තුව 0ට වැඩි සහ 1,000,000ට නොවැඩි විය යුතුයි",
   "retryAction": "නැවත උත්සාහ කරන්න",
-  "invalidMapCoordinates": "මෙම ස්ථානයේ සිතියම් ඛණ්ඩාංක වලංගු නොවේ.", "mapAppUnavailable": "සිතියම් යෙදුමක් ලබාගත නොහැක.", "routeSafetyAdvisory": "මාර්ග ආරක්ෂණ උපදේශනය", "reviewRouteAction": "මාර්ගය බලන්න", "continueAction": "ඉදිරියට",
-  "savedJourneyHubTitle": "සුරැකි ස්ථාන සහ ගමන් හබ්", "bookmarkedCount": "සලකුණු කළ ({count})", "@bookmarkedCount":{"placeholders":{"count":{"type":"int"}}}, "wantToVisitCount": "යන්න කැමති ({count})", "@wantToVisitCount":{"placeholders":{"count":{"type":"int"}}}, "recentCount": "මෑත ({count})", "@recentCount":{"placeholders":{"count":{"type":"int"}}},
-  "savedPlacesLoadError": "සුරැකි ස්ථාන load කළ නොහැකි විය.", "noBookmarkedPlaces": "තවම සලකුණු කළ ස්ථාන නැත", "noBookmarkedPlacesHint": "ස්ථානයක් මෙහි සුරැකීමට bookmark ලකුණ ඔබන්න.", "wantToVisitEmpty": "යන්න කැමති ලැයිස්තුව හිස්ය", "wantToVisitEmptyHint": "ස්ථාන විස්තර පිටුවෙන් ස්ථාන එක් කරන්න.", "noRecentlyViewedPlaces": "මෑතක බැලූ ස්ථාන නැත", "noRecentlyViewedPlacesHint": "ඔබ බලන ස්ථාන මෙහි ස්වයංක්‍රීයව දිස්වේ.", "browsingHistoryCount": "බැලූ ඉතිහාසය ({count})", "@browsingHistoryCount":{"placeholders":{"count":{"type":"int"}}},
+  "invalidMapCoordinates": "මෙම ස්ථානයේ සිතියම් ඛණ්ඩාංක වලංගු නොවේ.",
+  "mapAppUnavailable": "සිතියම් යෙදුමක් ලබාගත නොහැක.",
+  "routeSafetyAdvisory": "මාර්ග ආරක්ෂණ උපදේශනය",
+  "reviewRouteAction": "මාර්ගය බලන්න",
+  "continueAction": "ඉදිරියට",
+  "savedJourneyHubTitle": "සුරැකි ස්ථාන සහ ගමන් හබ්",
+  "bookmarkedCount": "සලකුණු කළ ({count})",
+  "@bookmarkedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "wantToVisitCount": "යන්න කැමති ({count})",
+  "@wantToVisitCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "recentCount": "මෑත ({count})",
+  "@recentCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "savedPlacesLoadError": "සුරැකි ස්ථාන load කළ නොහැකි විය.",
+  "noBookmarkedPlaces": "තවම සලකුණු කළ ස්ථාන නැත",
+  "noBookmarkedPlacesHint": "ස්ථානයක් මෙහි සුරැකීමට bookmark ලකුණ ඔබන්න.",
+  "wantToVisitEmpty": "යන්න කැමති ලැයිස්තුව හිස්ය",
+  "wantToVisitEmptyHint": "ස්ථාන විස්තර පිටුවෙන් ස්ථාන එක් කරන්න.",
+  "noRecentlyViewedPlaces": "මෑතක බැලූ ස්ථාන නැත",
+  "noRecentlyViewedPlacesHint": "ඔබ බලන ස්ථාන මෙහි ස්වයංක්‍රීයව දිස්වේ.",
+  "browsingHistoryCount": "බැලූ ඉතිහාසය ({count})",
+  "@browsingHistoryCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "usageLimitReachedTitle": "භාවිත සීමාව අවසන්",
   "usageLimitReachedMessage": "මෙම මාසය සඳහා ඔබගේ {feature} සියල්ල භාවිත කර ඇත. {plan} සමඟ දිගටම යන්න:",
-  "@usageLimitReachedMessage": {"placeholders":{"feature":{"type":"String"},"plan":{"type":"String"}}},
+  "@usageLimitReachedMessage": {
+    "placeholders": {
+      "feature": {
+        "type": "String"
+      },
+      "plan": {
+        "type": "String"
+      }
+    }
+  },
   "getPlanButton": "{plan} ලබාගන්න",
-  "@getPlanButton": {"placeholders":{"plan":{"type":"String"}}},
+  "@getPlanButton": {
+    "placeholders": {
+      "plan": {
+        "type": "String"
+      }
+    }
+  },
   "watchAdForOneMore": "තවත් එකක් සඳහා දැන්වීමක් බලන්න",
   "priceUnavailable": "මිල ලබාගත නොහැක",
   "contactForPrice": "මිල සඳහා සම්බන්ධ වන්න",
   "freePriceLabel": "නොමිලේ",
   "fromPriceLabel": "{price} සිට",
-  "@fromPriceLabel": {"placeholders":{"price":{"type":"String"}}},
+  "@fromPriceLabel": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
   "priceRangeLabel": "{minimum} – {maximum}",
-  "@priceRangeLabel": {"placeholders":{"minimum":{"type":"String"},"maximum":{"type":"String"}}},
+  "@priceRangeLabel": {
+    "placeholders": {
+      "minimum": {
+        "type": "String"
+      },
+      "maximum": {
+        "type": "String"
+      }
+    }
+  },
   "serverManagedPriceNote": "මිල සේවාවෙන් සපයන අතර වෙනස් විය හැක. මිලදී ගැනීමට පෙර තහවුරු කරන්න.",
   "hydrationSummary": "දේශීය පාන · මුද්‍රා කළ ජල උපදෙස් · ආරක්ෂිත අයිස් උපදෙස්",
   "appTitle": "Hidden Gems SL",
@@ -2796,5 +2889,8 @@
   "landslideLevel3Msg": "අදියර 3: නායයෑම් රතු නිවේදනය. කඳුකර මාර්ග අවහිර විය හැක",
   "floodRiskTitle": "ගංගා නිම්න ගංවතුර සංචාරක උපදේශනය",
   "floodRiskMsg": "පහත්බිම් මාර්ග ජලයෙන් යටවීමේ අවදානමක් පවතී. ප්‍රධාන මහාමාර්ග භාවිතා කරන්න",
-  "disasterHelplineTitle": "ආපදා සහන හදිසි ඇමතුම් (DMC): 117"
+  "disasterHelplineTitle": "ආපදා සහන හදිසි ඇමතුම් (DMC): 117",
+  "landslideAlertSubtitle": "NBRO නායයෑම් උපදෙස් සහ ගංගා ගංවතුර ආරක්ෂාව",
+  "foodSafetyTipsTitle": "ආහාර සුරක්ෂිතතා උපදෙස්",
+  "foodSafetyDisclaimer": "සාමාන්‍ය මඟපෙන්වීම සඳහා පමණි; රෝග ලක්ෂණ පවතින්නේ නම් වෛද්‍ය ප්‍රතිකාර ලබාගන්න."
 }

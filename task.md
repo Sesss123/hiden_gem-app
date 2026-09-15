@@ -1,3 +1,58 @@
+## Completed: Consolidated Language Hub & Clean Language Picker (2026-09-15)
+- [x] Streamlined Settings Menu UI:
+  - Removed redundant standalone "Bilingual (EN/SI)" tile from the main Settings list in `ProfileScreen`.
+  - Enriched the "Language" setting tile to display the active language name (e.g. `English >`, `සිංහල >`, `தமிழ் >`) alongside the chevron indicator.
+- [x] Pure & Elegant Language Picker Modal (`_showLanguagePicker`):
+  - Removed the confusing/redundant Bilingual ON/OFF switch card and nested section header.
+  - Retained an uncluttered, high-contrast modal presenting all 6 primary languages (`English 🇺🇸`, `සිංහල 🇱🇰`, `தமிழ் 🇱🇰`, `日本語 🇯🇵`, `Русский 🇷🇺`, `한국어 🇰🇷`) with native scripts and selected checkmarks.
+  - 1-tap language switching with instant haptic feedback and automatic modal dismiss.
+- [x] Verification & Code Quality:
+  - Validated clean Flutter test execution (`flutter test test/account_deletion_service_test.dart` - 5/5 passed).
+  - Confirmed 0 analyzer warnings or errors on `profile_screen.dart`.
+
+## Completed: Hardened Account Deletion Flow (Gaps 1-9 Remediation) (2026-09-15)
+- [x] Gap 1: Fail-fast atomicity & safe retries:
+  - Enforced server-authoritative try-catch transaction: all personal Firestore data, uploaded documents/photos, and RevenueCat data must be successfully purged before user tokens or the MySQL user record are deleted.
+  - Return HTTP 500 JSON with code `deletion_failed` upon any cleanup failure, keeping login session intact and allowing user to retry safely without data loss or inconsistency.
+- [x] Gap 2: Missing Firestore collections deletion:
+  - Added queries to purge `subscriptions` (by `accountId` and `userId`), `user_notifications` (by `recipientId` and `userId`), `profile_view_markers` (by `viewerUid` and `targetUid`), `threat_notifications` (by `userId`), and `guide_analytics` (by `guideId`).
+- [x] Gap 3: Firestore subcollections recursive purging:
+  - Added explicit recursive purge for `users/{uid}/security/posture`.
+  - In joined tour sessions (`tour_sessions.touristIds`), tourist removal now explicitly deletes `tour_sessions/{sessionId}/presence/{uid}` subcollection document.
+- [x] Gap 4: Uploaded files purging across dual storage keys:
+  - Purges both Firebase `$uid` and numeric `$user->id` directories across `guide_documents` (private/local disk) and `listing_photos` (public disk).
+- [x] Gap 5: Firebase Auth deletion reliability:
+  - Server-authoritative deletion using Firebase Admin SDK (`createAuth()->deleteUser($uid)`) prevents client-side `requires-recent-login` failure after server data has already been purged.
+- [x] Gap 6: Device FCM push notifications termination:
+  - Updated `NotificationService.stopWatchingUserNotifications` to unsubscribe from all topics (`guide_$uid`, `user_$uid`, `tourist_$uid`, `booking_$uid`).
+  - Added `if (!snapshot.exists) return;` guard in `detachCurrentDevice` to prevent errors when detaching from an already deleted Firestore user document.
+  - Calls `_fcm.deleteToken()` ensuring no residual push messages can ever reach the device.
+- [x] Gap 7: Local device data complete teardown:
+  - On deletion confirmation, client purges `UserPreferenceService.clearProfile()` (in-memory, secure storage, and debouncers), `clearAuthToken()`, `TripCacheService.clearUserData()`, `SecureEntitlements.clearForUser()`, and invokes `ZenithSecurityFacade().onUserLogout()`.
+- [x] Gap 8: RevenueCat subscriber data handling:
+  - Added `purgeRevenueCatSubscriber()` in `AuthController.php` calling RevenueCat REST API v1 (`DELETE /v1/subscribers/{app_user_id}`) when configured.
+  - Client side executes `Purchases.logOut()` on mobile.
+- [x] Gap 9: Automated testing & regression verification:
+  - Created `laravel-backend/tests/Feature/AccountDeletionFlowTest.php` covering unauthenticated requests, all 9 gap collections, tourist presence deletion, fail-fast rollback, and dual-folder storage file cleanup (5/5 tests passed).
+  - Created `test/account_deletion_service_test.dart` covering contract endpoints, server error fallback, FCM unsubscriptions, and dual storage keys (5/5 tests passed).
+
+## Completed: Disaster Alert Localization & QR Scanner UI Theme Overhaul (2026-09-15)
+- [x] 1. Disaster Alert & Food Safety Localization Fixes:
+  - Localized NBRO landslide subtitle across all 6 languages (`landslideAlertSubtitle` in `app_{en,ja,si,ta,ru,ko}.arb`).
+  - Replaced hardcoded "Level 1", "Level 2", "Level 3" badges with localized `${l10n.statLabelLevel} X`.
+  - Localized "Food safety tips" and medical guidance disclaimer (`foodSafetyTipsTitle`, `foodSafetyDisclaimer`) in `EmergencyKitScreen` and `PlaceDetailsScreen`.
+  - Recompiled localization bundle cleanly with `flutter gen-l10n`.
+- [x] 2. Premium QR Scanner Theme Overhaul (`qr_scanner_screen.dart`):
+  - Redesigned the screen to match Hidden Gems SL's luxury warm glassmorphism design system.
+  - Implemented `_ScannerOverlayPainter` with a smooth 62% black cutout mask and glowing Sigiriya ochre/gold (`AppPaletteDark.gold`) corner brackets.
+  - Added an animated glowing laser scan beam with vertical gradient falloff.
+  - Added a glassmorphic top navigation bar with circular frosted close button, "TOUR COMPANION / READY TO SCAN" status indicator, flashlight toggle (`toggleTorch()`), and camera flip button.
+  - Added a floating glass instructional card with brand gradient icon badge (`AppPalette.rust` to `AppPaletteDark.gold`) and localized guide sync message.
+  - Styled the Tour Verification Join Sheet and Success Dialog with brand theme colors and rounded buttons.
+- [x] 3. Verification & Quality Control:
+  - Validated syntax with `dart analyze lib/presentation/screens/qr_scanner_screen.dart` (0 errors/warnings).
+  - Executed test suite `flutter test test/health_and_disaster_safety_test.dart` (9/9 passed, 100%).
+
 ## Completed: Enterprise Admin Panel Fix Plan (P0/P1/P2) (2026-09-14)
 - [x] 1. P0 Mock Entitlement Security: Added `!kDebugMode` check throwing `UnsupportedError` in Flutter `premium_service.dart` (`simulateMockPurchase` & `simulateMockCancel`).
 - [x] 2. P0 Subscription Integrity Scanner: Implemented automated scan in `SubscriptionController.php` with `ALLOWED_PLANS = ['pro', 'elite', 'explorer', 'premium']`. Displayed red warning badge for unverified/mock plans and added secure modal revocation updating Firestore and recording in `admin_audit_logs`.

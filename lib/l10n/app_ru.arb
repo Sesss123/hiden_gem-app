@@ -1,22 +1,115 @@
 {
-  "guidePhoneVerified": "Телефон подтверждён", "guidePhoneVerificationRequired": "Требуется подтверждение телефона", "guidePhoneVerificationReason": "Подтвердите OTP перед публикацией или принятием бронирований.", "changePhoneAction": "Изменить", "verifyPhoneAction": "Подтвердить", "verifyGuidePhoneTitle": "Подтвердить телефон гида", "phoneWithCountryCodeLabel": "Телефон с кодом страны", "sendOtpAction": "Отправить OTP", "enterOtpTitle": "Введите код из SMS", "otpCodeLabel": "6-значный код", "phoneVerifiedSuccess": "Телефон успешно подтверждён.", "phoneVerificationFailed": "Не удалось подтвердить телефон: {error}", "@phoneVerificationFailed":{"placeholders":{"error":{"type":"String"}}}, "verifyPhoneBeforePublish": "Подтвердите телефон перед публикацией.", "validPriceRequired": "Введите корректную цену", "guideRateRangeError": "Ставка должна быть больше 0 и не выше 1 000 000",
+  "guidePhoneVerified": "Телефон подтверждён",
+  "guidePhoneVerificationRequired": "Требуется подтверждение телефона",
+  "guidePhoneVerificationReason": "Подтвердите OTP перед публикацией или принятием бронирований.",
+  "changePhoneAction": "Изменить",
+  "verifyPhoneAction": "Подтвердить",
+  "verifyGuidePhoneTitle": "Подтвердить телефон гида",
+  "phoneWithCountryCodeLabel": "Телефон с кодом страны",
+  "sendOtpAction": "Отправить OTP",
+  "enterOtpTitle": "Введите код из SMS",
+  "otpCodeLabel": "6-значный код",
+  "phoneVerifiedSuccess": "Телефон успешно подтверждён.",
+  "phoneVerificationFailed": "Не удалось подтвердить телефон: {error}",
+  "@phoneVerificationFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "verifyPhoneBeforePublish": "Подтвердите телефон перед публикацией.",
+  "validPriceRequired": "Введите корректную цену",
+  "guideRateRangeError": "Ставка должна быть больше 0 и не выше 1 000 000",
   "retryAction": "Повторить",
-  "invalidMapCoordinates": "У места неверные координаты.", "mapAppUnavailable": "Нет доступного приложения карт.", "routeSafetyAdvisory": "Безопасность маршрута", "reviewRouteAction": "Проверить маршрут", "continueAction": "Продолжить",
-  "savedJourneyHubTitle": "Сохранённые места и поездки", "bookmarkedCount": "Закладки ({count})", "@bookmarkedCount":{"placeholders":{"count":{"type":"int"}}}, "wantToVisitCount": "Хочу посетить ({count})", "@wantToVisitCount":{"placeholders":{"count":{"type":"int"}}}, "recentCount": "Недавние ({count})", "@recentCount":{"placeholders":{"count":{"type":"int"}}},
-  "savedPlacesLoadError": "Не удалось загрузить сохранённые места.", "noBookmarkedPlaces": "Закладок пока нет", "noBookmarkedPlacesHint": "Нажмите значок закладки у места, чтобы сохранить его.", "wantToVisitEmpty": "Список желаемых мест пуст", "wantToVisitEmptyHint": "Добавьте места со страницы сведений.", "noRecentlyViewedPlaces": "Недавно просмотренных мест нет", "noRecentlyViewedPlacesHint": "Просмотренные места появятся здесь автоматически.", "browsingHistoryCount": "История просмотров ({count})", "@browsingHistoryCount":{"placeholders":{"count":{"type":"int"}}},
+  "invalidMapCoordinates": "У места неверные координаты.",
+  "mapAppUnavailable": "Нет доступного приложения карт.",
+  "routeSafetyAdvisory": "Безопасность маршрута",
+  "reviewRouteAction": "Проверить маршрут",
+  "continueAction": "Продолжить",
+  "savedJourneyHubTitle": "Сохранённые места и поездки",
+  "bookmarkedCount": "Закладки ({count})",
+  "@bookmarkedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "wantToVisitCount": "Хочу посетить ({count})",
+  "@wantToVisitCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "recentCount": "Недавние ({count})",
+  "@recentCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "savedPlacesLoadError": "Не удалось загрузить сохранённые места.",
+  "noBookmarkedPlaces": "Закладок пока нет",
+  "noBookmarkedPlacesHint": "Нажмите значок закладки у места, чтобы сохранить его.",
+  "wantToVisitEmpty": "Список желаемых мест пуст",
+  "wantToVisitEmptyHint": "Добавьте места со страницы сведений.",
+  "noRecentlyViewedPlaces": "Недавно просмотренных мест нет",
+  "noRecentlyViewedPlacesHint": "Просмотренные места появятся здесь автоматически.",
+  "browsingHistoryCount": "История просмотров ({count})",
+  "@browsingHistoryCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "usageLimitReachedTitle": "Лимит исчерпан",
   "usageLimitReachedMessage": "Вы использовали все возможности {feature} за этот месяц. Продолжите с {plan}:",
-  "@usageLimitReachedMessage": {"placeholders":{"feature":{"type":"String"},"plan":{"type":"String"}}},
+  "@usageLimitReachedMessage": {
+    "placeholders": {
+      "feature": {
+        "type": "String"
+      },
+      "plan": {
+        "type": "String"
+      }
+    }
+  },
   "getPlanButton": "Подключить {plan}",
-  "@getPlanButton": {"placeholders":{"plan":{"type":"String"}}},
+  "@getPlanButton": {
+    "placeholders": {
+      "plan": {
+        "type": "String"
+      }
+    }
+  },
   "watchAdForOneMore": "Посмотреть рекламу для ещё одной попытки",
   "priceUnavailable": "Цена недоступна",
   "contactForPrice": "Уточните цену",
   "freePriceLabel": "Бесплатно",
   "fromPriceLabel": "От {price}",
-  "@fromPriceLabel": {"placeholders":{"price":{"type":"String"}}},
+  "@fromPriceLabel": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
   "priceRangeLabel": "{minimum}–{maximum}",
-  "@priceRangeLabel": {"placeholders":{"minimum":{"type":"String"},"maximum":{"type":"String"}}},
+  "@priceRangeLabel": {
+    "placeholders": {
+      "minimum": {
+        "type": "String"
+      },
+      "maximum": {
+        "type": "String"
+      }
+    }
+  },
   "serverManagedPriceNote": "Цены предоставляются сервисом и могут меняться. Уточняйте перед покупкой.",
   "hydrationSummary": "Местные напитки · бутилированная вода · безопасный лёд",
   "appTitle": "Hidden Gems SL",
@@ -2799,5 +2892,8 @@
   "paymentUnavailableError": "Сейчас оплатить бронирование нельзя. Обновите данные и повторите попытку.",
   "sendQuoteAmountLabel": "Сумма",
   "sendQuoteConfirmButtonLabel": "Принять и отправить предложение",
-  "sendQuoteDialogTitle": "Установить цену"
+  "sendQuoteDialogTitle": "Установить цену",
+  "landslideAlertSubtitle": "Руководство NBRO по оползням и безопасность при наводнениях",
+  "foodSafetyTipsTitle": "Советы по безопасности пищевых продуктов",
+  "foodSafetyDisclaimer": "Только общее руководство; при сохранении симптомов обратитесь к врачу."
 }

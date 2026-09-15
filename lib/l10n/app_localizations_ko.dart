@@ -5283,4 +5283,14 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get disasterHelplineTitle => '재난관리청 헬프라인 (DMC): 117';
+
+  @override
+  String get landslideAlertSubtitle => 'NBRO 산사태 지침 및 하천 범람 안전 안내';
+
+  @override
+  String get foodSafetyTipsTitle => '식품 안전 수칙';
+
+  @override
+  String get foodSafetyDisclaimer =>
+      '일반적인 안내일 뿐입니다. 증상이 지속되거나 심한 경우 전문의의 진료를 받으세요.';
 }

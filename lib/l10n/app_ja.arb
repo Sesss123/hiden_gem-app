@@ -1,22 +1,115 @@
 {
-  "guidePhoneVerified": "電話番号確認済み", "guidePhoneVerificationRequired": "電話番号の確認が必要です", "guidePhoneVerificationReason": "公開または予約承認の前にOTPで確認してください。", "changePhoneAction": "変更", "verifyPhoneAction": "確認", "verifyGuidePhoneTitle": "ガイドの電話番号を確認", "phoneWithCountryCodeLabel": "国番号付き電話番号", "sendOtpAction": "OTPを送信", "enterOtpTitle": "SMSコードを入力", "otpCodeLabel": "6桁のコード", "phoneVerifiedSuccess": "電話番号を確認しました。", "phoneVerificationFailed": "電話番号の確認に失敗しました：{error}", "@phoneVerificationFailed":{"placeholders":{"error":{"type":"String"}}}, "verifyPhoneBeforePublish": "公開前に電話番号を確認してください。", "validPriceRequired": "有効な価格を入力してください", "guideRateRangeError": "料金は0より大きく1,000,000以下にしてください",
+  "guidePhoneVerified": "電話番号確認済み",
+  "guidePhoneVerificationRequired": "電話番号の確認が必要です",
+  "guidePhoneVerificationReason": "公開または予約承認の前にOTPで確認してください。",
+  "changePhoneAction": "変更",
+  "verifyPhoneAction": "確認",
+  "verifyGuidePhoneTitle": "ガイドの電話番号を確認",
+  "phoneWithCountryCodeLabel": "国番号付き電話番号",
+  "sendOtpAction": "OTPを送信",
+  "enterOtpTitle": "SMSコードを入力",
+  "otpCodeLabel": "6桁のコード",
+  "phoneVerifiedSuccess": "電話番号を確認しました。",
+  "phoneVerificationFailed": "電話番号の確認に失敗しました：{error}",
+  "@phoneVerificationFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "verifyPhoneBeforePublish": "公開前に電話番号を確認してください。",
+  "validPriceRequired": "有効な価格を入力してください",
+  "guideRateRangeError": "料金は0より大きく1,000,000以下にしてください",
   "retryAction": "再試行",
-  "invalidMapCoordinates": "この場所の地図座標は無効です。", "mapAppUnavailable": "利用できる地図アプリがありません。", "routeSafetyAdvisory": "ルート安全情報", "reviewRouteAction": "ルートを確認", "continueAction": "続行",
-  "savedJourneyHubTitle": "保存した場所と旅", "bookmarkedCount": "ブックマーク（{count}）", "@bookmarkedCount":{"placeholders":{"count":{"type":"int"}}}, "wantToVisitCount": "行きたい（{count}）", "@wantToVisitCount":{"placeholders":{"count":{"type":"int"}}}, "recentCount": "最近（{count}）", "@recentCount":{"placeholders":{"count":{"type":"int"}}},
-  "savedPlacesLoadError": "保存した場所を読み込めませんでした。", "noBookmarkedPlaces": "ブックマークはまだありません", "noBookmarkedPlacesHint": "場所のブックマークをタップして保存できます。", "wantToVisitEmpty": "行きたいリストは空です", "wantToVisitEmptyHint": "場所の詳細ページから追加してください。", "noRecentlyViewedPlaces": "最近見た場所はありません", "noRecentlyViewedPlacesHint": "閲覧した場所が自動的に表示されます。", "browsingHistoryCount": "閲覧履歴（{count}）", "@browsingHistoryCount":{"placeholders":{"count":{"type":"int"}}},
+  "invalidMapCoordinates": "この場所の地図座標は無効です。",
+  "mapAppUnavailable": "利用できる地図アプリがありません。",
+  "routeSafetyAdvisory": "ルート安全情報",
+  "reviewRouteAction": "ルートを確認",
+  "continueAction": "続行",
+  "savedJourneyHubTitle": "保存した場所と旅",
+  "bookmarkedCount": "ブックマーク（{count}）",
+  "@bookmarkedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "wantToVisitCount": "行きたい（{count}）",
+  "@wantToVisitCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "recentCount": "最近（{count}）",
+  "@recentCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "savedPlacesLoadError": "保存した場所を読み込めませんでした。",
+  "noBookmarkedPlaces": "ブックマークはまだありません",
+  "noBookmarkedPlacesHint": "場所のブックマークをタップして保存できます。",
+  "wantToVisitEmpty": "行きたいリストは空です",
+  "wantToVisitEmptyHint": "場所の詳細ページから追加してください。",
+  "noRecentlyViewedPlaces": "最近見た場所はありません",
+  "noRecentlyViewedPlacesHint": "閲覧した場所が自動的に表示されます。",
+  "browsingHistoryCount": "閲覧履歴（{count}）",
+  "@browsingHistoryCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "usageLimitReachedTitle": "利用上限に達しました",
   "usageLimitReachedMessage": "今月の{feature}をすべて使用しました。{plan}で続行できます：",
-  "@usageLimitReachedMessage": {"placeholders":{"feature":{"type":"String"},"plan":{"type":"String"}}},
+  "@usageLimitReachedMessage": {
+    "placeholders": {
+      "feature": {
+        "type": "String"
+      },
+      "plan": {
+        "type": "String"
+      }
+    }
+  },
   "getPlanButton": "{plan}を入手",
-  "@getPlanButton": {"placeholders":{"plan":{"type":"String"}}},
+  "@getPlanButton": {
+    "placeholders": {
+      "plan": {
+        "type": "String"
+      }
+    }
+  },
   "watchAdForOneMore": "広告を見てもう1回利用",
   "priceUnavailable": "価格情報なし",
   "contactForPrice": "価格はお問い合わせください",
   "freePriceLabel": "無料",
   "fromPriceLabel": "{price}から",
-  "@fromPriceLabel": {"placeholders":{"price":{"type":"String"}}},
+  "@fromPriceLabel": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
   "priceRangeLabel": "{minimum}～{maximum}",
-  "@priceRangeLabel": {"placeholders":{"minimum":{"type":"String"},"maximum":{"type":"String"}}},
+  "@priceRangeLabel": {
+    "placeholders": {
+      "minimum": {
+        "type": "String"
+      },
+      "maximum": {
+        "type": "String"
+      }
+    }
+  },
   "serverManagedPriceNote": "価格はサービスから提供され、変更される場合があります。購入前にご確認ください。",
   "hydrationSummary": "地元の飲み物・密封水・安全な氷の案内",
   "appTitle": "Hidden Gems SL",
@@ -2799,5 +2892,8 @@
   "paymentUnavailableError": "現在この予約の支払いはできません。更新して再試行してください。",
   "sendQuoteAmountLabel": "金額",
   "sendQuoteConfirmButtonLabel": "承認して見積もりを送信",
-  "sendQuoteDialogTitle": "価格を設定"
+  "sendQuoteDialogTitle": "価格を設定",
+  "landslideAlertSubtitle": "NBRO 土砂災害ガイダンス＆河川洪水安全情報",
+  "foodSafetyTipsTitle": "食品安全のヒント",
+  "foodSafetyDisclaimer": "一般的なガイダンスのみです。症状が続く場合や重度の場合は専門医の診察を受けてください。"
 }

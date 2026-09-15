@@ -5515,4 +5515,15 @@ class AppLocalizationsTa extends AppLocalizations {
   @override
   String get disasterHelplineTitle =>
       'அனர்த்த முகாமைத்துவ அவசர உதவி (DMC): 117';
+
+  @override
+  String get landslideAlertSubtitle =>
+      'NBRO நிலச்சரிவு வழிகாட்டுதல் & நதி வெள்ள பாதுகாப்பு';
+
+  @override
+  String get foodSafetyTipsTitle => 'உணவுப் பாதுகாப்பு குறிப்புகள்';
+
+  @override
+  String get foodSafetyDisclaimer =>
+      'பொதுவான வழிகாட்டுதல் மட்டுமே; அறிகுறிகள் தொடர்ந்தால் மருத்துவ சிகிச்சையை நாடவும்.';
 }

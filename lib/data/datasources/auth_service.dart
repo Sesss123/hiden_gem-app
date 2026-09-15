@@ -625,11 +625,16 @@ class AuthService {
       final response = await SecureHttpClient(http.Client()).delete(
         Uri.parse('${AppConfig.laravelUrl}/auth/account'),
         headers: {'X-API-KEY': AppConfig.hiddenGemsApiKey},
-      ).timeout(const Duration(seconds: 20));
+      ).timeout(const Duration(seconds: 45));
 
       if (response.statusCode != 200) {
+        String? serverMsg;
+        try {
+          final body = jsonDecode(response.body);
+          serverMsg = body['message'] as String?;
+        } catch (_) {}
         throw Exception(
-            'Account deletion failed on the server (${response.statusCode}).');
+            serverMsg ?? 'Account deletion failed on the server (${response.statusCode}).');
       }
 
       // 2. Only tear down device state after the server confirms deletion.
@@ -638,6 +643,8 @@ class AuthService {
       await UserPreferenceService.clearAuthToken();
       await TripCacheService.clearUserData();
       await SecureEntitlements().clearForUser(user.uid);
+      ZenithSecurityFacade().onUserLogout();
+
       if (!kIsWeb) {
         try {
           await GoogleSignIn.instance.signOut();

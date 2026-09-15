@@ -207,7 +207,12 @@ class NotificationService {
     _notifSub = null;
     _seenNotifIds.clear();
     if (uid != null) {
-      await unsubscribeFromTopic('guide_$uid');
+      await Future.wait([
+        unsubscribeFromTopic('guide_$uid'),
+        unsubscribeFromTopic('user_$uid'),
+        unsubscribeFromTopic('tourist_$uid'),
+        unsubscribeFromTopic('booking_$uid'),
+      ]);
     }
   }
 
@@ -223,6 +228,7 @@ class NotificationService {
         final ref = FirebaseFirestore.instance.collection('users').doc(uid);
         await FirebaseFirestore.instance.runTransaction((transaction) async {
           final snapshot = await transaction.get(ref);
+          if (!snapshot.exists) return;
           final update = <String, dynamic>{
             'fcmTokens': FieldValue.arrayRemove([token]),
           };

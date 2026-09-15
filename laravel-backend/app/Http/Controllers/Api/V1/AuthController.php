@@ -10,6 +10,7 @@ use App\Models\GuideApplication;
 use App\Services\FirestoreService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
@@ -252,6 +253,7 @@ class AuthController extends Controller
                 'message' => 'Firebase login successful!',
                 'data' => [
                     'user' => $user,
+
                     'access_token' => $token,
                     'token_type' => 'Bearer',
                 ],
@@ -295,37 +297,83 @@ class AuthController extends Controller
         $user = $request->user();
         $uid = $user->firebase_uid;
 
-        if ($uid) {
-            // All cleanup is idempotent and must succeed before either login
-            // identity is removed. A retry can therefore safely finish a
-            // partially-completed deletion after a transient Firestore error.
-            $this->purgeFirestoreData($firestore, $uid);
-            GuideApplication::where('user_id', $uid)->delete();
-            Storage::disk('local')->deleteDirectory("guide_documents/{$uid}");
-            Storage::disk('public')->deleteDirectory("listing_photos/{$uid}");
+        try {
+            if ($uid) {
+                // All cleanup is idempotent and must succeed before either login
+                // identity is removed. A retry can therefore safely finish a
+                // partially-completed deletion after a transient Firestore error.
+                $this->purgeFirestoreData($firestore, $uid);
+                GuideApplication::where('user_id', $uid)->delete();
 
-            try {
-                $this->firebaseFactory()->createAuth()->deleteUser($uid);
-            } catch (UserNotFound $e) {
-                // A previous retry may already have removed the identity.
-                Log::info('Firebase identity already absent during account deletion.', ['uid' => $uid]);
+                // Purge uploaded files across both Firebase UID and numeric user ID
+                Storage::disk('local')->deleteDirectory("guide_documents/{$uid}");
+                Storage::disk('local')->deleteDirectory("guide_documents/{$user->id}");
+                Storage::disk('public')->deleteDirectory("listing_photos/{$uid}");
+                Storage::disk('public')->deleteDirectory("listing_photos/{$user->id}");
+
+                // Purge RevenueCat subscriber data if secret key is configured
+                $this->purgeRevenueCatSubscriber($uid);
+
+                try {
+                    $this->firebaseFactory()->createAuth()->deleteUser($uid);
+                } catch (UserNotFound $e) {
+                    // A previous retry may already have removed the identity.
+                    Log::info('Firebase identity already absent during account deletion.', ['uid' => $uid]);
+                }
             }
+
+            // Content authorship: keep the content, drop the link to this account.
+            Place::where('created_by', $user->id)->update(['created_by' => null]);
+            Event::where('created_by', $user->id)->update(['created_by' => null]);
+
+            // Revoke every token (including the one authenticating this request)
+            // before the row itself goes — this request is the account's last
+            // authenticated action either way.
+            $user->tokens()->delete();
+            $user->delete();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Account and associated data deleted.',
+            ]);
+        } catch (\Throwable $e) {
+            Log::error("Account deletion failed for user {$user->id} (UID: {$uid}): " . $e->getMessage(), [
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Account deletion failed due to a server error. Your account has not been deleted. Please try again.',
+                'code' => 'deletion_failed',
+            ], 500);
+        }
+    }
+
+    /**
+     * Purges RevenueCat subscriber profile and purchase history from RevenueCat servers
+     * using the REST API v1 if a secret key is configured.
+     */
+    private function purgeRevenueCatSubscriber(string $uid): void
+    {
+        $secretKey = config('services.revenuecat.secret_key');
+        if (!$secretKey) {
+            return;
         }
 
-        // Content authorship: keep the content, drop the link to this account.
-        Place::where('created_by', $user->id)->update(['created_by' => null]);
-        Event::where('created_by', $user->id)->update(['created_by' => null]);
+        try {
+            $response = Http::withHeaders([
+                'Authorization' => "Bearer {$secretKey}",
+                'Accept' => 'application/json',
+            ])->delete("https://api.revenuecat.com/v1/subscribers/" . urlencode($uid));
 
-        // Revoke every token (including the one authenticating this request)
-        // before the row itself goes — this request is the account's last
-        // authenticated action either way.
-        $user->tokens()->delete();
-        $user->delete();
-
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Account and associated data deleted.',
-        ]);
+            if ($response->successful() || $response->status() === 404) {
+                Log::info("RevenueCat subscriber deleted or absent for UID: {$uid}");
+            } else {
+                Log::warning("RevenueCat subscriber delete returned status {$response->status()}: " . $response->body());
+            }
+        } catch (\Throwable $e) {
+            Log::error("RevenueCat subscriber delete exception for UID {$uid}: " . $e->getMessage());
+        }
     }
 
     /**
@@ -357,9 +405,13 @@ class AuthController extends Controller
             ['tour_packages', 'ownerId'],
             ['operator_accounts', 'ownerUserId'],
             ['subscriptions', 'accountId'],
+            ['subscriptions', 'userId'],
             ['user_notifications', 'recipientId'],
+            ['user_notifications', 'userId'],
             ['profile_view_markers', 'viewerUid'],
+            ['profile_view_markers', 'targetUid'],
             ['guide_analytics', 'guideId'],
+            ['threat_notifications', 'userId'],
         ];
 
         foreach ($hardDeleteQueries as $query) {
@@ -388,6 +440,27 @@ class AuthController extends Controller
             if (!$firestore->patchDocument('tour_sessions', $session['id'], ['touristIds' => $remainingTourists])) {
                 throw new \RuntimeException("Failed removing deleted tourist from tour_sessions/{$session['id']}.");
             }
+            // Explicitly purge tourist presence subcollection doc in this session
+            $firestore->deleteDocument("tour_sessions/{$session['id']}/presence", $uid);
+
+            // Delete any meeting-point checkpoints this tourist personally
+            // created, and strip their uid from acknowledgedBy on broadcasts
+            // (the broadcast itself is guide-authored session data and stays).
+            $sessionPath = "tour_sessions/{$session['id']}";
+            $checkpoints = $firestore->listSubcollectionDocuments($sessionPath, 'checkpoints');
+            foreach ($checkpoints as $checkpoint) {
+                if (($checkpoint['createdBy'] ?? null) === $uid) {
+                    $firestore->deleteDocument("{$sessionPath}/checkpoints", $checkpoint['id']);
+                }
+            }
+            $broadcasts = $firestore->listSubcollectionDocuments($sessionPath, 'broadcasts');
+            foreach ($broadcasts as $broadcast) {
+                $acknowledgedBy = $broadcast['acknowledgedBy'] ?? [];
+                if (in_array($uid, $acknowledgedBy, true)) {
+                    $remaining = array_values(array_filter($acknowledgedBy, fn ($id) => $id !== $uid));
+                    $firestore->patchDocument("{$sessionPath}/broadcasts", $broadcast['id'], ['acknowledgedBy' => $remaining]);
+                }
+            }
         }
 
         // Remove membership references in operator accounts owned by someone
@@ -402,6 +475,10 @@ class AuthController extends Controller
                 }
             }
         }
+
+        // Explicitly purge security subcollections before deleting root user document
+        $firestore->deleteDocumentRecursively("users/{$uid}/security", "posture");
+        $firestore->deleteDocument("users/{$uid}/security", "posture");
 
         // Doc ID IS the uid for these two — no query needed.
         foreach (['guide_applications', 'users', 'join_attempts'] as $collection) {

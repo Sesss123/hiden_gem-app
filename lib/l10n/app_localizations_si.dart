@@ -5469,4 +5469,15 @@ class AppLocalizationsSi extends AppLocalizations {
 
   @override
   String get disasterHelplineTitle => 'ආපදා සහන හදිසි ඇමතුම් (DMC): 117';
+
+  @override
+  String get landslideAlertSubtitle =>
+      'NBRO නායයෑම් උපදෙස් සහ ගංගා ගංවතුර ආරක්ෂාව';
+
+  @override
+  String get foodSafetyTipsTitle => 'ආහාර සුරක්ෂිතතා උපදෙස්';
+
+  @override
+  String get foodSafetyDisclaimer =>
+      'සාමාන්‍ය මඟපෙන්වීම සඳහා පමණි; රෝග ලක්ෂණ පවතින්නේ නම් වෛද්‍ය ප්‍රතිකාර ලබාගන්න.';
 }

@@ -5272,4 +5272,14 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get disasterHelplineTitle => '災害管理局ヘルプライン (DMC): 117';
+
+  @override
+  String get landslideAlertSubtitle => 'NBRO 土砂災害ガイダンス＆河川洪水安全情報';
+
+  @override
+  String get foodSafetyTipsTitle => '食品安全のヒント';
+
+  @override
+  String get foodSafetyDisclaimer =>
+      '一般的なガイダンスのみです。症状が続く場合や重度の場合は専門医の診察を受けてください。';
 }

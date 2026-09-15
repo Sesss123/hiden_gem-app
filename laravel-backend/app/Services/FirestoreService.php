@@ -170,27 +170,6 @@ class FirestoreService
         }
     }
 
-    /**
-     * Deletes a Firestore document via REST API.
-     */
-    public function deleteDocument(string $collection, string $documentId): bool
-    {
-        try {
-            $token = $this->getToken();
-            $url = "https://firestore.googleapis.com/v1/projects/{$this->projectId}/databases/(default)/documents/{$collection}/{$documentId}";
-            $response = $this->client($token)->delete($url);
-
-            if ($response->successful()) {
-                Log::info("Firestore {$collection}/{$documentId} deleted via REST.");
-                return true;
-            }
-            Log::error("Firestore REST delete error ({$response->status()}): " . $response->body());
-            return false;
-        } catch (\Exception $e) {
-            Log::error("Firestore REST exception deleting {$collection}/{$documentId}: " . $e->getMessage());
-            throw $e;
-        }
-    }
 
     /** Send a data-first FCM message to a subscribed topic via HTTP v1. */
     public function sendFcmTopic(string $topic, string $title, string $body, array $data = [], bool $showNotification = true): bool
@@ -254,10 +233,64 @@ class FirestoreService
         return true;
     }
 
+    /** Delete a single document (non-recursive). Idempotent; 404 is treated as success. */
+    public function deleteDocument(string $collection, string $documentId): bool
+    {
+        try {
+            $token = $this->getToken();
+            $base = "https://firestore.googleapis.com/v1/projects/{$this->projectId}/databases/(default)/documents";
+            $response = $this->client($token)->delete("{$base}/{$collection}/{$documentId}");
+            return $response->successful() || $response->status() === 404;
+        } catch (\Throwable $e) {
+            Log::error("Firestore deleteDocument exception for {$collection}/{$documentId}: " . $e->getMessage());
+            return false;
+        }
+    }
+
     /** Delete a document and all nested subcollections below it. */
     public function deleteDocumentRecursively(string $collection, string $documentId): bool
     {
         return $this->deleteDocumentPathRecursively("{$collection}/{$documentId}");
+    }
+
+    /**
+     * Lists every document directly inside a subcollection at a known parent
+     * path (e.g. "tour_sessions/abc123/checkpoints"). Unlike queryDocuments(),
+     * which only searches root-level collections of a given name, this walks
+     * a specific nested collection path directly, so it works for
+     * subcollections without needing a Firestore collection-group index.
+     */
+    public function listSubcollectionDocuments(string $parentPath, string $subcollection): array
+    {
+        try {
+            $token = $this->getToken();
+            $base = "https://firestore.googleapis.com/v1/projects/{$this->projectId}/databases/(default)/documents";
+            $results = [];
+            $pageToken = null;
+            do {
+                $query = ['pageSize' => 300];
+                if ($pageToken) $query['pageToken'] = $pageToken;
+                $response = $this->client($token)->get("{$base}/{$parentPath}/{$subcollection}", $query);
+                if (!$response->successful()) {
+                    if ($response->status() === 404) break;
+                    Log::error("Firestore REST list error for {$parentPath}/{$subcollection} ({$response->status()}): " . $response->body());
+                    return $results;
+                }
+                foreach (($response->json('documents') ?? []) as $doc) {
+                    $id = basename($doc['name']);
+                    $fields = [];
+                    foreach (($doc['fields'] ?? []) as $k => $v) {
+                        $fields[$k] = $this->decodeValue($v);
+                    }
+                    $results[] = array_merge(['id' => $id], $fields);
+                }
+                $pageToken = $response->json('nextPageToken');
+            } while ($pageToken);
+            return $results;
+        } catch (\Exception $e) {
+            Log::error("Firestore REST exception listing {$parentPath}/{$subcollection}: " . $e->getMessage());
+            return $results ?? [];
+        }
     }
 
     private function deleteDocumentPathRecursively(string $documentPath): bool
@@ -271,6 +304,9 @@ class FirestoreService
             if ($pageToken) $body['pageToken'] = $pageToken;
             $collectionsResponse = $this->client($token)->post("{$base}/{$documentPath}:listCollectionIds", $body);
             if (!$collectionsResponse->successful()) {
+                if ($collectionsResponse->status() === 404) {
+                    break;
+                }
                 throw new \RuntimeException("Failed listing subcollections for {$documentPath} ({$collectionsResponse->status()}).");
             }
 
@@ -281,6 +317,9 @@ class FirestoreService
                     if ($documentsPageToken) $query['pageToken'] = $documentsPageToken;
                     $documentsResponse = $this->client($token)->get("{$base}/{$documentPath}/{$collectionId}", $query);
                     if (!$documentsResponse->successful()) {
+                        if ($documentsResponse->status() === 404) {
+                            break;
+                        }
                         throw new \RuntimeException("Failed listing {$documentPath}/{$collectionId} ({$documentsResponse->status()}).");
                     }
                     foreach (($documentsResponse->json('documents') ?? []) as $document) {
@@ -296,7 +335,7 @@ class FirestoreService
         } while ($pageToken);
 
         $response = $this->client($token)->delete("{$base}/{$documentPath}");
-        return $response->successful();
+        return $response->successful() || $response->status() === 404;
     }
 
     /**

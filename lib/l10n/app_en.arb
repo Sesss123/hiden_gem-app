@@ -1,22 +1,115 @@
 {
-  "guidePhoneVerified": "Phone verified", "guidePhoneVerificationRequired": "Phone verification required", "guidePhoneVerificationReason": "Verify by OTP before publishing or accepting bookings.", "changePhoneAction": "Change", "verifyPhoneAction": "Verify", "verifyGuidePhoneTitle": "Verify guide phone", "phoneWithCountryCodeLabel": "Phone number with country code", "sendOtpAction": "Send OTP", "enterOtpTitle": "Enter SMS code", "otpCodeLabel": "6-digit code", "phoneVerifiedSuccess": "Phone number verified successfully.", "phoneVerificationFailed": "Phone verification failed: {error}", "@phoneVerificationFailed":{"placeholders":{"error":{"type":"String"}}}, "verifyPhoneBeforePublish": "Verify your phone number before publishing.", "validPriceRequired": "Enter a valid price", "guideRateRangeError": "Rate must be greater than 0 and no more than 1,000,000",
+  "guidePhoneVerified": "Phone verified",
+  "guidePhoneVerificationRequired": "Phone verification required",
+  "guidePhoneVerificationReason": "Verify by OTP before publishing or accepting bookings.",
+  "changePhoneAction": "Change",
+  "verifyPhoneAction": "Verify",
+  "verifyGuidePhoneTitle": "Verify guide phone",
+  "phoneWithCountryCodeLabel": "Phone number with country code",
+  "sendOtpAction": "Send OTP",
+  "enterOtpTitle": "Enter SMS code",
+  "otpCodeLabel": "6-digit code",
+  "phoneVerifiedSuccess": "Phone number verified successfully.",
+  "phoneVerificationFailed": "Phone verification failed: {error}",
+  "@phoneVerificationFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "verifyPhoneBeforePublish": "Verify your phone number before publishing.",
+  "validPriceRequired": "Enter a valid price",
+  "guideRateRangeError": "Rate must be greater than 0 and no more than 1,000,000",
   "retryAction": "Retry",
-  "invalidMapCoordinates": "This place has invalid map coordinates.", "mapAppUnavailable": "No map application is available.", "routeSafetyAdvisory": "Route safety advisory", "reviewRouteAction": "Review route", "continueAction": "Continue",
-  "savedJourneyHubTitle": "Saved Places & Journey Hub", "bookmarkedCount": "Bookmarked ({count})", "@bookmarkedCount":{"placeholders":{"count":{"type":"int"}}}, "wantToVisitCount": "Want to Visit ({count})", "@wantToVisitCount":{"placeholders":{"count":{"type":"int"}}}, "recentCount": "Recent ({count})", "@recentCount":{"placeholders":{"count":{"type":"int"}}},
-  "savedPlacesLoadError": "Saved places could not be loaded.", "noBookmarkedPlaces": "No bookmarked places yet", "noBookmarkedPlacesHint": "Tap the bookmark icon on a place to save it here.", "wantToVisitEmpty": "Your Want to Visit list is empty", "wantToVisitEmptyHint": "Add places from their details page.", "noRecentlyViewedPlaces": "No recently viewed places", "noRecentlyViewedPlacesHint": "Places you explore will appear here automatically.", "browsingHistoryCount": "Browsing history ({count})", "@browsingHistoryCount":{"placeholders":{"count":{"type":"int"}}},
+  "invalidMapCoordinates": "This place has invalid map coordinates.",
+  "mapAppUnavailable": "No map application is available.",
+  "routeSafetyAdvisory": "Route safety advisory",
+  "reviewRouteAction": "Review route",
+  "continueAction": "Continue",
+  "savedJourneyHubTitle": "Saved Places & Journey Hub",
+  "bookmarkedCount": "Bookmarked ({count})",
+  "@bookmarkedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "wantToVisitCount": "Want to Visit ({count})",
+  "@wantToVisitCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "recentCount": "Recent ({count})",
+  "@recentCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "savedPlacesLoadError": "Saved places could not be loaded.",
+  "noBookmarkedPlaces": "No bookmarked places yet",
+  "noBookmarkedPlacesHint": "Tap the bookmark icon on a place to save it here.",
+  "wantToVisitEmpty": "Your Want to Visit list is empty",
+  "wantToVisitEmptyHint": "Add places from their details page.",
+  "noRecentlyViewedPlaces": "No recently viewed places",
+  "noRecentlyViewedPlacesHint": "Places you explore will appear here automatically.",
+  "browsingHistoryCount": "Browsing history ({count})",
+  "@browsingHistoryCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "usageLimitReachedTitle": "Usage limit reached",
   "usageLimitReachedMessage": "You have used all your {feature} for this month. Continue with {plan}:",
-  "@usageLimitReachedMessage": {"placeholders":{"feature":{"type":"String"},"plan":{"type":"String"}}},
+  "@usageLimitReachedMessage": {
+    "placeholders": {
+      "feature": {
+        "type": "String"
+      },
+      "plan": {
+        "type": "String"
+      }
+    }
+  },
   "getPlanButton": "Get {plan}",
-  "@getPlanButton": {"placeholders":{"plan":{"type":"String"}}},
+  "@getPlanButton": {
+    "placeholders": {
+      "plan": {
+        "type": "String"
+      }
+    }
+  },
   "watchAdForOneMore": "Watch an ad for one more",
   "priceUnavailable": "Price unavailable",
   "contactForPrice": "Contact for price",
   "freePriceLabel": "Free",
   "fromPriceLabel": "From {price}",
-  "@fromPriceLabel": {"placeholders":{"price":{"type":"String"}}},
+  "@fromPriceLabel": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
   "priceRangeLabel": "{minimum} – {maximum}",
-  "@priceRangeLabel": {"placeholders":{"minimum":{"type":"String"},"maximum":{"type":"String"}}},
+  "@priceRangeLabel": {
+    "placeholders": {
+      "minimum": {
+        "type": "String"
+      },
+      "maximum": {
+        "type": "String"
+      }
+    }
+  },
   "serverManagedPriceNote": "Prices are supplied by the service and may change. Confirm before purchase.",
   "hydrationSummary": "Local drinks · sealed water guidance · safer ice guidance",
   "appTitle": "Hidden Gems SL",
@@ -2820,5 +2913,8 @@
   "landslideLevel3Msg": "Level 3: Red Evacuation Alert. Mountain roads may be impassable",
   "floodRiskTitle": "River Basin Flood Travel Advisory",
   "floodRiskMsg": "Low-lying access roads may experience rising water. Use main highways",
-  "disasterHelplineTitle": "Disaster Helpline (DMC): 117"
+  "disasterHelplineTitle": "Disaster Helpline (DMC): 117",
+  "landslideAlertSubtitle": "NBRO Landslide Guidance & River Flood Safety",
+  "foodSafetyTipsTitle": "Food Safety Tips",
+  "foodSafetyDisclaimer": "General guidance only; seek professional care for persistent or severe symptoms."
 }

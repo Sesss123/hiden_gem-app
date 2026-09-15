@@ -1,22 +1,115 @@
 {
-  "guidePhoneVerified": "தொலைபேசி சரிபார்க்கப்பட்டது", "guidePhoneVerificationRequired": "தொலைபேசி சரிபார்ப்பு தேவை", "guidePhoneVerificationReason": "வெளியிட அல்லது முன்பதிவை ஏற்க முன் OTP மூலம் சரிபார்க்கவும்.", "changePhoneAction": "மாற்று", "verifyPhoneAction": "சரிபார்", "verifyGuidePhoneTitle": "வழிகாட்டி தொலைபேசியை சரிபார்", "phoneWithCountryCodeLabel": "நாட்டுக் குறியீட்டுடன் தொலைபேசி எண்", "sendOtpAction": "OTP அனுப்பு", "enterOtpTitle": "SMS குறியீட்டை உள்ளிடவும்", "otpCodeLabel": "6 இலக்க குறியீடு", "phoneVerifiedSuccess": "தொலைபேசி எண் வெற்றிகரமாக சரிபார்க்கப்பட்டது.", "phoneVerificationFailed": "தொலைபேசி சரிபார்ப்பு தோல்வி: {error}", "@phoneVerificationFailed":{"placeholders":{"error":{"type":"String"}}}, "verifyPhoneBeforePublish": "வெளியிட முன் தொலைபேசியை சரிபார்க்கவும்.", "validPriceRequired": "செல்லுபடியான விலையை உள்ளிடவும்", "guideRateRangeError": "கட்டணம் 0க்கு மேல், 1,000,000க்கு மிகாமல் இருக்க வேண்டும்",
+  "guidePhoneVerified": "தொலைபேசி சரிபார்க்கப்பட்டது",
+  "guidePhoneVerificationRequired": "தொலைபேசி சரிபார்ப்பு தேவை",
+  "guidePhoneVerificationReason": "வெளியிட அல்லது முன்பதிவை ஏற்க முன் OTP மூலம் சரிபார்க்கவும்.",
+  "changePhoneAction": "மாற்று",
+  "verifyPhoneAction": "சரிபார்",
+  "verifyGuidePhoneTitle": "வழிகாட்டி தொலைபேசியை சரிபார்",
+  "phoneWithCountryCodeLabel": "நாட்டுக் குறியீட்டுடன் தொலைபேசி எண்",
+  "sendOtpAction": "OTP அனுப்பு",
+  "enterOtpTitle": "SMS குறியீட்டை உள்ளிடவும்",
+  "otpCodeLabel": "6 இலக்க குறியீடு",
+  "phoneVerifiedSuccess": "தொலைபேசி எண் வெற்றிகரமாக சரிபார்க்கப்பட்டது.",
+  "phoneVerificationFailed": "தொலைபேசி சரிபார்ப்பு தோல்வி: {error}",
+  "@phoneVerificationFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "verifyPhoneBeforePublish": "வெளியிட முன் தொலைபேசியை சரிபார்க்கவும்.",
+  "validPriceRequired": "செல்லுபடியான விலையை உள்ளிடவும்",
+  "guideRateRangeError": "கட்டணம் 0க்கு மேல், 1,000,000க்கு மிகாமல் இருக்க வேண்டும்",
   "retryAction": "மீண்டும் முயற்சிக்கவும்",
-  "invalidMapCoordinates": "இந்த இடத்தின் வரைபட ஆயங்கள் தவறானவை.", "mapAppUnavailable": "வரைபடச் செயலி கிடைக்கவில்லை.", "routeSafetyAdvisory": "பாதை பாதுகாப்பு ஆலோசனை", "reviewRouteAction": "பாதையை பார்க்கவும்", "continueAction": "தொடரவும்",
-  "savedJourneyHubTitle": "சேமித்த இடங்கள் மற்றும் பயண மையம்", "bookmarkedCount": "புக்மார்க் ({count})", "@bookmarkedCount":{"placeholders":{"count":{"type":"int"}}}, "wantToVisitCount": "செல்ல விருப்பம் ({count})", "@wantToVisitCount":{"placeholders":{"count":{"type":"int"}}}, "recentCount": "சமீபம் ({count})", "@recentCount":{"placeholders":{"count":{"type":"int"}}},
-  "savedPlacesLoadError": "சேமித்த இடங்களை ஏற்ற முடியவில்லை.", "noBookmarkedPlaces": "புக்மார்க் செய்த இடங்கள் இல்லை", "noBookmarkedPlacesHint": "ஒரு இடத்தைச் சேமிக்க புக்மார்க் குறியைத் தட்டவும்.", "wantToVisitEmpty": "செல்ல விருப்பப் பட்டியல் காலியாக உள்ளது", "wantToVisitEmptyHint": "இட விவரப் பக்கத்திலிருந்து இடங்களைச் சேர்க்கவும்.", "noRecentlyViewedPlaces": "சமீபத்தில் பார்த்த இடங்கள் இல்லை", "noRecentlyViewedPlacesHint": "நீங்கள் பார்க்கும் இடங்கள் இங்கே தோன்றும்.", "browsingHistoryCount": "பார்வை வரலாறு ({count})", "@browsingHistoryCount":{"placeholders":{"count":{"type":"int"}}},
+  "invalidMapCoordinates": "இந்த இடத்தின் வரைபட ஆயங்கள் தவறானவை.",
+  "mapAppUnavailable": "வரைபடச் செயலி கிடைக்கவில்லை.",
+  "routeSafetyAdvisory": "பாதை பாதுகாப்பு ஆலோசனை",
+  "reviewRouteAction": "பாதையை பார்க்கவும்",
+  "continueAction": "தொடரவும்",
+  "savedJourneyHubTitle": "சேமித்த இடங்கள் மற்றும் பயண மையம்",
+  "bookmarkedCount": "புக்மார்க் ({count})",
+  "@bookmarkedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "wantToVisitCount": "செல்ல விருப்பம் ({count})",
+  "@wantToVisitCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "recentCount": "சமீபம் ({count})",
+  "@recentCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "savedPlacesLoadError": "சேமித்த இடங்களை ஏற்ற முடியவில்லை.",
+  "noBookmarkedPlaces": "புக்மார்க் செய்த இடங்கள் இல்லை",
+  "noBookmarkedPlacesHint": "ஒரு இடத்தைச் சேமிக்க புக்மார்க் குறியைத் தட்டவும்.",
+  "wantToVisitEmpty": "செல்ல விருப்பப் பட்டியல் காலியாக உள்ளது",
+  "wantToVisitEmptyHint": "இட விவரப் பக்கத்திலிருந்து இடங்களைச் சேர்க்கவும்.",
+  "noRecentlyViewedPlaces": "சமீபத்தில் பார்த்த இடங்கள் இல்லை",
+  "noRecentlyViewedPlacesHint": "நீங்கள் பார்க்கும் இடங்கள் இங்கே தோன்றும்.",
+  "browsingHistoryCount": "பார்வை வரலாறு ({count})",
+  "@browsingHistoryCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "usageLimitReachedTitle": "பயன்பாட்டு வரம்பு முடிந்தது",
   "usageLimitReachedMessage": "இந்த மாதத்திற்கான {feature} அனைத்தையும் பயன்படுத்திவிட்டீர்கள். {plan} உடன் தொடரவும்:",
-  "@usageLimitReachedMessage": {"placeholders":{"feature":{"type":"String"},"plan":{"type":"String"}}},
+  "@usageLimitReachedMessage": {
+    "placeholders": {
+      "feature": {
+        "type": "String"
+      },
+      "plan": {
+        "type": "String"
+      }
+    }
+  },
   "getPlanButton": "{plan} பெறுக",
-  "@getPlanButton": {"placeholders":{"plan":{"type":"String"}}},
+  "@getPlanButton": {
+    "placeholders": {
+      "plan": {
+        "type": "String"
+      }
+    }
+  },
   "watchAdForOneMore": "மேலும் ஒன்றுக்கு விளம்பரம் பார்க்கவும்",
   "priceUnavailable": "விலை கிடைக்கவில்லை",
   "contactForPrice": "விலைக்கு தொடர்பு கொள்ளவும்",
   "freePriceLabel": "இலவசம்",
   "fromPriceLabel": "{price} முதல்",
-  "@fromPriceLabel": {"placeholders":{"price":{"type":"String"}}},
+  "@fromPriceLabel": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
   "priceRangeLabel": "{minimum} – {maximum}",
-  "@priceRangeLabel": {"placeholders":{"minimum":{"type":"String"},"maximum":{"type":"String"}}},
+  "@priceRangeLabel": {
+    "placeholders": {
+      "minimum": {
+        "type": "String"
+      },
+      "maximum": {
+        "type": "String"
+      }
+    }
+  },
   "serverManagedPriceNote": "விலைகள் சேவையால் வழங்கப்படுகின்றன; மாறலாம். வாங்கும் முன் உறுதிசெய்யவும்.",
   "hydrationSummary": "உள்ளூர் பானங்கள் · மூடிய குடிநீர் வழிகாட்டல் · பாதுகாப்பான பனி வழிகாட்டல்",
   "appTitle": "Hidden Gems SL",
@@ -2799,5 +2892,8 @@
   "paymentUnavailableError": "இந்த முன்பதிவுக்கு இப்போது பணம் செலுத்த முடியாது. புதுப்பித்து மீண்டும் முயலுங்கள்.",
   "sendQuoteAmountLabel": "தொகை",
   "sendQuoteConfirmButtonLabel": "ஏற்று விலைமதிப்பை அனுப்பு",
-  "sendQuoteDialogTitle": "உங்கள் விலையை அமைக்கவும்"
+  "sendQuoteDialogTitle": "உங்கள் விலையை அமைக்கவும்",
+  "landslideAlertSubtitle": "NBRO நிலச்சரிவு வழிகாட்டுதல் & நதி வெள்ள பாதுகாப்பு",
+  "foodSafetyTipsTitle": "உணவுப் பாதுகாப்பு குறிப்புகள்",
+  "foodSafetyDisclaimer": "பொதுவான வழிகாட்டுதல் மட்டுமே; அறிகுறிகள் தொடர்ந்தால் மருத்துவ சிகிச்சையை நாடவும்."
 }
