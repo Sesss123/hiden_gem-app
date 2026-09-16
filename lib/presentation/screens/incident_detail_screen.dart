@@ -3,7 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:share_plus/share_plus.dart';
 import '../../core/theme/oracle_ui_system.dart';
+import '../../data/datasources/user_preference_service.dart';
 import '../../data/models/incident_report.dart';
 import '../../data/repositories/incident_repository.dart';
 import '../../l10n/app_localizations.dart';
@@ -98,7 +101,9 @@ class _IncidentDetailScreenState extends ConsumerState<IncidentDetailScreen> {
         Builder(
           builder: (context) => IconButton(
             icon: Icon(Icons.share_rounded, color: AppTheme.textSecondary(context)),
-            onPressed: () {},
+            onPressed: () => SharePlus.instance.share(
+              ShareParams(text: '${incident.incidentNumber}: ${incident.title}'),
+            ),
           ),
         ),
       ],
@@ -355,6 +360,93 @@ class _IncidentDetailScreenState extends ConsumerState<IncidentDetailScreen> {
     }).toList();
   }
 
+  Future<void> _handleAddEvidence(BuildContext context, IncidentReport incident) async {
+    final l10n = AppLocalizations.of(context)!;
+    final controller = TextEditingController();
+    final note = await showDialog<String>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n.addEvidenceDialogTitle),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          maxLines: 4,
+          decoration: InputDecoration(hintText: l10n.addEvidenceDialogHint),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: Text(l10n.cancelButton),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(dialogContext, controller.text.trim()),
+            child: Text(l10n.submitButton),
+          ),
+        ],
+      ),
+    );
+
+    if (note == null || note.isEmpty || !context.mounted) return;
+
+    final profile = UserPreferenceService.getProfile();
+    final userId = FirebaseAuth.instance.currentUser?.uid ?? 'anonymous';
+    try {
+      await ref.read(incidentRepositoryProvider).addEvidenceNote(
+            incidentId: incident.incidentId,
+            note: note,
+            addedBy: userId,
+            addedByRole: profile.role,
+          );
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.evidenceAddedMessage)));
+      }
+    } catch (_) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.genericErrorMessage)));
+      }
+    }
+  }
+
+  Future<void> _handleEscalate(BuildContext context, IncidentReport incident) async {
+    final l10n = AppLocalizations.of(context)!;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n.escalateIncidentConfirmTitle),
+        content: Text(l10n.escalateIncidentConfirmMessage),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: Text(l10n.cancelButton),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: Text(l10n.escalateButton),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true || !context.mounted) return;
+
+    final profile = UserPreferenceService.getProfile();
+    final userId = FirebaseAuth.instance.currentUser?.uid ?? 'anonymous';
+    try {
+      await ref.read(incidentRepositoryProvider).escalateIncident(
+            incidentId: incident.incidentId,
+            escalatedBy: userId,
+            escalatedByRole: profile.role,
+          );
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.incidentEscalatedMessage)));
+      }
+    } catch (_) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.genericErrorMessage)));
+      }
+    }
+  }
+
   Widget _buildStatusActions(IncidentReport incident) {
     return Builder(builder: (context) {
       return Container(
@@ -388,7 +480,7 @@ class _IncidentDetailScreenState extends ConsumerState<IncidentDetailScreen> {
               children: [
                 Expanded(
                   child: OutlinedButton(
-                    onPressed: () {},
+                    onPressed: () => _handleAddEvidence(context, incident),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: AppTheme.textPrimary(context),
                       side: BorderSide(color: AppTheme.borderColor(context)),
@@ -400,7 +492,9 @@ class _IncidentDetailScreenState extends ConsumerState<IncidentDetailScreen> {
                 const SizedBox(width: 16),
                 Expanded(
                   child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: (incident.status == 'resolved' || incident.status == 'closed' || incident.status == 'escalated')
+                        ? null
+                        : () => _handleEscalate(context, incident),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Theme.of(context).colorScheme.primary,
                       foregroundColor: Theme.of(context).colorScheme.onPrimary,

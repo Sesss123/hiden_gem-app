@@ -171,7 +171,12 @@ class ReviewRepository {
     } catch (e) {
       SecureLogger.warning("Failed to fetch guide reviews from backend: $e", tag: "Reviews");
     }
-    return cached?.page ?? ReviewPage.empty;
+    // A stale-but-present cache is still useful to show. Only when there's
+    // truly nothing cached do we surface the failure — returning an empty
+    // page here would be indistinguishable from "this guide has zero
+    // reviews" and silently hide a real fetch failure from the UI.
+    if (cached != null) return cached.page;
+    throw Exception('Failed to load guide reviews for $guideId');
   }
 
   // --- Moderation ---

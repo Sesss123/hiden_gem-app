@@ -4990,6 +4990,30 @@ abstract class AppLocalizations {
   /// **'Cancel'**
   String get cancelButton;
 
+  /// No description provided for @sendSosConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Send emergency SOS?'**
+  String get sendSosConfirmTitle;
+
+  /// No description provided for @sendSosConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Only continue for a real emergency. The alert cannot be recalled after delivery.'**
+  String get sendSosConfirmMessage;
+
+  /// No description provided for @sendSosButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Send SOS'**
+  String get sendSosButton;
+
+  /// No description provided for @sosDeliveryFailedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'SOS could not be delivered. Call 119 or 1990 now.'**
+  String get sosDeliveryFailedMessage;
+
   /// No description provided for @confirmPayoutButton.
   ///
   /// In en, this message translates to:
@@ -5812,6 +5836,12 @@ abstract class AppLocalizations {
   /// **'Failed to load reviews. Please try again.'**
   String get failedToLoadReviewsMessage;
 
+  /// No description provided for @failedToLoadBroadcastsMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load broadcasts. Please try again.'**
+  String get failedToLoadBroadcastsMessage;
+
   /// No description provided for @premiumAnalyticsLockedTitle.
   ///
   /// In en, this message translates to:
@@ -6621,6 +6651,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Sos triggered'**
   String get timelineTypeSosTriggered;
+
+  /// No description provided for @addEvidenceDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add evidence'**
+  String get addEvidenceDialogTitle;
+
+  /// No description provided for @addEvidenceDialogHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Describe the evidence or add extra details'**
+  String get addEvidenceDialogHint;
+
+  /// No description provided for @escalateIncidentConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Escalate this incident?'**
+  String get escalateIncidentConfirmTitle;
+
+  /// No description provided for @escalateIncidentConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This moves the report to the front of the admin review queue for urgent attention.'**
+  String get escalateIncidentConfirmMessage;
+
+  /// No description provided for @evidenceAddedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Evidence added to the report'**
+  String get evidenceAddedMessage;
+
+  /// No description provided for @incidentEscalatedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Incident escalated for urgent review'**
+  String get incidentEscalatedMessage;
+
+  /// No description provided for @genericErrorMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong. Please try again.'**
+  String get genericErrorMessage;
+
+  /// No description provided for @submitButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit'**
+  String get submitButton;
 
   /// No description provided for @invalidQrCodeFormatMessage.
   ///

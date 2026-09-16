@@ -2802,6 +2802,20 @@ class AppLocalizationsSi extends AppLocalizations {
   String get cancelButton => 'අවලංගු කරන්න';
 
   @override
+  String get sendSosConfirmTitle => 'හදිසි SOS එකක් යවන්නද?';
+
+  @override
+  String get sendSosConfirmMessage =>
+      'සැබෑ හදිසි අවස්ථාවක් සඳහා witharак continue කරන්න. යැවුවට පස්සේ මෙය ආපසු ගන්න බෑ.';
+
+  @override
+  String get sendSosButton => 'SOS යවන්න';
+
+  @override
+  String get sosDeliveryFailedMessage =>
+      'SOS එක යවන්න බැරි වුනා. දැන් 119 හෝ 1990 ට call කරන්න.';
+
+  @override
   String get confirmPayoutButton => 'ගෙවීම තහවුරු කරන්න';
 
   @override
@@ -3265,6 +3279,10 @@ class AppLocalizationsSi extends AppLocalizations {
       'සමාලෝචන පූරණය කිරීමට අසමත් විය. නැවත උත්සාහ කරන්න.';
 
   @override
+  String get failedToLoadBroadcastsMessage =>
+      'Broadcasts පූරණය කිරීමට අසමත් විය. නැවත උත්සාහ කරන්න.';
+
+  @override
   String get premiumAnalyticsLockedTitle => 'වාරික විශ්ලේෂණ අගුළු දමා ඇත';
 
   @override
@@ -3720,6 +3738,32 @@ class AppLocalizationsSi extends AppLocalizations {
 
   @override
   String get timelineTypeSosTriggered => 'SOS අවුලුවන ලදී';
+
+  @override
+  String get addEvidenceDialogTitle => 'සාක්ෂි එකතු කරන්න';
+
+  @override
+  String get addEvidenceDialogHint => 'සාක්ෂිය හෝ අමතර විස්තර විස්තර කරන්න';
+
+  @override
+  String get escalateIncidentConfirmTitle => 'මෙම සිද්ධිය උත්සන්න කරන්නද?';
+
+  @override
+  String get escalateIncidentConfirmMessage =>
+      'මෙය වාර්තාව admin review queue එකේ ඉදිරියටම ගෙන යනවා, ඉක්මන් අවධානයක් සඳහා.';
+
+  @override
+  String get evidenceAddedMessage => 'සාක්ෂිය වාර්තාවට එකතු කරන ලදී';
+
+  @override
+  String get incidentEscalatedMessage =>
+      'සිද්ධිය ඉක්මන් review සඳහා උත්සන්න කරන ලදී';
+
+  @override
+  String get genericErrorMessage => 'යමක් වැරදුනා. නැවත උත්සාහ කරන්න.';
+
+  @override
+  String get submitButton => 'ඉදිරිපත් කරන්න';
 
   @override
   String get invalidQrCodeFormatMessage => 'වලංගු නොවන QR කේත ආකෘතිය';

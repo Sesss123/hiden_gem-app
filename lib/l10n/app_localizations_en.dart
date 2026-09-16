@@ -2770,6 +2770,20 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cancelButton => 'Cancel';
 
   @override
+  String get sendSosConfirmTitle => 'Send emergency SOS?';
+
+  @override
+  String get sendSosConfirmMessage =>
+      'Only continue for a real emergency. The alert cannot be recalled after delivery.';
+
+  @override
+  String get sendSosButton => 'Send SOS';
+
+  @override
+  String get sosDeliveryFailedMessage =>
+      'SOS could not be delivered. Call 119 or 1990 now.';
+
+  @override
   String get confirmPayoutButton => 'Confirm payout';
 
   @override
@@ -3233,6 +3247,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Failed to load reviews. Please try again.';
 
   @override
+  String get failedToLoadBroadcastsMessage =>
+      'Failed to load broadcasts. Please try again.';
+
+  @override
   String get premiumAnalyticsLockedTitle => 'PREMIUM ANALYTICS LOCKED';
 
   @override
@@ -3680,6 +3698,32 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get timelineTypeSosTriggered => 'Sos triggered';
+
+  @override
+  String get addEvidenceDialogTitle => 'Add evidence';
+
+  @override
+  String get addEvidenceDialogHint =>
+      'Describe the evidence or add extra details';
+
+  @override
+  String get escalateIncidentConfirmTitle => 'Escalate this incident?';
+
+  @override
+  String get escalateIncidentConfirmMessage =>
+      'This moves the report to the front of the admin review queue for urgent attention.';
+
+  @override
+  String get evidenceAddedMessage => 'Evidence added to the report';
+
+  @override
+  String get incidentEscalatedMessage => 'Incident escalated for urgent review';
+
+  @override
+  String get genericErrorMessage => 'Something went wrong. Please try again.';
+
+  @override
+  String get submitButton => 'Submit';
 
   @override
   String get invalidQrCodeFormatMessage => 'Invalid QR code format';

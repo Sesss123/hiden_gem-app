@@ -128,6 +128,50 @@ class IncidentRepository {
     );
   }
 
+  /// Escalates an open/under-review incident, moving it to the front of the
+  /// admin queue (getActiveIncidents() orders by priorityTier desc) and
+  /// recording who requested the escalation and why.
+  Future<void> escalateIncident({
+    required String incidentId,
+    required String escalatedBy,
+    required String escalatedByRole,
+    String? reason,
+  }) async {
+    await _incidentRef.doc(incidentId).update({
+      'status': 'escalated',
+      'priorityTier': 1,
+      'updatedAt': DateTime.now().toIso8601String(),
+    });
+
+    await addTimelineEvent(
+      incidentId: incidentId,
+      type: 'escalated',
+      description: (reason == null || reason.trim().isEmpty)
+          ? 'Incident escalated by $escalatedByRole.'
+          : 'Incident escalated by $escalatedByRole: $reason',
+      userId: escalatedBy,
+      role: escalatedByRole,
+    );
+  }
+
+  /// Attaches a text-note piece of evidence to the incident timeline. File/
+  /// photo attachments go through `attachments` directly; this covers the
+  /// common case of a reporter adding follow-up context after filing.
+  Future<void> addEvidenceNote({
+    required String incidentId,
+    required String note,
+    required String addedBy,
+    required String addedByRole,
+  }) async {
+    await addTimelineEvent(
+      incidentId: incidentId,
+      type: 'evidence_added',
+      description: note,
+      userId: addedBy,
+      role: addedByRole,
+    );
+  }
+
   /// Tiered SOS Conversion Logic
   /// If SOS is critical, automatically create an incident.
   Future<void> handleSosTrigger({

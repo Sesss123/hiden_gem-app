@@ -240,8 +240,15 @@ class _GuideBroadcastScreenState extends State<GuideBroadcastScreen> {
     return StreamBuilder<List<BroadcastMessage>>(
       stream: _broadcastRepo.getActiveBroadcasts(widget.sessionId),
       builder: (context, snapshot) {
-        if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
-        final messages = snapshot.data!;
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (snapshot.hasError) {
+          return Center(
+            child: Text(l10n.failedToLoadBroadcastsMessage, style: GoogleFonts.inter(color: AppTheme.colors.redAccent)),
+          );
+        }
+        final messages = snapshot.data ?? const [];
 
         if (messages.isEmpty) {
           return Center(

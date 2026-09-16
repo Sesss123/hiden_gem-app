@@ -995,20 +995,20 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
                   padding: EdgeInsets.zero,
                 ),
                 onPressed: () async {
+                  final sosL10n = AppLocalizations.of(context)!;
                   final confirmed = await showDialog<bool>(
                     context: context,
                     builder: (dialogContext) => AlertDialog(
-                      title: const Text('Send emergency SOS?'),
-                      content: const Text(
-                          'Only continue for a real emergency. The alert cannot be recalled after delivery.'),
+                      title: Text(sosL10n.sendSosConfirmTitle),
+                      content: Text(sosL10n.sendSosConfirmMessage),
                       actions: [
                         TextButton(
                             onPressed: () =>
                                 Navigator.pop(dialogContext, false),
-                            child: const Text('Cancel')),
+                            child: Text(sosL10n.cancelButton)),
                         FilledButton(
                             onPressed: () => Navigator.pop(dialogContext, true),
-                            child: const Text('Send SOS')),
+                            child: Text(sosL10n.sendSosButton)),
                       ],
                     ),
                   );
@@ -1022,9 +1022,8 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
                     SecureLogger.error(
                         'Guide SOS delivery failed', e, st, 'GuideDashboard');
                     if (mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                          content: Text(
-                              'SOS could not be delivered. Call 119 or 1990 now.')));
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: Text(sosL10n.sosDeliveryFailedMessage)));
                     }
                     return;
                   }

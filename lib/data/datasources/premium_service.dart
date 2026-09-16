@@ -136,7 +136,11 @@ class PremiumNotifier extends _$PremiumNotifier {
         await _updateStateFromCustomerInfo(result.customerInfo);
       }
     } catch (e) {
-      state = false;
+      // Leave `state` untouched on failure — this only runs on login/logout
+      // transitions, and a transient network error here (timeout, RevenueCat
+      // outage) must not demote an already-confirmed premium user to free.
+      // The CustomerInfo listener and _checkServerOverride() will correct
+      // `state` once connectivity/RevenueCat recovers.
       SecureLogger.warning('RevenueCat account binding failed: $e',
           tag: 'RevenueCat');
     }
