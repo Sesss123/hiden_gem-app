@@ -1091,6 +1091,13 @@
   "quotedPriceLabel": "மேற்கோள் காட்டப்பட்ட விலை",
   "netPayoutLabel": "உங்கள் நிகர கொடுப்பனவு",
   "notAvailableAbbrev": "பொருந்தாது",
+  "payoutPendingLabel": "Pending",
+  "earningsAwaitingConfirmationNote": "{count, plural, one {1 booking} other {{count} bookings}} still awaiting server payout confirmation",
+  "@earningsAwaitingConfirmationNote": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
   "tourNotesLabel": "சுற்றுலா குறிப்புகள் / தேவைகள்",
   "responseNoteLabel": "உங்கள் பதில் குறிப்பு: {note}",
   "@responseNoteLabel": {
@@ -1149,6 +1156,7 @@
   "communicationFactorLabel": "தொடர்பு",
   "punctualityFactorLabel": "நேரந்தவறாமை",
   "safetyFactorLabel": "பாதுகாப்பு",
+  "friendlinessFactorLabel": "FRIENDLINESS",
   "fieldNotesLabelUppercase": "கள குறிப்புகள்",
   "commentFieldHint": "உங்களை எது கவர்ந்தது? அவர்கள் எங்கு மேம்படலாம்?",
   "transmitFeedbackButton": "கருத்தை அனுப்பு",
@@ -2556,6 +2564,13 @@
   },
   "verifiableHashLabel": "சரிபார்க்கக்கூடிய ஹாஷ்",
   "shareCollectibleButton": "சேகரிப்புப் பொருளைப் பகிர்",
+  "shareCollectibleMessage": "I just earned the {placeName} heritage stamp ({rarity}) on Hidden Gems SL!",
+  "@shareCollectibleMessage": {
+    "placeholders": {
+      "placeName": { "type": "String" },
+      "rarity": { "type": "String" }
+    }
+  },
   "stampRarityCommon": "பொதுவானது",
   "stampRarityRare": "அரியது",
   "stampRarityMythic": "புராணமானது",

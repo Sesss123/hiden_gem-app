@@ -93,10 +93,19 @@ class GuideController extends Controller
                 ]);
                 if (!$applicationSynced || !$userSynced) {
                     if ($applicationSynced && !$userSynced) {
-                        $this->firestoreService->updateGuideApplication($userId, [
+                        $reverted = $this->firestoreService->updateGuideApplication($userId, [
                             'status' => $application->getOriginal('status'),
                             'reviewedAt' => null,
                         ]);
+                        if (!$reverted) {
+                            // MySQL is about to roll back to 'pending' (the
+                            // exception below), but Firestore's compensating
+                            // write also failed — Firestore is now stuck
+                            // showing 'approved' while MySQL disagrees, with
+                            // no automatic retry. Log loudly so an operator
+                            // can find and manually reconcile it.
+                            Log::critical("Guide approval desync: Firestore guide_applications/{$userId} left at status=approved after MySQL rollback to pending. Manual reconciliation required.", ['application_id' => $id]);
+                        }
                     }
                     throw new \RuntimeException('Firestore rejected the guide approval sync.');
                 }
@@ -147,11 +156,14 @@ class GuideController extends Controller
                 ]);
                 if (!$applicationSynced || !$userSynced) {
                     if ($applicationSynced && !$userSynced) {
-                        $this->firestoreService->updateGuideApplication($userId, [
+                        $reverted = $this->firestoreService->updateGuideApplication($userId, [
                             'status' => $application->getOriginal('status'),
                             'adminComment' => $application->getOriginal('admin_comment'),
                             'reviewedAt' => null,
                         ]);
+                        if (!$reverted) {
+                            Log::critical("Guide rejection desync: Firestore guide_applications/{$userId} left at status=rejected after MySQL rollback. Manual reconciliation required.", ['application_id' => $id]);
+                        }
                     }
                     throw new \RuntimeException('Firestore rejected the guide rejection sync.');
                 }
@@ -192,8 +204,21 @@ class GuideController extends Controller
             return back()->withErrors(['error' => 'Ban was not applied because Firebase synchronization failed.']);
         }
 
-        $user->update(['role' => 'banned']);
-        $user->tokens()->delete();
+        // Firestore already shows 'banned' at this point (HTTP call above,
+        // outside DB::transaction's reach) — if the process dies before the
+        // MySQL side below finishes, the two stores disagree with no
+        // reconciliation job to catch it. Wrapping just the MySQL half
+        // keeps that half atomic and gives us a clear log line to search
+        // for if a crash ever happens in this exact window.
+        try {
+            DB::transaction(function () use ($user) {
+                $user->update(['role' => 'banned']);
+                $user->tokens()->delete();
+            });
+        } catch (\Exception $e) {
+            Log::critical("Ban desync: Firestore users/{$application->user_id} already shows role=banned but MySQL update failed: " . $e->getMessage(), ['application_id' => $id]);
+            return back()->withErrors(['error' => 'Ban partially applied — Firestore updated but local record failed. Contact an engineer.']);
+        }
 
         $this->logAdminAction('guide.banned', 'User', $user->id, ['application_id' => $id]);
 
@@ -226,8 +251,15 @@ class GuideController extends Controller
             return back()->withErrors(['error' => 'Guide removal was not applied because Firebase synchronization failed.']);
         }
 
-        $user->update(['role' => 'tourist']);
-        $application->delete();
+        try {
+            DB::transaction(function () use ($user, $application) {
+                $user->update(['role' => 'tourist']);
+                $application->delete();
+            });
+        } catch (\Exception $e) {
+            Log::critical("Guide removal desync: Firestore users/{$application->user_id} already shows role=tourist/removed but MySQL update failed: " . $e->getMessage(), ['application_id' => $id]);
+            return back()->withErrors(['error' => 'Removal partially applied — Firestore updated but local record failed. Contact an engineer.']);
+        }
 
         $this->logAdminAction('guide.removed', 'GuideApplication', $id, ['user_id' => $user->id]);
 

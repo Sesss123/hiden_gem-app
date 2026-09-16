@@ -2205,6 +2205,20 @@ class AppLocalizationsTa extends AppLocalizations {
   String get notAvailableAbbrev => 'பொருந்தாது';
 
   @override
+  String get payoutPendingLabel => 'Pending';
+
+  @override
+  String earningsAwaitingConfirmationNote(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count bookings',
+      one: '1 booking',
+    );
+    return '$_temp0 still awaiting server payout confirmation';
+  }
+
+  @override
   String get tourNotesLabel => 'சுற்றுலா குறிப்புகள் / தேவைகள்';
 
   @override
@@ -2309,6 +2323,9 @@ class AppLocalizationsTa extends AppLocalizations {
 
   @override
   String get safetyFactorLabel => 'பாதுகாப்பு';
+
+  @override
+  String get friendlinessFactorLabel => 'FRIENDLINESS';
 
   @override
   String get fieldNotesLabelUppercase => 'கள குறிப்புகள்';
@@ -4901,6 +4918,11 @@ class AppLocalizationsTa extends AppLocalizations {
 
   @override
   String get shareCollectibleButton => 'சேகரிப்புப் பொருளைப் பகிர்';
+
+  @override
+  String shareCollectibleMessage(String placeName, String rarity) {
+    return 'I just earned the $placeName heritage stamp ($rarity) on Hidden Gems SL!';
+  }
 
   @override
   String get stampRarityCommon => 'பொதுவானது';

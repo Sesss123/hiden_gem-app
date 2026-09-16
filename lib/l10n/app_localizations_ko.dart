@@ -2123,6 +2123,20 @@ class AppLocalizationsKo extends AppLocalizations {
   String get notAvailableAbbrev => '해당 없음';
 
   @override
+  String get payoutPendingLabel => 'Pending';
+
+  @override
+  String earningsAwaitingConfirmationNote(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count bookings',
+      one: '1 booking',
+    );
+    return '$_temp0 still awaiting server payout confirmation';
+  }
+
+  @override
   String get tourNotesLabel => '투어 메모 / 요청사항';
 
   @override
@@ -2220,6 +2234,9 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get safetyFactorLabel => '안전';
+
+  @override
+  String get friendlinessFactorLabel => 'FRIENDLINESS';
 
   @override
   String get fieldNotesLabelUppercase => '현장 메모';
@@ -4706,6 +4723,11 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get shareCollectibleButton => '수집품 공유';
+
+  @override
+  String shareCollectibleMessage(String placeName, String rarity) {
+    return 'I just earned the $placeName heritage stamp ($rarity) on Hidden Gems SL!';
+  }
 
   @override
   String get stampRarityCommon => '일반';

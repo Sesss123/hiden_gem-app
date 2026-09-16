@@ -219,8 +219,36 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
     return FutureBuilder<SubscriptionRecord?>(
       future: future,
       builder: (context, snapshot) {
-        final sub = snapshot.data;
         final l10n = AppLocalizations.of(context)!;
+
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: AppTheme.surfaceMuted(context),
+              borderRadius: BorderRadius.circular(18),
+            ),
+            child: const Center(child: CircularProgressIndicator()),
+          );
+        }
+
+        // A fetch failure must not be shown as "Free Tier" — that would
+        // prompt an already-paying subscriber to upgrade/pay again.
+        if (snapshot.hasError) {
+          return Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: AppTheme.surfaceMuted(context),
+              borderRadius: BorderRadius.circular(18),
+            ),
+            child: Text(
+              l10n.errorGenericColonMessage(snapshot.error.toString()),
+              style: GoogleFonts.inter(color: AppTheme.colors.redAccent, fontSize: 12),
+            ),
+          );
+        }
+
+        final sub = snapshot.data;
         return Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(

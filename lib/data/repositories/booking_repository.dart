@@ -291,18 +291,20 @@ class BookingRepository {
 
       if (response.statusCode != 200) {
         SecureLogger.warning(
-            "Quota check failed (${response.statusCode}), allowing booking to proceed",
+            "Quota check failed (${response.statusCode})",
             tag: "Booking");
-        return false;
+        throw Exception('Quota check failed (${response.statusCode})');
       }
 
       final data = json.decode(response.body) as Map<String, dynamic>;
       return data['quotaExceeded'] as bool? ?? false;
     } catch (e) {
-      SecureLogger.warning(
-          "Quota check failed: $e, allowing booking to proceed",
-          tag: "Booking");
-      return false;
+      SecureLogger.warning("Quota check failed: $e", tag: "Booking");
+      // Fail closed, not open: silently returning "not exceeded" here would
+      // let a transient network/backend hiccup bypass a guide's plan-tier
+      // booking cap. Rethrow so the caller surfaces a retryable error
+      // instead of letting the booking through unchecked.
+      rethrow;
     }
   }
 

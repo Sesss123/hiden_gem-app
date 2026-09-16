@@ -1113,6 +1113,13 @@
   "quotedPriceLabel": "Quoted Price",
   "netPayoutLabel": "Your Net Payout",
   "notAvailableAbbrev": "N/A",
+  "payoutPendingLabel": "Pending",
+  "earningsAwaitingConfirmationNote": "{count, plural, one {1 booking} other {{count} bookings}} still awaiting server payout confirmation",
+  "@earningsAwaitingConfirmationNote": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
   "tourNotesLabel": "Tour notes / requirements",
   "responseNoteLabel": "Your response note: {note}",
   "@responseNoteLabel": {
@@ -1171,6 +1178,7 @@
   "communicationFactorLabel": "COMMUNICATION",
   "punctualityFactorLabel": "PUNCTUALITY",
   "safetyFactorLabel": "SAFETY",
+  "friendlinessFactorLabel": "FRIENDLINESS",
   "fieldNotesLabelUppercase": "FIELD NOTES",
   "commentFieldHint": "What impressed you? Where could they improve?",
   "transmitFeedbackButton": "TRANSMIT FEEDBACK",
@@ -2578,6 +2586,13 @@
   },
   "verifiableHashLabel": "Verifiable hash",
   "shareCollectibleButton": "Share collectible",
+  "shareCollectibleMessage": "I just earned the {placeName} heritage stamp ({rarity}) on Hidden Gems SL!",
+  "@shareCollectibleMessage": {
+    "placeholders": {
+      "placeName": { "type": "String" },
+      "rarity": { "type": "String" }
+    }
+  },
   "stampRarityCommon": "Common",
   "stampRarityRare": "Rare",
   "stampRarityMythic": "Mythic",

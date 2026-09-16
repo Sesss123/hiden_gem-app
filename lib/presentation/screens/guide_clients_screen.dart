@@ -19,9 +19,12 @@ class _ClientSummary {
 
   int get tourCount => bookings.where((b) => b.status == 'completed').length;
   DateTime get lastVisit => bookings.map((b) => b.createdAt).reduce((a, b) => a.isAfter(b) ? a : b);
+  // What the client paid, not the guide's net cut — those are different
+  // figures, and the guide's net share is only known once the server sets
+  // guideNetAmount, so a client-side 90% estimate would misstate both.
   double get totalSpent => bookings
       .where((b) => b.status == 'completed')
-      .fold(0.0, (sum, b) => sum + (b.guideNetAmount ?? (b.quotedPrice ?? 0.0) * 0.90));
+      .fold(0.0, (sum, b) => sum + (b.quotedPrice ?? 0.0));
 }
 
 /// Client CRM — available to all approved guides (not tier-gated). Derives a

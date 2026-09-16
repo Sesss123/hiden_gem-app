@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Services\DiscordAlertService;
 use App\Services\FirestoreService;
 use Illuminate\Console\Command;
 
@@ -21,26 +22,37 @@ class ExpireFeaturedListings extends Command
 
     protected $description = 'Unfeature guide_listings whose featuredUntil has passed.';
 
-    public function handle(FirestoreService $firestore): int
+    public function handle(FirestoreService $firestore, DiscordAlertService $discord): int
     {
         $featured = $firestore->queryDocuments('guide_listings', 'isFeatured', 'EQUAL', true);
         $now = now()->toIso8601String();
 
         $expiredCount = 0;
+        $failedIds = [];
         foreach ($featured as $listing) {
             $featuredUntil = $listing['featuredUntil'] ?? null;
             if ($featuredUntil === null || $featuredUntil >= $now) {
                 continue;
             }
 
-            $firestore->patchDocument('guide_listings', $listing['id'], [
+            $synced = $firestore->patchDocument('guide_listings', $listing['id'], [
                 'isFeatured' => false,
                 'featuredUntil' => null,
             ]);
-            $expiredCount++;
+            if ($synced) {
+                $expiredCount++;
+            } else {
+                $failedIds[] = $listing['id'];
+            }
         }
 
         $this->info("Expired {$expiredCount} featured listing(s).");
+
+        if (!empty($failedIds)) {
+            $message = "ExpireFeaturedListings: failed to unfeature " . count($failedIds) . " listing(s): " . implode(', ', $failedIds);
+            $this->error($message);
+            $discord->send($message, 'error');
+        }
 
         return self::SUCCESS;
     }

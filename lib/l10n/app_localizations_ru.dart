@@ -2211,6 +2211,20 @@ class AppLocalizationsRu extends AppLocalizations {
   String get notAvailableAbbrev => 'Н/Д';
 
   @override
+  String get payoutPendingLabel => 'Pending';
+
+  @override
+  String earningsAwaitingConfirmationNote(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count bookings',
+      one: '1 booking',
+    );
+    return '$_temp0 still awaiting server payout confirmation';
+  }
+
+  @override
   String get tourNotesLabel => 'Заметки / требования к туру';
 
   @override
@@ -2312,6 +2326,9 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get safetyFactorLabel => 'БЕЗОПАСНОСТЬ';
+
+  @override
+  String get friendlinessFactorLabel => 'FRIENDLINESS';
 
   @override
   String get fieldNotesLabelUppercase => 'ПОЛЕВЫЕ ЗАМЕТКИ';
@@ -4897,6 +4914,11 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get shareCollectibleButton => 'Поделиться коллекционным предметом';
+
+  @override
+  String shareCollectibleMessage(String placeName, String rarity) {
+    return 'I just earned the $placeName heritage stamp ($rarity) on Hidden Gems SL!';
+  }
 
   @override
   String get stampRarityCommon => 'Обычный';

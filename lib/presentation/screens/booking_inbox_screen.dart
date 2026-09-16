@@ -437,7 +437,9 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
                 _buildDetailItem(
                   Icons.account_balance_wallet_outlined,
                   l10n.netPayoutLabel,
-                  "${request.currency ?? 'USD'} ${request.guideNetAmount?.toStringAsFixed(2) ?? (request.quotedPrice != null ? (request.quotedPrice! * 0.90).toStringAsFixed(2) : l10n.notAvailableAbbrev)}",
+                  request.guideNetAmount != null
+                      ? "${request.currency ?? 'USD'} ${request.guideNetAmount!.toStringAsFixed(2)}"
+                      : l10n.payoutPendingLabel,
                 ),
               ],
             ),
@@ -626,7 +628,7 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
   /// Shows a dialog for the guide to enter a price before accepting. Returns
   /// null if the guide cancels — the caller must not proceed with accept in
   /// that case, leaving the booking untouched at 'pending'.
-  Future<double?> _showQuoteDialog(AppLocalizations l10n) async {
+  Future<double?> _showQuoteDialog(AppLocalizations l10n, String currency) async {
     final controller = TextEditingController();
     return showDialog<double>(
       context: context,
@@ -638,7 +640,7 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
           autofocus: true,
           decoration: InputDecoration(
             labelText: l10n.sendQuoteAmountLabel,
-            prefixText: 'LKR ',
+            prefixText: '$currency ',
           ),
         ),
         actions: [
@@ -666,7 +668,7 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid == null) return;
 
-    final amount = await _showQuoteDialog(l10n);
+    final amount = await _showQuoteDialog(l10n, request.currency ?? 'USD');
     if (amount == null) return; // Guide cancelled — booking stays pending.
     if (!mounted) return;
 

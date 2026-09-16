@@ -2118,6 +2118,20 @@ class AppLocalizationsJa extends AppLocalizations {
   String get notAvailableAbbrev => '未定';
 
   @override
+  String get payoutPendingLabel => 'Pending';
+
+  @override
+  String earningsAwaitingConfirmationNote(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count bookings',
+      one: '1 booking',
+    );
+    return '$_temp0 still awaiting server payout confirmation';
+  }
+
+  @override
   String get tourNotesLabel => 'ツアーに関する要望・注意事項';
 
   @override
@@ -2215,6 +2229,9 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get safetyFactorLabel => '安全性';
+
+  @override
+  String get friendlinessFactorLabel => 'FRIENDLINESS';
 
   @override
   String get fieldNotesLabelUppercase => 'フィールドノート';
@@ -4699,6 +4716,11 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get shareCollectibleButton => 'コレクションを共有';
+
+  @override
+  String shareCollectibleMessage(String placeName, String rarity) {
+    return 'I just earned the $placeName heritage stamp ($rarity) on Hidden Gems SL!';
+  }
 
   @override
   String get stampRarityCommon => 'コモン';

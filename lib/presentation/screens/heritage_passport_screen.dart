@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:share_plus/share_plus.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/services/web3_passport_service.dart';
 import '../../data/models/passport_model.dart';
@@ -297,7 +298,11 @@ class _HeritagePassportScreenState extends State<HeritagePassportScreen> {
               width: double.infinity,
               height: 56,
               child: ElevatedButton(
-                onPressed: () => Navigator.pop(context),
+                onPressed: () => SharePlus.instance.share(
+                  ShareParams(
+                    text: AppLocalizations.of(context)!.shareCollectibleMessage(stamp.placeName, stamp.rarity),
+                  ),
+                ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: rarityColor,
                   foregroundColor: AppTheme.colors.white,

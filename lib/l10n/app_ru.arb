@@ -1091,6 +1091,13 @@
   "quotedPriceLabel": "Заявленная цена",
   "netPayoutLabel": "Ваша чистая выплата",
   "notAvailableAbbrev": "Н/Д",
+  "payoutPendingLabel": "Pending",
+  "earningsAwaitingConfirmationNote": "{count, plural, one {1 booking} other {{count} bookings}} still awaiting server payout confirmation",
+  "@earningsAwaitingConfirmationNote": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
   "tourNotesLabel": "Заметки / требования к туру",
   "responseNoteLabel": "Ваш комментарий к ответу: {note}",
   "@responseNoteLabel": {
@@ -1149,6 +1156,7 @@
   "communicationFactorLabel": "ОБЩЕНИЕ",
   "punctualityFactorLabel": "ПУНКТУАЛЬНОСТЬ",
   "safetyFactorLabel": "БЕЗОПАСНОСТЬ",
+  "friendlinessFactorLabel": "FRIENDLINESS",
   "fieldNotesLabelUppercase": "ПОЛЕВЫЕ ЗАМЕТКИ",
   "commentFieldHint": "Что вас впечатлило? Что можно улучшить?",
   "transmitFeedbackButton": "ОТПРАВИТЬ ОТЗЫВ",
@@ -2556,6 +2564,13 @@
   },
   "verifiableHashLabel": "Проверяемый хеш",
   "shareCollectibleButton": "Поделиться коллекционным предметом",
+  "shareCollectibleMessage": "I just earned the {placeName} heritage stamp ({rarity}) on Hidden Gems SL!",
+  "@shareCollectibleMessage": {
+    "placeholders": {
+      "placeName": { "type": "String" },
+      "rarity": { "type": "String" }
+    }
+  },
   "stampRarityCommon": "Обычный",
   "stampRarityRare": "Редкий",
   "stampRarityMythic": "Мифический",

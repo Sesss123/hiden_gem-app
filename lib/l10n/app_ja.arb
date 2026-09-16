@@ -1091,6 +1091,13 @@
   "quotedPriceLabel": "見積り価格",
   "netPayoutLabel": "あなたの受取額",
   "notAvailableAbbrev": "未定",
+  "payoutPendingLabel": "Pending",
+  "earningsAwaitingConfirmationNote": "{count, plural, one {1 booking} other {{count} bookings}} still awaiting server payout confirmation",
+  "@earningsAwaitingConfirmationNote": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
   "tourNotesLabel": "ツアーに関する要望・注意事項",
   "responseNoteLabel": "あなたの返信メモ：{note}",
   "@responseNoteLabel": {
@@ -1149,6 +1156,7 @@
   "communicationFactorLabel": "コミュニケーション",
   "punctualityFactorLabel": "時間厳守",
   "safetyFactorLabel": "安全性",
+  "friendlinessFactorLabel": "FRIENDLINESS",
   "fieldNotesLabelUppercase": "フィールドノート",
   "commentFieldHint": "特に良かった点は？改善できる点はありますか？",
   "transmitFeedbackButton": "フィードバックを送信",
@@ -2556,6 +2564,13 @@
   },
   "verifiableHashLabel": "検証可能なハッシュ",
   "shareCollectibleButton": "コレクションを共有",
+  "shareCollectibleMessage": "I just earned the {placeName} heritage stamp ({rarity}) on Hidden Gems SL!",
+  "@shareCollectibleMessage": {
+    "placeholders": {
+      "placeName": { "type": "String" },
+      "rarity": { "type": "String" }
+    }
+  },
   "stampRarityCommon": "コモン",
   "stampRarityRare": "レア",
   "stampRarityMythic": "ミシック",

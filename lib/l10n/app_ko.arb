@@ -1091,6 +1091,13 @@
   "quotedPriceLabel": "견적 금액",
   "netPayoutLabel": "실 수령액",
   "notAvailableAbbrev": "해당 없음",
+  "payoutPendingLabel": "Pending",
+  "earningsAwaitingConfirmationNote": "{count, plural, one {1 booking} other {{count} bookings}} still awaiting server payout confirmation",
+  "@earningsAwaitingConfirmationNote": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
   "tourNotesLabel": "투어 메모 / 요청사항",
   "responseNoteLabel": "회신 메모: {note}",
   "@responseNoteLabel": {
@@ -1149,6 +1156,7 @@
   "communicationFactorLabel": "의사소통",
   "punctualityFactorLabel": "시간 엄수",
   "safetyFactorLabel": "안전",
+  "friendlinessFactorLabel": "FRIENDLINESS",
   "fieldNotesLabelUppercase": "현장 메모",
   "commentFieldHint": "무엇이 인상 깊었나요? 개선할 점이 있다면 알려주세요.",
   "transmitFeedbackButton": "피드백 전송",
@@ -2556,6 +2564,13 @@
   },
   "verifiableHashLabel": "검증 가능한 해시",
   "shareCollectibleButton": "수집품 공유",
+  "shareCollectibleMessage": "I just earned the {placeName} heritage stamp ({rarity}) on Hidden Gems SL!",
+  "@shareCollectibleMessage": {
+    "placeholders": {
+      "placeName": { "type": "String" },
+      "rarity": { "type": "String" }
+    }
+  },
   "stampRarityCommon": "일반",
   "stampRarityRare": "희귀",
   "stampRarityMythic": "신화",

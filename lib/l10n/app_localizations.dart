@@ -3952,6 +3952,18 @@ abstract class AppLocalizations {
   /// **'N/A'**
   String get notAvailableAbbrev;
 
+  /// No description provided for @payoutPendingLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get payoutPendingLabel;
+
+  /// No description provided for @earningsAwaitingConfirmationNote.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one {1 booking} other {{count} bookings}} still awaiting server payout confirmation'**
+  String earningsAwaitingConfirmationNote(int count);
+
   /// No description provided for @tourNotesLabel.
   ///
   /// In en, this message translates to:
@@ -4131,6 +4143,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'SAFETY'**
   String get safetyFactorLabel;
+
+  /// No description provided for @friendlinessFactorLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'FRIENDLINESS'**
+  String get friendlinessFactorLabel;
 
   /// No description provided for @fieldNotesLabelUppercase.
   ///
@@ -8607,6 +8625,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Share collectible'**
   String get shareCollectibleButton;
+
+  /// No description provided for @shareCollectibleMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'I just earned the {placeName} heritage stamp ({rarity}) on Hidden Gems SL!'**
+  String shareCollectibleMessage(String placeName, String rarity);
 
   /// No description provided for @stampRarityCommon.
   ///

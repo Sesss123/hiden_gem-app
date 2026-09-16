@@ -3,7 +3,9 @@
 namespace App\Console\Commands;
 
 use App\Models\Place;
+use App\Services\DiscordAlertService;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class RepairPlaceSyncVersions extends Command
@@ -27,7 +29,7 @@ class RepairPlaceSyncVersions extends Command
      *
      * @return int
      */
-    public function handle()
+    public function handle(DiscordAlertService $discord)
     {
         $this->info('Scanning for places needing sync_version repair...');
 
@@ -54,6 +56,7 @@ class RepairPlaceSyncVersions extends Command
         $this->info("Found {$count} place(s) to repair. Bumping sync_version...");
 
         $repaired = 0;
+        $lastError = null;
 
         foreach ($places as $place) {
             DB::beginTransaction();
@@ -73,11 +76,28 @@ class RepairPlaceSyncVersions extends Command
                 $repaired++;
             } catch (\Exception $e) {
                 DB::rollBack();
+                $lastError = $e->getMessage();
                 $this->error("Failed to repair place {$place->id}: " . $e->getMessage());
             }
         }
 
         $this->info("Successfully repaired and bumped sync_version for {$repaired} place(s)!");
+
+        // This command runs every minute — a single row failing is routine
+        // (e.g. a concurrent edit), but every row failing points at a
+        // systemic problem (missing sync_counter row, DB connectivity).
+        // Alert once when that starts, and once more when it clears, rather
+        // than paging every minute while it continues.
+        $totalFailureThisRun = $repaired === 0 && $count > 0;
+        $wasAlerted = Cache::get('repair_place_sync_versions_alerted', false);
+        if ($totalFailureThisRun && !$wasAlerted) {
+            $discord->send("RepairPlaceSyncVersions: all {$count} place(s) failed to repair this run. Last error: {$lastError}", 'error');
+            Cache::put('repair_place_sync_versions_alerted', true, now()->addHours(6));
+        } elseif (!$totalFailureThisRun && $wasAlerted) {
+            $discord->send('RepairPlaceSyncVersions: repairs are succeeding again.', 'info');
+            Cache::forget('repair_place_sync_versions_alerted');
+        }
+
         return 0;
     }
 }

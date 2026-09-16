@@ -71,11 +71,20 @@ class _GuideEarningsScreenState extends ConsumerState<GuideEarningsScreen> {
               double pendingPayout = 0;
               double completedPayout = 0;
               double totalCommission = 0;
+              int unconfirmedCount = 0;
 
+              // Only server-confirmed amounts (guideNetAmount/commissionAmount)
+              // feed the headline totals — a client-computed quotedPrice*0.90
+              // estimate would show the guide a number that may not match
+              // what actually gets paid out. Bookings still awaiting the
+              // server's split are counted separately instead of guessed.
               for (var req in validRequests) {
-                final gross = req.quotedPrice ?? 0.0;
-                final net = req.guideNetAmount ?? (gross * 0.90);
-                final comm = req.commissionAmount ?? (gross * 0.10);
+                if (req.guideNetAmount == null || req.commissionAmount == null) {
+                  unconfirmedCount++;
+                  continue;
+                }
+                final net = req.guideNetAmount!;
+                final comm = req.commissionAmount!;
 
                 totalNet += net;
                 totalCommission += comm;
@@ -95,7 +104,7 @@ class _GuideEarningsScreenState extends ConsumerState<GuideEarningsScreen> {
 
               return Column(
                 children: [
-                  _buildSummarySection(l10n, totalNet, pendingPayout, completedPayout, totalCommission),
+                  _buildSummarySection(l10n, totalNet, pendingPayout, completedPayout, totalCommission, unconfirmedCount),
                   const SizedBox(height: 16),
                   _buildActionButtons(context, l10n, pendingPayout),
                   const SizedBox(height: 16),
@@ -124,7 +133,7 @@ class _GuideEarningsScreenState extends ConsumerState<GuideEarningsScreen> {
     );
   }
 
-  Widget _buildSummarySection(AppLocalizations l10n, double totalNet, double pendingPayout, double completedPayout, double totalCommission) {
+  Widget _buildSummarySection(AppLocalizations l10n, double totalNet, double pendingPayout, double completedPayout, double totalCommission, int unconfirmedCount) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -155,6 +164,13 @@ class _GuideEarningsScreenState extends ConsumerState<GuideEarningsScreen> {
                   l10n.lkrAmountLabel(totalNet.toStringAsFixed(0)),
                   style: GoogleFonts.outfit(fontSize: 30, fontWeight: FontWeight.w800, color: AppTheme.colors.white),
                 ),
+                if (unconfirmedCount > 0) ...[
+                  const SizedBox(height: 6),
+                  Text(
+                    l10n.earningsAwaitingConfirmationNote(unconfirmedCount),
+                    style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w500, color: AppTheme.colors.white.withValues(alpha: 0.5)),
+                  ),
+                ],
                 const SizedBox(height: 18),
                 Divider(color: AppTheme.colors.white.withValues(alpha: 0.1), height: 1),
                 const SizedBox(height: 18),
@@ -370,7 +386,7 @@ class _GuideEarningsScreenState extends ConsumerState<GuideEarningsScreen> {
 
   Widget _buildTransactionCard(BuildContext context, AppLocalizations l10n, BookingRequest req) {
     final gross = req.quotedPrice ?? 0.0;
-    final net = req.guideNetAmount ?? (gross * 0.90);
+    final net = req.guideNetAmount;
     final status = req.payoutStatus.isEmpty ? 'pending' : req.payoutStatus;
 
     Color statusColor;
@@ -447,7 +463,7 @@ class _GuideEarningsScreenState extends ConsumerState<GuideEarningsScreen> {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                l10n.lkrAmountLabel(net.toStringAsFixed(0)),
+                net != null ? l10n.lkrAmountLabel(net.toStringAsFixed(0)) : l10n.payoutPendingLabel,
                 style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w700, color: AppTheme.colors.green[700]),
               ),
               const SizedBox(height: 2),

@@ -1110,6 +1110,13 @@
   "quotedPriceLabel": "නිර්දේශිත මිල",
   "netPayoutLabel": "ඔබේ ශුද්ධ ගෙවීම",
   "notAvailableAbbrev": "නොමැත",
+  "payoutPendingLabel": "අපේක්ෂිතයි",
+  "earningsAwaitingConfirmationNote": "Bookings {count}ක් තවම server payout confirmation එකක් එනකම් ඉන්නවා",
+  "@earningsAwaitingConfirmationNote": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
   "tourNotesLabel": "සංචාර සටහන් / අවශ්‍යතා",
   "responseNoteLabel": "ඔබේ ප්‍රතිචාර සටහන: {note}",
   "@responseNoteLabel": {
@@ -1168,6 +1175,7 @@
   "communicationFactorLabel": "සන්නිවේදනය",
   "punctualityFactorLabel": "වේලාව නිවැරදිකම",
   "safetyFactorLabel": "ආරක්ෂාව",
+  "friendlinessFactorLabel": "මිත්‍රශීලීත්වය",
   "fieldNotesLabelUppercase": "ක්ෂේත්‍ර සටහන්",
   "commentFieldHint": "ඔබට කැපී පෙනුනේ මොකක්ද? ඔවුන්ට වැඩිදියුණු කළ හැක්කේ කොහෙද?",
   "transmitFeedbackButton": "ප්‍රතිපෝෂණය යවන්න",
@@ -2575,6 +2583,13 @@
   },
   "verifiableHashLabel": "සත්‍යාපනය කළ හැකි හැෂ්",
   "shareCollectibleButton": "එකතුව බෙදාගන්න",
+  "shareCollectibleMessage": "මට Hidden Gems SL එකේ {placeName} heritage stamp එක ({rarity}) ලැබුණා!",
+  "@shareCollectibleMessage": {
+    "placeholders": {
+      "placeName": { "type": "String" },
+      "rarity": { "type": "String" }
+    }
+  },
   "stampRarityCommon": "සාමාන්‍ය",
   "stampRarityRare": "දුර්ලභ",
   "stampRarityMythic": "පුරාණෝක්ති",
