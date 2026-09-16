@@ -25,10 +25,13 @@ class ExpireTravelAlerts extends Command
                         continue;
                     }
                     $alert->update(['is_active' => false]);
-                    $firestore->sendFcmTopic('travel_alerts', 'Travel alert ended', $alert->title, [
+                    $pushed = $firestore->sendFcmTopic('travel_alerts', 'Travel alert ended', $alert->title, [
                         'alertId' => (string) $alert->id,
                         'event' => 'expired',
                     ]);
+                    if (!$pushed) {
+                        $this->warn("Expiry push failed for alert {$alert->id} — clients will still see it cleared on their next poll.");
+                    }
                     AdminAuditLog::create([
                         'action' => 'travel_alert.expired',
                         'target_type' => TravelAlert::class,

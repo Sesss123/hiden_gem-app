@@ -8,6 +8,7 @@ use App\Models\AdminAuditLog;
 use App\Services\FirestoreService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class TravelAlertController extends Controller
 {
@@ -67,12 +68,15 @@ class TravelAlertController extends Controller
         }
         $travelAlert->update($data);
         if ($travelAlert->is_active && $travelAlert->level > $oldLevel) {
-            $firestore->sendFcmTopic('travel_alerts', 'Travel alert escalated', $travelAlert->message, [
+            $pushed = $firestore->sendFcmTopic('travel_alerts', 'Travel alert escalated', $travelAlert->message, [
                 'type' => 'travel_alert',
                 'event' => 'escalated',
                 'alertId' => (string) $travelAlert->id,
                 'level' => (string) $travelAlert->level,
             ]);
+            if (!$pushed) {
+                Log::error("Travel alert escalation push failed for alert {$travelAlert->id} — users were not notified of the level change.");
+            }
         }
         $this->audit($request, 'travel_alert.updated', $travelAlert);
         return $request->expectsJson() ? response()->json($travelAlert->fresh()) : back()->with('success', 'Alert updated.');
@@ -98,7 +102,7 @@ class TravelAlertController extends Controller
         DB::transaction(function () use ($travelAlert) {
             $travelAlert->update(['is_active' => true]);
         });
-        $firestore->sendFcmTopic('travel_alerts', $travelAlert->title, $travelAlert->message, [
+        $pushed = $firestore->sendFcmTopic('travel_alerts', $travelAlert->title, $travelAlert->message, [
             'alertId' => (string) $travelAlert->id,
             'type' => 'travel_alert',
             'alertType' => $travelAlert->type,
@@ -107,6 +111,9 @@ class TravelAlertController extends Controller
             'source' => $travelAlert->source,
             'expiresAt' => $travelAlert->expires_at->utc()->toIso8601String(),
         ]);
+        if (!$pushed) {
+            Log::error("Travel alert publish push failed for alert {$travelAlert->id} — users were not notified of the new alert.");
+        }
         $this->audit($request, 'travel_alert.published', $travelAlert);
         return $request->expectsJson() ? response()->json($travelAlert->fresh()) : back()->with('success', 'Alert published.');
     }

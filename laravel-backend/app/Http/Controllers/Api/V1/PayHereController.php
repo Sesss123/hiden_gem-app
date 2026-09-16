@@ -268,6 +268,21 @@ class PayHereController extends Controller
             $commission = round($amount * $rate, 2);
             $guideNet = round($amount - $commission, 2);
 
+            // Defense-in-depth: the signature already proves this payload
+            // came from PayHere, but it doesn't prove the amount matches
+            // what we quoted. A mismatch here (partial capture, currency
+            // conversion, a merchant-portal manual override) shouldn't block
+            // the payment — PayHere's reported amount is still what was
+            // actually charged — but it should be flagged for a human to
+            // check rather than silently accepted as if it were expected.
+            $quotedPrice = isset($booking['quotedPrice']) ? (float) $booking['quotedPrice'] : null;
+            if ($quotedPrice !== null && abs($quotedPrice - $amount) > 0.01) {
+                Log::warning("PayHere notify: paid amount does not match quoted price for {$orderId}.", [
+                    'quoted_price' => $quotedPrice,
+                    'payhere_amount' => $amount,
+                ]);
+            }
+
             $updated = $firestore->updateBooking($orderId, [
                 'payoutStatus' => 'paid',
                 'status' => 'confirmed',

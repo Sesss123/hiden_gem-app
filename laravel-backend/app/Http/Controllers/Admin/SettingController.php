@@ -9,6 +9,7 @@ use App\Services\FirestoreService;
 use App\Traits\LogsAdminActivity;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class SettingController extends Controller
 {
@@ -85,11 +86,14 @@ class SettingController extends Controller
 
         // Near-real-time refresh for running apps. Polling/resume sync remains
         // the delivery fallback when FCM is unavailable or permission is denied.
-        $firebase->sendFcmTopic('app_config', 'App configuration updated', 'Advertising configuration changed.', [
+        $pushed = $firebase->sendFcmTopic('app_config', 'App configuration updated', 'Advertising configuration changed.', [
             'type' => 'app_config',
             'key' => 'ads_enabled',
             'enabled' => $newState ? 'true' : 'false',
         ], false);
+        if (!$pushed) {
+            Log::warning('Ads-toggle config-change push failed — clients will pick up the change on their next poll/resume instead.');
+        }
 
         if ($request->wantsJson()) {
             return response()->json([

@@ -197,11 +197,17 @@
 </div>
 
 <script>
+    // Built via Laravel's own route() helper with a placeholder token, so a
+    // future change to the admin.subscriptions.revoke path is caught by
+    // route:list / a 404 at the template level instead of silently breaking
+    // this one hand-built URL.
+    const REVOKE_URL_TEMPLATE = @json(route('admin.subscriptions.revoke', ['uid' => 'UID_PLACEHOLDER']));
+
     function openRevokeModal(button) {
         const uid = button.dataset.uid;
         document.getElementById('modal-user-name').innerText = button.dataset.name;
         document.getElementById('modal-user-plan').innerText = button.dataset.plan;
-        document.getElementById('revoke-form').action = @json(url('/admin/subscriptions')) + '/' + encodeURIComponent(uid) + '/revoke';
+        document.getElementById('revoke-form').action = REVOKE_URL_TEMPLATE.replace('UID_PLACEHOLDER', encodeURIComponent(uid));
         document.getElementById('revoke-modal').classList.remove('hidden');
     }
 
