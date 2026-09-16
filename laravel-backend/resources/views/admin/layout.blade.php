@@ -204,7 +204,7 @@
         </div>
     </aside>
 
-    <!-- Main Content Area -->
+
     <div class="flex-1 flex flex-col ml-0 md:ml-64 min-w-0 pt-14 md:pt-0">
         <main class="flex-1 w-full max-w-[2200px] mx-auto p-6 md:p-8 animate-fadeIn">
             @if(session('success'))
