@@ -18,8 +18,8 @@
             </h2>
         </div>
         @if($isEdit)
-            <span class="text-xs bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-xl font-mono text-teal-300">
-                Current Sync Version: v{{ $place->sync_version }}
+            <span class="text-xs bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-xl text-teal-300">
+                <i class="fa-regular fa-clock"></i> Last updated: {{ $place->updated_at?->format('M j, Y g:i A') ?? '—' }}
             </span>
         @endif
     </div>
