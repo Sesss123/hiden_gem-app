@@ -100,8 +100,14 @@ class DeltaSyncService {
   final DiscoveryLocalDataSource _localDataSource = DiscoveryLocalDataSource();
   final SecureHttpClient _client = SecureHttpClient(http.Client());
 
-  // BUG-055: Synchronization lock — prevents parallel sync executions on double-tap
-  bool _isSyncing = false;
+  // BUG-055: Synchronization lock — prevents parallel sync executions on double-tap.
+  // Concurrent callers (e.g. home_screen and discovery_screen both loading on
+  // startup) await the SAME in-flight sync via _inFlightSync instead of
+  // short-circuiting: skipping-and-returning-immediately let the second
+  // caller re-read SQLite before the first sync had written anything,
+  // surfacing "no data available" even though a real sync was actively
+  // running a few hundred milliseconds away from completing.
+  Future<int>? _inFlightSync;
 
   Future<Duration> _getDynamicTimeout() async {
     try {
@@ -197,21 +203,30 @@ class DeltaSyncService {
   /// Executes chunked paginated delta sync from server.
   /// Handles first-boot full sync (since_version=0) and incremental updates.
   /// When [forceFullResync] is true, resets cursor to 0 to self-heal any version tracking gaps.
-  Future<int> performDeltaSync({bool forceFullResync = false}) async {
-    // BUG-055: Guard against concurrent sync executions
-    if (_isSyncing) {
-      SecureLogger.warning('Delta sync already in progress — skipping duplicate invocation.');
-      return await _sqliteService.getLocalSyncVersion();
+  Future<int> performDeltaSync({bool forceFullResync = false}) {
+    // BUG-055: Guard against concurrent sync executions — wait for the
+    // in-flight sync instead of skipping it, so a caller that lost the race
+    // still gets real data once the active sync finishes. _inFlightSync is
+    // set synchronously (before any `await`), so two callers arriving back
+    // to back on the same event-loop turn can't both pass this check.
+    final existing = _inFlightSync;
+    if (existing != null) {
+      SecureLogger.warning('Delta sync already in progress — awaiting existing sync instead of starting a duplicate.');
+      return existing;
     }
 
+    final future = _performDeltaSyncInternal(forceFullResync: forceFullResync);
+    _inFlightSync = future;
+    return future;
+  }
+
+  Future<int> _performDeltaSyncInternal({bool forceFullResync = false}) async {
     // BUG-150: Verify local storage is ready before starting the sync loop.
     // If the SQLite DB is not accessible, abort early and return current version.
     if (!await _isStorageReady()) {
       SecureLogger.warning('Delta sync aborted: local storage not ready.');
       return 0;
     }
-
-    _isSyncing = true;
 
     // BUG-036: Purge quarantined records older than 30 days during sync initiation
     try {
@@ -312,7 +327,7 @@ class DeltaSyncService {
       SecureLogger.error('Exception during delta synchronization loop at version $currentVersion', e);
     } finally {
       // BUG-055: Always release the lock when done
-      _isSyncing = false;
+      _inFlightSync = null;
     }
 
     return currentVersion;

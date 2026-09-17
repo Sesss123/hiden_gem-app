@@ -451,24 +451,29 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: [
-                  Icon(Icons.directions_car_filled_outlined,
-                      size: 20, color: Theme.of(context).colorScheme.primary),
-                  const SizedBox(width: 8),
-                  Text(
-                    "APPROXIMATE TRAVEL TIME",
-                    style: GoogleFonts.outfit(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: 1,
-                      color: Theme.of(context).colorScheme.primary,
+              Expanded(
+                child: Row(
+                  children: [
+                    Icon(Icons.directions_car_filled_outlined,
+                        size: 20, color: Theme.of(context).colorScheme.primary),
+                    const SizedBox(width: 8),
+                    Flexible(
+                      child: Text(
+                        "APPROXIMATE TRAVEL TIME",
+                        style: GoogleFonts.outfit(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 1,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
+              const SizedBox(width: 8),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
@@ -476,7 +481,7 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
                   borderRadius: BorderRadius.circular(100),
                 ),
                 child: Text(
-                  "${result.straightLineKm.toStringAsFixed(1)} km straight-line",
+                  "${result.straightLineKm.toStringAsFixed(1)} km",
                   style: GoogleFonts.inter(
                     fontSize: 11,
                     fontWeight: FontWeight.w700,

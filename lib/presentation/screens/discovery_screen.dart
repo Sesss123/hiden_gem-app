@@ -683,8 +683,15 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
                     _buildListView(l10n)
                   else if (_selectedFilter != "all")
                     _buildListView(l10n)
-                  else
+                  else ...[
                     _buildExploreView(l10n),
+                    // Explore lives inside home_screen's IndexedStack, whose
+                    // outer Scaffold docks the always-visible Oracle orb FAB
+                    // above the bottom nav bar. Without this, the last
+                    // section's cards render right up to the screen edge and
+                    // end up partly hidden behind that orb.
+                    const SliverToBoxAdapter(child: SizedBox(height: 96)),
+                  ],
                 ],
               ),
             ),
@@ -1177,7 +1184,9 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
     }
     
     return SliverPadding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+      // Extra bottom clearance so the last card isn't hidden behind the
+      // always-docked Oracle orb FAB from home_screen's outer Scaffold.
+      padding: const EdgeInsets.fromLTRB(20, 24, 20, 96),
       sliver: SliverList(
         delegate: SliverChildBuilderDelegate(
           (context, index) {

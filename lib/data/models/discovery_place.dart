@@ -253,7 +253,16 @@ class DiscoveryPlace {
       bestTime: json['bestTime'] as String? ?? json['best_time'] as String? ?? '',
       facilities: List<String>.from(json['facilities'] ?? []),
       openingHours: json['openingHours'] as String? ?? json['opening_hours'] as String? ?? '',
-      weeklyHours: Map<String, dynamic>.from(json['weeklyHours'] ?? json['weekly_hours'] ?? const {}),
+      weeklyHours: () {
+        // Backend sometimes serializes an empty/unset weekly_hours column as
+        // a JSON array ([]) rather than an object ({}) — e.g. Laravel casts
+        // an empty PHP array to `[]` by default. Treat any non-map shape as
+        // "no weekly hours set" instead of throwing and failing the whole
+        // place's delta-sync parse.
+        final raw = json['weeklyHours'] ?? json['weekly_hours'];
+        if (raw is Map) return Map<String, dynamic>.from(raw);
+        return <String, dynamic>{};
+      }(),
       temporarilyClosed: json['temporarilyClosed'] as bool? ?? json['temporarily_closed'] as bool? ?? false,
       closureNote: json['closureNote'] as String? ?? json['closure_note'] as String? ?? '',
       closureUntil: parseUtcTimestamp(json['closureUntil'] ?? json['closure_until']),
