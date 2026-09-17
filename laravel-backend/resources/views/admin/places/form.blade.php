@@ -149,11 +149,17 @@
             </h3>
 
             <div class="rounded-xl border border-slate-700 bg-slate-900/50 p-4 space-y-4">
-                <div>
-                    <div class="text-xs font-semibold text-slate-200">Structured weekly opening hours</div>
-                    <p class="text-[11px] text-slate-500">Sri Lanka local time. These values power the app's Open now / Closed status.</p>
+                <div class="flex items-start justify-between gap-3 flex-wrap">
+                    <div>
+                        <div class="text-xs font-semibold text-slate-200">Structured weekly opening hours</div>
+                        <p class="text-[11px] text-slate-500">Sri Lanka local time. These values power the app's Open now / Closed status.</p>
+                    </div>
+                    <button type="button" id="fill_default_hours_btn" class="shrink-0 px-3 py-1.5 rounded-lg bg-sky-600/20 border border-sky-500/40 text-sky-300 hover:bg-sky-600/30 text-[11px] font-semibold transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> Fill Default Hours (by Category)
+                    </button>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <p id="fill_default_hours_status" class="text-[11px] hidden"></p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3" id="weekly_hours_grid">
                     @php
                         // weekly_hours can be stored as an empty JSON array ([])
                         // rather than an object ({}) for places that predate this
@@ -166,11 +172,11 @@
                             $dayHours = old("weekly_hours.$dayKey", $weeklyHoursMap[$dayKey] ?? []);
                             $dayHours = is_array($dayHours) ? $dayHours : [];
                         @endphp
-                        <div class="grid grid-cols-[90px_1fr_1fr_auto] items-center gap-2">
+                        <div class="grid grid-cols-[90px_1fr_1fr_auto] items-center gap-2" data-day-row="{{ $dayKey }}">
                             <span class="text-xs text-slate-300">{{ $dayLabel }}</span>
-                            <input type="time" name="weekly_hours[{{ $dayKey }}][open]" value="{{ $dayHours['open'] ?? '' }}" class="px-2 py-1.5 bg-slate-950 border border-slate-700 rounded-lg text-xs text-white">
-                            <input type="time" name="weekly_hours[{{ $dayKey }}][close]" value="{{ $dayHours['close'] ?? '' }}" class="px-2 py-1.5 bg-slate-950 border border-slate-700 rounded-lg text-xs text-white">
-                            <label class="text-[11px] text-slate-400 whitespace-nowrap"><input type="checkbox" name="weekly_hours[{{ $dayKey }}][closed]" value="1" {{ !empty($dayHours['closed']) ? 'checked' : '' }}> Closed</label>
+                            <input type="time" name="weekly_hours[{{ $dayKey }}][open]" value="{{ $dayHours['open'] ?? '' }}" class="px-2 py-1.5 bg-slate-950 border border-slate-700 rounded-lg text-xs text-white" data-day-open>
+                            <input type="time" name="weekly_hours[{{ $dayKey }}][close]" value="{{ $dayHours['close'] ?? '' }}" class="px-2 py-1.5 bg-slate-950 border border-slate-700 rounded-lg text-xs text-white" data-day-close>
+                            <label class="text-[11px] text-slate-400 whitespace-nowrap"><input type="checkbox" name="weekly_hours[{{ $dayKey }}][closed]" value="1" {{ !empty($dayHours['closed']) ? 'checked' : '' }} data-day-closed> Closed</label>
                         </div>
                     @endforeach
                 </div>
@@ -974,6 +980,86 @@ document.addEventListener('DOMContentLoaded', function() {
     if (catInput) {
         catInput.addEventListener('change', filterActivities);
         filterActivities(); // sync on load (edit mode: category pre-selected)
+    }
+});
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Suggested default weekly hours per category — a starting point only.
+    // { open, close } with close === '23:59' + open === '00:00' meaning "24 hours".
+    // Categories not listed here are left untouched (admin fills manually).
+    const CATEGORY_DEFAULT_HOURS = {
+        'Beach': { open: '00:00', close: '23:59' },
+        'Waterfalls': { open: '00:00', close: '23:59' },
+        'View Point': { open: '00:00', close: '23:59' },
+        'Sunrise & Sunset Viewpoints': { open: '00:00', close: '23:59' },
+        'Tea Estate': { open: '00:00', close: '23:59' },
+        'Hiking / Trekking': { open: '00:00', close: '23:59' },
+        'Adventure Park': { open: '00:00', close: '23:59' },
+        'Village Experience': { open: '00:00', close: '23:59' },
+
+        'Religious Places': { open: '06:00', close: '20:00' },
+        'Temple': { open: '06:00', close: '20:00' },
+        'Sacred Temple': { open: '06:00', close: '20:00' },
+        'Multi-Religious Pilgrimage': { open: '06:00', close: '20:00' },
+
+        'Ancient Architecture': { open: '09:00', close: '17:00' },
+        'Colonial Fort': { open: '09:00', close: '17:00' },
+        'Royal Palace': { open: '09:00', close: '17:00' },
+        'Historical Monument': { open: '09:00', close: '17:00' },
+        'Museum Tourism': { open: '09:00', close: '17:00' },
+        'Cultural Site': { open: '09:00', close: '17:00' },
+
+        'Wildlife / National Park': { open: '06:00', close: '18:00' },
+
+        'Shopping Tourism': { open: '09:00', close: '21:00' },
+        'Culinary / Food': { open: '09:00', close: '21:00' },
+    };
+
+    const fillBtn = document.getElementById('fill_default_hours_btn');
+    const fillStatus = document.getElementById('fill_default_hours_status');
+    const catSelect = document.getElementById('category_input');
+    const weeklyGrid = document.getElementById('weekly_hours_grid');
+
+    if (fillBtn && catSelect && weeklyGrid) {
+        fillBtn.addEventListener('click', function() {
+            const category = catSelect.value;
+            const defaults = CATEGORY_DEFAULT_HOURS[category];
+
+            fillStatus.classList.remove('hidden', 'text-red-400', 'text-emerald-400');
+
+            if (!category) {
+                fillStatus.textContent = 'Pick a Category on the Core Info tab first.';
+                fillStatus.classList.add('text-red-400');
+                return;
+            }
+            if (!defaults) {
+                fillStatus.textContent = '"' + category + '" has no suggested default hours — please fill each day manually.';
+                fillStatus.classList.add('text-red-400');
+                return;
+            }
+
+            let filledCount = 0;
+            weeklyGrid.querySelectorAll('[data-day-row]').forEach(function(row) {
+                const openInput = row.querySelector('[data-day-open]');
+                const closeInput = row.querySelector('[data-day-close]');
+                const closedCheckbox = row.querySelector('[data-day-closed]');
+                // Only touch days with nothing set yet, so this never
+                // clobbers hours an admin already typed in.
+                const isEmpty = !openInput.value && !closeInput.value && !closedCheckbox.checked;
+                if (isEmpty) {
+                    openInput.value = defaults.open;
+                    closeInput.value = defaults.close;
+                    filledCount++;
+                }
+            });
+
+            fillStatus.textContent = filledCount > 0
+                ? 'Filled ' + filledCount + ' empty day(s) with default hours for "' + category + '". Review and adjust as needed, then save.'
+                : 'All days already had hours set — nothing was changed.';
+            fillStatus.classList.add('text-emerald-400');
+        });
     }
 });
 </script>
