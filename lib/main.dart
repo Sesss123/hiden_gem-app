@@ -26,6 +26,7 @@ import 'core/analytics/analytics_service.dart';
 import 'core/notifications/notification_service.dart';
 import 'core/network/secure_network.dart';
 import 'core/services/delta_sync_service.dart';
+import 'data/repositories/discovery_repository.dart';
 import 'core/utils/secure_logger.dart';
 import 'core/utils/encryption_util.dart';
 import 'package:safe_device/safe_device.dart';
@@ -666,6 +667,7 @@ class _HiddenGemsAppState extends ConsumerState<HiddenGemsApp>
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
       MonetizationService().syncRemoteAdConfig();
+      _syncPlacesOnResume();
     }
     // Flush any debounced bookmark/itinerary Firestore sync immediately on
     // pause/detach/hidden, so backgrounding or closing the app doesn't
@@ -674,6 +676,25 @@ class _HiddenGemsAppState extends ConsumerState<HiddenGemsApp>
         state == AppLifecycleState.detached ||
         state == AppLifecycleState.hidden) {
       UserPreferenceService.flushPendingFirestoreSync();
+    }
+  }
+
+  // Places only synced at cold start or when a screen first fetches them,
+  // so an admin's edit (e.g. via the VPS admin panel) while this app was
+  // merely backgrounded — not killed — would otherwise stay invisible
+  // until the user force-quit and reopened the app. Running delta sync on
+  // every foreground resume closes that gap; invalidating the memory
+  // cache afterwards means the next place-list fetch picks up the change
+  // instead of serving the pre-sync snapshot.
+  Future<void> _syncPlacesOnResume() async {
+    if (kIsWeb) return;
+    try {
+      final newVersion = await DeltaSyncService().performDeltaSync();
+      ref.read(discoveryLocalDataSourceProvider).invalidateCache();
+      SecureLogger.info(
+          "Resume delta sync complete (v$newVersion). Memory cache invalidated.");
+    } catch (e) {
+      SecureLogger.warning("Resume delta sync failed: $e");
     }
   }
 
