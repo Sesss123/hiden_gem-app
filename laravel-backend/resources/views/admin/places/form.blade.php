@@ -94,8 +94,18 @@
                     <p class="text-[11px] text-slate-500">Sri Lanka local time. These values power the app's Open now / Closed status.</p>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    @php
+                        // weekly_hours can be stored as an empty JSON array ([])
+                        // rather than an object ({}) for places that predate this
+                        // field, which decodes to a plain PHP list — guard against
+                        // that shape before doing string-keyed lookups below.
+                        $weeklyHoursMap = is_array($place->weekly_hours) ? $place->weekly_hours : [];
+                    @endphp
                     @foreach(['mon'=>'Monday','tue'=>'Tuesday','wed'=>'Wednesday','thu'=>'Thursday','fri'=>'Friday','sat'=>'Saturday','sun'=>'Sunday'] as $dayKey => $dayLabel)
-                        @php($dayHours = old("weekly_hours.$dayKey", ($place->weekly_hours ?? [])[$dayKey] ?? []))
+                        @php
+                            $dayHours = old("weekly_hours.$dayKey", $weeklyHoursMap[$dayKey] ?? []);
+                            $dayHours = is_array($dayHours) ? $dayHours : [];
+                        @endphp
                         <div class="grid grid-cols-[90px_1fr_1fr_auto] items-center gap-2">
                             <span class="text-xs text-slate-300">{{ $dayLabel }}</span>
                             <input type="time" name="weekly_hours[{{ $dayKey }}][open]" value="{{ $dayHours['open'] ?? '' }}" class="px-2 py-1.5 bg-slate-950 border border-slate-700 rounded-lg text-xs text-white">
