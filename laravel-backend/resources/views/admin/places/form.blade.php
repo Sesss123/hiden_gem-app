@@ -43,6 +43,9 @@
             <button type="button" data-tab="core" class="form-tab-btn shrink-0 px-4 py-2.5 rounded-xl text-xs font-semibold whitespace-nowrap flex items-center gap-1.5 transition">
                 <i class="fa-solid fa-tag"></i> Core Info
             </button>
+            <button type="button" data-tab="hours" class="form-tab-btn shrink-0 px-4 py-2.5 rounded-xl text-xs font-semibold whitespace-nowrap flex items-center gap-1.5 transition">
+                <i class="fa-solid fa-clock"></i> Hours
+            </button>
             <button type="button" data-tab="gps" class="form-tab-btn shrink-0 px-4 py-2.5 rounded-xl text-xs font-semibold whitespace-nowrap flex items-center gap-1.5 transition">
                 <i class="fa-solid fa-earth-asia"></i> GPS
             </button>
@@ -86,40 +89,6 @@
                         placeholder="e.g. Sigiriya Rock Fortress"
                         class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 font-semibold">
                 </div>
-            </div>
-
-            <div class="rounded-xl border border-slate-700 bg-slate-900/50 p-4 space-y-4">
-                <div>
-                    <div class="text-xs font-semibold text-slate-200">Structured weekly opening hours</div>
-                    <p class="text-[11px] text-slate-500">Sri Lanka local time. These values power the app's Open now / Closed status.</p>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    @php
-                        // weekly_hours can be stored as an empty JSON array ([])
-                        // rather than an object ({}) for places that predate this
-                        // field, which decodes to a plain PHP list — guard against
-                        // that shape before doing string-keyed lookups below.
-                        $weeklyHoursMap = is_array($place->weekly_hours) ? $place->weekly_hours : [];
-                    @endphp
-                    @foreach(['mon'=>'Monday','tue'=>'Tuesday','wed'=>'Wednesday','thu'=>'Thursday','fri'=>'Friday','sat'=>'Saturday','sun'=>'Sunday'] as $dayKey => $dayLabel)
-                        @php
-                            $dayHours = old("weekly_hours.$dayKey", $weeklyHoursMap[$dayKey] ?? []);
-                            $dayHours = is_array($dayHours) ? $dayHours : [];
-                        @endphp
-                        <div class="grid grid-cols-[90px_1fr_1fr_auto] items-center gap-2">
-                            <span class="text-xs text-slate-300">{{ $dayLabel }}</span>
-                            <input type="time" name="weekly_hours[{{ $dayKey }}][open]" value="{{ $dayHours['open'] ?? '' }}" class="px-2 py-1.5 bg-slate-950 border border-slate-700 rounded-lg text-xs text-white">
-                            <input type="time" name="weekly_hours[{{ $dayKey }}][close]" value="{{ $dayHours['close'] ?? '' }}" class="px-2 py-1.5 bg-slate-950 border border-slate-700 rounded-lg text-xs text-white">
-                            <label class="text-[11px] text-slate-400 whitespace-nowrap"><input type="checkbox" name="weekly_hours[{{ $dayKey }}][closed]" value="1" {{ !empty($dayHours['closed']) ? 'checked' : '' }}> Closed</label>
-                        </div>
-                    @endforeach
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-                    <label class="flex items-center gap-2 text-xs text-red-300"><input type="checkbox" name="temporarily_closed" value="1" {{ old('temporarily_closed', $place->temporarily_closed) ? 'checked' : '' }}> Temporarily closed</label>
-                    <input type="datetime-local" name="closure_until" value="{{ old('closure_until', optional($place->closure_until)->format('Y-m-d\TH:i')) }}" class="px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white" aria-label="Closed until">
-                    <input type="text" name="closure_note" value="{{ old('closure_note', $place->closure_note) }}" placeholder="Closure reason" class="px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white">
-                </div>
-                <input type="text" name="holiday_hours_note" value="{{ old('holiday_hours_note', $place->holiday_hours_note) }}" placeholder="Public holiday exception, e.g. Closed on Poya days" class="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white">
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -170,6 +139,47 @@
                         @endforeach
                     </select>
                 </div>
+            </div>
+        </div>
+
+        <!-- Tab: Opening Hours -->
+        <div class="form-tab-panel glass-card p-6 rounded-2xl space-y-4 border border-slate-800" data-panel="hours">
+            <h3 class="text-sm font-semibold text-sky-400 uppercase tracking-wider border-b border-slate-800 pb-2 flex items-center gap-2">
+                <i class="fa-solid fa-clock"></i> Opening Hours
+            </h3>
+
+            <div class="rounded-xl border border-slate-700 bg-slate-900/50 p-4 space-y-4">
+                <div>
+                    <div class="text-xs font-semibold text-slate-200">Structured weekly opening hours</div>
+                    <p class="text-[11px] text-slate-500">Sri Lanka local time. These values power the app's Open now / Closed status.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    @php
+                        // weekly_hours can be stored as an empty JSON array ([])
+                        // rather than an object ({}) for places that predate this
+                        // field, which decodes to a plain PHP list — guard against
+                        // that shape before doing string-keyed lookups below.
+                        $weeklyHoursMap = is_array($place->weekly_hours) ? $place->weekly_hours : [];
+                    @endphp
+                    @foreach(['mon'=>'Monday','tue'=>'Tuesday','wed'=>'Wednesday','thu'=>'Thursday','fri'=>'Friday','sat'=>'Saturday','sun'=>'Sunday'] as $dayKey => $dayLabel)
+                        @php
+                            $dayHours = old("weekly_hours.$dayKey", $weeklyHoursMap[$dayKey] ?? []);
+                            $dayHours = is_array($dayHours) ? $dayHours : [];
+                        @endphp
+                        <div class="grid grid-cols-[90px_1fr_1fr_auto] items-center gap-2">
+                            <span class="text-xs text-slate-300">{{ $dayLabel }}</span>
+                            <input type="time" name="weekly_hours[{{ $dayKey }}][open]" value="{{ $dayHours['open'] ?? '' }}" class="px-2 py-1.5 bg-slate-950 border border-slate-700 rounded-lg text-xs text-white">
+                            <input type="time" name="weekly_hours[{{ $dayKey }}][close]" value="{{ $dayHours['close'] ?? '' }}" class="px-2 py-1.5 bg-slate-950 border border-slate-700 rounded-lg text-xs text-white">
+                            <label class="text-[11px] text-slate-400 whitespace-nowrap"><input type="checkbox" name="weekly_hours[{{ $dayKey }}][closed]" value="1" {{ !empty($dayHours['closed']) ? 'checked' : '' }}> Closed</label>
+                        </div>
+                    @endforeach
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <label class="flex items-center gap-2 text-xs text-red-300"><input type="checkbox" name="temporarily_closed" value="1" {{ old('temporarily_closed', $place->temporarily_closed) ? 'checked' : '' }}> Temporarily closed</label>
+                    <input type="datetime-local" name="closure_until" value="{{ old('closure_until', optional($place->closure_until)->format('Y-m-d\TH:i')) }}" class="px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white" aria-label="Closed until">
+                    <input type="text" name="closure_note" value="{{ old('closure_note', $place->closure_note) }}" placeholder="Closure reason" class="px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white">
+                </div>
+                <input type="text" name="holiday_hours_note" value="{{ old('holiday_hours_note', $place->holiday_hours_note) }}" placeholder="Public holiday exception, e.g. Closed on Poya days" class="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white">
             </div>
         </div>
 
