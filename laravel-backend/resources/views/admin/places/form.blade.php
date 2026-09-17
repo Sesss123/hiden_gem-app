@@ -986,36 +986,30 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Suggested default weekly hours per category — a starting point only.
-    // { open, close } with close === '23:59' + open === '00:00' meaning "24 hours".
-    // Categories not listed here are left untouched (admin fills manually).
-    const CATEGORY_DEFAULT_HOURS = {
-        'Beach': { open: '00:00', close: '23:59' },
-        'Waterfalls': { open: '00:00', close: '23:59' },
-        'View Point': { open: '00:00', close: '23:59' },
-        'Sunrise & Sunset Viewpoints': { open: '00:00', close: '23:59' },
-        'Tea Estate': { open: '00:00', close: '23:59' },
-        'Hiking / Trekking': { open: '00:00', close: '23:59' },
-        'Adventure Park': { open: '00:00', close: '23:59' },
-        'Village Experience': { open: '00:00', close: '23:59' },
+    // Suggested default weekly hours by category KEYWORD — matched against
+    // the category text case-insensitively, so free-text / database-only
+    // categories (e.g. "Buddhist Temple", "Mosque", "Kovil") still match
+    // without needing an exact-string entry for every variant. Order
+    // matters: first keyword match wins, so more specific groups (24h
+    // natural sites) are listed before broader fallback groups.
+    // { open, close } with '00:00'-'23:59' meaning "24 hours".
+    const CATEGORY_KEYWORD_HOURS = [
+        { keywords: ['beach', 'waterfall', 'view point', 'viewpoint', 'tea estate', 'hiking', 'trekking', 'adventure park', 'village experience', 'lagoon', 'park', 'garden'], hours: { open: '00:00', close: '23:59' } },
+        { keywords: ['temple', 'kovil', 'mosque', 'church', 'shrine', 'devale', 'devalaya', 'stupa', 'monastery', 'sanctuary', 'basilica', 'chapel', 'cathedral', 'religious', 'pilgrimage'], hours: { open: '06:00', close: '20:00' } },
+        { keywords: ['museum', 'fort', 'palace', 'architecture', 'heritage', 'historical', 'monument', 'cultural site'], hours: { open: '09:00', close: '17:00' } },
+        { keywords: ['wildlife', 'national park'], hours: { open: '06:00', close: '18:00' } },
+        { keywords: ['shopping', 'culinary', 'food', 'market'], hours: { open: '09:00', close: '21:00' } },
+    ];
 
-        'Religious Places': { open: '06:00', close: '20:00' },
-        'Temple': { open: '06:00', close: '20:00' },
-        'Sacred Temple': { open: '06:00', close: '20:00' },
-        'Multi-Religious Pilgrimage': { open: '06:00', close: '20:00' },
-
-        'Ancient Architecture': { open: '09:00', close: '17:00' },
-        'Colonial Fort': { open: '09:00', close: '17:00' },
-        'Royal Palace': { open: '09:00', close: '17:00' },
-        'Historical Monument': { open: '09:00', close: '17:00' },
-        'Museum Tourism': { open: '09:00', close: '17:00' },
-        'Cultural Site': { open: '09:00', close: '17:00' },
-
-        'Wildlife / National Park': { open: '06:00', close: '18:00' },
-
-        'Shopping Tourism': { open: '09:00', close: '21:00' },
-        'Culinary / Food': { open: '09:00', close: '21:00' },
-    };
+    function findDefaultHoursForCategory(category) {
+        const lower = category.toLowerCase();
+        for (const group of CATEGORY_KEYWORD_HOURS) {
+            if (group.keywords.some(function(kw) { return lower.includes(kw); })) {
+                return group.hours;
+            }
+        }
+        return null;
+    }
 
     const fillBtn = document.getElementById('fill_default_hours_btn');
     const fillStatus = document.getElementById('fill_default_hours_status');
@@ -1025,7 +1019,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (fillBtn && catSelect && weeklyGrid) {
         fillBtn.addEventListener('click', function() {
             const category = catSelect.value;
-            const defaults = CATEGORY_DEFAULT_HOURS[category];
+            const defaults = category ? findDefaultHoursForCategory(category) : null;
 
             fillStatus.classList.remove('hidden', 'text-red-400', 'text-emerald-400');
 
