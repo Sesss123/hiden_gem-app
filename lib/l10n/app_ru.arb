@@ -24,6 +24,7 @@
   "retryAction": "Повторить",
   "invalidMapCoordinates": "У места неверные координаты.",
   "mapAppUnavailable": "Нет доступного приложения карт.",
+  "mapNotAvailableOnWeb": "Интерактивная карта пока недоступна в веб-версии. Чтобы посмотреть карту, используйте мобильное приложение Hidden Gems SL.",
   "routeSafetyAdvisory": "Безопасность маршрута",
   "reviewRouteAction": "Проверить маршрут",
   "continueAction": "Продолжить",

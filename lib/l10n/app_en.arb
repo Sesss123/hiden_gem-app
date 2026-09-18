@@ -24,6 +24,7 @@
   "retryAction": "Retry",
   "invalidMapCoordinates": "This place has invalid map coordinates.",
   "mapAppUnavailable": "No map application is available.",
+  "mapNotAvailableOnWeb": "The interactive map isn't available on web yet. Please use the Hidden Gems SL mobile app to explore the map.",
   "routeSafetyAdvisory": "Route safety advisory",
   "reviewRouteAction": "Review route",
   "continueAction": "Continue",

@@ -214,6 +214,12 @@ abstract class AppLocalizations {
   /// **'No map application is available.'**
   String get mapAppUnavailable;
 
+  /// No description provided for @mapNotAvailableOnWeb.
+  ///
+  /// In en, this message translates to:
+  /// **'The interactive map isn\'t available on web yet. Please use the Hidden Gems SL mobile app to explore the map.'**
+  String get mapNotAvailableOnWeb;
+
   /// No description provided for @routeSafetyAdvisory.
   ///
   /// In en, this message translates to:

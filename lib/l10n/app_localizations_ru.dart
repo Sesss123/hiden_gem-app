@@ -69,6 +69,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String get mapAppUnavailable => 'Нет доступного приложения карт.';
 
   @override
+  String get mapNotAvailableOnWeb =>
+      'Интерактивная карта пока недоступна в веб-версии. Чтобы посмотреть карту, используйте мобильное приложение Hidden Gems SL.';
+
+  @override
   String get routeSafetyAdvisory => 'Безопасность маршрута';
 
   @override

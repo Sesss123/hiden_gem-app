@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -261,6 +262,39 @@ class _MapExplorerScreenState extends ConsumerState<MapExplorerScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // The web build has no Google Maps JavaScript SDK script loaded (that
+    // requires its own browser-restricted API key, separate from the
+    // Android/iOS native SDK key), so google_maps_flutter_web crashes on
+    // web trying to read google.maps.MapTypeId off an undefined `google`
+    // object. Native platforms are unaffected — only bail out on web.
+    if (kIsWeb) {
+      final l10n = AppLocalizations.of(context)!;
+      return Scaffold(
+        appBar: AppBar(
+          leading: BackButton(onPressed: () => Navigator.of(context).pop()),
+        ),
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.map_outlined,
+                    size: 48, color: AppTheme.textSecondary(context)),
+                const SizedBox(height: 16),
+                Text(
+                  l10n.mapNotAvailableOnWeb,
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.inter(
+                      fontSize: 14, color: AppTheme.textSecondary(context)),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
     return Scaffold(
       body: Stack(
         children: [

@@ -68,6 +68,10 @@ class AppLocalizationsSi extends AppLocalizations {
   String get mapAppUnavailable => 'සිතියම් යෙදුමක් ලබාගත නොහැක.';
 
   @override
+  String get mapNotAvailableOnWeb =>
+      'අන්තර්ක්‍රියාකාරී සිතියම web අනුවාදයේ තවම ලබාගත නොහැක. සිතියම බලන්න කරුණාකර Hidden Gems SL mobile app එක භාවිත කරන්න.';
+
+  @override
   String get routeSafetyAdvisory => 'මාර්ග ආරක්ෂණ උපදේශනය';
 
   @override

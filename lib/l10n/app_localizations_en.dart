@@ -68,6 +68,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get mapAppUnavailable => 'No map application is available.';
 
   @override
+  String get mapNotAvailableOnWeb =>
+      'The interactive map isn\'t available on web yet. Please use the Hidden Gems SL mobile app to explore the map.';
+
+  @override
   String get routeSafetyAdvisory => 'Route safety advisory';
 
   @override

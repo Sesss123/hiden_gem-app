@@ -69,6 +69,10 @@ class AppLocalizationsTa extends AppLocalizations {
   String get mapAppUnavailable => 'வரைபடச் செயலி கிடைக்கவில்லை.';
 
   @override
+  String get mapNotAvailableOnWeb =>
+      'இணையதளத்தில் ஊடாடும் வரைபடம் இன்னும் கிடைக்கவில்லை. வரைபடத்தைப் பயன்படுத்த Hidden Gems SL மொபைல் செயலியைப் பயன்படுத்தவும்.';
+
+  @override
   String get routeSafetyAdvisory => 'பாதை பாதுகாப்பு ஆலோசனை';
 
   @override

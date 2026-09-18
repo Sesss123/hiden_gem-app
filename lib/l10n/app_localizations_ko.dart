@@ -65,6 +65,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get mapAppUnavailable => '사용 가능한 지도 앱이 없습니다.';
 
   @override
+  String get mapNotAvailableOnWeb =>
+      '인터랙티브 지도는 아직 웹에서 사용할 수 없습니다. 지도를 보려면 Hidden Gems SL 모바일 앱을 이용해 주세요.';
+
+  @override
   String get routeSafetyAdvisory => '경로 안전 안내';
 
   @override

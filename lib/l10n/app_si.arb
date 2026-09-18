@@ -24,6 +24,7 @@
   "retryAction": "නැවත උත්සාහ කරන්න",
   "invalidMapCoordinates": "මෙම ස්ථානයේ සිතියම් ඛණ්ඩාංක වලංගු නොවේ.",
   "mapAppUnavailable": "සිතියම් යෙදුමක් ලබාගත නොහැක.",
+  "mapNotAvailableOnWeb": "අන්තර්ක්‍රියාකාරී සිතියම web අනුවාදයේ තවම ලබාගත නොහැක. සිතියම බලන්න කරුණාකර Hidden Gems SL mobile app එක භාවිත කරන්න.",
   "routeSafetyAdvisory": "මාර්ග ආරක්ෂණ උපදේශනය",
   "reviewRouteAction": "මාර්ගය බලන්න",
   "continueAction": "ඉදිරියට",

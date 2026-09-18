@@ -24,6 +24,7 @@
   "retryAction": "再試行",
   "invalidMapCoordinates": "この場所の地図座標は無効です。",
   "mapAppUnavailable": "利用できる地図アプリがありません。",
+  "mapNotAvailableOnWeb": "インタラクティブマップはまだWeb版では利用できません。マップを表示するにはHidden Gems SLモバイルアプリをご利用ください。",
   "routeSafetyAdvisory": "ルート安全情報",
   "reviewRouteAction": "ルートを確認",
   "continueAction": "続行",
