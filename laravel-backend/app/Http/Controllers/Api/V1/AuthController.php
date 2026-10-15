@@ -306,10 +306,16 @@ class AuthController extends Controller
                 GuideApplication::where('user_id', $uid)->delete();
 
                 // Purge uploaded files across both Firebase UID and numeric user ID
-                Storage::disk('local')->deleteDirectory("guide_documents/{$uid}");
-                Storage::disk('local')->deleteDirectory("guide_documents/{$user->id}");
-                Storage::disk('public')->deleteDirectory("listing_photos/{$uid}");
-                Storage::disk('public')->deleteDirectory("listing_photos/{$user->id}");
+                foreach ([
+                    ['local', "guide_documents/{$uid}"],
+                    ['local', "guide_documents/{$user->id}"],
+                    ['public', "listing_photos/{$uid}"],
+                    ['public', "listing_photos/{$user->id}"],
+                ] as [$disk, $directory]) {
+                    if (!Storage::disk($disk)->deleteDirectory($directory)) {
+                        throw new \RuntimeException("Failed deleting stored account files at {$disk}:{$directory}.");
+                    }
+                }
 
                 // Purge RevenueCat subscriber data if secret key is configured
                 $this->purgeRevenueCatSubscriber($uid);
@@ -356,8 +362,11 @@ class AuthController extends Controller
     private function purgeRevenueCatSubscriber(string $uid): void
     {
         $secretKey = config('services.revenuecat.secret_key');
-        if (!$secretKey) {
+        if (!$secretKey && !app()->environment('production')) {
             return;
+        }
+        if (!$secretKey) {
+            throw new \RuntimeException('RevenueCat secret key is required for production account deletion.');
         }
 
         try {
@@ -369,10 +378,11 @@ class AuthController extends Controller
             if ($response->successful() || $response->status() === 404) {
                 Log::info("RevenueCat subscriber deleted or absent for UID: {$uid}");
             } else {
-                Log::warning("RevenueCat subscriber delete returned status {$response->status()}: " . $response->body());
+                throw new \RuntimeException("RevenueCat subscriber deletion failed ({$response->status()}).");
             }
         } catch (\Throwable $e) {
             Log::error("RevenueCat subscriber delete exception for UID {$uid}: " . $e->getMessage());
+            throw $e;
         }
     }
 
@@ -409,9 +419,8 @@ class AuthController extends Controller
             ['user_notifications', 'recipientId'],
             ['user_notifications', 'userId'],
             ['profile_view_markers', 'viewerUid'],
-            ['profile_view_markers', 'targetUid'],
             ['guide_analytics', 'guideId'],
-            ['threat_notifications', 'userId'],
+            ['threat_notifications', 'uid'],
         ];
 
         foreach ($hardDeleteQueries as $query) {
@@ -428,6 +437,10 @@ class AuthController extends Controller
             }
         }
 
+        // Legacy profile-view markers stored the viewer UID only in the
+        // document ID (`<listingId>_<uid>`), before viewerUid was added.
+        $firestore->deleteDocumentsWithIdSuffix('profile_view_markers', "_{$uid}");
+
         // A tourist deleting their account must be removed from a shared
         // session, not delete the guide's session and every other tourist's
         // live-tour data. Guide-owned sessions above are still deleted.
@@ -441,24 +454,30 @@ class AuthController extends Controller
                 throw new \RuntimeException("Failed removing deleted tourist from tour_sessions/{$session['id']}.");
             }
             // Explicitly purge tourist presence subcollection doc in this session
-            $firestore->deleteDocument("tour_sessions/{$session['id']}/presence", $uid);
+            if (!$firestore->deleteDocument("tour_sessions/{$session['id']}/presence", $uid)) {
+                throw new \RuntimeException("Failed deleting presence for {$uid} from tour_sessions/{$session['id']}.");
+            }
 
             // Delete any meeting-point checkpoints this tourist personally
             // created, and strip their uid from acknowledgedBy on broadcasts
             // (the broadcast itself is guide-authored session data and stays).
             $sessionPath = "tour_sessions/{$session['id']}";
-            $checkpoints = $firestore->listSubcollectionDocuments($sessionPath, 'checkpoints');
+            $checkpoints = $firestore->listSubcollectionDocuments($sessionPath, 'checkpoints', true);
             foreach ($checkpoints as $checkpoint) {
                 if (($checkpoint['createdBy'] ?? null) === $uid) {
-                    $firestore->deleteDocument("{$sessionPath}/checkpoints", $checkpoint['id']);
+                    if (!$firestore->deleteDocument("{$sessionPath}/checkpoints", $checkpoint['id'])) {
+                        throw new \RuntimeException("Failed deleting checkpoint {$checkpoint['id']}.");
+                    }
                 }
             }
-            $broadcasts = $firestore->listSubcollectionDocuments($sessionPath, 'broadcasts');
+            $broadcasts = $firestore->listSubcollectionDocuments($sessionPath, 'broadcasts', true);
             foreach ($broadcasts as $broadcast) {
                 $acknowledgedBy = $broadcast['acknowledgedBy'] ?? [];
                 if (in_array($uid, $acknowledgedBy, true)) {
                     $remaining = array_values(array_filter($acknowledgedBy, fn ($id) => $id !== $uid));
-                    $firestore->patchDocument("{$sessionPath}/broadcasts", $broadcast['id'], ['acknowledgedBy' => $remaining]);
+                    if (!$firestore->patchDocument("{$sessionPath}/broadcasts", $broadcast['id'], ['acknowledgedBy' => $remaining])) {
+                        throw new \RuntimeException("Failed removing acknowledgement from broadcast {$broadcast['id']}.");
+                    }
                 }
             }
         }
@@ -477,8 +496,9 @@ class AuthController extends Controller
         }
 
         // Explicitly purge security subcollections before deleting root user document
-        $firestore->deleteDocumentRecursively("users/{$uid}/security", "posture");
-        $firestore->deleteDocument("users/{$uid}/security", "posture");
+        if (!$firestore->deleteDocumentRecursively("users/{$uid}/security", 'posture')) {
+            throw new \RuntimeException("Failed deleting users/{$uid}/security/posture.");
+        }
 
         // Doc ID IS the uid for these two — no query needed.
         foreach (['guide_applications', 'users', 'join_attempts'] as $collection) {

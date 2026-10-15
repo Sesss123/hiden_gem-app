@@ -4,13 +4,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import '../../core/config/app_config.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/theme/oracle_ui_system.dart';
-import '../../core/analytics/analytics_service.dart';
-import '../../core/services/ar_service.dart';
-import '../../data/models/ar_place_data.dart';
-import '../../core/services/ar_support_service.dart';
 import '../../core/services/asset_cache_service.dart';
 import '../../core/services/opening_hours_service.dart';
 import '../../core/services/travel_time_service.dart';
@@ -25,18 +20,12 @@ import '../widgets/cached_image.dart';
 import '../../core/services/media_cache_manager.dart';
 import '../../data/models/discovery_place.dart';
 import '../../data/datasources/user_preference_service.dart';
-import '../../data/datasources/portal_service.dart';
 import '../../core/services/usage_limiter_service.dart';
-import '../../core/services/secure_entitlements.dart';
 import '../../core/services/integrity_shield.dart';
 import '../../core/services/translation_service.dart';
 import '../../core/localization/l10n_utils.dart';
 import '../../l10n/app_localizations.dart';
 import '../widgets/limit_reached_dialog.dart';
-import 'ar_viewer_screen.dart';
-import 'ar_upgrade_dialog.dart';
-import 'ar_fallback_screen.dart';
-import 'ar_coming_soon_screen.dart';
 import 'premium_hub_screen.dart';
 import '../../core/services/premium_unlock_service.dart';
 import '../../data/datasources/monetization_service.dart';
@@ -44,7 +33,6 @@ import '../widgets/native_ad_widget.dart';
 import '../widgets/banner_ad_widget.dart';
 import 'heritage_passport_screen.dart';
 import 'audio_guide_screen.dart';
-import 'ancestral_portal_screen.dart';
 import '../../core/services/explorer_progress_service.dart';
 
 class PlaceDetailsScreen extends ConsumerStatefulWidget {
@@ -65,8 +53,6 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
   // AR entry point on AppConfig.arFeatureEnabled as well as the place's own
   // arSupported flag, so flipping that one config value is enough to bring
   // AR back for a future release without touching this screen again.
-  bool get _arAvailableForPlace => widget.place.arSupported && AppConfig.arFeatureEnabled;
-
   @override
   void initState() {
     super.initState();
@@ -87,15 +73,19 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
   Future<void> _recordVisitIfNearby() async {
     final placeId = widget.place.id;
     try {
-      
       if (IntegrityShield().riskScore >= 60) return;
 
       final repository = ref.read(discoveryRepositoryProvider);
-      final userPos = await repository.getCurrentLocation().timeout(const Duration(seconds: 8));
+      final userPos = await repository
+          .getCurrentLocation()
+          .timeout(const Duration(seconds: 8));
       if (userPos == null) return;
 
       final distanceMeters = Geolocator.distanceBetween(
-        userPos.latitude, userPos.longitude, widget.place.lat, widget.place.lng,
+        userPos.latitude,
+        userPos.longitude,
+        widget.place.lat,
+        widget.place.lng,
       );
       if (distanceMeters > _visitProximityMeters) return;
 
@@ -113,9 +103,10 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    
+
     return FutureBuilder<bool>(
-      future: PremiumUnlockService.hasAccess(widget.place.id, arTier: widget.place.arTier),
+      future: PremiumUnlockService.hasAccess(widget.place.id,
+          arTier: widget.place.arTier),
       builder: (context, snapshot) {
         // Fail closed: while hasAccess() is still resolving or errors out,
         // treat the place as locked rather than granting free premium
@@ -130,7 +121,7 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
                 CustomScrollView(
                   physics: const BouncingScrollPhysics(),
                   slivers: [
-    _buildHeroImage(context, l10n),
+                    _buildHeroImage(context, l10n),
                     SliverToBoxAdapter(
                       child: Padding(
                         padding: const EdgeInsets.fromLTRB(20, 24, 20, 0),
@@ -138,54 +129,85 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             // 1. Open / Closed & Structured Opening Hours
-                            _buildOpeningHoursBanner(context, l10n).animate().fadeIn(duration: 500.ms),
+                            _buildOpeningHoursBanner(context, l10n)
+                                .animate()
+                                .fadeIn(duration: 500.ms),
                             const SizedBox(height: 18),
 
                             // 2. Distance & Route-Based Travel Time (Terrain-Weighted)
-                            _buildRouteTravelTimeSection(context, l10n).animate().fadeIn(duration: 550.ms),
+                            _buildRouteTravelTimeSection(context, l10n)
+                                .animate()
+                                .fadeIn(duration: 550.ms),
                             const SizedBox(height: 18),
 
                             // 3. Ticket Price & Admission
-                            _buildTicketAndBudgetCard(context, l10n).animate().fadeIn(duration: 600.ms),
+                            _buildTicketAndBudgetCard(context, l10n)
+                                .animate()
+                                .fadeIn(duration: 600.ms),
                             const SizedBox(height: 18),
 
                             // 4. Safety & Weather Warning
-                            _buildSafetyAndWeatherCard(context, l10n).animate().fadeIn(duration: 650.ms),
+                            _buildSafetyAndWeatherCard(context, l10n)
+                                .animate()
+                                .fadeIn(duration: 650.ms),
                             const SizedBox(height: 18),
 
                             // 5. Toilets, Parking, Mobile Signal & Facilities
-                            _buildEssentialFacilitiesCard(context, l10n).animate().fadeIn(duration: 700.ms),
+                            _buildEssentialFacilitiesCard(context, l10n)
+                                .animate()
+                                .fadeIn(duration: 700.ms),
                             const SizedBox(height: 18),
 
                             // 6. Nearby Essentials (1-Tap Search)
-                            _buildNearbyEssentialsSection(context, l10n).animate().fadeIn(duration: 750.ms),
+                            _buildNearbyEssentialsSection(context, l10n)
+                                .animate()
+                                .fadeIn(duration: 750.ms),
                             const SizedBox(height: 18),
 
                             // 7. Reviews & Ratings
-                            _buildReviewsSection(context, l10n).animate().fadeIn(duration: 800.ms),
+                            _buildReviewsSection(context, l10n)
+                                .animate()
+                                .fadeIn(duration: 800.ms),
                             const SizedBox(height: 22),
 
                             // 8. Description, Curated Story, Media & Interactive AR
-                            _buildStatPillStrip(context, l10n).animate().fadeIn(duration: 600.ms),
+                            _buildStatPillStrip(context, l10n)
+                                .animate()
+                                .fadeIn(duration: 600.ms),
                             const SizedBox(height: 24),
-                            _buildDescription(context, l10n).animate().fadeIn(duration: 600.ms),
+                            _buildDescription(context, l10n)
+                                .animate()
+                                .fadeIn(duration: 600.ms),
                             const SizedBox(height: 24),
-                            _buildPhotoGallery(context, l10n).animate().fadeIn(duration: 600.ms),
+                            _buildPhotoGallery(context, l10n)
+                                .animate()
+                                .fadeIn(duration: 600.ms),
                             const SizedBox(height: 24),
-                            _buildAIReason(context, l10n).animate().fadeIn(delay: 200.ms, duration: 600.ms).slideY(begin: 0.1),
+                            _buildAIReason(context, l10n)
+                                .animate()
+                                .fadeIn(delay: 200.ms, duration: 600.ms)
+                                .slideY(begin: 0.1),
                             const SizedBox(height: 24),
-                            _buildSponsoredExperience().animate().fadeIn(delay: 300.ms, duration: 600.ms),
+                            _buildSponsoredExperience()
+                                .animate()
+                                .fadeIn(delay: 300.ms, duration: 600.ms),
                             const SizedBox(height: 28),
-                            _buildGoodToKnowCard(context, l10n).animate().fadeIn(delay: 400.ms, duration: 600.ms),
+                            _buildGoodToKnowCard(context, l10n)
+                                .animate()
+                                .fadeIn(delay: 400.ms, duration: 600.ms),
                             const SizedBox(height: 28),
                             if (_hasFieldNotes())
-                              _buildFieldNotesCard(context, l10n).animate().fadeIn(delay: 500.ms, duration: 600.ms),
+                              _buildFieldNotesCard(context, l10n)
+                                  .animate()
+                                  .fadeIn(delay: 500.ms, duration: 600.ms),
                             if (_hasFieldNotes()) const SizedBox(height: 24),
-                            _buildEtiquetteSection(context, l10n).animate().fadeIn(delay: 600.ms, duration: 600.ms),
+                            _buildEtiquetteSection(context, l10n)
+                                .animate()
+                                .fadeIn(delay: 600.ms, duration: 600.ms),
                             const SizedBox(height: 20),
-                            _buildAncestralPortalCard(context).animate().fadeIn(delay: 700.ms, duration: 600.ms).shimmer(delay: 2.seconds, duration: 1500.ms),
-                            const SizedBox(height: 24),
-                            _buildNearbyPlacesSection(context, l10n).animate().fadeIn(delay: 800.ms, duration: 600.ms),
+                            _buildNearbyPlacesSection(context, l10n)
+                                .animate()
+                                .fadeIn(delay: 800.ms, duration: 600.ms),
                             const SizedBox(height: 100),
                           ],
                         ),
@@ -224,17 +246,22 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.lock_outline_rounded, color: AppPalette.sigiriyaOchre, size: 64),
+              const Icon(Icons.lock_outline_rounded,
+                  color: AppPalette.sigiriyaOchre, size: 64),
               const SizedBox(height: 24),
               OracleUI.neonText(
                 l10n.heritageSiteLocked,
-                style: GoogleFonts.outfit(fontSize: 22, fontWeight: FontWeight.bold, color: AppPalette.sigiriyaOchre),
+                style: GoogleFonts.outfit(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: AppPalette.sigiriyaOchre),
               ),
               const SizedBox(height: 16),
               Text(
                 l10n.lockOverlayDescription,
                 textAlign: TextAlign.center,
-                style: GoogleFonts.inter(color: AppTheme.textSecondary(context), height: 1.5),
+                style: GoogleFonts.inter(
+                    color: AppTheme.textSecondary(context), height: 1.5),
               ),
               const SizedBox(height: 32),
               SizedBox(
@@ -248,19 +275,27 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
                       },
                     );
                   },
-                  icon: Icon(Icons.play_circle_outline, color: AppTheme.colors.black),
-                  label: Text(l10n.watchAdToUnlock, style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: AppTheme.colors.black)),
+                  icon: Icon(Icons.play_circle_outline,
+                      color: AppTheme.colors.black),
+                  label: Text(l10n.watchAdToUnlock,
+                      style: GoogleFonts.outfit(
+                          fontWeight: FontWeight.bold,
+                          color: AppTheme.colors.black)),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppPalette.sigiriyaOchre,
                     padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12)),
                   ),
                 ),
               ),
               const SizedBox(height: 16),
               TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: Text(l10n.goBack, style: TextStyle(color: AppTheme.textSecondary(context).withValues(alpha: 0.7))),
+                child: Text(l10n.goBack,
+                    style: TextStyle(
+                        color: AppTheme.textSecondary(context)
+                            .withValues(alpha: 0.7))),
               ),
             ],
           ),
@@ -349,7 +384,8 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
                           const SizedBox(width: 8),
                           Text(
                             "·",
-                            style: TextStyle(color: AppTheme.textSecondary(context)),
+                            style: TextStyle(
+                                color: AppTheme.textSecondary(context)),
                           ),
                           const SizedBox(width: 8),
                           Flexible(
@@ -387,11 +423,13 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
               decoration: BoxDecoration(
                 color: AppTheme.errorRed.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: AppTheme.errorRed.withValues(alpha: 0.3)),
+                border:
+                    Border.all(color: AppTheme.errorRed.withValues(alpha: 0.3)),
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.warning_amber_rounded, size: 14, color: AppTheme.errorRed),
+                  const Icon(Icons.warning_amber_rounded,
+                      size: 14, color: AppTheme.errorRed),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
@@ -411,7 +449,8 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
             const SizedBox(height: 8),
             Row(
               children: [
-                const Icon(Icons.brightness_2_outlined, size: 13, color: AppPalette.sigiriyaOchre),
+                const Icon(Icons.brightness_2_outlined,
+                    size: 13, color: AppPalette.sigiriyaOchre),
                 const SizedBox(width: 6),
                 Expanded(
                   child: Text(
@@ -431,7 +470,8 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
     );
   }
 
-  Widget _buildRouteTravelTimeSection(BuildContext context, AppLocalizations l10n) {
+  Widget _buildRouteTravelTimeSection(
+      BuildContext context, AppLocalizations l10n) {
     final result = TravelTimeService.calculate(
       distanceKm: widget.place.distanceKm,
       district: widget.place.district,
@@ -477,7 +517,10 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+                  color: Theme.of(context)
+                      .colorScheme
+                      .primary
+                      .withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(100),
                 ),
                 child: Text(
@@ -545,7 +588,8 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
             const SizedBox(height: 10),
             Row(
               children: [
-                const Icon(Icons.terrain_rounded, size: 14, color: AppPalette.sigiriyaOchre),
+                const Icon(Icons.terrain_rounded,
+                    size: 14, color: AppPalette.sigiriyaOchre),
                 const SizedBox(width: 6),
                 Expanded(
                   child: Text(
@@ -572,13 +616,15 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
               icon: const Icon(Icons.turn_right_rounded, size: 18),
               label: Text(
                 "Open Turn-by-Turn Navigation",
-                style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w700),
+                style: GoogleFonts.inter(
+                    fontSize: 13, fontWeight: FontWeight.w700),
               ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Theme.of(context).colorScheme.primary,
                 foregroundColor: Theme.of(context).colorScheme.onPrimary,
                 padding: const EdgeInsets.symmetric(vertical: 12),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
               ),
             ),
           ),
@@ -622,7 +668,8 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
     );
   }
 
-  Widget _buildTicketAndBudgetCard(BuildContext context, AppLocalizations l10n) {
+  Widget _buildTicketAndBudgetCard(
+      BuildContext context, AppLocalizations l10n) {
     final ticket = widget.place.ticketRange.trim();
     final budget = widget.place.budgetCategory.trim();
     final guide = widget.place.guideRequired.trim();
@@ -674,9 +721,11 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
                     ),
                     if (hasBudget)
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 2),
                         decoration: BoxDecoration(
-                          color: AppPalette.sigiriyaOchre.withValues(alpha: 0.12),
+                          color:
+                              AppPalette.sigiriyaOchre.withValues(alpha: 0.12),
                           borderRadius: BorderRadius.circular(100),
                         ),
                         child: Text(
@@ -703,7 +752,8 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
                   const SizedBox(height: 4),
                   Row(
                     children: [
-                      const Icon(Icons.person_pin_circle_outlined, size: 13, color: AppPalette.rust),
+                      const Icon(Icons.person_pin_circle_outlined,
+                          size: 13, color: AppPalette.rust),
                       const SizedBox(width: 5),
                       Text(
                         "Guide: $guide",
@@ -724,7 +774,8 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
     );
   }
 
-  Widget _buildSafetyAndWeatherCard(BuildContext context, AppLocalizations l10n) {
+  Widget _buildSafetyAndWeatherCard(
+      BuildContext context, AppLocalizations l10n) {
     final safety = widget.place.safetyLevel.trim();
     final wildlife = widget.place.wildlifeHazard.trim();
     final rain = widget.place.rainSensitivity.trim();
@@ -785,7 +836,8 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
               const Spacer(),
               if (safety.isNotEmpty)
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                   decoration: BoxDecoration(
                     color: cardColor.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(100),
@@ -806,7 +858,8 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Icon(Icons.pets_rounded, size: 14, color: AppPalette.rust),
+                const Icon(Icons.pets_rounded,
+                    size: 14, color: AppPalette.rust),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
@@ -826,7 +879,8 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Icon(Icons.cloud_outlined, size: 14, color: Colors.lightBlue),
+                const Icon(Icons.cloud_outlined,
+                    size: 14, color: Colors.lightBlue),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
@@ -847,11 +901,13 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
               runSpacing: 6,
               children: riskTags.map((tag) {
                 return Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
                   decoration: BoxDecoration(
                     color: cardColor.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: cardColor.withValues(alpha: 0.25)),
+                    border:
+                        Border.all(color: cardColor.withValues(alpha: 0.25)),
                   ),
                   child: Text(
                     tag,
@@ -872,14 +928,16 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
               decoration: BoxDecoration(
                 color: hazard.badgeColor.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: hazard.badgeColor.withValues(alpha: 0.4)),
+                border:
+                    Border.all(color: hazard.badgeColor.withValues(alpha: 0.4)),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     children: [
-                      Icon(Icons.warning_rounded, size: 16, color: hazard.badgeColor),
+                      Icon(Icons.warning_rounded,
+                          size: 16, color: hazard.badgeColor),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
@@ -918,7 +976,8 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
     );
   }
 
-  Widget _buildEssentialFacilitiesCard(BuildContext context, AppLocalizations l10n) {
+  Widget _buildEssentialFacilitiesCard(
+      BuildContext context, AppLocalizations l10n) {
     final toilets = widget.place.toilets.trim();
     final parking = widget.place.parkingRange.trim();
     final signal = widget.place.mobileSignal.trim();
@@ -962,21 +1021,28 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
                 icon: Icons.wc_rounded,
                 label: "Toilets",
                 value: toilets.isNotEmpty ? toilets : "Not reported",
-                isPositive: toilets.isEmpty ? null : !toilets.toLowerCase().contains("no"),
+                isPositive: toilets.isEmpty
+                    ? null
+                    : !toilets.toLowerCase().contains("no"),
               ),
               _facilityBadge(
                 context,
                 icon: Icons.local_parking_rounded,
                 label: "Parking",
                 value: parking.isNotEmpty ? parking : "Not reported",
-                isPositive: parking.isEmpty ? null : !parking.toLowerCase().contains("no"),
+                isPositive: parking.isEmpty
+                    ? null
+                    : !parking.toLowerCase().contains("no"),
               ),
               _facilityBadge(
                 context,
                 icon: Icons.signal_cellular_alt_rounded,
                 label: "Mobile Signal",
                 value: signal.isNotEmpty ? signal : "Not reported",
-                isPositive: signal.isEmpty ? null : !signal.toLowerCase().contains("no") && !signal.toLowerCase().contains("poor"),
+                isPositive: signal.isEmpty
+                    ? null
+                    : !signal.toLowerCase().contains("no") &&
+                        !signal.toLowerCase().contains("poor"),
               ),
               if (food.isNotEmpty)
                 _facilityBadge(
@@ -992,7 +1058,8 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
                   icon: Icons.accessible_rounded,
                   label: "Wheelchair",
                   value: wheelchair,
-                  isPositive: wheelchair.toLowerCase().contains("yes") || wheelchair.toLowerCase().contains("full"),
+                  isPositive: wheelchair.toLowerCase().contains("yes") ||
+                      wheelchair.toLowerCase().contains("full"),
                 ),
             ],
           ),
@@ -1056,7 +1123,8 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
   }
 
   Widget _buildLocalDrinkPrompt(BuildContext context, AppLocalizations l10n) {
-    final localDrink = HealthSafetyService.instance.getRecommendationForLocation(
+    final localDrink =
+        HealthSafetyService.instance.getRecommendationForLocation(
       district: widget.place.district,
       title: widget.place.name,
       category: widget.place.category,
@@ -1075,7 +1143,8 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
         decoration: BoxDecoration(
           color: localDrink.themeColor.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: localDrink.themeColor.withValues(alpha: 0.3)),
+          border:
+              Border.all(color: localDrink.themeColor.withValues(alpha: 0.3)),
         ),
         child: Row(
           children: [
@@ -1097,7 +1166,8 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
                       ),
                       const SizedBox(width: 6),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 6, vertical: 2),
                         decoration: BoxDecoration(
                           color: localDrink.themeColor.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(6),
@@ -1127,14 +1197,16 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
                 ],
               ),
             ),
-            Icon(Icons.arrow_forward_ios_rounded, size: 14, color: localDrink.themeColor),
+            Icon(Icons.arrow_forward_ios_rounded,
+                size: 14, color: localDrink.themeColor),
           ],
         ),
       ),
     );
   }
 
-  void _showWaterAndHydrationSheet(BuildContext context, AppLocalizations l10n) {
+  void _showWaterAndHydrationSheet(
+      BuildContext context, AppLocalizations l10n) {
     final drinks = HealthSafetyService.instance.getAllLocalDrinks();
     final rules = HealthSafetyService.essentialWaterSafetyRules;
 
@@ -1161,7 +1233,8 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
                   height: 4,
                   margin: const EdgeInsets.only(bottom: 16),
                   decoration: BoxDecoration(
-                    color: AppTheme.textSecondary(context).withValues(alpha: 0.3),
+                    color:
+                        AppTheme.textSecondary(context).withValues(alpha: 0.3),
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
@@ -1202,18 +1275,21 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
                     decoration: BoxDecoration(
                       color: drink.themeColor.withValues(alpha: 0.08),
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: drink.themeColor.withValues(alpha: 0.25)),
+                      border: Border.all(
+                          color: drink.themeColor.withValues(alpha: 0.25)),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Row(
                           children: [
-                            Text(drink.emoji, style: const TextStyle(fontSize: 20)),
+                            Text(drink.emoji,
+                                style: const TextStyle(fontSize: 20)),
                             const SizedBox(width: 8),
                             Expanded(
                               child: Text(
-                                HealthSafetyLocalization.drinkTitle(l10n, drink.id),
+                                HealthSafetyLocalization.drinkTitle(
+                                    l10n, drink.id),
                                 style: GoogleFonts.outfit(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w700,
@@ -1222,13 +1298,15 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
                               ),
                             ),
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 3),
                               decoration: BoxDecoration(
                                 color: drink.themeColor.withValues(alpha: 0.18),
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Text(
-                                HealthSafetyLocalization.drinkPrice(l10n, drink.id),
+                                HealthSafetyLocalization.drinkPrice(
+                                    l10n, drink.id),
                                 style: GoogleFonts.inter(
                                   fontSize: 11,
                                   fontWeight: FontWeight.w700,
@@ -1268,7 +1346,8 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
                     decoration: BoxDecoration(
                       color: AppTheme.surfaceMuted(context),
                       borderRadius: BorderRadius.circular(14),
-                      border: Border.all(color: AppTheme.primaryBorder(context)),
+                      border:
+                          Border.all(color: AppTheme.primaryBorder(context)),
                     ),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -1290,7 +1369,8 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                HealthSafetyLocalization.ruleText(l10n, rule.id),
+                                HealthSafetyLocalization.ruleText(
+                                    l10n, rule.id),
                                 style: GoogleFonts.outfit(
                                   fontSize: 13,
                                   fontWeight: FontWeight.w700,
@@ -1316,13 +1396,15 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
                   icon: const Icon(Icons.storefront_rounded, size: 18),
                   label: Text(
                     l10n.findSafeWaterAction,
-                    style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w700),
+                    style: GoogleFonts.inter(
+                        fontSize: 13, fontWeight: FontWeight.w700),
                   ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Theme.of(context).colorScheme.primary,
                     foregroundColor: Theme.of(context).colorScheme.onPrimary,
                     padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14)),
                   ),
                 ),
               ),
@@ -1347,19 +1429,32 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(l10n?.foodSafetyTipsTitle ?? 'Food safety tips', style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.w800, color: AppTheme.textPrimary(context))),
+          Text(l10n?.foodSafetyTipsTitle ?? 'Food safety tips',
+              style: GoogleFonts.outfit(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w800,
+                  color: AppTheme.textPrimary(context))),
           const SizedBox(height: 8),
           ...tips.map((tip) => Padding(
                 padding: const EdgeInsets.only(bottom: 6),
-                child: Text('• $tip', style: GoogleFonts.inter(fontSize: 11.5, height: 1.3, color: AppTheme.textSecondary(context))),
+                child: Text('• $tip',
+                    style: GoogleFonts.inter(
+                        fontSize: 11.5,
+                        height: 1.3,
+                        color: AppTheme.textSecondary(context))),
               )),
-          Text(l10n?.foodSafetyDisclaimer ?? 'General guidance only; seek professional care for persistent or severe symptoms.', style: GoogleFonts.inter(fontSize: 10, color: AppTheme.textSecondary(context))),
+          Text(
+              l10n?.foodSafetyDisclaimer ??
+                  'General guidance only; seek professional care for persistent or severe symptoms.',
+              style: GoogleFonts.inter(
+                  fontSize: 10, color: AppTheme.textSecondary(context))),
         ],
       ),
     );
   }
 
-  Widget _buildNearbyEssentialsSection(BuildContext context, AppLocalizations l10n) {
+  Widget _buildNearbyEssentialsSection(
+      BuildContext context, AppLocalizations l10n) {
     final essentials = [
       (Icons.local_hospital_rounded, "Hospital", "රෝහල්", "hospital"),
       (Icons.local_police_rounded, "Police", "පොලිසිය", "police station"),
@@ -1367,7 +1462,12 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
       (Icons.atm_rounded, "ATM", "ATM", "atm"),
       (Icons.restaurant_rounded, "Food", "ආපනශාලා", "restaurant"),
       (Icons.wc_rounded, "Toilets", "වැසිකිළි", "public toilet"),
-      (Icons.directions_bus_rounded, "Transport", "ප්‍රවාහන", "bus stand train station"),
+      (
+        Icons.directions_bus_rounded,
+        "Transport",
+        "ප්‍රවාහන",
+        "bus stand train station"
+      ),
     ];
 
     return Column(
@@ -1423,15 +1523,19 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
                       );
                     },
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 14, vertical: 10),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(14),
-                        border: Border.all(color: AppTheme.primaryBorder(context)),
+                        border:
+                            Border.all(color: AppTheme.primaryBorder(context)),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(item.$1, size: 16, color: Theme.of(context).colorScheme.primary),
+                          Icon(item.$1,
+                              size: 16,
+                              color: Theme.of(context).colorScheme.primary),
                           const SizedBox(width: 8),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -1526,7 +1630,8 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.verified_rounded, size: 12, color: AppTheme.colors.green),
+                    Icon(Icons.verified_rounded,
+                        size: 12, color: AppTheme.colors.green),
                     const SizedBox(width: 4),
                     Text(
                       "Community Verified",
@@ -1625,7 +1730,7 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
 
   Widget _buildEtiquetteSection(BuildContext context, AppLocalizations l10n) {
     final cat = widget.place.category.toLowerCase();
-    
+
     String title = l10n.sustainableEthos;
     IconData icon = Icons.eco_outlined;
     List<String> tips = [
@@ -1634,7 +1739,9 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
       l10n.etiquetteTipRespectWildlife,
     ];
 
-    if (cat.contains("temple") || cat.contains("culture") || cat.contains("historical")) {
+    if (cat.contains("temple") ||
+        cat.contains("culture") ||
+        cat.contains("historical")) {
       title = l10n.culturalEtiquette;
       icon = Icons.temple_buddhist_outlined;
       tips = [
@@ -1643,7 +1750,9 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
         l10n.etiquetteTipAskPhotoPermission,
         l10n.etiquetteTipNoBackToStatues,
       ];
-    } else if (cat.contains("nature") || cat.contains("waterfall") || cat.contains("hiking")) {
+    } else if (cat.contains("nature") ||
+        cat.contains("waterfall") ||
+        cat.contains("hiking")) {
       title = l10n.ecoResponsibleTravel;
       icon = Icons.nature_people_outlined;
       tips = [
@@ -1666,22 +1775,30 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
         children: [
           Row(
             children: [
-              Icon(icon, color: Theme.of(context).colorScheme.primary, size: 18),
+              Icon(icon,
+                  color: Theme.of(context).colorScheme.primary, size: 18),
               const SizedBox(width: 10),
               Text(
                 title,
-                style: GoogleFonts.outfit(fontSize: 12.5, fontWeight: FontWeight.w700, color: AppTheme.textPrimary(context), letterSpacing: 0.3),
+                style: GoogleFonts.outfit(
+                    fontSize: 12.5,
+                    fontWeight: FontWeight.w700,
+                    color: AppTheme.textPrimary(context),
+                    letterSpacing: 0.3),
               ),
             ],
           ),
           const SizedBox(height: 14),
           ...tips.map((tip) => Padding(
-            padding: const EdgeInsets.only(bottom: 10),
-            child: Text(
-              "·  $tip",
-              style: GoogleFonts.inter(color: AppTheme.textPrimary(context).withValues(alpha: 0.75), fontSize: 12.5),
-            ),
-          )),
+                padding: const EdgeInsets.only(bottom: 10),
+                child: Text(
+                  "·  $tip",
+                  style: GoogleFonts.inter(
+                      color:
+                          AppTheme.textPrimary(context).withValues(alpha: 0.75),
+                      fontSize: 12.5),
+                ),
+              )),
         ],
       ),
     );
@@ -1696,7 +1813,10 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
       elevation: 0,
       automaticallyImplyLeading: false,
       flexibleSpace: FlexibleSpaceBar(
-        stretchModes: const [StretchMode.zoomBackground, StretchMode.blurBackground],
+        stretchModes: const [
+          StretchMode.zoomBackground,
+          StretchMode.blurBackground
+        ],
         background: Stack(
           fit: StackFit.expand,
           children: [
@@ -1727,7 +1847,9 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
                   end: Alignment.bottomCenter,
                   colors: [
                     AppTheme.colors.transparent,
-                    Theme.of(context).scaffoldBackgroundColor.withValues(alpha: 0.85),
+                    Theme.of(context)
+                        .scaffoldBackgroundColor
+                        .withValues(alpha: 0.85),
                     Theme.of(context).scaffoldBackgroundColor,
                   ],
                   stops: const [0.42, 0.92, 1],
@@ -1755,7 +1877,9 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
                     icon: Icons.audiotrack_outlined,
                     onTap: () => Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => AudioGuideScreen(place: widget.place)),
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              AudioGuideScreen(place: widget.place)),
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -1764,19 +1888,14 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
                     icon: Icons.wallet_membership_outlined,
                     onTap: () => Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const HeritagePassportScreen()),
+                      MaterialPageRoute(
+                          builder: (context) => const HeritagePassportScreen()),
                     ),
                   ),
                 ],
               ),
             ),
-            if (_arAvailableForPlace)
-              Positioned(
-                top: 104,
-                right: 16,
-                child: _buildARTierBadge(context, widget.place.arTier),
-              )
-            else if (widget.place.category.isNotEmpty)
+            if (widget.place.category.isNotEmpty)
               Positioned(
                 top: 104,
                 right: 16,
@@ -1795,7 +1914,8 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
     );
   }
 
-  Widget _heroIconButton(BuildContext context, {required IconData icon, required VoidCallback onTap}) {
+  Widget _heroIconButton(BuildContext context,
+      {required IconData icon, required VoidCallback onTap}) {
     return ClipOval(
       child: Material(
         color: AppTheme.colors.black.withValues(alpha: 0.28),
@@ -1822,11 +1942,17 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(Icons.account_balance_outlined, color: Colors.white, size: 13),
+          const Icon(Icons.account_balance_outlined,
+              color: Colors.white, size: 13),
           const SizedBox(width: 7),
           Text(
-            L10nUtils.getLocalizedCategory(context, widget.place.category).toUpperCase(),
-            style: GoogleFonts.outfit(fontSize: 10, fontWeight: FontWeight.w700, color: AppTheme.colors.white, letterSpacing: 1.5),
+            L10nUtils.getLocalizedCategory(context, widget.place.category)
+                .toUpperCase(),
+            style: GoogleFonts.outfit(
+                fontSize: 10,
+                fontWeight: FontWeight.w700,
+                color: AppTheme.colors.white,
+                letterSpacing: 1.5),
           ),
         ],
       ),
@@ -1853,19 +1979,25 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.account_balance_outlined, color: AppTheme.colors.white, size: 13),
+          Icon(Icons.account_balance_outlined,
+              color: AppTheme.colors.white, size: 13),
           const SizedBox(width: 7),
           Text(
             label.toUpperCase(),
-            style: GoogleFonts.outfit(fontSize: 10, fontWeight: FontWeight.w700, color: AppTheme.colors.white, letterSpacing: 1.5),
+            style: GoogleFonts.outfit(
+                fontSize: 10,
+                fontWeight: FontWeight.w700,
+                color: AppTheme.colors.white,
+                letterSpacing: 1.5),
           ),
         ],
       ),
     ).animate(onPlay: (c) => c.repeat()).shimmer(
-      duration: 3.seconds,
-      color: AppTheme.colors.white.withValues(alpha: 0.15),
-    );
+          duration: 3.seconds,
+          color: AppTheme.colors.white.withValues(alpha: 0.15),
+        );
   }
+
   Widget _buildHeaderInfo(BuildContext context, AppLocalizations l10n) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.end,
@@ -1877,26 +2009,33 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
               Text(
                 widget.place.name,
                 style: GoogleFonts.outfit(
-                  fontSize: 27,
-                  fontWeight: FontWeight.w800,
-                  color: Theme.of(context).colorScheme.onSurface,
-                  height: 1.08,
-                  letterSpacing: -0.4
-                ).copyWith(
-                  fontFamilyFallback: [GoogleFonts.abhayaLibre().fontFamily!, GoogleFonts.hindGuntur().fontFamily!],
+                        fontSize: 27,
+                        fontWeight: FontWeight.w800,
+                        color: Theme.of(context).colorScheme.onSurface,
+                        height: 1.08,
+                        letterSpacing: -0.4)
+                    .copyWith(
+                  fontFamilyFallback: [
+                    GoogleFonts.abhayaLibre().fontFamily!,
+                    GoogleFonts.hindGuntur().fontFamily!
+                  ],
                 ),
               ),
               SizedBox(height: 8),
               Row(
                 children: [
-                  Icon(Icons.location_on_rounded, color: Theme.of(context).colorScheme.primary, size: 13),
+                  Icon(Icons.location_on_rounded,
+                      color: Theme.of(context).colorScheme.primary, size: 13),
                   SizedBox(width: 6),
                   Flexible(
                     child: Text(
                       widget.place.distanceKm > 0
                           ? "${widget.place.district} · ${widget.place.distanceKm.toStringAsFixed(1)} km"
                           : widget.place.district,
-                      style: GoogleFonts.inter(fontSize: 11.5, color: AppTheme.textSecondary(context), fontWeight: FontWeight.w600),
+                      style: GoogleFonts.inter(
+                          fontSize: 11.5,
+                          color: AppTheme.textSecondary(context),
+                          fontWeight: FontWeight.w600),
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
@@ -1928,16 +2067,21 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
         child: InkWell(
           onTap: () async {
             HapticFeedback.mediumImpact();
-            final nowBookmarked = await UserPreferenceService.toggleBookmark(widget.place.id);
+            final nowBookmarked =
+                await UserPreferenceService.toggleBookmark(widget.place.id);
             if (!context.mounted) return;
             setState(() => _isBookmarked = nowBookmarked);
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: Text(nowBookmarked ? l10n.bookmarkAddedSnackbar : l10n.bookmarkRemovedSnackbar),
+              content: Text(nowBookmarked
+                  ? l10n.bookmarkAddedSnackbar
+                  : l10n.bookmarkRemovedSnackbar),
               backgroundColor: AppTheme.accentOchre(context),
             ));
           },
           child: Icon(
-            _isBookmarked ? Icons.bookmark_rounded : Icons.bookmark_border_rounded,
+            _isBookmarked
+                ? Icons.bookmark_rounded
+                : Icons.bookmark_border_rounded,
             color: Theme.of(context).colorScheme.primary,
             size: 18,
           ),
@@ -1994,12 +2138,14 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
     );
   }
 
-  void _openGalleryViewer(BuildContext context, List<PlaceImageModel> images, int initialIndex) {
+  void _openGalleryViewer(
+      BuildContext context, List<PlaceImageModel> images, int initialIndex) {
     HapticFeedback.selectionClick();
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => _FullscreenGalleryViewer(images: images, initialIndex: initialIndex),
+        builder: (_) => _FullscreenGalleryViewer(
+            images: images, initialIndex: initialIndex),
         fullscreenDialog: true,
       ),
     );
@@ -2027,7 +2173,8 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
         Text(
           widget.place.description,
           style: GoogleFonts.inter(
-            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.9),
+            color:
+                Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.9),
             height: 1.7,
             fontSize: 15,
             fontWeight: FontWeight.w400,
@@ -2056,92 +2203,80 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
           const SizedBox(width: 16),
           Expanded(
             child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                l10n.oracleVision,
-                style: GoogleFonts.inter(
-                  fontWeight: FontWeight.w700,
-                  color: Theme.of(context).colorScheme.primary,
-                  fontSize: 11,
-                  letterSpacing: 0.5
-                )
-              ),
-              if (canTranslate)
-                GestureDetector(
-                  onTap: _isTranslating ? null : _translateDescription,
-                  child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.05),
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2)),
-                    ),
-                    child: _isTranslating 
-                      ? SizedBox(width: 12, height: 12, child: CircularProgressIndicator(strokeWidth: 1.5, color: Theme.of(context).colorScheme.primary))
-                      : Text(
-                          l10n.tapToTranslate,
-                          style: GoogleFonts.inter(fontSize: 9, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.primary),
-                        ),
-                  ),
-                ),
-            ],
-          ),
-          SizedBox(height: 16),
-          Text(
-            _translatedAiReason ?? widget.place.aiReason, 
-            style: GoogleFonts.inter(
-              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.9), 
-              height: 1.7, 
-              fontSize: 15,
-              fontWeight: FontWeight.w400,
-            ).copyWith(
-              fontFamilyFallback: [GoogleFonts.abhayaLibre().fontFamily!, GoogleFonts.hindGuntur().fontFamily!],
-            )
-          ),
-          if (_arAvailableForPlace) ...[
-              SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.secondary.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Theme.of(context).colorScheme.secondary.withValues(alpha: 0.3)),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.auto_awesome, color: Theme.of(context).colorScheme.secondary, size: 14),
-                        SizedBox(width: 10),
-                        Text(
-                          l10n.aerDimensionReady,
-                          style: GoogleFonts.outfit(
-                            color: Theme.of(context).colorScheme.secondary,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 10,
-                            letterSpacing: 2,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(l10n.oracleVision,
+                        style: GoogleFonts.inter(
+                            fontWeight: FontWeight.w700,
+                            color: Theme.of(context).colorScheme.primary,
+                            fontSize: 11,
+                            letterSpacing: 0.5)),
+                    if (canTranslate)
+                      GestureDetector(
+                        onTap: _isTranslating ? null : _translateDescription,
+                        child: Container(
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context)
+                                .colorScheme
+                                .primary
+                                .withValues(alpha: 0.05),
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .primary
+                                    .withValues(alpha: 0.2)),
                           ),
+                          child: _isTranslating
+                              ? SizedBox(
+                                  width: 12,
+                                  height: 12,
+                                  child: CircularProgressIndicator(
+                                      strokeWidth: 1.5,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .primary))
+                              : Text(
+                                  l10n.tapToTranslate,
+                                  style: GoogleFonts.inter(
+                                      fontSize: 9,
+                                      fontWeight: FontWeight.bold,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .primary),
+                                ),
                         ),
+                      ),
+                  ],
+                ),
+                SizedBox(height: 16),
+                Text(_translatedAiReason ?? widget.place.aiReason,
+                    style: GoogleFonts.inter(
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onSurface
+                          .withValues(alpha: 0.9),
+                      height: 1.7,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w400,
+                    ).copyWith(
+                      fontFamilyFallback: [
+                        GoogleFonts.abhayaLibre().fontFamily!,
+                        GoogleFonts.hindGuntur().fontFamily!
                       ],
-                    ),
-                  ),
-                  _buildDownloadButton(context),
-                ],
-              ),
-            ],
-          ],
-              ),
+                    )),
+              ],
             ),
-          ],
-        ),
-      );
-    }
+          ),
+        ],
+      ),
+    );
+  }
 
   Widget _buildSponsoredExperience() {
     return const NativeAdWidget();
@@ -2150,7 +2285,8 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
   Future<void> _translateDescription() async {
     setState(() => _isTranslating = true);
     try {
-      final translated = await TranslationService.translate(widget.place.aiReason, 'si');
+      final translated =
+          await TranslationService.translate(widget.place.aiReason, 'si');
       if (mounted) {
         setState(() {
           _translatedAiReason = translated;
@@ -2161,7 +2297,7 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
       if (mounted) setState(() => _isTranslating = false);
     }
   }
-  
+
   Widget _buildDownloadButton(BuildContext context) {
     return _DownloadButton(place: widget.place);
   }
@@ -2180,21 +2316,17 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
         onTap: () => _openDirections(context, l10n),
       ),
       if (widget.place.bestTime.isNotEmpty)
-        _statPill(context, Icons.schedule_rounded, l10n.bestAtLabel(widget.place.bestTime)),
+        _statPill(context, Icons.schedule_rounded,
+            l10n.bestAtLabel(widget.place.bestTime)),
       if (widget.place.ticketRange.isNotEmpty)
-        _statPill(context, Icons.confirmation_number_outlined, widget.place.ticketRange),
+        _statPill(context, Icons.confirmation_number_outlined,
+            widget.place.ticketRange),
       // openingHours is captured by the admin form (Travel Insights tab) and
       // parsed by DiscoveryPlace, but had no widget displaying it anywhere
       // on this screen — a visitor could never see when a place is open.
       if (widget.place.openingHours.isNotEmpty)
-        _statPill(context, Icons.access_time_rounded, widget.place.openingHours),
-      if (_arAvailableForPlace)
         _statPill(
-          context,
-          Icons.view_in_ar_outlined,
-          l10n.arHeritageReady,
-          accent: AppTheme.sigiriyaOchre(context),
-        ),
+            context, Icons.access_time_rounded, widget.place.openingHours),
     ];
 
     if (pills.isEmpty) return const SizedBox.shrink();
@@ -2223,7 +2355,9 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
 
   String _estimateTimeLabel(double distanceKm, double speedKmh) {
     final minutes = (distanceKm / speedKmh * 60).round();
-    return minutes < 60 ? '$minutes min' : '${(minutes / 60).floor()}h ${minutes % 60}m';
+    return minutes < 60
+        ? '$minutes min'
+        : '${(minutes / 60).floor()}h ${minutes % 60}m';
   }
 
   String _directionsPillLabel(AppLocalizations l10n) {
@@ -2232,7 +2366,8 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
     return '${distanceKm.toStringAsFixed(1)} km · ~${_estimateTimeLabel(distanceKm, _bikeSpeedKmh)}';
   }
 
-  Future<void> _openDirections(BuildContext context, AppLocalizations l10n) async {
+  Future<void> _openDirections(
+      BuildContext context, AppLocalizations l10n) async {
     HapticFeedback.selectionClick();
     if (widget.place.distanceKm <= 0) {
       await _launchMaps();
@@ -2265,7 +2400,8 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
     // or any other) — falls back to a Google Maps web URL if no app
     // claims the geo: scheme (e.g. some emulators, or GPS disabled).
     final geoUri = Uri.parse('geo:$lat,$lng?q=$lat,$lng($label)');
-    final webUri = Uri.parse('https://www.google.com/maps/search/?api=1&query=$lat,$lng');
+    final webUri =
+        Uri.parse('https://www.google.com/maps/search/?api=1&query=$lat,$lng');
 
     final launched = await canLaunchUrl(geoUri) && await launchUrl(geoUri);
     if (!launched && await canLaunchUrl(webUri)) {
@@ -2275,16 +2411,20 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
     if (!launched) {
       if (!mounted) return;
       final l10n = AppLocalizations.of(context)!;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.couldNotOpenMaps)));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(l10n.couldNotOpenMaps)));
     }
   }
 
-  Widget _statPill(BuildContext context, IconData icon, String label, {Color? accent, VoidCallback? onTap}) {
+  Widget _statPill(BuildContext context, IconData icon, String label,
+      {Color? accent, VoidCallback? onTap}) {
     final color = accent ?? AppTheme.textPrimary(context);
     final pill = Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
       decoration: BoxDecoration(
-        color: accent != null ? accent.withValues(alpha: 0.15) : AppTheme.surfaceMuted(context),
+        color: accent != null
+            ? accent.withValues(alpha: 0.15)
+            : AppTheme.surfaceMuted(context),
         borderRadius: BorderRadius.circular(100),
       ),
       child: Row(
@@ -2294,7 +2434,8 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
           const SizedBox(width: 8),
           Text(
             label,
-            style: GoogleFonts.inter(fontSize: 11.5, fontWeight: FontWeight.w700, color: color),
+            style: GoogleFonts.inter(
+                fontSize: 11.5, fontWeight: FontWeight.w700, color: color),
           ),
         ],
       ),
@@ -2303,7 +2444,8 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
     return Material(
       color: AppTheme.colors.transparent,
       borderRadius: BorderRadius.circular(100),
-      child: InkWell(borderRadius: BorderRadius.circular(100), onTap: onTap, child: pill),
+      child: InkWell(
+          borderRadius: BorderRadius.circular(100), onTap: onTap, child: pill),
     );
   }
 
@@ -2313,7 +2455,10 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
       children: [
         Text(
           l10n.goodToKnow,
-          style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.w700, color: AppTheme.textPrimary(context)),
+          style: GoogleFonts.outfit(
+              fontSize: 14,
+              fontWeight: FontWeight.w700,
+              color: AppTheme.textPrimary(context)),
         ),
         const SizedBox(height: 14),
         Container(
@@ -2323,9 +2468,27 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
           ),
           child: Column(
             children: [
-              _goodToKnowRow(context, Icons.info_outline, l10n.theKnowledge, Theme.of(context).colorScheme.primary, _buildDetailsChips(context, l10n), showDivider: true),
-              _goodToKnowRow(context, Icons.warning_amber_rounded, l10n.safetyProtocols, AppTheme.errorRed, _buildRiskTags(context), showDivider: true),
-              _goodToKnowRow(context, Icons.local_cafe_outlined, l10n.provisions, AppTheme.colors.teal.shade700, _buildFacilities(context), showDivider: false),
+              _goodToKnowRow(
+                  context,
+                  Icons.info_outline,
+                  l10n.theKnowledge,
+                  Theme.of(context).colorScheme.primary,
+                  _buildDetailsChips(context, l10n),
+                  showDivider: true),
+              _goodToKnowRow(
+                  context,
+                  Icons.warning_amber_rounded,
+                  l10n.safetyProtocols,
+                  AppTheme.errorRed,
+                  _buildRiskTags(context),
+                  showDivider: true),
+              _goodToKnowRow(
+                  context,
+                  Icons.local_cafe_outlined,
+                  l10n.provisions,
+                  AppTheme.colors.teal.shade700,
+                  _buildFacilities(context),
+                  showDivider: false),
             ],
           ),
         ),
@@ -2333,12 +2496,16 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
     );
   }
 
-  Widget _goodToKnowRow(BuildContext context, IconData icon, String title, Color iconColor, Widget content, {required bool showDivider}) {
+  Widget _goodToKnowRow(BuildContext context, IconData icon, String title,
+      Color iconColor, Widget content,
+      {required bool showDivider}) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: showDivider
-          ? BoxDecoration(border: Border(bottom: BorderSide(color: AppTheme.primaryBorder(context))))
+          ? BoxDecoration(
+              border: Border(
+                  bottom: BorderSide(color: AppTheme.primaryBorder(context))))
           : null,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -2349,7 +2516,10 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
               const SizedBox(width: 14),
               Text(
                 title,
-                style: GoogleFonts.outfit(fontSize: 12.5, fontWeight: FontWeight.w700, color: AppTheme.textPrimary(context)),
+                style: GoogleFonts.outfit(
+                    fontSize: 12.5,
+                    fontWeight: FontWeight.w700,
+                    color: AppTheme.textPrimary(context)),
               ),
             ],
           ),
@@ -2381,7 +2551,10 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
           children: [
             Text(
               l10n.fieldNotesTitle,
-              style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.w700, color: AppTheme.textPrimary(context)),
+              style: GoogleFonts.outfit(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                  color: AppTheme.textPrimary(context)),
             ),
             const SizedBox(width: 8),
             Container(
@@ -2392,7 +2565,10 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
               ),
               child: Text(
                 "${entries.length}",
-                style: GoogleFonts.inter(fontSize: 10.5, fontWeight: FontWeight.w700, color: AppTheme.sigiriyaOchre(context)),
+                style: GoogleFonts.inter(
+                    fontSize: 10.5,
+                    fontWeight: FontWeight.w700,
+                    color: AppTheme.sigiriyaOchre(context)),
               ),
             ),
           ],
@@ -2409,7 +2585,8 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
               mainAxisSpacing: 12,
               childAspectRatio: 1.15,
             ),
-            itemBuilder: (context, i) => _fieldNoteTile(context, compact[i].$1, compact[i].$2, compact[i].$3),
+            itemBuilder: (context, i) => _fieldNoteTile(
+                context, compact[i].$1, compact[i].$2, compact[i].$3),
           ),
         if (compact.isNotEmpty && prose.isNotEmpty) const SizedBox(height: 12),
         for (var i = 0; i < prose.length; i++) ...[
@@ -2420,31 +2597,85 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
     );
   }
 
-  List<(IconData, String, String, bool)> _fieldNoteEntries(BuildContext context, AppLocalizations l10n) {
+  List<(IconData, String, String, bool)> _fieldNoteEntries(
+      BuildContext context, AppLocalizations l10n) {
     final p = widget.place;
     return <(IconData, String, String, bool)>[
-      (Icons.signal_cellular_alt_rounded, l10n.fieldNoteMobileSignal, p.mobileSignal, false),
-      (Icons.route_outlined, l10n.fieldNoteRoadCondition, p.roadCondition, false),
+      (
+        Icons.signal_cellular_alt_rounded,
+        l10n.fieldNoteMobileSignal,
+        p.mobileSignal,
+        false
+      ),
+      (
+        Icons.route_outlined,
+        l10n.fieldNoteRoadCondition,
+        p.roadCondition,
+        false
+      ),
       (Icons.hiking_rounded, l10n.fieldNoteActivities, p.activities, true),
-      (Icons.trending_up_rounded, l10n.fieldNotePopularity, p.touristPopularity, false),
-      (Icons.family_restroom_rounded, l10n.fieldNoteFamilyFriendly, p.familyFriendly, false),
+      (
+        Icons.trending_up_rounded,
+        l10n.fieldNotePopularity,
+        p.touristPopularity,
+        false
+      ),
+      (
+        Icons.family_restroom_rounded,
+        l10n.fieldNoteFamilyFriendly,
+        p.familyFriendly,
+        false
+      ),
       (Icons.savings_outlined, l10n.fieldNoteBudget, p.budgetCategory, false),
       (Icons.wc_rounded, l10n.fieldNoteToilets, p.toilets, false),
-      (Icons.restaurant_outlined, l10n.fieldNoteFoodNearby, p.foodNearby, false),
-      (Icons.accessible_rounded, l10n.fieldNoteWheelchairAccess, p.wheelchairAccess, false),
+      (
+        Icons.restaurant_outlined,
+        l10n.fieldNoteFoodNearby,
+        p.foodNearby,
+        false
+      ),
+      (
+        Icons.accessible_rounded,
+        l10n.fieldNoteWheelchairAccess,
+        p.wheelchairAccess,
+        false
+      ),
       (Icons.forest_outlined, l10n.fieldNoteCamping, p.campingAllowed, false),
       (Icons.shield_outlined, l10n.fieldNoteSafetyLevel, p.safetyLevel, false),
-      (Icons.pets_outlined, l10n.fieldNoteWildlifeHazard, p.wildlifeHazard, true),
-      (Icons.person_pin_circle_outlined, l10n.fieldNoteGuideRequired, p.guideRequired, false),
-      (Icons.water_drop_outlined, l10n.fieldNoteRainSensitivity, p.rainSensitivity, false),
+      (
+        Icons.pets_outlined,
+        l10n.fieldNoteWildlifeHazard,
+        p.wildlifeHazard,
+        true
+      ),
+      (
+        Icons.person_pin_circle_outlined,
+        l10n.fieldNoteGuideRequired,
+        p.guideRequired,
+        false
+      ),
+      (
+        Icons.water_drop_outlined,
+        l10n.fieldNoteRainSensitivity,
+        p.rainSensitivity,
+        false
+      ),
       (Icons.cloud_outlined, l10n.fieldNoteMonsoonNote, p.monsoonNote, true),
       (Icons.surfing_outlined, l10n.fieldNoteSurfing, p.surfing, false),
-      if ((double.tryParse(p.heightM) ?? 0) > 0) (Icons.height_rounded, l10n.fieldNoteHeight, "${p.heightM} m", false),
-      if ((double.tryParse(p.lengthKm) ?? 0) > 0) (Icons.straighten_rounded, l10n.fieldNoteLength, "${p.lengthKm} km", false),
+      if ((double.tryParse(p.heightM) ?? 0) > 0)
+        (Icons.height_rounded, l10n.fieldNoteHeight, "${p.heightM} m", false),
+      if ((double.tryParse(p.lengthKm) ?? 0) > 0)
+        (
+          Icons.straighten_rounded,
+          l10n.fieldNoteLength,
+          "${p.lengthKm} km",
+          false
+        ),
     ].where((e) => e.$3.trim().isNotEmpty).toList();
   }
 
-  Widget _fieldNoteProseRow(BuildContext context, IconData icon, String label, String value) {
+  Widget _fieldNoteProseRow(
+      BuildContext context, IconData icon, String label, String value) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(16),
@@ -2463,12 +2694,20 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
               children: [
                 Text(
                   label.toUpperCase(),
-                  style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w700, color: AppTheme.textSecondary(context), letterSpacing: 0.3),
+                  style: GoogleFonts.inter(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                      color: AppTheme.textSecondary(context),
+                      letterSpacing: 0.3),
                 ),
                 const SizedBox(height: 5),
                 Text(
                   value,
-                  style: GoogleFonts.outfit(fontSize: 15, fontWeight: FontWeight.w600, color: AppTheme.textPrimary(context), height: 1.4),
+                  style: GoogleFonts.outfit(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                      color: AppTheme.textPrimary(context),
+                      height: 1.4),
                 ),
               ],
             ),
@@ -2478,7 +2717,8 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
     );
   }
 
-  Widget _fieldNoteTile(BuildContext context, IconData icon, String label, String value) {
+  Widget _fieldNoteTile(
+      BuildContext context, IconData icon, String label, String value) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -2493,14 +2733,21 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
           const SizedBox(height: 10),
           Text(
             label.toUpperCase(),
-            style: GoogleFonts.inter(fontSize: 10.5, fontWeight: FontWeight.w700, color: AppTheme.textSecondary(context), letterSpacing: 0.2),
+            style: GoogleFonts.inter(
+                fontSize: 10.5,
+                fontWeight: FontWeight.w700,
+                color: AppTheme.textSecondary(context),
+                letterSpacing: 0.2),
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
           ),
           const SizedBox(height: 4),
           Text(
             value,
-            style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w700, color: AppTheme.textPrimary(context)),
+            style: GoogleFonts.outfit(
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                color: AppTheme.textPrimary(context)),
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
           ),
@@ -2514,51 +2761,94 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
       spacing: 12,
       runSpacing: 12,
       children: [
-        if (widget.place.category.isNotEmpty) _chip(context, L10nUtils.getLocalizedCategory(context, widget.place.category), Theme.of(context).colorScheme.primary),
-        if (widget.place.roadType.isNotEmpty) _chip(context, "${l10n.road}: ${widget.place.roadType}", Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4)),
-        if (widget.place.vehicleAccess.isNotEmpty) _chip(context, "${l10n.access}: ${widget.place.vehicleAccess}", Theme.of(context).colorScheme.secondary),
-        if (widget.place.parkingRange.isNotEmpty) _chip(context, "${l10n.parking}: ${widget.place.parkingRange}", Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.2)),
+        if (widget.place.category.isNotEmpty)
+          _chip(
+              context,
+              L10nUtils.getLocalizedCategory(context, widget.place.category),
+              Theme.of(context).colorScheme.primary),
+        if (widget.place.roadType.isNotEmpty)
+          _chip(context, "${l10n.road}: ${widget.place.roadType}",
+              Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4)),
+        if (widget.place.vehicleAccess.isNotEmpty)
+          _chip(context, "${l10n.access}: ${widget.place.vehicleAccess}",
+              Theme.of(context).colorScheme.secondary),
+        if (widget.place.parkingRange.isNotEmpty)
+          _chip(context, "${l10n.parking}: ${widget.place.parkingRange}",
+              Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.2)),
       ],
     );
   }
 
   Widget _buildRiskTags(BuildContext context) {
-    if (widget.place.riskTags.isEmpty) return Text(AppLocalizations.of(context)!.noRiskTagsFound, style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5), fontSize: 13));
+    if (widget.place.riskTags.isEmpty)
+      return Text(AppLocalizations.of(context)!.noRiskTagsFound,
+          style: TextStyle(
+              color: Theme.of(context)
+                  .colorScheme
+                  .onSurface
+                  .withValues(alpha: 0.5),
+              fontSize: 13));
     return Wrap(
       spacing: 12,
       runSpacing: 12,
-      children: widget.place.riskTags.map((t) => _chip(context, t, AppTheme.errorRed)).toList(),
+      children: widget.place.riskTags
+          .map((t) => _chip(context, t, AppTheme.errorRed))
+          .toList(),
     );
   }
 
   Widget _buildFacilities(BuildContext context) {
-    if (widget.place.facilities.isEmpty) return Text(AppLocalizations.of(context)!.noFacilitiesFound, style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5), fontSize: 13));
+    if (widget.place.facilities.isEmpty)
+      return Text(AppLocalizations.of(context)!.noFacilitiesFound,
+          style: TextStyle(
+              color: Theme.of(context)
+                  .colorScheme
+                  .onSurface
+                  .withValues(alpha: 0.5),
+              fontSize: 13));
     return Wrap(
       spacing: 12,
       runSpacing: 12,
-      children: widget.place.facilities.map((t) => _chip(context, t, AppTheme.colors.primary)).toList(),
+      children: widget.place.facilities
+          .map((t) => _chip(context, t, AppTheme.colors.primary))
+          .toList(),
     );
   }
 
   bool _hasFieldNotes() {
     final p = widget.place;
     return [
-      p.mobileSignal, p.roadCondition, p.activities, p.touristPopularity,
-      p.familyFriendly, p.budgetCategory, p.toilets, p.foodNearby,
-      p.wheelchairAccess, p.campingAllowed, p.safetyLevel, p.wildlifeHazard,
-      p.guideRequired, p.rainSensitivity, p.monsoonNote, p.surfing,
-    ].any((v) => v.trim().isNotEmpty) ||
+          p.mobileSignal,
+          p.roadCondition,
+          p.activities,
+          p.touristPopularity,
+          p.familyFriendly,
+          p.budgetCategory,
+          p.toilets,
+          p.foodNearby,
+          p.wheelchairAccess,
+          p.campingAllowed,
+          p.safetyLevel,
+          p.wildlifeHazard,
+          p.guideRequired,
+          p.rainSensitivity,
+          p.monsoonNote,
+          p.surfing,
+        ].any((v) => v.trim().isNotEmpty) ||
         (double.tryParse(p.heightM) ?? 0) > 0 ||
         (double.tryParse(p.lengthKm) ?? 0) > 0;
   }
 
   Widget _chip(BuildContext context, String label, Color color) {
-    final isNeutral = color == Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4) ||
+    final isNeutral = color ==
+            Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4) ||
         color == Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.2);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
-        color: isNeutral ? AppTheme.surfaceMuted(context) : color.withValues(alpha: 0.12),
+        color: isNeutral
+            ? AppTheme.surfaceMuted(context)
+            : color.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(100),
       ),
       child: Text(
@@ -2572,7 +2862,8 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
     );
   }
 
-  Widget _buildBottomActions(BuildContext context, WidgetRef ref, AppLocalizations l10n) {
+  Widget _buildBottomActions(
+      BuildContext context, WidgetRef ref, AppLocalizations l10n) {
     return Container(
       color: AppTheme.colors.transparent,
       padding: const EdgeInsets.fromLTRB(20, 14, 20, 24),
@@ -2594,7 +2885,9 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
               child: InkWell(
                 onTap: () async {
                   HapticFeedback.mediumImpact();
-                  final nowBookmarked = await UserPreferenceService.toggleBookmark(widget.place.id);
+                  final nowBookmarked =
+                      await UserPreferenceService.toggleBookmark(
+                          widget.place.id);
                   if (!context.mounted) return;
                   setState(() => _isBookmarked = nowBookmarked);
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -2605,7 +2898,9 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
                   ));
                 },
                 child: Icon(
-                  _isBookmarked ? Icons.bookmark_rounded : Icons.bookmark_border_rounded,
+                  _isBookmarked
+                      ? Icons.bookmark_rounded
+                      : Icons.bookmark_border_rounded,
                   color: _isBookmarked
                       ? Theme.of(context).colorScheme.primary
                       : Theme.of(context).colorScheme.onSurface,
@@ -2622,7 +2917,10 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
                 borderRadius: BorderRadius.circular(100),
                 boxShadow: [
                   BoxShadow(
-                    color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.32),
+                    color: Theme.of(context)
+                        .colorScheme
+                        .primary
+                        .withValues(alpha: 0.32),
                     blurRadius: 26,
                     offset: const Offset(0, 12),
                   )
@@ -2633,10 +2931,20 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
                   backgroundColor: AppTheme.colors.transparent,
                   foregroundColor: Theme.of(context).colorScheme.onPrimary,
                   shadowColor: AppTheme.colors.transparent,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(100)),
                 ),
                 onPressed: () async {
                   HapticFeedback.mediumImpact();
+                  final nowAdded = await UserPreferenceService.toggleItinerary(
+                      widget.place.id);
+                  if (!context.mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Text(nowAdded
+                        ? l10n.itineraryAddedSnackbar(widget.place.name)
+                        : l10n.itineraryRemovedSnackbar),
+                  ));
+                  /*
                   if (_arAvailableForPlace) {
                     _handleARLaunch(context, ref, l10n);
                   } else if (widget.place.arSupported && !AppConfig.arFeatureEnabled) {
@@ -2657,25 +2965,18 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
                             : l10n.itineraryRemovedSnackbar),
                     ));
                   }
+                  */
                 },
                 child: FittedBox(
                   fit: BoxFit.scaleDown,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(
-                        _arAvailableForPlace
-                            ? Icons.view_in_ar
-                            : (widget.place.arSupported ? Icons.view_in_ar_outlined : Icons.auto_fix_high),
-                        size: 20,
-                      ),
+                      const Icon(Icons.auto_fix_high, size: 20),
                       const SizedBox(width: 10),
-                      Text(
-                        _arAvailableForPlace
-                            ? l10n.invokeAr
-                            : (widget.place.arSupported ? l10n.comingSoonButton : l10n.addToDestiny),
-                        style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w700),
-                      ),
+                      Text(l10n.addToDestiny,
+                          style: GoogleFonts.inter(
+                              fontSize: 14, fontWeight: FontWeight.w700)),
                     ],
                   ),
                 ),
@@ -2687,6 +2988,7 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
     );
   }
 
+  /*
   void _handleARLaunch(BuildContext context, WidgetRef ref, AppLocalizations l10n) async {
     HapticFeedback.heavyImpact();
     
@@ -3031,17 +3333,23 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
 
 
 
-  Widget _buildNearbyPlacesSection(BuildContext context, AppLocalizations l10n) {
+  */
+  Widget _buildNearbyPlacesSection(
+      BuildContext context, AppLocalizations l10n) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           children: [
-            Icon(Icons.near_me_outlined, color: Theme.of(context).colorScheme.primary, size: 18),
+            Icon(Icons.near_me_outlined,
+                color: Theme.of(context).colorScheme.primary, size: 18),
             const SizedBox(width: 8),
             Text(
               "Nearby Places",
-              style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w700, color: AppTheme.textPrimary(context)),
+              style: GoogleFonts.outfit(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: AppTheme.textPrimary(context)),
             ),
           ],
         ),
@@ -3049,18 +3357,26 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
         SizedBox(
           height: 140,
           child: FutureBuilder<Result<List<DiscoveryPlace>, AppError>>(
-            future: ref.read(discoveryRepositoryProvider).getNearbyPlaces(widget.place),
+            future: ref
+                .read(discoveryRepositoryProvider)
+                .getNearbyPlaces(widget.place),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
               }
               if (!snapshot.hasData || snapshot.data!.isFailure) {
-                return Center(child: Text("Unable to load nearby places.", style: GoogleFonts.inter(color: AppTheme.textSecondary(context))));
+                return Center(
+                    child: Text("Unable to load nearby places.",
+                        style: GoogleFonts.inter(
+                            color: AppTheme.textSecondary(context))));
               }
-              
+
               final places = snapshot.data!.valueOrNull!;
               if (places.isEmpty) {
-                return Center(child: Text("No nearby places found.", style: GoogleFonts.inter(color: AppTheme.textSecondary(context))));
+                return Center(
+                    child: Text("No nearby places found.",
+                        style: GoogleFonts.inter(
+                            color: AppTheme.textSecondary(context))));
               }
 
               return ListView.separated(
@@ -3075,7 +3391,8 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => PlaceDetailsScreen(place: place),
+                          builder: (context) =>
+                              PlaceDetailsScreen(place: place),
                         ),
                       );
                     },
@@ -3104,12 +3421,19 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
                                   place.name,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
-                                  style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.bold, color: AppTheme.textPrimary(context)),
+                                  style: GoogleFonts.inter(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                      color: AppTheme.textPrimary(context)),
                                 ),
                                 const SizedBox(height: 2),
                                 Text(
                                   "${place.distanceKm.toStringAsFixed(1)} km",
-                                  style: GoogleFonts.inter(fontSize: 10, color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.w600),
+                                  style: GoogleFonts.inter(
+                                      fontSize: 10,
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      fontWeight: FontWeight.w600),
                                 ),
                               ],
                             ),
@@ -3127,6 +3451,7 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
     );
   }
 
+  /*
   Widget _buildAncestralPortalCard(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final portal = PortalService.getPortalForPlace(widget.place.name);
@@ -3155,9 +3480,11 @@ class _PlaceDetailsScreenState extends ConsumerState<PlaceDetailsScreen> {
       ),
     );
   }
+  */
 }
 
 /// Cinematic AR Portal Sheet - shows before AR launches
+/*
 class _ARPortalSheet extends StatefulWidget {
   final DiscoveryPlace place;
   final bool isDemo;
@@ -3167,8 +3494,11 @@ class _ARPortalSheet extends StatefulWidget {
   @override
   State<_ARPortalSheet> createState() => _ARPortalSheetState();
 }
+*/
 
-class _ARPortalSheetState extends State<_ARPortalSheet> with SingleTickerProviderStateMixin {
+/*
+class _ARPortalSheetState extends State<_ARPortalSheet>
+    with SingleTickerProviderStateMixin {
   late AnimationController _pulse;
 
   late Animation<double> _scale;
@@ -3176,8 +3506,11 @@ class _ARPortalSheetState extends State<_ARPortalSheet> with SingleTickerProvide
   @override
   void initState() {
     super.initState();
-    _pulse = AnimationController(vsync: this, duration: const Duration(seconds: 2))..repeat(reverse: true);
-    _scale = Tween<double>(begin: 1.0, end: 1.06).animate(CurvedAnimation(parent: _pulse, curve: Curves.easeInOut));
+    _pulse =
+        AnimationController(vsync: this, duration: const Duration(seconds: 2))
+          ..repeat(reverse: true);
+    _scale = Tween<double>(begin: 1.0, end: 1.06)
+        .animate(CurvedAnimation(parent: _pulse, curve: Curves.easeInOut));
   }
 
   @override
@@ -3189,8 +3522,10 @@ class _ARPortalSheetState extends State<_ARPortalSheet> with SingleTickerProvide
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final Color accentColor = widget.isDemo ? AppTheme.colors.primary : AppTheme.colors.primary;
-    final String tierLabel = widget.isDemo ? l10n.arDemoLabel : l10n.fullHeritageAr;
+    final Color accentColor =
+        widget.isDemo ? AppTheme.colors.primary : AppTheme.colors.primary;
+    final String tierLabel =
+        widget.isDemo ? l10n.arDemoLabel : l10n.fullHeritageAr;
     final String tierIcon = widget.isDemo ? '\u23F3' : '\u{1F3DB}';
 
     return Container(
@@ -3198,8 +3533,14 @@ class _ARPortalSheetState extends State<_ARPortalSheet> with SingleTickerProvide
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(32),
-        border: Border.all(color: accentColor.withValues(alpha: 0.4), width: 1.5),
-        boxShadow: [BoxShadow(color: accentColor.withValues(alpha: 0.2), blurRadius: 40, spreadRadius: 4)],
+        border:
+            Border.all(color: accentColor.withValues(alpha: 0.4), width: 1.5),
+        boxShadow: [
+          BoxShadow(
+              color: accentColor.withValues(alpha: 0.2),
+              blurRadius: 40,
+              spreadRadius: 4)
+        ],
       ),
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 24, vertical: 32),
@@ -3215,7 +3556,12 @@ class _ARPortalSheetState extends State<_ARPortalSheet> with SingleTickerProvide
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   border: Border.all(color: accentColor, width: 3),
-                  boxShadow: [BoxShadow(color: accentColor.withValues(alpha: 0.5), blurRadius: 20, spreadRadius: 2)],
+                  boxShadow: [
+                    BoxShadow(
+                        color: accentColor.withValues(alpha: 0.5),
+                        blurRadius: 20,
+                        spreadRadius: 2)
+                  ],
                 ),
                 child: Icon(Icons.view_in_ar, color: accentColor, size: 36),
               ),
@@ -3223,18 +3569,32 @@ class _ARPortalSheetState extends State<_ARPortalSheet> with SingleTickerProvide
             SizedBox(height: 20),
             Text(
               "$tierIcon  $tierLabel",
-              style: GoogleFonts.inter(color: accentColor, fontSize: 12, fontWeight: FontWeight.bold, letterSpacing: 1.5),
+              style: GoogleFonts.inter(
+                  color: accentColor,
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1.5),
             ),
             SizedBox(height: 8),
             Text(
               widget.place.name,
               textAlign: TextAlign.center,
-              style: GoogleFonts.outfit(color: Theme.of(context).colorScheme.onSurface, fontSize: 22, fontWeight: FontWeight.bold),
+              style: GoogleFonts.outfit(
+                  color: Theme.of(context).colorScheme.onSurface,
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 4),
             Text(
-              widget.place.historicalPeriod.isNotEmpty ? widget.place.historicalPeriod : l10n.ancientHeritageSite,
-              style: GoogleFonts.inter(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4), fontSize: 13),
+              widget.place.historicalPeriod.isNotEmpty
+                  ? widget.place.historicalPeriod
+                  : l10n.ancientHeritageSite,
+              style: GoogleFonts.inter(
+                  color: Theme.of(context)
+                      .colorScheme
+                      .onSurface
+                      .withValues(alpha: 0.4),
+                  fontSize: 13),
             ),
             SizedBox(height: 28),
             // What to expect
@@ -3264,13 +3624,16 @@ class _ARPortalSheetState extends State<_ARPortalSheet> with SingleTickerProvide
               width: double.infinity,
               child: ElevatedButton.icon(
                 icon: Icon(Icons.rocket_launch_rounded),
-                label: Text(widget.isDemo ? l10n.enterDemo : l10n.openArPortal, style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 15)),
+                label: Text(widget.isDemo ? l10n.enterDemo : l10n.openArPortal,
+                    style: GoogleFonts.outfit(
+                        fontWeight: FontWeight.bold, fontSize: 15)),
                 onPressed: widget.onLaunch,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: accentColor,
                   foregroundColor: AppTheme.colors.black,
                   padding: EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16)),
                   elevation: 8,
                   shadowColor: accentColor.withValues(alpha: 0.6),
                 ),
@@ -3279,7 +3642,13 @@ class _ARPortalSheetState extends State<_ARPortalSheet> with SingleTickerProvide
             SizedBox(height: 12),
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text(l10n.cancel, style: GoogleFonts.inter(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4), fontSize: 13)),
+              child: Text(l10n.cancel,
+                  style: GoogleFonts.inter(
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onSurface
+                          .withValues(alpha: 0.4),
+                      fontSize: 13)),
             ),
           ],
         ),
@@ -3290,15 +3659,24 @@ class _ARPortalSheetState extends State<_ARPortalSheet> with SingleTickerProvide
   Widget _portalTip(IconData icon, String label) {
     return Row(
       children: [
-        Icon(icon, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65), size: 18),
+        Icon(icon,
+            color:
+                Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.65),
+            size: 18),
         SizedBox(width: 10),
-        Expanded(child: Text(label, style: GoogleFonts.inter(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7), fontSize: 12))),
+        Expanded(
+            child: Text(label,
+                style: GoogleFonts.inter(
+                    color: Theme.of(context)
+                        .colorScheme
+                        .onSurface
+                        .withValues(alpha: 0.7),
+                    fontSize: 12))),
       ],
     );
   }
-
 }
-
+*/
 
 class _DownloadButton extends StatefulWidget {
   final DiscoveryPlace place;
@@ -3334,73 +3712,85 @@ class _DownloadButtonState extends State<_DownloadButton> {
         children: [
           Icon(Icons.check_circle, color: AppTheme.colors.green, size: 14),
           SizedBox(width: 4),
-          Text(l10n.offlineReady, style: GoogleFonts.inter(color: AppTheme.colors.green, fontSize: 10, fontWeight: FontWeight.bold)),
+          Text(l10n.offlineReady,
+              style: GoogleFonts.inter(
+                  color: AppTheme.colors.green,
+                  fontSize: 10,
+                  fontWeight: FontWeight.bold)),
         ],
       );
     }
 
     return GestureDetector(
-      onTap: isDownloading ? null : () async {
-        // Check Limits
-        final canDownload = await UsageLimiterService.canDownloadOffline();
-        if (!context.mounted) return;
-        if (!canDownload) {
-          showDialog(
-            context: context,
-            builder: (_) => LimitReachedDialog(
-              featureName: l10n.featureNameOfflineDownloads,
-              onWatchAd: () {
-                MonetizationService().showRewardedAd(
-                  onRewardEarned: (reward) async {
-                    await UsageLimiterService.provideBonusOfflineDownload();
-                    if (!mounted || !context.mounted) return;
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(AppLocalizations.of(context)!.bonusDownloadUnlockedSnackbar)),
-                    );
-                  },
+      onTap: isDownloading
+          ? null
+          : () async {
+              // Check Limits
+              final canDownload =
+                  await UsageLimiterService.canDownloadOffline();
+              if (!context.mounted) return;
+              if (!canDownload) {
+                showDialog(
+                  context: context,
+                  builder: (_) => LimitReachedDialog(
+                    featureName: l10n.featureNameOfflineDownloads,
+                    onWatchAd: () {
+                      MonetizationService().showRewardedAd(
+                        onRewardEarned: (reward) async {
+                          await UsageLimiterService
+                              .provideBonusOfflineDownload();
+                          if (!mounted || !context.mounted) return;
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                                content: Text(AppLocalizations.of(context)!
+                                    .bonusDownloadUnlockedSnackbar)),
+                          );
+                        },
+                      );
+                    },
+                  ),
                 );
-              },
-            ),
-          );
-          return;
-        }
+                return;
+              }
 
-        setState(() => isDownloading = true);
-        
-        try {
-          // Download Model
-          await AssetCacheService.downloadAsset(
-            widget.place.arModelUrl, 
-            onProgress: (p) {
-              if (mounted) setState(() => progress = p * 0.7);
-            }
-          );
-          
-          // Download Audio (if exists)
-          if (widget.place.audioUrlSi.isNotEmpty) {
-            await AssetCacheService.downloadAsset(widget.place.audioUrlSi);
-          }
-          if (widget.place.audioUrlEn.isNotEmpty) {
-            await AssetCacheService.downloadAsset(widget.place.audioUrlEn);
-          }
+              setState(() => isDownloading = true);
 
-          // Increment usage
-          await UsageLimiterService.incrementOfflineDownload();
+              try {
+                // Download Model
+                await AssetCacheService.downloadAsset(widget.place.arModelUrl,
+                    onProgress: (p) {
+                  if (mounted) setState(() => progress = p * 0.7);
+                });
 
-          if (context.mounted) {
-            setState(() {
-              isDownloading = false;
-              isDownloaded = true;
-            });
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.assetsCached)));
-          }
-        } catch (e) {
-          if (context.mounted) {
-            setState(() => isDownloading = false);
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.downloadFailed)));
-          }
-        }
-      },
+                // Download Audio (if exists)
+                if (widget.place.audioUrlSi.isNotEmpty) {
+                  await AssetCacheService.downloadAsset(
+                      widget.place.audioUrlSi);
+                }
+                if (widget.place.audioUrlEn.isNotEmpty) {
+                  await AssetCacheService.downloadAsset(
+                      widget.place.audioUrlEn);
+                }
+
+                // Increment usage
+                await UsageLimiterService.incrementOfflineDownload();
+
+                if (context.mounted) {
+                  setState(() {
+                    isDownloading = false;
+                    isDownloaded = true;
+                  });
+                  ScaffoldMessenger.of(context)
+                      .showSnackBar(SnackBar(content: Text(l10n.assetsCached)));
+                }
+              } catch (e) {
+                if (context.mounted) {
+                  setState(() => isDownloading = false);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(l10n.downloadFailed)));
+                }
+              }
+            },
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
@@ -3408,21 +3798,37 @@ class _DownloadButtonState extends State<_DownloadButton> {
           borderRadius: BorderRadius.circular(20),
           border: Border.all(color: AppTheme.primaryBorder(context)),
         ),
-        child: isDownloading 
-          ? SizedBox(width: 14, height: 14, child: CircularProgressIndicator(strokeWidth: 2, value: progress, color: AppPalette.sigiriyaOchre))
-          : Row(
-              children: [
-                Icon(Icons.download_for_offline, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7), size: 14),
-                SizedBox(width: 6),
-                Text(l10n.downloadForOffline, style: GoogleFonts.inter(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7), fontSize: 10, fontWeight: FontWeight.bold)),
-              ],
-            ),
+        child: isDownloading
+            ? SizedBox(
+                width: 14,
+                height: 14,
+                child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    value: progress,
+                    color: AppPalette.sigiriyaOchre))
+            : Row(
+                children: [
+                  Icon(Icons.download_for_offline,
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onSurface
+                          .withValues(alpha: 0.7),
+                      size: 14),
+                  SizedBox(width: 6),
+                  Text(l10n.downloadForOffline,
+                      style: GoogleFonts.inter(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onSurface
+                              .withValues(alpha: 0.7),
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold)),
+                ],
+              ),
       ),
     );
   }
-
 }
-
 
 class PlaceDetailsScreenStats extends StatelessWidget {
   final DiscoveryPlace place;
@@ -3441,10 +3847,12 @@ class _FullscreenGalleryViewer extends StatefulWidget {
   final List<PlaceImageModel> images;
   final int initialIndex;
 
-  const _FullscreenGalleryViewer({required this.images, required this.initialIndex});
+  const _FullscreenGalleryViewer(
+      {required this.images, required this.initialIndex});
 
   @override
-  State<_FullscreenGalleryViewer> createState() => _FullscreenGalleryViewerState();
+  State<_FullscreenGalleryViewer> createState() =>
+      _FullscreenGalleryViewerState();
 }
 
 class _FullscreenGalleryViewerState extends State<_FullscreenGalleryViewer> {
@@ -3492,7 +3900,8 @@ class _FullscreenGalleryViewerState extends State<_FullscreenGalleryViewer> {
             top: 48,
             left: 12,
             child: IconButton(
-              icon: Icon(Icons.close_rounded, color: AppTheme.colors.white, size: 28),
+              icon: Icon(Icons.close_rounded,
+                  color: AppTheme.colors.white, size: 28),
               onPressed: () => Navigator.pop(context),
             ),
           ),
@@ -3502,14 +3911,18 @@ class _FullscreenGalleryViewerState extends State<_FullscreenGalleryViewer> {
             right: 0,
             child: Center(
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
                 decoration: BoxDecoration(
                   color: AppTheme.colors.black54,
                   borderRadius: BorderRadius.circular(100),
                 ),
                 child: Text(
                   '${_currentIndex + 1} / ${widget.images.length}',
-                  style: GoogleFonts.inter(color: AppTheme.colors.white, fontSize: 12, fontWeight: FontWeight.w600),
+                  style: GoogleFonts.inter(
+                      color: AppTheme.colors.white,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600),
                 ),
               ),
             ),
@@ -3560,7 +3973,9 @@ class _VehicleEtaSheetState extends State<_VehicleEtaSheet> {
 
     return Container(
       padding: EdgeInsets.only(
-        left: 24, right: 24, top: 24,
+        left: 24,
+        right: 24,
+        top: 24,
         bottom: 24 + MediaQuery.of(context).viewInsets.bottom,
       ),
       decoration: BoxDecoration(
@@ -3573,7 +3988,8 @@ class _VehicleEtaSheetState extends State<_VehicleEtaSheet> {
         children: [
           Center(
             child: Container(
-              width: 40, height: 4,
+              width: 40,
+              height: 4,
               decoration: BoxDecoration(
                 color: AppTheme.surfaceMuted(context),
                 borderRadius: BorderRadius.circular(2),
@@ -3583,21 +3999,31 @@ class _VehicleEtaSheetState extends State<_VehicleEtaSheet> {
           const SizedBox(height: 20),
           Text(
             widget.placeName,
-            style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.w800, color: AppTheme.textPrimary(context)),
+            style: GoogleFonts.outfit(
+                fontSize: 18,
+                fontWeight: FontWeight.w800,
+                color: AppTheme.textPrimary(context)),
           ),
           const SizedBox(height: 4),
           Text(
             '${widget.distanceKm.toStringAsFixed(1)} km ${l10n.awayLabel}',
-            style: GoogleFonts.inter(fontSize: 13, color: AppTheme.textSecondary(context)),
+            style: GoogleFonts.inter(
+                fontSize: 13, color: AppTheme.textSecondary(context)),
           ),
           const SizedBox(height: 20),
           Row(
             children: [
-              Expanded(child: _modeOption(context, _TravelMode.walk, Icons.directions_walk_rounded, l10n.travelModeWalk)),
+              Expanded(
+                  child: _modeOption(context, _TravelMode.walk,
+                      Icons.directions_walk_rounded, l10n.travelModeWalk)),
               const SizedBox(width: 10),
-              Expanded(child: _modeOption(context, _TravelMode.bike, Icons.two_wheeler_rounded, l10n.travelModeBike)),
+              Expanded(
+                  child: _modeOption(context, _TravelMode.bike,
+                      Icons.two_wheeler_rounded, l10n.travelModeBike)),
               const SizedBox(width: 10),
-              Expanded(child: _modeOption(context, _TravelMode.car, Icons.directions_car_filled_rounded, l10n.travelModeCar)),
+              Expanded(
+                  child: _modeOption(context, _TravelMode.car,
+                      Icons.directions_car_filled_rounded, l10n.travelModeCar)),
             ],
           ),
           const SizedBox(height: 24),
@@ -3606,13 +4032,16 @@ class _VehicleEtaSheetState extends State<_VehicleEtaSheet> {
             child: ElevatedButton.icon(
               onPressed: widget.onOpenMaps,
               icon: const Icon(Icons.map_outlined),
-              label: Text(l10n.openInMaps, style: GoogleFonts.inter(fontWeight: FontWeight.w700)),
+              label: Text(l10n.openInMaps,
+                  style: GoogleFonts.inter(fontWeight: FontWeight.w700)),
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 backgroundColor: Theme.of(context).colorScheme.primary,
-                foregroundColor: isDark ? AppTheme.colors.black : AppTheme.colors.white,
+                foregroundColor:
+                    isDark ? AppTheme.colors.black : AppTheme.colors.white,
                 elevation: 0,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(100)),
               ),
             ),
           ),
@@ -3621,14 +4050,17 @@ class _VehicleEtaSheetState extends State<_VehicleEtaSheet> {
     );
   }
 
-  Widget _modeOption(BuildContext context, _TravelMode mode, IconData icon, String label) {
+  Widget _modeOption(
+      BuildContext context, _TravelMode mode, IconData icon, String label) {
     final isSelected = _selected == mode;
     final speed = switch (mode) {
       _TravelMode.walk => widget.walkSpeedKmh,
       _TravelMode.bike => widget.bikeSpeedKmh,
       _TravelMode.car => widget.carSpeedKmh,
     };
-    final color = isSelected ? Theme.of(context).colorScheme.primary : AppTheme.textSecondary(context);
+    final color = isSelected
+        ? Theme.of(context).colorScheme.primary
+        : AppTheme.textSecondary(context);
 
     return GestureDetector(
       onTap: () {
@@ -3638,19 +4070,30 @@ class _VehicleEtaSheetState extends State<_VehicleEtaSheet> {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 14),
         decoration: BoxDecoration(
-          color: isSelected ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.12) : AppTheme.surfaceMuted(context),
+          color: isSelected
+              ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.12)
+              : AppTheme.surfaceMuted(context),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: isSelected ? Theme.of(context).colorScheme.primary : AppTheme.colors.transparent, width: 1.5),
+          border: Border.all(
+              color: isSelected
+                  ? Theme.of(context).colorScheme.primary
+                  : AppTheme.colors.transparent,
+              width: 1.5),
         ),
         child: Column(
           children: [
             Icon(icon, color: color, size: 22),
             const SizedBox(height: 6),
-            Text(label, style: GoogleFonts.inter(fontSize: 11.5, fontWeight: FontWeight.w700, color: color)),
+            Text(label,
+                style: GoogleFonts.inter(
+                    fontSize: 11.5, fontWeight: FontWeight.w700, color: color)),
             const SizedBox(height: 2),
             Text(
               widget.estimateLabel(widget.distanceKm, speed),
-              style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: color.withValues(alpha: 0.8)),
+              style: GoogleFonts.inter(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                  color: color.withValues(alpha: 0.8)),
             ),
           ],
         ),

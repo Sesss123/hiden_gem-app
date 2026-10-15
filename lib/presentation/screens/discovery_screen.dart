@@ -7,7 +7,6 @@ import 'package:geolocator/geolocator.dart';
 import 'package:hidden_gems_sl/l10n/app_localizations.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:hidden_gems_sl/data/repositories/discovery_repository.dart';
-import '../../core/config/app_config.dart';
 import '../../core/theme/oracle_ui_system.dart';
 import '../../core/theme/app_theme.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -29,19 +28,19 @@ class DiscoveryScreen extends ConsumerStatefulWidget {
   ConsumerState<DiscoveryScreen> createState() => _DiscoveryScreenState();
 }
 
-class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with AutomaticKeepAliveClientMixin {
+class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen>
+    with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
   Position? _currentPosition;
-  
+
   List<DiscoveryPlace> _allPlaces = [];
   List<DiscoveryPlace> _oraclePicks = [];
   List<DiscoveryPlace> _naturePicks = [];
   List<DiscoveryPlace> _culturePicks = [];
-  List<DiscoveryPlace> _arPicks = [];
   List<DiscoveryPlace> _filteredList = [];
   List<VillageExperience> _villageExperiences = [];
-  
+
   bool _isLoading = true;
   String _selectedFilter = "all";
   String _searchQuery = "";
@@ -50,21 +49,24 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
   // Advanced Filters
   double _maxDistance = 100.0;
   String _selectedPriceRange = "All";
-  bool _onlyAR = false;
 
   // Fixed, non-category filters: "all" plus the ones that key off a field
   // other than category (ticketRange/vehicleAccess/arSupported — see
   // _applyFilter). Real place categories are appended dynamically from
   // whatever's actually in _allPlaces, so an admin-added category (e.g.
   // "Beach") is filterable without a matching hand-written keyword group.
-  static const List<String> _fixedFilters = ["all", "budget", "family", "ar"];
+  static const List<String> _fixedFilters = ["all", "budget", "family"];
   // Primary row keeps the chip strip short and scannable; the rest live
   // behind the "More" chip so the row doesn't grow every time a new
   // category is added in the admin panel.
   static const List<String> _primaryFilters = ["all"];
 
   List<String> get _categoryFilters {
-    final cats = _allPlaces.map((p) => p.category).where((c) => c.trim().isNotEmpty).toSet().toList();
+    final cats = _allPlaces
+        .map((p) => p.category)
+        .where((c) => c.trim().isNotEmpty)
+        .toSet()
+        .toList();
     cats.sort();
     return cats.map((c) => '$_categoryFilterPrefix$c').toList();
   }
@@ -72,11 +74,9 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
   // AR content isn't live yet — see AppConfig.arFeatureEnabled. Drop the
   // "ar" chip from what actually renders rather than removing it from
   // _fixedFilters itself, so re-enabling the flag needs no further change.
-  List<String> get _filters => [
-        ..._fixedFilters.where((f) => f != 'ar' || AppConfig.arFeatureEnabled),
-        ..._categoryFilters,
-      ];
-  List<String> get _secondaryFilters => _filters.where((f) => !_primaryFilters.contains(f)).toList();
+  List<String> get _filters => [..._fixedFilters, ..._categoryFilters];
+  List<String> get _secondaryFilters =>
+      _filters.where((f) => !_primaryFilters.contains(f)).toList();
 
   // BUG-080: Debounce timer for search queries
   Timer? _searchDebounce;
@@ -95,7 +95,8 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
     // can't gate on _filters.contains(...) the way it used to — any
     // non-empty value is safe since _applyFilter's fallback branch treats
     // an unrecognized filter as a plain substring match against category.
-    if (widget.initialFilter != null && widget.initialFilter!.trim().isNotEmpty) {
+    if (widget.initialFilter != null &&
+        widget.initialFilter!.trim().isNotEmpty) {
       _selectedFilter = widget.initialFilter!;
     }
     _searchController.addListener(() {
@@ -125,22 +126,21 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
     _initDiscovery();
   }
 
-
   Future<void> _initDiscovery({bool forceRefresh = false}) async {
     if (!forceRefresh) setState(() => _isLoading = true);
-    
+
     try {
       final repo = ref.read(discoveryRepositoryProvider);
       _currentPosition = await repo.getCurrentLocation();
-      
+
       final result = await repo.getDiscoveryPlaces(
         userLat: _currentPosition?.latitude,
         userLng: _currentPosition?.longitude,
         forceRefresh: forceRefresh,
       );
-      
+
       _allPlaces = result.valueOrNull ?? [];
-      
+
       if (mounted) {
         setState(() {
           _filteredList = _allPlaces;
@@ -148,24 +148,25 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
       }
 
       _oraclePicks = await repo.getAiRecommendations(_allPlaces);
-      
-      _naturePicks = _allPlaces.where((p) => 
-        p.category.toLowerCase().contains("nature") || 
-        p.category.toLowerCase().contains("waterfall") ||
-        p.category.toLowerCase().contains("hiking")
-      ).toList();
-      
-      _culturePicks = _allPlaces.where((p) => 
-        p.category.toLowerCase().contains("culture") || 
-        p.category.toLowerCase().contains("historical") ||
-        p.category.toLowerCase().contains("village")
-      ).toList();
-      
+
+      _naturePicks = _allPlaces
+          .where((p) =>
+              p.category.toLowerCase().contains("nature") ||
+              p.category.toLowerCase().contains("waterfall") ||
+              p.category.toLowerCase().contains("hiking"))
+          .toList();
+
+      _culturePicks = _allPlaces
+          .where((p) =>
+              p.category.toLowerCase().contains("culture") ||
+              p.category.toLowerCase().contains("historical") ||
+              p.category.toLowerCase().contains("village"))
+          .toList();
+
       // AR content isn't live yet — see AppConfig.arFeatureEnabled. Leave
       // _arPicks empty so the "Explore in AR" section (gated on isNotEmpty
       // below) never renders instead of promising an experience that isn't
       // ready.
-      _arPicks = AppConfig.arFeatureEnabled ? _allPlaces.where((p) => p.arSupported).toList() : [];
 
       _villageExperiences = await VillageExperienceService.getNearbyExperiences(
         lat: _currentPosition?.latitude ?? 7.8731,
@@ -182,7 +183,8 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
       setState(() => _isLoading = false);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(AppLocalizations.of(context)!.oracleConnectionDisrupted(e.toString())),
+          content: Text(AppLocalizations.of(context)!
+              .oracleConnectionDisrupted(e.toString())),
           backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );
@@ -191,9 +193,9 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
 
   String _resolveDistrict(DiscoveryPlace place) {
     if (place.district.isNotEmpty) return place.district;
-    
+
     final nameLower = place.name.toLowerCase();
-    
+
     final districtMap = {
       'colombo': 'Colombo',
       'galle': 'Galle',
@@ -270,13 +272,16 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
           final cat = p.category.toLowerCase();
 
           if (cleanFilter.startsWith(_categoryFilterPrefix)) {
-            matchesCategory = cat == cleanFilter.substring(_categoryFilterPrefix.length);
+            matchesCategory =
+                cat == cleanFilter.substring(_categoryFilterPrefix.length);
           } else if (cleanFilter == "budget") {
-            matchesCategory = p.ticketRange.toLowerCase().contains("free") || p.ticketRange.contains("50") || p.ticketRange.contains("100");
+            matchesCategory = p.ticketRange.toLowerCase().contains("free") ||
+                p.ticketRange.contains("50") ||
+                p.ticketRange.contains("100");
           } else if (cleanFilter == "family") {
-            matchesCategory = p.vehicleAccess.toLowerCase().contains("all vehicles") || p.roadType.toLowerCase().contains("paved");
-          } else if (cleanFilter == "ar") {
-            matchesCategory = p.arSupported;
+            matchesCategory =
+                p.vehicleAccess.toLowerCase().contains("all vehicles") ||
+                    p.roadType.toLowerCase().contains("paved");
           } else {
             matchesCategory = cat.contains(cleanFilter);
           }
@@ -303,14 +308,14 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
         if (_selectedPriceRange != "All") {
           final price = p.ticketRange.toLowerCase();
           final numMatch = RegExp(r'\d+').firstMatch(price);
-          final priceNum = numMatch != null ? int.tryParse(numMatch.group(0)!) ?? 0 : 0;
+          final priceNum =
+              numMatch != null ? int.tryParse(numMatch.group(0)!) ?? 0 : 0;
           if (_selectedPriceRange == "Free" && priceNum != 0) return false;
-          if (_selectedPriceRange == "Economy" && (priceNum == 0 || priceNum > 2000)) return false;
-          if (_selectedPriceRange == "Premium" && priceNum <= 2000) return false;
+          if (_selectedPriceRange == "Economy" &&
+              (priceNum == 0 || priceNum > 2000)) return false;
+          if (_selectedPriceRange == "Premium" && priceNum <= 2000)
+            return false;
         }
-
-        // 5. AR Filter
-        if (_onlyAR && !p.arSupported) return false;
 
         return true;
       }).toList();
@@ -327,32 +332,42 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
       context: context,
       backgroundColor: AppTheme.colors.transparent,
       isScrollControlled: true,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setModalState) {
-          final isDark = Theme.of(context).brightness == Brightness.dark;
-          final l10n = AppLocalizations.of(context)!;
+      builder: (context) => StatefulBuilder(builder: (context, setModalState) {
+        final isDark = Theme.of(context).brightness == Brightness.dark;
+        final l10n = AppLocalizations.of(context)!;
 
-          return Container(
-            constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.85),
-            decoration: BoxDecoration(
-              color: isDark ? AppTheme.colors.primary.withValues(alpha: 0.95) : AppTheme.colors.white.withValues(alpha: 0.95),
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(40)),
-              border: Border.all(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2)),
-            ),
-            child: OracleUI.glassContainer(
-              radius: const BorderRadius.vertical(top: Radius.circular(40)),
-              padding: EdgeInsets.fromLTRB(24, 32, 24, MediaQuery.of(context).viewInsets.bottom + 32),
-              child: SingleChildScrollView(
-                child: Column(
+        return Container(
+          constraints: BoxConstraints(
+              maxHeight: MediaQuery.of(context).size.height * 0.85),
+          decoration: BoxDecoration(
+            color: isDark
+                ? AppTheme.colors.primary.withValues(alpha: 0.95)
+                : AppTheme.colors.white.withValues(alpha: 0.95),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(40)),
+            border: Border.all(
+                color: Theme.of(context)
+                    .colorScheme
+                    .primary
+                    .withValues(alpha: 0.2)),
+          ),
+          child: OracleUI.glassContainer(
+            radius: const BorderRadius.vertical(top: Radius.circular(40)),
+            padding: EdgeInsets.fromLTRB(
+                24, 32, 24, MediaQuery.of(context).viewInsets.bottom + 32),
+            child: SingleChildScrollView(
+              child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                   Center(
+                  Center(
                     child: Container(
                       width: 60,
                       height: 5,
                       decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.2),
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onSurface
+                            .withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
@@ -364,19 +379,27 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
                       Expanded(
                         child: OracleUI.neonText(
                           l10n.discoveryFiltersTitle,
-                          style: GoogleFonts.outfit(fontSize: 24, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.secondary),
+                          style: GoogleFonts.outfit(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context).colorScheme.secondary),
                         ),
                       ),
                       TextButton(
-                        style: TextButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 8), minimumSize: Size.zero),
+                        style: TextButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(horizontal: 8),
+                            minimumSize: Size.zero),
                         onPressed: () {
                           setModalState(() {
                             _maxDistance = 100.0;
                             _selectedPriceRange = "All";
-                            _onlyAR = false;
                           });
                         },
-                        child: Text(l10n.resetButton, style: GoogleFonts.outfit(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.bold, letterSpacing: 1)),
+                        child: Text(l10n.resetButton,
+                            style: GoogleFonts.outfit(
+                                color: Theme.of(context).colorScheme.primary,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 1)),
                       ),
                     ],
                   ),
@@ -385,7 +408,11 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
                   // Distance Selector
                   Text(
                     l10n.maximumRadiusKm(_maxDistance.toInt()),
-                    style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.bold, color: AppTheme.textPrimary(context), letterSpacing: 1),
+                    style: GoogleFonts.outfit(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: AppTheme.textPrimary(context),
+                        letterSpacing: 1),
                   ),
                   Slider(
                     value: _maxDistance,
@@ -402,7 +429,11 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
                   // Price Range
                   Text(
                     l10n.budgetLevelLabel,
-                    style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.bold, color: AppTheme.textPrimary(context), letterSpacing: 1),
+                    style: GoogleFonts.outfit(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: AppTheme.textPrimary(context),
+                        letterSpacing: 1),
                   ),
                   const SizedBox(height: 16),
                   Wrap(
@@ -419,10 +450,12 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
                         _ => p,
                       };
                       return GestureDetector(
-                        onTap: () => setModalState(() => _selectedPriceRange = p),
+                        onTap: () =>
+                            setModalState(() => _selectedPriceRange = p),
                         child: AnimatedContainer(
                           duration: const Duration(milliseconds: 200),
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 8),
                           decoration: BoxDecoration(
                             color: isSelected
                                 ? primary.withValues(alpha: 0.15)
@@ -431,7 +464,8 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
                             border: Border.all(
                               color: isSelected
                                   ? primary.withValues(alpha: 0.6)
-                                  : AppTheme.colors.white.withValues(alpha: 0.15),
+                                  : AppTheme.colors.white
+                                      .withValues(alpha: 0.15),
                               width: 1,
                             ),
                           ),
@@ -439,7 +473,9 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
                             label.toUpperCase(),
                             style: GoogleFonts.inter(
                               fontSize: 11,
-                              fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                              fontWeight: isSelected
+                                  ? FontWeight.bold
+                                  : FontWeight.w500,
                               color: isSelected
                                   ? AppTheme.textPrimary(context)
                                   : AppTheme.textSecondary(context),
@@ -452,39 +488,6 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
                   ),
                   const SizedBox(height: 40),
 
-                  // AR Toggle
-                  if (AppConfig.arFeatureEnabled) ...[
-                    OracleUI.glassContainer(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                      child: Row(
-                        children: [
-                          Icon(Icons.view_in_ar_rounded, color: Theme.of(context).colorScheme.secondary),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  l10n.heritageArSearchTitle,
-                                  style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 13, color: AppTheme.textPrimary(context)),
-                                ),
-                                Text(
-                                  l10n.onlyShowArEnabledSpots,
-                                  style: GoogleFonts.inter(fontSize: 10, color: AppTheme.textSecondary(context)),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Switch(
-                            value: _onlyAR,
-                            activeThumbColor: Theme.of(context).colorScheme.secondary,
-                            onChanged: (val) => setModalState(() => _onlyAR = val),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 40),
-                  ],
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
@@ -496,24 +499,27 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Theme.of(context).colorScheme.primary,
                         padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16)),
                       ),
                       child: FittedBox(
                         fit: BoxFit.scaleDown,
                         child: Text(
                           l10n.revealDestinies,
-                          style: GoogleFonts.outfit(color: AppTheme.colors.white, fontWeight: FontWeight.bold, letterSpacing: 2),
+                          style: GoogleFonts.outfit(
+                              color: AppTheme.colors.white,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 2),
                         ),
                       ),
                     ),
                   ),
                 ],
-                ),
               ),
             ),
-          );
-        }
-      ),
+          ),
+        );
+      }),
     );
   }
 
@@ -552,7 +558,8 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
 
   void _openPlaceDetails(DiscoveryPlace place) {
     HapticFeedback.lightImpact();
-    Navigator.push(context, MaterialPageRoute(builder: (_) => PlaceDetailsScreen(place: place)));
+    Navigator.push(context,
+        MaterialPageRoute(builder: (_) => PlaceDetailsScreen(place: place)));
   }
 
   void _openVillageExperience(VillageExperience exp) {
@@ -575,7 +582,8 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
             padding: EdgeInsets.zero,
             children: [
               ClipRRect(
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+                borderRadius:
+                    const BorderRadius.vertical(top: Radius.circular(28)),
                 child: CachedNetworkImage(
                   imageUrl: exp.imageUrl,
                   height: 200,
@@ -584,7 +592,8 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
                   errorWidget: (context, url, error) => Container(
                     height: 200,
                     color: AppTheme.surfaceMuted(context),
-                    child: Icon(Icons.home_work_outlined, color: AppTheme.textSecondary(context), size: 40),
+                    child: Icon(Icons.home_work_outlined,
+                        color: AppTheme.textSecondary(context), size: 40),
                   ),
                 ),
               ),
@@ -595,47 +604,72 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
                   children: [
                     Text(
                       exp.name,
-                      style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.w800, color: AppTheme.textPrimary(context)),
+                      style: GoogleFonts.outfit(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w800,
+                          color: AppTheme.textPrimary(context)),
                     ),
                     const SizedBox(height: 6),
                     Row(
                       children: [
-                        Icon(Icons.place_rounded, size: 14, color: Theme.of(context).colorScheme.primary),
+                        Icon(Icons.place_rounded,
+                            size: 14,
+                            color: Theme.of(context).colorScheme.primary),
                         const SizedBox(width: 4),
                         Text(
                           exp.district,
-                          style: GoogleFonts.inter(fontSize: 12, color: AppTheme.textSecondary(context), fontWeight: FontWeight.w600),
+                          style: GoogleFonts.inter(
+                              fontSize: 12,
+                              color: AppTheme.textSecondary(context),
+                              fontWeight: FontWeight.w600),
                         ),
                         const SizedBox(width: 12),
-                        Icon(Icons.person_pin_rounded, size: 14, color: Theme.of(context).colorScheme.secondary),
+                        Icon(Icons.person_pin_rounded,
+                            size: 14,
+                            color: Theme.of(context).colorScheme.secondary),
                         const SizedBox(width: 4),
                         Text(
-                          AppLocalizations.of(context)!.hostedByName(exp.hostName),
-                          style: GoogleFonts.inter(fontSize: 12, color: AppTheme.textSecondary(context), fontWeight: FontWeight.w600),
+                          AppLocalizations.of(context)!
+                              .hostedByName(exp.hostName),
+                          style: GoogleFonts.inter(
+                              fontSize: 12,
+                              color: AppTheme.textSecondary(context),
+                              fontWeight: FontWeight.w600),
                         ),
                       ],
                     ),
                     const SizedBox(height: 16),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 8),
                       decoration: BoxDecoration(
                         color: AppTheme.surfaceMuted(context),
                         borderRadius: BorderRadius.circular(100),
                       ),
                       child: Text(
                         exp.experienceType,
-                        style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w700, color: AppTheme.textPrimary(context)),
+                        style: GoogleFonts.inter(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w700,
+                            color: AppTheme.textPrimary(context)),
                       ),
                     ),
                     const SizedBox(height: 20),
                     Text(
                       exp.description,
-                      style: GoogleFonts.inter(fontSize: 14, color: AppTheme.textSecondary(context), height: 1.6),
+                      style: GoogleFonts.inter(
+                          fontSize: 14,
+                          color: AppTheme.textSecondary(context),
+                          height: 1.6),
                     ),
                     const SizedBox(height: 24),
                     Text(
-                      AppLocalizations.of(context)!.priceInLkr(exp.price.toStringAsFixed(0)),
-                      style: GoogleFonts.outfit(fontSize: 22, fontWeight: FontWeight.w800, color: Theme.of(context).colorScheme.primary),
+                      AppLocalizations.of(context)!
+                          .priceInLkr(exp.price.toStringAsFixed(0)),
+                      style: GoogleFonts.outfit(
+                          fontSize: 22,
+                          fontWeight: FontWeight.w800,
+                          color: Theme.of(context).colorScheme.primary),
                     ),
                   ],
                 ),
@@ -663,7 +697,8 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
               color: Theme.of(context).colorScheme.primary,
               displacement: 100,
               child: CustomScrollView(
-                physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+                physics: const BouncingScrollPhysics(
+                    parent: AlwaysScrollableScrollPhysics()),
                 slivers: [
                   _buildLocationHeader(),
                   SliverToBoxAdapter(
@@ -698,43 +733,69 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
           ],
         ),
       ),
-      floatingActionButton: _currentPosition == null ? null : FloatingActionButton(
-        heroTag: 'map_fab',
-        onPressed: () {
-          HapticFeedback.mediumImpact();
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => MapExplorerScreen(initialPosition: LatLng(_currentPosition!.latitude, _currentPosition!.longitude)),
+      floatingActionButton: _currentPosition == null
+          ? null
+          : FloatingActionButton(
+              heroTag: 'map_fab',
+              onPressed: () {
+                HapticFeedback.mediumImpact();
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => MapExplorerScreen(
+                        initialPosition: LatLng(_currentPosition!.latitude,
+                            _currentPosition!.longitude)),
+                  ),
+                );
+              },
+              backgroundColor:
+                  Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+                side: BorderSide(
+                    color: Theme.of(context)
+                        .colorScheme
+                        .primary
+                        .withValues(alpha: 0.5)),
+              ),
+              child: Icon(Icons.map_outlined,
+                  color: Theme.of(context).colorScheme.primary),
             ),
-          );
-        },
-        backgroundColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-          side: BorderSide(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5)),
-        ),
-        child: Icon(Icons.map_outlined, color: Theme.of(context).colorScheme.primary),
-      ),
     );
   }
 
   IconData _getFilterIcon(String filter) {
     switch (filter) {
-      case 'all': return Icons.explore_outlined;
-      case 'family': return Icons.people_outline_rounded;
-      case 'budget': return Icons.sell_outlined;
-      case 'ar': return Icons.view_in_ar_rounded;
+      case 'all':
+        return Icons.explore_outlined;
+      case 'family':
+        return Icons.people_outline_rounded;
+      case 'budget':
+        return Icons.sell_outlined;
     }
     if (filter.startsWith(_categoryFilterPrefix)) {
       final cat = filter.substring(_categoryFilterPrefix.length).toLowerCase();
       if (cat.contains('waterfall')) return Icons.water_drop_outlined;
-      if (cat.contains('beach') || cat.contains('coast') || cat.contains('ocean')) return Icons.waves_outlined;
-      if (cat.contains('hiking') || cat.contains('mountain') || cat.contains('peak')) return Icons.directions_walk_outlined;
-      if (cat.contains('temple') || cat.contains('religio') || cat.contains('sacred')) return Icons.temple_hindu_outlined;
-      if (cat.contains('histor') || cat.contains('ancient') || cat.contains('fort') || cat.contains('palace') || cat.contains('monument')) return Icons.account_balance_outlined;
-      if (cat.contains('nature') || cat.contains('park') || cat.contains('eco') || cat.contains('wildlife')) return Icons.forest_outlined;
-      if (cat.contains('food') || cat.contains('culinary')) return Icons.restaurant_outlined;
+      if (cat.contains('beach') ||
+          cat.contains('coast') ||
+          cat.contains('ocean')) return Icons.waves_outlined;
+      if (cat.contains('hiking') ||
+          cat.contains('mountain') ||
+          cat.contains('peak')) return Icons.directions_walk_outlined;
+      if (cat.contains('temple') ||
+          cat.contains('religio') ||
+          cat.contains('sacred')) return Icons.temple_hindu_outlined;
+      if (cat.contains('histor') ||
+          cat.contains('ancient') ||
+          cat.contains('fort') ||
+          cat.contains('palace') ||
+          cat.contains('monument')) return Icons.account_balance_outlined;
+      if (cat.contains('nature') ||
+          cat.contains('park') ||
+          cat.contains('eco') ||
+          cat.contains('wildlife')) return Icons.forest_outlined;
+      if (cat.contains('food') || cat.contains('culinary'))
+        return Icons.restaurant_outlined;
       if (cat.contains('museum')) return Icons.museum_outlined;
       if (cat.contains('tea')) return Icons.local_cafe_outlined;
     }
@@ -750,7 +811,10 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       elevation: 0,
       flexibleSpace: FlexibleSpaceBar(
-        stretchModes: const [StretchMode.zoomBackground, StretchMode.blurBackground],
+        stretchModes: const [
+          StretchMode.zoomBackground,
+          StretchMode.blurBackground
+        ],
         background: Stack(
           fit: StackFit.expand,
           children: [
@@ -768,7 +832,9 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
                   end: Alignment.bottomCenter,
                   colors: [
                     AppTheme.colors.black.withValues(alpha: 0.4),
-                    Theme.of(context).scaffoldBackgroundColor.withValues(alpha: 0.8),
+                    Theme.of(context)
+                        .scaffoldBackgroundColor
+                        .withValues(alpha: 0.8),
                     Theme.of(context).scaffoldBackgroundColor,
                   ],
                   stops: const [0.0, 0.7, 1.0],
@@ -788,7 +854,10 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
                       fontWeight: FontWeight.w800,
                       letterSpacing: -0.4,
                       shadows: [
-                        Shadow(color: AppTheme.colors.black38, offset: Offset(0, 2), blurRadius: 4)
+                        Shadow(
+                            color: AppTheme.colors.black38,
+                            offset: Offset(0, 2),
+                            blurRadius: 4)
                       ],
                     ),
                   ),
@@ -805,7 +874,8 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
                     ),
                     child: Row(
                       children: [
-                        Icon(Icons.search, color: AppTheme.textSecondary(context), size: 20),
+                        Icon(Icons.search,
+                            color: AppTheme.textSecondary(context), size: 20),
                         const SizedBox(width: 12),
                         Expanded(
                           child: TextField(
@@ -816,14 +886,22 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
                             decoration: InputDecoration(
                               hintText: l10n.searchHint,
                               hintStyle: GoogleFonts.inter(
-                                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onSurface
+                                    .withValues(alpha: 0.4),
                                 fontSize: 14,
                               ),
                               border: InputBorder.none,
                               isCollapsed: true,
                               suffixIcon: _searchController.text.isNotEmpty
                                   ? IconButton(
-                                      icon: Icon(Icons.clear, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6), size: 18),
+                                      icon: Icon(Icons.clear,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onSurface
+                                              .withValues(alpha: 0.6),
+                                          size: 18),
                                       onPressed: () {
                                         setState(() {
                                           _searchController.clear();
@@ -835,11 +913,14 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
                                     )
                                   : null,
                             ),
-                            style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+                            style: TextStyle(
+                                color: Theme.of(context).colorScheme.onSurface),
                           ),
                         ),
                         IconButton(
-                          icon: Icon(Icons.tune, color: Theme.of(context).colorScheme.primary, size: 22),
+                          icon: Icon(Icons.tune,
+                              color: Theme.of(context).colorScheme.primary,
+                              size: 22),
                           onPressed: () {
                             HapticFeedback.mediumImpact();
                             _showDiscoveryFilterModal();
@@ -884,9 +965,13 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
           if (index == _primaryFilters.length) {
             return OracleUI.glassChip(
               context: context,
-              label: isMoreSelected ? _filterLabel(context, _selectedFilter) : l10n.moreLabel,
+              label: isMoreSelected
+                  ? _filterLabel(context, _selectedFilter)
+                  : l10n.moreLabel,
               isSelected: isMoreSelected,
-              icon: isMoreSelected ? _getFilterIcon(_selectedFilter) : Icons.tune_rounded,
+              icon: isMoreSelected
+                  ? _getFilterIcon(_selectedFilter)
+                  : Icons.tune_rounded,
               onTap: _showMoreFiltersSheet,
             );
           }
@@ -916,11 +1001,18 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
         final isDark = Theme.of(context).brightness == Brightness.dark;
         final l10n = AppLocalizations.of(context)!;
         return Container(
-          constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.6),
+          constraints: BoxConstraints(
+              maxHeight: MediaQuery.of(context).size.height * 0.6),
           decoration: BoxDecoration(
-            color: isDark ? AppTheme.colors.primary.withValues(alpha: 0.95) : AppTheme.colors.white.withValues(alpha: 0.95),
+            color: isDark
+                ? AppTheme.colors.primary.withValues(alpha: 0.95)
+                : AppTheme.colors.white.withValues(alpha: 0.95),
             borderRadius: const BorderRadius.vertical(top: Radius.circular(40)),
-            border: Border.all(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2)),
+            border: Border.all(
+                color: Theme.of(context)
+                    .colorScheme
+                    .primary
+                    .withValues(alpha: 0.2)),
           ),
           child: OracleUI.glassContainer(
             radius: const BorderRadius.vertical(top: Radius.circular(40)),
@@ -934,7 +1026,10 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
                     width: 60,
                     height: 5,
                     decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.2),
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onSurface
+                          .withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
@@ -942,7 +1037,10 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
                 const SizedBox(height: 24),
                 OracleUI.neonText(
                   l10n.discoveryFiltersTitle,
-                  style: GoogleFonts.outfit(fontSize: 22, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.secondary),
+                  style: GoogleFonts.outfit(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.secondary),
                 ),
                 const SizedBox(height: 20),
                 Flexible(
@@ -979,22 +1077,20 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
     // are never constructed until they scroll into the viewport.
     final List<Widget> sections = [
       if (_oraclePicks.isNotEmpty) ...[
-        _buildSectionTitle(l10n.picksForYou, Icons.auto_awesome, places: _oraclePicks),
+        _buildSectionTitle(l10n.picksForYou, Icons.auto_awesome,
+            places: _oraclePicks),
         _buildHorizontalCards(_oraclePicks, l10n, isOracle: true),
         const SizedBox(height: 32),
       ],
-      if (_arPicks.isNotEmpty) ...[
-        _buildSectionTitle(l10n.exploreInAr, Icons.view_in_ar, places: _arPicks),
-        _buildHorizontalCards(_arPicks, l10n, isAR: true),
-        const SizedBox(height: 32),
-      ],
       if (_naturePicks.isNotEmpty) ...[
-        _buildSectionTitle(l10n.bestNatureNearby, Icons.park_outlined, places: _naturePicks),
+        _buildSectionTitle(l10n.bestNatureNearby, Icons.park_outlined,
+            places: _naturePicks),
         _buildHorizontalCards(_naturePicks, l10n),
         const SizedBox(height: 32),
       ],
       if (_culturePicks.isNotEmpty) ...[
-        _buildSectionTitle(l10n.topCultureSpots, Icons.temple_buddhist_outlined, places: _culturePicks),
+        _buildSectionTitle(l10n.topCultureSpots, Icons.temple_buddhist_outlined,
+            places: _culturePicks),
         _buildHorizontalCards(_culturePicks, l10n),
         const SizedBox(height: 32),
       ],
@@ -1011,7 +1107,10 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
       // distance so the "Nearby" name in the title is actually true — a place
       // across the country would otherwise appear ahead of one 2km away.
       if (_allPlaces.isNotEmpty) ...[
-        _buildSectionTitle(l10n.allNearbyPlacesTitle, Icons.travel_explore_outlined, places: [..._allPlaces]..sort((a, b) => a.distanceKm.compareTo(b.distanceKm))),
+        _buildSectionTitle(
+            l10n.allNearbyPlacesTitle, Icons.travel_explore_outlined,
+            places: [..._allPlaces]
+              ..sort((a, b) => a.distanceKm.compareTo(b.distanceKm))),
         _buildHorizontalCards(
           [..._allPlaces]..sort((a, b) => a.distanceKm.compareTo(b.distanceKm)),
           l10n,
@@ -1027,7 +1126,6 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
       ),
     );
   }
-
 
   Widget _buildVillageCards(List<VillageExperience> experiences) {
     return SizedBox(
@@ -1060,22 +1158,26 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
                         Expanded(
                           flex: 3,
                           child: ClipRRect(
-                            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+                            borderRadius: const BorderRadius.vertical(
+                                top: Radius.circular(24)),
                             child: CachedNetworkImage(
-                              imageUrl: exp.imageUrl, 
-                              fit: BoxFit.cover, 
+                              imageUrl: exp.imageUrl,
+                              fit: BoxFit.cover,
                               width: double.infinity,
                               memCacheWidth: 600,
                               memCacheHeight: 400,
                               placeholder: (context, url) => Shimmer.fromColors(
-                                baseColor: AppTheme.colors.white.withValues(alpha: 0.05),
-                                highlightColor: AppTheme.colors.white.withValues(alpha: 0.15),
+                                baseColor: AppTheme.colors.white
+                                    .withValues(alpha: 0.05),
+                                highlightColor: AppTheme.colors.white
+                                    .withValues(alpha: 0.15),
                                 child: Container(color: AppTheme.colors.white),
                               ),
                               errorWidget: (context, url, error) => Container(
                                 color: AppTheme.colors.black12,
                                 child: Center(
-                                  child: Icon(Icons.broken_image_outlined, color: AppTheme.colors.white24, size: 32),
+                                  child: Icon(Icons.broken_image_outlined,
+                                      color: AppTheme.colors.white24, size: 32),
                                 ),
                               ),
                             ),
@@ -1091,27 +1193,44 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
                               children: [
                                 Text(
                                   exp.name.toUpperCase(),
-                                  style: GoogleFonts.outfit(fontSize: 13, fontWeight: FontWeight.bold, color: AppTheme.textPrimary(context), letterSpacing: 0.5),
+                                  style: GoogleFonts.outfit(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.bold,
+                                      color: AppTheme.textPrimary(context),
+                                      letterSpacing: 0.5),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                 ),
                                 Row(
                                   children: [
-                                    Icon(Icons.person_pin_rounded, size: 10, color: Theme.of(context).colorScheme.secondary),
+                                    Icon(Icons.person_pin_rounded,
+                                        size: 10,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .secondary),
                                     const SizedBox(width: 4),
                                     Expanded(
                                       child: Text(
                                         exp.hostName.toUpperCase(),
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
-                                        style: GoogleFonts.inter(fontSize: 9, color: AppTheme.textSecondary(context), fontWeight: FontWeight.w600, letterSpacing: 0.5),
+                                        style: GoogleFonts.inter(
+                                            fontSize: 9,
+                                            color:
+                                                AppTheme.textSecondary(context),
+                                            fontWeight: FontWeight.w600,
+                                            letterSpacing: 0.5),
                                       ),
                                     ),
                                   ],
                                 ),
                                 OracleUI.neonText(
                                   "LKR ${exp.price}",
-                                  style: GoogleFonts.outfit(fontSize: 11, color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.w900),
+                                  style: GoogleFonts.outfit(
+                                      fontSize: 11,
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      fontWeight: FontWeight.w900),
                                 ),
                               ],
                             ),
@@ -1129,7 +1248,6 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
     );
   }
 
-
   Widget _buildListView(AppLocalizations l10n) {
     if (_filteredList.isEmpty) {
       return SliverFillRemaining(
@@ -1141,14 +1259,19 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
               children: [
                 OracleUI.premiumGlassCard(
                   padding: const EdgeInsets.all(32),
-                  child: Icon(Icons.search_off_rounded, size: 64, color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5)),
+                  child: Icon(Icons.search_off_rounded,
+                      size: 64,
+                      color: Theme.of(context)
+                          .colorScheme
+                          .primary
+                          .withValues(alpha: 0.5)),
                 ),
                 const SizedBox(height: 32),
                 OracleUI.neonText(
-                  l10n.noMatchesNearby.toUpperCase(), 
+                  l10n.noMatchesNearby.toUpperCase(),
                   style: GoogleFonts.outfit(
-                    fontSize: 20, 
-                    fontWeight: FontWeight.bold, 
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
                     color: AppTheme.textPrimary(context),
                     letterSpacing: 1,
                   ),
@@ -1157,10 +1280,10 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 40),
                   child: Text(
-                    l10n.tryIncreasingDistance, 
+                    l10n.tryIncreasingDistance,
                     textAlign: TextAlign.center,
                     style: GoogleFonts.inter(
-                      color: AppTheme.textSecondary(context), 
+                      color: AppTheme.textSecondary(context),
                       fontSize: 14,
                       height: 1.5,
                     ),
@@ -1173,8 +1296,13 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
                     _maxDistance = 100.0;
                     _applyFilter();
                   }),
-                  icon: Icon(Icons.refresh_rounded, color: Theme.of(context).colorScheme.primary),
-                  label: Text(l10n.resetAllFilters, style: GoogleFonts.outfit(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.bold, letterSpacing: 1)),
+                  icon: Icon(Icons.refresh_rounded,
+                      color: Theme.of(context).colorScheme.primary),
+                  label: Text(l10n.resetAllFilters,
+                      style: GoogleFonts.outfit(
+                          color: Theme.of(context).colorScheme.primary,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1)),
                 ),
               ],
             ),
@@ -1182,7 +1310,7 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
         ),
       );
     }
-    
+
     return SliverPadding(
       // Extra bottom clearance so the last card isn't hidden behind the
       // always-docked Oracle orb FAB from home_screen's outer Scaffold.
@@ -1209,8 +1337,8 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
     );
   }
 
-
-  Widget _buildSectionTitle(String title, IconData icon, {List<DiscoveryPlace>? places}) {
+  Widget _buildSectionTitle(String title, IconData icon,
+      {List<DiscoveryPlace>? places}) {
     final l10n = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
@@ -1237,7 +1365,8 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => SeeAllPlacesScreen(title: title, places: places),
+                    builder: (_) =>
+                        SeeAllPlacesScreen(title: title, places: places),
                   ),
                 );
               },
@@ -1279,224 +1408,271 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
           final place = places[index];
           // BUG-100: Assign unique key to avoid full redraws on horizontal scrolling
           return RepaintBoundary(
-            key: ValueKey('horiz_card_${isOracle ? "oracle" : (isAR ? "ar" : "normal")}_${place.id}'),
+            key: ValueKey(
+                'horiz_card_${isOracle ? "oracle" : (isAR ? "ar" : "normal")}_${place.id}'),
             child: OracleUI.staggeredEntrance(
               index: index,
               child: GestureDetector(
                 onTap: () => _openPlaceDetails(place),
-              child: Container(
-                width: isOracle ? 300 : (isAR ? 260 : 210),
-                margin: const EdgeInsets.symmetric(horizontal: 10),
-
-                child: OracleUI.premiumGlassCard(
-                  padding: EdgeInsets.zero,
-                  showGlow: isOracle || isAR,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(
-                        height: isOracle || isAR ? 158 : 138,
-                        child: Stack(
-                          children: [
-                            Positioned.fill(
-                              child: ClipRRect(
-                                borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-                                child: place.imageUrl.isEmpty
-                                    ? Container(
-                                        color: AppTheme.colors.black12,
-                                        child: Center(
-                                          child: Icon(Icons.image_outlined, color: AppTheme.colors.white24, size: 32),
-                                        ),
-                                      )
-                                    : CachedNetworkImage(
-                                        imageUrl: place.imageUrl,
-                                        width: double.infinity,
-                                        fit: BoxFit.cover,
-                                        memCacheWidth: 600,
-                                        memCacheHeight: 400,
-                                        placeholder: (context, url) => Shimmer.fromColors(
-                                          baseColor: AppTheme.colors.white.withValues(alpha: 0.05),
-                                          highlightColor: AppTheme.colors.white.withValues(alpha: 0.15),
-                                          child: Container(color: AppTheme.colors.white),
-                                        ),
-                                        errorWidget: (context, url, error) => Container(
+                child: Container(
+                  width: isOracle ? 300 : (isAR ? 260 : 210),
+                  margin: const EdgeInsets.symmetric(horizontal: 10),
+                  child: OracleUI.premiumGlassCard(
+                    padding: EdgeInsets.zero,
+                    showGlow: isOracle || isAR,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(
+                          height: isOracle || isAR ? 158 : 138,
+                          child: Stack(
+                            children: [
+                              Positioned.fill(
+                                child: ClipRRect(
+                                  borderRadius: const BorderRadius.vertical(
+                                      top: Radius.circular(24)),
+                                  child: place.imageUrl.isEmpty
+                                      ? Container(
                                           color: AppTheme.colors.black12,
                                           child: Center(
-                                            child: Icon(Icons.broken_image_outlined, color: AppTheme.colors.white24, size: 32),
+                                            child: Icon(Icons.image_outlined,
+                                                color: AppTheme.colors.white24,
+                                                size: 32),
+                                          ),
+                                        )
+                                      : CachedNetworkImage(
+                                          imageUrl: place.imageUrl,
+                                          width: double.infinity,
+                                          fit: BoxFit.cover,
+                                          memCacheWidth: 600,
+                                          memCacheHeight: 400,
+                                          placeholder: (context, url) =>
+                                              Shimmer.fromColors(
+                                            baseColor: AppTheme.colors.white
+                                                .withValues(alpha: 0.05),
+                                            highlightColor: AppTheme
+                                                .colors.white
+                                                .withValues(alpha: 0.15),
+                                            child: Container(
+                                                color: AppTheme.colors.white),
+                                          ),
+                                          errorWidget: (context, url, error) =>
+                                              Container(
+                                            color: AppTheme.colors.black12,
+                                            child: Center(
+                                              child: Icon(
+                                                  Icons.broken_image_outlined,
+                                                  color:
+                                                      AppTheme.colors.white24,
+                                                  size: 32),
+                                            ),
                                           ),
                                         ),
-                                      ),
+                                ),
                               ),
-                            ),
-                            Positioned.fill(
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-                                  gradient: LinearGradient(
-                                    begin: Alignment.topCenter,
-                                    end: Alignment.bottomCenter,
-                                    colors: [
-                                      AppTheme.colors.black.withValues(alpha: 0.1),
-                                      AppTheme.colors.black.withValues(alpha: 0.4),
-                                    ],
+                              Positioned.fill(
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: const BorderRadius.vertical(
+                                        top: Radius.circular(24)),
+                                    gradient: LinearGradient(
+                                      begin: Alignment.topCenter,
+                                      end: Alignment.bottomCenter,
+                                      colors: [
+                                        AppTheme.colors.black
+                                            .withValues(alpha: 0.1),
+                                        AppTheme.colors.black
+                                            .withValues(alpha: 0.4),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                            if (place.arSupported && AppConfig.arFeatureEnabled)
                               Positioned(
-                                top: 12,
-                                right: 12,
-                                child: OracleUI.glassContainer(
-                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                                  radius: BorderRadius.circular(12),
-                                  opacity: 0.2,
+                                left: 12,
+                                bottom: 12,
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10, vertical: 6),
+                                  decoration: BoxDecoration(
+                                    color: AppTheme.colors.black
+                                        .withValues(alpha: 0.62),
+                                    borderRadius: BorderRadius.circular(100),
+                                    border: Border.all(
+                                        color: AppTheme.colors.white
+                                            .withValues(alpha: 0.16)),
+                                  ),
                                   child: Row(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      Icon(Icons.view_in_ar_rounded, color: Theme.of(context).colorScheme.secondary, size: 14),
-                                      const SizedBox(width: 6),
+                                      Icon(Icons.near_me_rounded,
+                                          size: 12,
+                                          color: AppTheme.colors.white),
+                                      const SizedBox(width: 5),
                                       Text(
-                                        l10n.arBadge,
-                                        style: GoogleFonts.outfit(color: AppTheme.colors.white, fontWeight: FontWeight.bold, fontSize: 10, letterSpacing: 1),
+                                        "${place.distanceKm.toStringAsFixed(1)} km",
+                                        style: GoogleFonts.inter(
+                                            color: AppTheme.colors.white,
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.w700),
                                       ),
                                     ],
                                   ),
                                 ),
                               ),
-                            Positioned(
-                              left: 12,
-                              bottom: 12,
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                                decoration: BoxDecoration(
-                                  color: AppTheme.colors.black.withValues(alpha: 0.62),
-                                  borderRadius: BorderRadius.circular(100),
-                                  border: Border.all(color: AppTheme.colors.white.withValues(alpha: 0.16)),
-                                ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(Icons.near_me_rounded, size: 12, color: AppTheme.colors.white),
-                                    const SizedBox(width: 5),
-                                    Text(
-                                      "${place.distanceKm.toStringAsFixed(1)} km",
-                                      style: GoogleFonts.inter(color: AppTheme.colors.white, fontSize: 10, fontWeight: FontWeight.w700),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.fromLTRB(14, 12, 12, 12),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    place.name,
-                                    style: GoogleFonts.outfit(
-                                      fontSize: isOracle ? 17 : 14,
-                                      fontWeight: FontWeight.w800,
-                                      height: 1.12,
-                                      color: AppTheme.textPrimary(context),
-                                    ),
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  const SizedBox(height: 5),
-                                  Text(
-                                    [
-                                      L10nUtils.getLocalizedCategory(context, place.category),
-                                      _resolveDistrict(place),
-                                    ].where((value) => value.isNotEmpty).join(' • '),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: GoogleFonts.inter(fontSize: 10, color: AppTheme.textSecondary(context), fontWeight: FontWeight.w500),
-                                  ),
-                                ],
-                              ),
-                              Row(
-                                children: [
-                                  Icon(Icons.star_rounded, size: 15, color: AppPalette.heroOchre),
-                                  const SizedBox(width: 3),
-                                  Text(
-                                    place.rating > 0 ? place.rating.toStringAsFixed(1) : '—',
-                                    style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w700, color: AppTheme.textPrimary(context)),
-                                  ),
-                                  const Spacer(),
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
-                                    decoration: BoxDecoration(
-                                      color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.10),
-                                      borderRadius: BorderRadius.circular(100),
-                                    ),
-                                    child: Text(
-                                      place.ticketRange,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: GoogleFonts.outfit(fontSize: 10, color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.w800),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 7),
-                                  Container(
-                                    width: 27,
-                                    height: 27,
-                                    decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary, shape: BoxShape.circle),
-                                    child: Icon(Icons.arrow_forward_rounded, size: 15, color: AppTheme.colors.white),
-                                  ),
-                                ],
-                              ),
-                              if (isOracle && place.aiReason.isNotEmpty) ...[
-                                const Spacer(),
-                                Container(
-                                  padding: const EdgeInsets.all(8),
-                                  width: double.infinity,
-                                  decoration: BoxDecoration(
-                                    color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.05),
-                                    borderRadius: BorderRadius.circular(12),
-                                    border: Border.all(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1)),
-                                  ),
-                                  child: Row(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Icon(Icons.auto_awesome, color: Theme.of(context).colorScheme.primary, size: 12),
-                                      const SizedBox(width: 6),
-                                      Expanded(
-                                        child: Text(
-                                          place.aiReason,
-                                          style: GoogleFonts.inter(
-                                            fontSize: 9.5,
-                                            fontStyle: FontStyle.italic,
-                                            color: AppTheme.textPrimary(context).withValues(alpha: 0.8),
-                                            height: 1.3,
-                                          ),
-                                          maxLines: 2,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ]
                             ],
                           ),
                         ),
-                      )
-                    ],
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(14, 12, 12, 12),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      place.name,
+                                      style: GoogleFonts.outfit(
+                                        fontSize: isOracle ? 17 : 14,
+                                        fontWeight: FontWeight.w800,
+                                        height: 1.12,
+                                        color: AppTheme.textPrimary(context),
+                                      ),
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    const SizedBox(height: 5),
+                                    Text(
+                                      [
+                                        L10nUtils.getLocalizedCategory(
+                                            context, place.category),
+                                        _resolveDistrict(place),
+                                      ]
+                                          .where((value) => value.isNotEmpty)
+                                          .join(' • '),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: GoogleFonts.inter(
+                                          fontSize: 10,
+                                          color:
+                                              AppTheme.textSecondary(context),
+                                          fontWeight: FontWeight.w500),
+                                    ),
+                                  ],
+                                ),
+                                Row(
+                                  children: [
+                                    Icon(Icons.star_rounded,
+                                        size: 15, color: AppPalette.heroOchre),
+                                    const SizedBox(width: 3),
+                                    Text(
+                                      place.rating > 0
+                                          ? place.rating.toStringAsFixed(1)
+                                          : '—',
+                                      style: GoogleFonts.inter(
+                                          fontSize: 11,
+                                          fontWeight: FontWeight.w700,
+                                          color: AppTheme.textPrimary(context)),
+                                    ),
+                                    const Spacer(),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 9, vertical: 5),
+                                      decoration: BoxDecoration(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .primary
+                                            .withValues(alpha: 0.10),
+                                        borderRadius:
+                                            BorderRadius.circular(100),
+                                      ),
+                                      child: Text(
+                                        place.ticketRange,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: GoogleFonts.outfit(
+                                            fontSize: 10,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .primary,
+                                            fontWeight: FontWeight.w800),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 7),
+                                    Container(
+                                      width: 27,
+                                      height: 27,
+                                      decoration: BoxDecoration(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .primary,
+                                          shape: BoxShape.circle),
+                                      child: Icon(Icons.arrow_forward_rounded,
+                                          size: 15,
+                                          color: AppTheme.colors.white),
+                                    ),
+                                  ],
+                                ),
+                                if (isOracle && place.aiReason.isNotEmpty) ...[
+                                  const Spacer(),
+                                  Container(
+                                    padding: const EdgeInsets.all(8),
+                                    width: double.infinity,
+                                    decoration: BoxDecoration(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .primary
+                                          .withValues(alpha: 0.05),
+                                      borderRadius: BorderRadius.circular(12),
+                                      border: Border.all(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .primary
+                                              .withValues(alpha: 0.1)),
+                                    ),
+                                    child: Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Icon(Icons.auto_awesome,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .primary,
+                                            size: 12),
+                                        const SizedBox(width: 6),
+                                        Expanded(
+                                          child: Text(
+                                            place.aiReason,
+                                            style: GoogleFonts.inter(
+                                              fontSize: 9.5,
+                                              fontStyle: FontStyle.italic,
+                                              color:
+                                                  AppTheme.textPrimary(context)
+                                                      .withValues(alpha: 0.8),
+                                              height: 1.3,
+                                            ),
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ]
+                              ],
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-        );
+          );
         },
       ),
     );
@@ -1506,7 +1682,7 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
     return OracleUI.premiumGlassCard(
       padding: EdgeInsets.zero,
       radius: BorderRadius.circular(24),
-      showGlow: place.arSupported,
+      showGlow: false,
       child: InkWell(
         onTap: () => _openPlaceDetails(place),
         borderRadius: BorderRadius.circular(24),
@@ -1527,7 +1703,8 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
                           ? Container(
                               color: AppTheme.colors.black12,
                               child: Center(
-                                child: Icon(Icons.image_outlined, color: AppTheme.colors.white24, size: 32),
+                                child: Icon(Icons.image_outlined,
+                                    color: AppTheme.colors.white24, size: 32),
                               ),
                             )
                           : CachedNetworkImage(
@@ -1536,14 +1713,17 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
                               memCacheWidth: 600,
                               memCacheHeight: 400,
                               placeholder: (context, url) => Shimmer.fromColors(
-                                baseColor: AppTheme.colors.white.withValues(alpha: 0.05),
-                                highlightColor: AppTheme.colors.white.withValues(alpha: 0.15),
+                                baseColor: AppTheme.colors.white
+                                    .withValues(alpha: 0.05),
+                                highlightColor: AppTheme.colors.white
+                                    .withValues(alpha: 0.15),
                                 child: Container(color: AppTheme.colors.white),
                               ),
                               errorWidget: (context, url, error) => Container(
                                 color: AppTheme.colors.black12,
                                 child: Center(
-                                  child: Icon(Icons.broken_image_outlined, color: AppTheme.colors.white24, size: 32),
+                                  child: Icon(Icons.broken_image_outlined,
+                                      color: AppTheme.colors.white24, size: 32),
                                 ),
                               ),
                             ),
@@ -1553,13 +1733,15 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
                     top: 12,
                     left: 12,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
                         color: AppTheme.colors.black87,
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
-                        L10nUtils.getLocalizedCategory(context, place.category).toUpperCase(),
+                        L10nUtils.getLocalizedCategory(context, place.category)
+                            .toUpperCase(),
                         style: GoogleFonts.outfit(
                           color: AppTheme.colors.white,
                           fontSize: 8,
@@ -1597,36 +1779,12 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
                         ],
                       ),
                       const SizedBox(height: 6),
-                      if (place.arSupported) ...[
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.secondary.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: Theme.of(context).colorScheme.secondary.withValues(alpha: 0.2)),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(Icons.view_in_ar_rounded, size: 10, color: Theme.of(context).colorScheme.secondary),
-                              const SizedBox(width: 6),
-                              Text(
-                                l10n.heritageArBadge,
-                                style: GoogleFonts.outfit(
-                                  color: Theme.of(context).colorScheme.secondary,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 9,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 6),
-                      ],
                       const Spacer(),
                       Row(
                         children: [
-                          Icon(Icons.location_on_rounded, size: 14, color: Theme.of(context).colorScheme.primary),
+                          Icon(Icons.location_on_rounded,
+                              size: 14,
+                              color: Theme.of(context).colorScheme.primary),
                           const SizedBox(width: 4),
                           Text(
                             "${place.distanceKm.toStringAsFixed(1)} km",
@@ -1648,7 +1806,8 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen> with Automati
                           const SizedBox(width: 8),
                           Icon(
                             Icons.chevron_right_rounded,
-                            color: AppTheme.textSecondary(context).withValues(alpha: 0.5),
+                            color: AppTheme.textSecondary(context)
+                                .withValues(alpha: 0.5),
                             size: 18,
                           ),
                         ],
@@ -1672,7 +1831,8 @@ class SeeAllPlacesScreen extends StatelessWidget {
   final String title;
   final List<DiscoveryPlace> places;
 
-  const SeeAllPlacesScreen({super.key, required this.title, required this.places});
+  const SeeAllPlacesScreen(
+      {super.key, required this.title, required this.places});
 
   @override
   Widget build(BuildContext context) {
@@ -1683,7 +1843,10 @@ class SeeAllPlacesScreen extends StatelessWidget {
         elevation: 0,
         title: Text(
           title,
-          style: GoogleFonts.outfit(fontSize: 17, fontWeight: FontWeight.w700, color: AppTheme.textPrimary(context)),
+          style: GoogleFonts.outfit(
+              fontSize: 17,
+              fontWeight: FontWeight.w700,
+              color: AppTheme.textPrimary(context)),
         ),
         iconTheme: IconThemeData(color: AppTheme.textPrimary(context)),
       ),
@@ -1701,7 +1864,10 @@ class SeeAllPlacesScreen extends StatelessWidget {
           return GestureDetector(
             onTap: () {
               HapticFeedback.selectionClick();
-              Navigator.push(context, MaterialPageRoute(builder: (_) => PlaceDetailsScreen(place: place)));
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (_) => PlaceDetailsScreen(place: place)));
             },
             child: OracleUI.premiumGlassCard(
               padding: EdgeInsets.zero,
@@ -1710,11 +1876,15 @@ class SeeAllPlacesScreen extends StatelessWidget {
                 children: [
                   Expanded(
                     child: ClipRRect(
-                      borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+                      borderRadius:
+                          const BorderRadius.vertical(top: Radius.circular(24)),
                       child: place.imageUrl.isEmpty
                           ? Container(
                               color: AppTheme.colors.black12,
-                              child: Center(child: Icon(Icons.image_outlined, color: AppTheme.colors.white24, size: 32)),
+                              child: Center(
+                                  child: Icon(Icons.image_outlined,
+                                      color: AppTheme.colors.white24,
+                                      size: 32)),
                             )
                           : CachedNetworkImage(
                               imageUrl: place.imageUrl,
@@ -1722,13 +1892,18 @@ class SeeAllPlacesScreen extends StatelessWidget {
                               fit: BoxFit.cover,
                               memCacheWidth: 400,
                               placeholder: (context, url) => Shimmer.fromColors(
-                                baseColor: AppTheme.colors.white.withValues(alpha: 0.05),
-                                highlightColor: AppTheme.colors.white.withValues(alpha: 0.15),
+                                baseColor: AppTheme.colors.white
+                                    .withValues(alpha: 0.05),
+                                highlightColor: AppTheme.colors.white
+                                    .withValues(alpha: 0.15),
                                 child: Container(color: AppTheme.colors.white),
                               ),
                               errorWidget: (context, url, error) => Container(
                                 color: AppTheme.colors.black12,
-                                child: Center(child: Icon(Icons.broken_image_outlined, color: AppTheme.colors.white24, size: 32)),
+                                child: Center(
+                                    child: Icon(Icons.broken_image_outlined,
+                                        color: AppTheme.colors.white24,
+                                        size: 32)),
                               ),
                             ),
                     ),
@@ -1743,21 +1918,31 @@ class SeeAllPlacesScreen extends StatelessWidget {
                           place.name,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: GoogleFonts.outfit(fontSize: 13, fontWeight: FontWeight.w800, color: AppTheme.textPrimary(context)),
+                          style: GoogleFonts.outfit(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w800,
+                              color: AppTheme.textPrimary(context)),
                         ),
                         const SizedBox(height: 4),
                         Row(
                           children: [
                             Text(
                               "${place.distanceKm.toStringAsFixed(1)} km",
-                              style: GoogleFonts.inter(fontSize: 11, color: AppTheme.textSecondary(context), fontWeight: FontWeight.w500),
+                              style: GoogleFonts.inter(
+                                  fontSize: 11,
+                                  color: AppTheme.textSecondary(context),
+                                  fontWeight: FontWeight.w500),
                             ),
                             const Spacer(),
                             Flexible(
                               child: Text(
                                 place.ticketRange,
                                 overflow: TextOverflow.ellipsis,
-                                style: GoogleFonts.outfit(fontSize: 11, color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.w700),
+                                style: GoogleFonts.outfit(
+                                    fontSize: 11,
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
+                                    fontWeight: FontWeight.w700),
                               ),
                             ),
                           ],

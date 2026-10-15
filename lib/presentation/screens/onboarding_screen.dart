@@ -86,14 +86,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 alignment: Alignment.topRight,
                 child: TextButton(
                   onPressed: _finish,
-                  child: Text(
-                    l10n?.skipForNow ?? "Skip for now",
-                    style: GoogleFonts.inter(
-                      color: AppTheme.textSecondary(context),
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                    )
-                  ),
+                  child: Text(l10n?.skipForNow ?? "Skip for now",
+                      style: GoogleFonts.inter(
+                        color: AppTheme.textSecondary(context),
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                      )),
                 ),
               ),
               // Pages
@@ -137,21 +135,32 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             spacing: 16,
             runSpacing: 16,
             alignment: WrapAlignment.center,
-            children: gems.asMap().entries.map((e) => _gemBubble(e.value.$1, e.value.$2, e.key)).toList(),
+            children: gems
+                .asMap()
+                .entries
+                .map((e) => _gemBubble(e.value.$1, e.value.$2, e.key))
+                .toList(),
           ),
           const SizedBox(height: 60),
           Text(
             "Discover hidden gems",
             textAlign: TextAlign.center,
             style: GoogleFonts.outfit(
-              fontSize: 30, fontWeight: FontWeight.w800, color: AppTheme.textPrimary(context), height: 1.1, letterSpacing: -0.5,
+              fontSize: 30,
+              fontWeight: FontWeight.w800,
+              color: AppTheme.textPrimary(context),
+              height: 1.1,
+              letterSpacing: -0.5,
             ),
           ),
           const SizedBox(height: 24),
           Text(
             "Explore over 500 off-the-beaten-path locations curated by locals — places you won't find in any guidebook.",
             textAlign: TextAlign.center,
-            style: GoogleFonts.inter(fontSize: 15, color: AppTheme.textSecondary(context), height: 1.6),
+            style: GoogleFonts.inter(
+                fontSize: 15,
+                color: AppTheme.textSecondary(context),
+                height: 1.6),
           ),
         ],
       ).animate().fadeIn(duration: 600.ms).slideY(begin: 0.1, end: 0),
@@ -168,14 +177,18 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         children: [
           Icon(icon, color: Theme.of(context).colorScheme.primary, size: 26),
           const SizedBox(height: 12),
-          Text(
-            label,
-            textAlign: TextAlign.center,
-            style: GoogleFonts.inter(fontSize: 11, color: AppTheme.textSecondary(context), fontWeight: FontWeight.w600)
-          ),
+          Text(label,
+              textAlign: TextAlign.center,
+              style: GoogleFonts.inter(
+                  fontSize: 11,
+                  color: AppTheme.textSecondary(context),
+                  fontWeight: FontWeight.w600)),
         ],
       ),
-    ).animate().fadeIn(delay: (200 * index).ms).scale(begin: const Offset(0.8, 0.8));
+    )
+        .animate()
+        .fadeIn(delay: (200 * index).ms)
+        .scale(begin: const Offset(0.8, 0.8));
   }
 
   // ── Slide 2: AI Travel Planner ────────────────────────────
@@ -183,16 +196,18 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     return const _OnboardingSlide(
       icon: Icons.auto_awesome_rounded,
       title: "Plan Smarter with AI",
-      description: "Tell the Oracle where you want to go.\nGet a full personalized itinerary for Sri Lanka in seconds.",
+      description:
+          "Tell the Oracle where you want to go.\nGet a full personalized itinerary for Sri Lanka in seconds.",
     );
   }
 
   // ── Slide 3: Immersive AR Viewer ──────────────────────────
   Widget _buildSlide3() {
     return const _OnboardingSlide(
-      icon: Icons.view_in_ar_rounded,
-      title: "Step Into History",
-      description: "Unlock detailed 3D historical reconstructions of monuments. Watch past eras come alive in real-time.",
+      icon: Icons.map_rounded,
+      title: "Explore with Confidence",
+      description:
+          "Save useful travel details, discover nearby places, and keep essential guidance available during your journey.",
     );
   }
 
@@ -201,7 +216,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     return const _OnboardingSlide(
       icon: Icons.person_pin_circle_rounded,
       title: "Verified Local Guides",
-      description: "Connect with certified regional tour guides. Request custom bookings and secure narrative tours directly.",
+      description:
+          "Connect with certified regional tour guides. Request custom bookings and secure narrative tours directly.",
     );
   }
 
@@ -210,7 +226,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     return const _OnboardingSlide(
       icon: Icons.security_rounded,
       title: "Zenith Safety Shield",
-      description: "Explore with peace of mind. Live local safety alerts, offline map backups, and one-tap emergency SOS broadcasts.",
+      description:
+          "Explore with peace of mind. Live local safety alerts, offline map backups, and one-tap emergency SOS broadcasts.",
     );
   }
 
@@ -229,7 +246,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 32),
           child: PrimaryButton(
-            label: _currentPage == 4 ? "Begin journey" : (l10n?.continueButton ?? "Continue"),
+            label: _currentPage == 4
+                ? "Begin journey"
+                : (l10n?.continueButton ?? "Continue"),
             onPressed: _next,
           ),
         ),
@@ -245,7 +264,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       width: active ? 28 : 8,
       height: 6,
       decoration: BoxDecoration(
-        color: active ? Theme.of(context).colorScheme.primary : AppTheme.surfaceMuted(context),
+        color: active
+            ? Theme.of(context).colorScheme.primary
+            : AppTheme.surfaceMuted(context),
         borderRadius: BorderRadius.circular(4),
       ),
     );
@@ -273,22 +294,31 @@ class _OnboardingSlide extends StatelessWidget {
           OracleUI.glassContainer(
             padding: const EdgeInsets.all(32),
             borderRadius: BorderRadius.circular(50),
-            borderColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
-            child: Icon(icon, size: 64, color: Theme.of(context).colorScheme.primary),
+            borderColor:
+                Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
+            child: Icon(icon,
+                size: 64, color: Theme.of(context).colorScheme.primary),
           ),
           const SizedBox(height: 60),
           Text(
             title,
             textAlign: TextAlign.center,
             style: GoogleFonts.outfit(
-              fontSize: 30, fontWeight: FontWeight.w800, color: AppTheme.textPrimary(context), height: 1.1, letterSpacing: -0.5,
+              fontSize: 30,
+              fontWeight: FontWeight.w800,
+              color: AppTheme.textPrimary(context),
+              height: 1.1,
+              letterSpacing: -0.5,
             ),
           ),
           const SizedBox(height: 24),
           Text(
             description,
             textAlign: TextAlign.center,
-            style: GoogleFonts.inter(fontSize: 15, color: AppTheme.textSecondary(context), height: 1.6),
+            style: GoogleFonts.inter(
+                fontSize: 15,
+                color: AppTheme.textSecondary(context),
+                height: 1.6),
           ),
         ],
       ).animate().fadeIn(duration: 600.ms).slideY(begin: 0.1, end: 0),

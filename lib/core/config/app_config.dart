@@ -9,12 +9,16 @@ class AppConfig {
 
   static const String laravelUrl = String.fromEnvironment(
     'LARAVEL_BACKEND_URL',
-    defaultValue: kReleaseMode ? "https://api.hidengem.xyz/api/v1" : "http://192.168.8.168:8888/api/v1",
+    defaultValue: kReleaseMode
+        ? "https://api.hidengem.xyz/api/v1"
+        : "http://192.168.8.168:8888/api/v1",
   );
 
   static const String pythonUrl = String.fromEnvironment(
     'PYTHON_BACKEND_URL',
-    defaultValue: kReleaseMode ? "https://ai.hiddengemssl.com/api" : "http://192.168.8.168:8000/api",
+    defaultValue: kReleaseMode
+        ? "https://ai.hiddengemssl.com/api"
+        : "http://192.168.8.168:8000/api",
   );
 
   // Alias for backward compatibility (defaults to Laravel backend)
@@ -37,8 +41,8 @@ class AppConfig {
       final uri = Uri.parse(laravelUrl);
       final scheme = uri.scheme == 'https' ? 'wss' : 'ws';
       final explicitPort = const String.fromEnvironment('REVERB_PORT');
-      final port = explicitPort.isNotEmpty 
-          ? int.parse(explicitPort) 
+      final port = explicitPort.isNotEmpty
+          ? int.parse(explicitPort)
           : ((uri.port == 8888 || uri.port == 80) ? 8080 : uri.port);
       return '$scheme://${uri.host}:$port/app/hiddengems_reverb_key?protocol=7&client=js&version=8.0.0&flash=false';
     } catch (_) {
@@ -121,7 +125,9 @@ class AppConfig {
 
   static const String nodeProxyUrl = String.fromEnvironment(
     'NODE_PROXY_URL',
-    defaultValue: kReleaseMode ? "https://api.hidengem.xyz/api/v1" : "http://192.168.8.102:8888/api/v1",
+    defaultValue: kReleaseMode
+        ? "https://api.hidengem.xyz/api/v1"
+        : "http://192.168.8.102:8888/api/v1",
   );
 
   static const String cdnBaseUrl = String.fromEnvironment(
@@ -159,8 +165,6 @@ class AppConfig {
   // Heritage AR models aren't ready yet (no trained/production 3D assets) —
   // flip to true once real AR content ships, rather than reverting every
   // place.arSupported gate this flag guards across place_details_screen.dart.
-  static const bool arFeatureEnabled = false;
-
   static final String sharedAesKey = const String.fromEnvironment(
     'SHARED_AES_KEY',
     defaultValue: "DEFAULT_NON_PROD_AES_KEY", // Non-prod placeholder
@@ -185,7 +189,8 @@ class AppConfig {
     // In production and profile modes, missing or placeholder keys will fail hard.
     // In debug mode, allow default placeholder keys without crashing so developers/users can test locally.
     if (kDebugMode) {
-      SecureLogger.info('[AppConfig] Running in debug mode. Default/placeholder environment keys allowed.');
+      SecureLogger.info(
+          '[AppConfig] Running in debug mode. Default/placeholder environment keys allowed.');
       return;
     }
 
@@ -198,7 +203,8 @@ class AppConfig {
     // regardless of what's actually passed at build time, permanently
     // failing validation no matter how the real secret was supplied. Removed.
     if (isPlaceholder(hiddenGemsApiKey)) {
-      throw AssertionError("CRITICAL: Must configure a valid HIDDEN_GEMS_API_KEY environment variable.");
+      throw AssertionError(
+          "CRITICAL: Must configure a valid HIDDEN_GEMS_API_KEY environment variable.");
     }
     // TEMPORARY: RevenueCat/HMAC/AES secrets are not yet provisioned for this
     // build — relaxed to warnings so the app can ship with core
@@ -206,8 +212,11 @@ class AppConfig {
     // while subscriptions/entitlement-signing stay non-functional until
     // real secrets are configured. Restore the throws below once those
     // secrets exist.
-    if (isPlaceholder(revenueCatApiKeyAndroid) || isPlaceholder(revenueCatApiKeyIos)) {
-      SecureLogger.warning("RevenueCat API Keys not configured (BUG-Q001) — subscriptions will not work.", tag: "AppConfig");
+    if (isPlaceholder(revenueCatApiKeyAndroid) ||
+        isPlaceholder(revenueCatApiKeyIos)) {
+      SecureLogger.warning(
+          "RevenueCat API Keys not configured (BUG-Q001) — subscriptions will not work.",
+          tag: "AppConfig");
     }
     if (isPlaceholder(sharedSecret)) {
       SecureLogger.warning("HMAC_SECRET not configured.", tag: "AppConfig");
@@ -222,7 +231,8 @@ class AppConfig {
       SecureLogger.warning("SHARED_HMAC_KEY not configured.", tag: "AppConfig");
     }
     if (isPlaceholder(hmacExpirySecret)) {
-      SecureLogger.warning("HMAC_EXPIRY_SECRET not configured.", tag: "AppConfig");
+      SecureLogger.warning("HMAC_EXPIRY_SECRET not configured.",
+          tag: "AppConfig");
     }
     // App Store ID only exists for the iOS listing (used to build the App
     // Store review-request/update-check link) — Android has no equivalent,
@@ -239,7 +249,8 @@ class AppConfig {
     // hard-failing every release build over one unconfigured secondary
     // button would be disproportionate. Leaving it unset just means that
     // button fails cleanly at tap time instead of at launch.
-    if (Platform.isAndroid && (isPlaceholder(appleServiceId) || isPlaceholder(appleRedirectUri))) {
+    if (Platform.isAndroid &&
+        (isPlaceholder(appleServiceId) || isPlaceholder(appleRedirectUri))) {
       SecureLogger.warning(
         "Apple Sign-In is not configured (APPLE_SERVICE_ID/APPLE_REDIRECT_URI still placeholder) — "
         "the Apple Sign-In button will fail for any user who taps it on Android.",
@@ -247,22 +258,27 @@ class AppConfig {
       );
     }
     if (isPlaceholder(weatherApiKey)) {
-      SecureLogger.warning("WEATHER_API_KEY not configured — weather feature will not work.", tag: "AppConfig");
+      SecureLogger.warning(
+          "WEATHER_API_KEY not configured — weather feature will not work.",
+          tag: "AppConfig");
     }
-    if (isPlaceholder(const String.fromEnvironment('ADMOB_BANNER_ID', defaultValue: 'YOUR_REAL_BANNER_ID'))) {
+    if (isPlaceholder(const String.fromEnvironment('ADMOB_BANNER_ID',
+        defaultValue: 'YOUR_REAL_BANNER_ID'))) {
       SecureLogger.warning("ADMOB_BANNER_ID not configured.", tag: "AppConfig");
     }
-    if (isPlaceholder(const String.fromEnvironment('ADMOB_INTERSTITIAL_ID', defaultValue: 'YOUR_REAL_INTERSTITIAL_ID'))) {
-      SecureLogger.warning("ADMOB_INTERSTITIAL_ID not configured.", tag: "AppConfig");
+    if (isPlaceholder(const String.fromEnvironment('ADMOB_INTERSTITIAL_ID',
+        defaultValue: 'YOUR_REAL_INTERSTITIAL_ID'))) {
+      SecureLogger.warning("ADMOB_INTERSTITIAL_ID not configured.",
+          tag: "AppConfig");
     }
-    if (isPlaceholder(const String.fromEnvironment('ADMOB_REWARDED_ID', defaultValue: 'YOUR_REAL_REWARDED_ID'))) {
-      SecureLogger.warning("ADMOB_REWARDED_ID not configured.", tag: "AppConfig");
+    if (isPlaceholder(const String.fromEnvironment('ADMOB_REWARDED_ID',
+        defaultValue: 'YOUR_REAL_REWARDED_ID'))) {
+      SecureLogger.warning("ADMOB_REWARDED_ID not configured.",
+          tag: "AppConfig");
     }
-    if (isPlaceholder(const String.fromEnvironment('ADMOB_NATIVE_ID', defaultValue: 'YOUR_REAL_NATIVE_ID'))) {
+    if (isPlaceholder(const String.fromEnvironment('ADMOB_NATIVE_ID',
+        defaultValue: 'YOUR_REAL_NATIVE_ID'))) {
       SecureLogger.warning("ADMOB_NATIVE_ID not configured.", tag: "AppConfig");
     }
   }
 }
-
-
-

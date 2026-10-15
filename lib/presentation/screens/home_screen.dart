@@ -26,8 +26,6 @@ import '../../data/datasources/dynamic_content_service.dart';
 import '../../data/models/event_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'savor_lanka_screen.dart';
-import '../../features/ar_video/screens/ar_video_library_screen.dart';
-import 'ar_coming_soon_screen.dart';
 import '../widgets/banner_ad_widget.dart';
 import '../widgets/native_ad_widget.dart';
 import '../../data/models/discovery_place.dart';
@@ -377,9 +375,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ),
         child: Row(
           children: [
-            Icon(Icons.cloud_off_rounded, size: 17, color: AppTheme.textSecondary(context)),
+            Icon(Icons.cloud_off_rounded,
+                size: 17, color: AppTheme.textSecondary(context)),
             const SizedBox(width: 8),
-            Expanded(child: Text('Live hazard data unavailable', style: GoogleFonts.inter(fontSize: 11, color: AppTheme.textSecondary(context)))),
+            Expanded(
+                child: Text('Live hazard data unavailable',
+                    style: GoogleFonts.inter(
+                        fontSize: 11, color: AppTheme.textSecondary(context)))),
           ],
         ),
       );
@@ -438,7 +440,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 const SizedBox(height: 3),
                 Text(
                   '${hazard.source} · ${hazard.updatedAt == null ? 'Live check' : 'Updated ${hazard.updatedAt}'}${hazard.expiresAt == null ? '' : ' · Expires ${hazard.expiresAt}'}',
-                  style: GoogleFonts.inter(fontSize: 9, color: AppTheme.textSecondary(context)),
+                  style: GoogleFonts.inter(
+                      fontSize: 9, color: AppTheme.textSecondary(context)),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -733,24 +736,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         context,
                         MaterialPageRoute(
                             builder: (_) => const SavorLankaScreen()),
-                      );
-                    },
-                  ),
-                  _moreToolItem(
-                    title: l10n.arPortalsAction,
-                    subtitle: "Immersive 3D/Video",
-                    icon: Icons.view_in_ar_rounded,
-                    color: AppTheme.colors.indigoAccent,
-                    onTap: () {
-                      Navigator.pop(ctx);
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => AppConfig.arFeatureEnabled
-                              ? const ARVideoLibraryScreen()
-                              : ARComingSoonScreen(
-                                  placeName: l10n.arPortalsAction),
-                        ),
                       );
                     },
                   ),

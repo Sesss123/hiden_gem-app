@@ -64,7 +64,7 @@ subprojects {
         if (project.plugins.hasPlugin("com.android.library") || project.plugins.hasPlugin("com.android.application")) {
             val android = project.extensions.findByName("android")
             if (android != null) {
-                // 1. Fixing namespace issues (Crucial for ARCore and newer AGP versions)
+                // 1. Fix namespace issues for older Android plugins.
                 try {
                     val getNamespace = android.javaClass.getMethod("getNamespace")
                     val currentNamespace = getNamespace.invoke(android)
@@ -75,9 +75,6 @@ subprojects {
                             fallbackNamespace = "com.hidden.gems.${project.name.replace("-", "_").replace(".", "_")}"
                         }
                         
-                        if (project.name.contains("arcore_flutter_plugin")) {
-                            fallbackNamespace = "com.difrancescogianmarco.arcore_flutter_plugin"
-                        }
                         android.javaClass.getMethod("setNamespace", String::class.java).invoke(android, fallbackNamespace)
                     }
                 } catch (e: Exception) {}

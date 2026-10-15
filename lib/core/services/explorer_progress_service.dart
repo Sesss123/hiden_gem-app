@@ -14,7 +14,8 @@ import 'dart:async';
 ///   - [recordArSession] → call after a successful AR session
 ///   - [recordBadgeEarned] → call when a badge is unlocked
 class ExplorerProgressService {
-  static final ExplorerProgressService _instance = ExplorerProgressService._internal();
+  static final ExplorerProgressService _instance =
+      ExplorerProgressService._internal();
   factory ExplorerProgressService() => _instance;
   ExplorerProgressService._internal();
 
@@ -22,17 +23,15 @@ class ExplorerProgressService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   // ── Total targets (adjust as content grows) ────────────────────────────────
-  static const int totalSites = 85;        // All AR-enabled sites in Sri Lanka
-  static const int totalArSessions = 50;   // Encourages repeat AR usage
-  static const int totalBadges = 10;       // Total badge count
+  static const int totalSites = 85;
+  static const int totalBadges = 5;
 
   // ── Live notifiers (UI reacts to these) ───────────────────────────────────
-  final ValueNotifier<int> visitedSites   = ValueNotifier(0);
-  final ValueNotifier<int> arSessionCount = ValueNotifier(0);
-  final ValueNotifier<int> badgeCount     = ValueNotifier(0);
+  final ValueNotifier<int> visitedSites = ValueNotifier(0);
+  final ValueNotifier<int> badgeCount = ValueNotifier(0);
   final ValueNotifier<Set<String>> visitedSiteIds = ValueNotifier({});
   final ValueNotifier<Set<String>> earnedBadgeIds = ValueNotifier({});
-  
+
   Timer? _debounceTimer;
   final Map<String, dynamic> _pendingFields = {};
   bool _isInitialized = false;
@@ -50,15 +49,15 @@ class ExplorerProgressService {
     if (user == null) return;
 
     try {
-      final doc = await _firestore.collection('user_progress').doc(user.uid).get();
+      final doc =
+          await _firestore.collection('user_progress').doc(user.uid).get();
       if (doc.exists) {
         final data = doc.data()!;
         final siteIds = Set<String>.from(data['visitedSiteIds'] ?? []);
         visitedSiteIds.value = siteIds;
-        visitedSites.value  = siteIds.length;
-        arSessionCount.value = data['arSessions'] as int? ?? 0;
+        visitedSites.value = siteIds.length;
         earnedBadgeIds.value = Set<String>.from(data['earnedBadgeIds'] ?? []);
-        badgeCount.value    = earnedBadgeIds.value.length;
+        badgeCount.value = earnedBadgeIds.value.length;
       }
     } catch (e) {
       debugPrint('[ExplorerProgress] Sync failed: $e');
@@ -74,19 +73,15 @@ class ExplorerProgressService {
     final updated = Set<String>.from(visitedSiteIds.value)..add(siteId);
     visitedSiteIds.value = updated;
     visitedSites.value = updated.length;
-    await _saveToCloud({'visitedSiteIds': updated.toList(), 'visitedCount': updated.length});
+    await _saveToCloud(
+        {'visitedSiteIds': updated.toList(), 'visitedCount': updated.length});
     await _checkMilestoneBadges();
 
-    debugPrint('[ExplorerProgress] Site visited: $siteId | Total: ${updated.length}');
+    debugPrint(
+        '[ExplorerProgress] Site visited: $siteId | Total: ${updated.length}');
   }
 
   /// Call this after each completed AR session.
-  Future<void> recordArSession() async {
-    arSessionCount.value++;
-    await _saveToCloud({'arSessions': arSessionCount.value});
-    await _checkMilestoneBadges();
-  }
-
   /// Call when a badge is newly earned directly (e.g. a future non-milestone
   /// badge type). Milestone badges below are auto-awarded — no need to call
   /// this for those.
@@ -95,7 +90,8 @@ class ExplorerProgressService {
     final updated = Set<String>.from(earnedBadgeIds.value)..add(badgeId);
     earnedBadgeIds.value = updated;
     badgeCount.value = updated.length;
-    await _saveToCloud({'earnedBadgeIds': updated.toList(), 'badges': updated.length});
+    await _saveToCloud(
+        {'earnedBadgeIds': updated.toList(), 'badges': updated.length});
   }
 
   /// Checks visitedSites/arSessionCount against [ExplorerBadge.milestones]
@@ -103,7 +99,7 @@ class ExplorerProgressService {
   Future<void> _checkMilestoneBadges() async {
     for (final badge in ExplorerBadge.milestones) {
       if (earnedBadgeIds.value.contains(badge.id)) continue;
-      final current = badge.type == ExplorerBadgeType.sites ? visitedSites.value : arSessionCount.value;
+      final current = visitedSites.value;
       if (current >= badge.threshold) {
         await recordBadgeEarned(badge.id);
         debugPrint('[ExplorerProgress] Badge earned: ${badge.title}');
@@ -116,23 +112,17 @@ class ExplorerProgressService {
   /// Overall weighted progress (0.0 – 1.0)
   /// Weighted: Sites 50%, AR 30%, Badges 20%
   double get overallProgress {
-    final sitePct  = (visitedSites.value  / totalSites).clamp(0.0, 1.0);
-    final arPct    = (arSessionCount.value / totalArSessions).clamp(0.0, 1.0);
-    final badgePct = (badgeCount.value    / totalBadges).clamp(0.0, 1.0);
-    return (sitePct * 0.5) + (arPct * 0.3) + (badgePct * 0.2);
+    final sitePct = (visitedSites.value / totalSites).clamp(0.0, 1.0);
+    final badgePct = (badgeCount.value / totalBadges).clamp(0.0, 1.0);
+    return (sitePct * 0.75) + (badgePct * 0.25);
   }
 
   /// Sites progress (0.0 – 1.0)
-  double get sitesProgress =>
-      (visitedSites.value / totalSites).clamp(0.0, 1.0);
+  double get sitesProgress => (visitedSites.value / totalSites).clamp(0.0, 1.0);
 
   /// AR sessions progress (0.0 – 1.0)
-  double get arProgress =>
-      (arSessionCount.value / totalArSessions).clamp(0.0, 1.0);
-
   /// Badges progress (0.0 – 1.0)
-  double get badgesProgress =>
-      (badgeCount.value / totalBadges).clamp(0.0, 1.0);
+  double get badgesProgress => (badgeCount.value / totalBadges).clamp(0.0, 1.0);
 
   // ── Explorer Level ─────────────────────────────────────────────────────────
 
@@ -150,7 +140,7 @@ class ExplorerProgressService {
 
   Future<void> _saveToCloud(Map<String, dynamic> fields) async {
     _pendingFields.addAll(fields);
-    
+
     // Debounce: Wait 2 seconds of silence before pushing to Firestore
     _debounceTimer?.cancel();
     _debounceTimer = Timer(const Duration(seconds: 2), () async {
@@ -176,7 +166,6 @@ class ExplorerProgressService {
 
   void reset() {
     visitedSites.value = 0;
-    arSessionCount.value = 0;
     badgeCount.value = 0;
     visitedSiteIds.value = {};
     earnedBadgeIds.value = {};
@@ -186,7 +175,7 @@ class ExplorerProgressService {
 
 // ─── Explorer Badges (Milestones) ─────────────────────────────────────────────
 
-enum ExplorerBadgeType { sites, arSessions }
+enum ExplorerBadgeType { sites }
 
 class ExplorerBadge {
   final String id;
@@ -207,16 +196,42 @@ class ExplorerBadge {
 
   /// The 10 auto-awarded milestone badges (matches [ExplorerProgressService.totalBadges]).
   static const List<ExplorerBadge> milestones = [
-    ExplorerBadge(id: 'first_steps', title: 'First Steps', emoji: '👣',
-        description: 'Visit your first site', type: ExplorerBadgeType.sites, threshold: 1),
-    ExplorerBadge(id: 'explorer_5', title: 'Explorer', emoji: '🧭',
-        description: 'Visit 5 sites', type: ExplorerBadgeType.sites, threshold: 5),
-    ExplorerBadge(id: 'wanderer_15', title: 'Wanderer', emoji: '🗺️',
-        description: 'Visit 15 sites', type: ExplorerBadgeType.sites, threshold: 15),
-    ExplorerBadge(id: 'adventurer_30', title: 'Adventurer', emoji: '🏔️',
-        description: 'Visit 30 sites', type: ExplorerBadgeType.sites, threshold: 30),
-    ExplorerBadge(id: 'completionist_85', title: 'Completionist', emoji: '👑',
-        description: 'Visit every site in Sri Lanka', type: ExplorerBadgeType.sites, threshold: 85),
+    ExplorerBadge(
+        id: 'first_steps',
+        title: 'First Steps',
+        emoji: '👣',
+        description: 'Visit your first site',
+        type: ExplorerBadgeType.sites,
+        threshold: 1),
+    ExplorerBadge(
+        id: 'explorer_5',
+        title: 'Explorer',
+        emoji: '🧭',
+        description: 'Visit 5 sites',
+        type: ExplorerBadgeType.sites,
+        threshold: 5),
+    ExplorerBadge(
+        id: 'wanderer_15',
+        title: 'Wanderer',
+        emoji: '🗺️',
+        description: 'Visit 15 sites',
+        type: ExplorerBadgeType.sites,
+        threshold: 15),
+    ExplorerBadge(
+        id: 'adventurer_30',
+        title: 'Adventurer',
+        emoji: '🏔️',
+        description: 'Visit 30 sites',
+        type: ExplorerBadgeType.sites,
+        threshold: 30),
+    ExplorerBadge(
+        id: 'completionist_85',
+        title: 'Completionist',
+        emoji: '👑',
+        description: 'Visit every site in Sri Lanka',
+        type: ExplorerBadgeType.sites,
+        threshold: 85),
+    /*
     ExplorerBadge(id: 'ar_pioneer_1', title: 'AR Pioneer', emoji: '🔭',
         description: 'Complete your first AR session', type: ExplorerBadgeType.arSessions, threshold: 1),
     ExplorerBadge(id: 'ar_enthusiast_5', title: 'AR Enthusiast', emoji: '✨',
@@ -227,6 +242,7 @@ class ExplorerBadge {
         description: 'Complete 30 AR sessions', type: ExplorerBadgeType.arSessions, threshold: 30),
     ExplorerBadge(id: 'ar_legend_50', title: 'AR Legend', emoji: '💫',
         description: 'Complete 50 AR sessions', type: ExplorerBadgeType.arSessions, threshold: 50),
+    */
   ];
 }
 

@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../core/utils/encryption_util.dart';
-import 'ar_artifact.dart';
 
 class PlaceImageModel {
   final int id;
@@ -18,8 +17,10 @@ class PlaceImageModel {
   factory PlaceImageModel.fromJson(Map<String, dynamic> json) {
     return PlaceImageModel(
       id: (json['id'] as num?)?.toInt() ?? 0,
-      thumbPath: json['thumbPath'] as String? ?? json['thumb_path'] as String? ?? '',
-      fullPath: json['fullPath'] as String? ?? json['full_path'] as String? ?? '',
+      thumbPath:
+          json['thumbPath'] as String? ?? json['thumb_path'] as String? ?? '',
+      fullPath:
+          json['fullPath'] as String? ?? json['full_path'] as String? ?? '',
       isCover: json['isCover'] as bool? ?? json['is_cover'] as bool? ?? false,
     );
   }
@@ -38,7 +39,6 @@ class PlaceImageModel {
 }
 
 class DiscoveryPlace {
-
   final String id;
   final String name;
   final String description;
@@ -49,7 +49,7 @@ class DiscoveryPlace {
   final double rating;
   final String ticketRange;
   final String imageUrl;
-  
+
   final String roadType;
   final String vehicleAccess;
   final List<String> riskTags;
@@ -102,8 +102,7 @@ class DiscoveryPlace {
   final String audioUrlEn;
   final String fallbackVideoUrl;
   final List<dynamic> arHotspots;
-  final List<ARArtifact> arArtifacts;
-  
+
   final String geohash;
   final List<PlaceImageModel> images;
 
@@ -179,7 +178,6 @@ class DiscoveryPlace {
     this.audioUrlEn = '',
     this.fallbackVideoUrl = '',
     this.arHotspots = const [],
-    this.arArtifacts = const [],
     this.geohash = '',
     this.images = const [],
     this.distanceKm = 0.0,
@@ -237,8 +235,10 @@ class DiscoveryPlace {
       id: json['id'].toString(),
       name: json['name'] as String? ?? '',
       description: json['description'] as String? ?? '',
-      district: json['district'] as String? ?? json['district_id'] as String? ?? '',
-      category: json['category'] as String? ?? json['category_id'] as String? ?? '',
+      district:
+          json['district'] as String? ?? json['district_id'] as String? ?? '',
+      category:
+          json['category'] as String? ?? json['category_id'] as String? ?? '',
       lat: parseCoord(json['lat']),
       lng: parseCoord(json['lng']),
       rating: (json['rating'] as num?)?.toDouble() ?? 0.0,
@@ -246,13 +246,21 @@ class DiscoveryPlace {
           json['ticket_range'] as String? ??
           (json['ticket_price'] != null ? ticketRangeFromPrice() : null) ??
           'Free',
-      roadType: json['roadType'] as String? ?? json['road_type'] as String? ?? '',
-      vehicleAccess: json['vehicleAccess'] as String? ?? json['vehicle_access'] as String? ?? '',
+      roadType:
+          json['roadType'] as String? ?? json['road_type'] as String? ?? '',
+      vehicleAccess: json['vehicleAccess'] as String? ??
+          json['vehicle_access'] as String? ??
+          '',
       riskTags: List<String>.from(json['riskTags'] ?? json['risk_tags'] ?? []),
-      parkingRange: json['parkingRange'] as String? ?? json['parking_range'] as String? ?? '',
-      bestTime: json['bestTime'] as String? ?? json['best_time'] as String? ?? '',
+      parkingRange: json['parkingRange'] as String? ??
+          json['parking_range'] as String? ??
+          '',
+      bestTime:
+          json['bestTime'] as String? ?? json['best_time'] as String? ?? '',
       facilities: List<String>.from(json['facilities'] ?? []),
-      openingHours: json['openingHours'] as String? ?? json['opening_hours'] as String? ?? '',
+      openingHours: json['openingHours'] as String? ??
+          json['opening_hours'] as String? ??
+          '',
       weeklyHours: () {
         // Backend sometimes serializes an empty/unset weekly_hours column as
         // a JSON array ([]) rather than an object ({}) — e.g. Laravel casts
@@ -263,10 +271,17 @@ class DiscoveryPlace {
         if (raw is Map) return Map<String, dynamic>.from(raw);
         return <String, dynamic>{};
       }(),
-      temporarilyClosed: json['temporarilyClosed'] as bool? ?? json['temporarily_closed'] as bool? ?? false,
-      closureNote: json['closureNote'] as String? ?? json['closure_note'] as String? ?? '',
-      closureUntil: parseUtcTimestamp(json['closureUntil'] ?? json['closure_until']),
-      holidayHoursNote: json['holidayHoursNote'] as String? ?? json['holiday_hours_note'] as String? ?? '',
+      temporarilyClosed: json['temporarilyClosed'] as bool? ??
+          json['temporarily_closed'] as bool? ??
+          false,
+      closureNote: json['closureNote'] as String? ??
+          json['closure_note'] as String? ??
+          '',
+      closureUntil:
+          parseUtcTimestamp(json['closureUntil'] ?? json['closure_until']),
+      holidayHoursNote: json['holidayHoursNote'] as String? ??
+          json['holiday_hours_note'] as String? ??
+          '',
       mobileSignal: json['mobile_signal'] as String? ?? '',
       roadCondition: json['road_condition'] as String? ?? '',
       activities: json['activities'] as String? ?? '',
@@ -287,19 +302,33 @@ class DiscoveryPlace {
       surfing: json['surfing'] as String? ?? '',
       updatedAt: parseUtcTimestamp(json['updatedAt'] ?? json['updated_at']),
       verifiedAt: parseUtcTimestamp(json['verifiedAt'] ?? json['verified_at']),
-      syncVersion: (json['syncVersion'] as num?)?.toInt() ?? (json['sync_version'] as num?)?.toInt() ?? 0,
-      arSupported: json['arSupported'] as bool? ?? json['ar_supported'] as bool? ?? false,
+      syncVersion: (json['syncVersion'] as num?)?.toInt() ??
+          (json['sync_version'] as num?)?.toInt() ??
+          0,
+      arSupported: json['arSupported'] as bool? ??
+          json['ar_supported'] as bool? ??
+          false,
       // Fail closed: a payload missing this field defaults to Tier 1
       // (Heritage/gated), not Tier 3 (free) — PremiumUnlockService.hasAccess()
       // treats any tier > 1 as free-to-view, so defaulting to a permissive
       // value here silently bypassed the paywall for any place whose data
       // was missing arTier (partial migration, data-entry gap, etc.).
       arTier: json['arTier'] as int? ?? json['ar_tier'] as int? ?? 1,
-      arBrandName: json['arBrandName'] as String? ?? json['ar_brand_name'] as String? ?? '',
-      arModelUrl: json['arModelUrl'] as String? ?? json['ar_model_url'] as String? ?? '',
-      arHistoricalModelUrl: json['arHistoricalModelUrl'] as String? ?? json['ar_historical_model_url'] as String? ?? '',
-      arModelScale: (json['arModelScale'] as num?)?.toDouble() ?? (json['ar_model_scale'] as num?)?.toDouble() ?? 0.01,
-      historicalPeriod: json['historicalPeriod'] as String? ?? json['historical_period'] as String? ?? '',
+      arBrandName: json['arBrandName'] as String? ??
+          json['ar_brand_name'] as String? ??
+          '',
+      arModelUrl: json['arModelUrl'] as String? ??
+          json['ar_model_url'] as String? ??
+          '',
+      arHistoricalModelUrl: json['arHistoricalModelUrl'] as String? ??
+          json['ar_historical_model_url'] as String? ??
+          '',
+      arModelScale: (json['arModelScale'] as num?)?.toDouble() ??
+          (json['ar_model_scale'] as num?)?.toDouble() ??
+          0.01,
+      historicalPeriod: json['historicalPeriod'] as String? ??
+          json['historical_period'] as String? ??
+          '',
       arFileSizeMb: (json['ar_file_size_mb'] as num?)?.toDouble() ?? 0.0,
       arAuthor: json['ar_author'] as String? ?? 'Hidden Gems SL',
       arContentVersion: json['ar_content_version'] as int? ?? 1,
@@ -307,19 +336,23 @@ class DiscoveryPlace {
       audioUrlEn: json['audio_guide_url_en'] as String? ?? '',
       fallbackVideoUrl: json['fallback_video_url'] as String? ?? '',
       arHotspots: json['ar_hotspots'] as List<dynamic>? ?? [],
-      arArtifacts: (json['ar_artifacts'] as List<dynamic>? ?? [])
-          .map((a) => ARArtifact.fromMap(a as Map<String, dynamic>))
-          .toList(),
       geohash: json['geohash'] as String? ?? '',
-      imageUrl: json['imageUrl'] as String? ?? json['image_url'] as String? ?? '',
+      imageUrl:
+          json['imageUrl'] as String? ?? json['image_url'] as String? ?? '',
       images: (json['images'] is List && (json['images'] as List).isNotEmpty)
-          ? (json['images'] as List).map((i) => PlaceImageModel.fromJson(i as Map<String, dynamic>)).toList()
+          ? (json['images'] as List)
+              .map((i) => PlaceImageModel.fromJson(i as Map<String, dynamic>))
+              .toList()
           : (json['imageUrl'] != null || json['image_url'] != null)
               ? [
                   PlaceImageModel(
                     id: 0,
-                    thumbPath: json['imageUrl'] as String? ?? json['image_url'] as String? ?? '',
-                    fullPath: json['imageUrl'] as String? ?? json['image_url'] as String? ?? '',
+                    thumbPath: json['imageUrl'] as String? ??
+                        json['image_url'] as String? ??
+                        '',
+                    fullPath: json['imageUrl'] as String? ??
+                        json['image_url'] as String? ??
+                        '',
                     isCover: true,
                   )
                 ]
@@ -330,11 +363,13 @@ class DiscoveryPlace {
   factory DiscoveryPlace.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
     final geoPoint = data['geoPoint'] as GeoPoint?;
-    
+
     double parseCoord(dynamic val, double? geoVal) {
-      if (geoVal != null) return double.tryParse(geoVal.toStringAsFixed(8)) ?? geoVal;
+      if (geoVal != null)
+        return double.tryParse(geoVal.toStringAsFixed(8)) ?? geoVal;
       if (val == null) return 0.0;
-      double? parsed = val is num ? val.toDouble() : double.tryParse(val.toString());
+      double? parsed =
+          val is num ? val.toDouble() : double.tryParse(val.toString());
       if (parsed == null) return 0.0;
       // BUG-042: Preserve up to 8 decimal places for GPS precision without truncation
       return double.tryParse(parsed.toStringAsFixed(8)) ?? parsed;
@@ -367,11 +402,15 @@ class DiscoveryPlace {
       bestTime: data['bestTime'] ?? data['best_time'] ?? '',
       facilities: List<String>.from(data['facilities'] ?? []),
       openingHours: data['openingHours'] ?? data['opening_hours'] ?? '',
-      weeklyHours: Map<String, dynamic>.from(data['weeklyHours'] ?? data['weekly_hours'] ?? const {}),
-      temporarilyClosed: data['temporarilyClosed'] ?? data['temporarily_closed'] ?? false,
+      weeklyHours: Map<String, dynamic>.from(
+          data['weeklyHours'] ?? data['weekly_hours'] ?? const {}),
+      temporarilyClosed:
+          data['temporarilyClosed'] ?? data['temporarily_closed'] ?? false,
       closureNote: data['closureNote'] ?? data['closure_note'] ?? '',
-      closureUntil: parseUtcTimestamp(data['closureUntil'] ?? data['closure_until']),
-      holidayHoursNote: data['holidayHoursNote'] ?? data['holiday_hours_note'] ?? '',
+      closureUntil:
+          parseUtcTimestamp(data['closureUntil'] ?? data['closure_until']),
+      holidayHoursNote:
+          data['holidayHoursNote'] ?? data['holiday_hours_note'] ?? '',
       mobileSignal: data['mobile_signal'] ?? '',
       roadCondition: data['road_condition'] ?? '',
       activities: data['activities'] ?? '',
@@ -392,7 +431,9 @@ class DiscoveryPlace {
       surfing: data['surfing'] ?? '',
       updatedAt: parseUtcTimestamp(data['updatedAt'] ?? data['updated_at']),
       verifiedAt: parseUtcTimestamp(data['verifiedAt'] ?? data['verified_at']),
-      syncVersion: (data['syncVersion'] as num?)?.toInt() ?? (data['sync_version'] as num?)?.toInt() ?? 0,
+      syncVersion: (data['syncVersion'] as num?)?.toInt() ??
+          (data['sync_version'] as num?)?.toInt() ??
+          0,
       arSupported: data['arSupported'] ?? false,
       // Fail closed — see matching comment in fromJson() above.
       arTier: data['arTier'] ?? 1,
@@ -407,7 +448,9 @@ class DiscoveryPlace {
       geohash: data['geohash'] ?? '',
       imageUrl: data['imageUrl'] ?? data['image_url'] ?? '',
       images: (data['images'] is List && (data['images'] as List).isNotEmpty)
-          ? (data['images'] as List).map((i) => PlaceImageModel.fromJson(i as Map<String, dynamic>)).toList()
+          ? (data['images'] as List)
+              .map((i) => PlaceImageModel.fromJson(i as Map<String, dynamic>))
+              .toList()
           : (data['imageUrl'] != null || data['image_url'] != null)
               ? [
                   PlaceImageModel(
@@ -507,5 +550,3 @@ class DiscoveryPlace {
     };
   }
 }
-
-

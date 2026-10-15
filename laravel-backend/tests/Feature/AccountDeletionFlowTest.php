@@ -66,6 +66,11 @@ class AccountDeletionFlowTest extends TestCase
                 return true;
             });
 
+        $firestoreMock->shouldReceive('deleteDocumentsWithIdSuffix')
+            ->with('profile_view_markers', '_test-firebase-uid-999')
+            ->once()
+            ->andReturn(true);
+
         $authController = new AuthController();
         $testUid = 'test-firebase-uid-999';
 
@@ -87,7 +92,7 @@ class AccountDeletionFlowTest extends TestCase
         $this->assertContains(['user_notifications', 'userId'], $capturedQueries);
         $this->assertContains(['profile_view_markers', 'viewerUid'], $capturedQueries);
         $this->assertContains(['profile_view_markers', 'targetUid'], $capturedQueries);
-        $this->assertContains(['threat_notifications', 'userId'], $capturedQueries);
+        $this->assertContains(['threat_notifications', 'uid'], $capturedQueries);
 
         // 3. Verify security posture subcollection cleanup
         $this->assertContains("users/{$testUid}/security/posture", $recursivelyDeleted);
@@ -144,6 +149,8 @@ class AccountDeletionFlowTest extends TestCase
         // General allowances for remaining calls
         $firestoreMock->shouldReceive('deleteDocumentRecursively')->andReturn(true);
         $firestoreMock->shouldReceive('deleteDocument')->andReturn(true);
+        $firestoreMock->shouldReceive('deleteDocumentsWithIdSuffix')->andReturn(true);
+        $firestoreMock->shouldReceive('listSubcollectionDocuments')->andReturn([]);
 
         $authController = new AuthController();
         $method->invoke($authController, $firestoreMock, $testUid);

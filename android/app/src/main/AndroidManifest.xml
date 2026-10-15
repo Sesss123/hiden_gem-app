@@ -1,5 +1,4 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- Permissions -->
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -12,16 +11,7 @@
     <uses-permission android:name="android.permission.READ_CALENDAR" />
     <uses-permission android:name="android.permission.WRITE_CALENDAR" />
 
-    <!-- AR Mode Permissions (ARCore) -->
     <uses-permission android:name="android.permission.CAMERA" />
-    <!-- required="false" + tools:node="replace" forces this to win over
-         ar_flutter_plugin_2's own manifest, which declares required="true" —
-         without the override, Play Store would hide the whole app from
-         every non-ARCore device instead of just disabling the AR feature. -->
-    <uses-feature
-        android:name="android.hardware.camera.ar"
-        android:required="false"
-        tools:node="replace" />
 
 
     <application
@@ -41,11 +31,6 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="${MAPS_API_KEY}"/>
-
-        <!-- ARCore — required for AR Mode. "optional" means non-AR devices can still install the app -->
-        <meta-data
-            android:name="com.google.ar.core"
-            android:value="optional" />
 
 
         <activity

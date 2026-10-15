@@ -17,7 +17,6 @@ class UsageMeterWidget extends StatefulWidget {
 
 class _UsageMeterWidgetState extends State<UsageMeterWidget> {
   int _aiLimit = 3;
-  int _arLimit = 1;
   int _offlineLimit = 2;
   bool _isLoading = true;
 
@@ -42,16 +41,13 @@ class _UsageMeterWidgetState extends State<UsageMeterWidget> {
           final plan = profile.premiumPlan ?? 'premium';
           if (plan == 'explorer') {
             _aiLimit = 20;
-            _arLimit = 3;
             _offlineLimit = 10;
           } else {
             _aiLimit = 50;
-            _arLimit = 9999;
             _offlineLimit = 9999;
           }
         } else {
           _aiLimit = 3;
-          _arLimit = 1;
           _offlineLimit = 2;
         }
         _isLoading = false;
@@ -68,7 +64,8 @@ class _UsageMeterWidgetState extends State<UsageMeterWidget> {
     if (_isLoading) {
       return SizedBox(
         height: 100,
-        child: Center(child: CircularProgressIndicator(color: AppTheme.colors.primary)),
+        child: Center(
+            child: CircularProgressIndicator(color: AppTheme.colors.primary)),
       );
     }
 
@@ -81,24 +78,22 @@ class _UsageMeterWidgetState extends State<UsageMeterWidget> {
     final isAiHigh = aiPercent >= 0.8 && _aiLimit < 100;
 
     // AR Sessions
-    final arUsed = profile.arSessionsUsedThisMonth;
-    final arPercent = _arLimit > 0 && _arLimit < 9999 ? (arUsed / _arLimit).clamp(0.0, 1.0) : 0.0;
-    final isArHigh = arPercent >= 0.8 && _arLimit < 100;
-
     // Offline Downloads
     final offlineUsed = profile.offlineDownloadsUsed;
-    final offlinePercent = _offlineLimit > 0 && _offlineLimit < 9999 ? (offlineUsed / _offlineLimit).clamp(0.0, 1.0) : 0.0;
+    final offlinePercent = _offlineLimit > 0 && _offlineLimit < 9999
+        ? (offlineUsed / _offlineLimit).clamp(0.0, 1.0)
+        : 0.0;
     final isOfflineHigh = offlinePercent >= 0.8 && _offlineLimit < 100;
 
-    final hasWarning = isAiHigh || isArHigh || isOfflineHigh;
+    final hasWarning = isAiHigh || isOfflineHigh;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: OracleUI.glassContainer(
         padding: const EdgeInsets.all(20),
         borderRadius: BorderRadius.circular(24),
-        borderColor: hasWarning 
-            ? AppTheme.warningAmber.withValues(alpha: 0.3) 
+        borderColor: hasWarning
+            ? AppTheme.warningAmber.withValues(alpha: 0.3)
             : AppTheme.colors.white.withValues(alpha: 0.05),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -108,33 +103,33 @@ class _UsageMeterWidgetState extends State<UsageMeterWidget> {
               children: [
                 Expanded(
                   child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'PLAN USAGE METERS',
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.outfit(
-                        color: AppTheme.warningAmber,
-                        fontSize: 11,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 2,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'PLAN USAGE METERS',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.outfit(
+                          color: AppTheme.warningAmber,
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 2,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      profile.isPremium
-                          ? '${(profile.premiumPlan ?? "Premium").toUpperCase()} PLAN ACTIVE'
-                          : 'FREE EXPLORER TIER',
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.inter(
-                        color: AppTheme.textSecondary(context),
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
+                      const SizedBox(height: 2),
+                      Text(
+                        profile.isPremium
+                            ? '${(profile.premiumPlan ?? "Premium").toUpperCase()} PLAN ACTIVE'
+                            : 'FREE EXPLORER TIER',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.inter(
+                          color: AppTheme.textSecondary(context),
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
                   ),
                 ),
                 if (!profile.isPremium) ...[
@@ -144,12 +139,15 @@ class _UsageMeterWidgetState extends State<UsageMeterWidget> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) => isGuide ? const SubscriptionScreen() : const PremiumHubScreen(),
+                          builder: (_) => isGuide
+                              ? const SubscriptionScreen()
+                              : const PremiumHubScreen(),
                         ),
                       );
                     },
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 6),
                       decoration: BoxDecoration(
                         color: AppTheme.warningAmber,
                         borderRadius: BorderRadius.circular(10),
@@ -174,16 +172,21 @@ class _UsageMeterWidgetState extends State<UsageMeterWidget> {
                 decoration: BoxDecoration(
                   color: AppTheme.warningAmber.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: AppTheme.warningAmber.withValues(alpha: 0.2)),
+                  border: Border.all(
+                      color: AppTheme.warningAmber.withValues(alpha: 0.2)),
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.warning_amber_rounded, color: AppTheme.warningAmber, size: 14),
+                    const Icon(Icons.warning_amber_rounded,
+                        color: AppTheme.warningAmber, size: 14),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         'Approaching monthly feature limit. Upgrade to maintain full access.',
-                        style: GoogleFonts.inter(color: AppTheme.warningAmber, fontSize: 10, fontWeight: FontWeight.w500),
+                        style: GoogleFonts.inter(
+                            color: AppTheme.warningAmber,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w500),
                       ),
                     ),
                   ],
@@ -203,16 +206,6 @@ class _UsageMeterWidgetState extends State<UsageMeterWidget> {
             const SizedBox(height: 14),
 
             // AR Sessions Progress Bar
-            _buildProgressBar(
-              title: 'AR 3D Portal Sessions',
-              used: arUsed,
-              limit: _arLimit,
-              percent: arPercent,
-              isHigh: isArHigh,
-              isUnlimited: _arLimit >= 9999,
-            ),
-            const SizedBox(height: 14),
-
             // Offline Downloads Progress Bar
             _buildProgressBar(
               title: 'Offline Island Guides',
@@ -248,12 +241,15 @@ class _UsageMeterWidgetState extends State<UsageMeterWidget> {
           children: [
             Text(
               title,
-              style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 12),
+              style: GoogleFonts.inter(
+                  color: AppTheme.textSecondary(context), fontSize: 12),
             ),
             Text(
               isUnlimited ? 'Unlimited' : '$used / $limit used',
               style: GoogleFonts.inter(
-                color: isHigh ? AppTheme.colors.redAccent : AppTheme.textSecondary(context).withValues(alpha: 0.5),
+                color: isHigh
+                    ? AppTheme.colors.redAccent
+                    : AppTheme.textSecondary(context).withValues(alpha: 0.5),
                 fontSize: 11,
                 fontWeight: FontWeight.bold,
               ),
@@ -266,7 +262,9 @@ class _UsageMeterWidgetState extends State<UsageMeterWidget> {
           child: LinearProgressIndicator(
             value: isUnlimited ? 1.0 : percent,
             minHeight: 6,
-            backgroundColor: Theme.of(context).brightness == Brightness.dark ? AppTheme.colors.white10 : AppTheme.colors.black12,
+            backgroundColor: Theme.of(context).brightness == Brightness.dark
+                ? AppTheme.colors.white10
+                : AppTheme.colors.black12,
             valueColor: AlwaysStoppedAnimation<Color>(color),
           ),
         ),

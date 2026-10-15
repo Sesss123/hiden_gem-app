@@ -18,15 +18,16 @@ enum OracleState { idle, listening, thinking, speaking }
 class VoiceAssistantService {
   static final FlutterTts _tts = FlutterTts();
   static final stt.SpeechToText _stt = stt.SpeechToText();
-  static final ValueNotifier<OracleState> state = ValueNotifier(OracleState.idle);
-  
+  static final ValueNotifier<OracleState> state =
+      ValueNotifier(OracleState.idle);
+
   static String _lastWords = "";
 
   static Future<void> init() async {
-    await _tts.setLanguage("en-US"); 
+    await _tts.setLanguage("en-US");
     await _tts.setPitch(1.0);
     await _tts.setSpeechRate(0.5);
-    
+
     _tts.setStartHandler(() => state.value = OracleState.speaking);
     _tts.setCompletionHandler(() => state.value = OracleState.idle);
   }
@@ -38,7 +39,8 @@ class VoiceAssistantService {
     } catch (e) {
       // BUG-059: TTS engine may be occupied or unavailable; log and recover gracefully
       state.value = OracleState.idle;
-      SecureLogger.warning('VoiceAssistantService.speak() failed \u2014 TTS may be busy: $e');
+      SecureLogger.warning(
+          'VoiceAssistantService.speak() failed \u2014 TTS may be busy: $e');
     }
   }
 
@@ -48,14 +50,14 @@ class VoiceAssistantService {
   }
 
   static Future<Position?> getCurrentPosition() async {
-     try {
-       return await Geolocator.getCurrentPosition(
-         locationSettings: const LocationSettings(accuracy: LocationAccuracy.high)
-       );
-     } catch (e) {
-       SecureLogger.error('Oracle Position Fetch Failed: $e');
-       return null;
-     }
+    try {
+      return await Geolocator.getCurrentPosition(
+          locationSettings:
+              const LocationSettings(accuracy: LocationAccuracy.high));
+    } catch (e) {
+      SecureLogger.error('Oracle Position Fetch Failed: $e');
+      return null;
+    }
   }
 
   static Timer? _inactivityTimer;
@@ -95,11 +97,13 @@ class VoiceAssistantService {
           }
         },
         onError: (errorNotification) {
-          SecureLogger.error('STT Error: ${errorNotification.errorMsg} (Permanent: ${errorNotification.permanent})');
+          SecureLogger.error(
+              'STT Error: ${errorNotification.errorMsg} (Permanent: ${errorNotification.permanent})');
           _inactivityTimer?.cancel();
-          if (errorNotification.errorMsg == 'error_permission' || 
+          if (errorNotification.errorMsg == 'error_permission' ||
               errorNotification.errorMsg == 'not-allowed') {
-            speak("Traveler, your browser has veiled your voice. Please allow microphone access in your settings.");
+            speak(
+                "Traveler, your browser has veiled your voice. Please allow microphone access in your settings.");
           } else if (errorNotification.errorMsg == 'error_no_match') {
             // Silently handle no match to avoid annoying the user
           } else {
@@ -121,7 +125,7 @@ class VoiceAssistantService {
           _resetInactivityTimer();
           _lastWords = result.recognizedWords;
           onResult(_lastWords);
-          
+
           if (result.finalResult) {
             _inactivityTimer?.cancel();
             state.value = OracleState.thinking;
@@ -133,35 +137,38 @@ class VoiceAssistantService {
   }
 
   /// Central Hub for Oracle Commands (Stage 1 & 2)
-  static Future<void> processCommand(String text, {String? locationContext}) async {
+  static Future<void> processCommand(String text,
+      {String? locationContext}) async {
     if (text.isEmpty) return;
 
     try {
       SecureLogger.info('Oracle Processing: $text');
-      
+
       // 1. Get real GPS location (Stage 3 & 5)
       Position? position;
       try {
         position = await Geolocator.getCurrentPosition(
-          locationSettings: const LocationSettings(accuracy: LocationAccuracy.high)
-        );
+            locationSettings:
+                const LocationSettings(accuracy: LocationAccuracy.high));
       } catch (e) {
         SecureLogger.error('Position Error: $e');
       }
 
-      final context = locationContext ?? (position != null 
-        ? "Lat: ${position.latitude}, Lng: ${position.longitude}" 
-        : "Current Coordinates");
-      
+      final context = locationContext ??
+          (position != null
+              ? "Lat: ${position.latitude}, Lng: ${position.longitude}"
+              : "Current Coordinates");
+
       // 2. Process via Gemini Brain (Stage 2 & 5)
-      final aiResponse = await getOracleLogic(text, context, position: position);
-      
+      final aiResponse =
+          await getOracleLogic(text, context, position: position);
+
       // 3. Natural Narration Output (Stage 1 & 6)
       await speakAdvanced(aiResponse, accent: 'en_us');
-      
     } catch (e) {
       SecureLogger.error('Oracle Pipeline Error: $e');
-      await speak("The stars are cloudy, traveler. Please repeat your request.");
+      await speak(
+          "The stars are cloudy, traveler. Please repeat your request.");
     }
   }
 
@@ -170,10 +177,9 @@ class VoiceAssistantService {
     await _stt.stop();
   }
 
-
-
   // Lumen-1 Integration Layer - The Oracle Supreme
-  static Future<String> getOracleLogic(String userQuery, String locationContext, {Position? position}) async {
+  static Future<String> getOracleLogic(String userQuery, String locationContext,
+      {Position? position}) async {
     // Stage 5: Offline Fallback Check
     final hasInternet = await _checkConnectivity();
     if (!hasInternet) {
@@ -182,7 +188,7 @@ class VoiceAssistantService {
 
     // Phase 4 & 5: Oracle Supreme - Emotional & Contextual Awareness
     final contextData = await OracleContextEngine.getFullContext(userQuery);
-    
+
     await OracleContextEngine.updateContext({
       'last_query_energy': contextData['energy_level'],
       'last_query_sentiment': contextData['query_sentiment'],
@@ -198,7 +204,8 @@ class VoiceAssistantService {
           query: userQuery,
           locationContext: locationContext,
         );
-        SecureLogger.info('[Oracle] Lumen-1 replied: ${reply.substring(0, reply.length.clamp(0, 80))}...');
+        SecureLogger.info(
+            '[Oracle] Lumen-1 replied: ${reply.substring(0, reply.length.clamp(0, 80))}...');
         return reply;
       } on LumenException catch (e) {
         SecureLogger.warning('[Oracle] Lumen-1 error: $e — using fallback');
@@ -208,7 +215,8 @@ class VoiceAssistantService {
         // Fall through to local fallback logic
       }
     } else {
-      SecureLogger.warning('[Oracle] Lumen-1 server not reachable — using local logic');
+      SecureLogger.warning(
+          '[Oracle] Lumen-1 server not reachable — using local logic');
     }
 
     // Local fallback logic (when Lumen-1 is unavailable)
@@ -216,24 +224,20 @@ class VoiceAssistantService {
     // lowercase 'low' — this previously compared against 'Low' and could
     // never match, silently disabling energy-based relax-plan triggering
     // for every query except ones containing the literal word "tired".
-    if (userQuery.toLowerCase().contains("tired") || contextData['energy_level'] == 'low') {
+    if (userQuery.toLowerCase().contains("tired") ||
+        contextData['energy_level'] == 'low') {
       await DynamicItineraryService.mutatePlan('relax');
       return "I sense your vitality is low, traveler. Rest is a sacred part of the journey. I have adjusted your path to include more restorative moments.";
     }
 
-    if (userQuery.toLowerCase().contains("food") || userQuery.toLowerCase().contains("hungry")) {
+    if (userQuery.toLowerCase().contains("food") ||
+        userQuery.toLowerCase().contains("hungry")) {
       return "The spice of Lanka awaits! Use my SavorLanka Vision to unlock the secrets of our traditional clay-pot wonders. Shall I guide you to a local tavern?";
     }
 
     // AR Time Travel trigger
-    if (userQuery.toLowerCase().contains("show me before") ||
-        userQuery.toLowerCase().contains("history view") ||
-        userQuery.toLowerCase().contains("how did it look") ||
-        userQuery.toLowerCase().contains("time travel")) {
-      return "Close your eyes, traveler. When you open them, the past will greet you. Tap 'View in History' on any place to witness its ancient form through the AR portal.";
-    }
-    
-    if (userQuery.toLowerCase().contains("near me") || userQuery.toLowerCase().contains("hidden gem")) {
+    if (userQuery.toLowerCase().contains("near me") ||
+        userQuery.toLowerCase().contains("hidden gem")) {
       // Find true nearest gem using Haversine (Stage 5 Fix)
       final gem = await _findNearestGem(position);
       if (gem != null) {
@@ -245,7 +249,8 @@ class VoiceAssistantService {
     return "The stars of Lanka align in your favor. Your question: '$userQuery' reaches the heart of the Oracle. How may I guide your spirit?";
   }
 
-  static Future<Map<String, dynamic>?> _findNearestGem(Position? position) async {
+  static Future<Map<String, dynamic>?> _findNearestGem(
+      Position? position) async {
     if (position == null) return null;
 
     try {
@@ -253,15 +258,13 @@ class VoiceAssistantService {
       final String? cachedJson = TripCacheService.getGlobalData('places');
       if (cachedJson == null || cachedJson.isEmpty) return null;
       final List<dynamic> places = json.decode(cachedJson);
-      
+
       Map<String, dynamic>? nearest;
       double minDistance = double.infinity;
 
       for (var place in places) {
         final double distance = _calculateDistance(
-          position.latitude, position.longitude,
-          place['lat'], place['lng']
-        );
+            position.latitude, position.longitude, place['lat'], place['lng']);
         if (distance < minDistance) {
           minDistance = distance;
           nearest = place;
@@ -274,17 +277,23 @@ class VoiceAssistantService {
     }
   }
 
-  static double _calculateDistance(double lat1, double lon1, double lat2, double lon2) {
+  static double _calculateDistance(
+      double lat1, double lon1, double lat2, double lon2) {
     const p = 0.017453292519943295;
-    final a = 0.5 - math.cos((lat2 - lat1) * p) / 2 +
-        math.cos(lat1 * p) * math.cos(lat2 * p) *
-        (1 - math.cos((lon2 - lon1) * p)) / 2;
+    final a = 0.5 -
+        math.cos((lat2 - lat1) * p) / 2 +
+        math.cos(lat1 * p) *
+            math.cos(lat2 * p) *
+            (1 - math.cos((lon2 - lon1) * p)) /
+            2;
     return 12742 * math.asin(math.sqrt(a)); // 2 * R; R = 6371 km
   }
 
   static Future<bool> _checkConnectivity() async {
     try {
-      final result = await http.head(Uri.parse('https://google.com')).timeout(const Duration(seconds: 3));
+      final result = await http
+          .head(Uri.parse('https://google.com'))
+          .timeout(const Duration(seconds: 3));
       return result.statusCode == 200;
     } catch (e) {
       SecureLogger.warning('[VoiceAssistant] Connectivity check failed: $e');
@@ -310,7 +319,8 @@ class VoiceAssistantService {
   /// In a future production build this would route to ElevenLabs / Google
   /// Cloud TTS for authentic voice talent; the fallback here ensures the
   /// system TTS at least sounds meaningfully different per context.
-  static Future<void> speakAdvanced(String text, {required String accent}) async {
+  static Future<void> speakAdvanced(String text,
+      {required String accent}) async {
     try {
       switch (accent) {
         case 'lk_sinhala':
@@ -338,7 +348,8 @@ class VoiceAssistantService {
     } catch (e) {
       // If the requested language/locale isn't installed on device, fallback
       // gracefully to default rather than crashing the narration pipeline.
-      SecureLogger.warning('speakAdvanced() locale error for accent "$accent": $e — falling back to default.');
+      SecureLogger.warning(
+          'speakAdvanced() locale error for accent "$accent": $e — falling back to default.');
       await _tts.setLanguage('en-US');
       await _tts.setPitch(1.0);
       await _tts.setSpeechRate(0.5);
@@ -347,4 +358,3 @@ class VoiceAssistantService {
     }
   }
 }
-

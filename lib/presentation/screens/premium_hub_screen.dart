@@ -21,7 +21,8 @@ class PremiumHubScreen extends ConsumerStatefulWidget {
   ConsumerState<PremiumHubScreen> createState() => _PremiumHubScreenState();
 }
 
-class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with SingleTickerProviderStateMixin {
+class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen>
+    with SingleTickerProviderStateMixin {
   late AnimationController _pulseController;
 
   // Monthly/annual toggle for Heritage Premium — the annual product is the
@@ -53,11 +54,13 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
       for (final pkg in packages) {
         if (pkg.storeProduct.identifier == PremiumNotifier.premiumId) {
           _monthlyPackage = pkg;
-        } else if (pkg.storeProduct.identifier == PremiumNotifier.premiumAnnualId) {
+        } else if (pkg.storeProduct.identifier ==
+            PremiumNotifier.premiumAnnualId) {
           _annualPackage = pkg;
         }
       }
-      if (mounted && (_monthlyPackage != null || _annualPackage != null)) setState(() {});
+      if (mounted && (_monthlyPackage != null || _annualPackage != null))
+        setState(() {});
     } catch (_) {
       // RevenueCat not configured (dev/example keys) — static fallback prices used.
     }
@@ -94,7 +97,11 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
         backgroundColor: AppTheme.colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.close_rounded, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7)),
+          icon: Icon(Icons.close_rounded,
+              color: Theme.of(context)
+                  .colorScheme
+                  .onSurface
+                  .withValues(alpha: 0.7)),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -124,7 +131,9 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
       padding: const EdgeInsets.fromLTRB(24, 100, 24, 32),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: isDark ? [AppPaletteDark.card, AppPaletteDark.bg] : [AppPalette.ink, const Color(0xFF4A2F1C)],
+          colors: isDark
+              ? [AppPaletteDark.card, AppPaletteDark.bg]
+              : [AppPalette.ink, const Color(0xFF4A2F1C)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -136,21 +145,28 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
       child: Column(
         children: [
           Container(
-            width: 88, height: 88,
+            width: 88,
+            height: 88,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: goldColor.withValues(alpha: 0.18),
             ),
             child: Icon(Icons.stars_rounded, color: goldColor, size: 40),
           )
-          .animate(onPlay: (c) => c.repeat())
-          .shimmer(duration: 3.seconds)
-          .scale(duration: 2.seconds, begin: const Offset(0.95, 0.95), end: const Offset(1.05, 1.05), curve: Curves.easeInOut),
+              .animate(onPlay: (c) => c.repeat())
+              .shimmer(duration: 3.seconds)
+              .scale(
+                  duration: 2.seconds,
+                  begin: const Offset(0.95, 0.95),
+                  end: const Offset(1.05, 1.05),
+                  curve: Curves.easeInOut),
           SizedBox(height: 20),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              if (isPremium) Icon(Icons.workspace_premium_rounded, color: goldColor, size: 22),
+              if (isPremium)
+                Icon(Icons.workspace_premium_rounded,
+                    color: goldColor, size: 22),
               if (isPremium) SizedBox(width: 10),
               Flexible(
                 child: Text(
@@ -188,11 +204,6 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
       child: Column(
         children: [
           _benefitRow(
-            Icons.view_in_ar_rounded,
-            l10n.heritageArModeTitle,
-            l10n.heritageArModeDescription,
-          ),
-          _benefitRow(
             Icons.auto_awesome_rounded,
             l10n.oracleAiTripIntelligenceTitle,
             l10n.oracleAiTripIntelligenceDescription,
@@ -207,7 +218,10 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
             l10n.exclusiveCuratorDealsTitle,
             l10n.exclusiveCuratorDealsDescription,
             onTap: isPremium
-                ? () => Navigator.push(context, MaterialPageRoute(builder: (_) => const CuratorDealsScreen()))
+                ? () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (_) => const CuratorDealsScreen()))
                 : null,
           ),
           _benefitRow(
@@ -215,7 +229,11 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
             l10n.guardianEmergencyTranslatorTitle,
             l10n.guardianEmergencyTranslatorDescription,
             onTap: isPremium
-                ? () => Navigator.push(context, MaterialPageRoute(builder: (_) => const EmergencyTranslatorScreen(initialType: EmergencySituationType.other)))
+                ? () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (_) => const EmergencyTranslatorScreen(
+                            initialType: EmergencySituationType.other)))
                 : null,
           ),
         ],
@@ -223,7 +241,8 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
     );
   }
 
-  Widget _benefitRow(IconData icon, String title, String desc, {VoidCallback? onTap}) {
+  Widget _benefitRow(IconData icon, String title, String desc,
+      {VoidCallback? onTap}) {
     final iconColor = Theme.of(context).colorScheme.primary;
     return Padding(
       padding: EdgeInsets.only(bottom: 16),
@@ -274,7 +293,10 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
                 ),
               ),
               if (onTap != null)
-                Icon(Icons.arrow_forward_ios_rounded, size: 14, color: AppTheme.textSecondary(context).withValues(alpha: 0.5)),
+                Icon(Icons.arrow_forward_ios_rounded,
+                    size: 14,
+                    color:
+                        AppTheme.textSecondary(context).withValues(alpha: 0.5)),
             ],
           ),
         ),
@@ -283,7 +305,8 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
   }
 
   Widget _buildPricingCard(bool isPremium) {
-    final profile = ref.watch(premiumProvider.select((_) => UserPreferenceService.getProfile()));
+    final profile = ref.watch(
+        premiumProvider.select((_) => UserPreferenceService.getProfile()));
     final l10n = AppLocalizations.of(context)!;
     const goldColor = AppPalette.rust;
 
@@ -303,7 +326,8 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
                     .shimmer(duration: 4.seconds),
                 SizedBox(height: 20),
                 Text(
-                  l10n.premiumActiveLabel(profile.premiumPlan ?? l10n.premiumFallback),
+                  l10n.premiumActiveLabel(
+                      profile.premiumPlan ?? l10n.premiumFallback),
                   style: GoogleFonts.outfit(
                     fontSize: 17,
                     fontWeight: FontWeight.w700,
@@ -314,8 +338,12 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
                   Padding(
                     padding: EdgeInsets.only(top: 10),
                     child: Text(
-                      l10n.renewingOnLabel('${profile.premiumExpiresAt!.day}/${profile.premiumExpiresAt!.month}/${profile.premiumExpiresAt!.year}'),
-                      style: GoogleFonts.inter(fontSize: 12, color: AppTheme.textSecondary(context), fontWeight: FontWeight.w600),
+                      l10n.renewingOnLabel(
+                          '${profile.premiumExpiresAt!.day}/${profile.premiumExpiresAt!.month}/${profile.premiumExpiresAt!.year}'),
+                      style: GoogleFonts.inter(
+                          fontSize: 12,
+                          color: AppTheme.textSecondary(context),
+                          fontWeight: FontWeight.w600),
                     ),
                   ),
                 SizedBox(height: 24),
@@ -326,8 +354,13 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
                     borderRadius: BorderRadius.circular(100),
                   ),
                   child: Text(
-                    l10n.viaSourceLabel(profile.premiumSource?.replaceAll('_', ' ') ?? l10n.storeFallback),
-                    style: GoogleFonts.inter(fontSize: 10, color: AppTheme.textSecondary(context), fontWeight: FontWeight.w600),
+                    l10n.viaSourceLabel(
+                        profile.premiumSource?.replaceAll('_', ' ') ??
+                            l10n.storeFallback),
+                    style: GoogleFonts.inter(
+                        fontSize: 10,
+                        color: AppTheme.textSecondary(context),
+                        fontWeight: FontWeight.w600),
                   ),
                 ),
               ],
@@ -336,9 +369,13 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
           if (kDebugMode) ...[
             SizedBox(height: 16),
             TextButton.icon(
-              icon: Icon(Icons.restart_alt_rounded, color: AppTheme.colors.redAccent, size: 16),
+              icon: Icon(Icons.restart_alt_rounded,
+                  color: AppTheme.colors.redAccent, size: 16),
               label: Text(l10n.resetPremiumDevButton,
-                style: GoogleFonts.inter(color: AppTheme.colors.redAccent, fontSize: 11, fontWeight: FontWeight.bold)),
+                  style: GoogleFonts.inter(
+                      color: AppTheme.colors.redAccent,
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold)),
               onPressed: () {
                 ref.read(premiumProvider.notifier).simulateMockCancel();
                 ScaffoldMessenger.of(context).showSnackBar(
@@ -351,12 +388,20 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
           _buildTierOption(
             context: context,
             title: l10n.smartTravelerTitle,
-            priceStr: PriceLocalization.display(l10n,
-                PriceCatalogService.instance.price('subscriptions.smart_traveler.monthly')),
+            priceStr: PriceLocalization.display(
+                l10n,
+                PriceCatalogService.instance
+                    .price('subscriptions.smart_traveler.monthly')),
             billingCycle: l10n.billedMonthlyLabel,
-            features: [l10n.featureAiItineraries20, l10n.featureSelectedArPlaces, l10n.featureOfflineMapsBasic],
+            features: [
+              l10n.featureAiItineraries20,
+              l10n.featureSelectedArPlaces,
+              l10n.featureOfflineMapsBasic
+            ],
             color: AppTheme.colors.primary,
-            onPressed: () => ref.read(premiumProvider.notifier).buyPremium(productId: PremiumNotifier.explorerId),
+            onPressed: () => ref
+                .read(premiumProvider.notifier)
+                .buyPremium(productId: PremiumNotifier.explorerId),
           ),
           SizedBox(height: 20),
           _buildBillingToggle(context, goldColor),
@@ -364,16 +409,25 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
           Builder(builder: (context) {
             final l10n = AppLocalizations.of(context)!;
             final annualPrice = _annualPackage?.storeProduct.priceString ??
-                PriceLocalization.display(l10n, PriceCatalogService.instance.price('subscriptions.heritage.annual'));
+                PriceLocalization.display(
+                    l10n,
+                    PriceCatalogService.instance
+                        .price('subscriptions.heritage.annual'));
             final monthlyPrice = _monthlyPackage?.storeProduct.priceString ??
-                PriceLocalization.display(l10n, PriceCatalogService.instance.price('subscriptions.heritage.monthly'));
-            final trialLabel = _trialLabel(_isAnnual ? _annualPackage : _monthlyPackage, l10n);
+                PriceLocalization.display(
+                    l10n,
+                    PriceCatalogService.instance
+                        .price('subscriptions.heritage.monthly'));
+            final trialLabel =
+                _trialLabel(_isAnnual ? _annualPackage : _monthlyPackage, l10n);
 
             return _buildTierOption(
               context: context,
               title: l10n.heritagePremiumTitle,
               priceStr: _isAnnual ? annualPrice : monthlyPrice,
-              billingCycle: _isAnnual ? l10n.billedYearlySaveLabel : l10n.billedMonthlyLabel,
+              billingCycle: _isAnnual
+                  ? l10n.billedYearlySaveLabel
+                  : l10n.billedMonthlyLabel,
               features: [
                 l10n.featureUnlimitedAiItineraries,
                 l10n.featureFullHeritageArAccess,
@@ -383,7 +437,9 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
               color: goldColor,
               isRecommended: true,
               onPressed: () => ref.read(premiumProvider.notifier).buyPremium(
-                    productId: _isAnnual ? PremiumNotifier.premiumAnnualId : PremiumNotifier.premiumId,
+                    productId: _isAnnual
+                        ? PremiumNotifier.premiumAnnualId
+                        : PremiumNotifier.premiumId,
                   ),
             );
           }),
@@ -393,7 +449,11 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
             title: l10n.ultraExplorerTitle,
             priceStr: l10n.waitlistLabel,
             billingCycle: l10n.nextGenExperienceLabel,
-            features: [l10n.featureVrModeSupport, l10n.featureHistoricalTimelines, l10n.featurePersonalAiCurator],
+            features: [
+              l10n.featureVrModeSupport,
+              l10n.featureHistoricalTimelines,
+              l10n.featurePersonalAiCurator
+            ],
             color: AppTheme.colors.primary,
             isLocked: true,
             onPressed: () {
@@ -401,14 +461,16 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
                 SnackBar(
                   content: Text(l10n.ultraExplorerWaitlistMessage),
                   behavior: SnackBarBehavior.floating,
-                  backgroundColor: AppTheme.colors.primary.withValues(alpha: 0.15),
+                  backgroundColor:
+                      AppTheme.colors.primary.withValues(alpha: 0.15),
                 ),
               );
             },
           ),
           SizedBox(height: 32),
           TextButton(
-            onPressed: () => ref.read(premiumProvider.notifier).restorePurchases(),
+            onPressed: () =>
+                ref.read(premiumProvider.notifier).restorePurchases(),
             child: Text(
               l10n.restorePreviousPurchasesButton,
               style: GoogleFonts.inter(
@@ -421,11 +483,13 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
           SizedBox(height: 8),
           Text(
             l10n.termsPrivacyLabel,
-            style: GoogleFonts.inter(fontSize: 11, color: AppTheme.textSecondary(context).withValues(alpha: 0.7), fontWeight: FontWeight.w600),
+            style: GoogleFonts.inter(
+                fontSize: 11,
+                color: AppTheme.textSecondary(context).withValues(alpha: 0.7),
+                fontWeight: FontWeight.w600),
           ),
           SizedBox(height: 24),
-          if (kDebugMode)
-            _buildMockButton(),
+          if (kDebugMode) _buildMockButton(),
         ],
       ],
     );
@@ -440,13 +504,19 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
         border: Border.all(color: AppTheme.colors.red.withValues(alpha: 0.3)),
       ),
       child: TextButton.icon(
-        icon: Icon(Icons.bug_report, color: AppTheme.colors.redAccent, size: 16),
+        icon:
+            Icon(Icons.bug_report, color: AppTheme.colors.redAccent, size: 16),
         label: Text(AppLocalizations.of(context)!.testBuyDevButton,
-          style: GoogleFonts.inter(color: AppTheme.colors.redAccent, fontSize: 11, fontWeight: FontWeight.bold)),
+            style: GoogleFonts.inter(
+                color: AppTheme.colors.redAccent,
+                fontSize: 11,
+                fontWeight: FontWeight.bold)),
         onPressed: () {
           ref.read(premiumProvider.notifier).simulateMockPurchase();
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(AppLocalizations.of(context)!.mockPurchaseSimulatedMessage)),
+            SnackBar(
+                content: Text(AppLocalizations.of(context)!
+                    .mockPurchaseSimulatedMessage)),
           );
         },
       ),
@@ -475,7 +545,9 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
               style: GoogleFonts.inter(
                 fontSize: 12,
                 fontWeight: FontWeight.w700,
-                color: selected ? AppTheme.colors.white : AppTheme.textSecondary(context),
+                color: selected
+                    ? AppTheme.colors.white
+                    : AppTheme.textSecondary(context),
               ),
             ),
           ),
@@ -491,8 +563,10 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
       ),
       child: Row(
         children: [
-          segment(AppLocalizations.of(context)!.monthlyLabel, !_isAnnual, () => setState(() => _isAnnual = false)),
-          segment(AppLocalizations.of(context)!.yearlySaveLabel, _isAnnual, () => setState(() => _isAnnual = true)),
+          segment(AppLocalizations.of(context)!.monthlyLabel, !_isAnnual,
+              () => setState(() => _isAnnual = false)),
+          segment(AppLocalizations.of(context)!.yearlySaveLabel, _isAnnual,
+              () => setState(() => _isAnnual = true)),
         ],
       ),
     );
@@ -512,19 +586,32 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
     final isDark = Theme.of(context).brightness == Brightness.dark;
     // Recommended tier gets the dark "premium" treatment (gold-on-charcoal);
     // other tiers stay as plain shadow cards.
-    final cardBg = isRecommended ? AppPalette.ink : (isDark ? AppPaletteDark.card : Theme.of(context).colorScheme.surface);
-    final titleColor = isRecommended ? AppPalette.heroOchre : AppTheme.textPrimary(context);
-    final priceColor = isRecommended ? AppTheme.colors.white : AppTheme.textPrimary(context);
-    final featureTextColor = isRecommended ? AppTheme.colors.white.withValues(alpha: 0.75) : AppTheme.textSecondary(context);
+    final cardBg = isRecommended
+        ? AppPalette.ink
+        : (isDark
+            ? AppPaletteDark.card
+            : Theme.of(context).colorScheme.surface);
+    final titleColor =
+        isRecommended ? AppPalette.heroOchre : AppTheme.textPrimary(context);
+    final priceColor =
+        isRecommended ? AppTheme.colors.white : AppTheme.textPrimary(context);
+    final featureTextColor = isRecommended
+        ? AppTheme.colors.white.withValues(alpha: 0.75)
+        : AppTheme.textSecondary(context);
     final checkColor = isRecommended ? AppPalette.heroOchre : color;
 
     return Container(
       decoration: BoxDecoration(
         color: cardBg,
         borderRadius: BorderRadius.circular(24),
-        boxShadow: isRecommended ? null : [
-          BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.05), blurRadius: 16, offset: const Offset(0, 6)),
-        ],
+        boxShadow: isRecommended
+            ? null
+            : [
+                BoxShadow(
+                    color: AppTheme.colors.black.withValues(alpha: 0.05),
+                    blurRadius: 16,
+                    offset: const Offset(0, 6)),
+              ],
       ),
       padding: EdgeInsets.all(24),
       child: Column(
@@ -554,14 +641,21 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
                   ),
                   child: Text(
                     AppLocalizations.of(context)!.popularLabel,
-                    style: GoogleFonts.inter(fontSize: 9, fontWeight: FontWeight.w700, color: AppPalette.ink),
+                    style: GoogleFonts.inter(
+                        fontSize: 9,
+                        fontWeight: FontWeight.w700,
+                        color: AppPalette.ink),
                   ),
                 ),
               ],
               if (isLocked)
                 Text(
-                   AppLocalizations.of(context)!.lockedLabelShort,
-                  style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.w600, color: AppTheme.textSecondary(context).withValues(alpha: 0.6)),
+                  AppLocalizations.of(context)!.lockedLabelShort,
+                  style: GoogleFonts.inter(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w600,
+                      color: AppTheme.textSecondary(context)
+                          .withValues(alpha: 0.6)),
                 ),
             ],
           ),
@@ -586,7 +680,10 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
                   padding: EdgeInsets.only(bottom: 5),
                   child: Text(
                     AppLocalizations.of(context)!.perMonthLabel,
-                    style: GoogleFonts.inter(color: featureTextColor, fontSize: 12, fontWeight: FontWeight.w600),
+                    style: GoogleFonts.inter(
+                        color: featureTextColor,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600),
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
@@ -595,17 +692,22 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
           ),
           SizedBox(height: 18),
           ...features.map((f) => Padding(
-            padding: EdgeInsets.only(bottom: 10),
-            child: Row(
-              children: [
-                Icon(Icons.check_circle_rounded, size: 16, color: checkColor),
-                SizedBox(width: 10),
-                Expanded(
-                  child: Text(f, style: GoogleFonts.inter(color: featureTextColor, fontSize: 12, fontWeight: FontWeight.w500)),
+                padding: EdgeInsets.only(bottom: 10),
+                child: Row(
+                  children: [
+                    Icon(Icons.check_circle_rounded,
+                        size: 16, color: checkColor),
+                    SizedBox(width: 10),
+                    Expanded(
+                      child: Text(f,
+                          style: GoogleFonts.inter(
+                              color: featureTextColor,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500)),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          )),
+              )),
           SizedBox(height: 20),
           SizedBox(
             width: double.infinity,
@@ -616,13 +718,18 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen> with Single
                 backgroundColor: isLocked
                     ? AppTheme.surfaceMuted(context)
                     : (isRecommended ? AppPalette.heroOchre : color),
-                foregroundColor: isLocked ? AppTheme.textSecondary(context) : AppPalette.ink,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
+                foregroundColor:
+                    isLocked ? AppTheme.textSecondary(context) : AppPalette.ink,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(100)),
                 elevation: 0,
               ),
               child: Text(
-                isLocked ? AppLocalizations.of(context)!.comingSoonButton : AppLocalizations.of(context)!.upgradeNowLongButton,
-                style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 13),
+                isLocked
+                    ? AppLocalizations.of(context)!.comingSoonButton
+                    : AppLocalizations.of(context)!.upgradeNowLongButton,
+                style: GoogleFonts.inter(
+                    fontWeight: FontWeight.w700, fontSize: 13),
               ),
             ),
           ),

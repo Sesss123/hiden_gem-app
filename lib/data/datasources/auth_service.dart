@@ -250,13 +250,16 @@ class AuthService {
   /// signed-in account. This never signs into a different phone-only account.
   Future<PhoneSignInChallenge> startGuidePhoneLink(String phoneNumber) async {
     final current = _auth.currentUser;
-    if (current == null) throw StateError('Sign in before verifying a phone number.');
+    if (current == null)
+      throw StateError('Sign in before verifying a phone number.');
     if (kIsWeb) {
-      throw UnsupportedError('Guide phone linking is available in the Android/iOS app.');
+      throw UnsupportedError(
+          'Guide phone linking is available in the Android/iOS app.');
     }
     final normalized = phoneNumber.replaceAll(RegExp(r'[\s()-]'), '');
     if (!RegExp(r'^\+[1-9]\d{7,14}$').hasMatch(normalized)) {
-      throw FirebaseAuthException(code: 'invalid-phone-number',
+      throw FirebaseAuthException(
+          code: 'invalid-phone-number',
           message: 'Enter a valid phone number including the country code.');
     }
     final completer = Completer<PhoneSignInChallenge>();
@@ -266,7 +269,8 @@ class AuthService {
       verificationCompleted: (credential) async {
         try {
           await _linkPhoneCredential(current, credential);
-          if (!completer.isCompleted) completer.complete(const PhoneSignInChallenge());
+          if (!completer.isCompleted)
+            completer.complete(const PhoneSignInChallenge());
         } catch (error, stack) {
           if (!completer.isCompleted) completer.completeError(error, stack);
         }
@@ -275,29 +279,41 @@ class AuthService {
         if (!completer.isCompleted) completer.completeError(error);
       },
       codeSent: (verificationId, _) {
-        if (!completer.isCompleted) completer.complete(PhoneSignInChallenge(verificationId: verificationId));
+        if (!completer.isCompleted)
+          completer
+              .complete(PhoneSignInChallenge(verificationId: verificationId));
       },
       codeAutoRetrievalTimeout: (verificationId) {
-        if (!completer.isCompleted) completer.complete(PhoneSignInChallenge(verificationId: verificationId));
+        if (!completer.isCompleted)
+          completer
+              .complete(PhoneSignInChallenge(verificationId: verificationId));
       },
     );
     return completer.future.timeout(const Duration(seconds: 75));
   }
 
-  Future<void> confirmGuidePhoneLink(PhoneSignInChallenge challenge, String smsCode) async {
-    if (challenge.verificationId == null) return; // Android auto-verification completed.
+  Future<void> confirmGuidePhoneLink(
+      PhoneSignInChallenge challenge, String smsCode) async {
+    if (challenge.verificationId == null)
+      return; // Android auto-verification completed.
     final code = smsCode.trim();
     if (!RegExp(r'^\d{6}$').hasMatch(code)) {
-      throw FirebaseAuthException(code: 'invalid-verification-code', message: 'Enter the 6-digit SMS code.');
+      throw FirebaseAuthException(
+          code: 'invalid-verification-code',
+          message: 'Enter the 6-digit SMS code.');
     }
     final current = _auth.currentUser;
     if (current == null) throw StateError('Your sign-in session has ended.');
-    await _linkPhoneCredential(current, PhoneAuthProvider.credential(
-      verificationId: challenge.verificationId!, smsCode: code));
+    await _linkPhoneCredential(
+        current,
+        PhoneAuthProvider.credential(
+            verificationId: challenge.verificationId!, smsCode: code));
   }
 
-  Future<void> _linkPhoneCredential(User user, PhoneAuthCredential credential) async {
-    if (user.providerData.any((provider) => provider.providerId == PhoneAuthProvider.PROVIDER_ID)) {
+  Future<void> _linkPhoneCredential(
+      User user, PhoneAuthCredential credential) async {
+    if (user.providerData.any(
+        (provider) => provider.providerId == PhoneAuthProvider.PROVIDER_ID)) {
       await user.updatePhoneNumber(credential);
     } else {
       await user.linkWithCredential(credential);
@@ -306,8 +322,12 @@ class AuthService {
     final refreshed = _auth.currentUser!;
     await refreshed.getIdToken(true);
     final phone = refreshed.phoneNumber;
-    if (phone == null) throw StateError('Firebase did not confirm the phone number.');
-    await FirebaseFirestore.instance.collection('users').doc(refreshed.uid).set({
+    if (phone == null)
+      throw StateError('Firebase did not confirm the phone number.');
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(refreshed.uid)
+        .set({
       'phoneNumber': phone,
       'phoneVerified': true,
       'phoneVerifiedAt': FieldValue.serverTimestamp(),
@@ -625,7 +645,9 @@ class AuthService {
       final response = await SecureHttpClient(http.Client()).delete(
         Uri.parse('${AppConfig.laravelUrl}/auth/account'),
         headers: {'X-API-KEY': AppConfig.hiddenGemsApiKey},
-      ).timeout(const Duration(seconds: 45));
+        // Recursive Firestore/storage cleanup can legitimately take longer than
+        // an ordinary API call for guide accounts with years of tour history.
+      ).timeout(const Duration(seconds: 120));
 
       if (response.statusCode != 200) {
         String? serverMsg;
@@ -633,8 +655,8 @@ class AuthService {
           final body = jsonDecode(response.body);
           serverMsg = body['message'] as String?;
         } catch (_) {}
-        throw Exception(
-            serverMsg ?? 'Account deletion failed on the server (${response.statusCode}).');
+        throw Exception(serverMsg ??
+            'Account deletion failed on the server (${response.statusCode}).');
       }
 
       // 2. Only tear down device state after the server confirms deletion.

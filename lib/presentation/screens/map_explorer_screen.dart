@@ -77,15 +77,23 @@ class _MapExplorerScreenState extends ConsumerState<MapExplorerScreen> {
       for (final doc in snapshot.docs) {
         final data = doc.data();
         final expiresAt = DateTime.tryParse('${data['expiresAt'] ?? ''}');
-        if (expiresAt != null && expiresAt.isBefore(DateTime.now().toUtc())) continue;
+        if (expiresAt != null && expiresAt.isBefore(DateTime.now().toUtc()))
+          continue;
         final geometry = data['hazard_geometry'] ?? data['hazardGeometry'];
         if (geometry is! List) continue;
-        final points = geometry.whereType<Map>().map((point) => LatLng(
-              (point['lat'] as num).toDouble(),
-              (point['lng'] as num).toDouble(),
-            )).toList();
+        final points = geometry
+            .whereType<Map>()
+            .map((point) => LatLng(
+                  (point['lat'] as num).toDouble(),
+                  (point['lng'] as num).toDouble(),
+                ))
+            .toList();
         final level = (data['level'] as num?)?.toInt() ?? 1;
-        final color = level >= 3 ? Colors.red : level == 2 ? Colors.orange : Colors.yellow.shade700;
+        final color = level >= 3
+            ? Colors.red
+            : level == 2
+                ? Colors.orange
+                : Colors.yellow.shade700;
         if (data['type'] == 'closed_road' && points.length >= 2) {
           closedRoads.add(Polyline(
             polylineId: PolylineId('closed_${doc.id}'),
@@ -105,7 +113,16 @@ class _MapExplorerScreenState extends ConsumerState<MapExplorerScreen> {
           strokeWidth: 2,
         ));
       }
-      if (mounted) setState(() { _hazardPolygons..clear()..addAll(polygons); _closedRoadLines..clear()..addAll(closedRoads); _hazardFeedOffline = false; });
+      if (mounted)
+        setState(() {
+          _hazardPolygons
+            ..clear()
+            ..addAll(polygons);
+          _closedRoadLines
+            ..clear()
+            ..addAll(closedRoads);
+          _hazardFeedOffline = false;
+        });
     }, onError: (_) {
       if (mounted) setState(() => _hazardFeedOffline = true);
     });
@@ -190,9 +207,8 @@ class _MapExplorerScreenState extends ConsumerState<MapExplorerScreen> {
           markerId: MarkerId(place.id),
           position: LatLng(place.lat, place.lng),
           onTap: () => setState(() => _selectedPlace = place),
-          icon: BitmapDescriptor.defaultMarkerWithHue(place.arSupported
-              ? BitmapDescriptor.hueYellow
-              : BitmapDescriptor.hueAzure),
+          icon:
+              BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
         ),
       );
     }
@@ -245,7 +261,8 @@ class _MapExplorerScreenState extends ConsumerState<MapExplorerScreen> {
         (place.lat == 0 && place.lng == 0)) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text(AppLocalizations.of(context)!.invalidMapCoordinates)));
+            content:
+                Text(AppLocalizations.of(context)!.invalidMapCoordinates)));
       }
       return;
     }
@@ -255,8 +272,8 @@ class _MapExplorerScreenState extends ConsumerState<MapExplorerScreen> {
       await launchUrl(Uri.parse(googleMapsUrl),
           mode: LaunchMode.externalApplication);
     } else if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.mapAppUnavailable)));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(AppLocalizations.of(context)!.mapAppUnavailable)));
     }
   }
 
@@ -318,10 +335,17 @@ class _MapExplorerScreenState extends ConsumerState<MapExplorerScreen> {
             right: 16,
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-              decoration: BoxDecoration(color: AppTheme.colors.white, borderRadius: BorderRadius.circular(12)),
+              decoration: BoxDecoration(
+                  color: AppTheme.colors.white,
+                  borderRadius: BorderRadius.circular(12)),
               child: Text(
-                _hazardFeedOffline ? 'Hazards: offline/cache' : 'Hazards  🟡 Watch  🟠 Warning  🔴 Stop',
-                style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.w600, color: AppTheme.textPrimary(context)),
+                _hazardFeedOffline
+                    ? 'Hazards: offline/cache'
+                    : 'Hazards  🟡 Watch  🟠 Warning  🔴 Stop',
+                style: GoogleFonts.inter(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w600,
+                    color: AppTheme.textPrimary(context)),
               ),
             ),
           ),

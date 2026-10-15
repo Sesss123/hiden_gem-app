@@ -399,7 +399,11 @@ export const track_profile_view = functions.https.onCall(async (data: any, conte
             return false;
         }
         tx.update(listingRef, { profileViews: admin.firestore.FieldValue.increment(1) });
-        tx.set(markerRef, { lastViewedAtMs: now }, { merge: true });
+        // Store ownership explicitly so privacy/account-deletion jobs can
+        // query and remove every marker created by this viewer. Older marker
+        // documents only encoded the UID in their document ID; the backend
+        // retains a suffix-cleanup fallback for those legacy records.
+        tx.set(markerRef, { lastViewedAtMs: now, viewerUid, listingId }, { merge: true });
         return true;
     });
 

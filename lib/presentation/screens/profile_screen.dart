@@ -316,9 +316,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                                       : FontWeight.w500,
                                   color: isSelected
                                       ? AppPalette.rust
-                                      : Theme.of(context)
-                                          .colorScheme
-                                          .onSurface,
+                                      : Theme.of(context).colorScheme.onSurface,
                                 ),
                               ),
                               if (lang['native'] != lang['name']) ...[
@@ -788,7 +786,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(
-              isPremium ? Icons.view_in_ar_rounded : Icons.lock_outline_rounded,
+              isPremium
+                  ? Icons.workspace_premium_rounded
+                  : Icons.lock_outline_rounded,
               color: AppPalette.heroOchre,
               size: 20,
             ),
@@ -932,10 +932,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
           l10n.savedPlacesHubTitle,
           l10n.savedPlacesHubSubtitle,
           AppPalette.sigiriyaOchre,
-          () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (_) => const SavedPlacesScreen())),
+          () => Navigator.push(context,
+              MaterialPageRoute(builder: (_) => const SavedPlacesScreen())),
         ),
         const SizedBox(height: 8),
         _hubCard(

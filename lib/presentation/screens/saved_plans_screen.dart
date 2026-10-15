@@ -7,10 +7,8 @@ import 'package:hidden_gems_sl/data/datasources/trip_cache_service.dart';
 import '../../core/theme/oracle_ui_system.dart';
 import '../../data/models/trip_plan_model.dart';
 import '../widgets/interested_events_hub.dart';
-import 'ar_coming_soon_screen.dart';
 import 'results_screen.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:collection/collection.dart';
 import '../../l10n/app_localizations.dart';
 
 class SavedPlansScreen extends ConsumerStatefulWidget {
@@ -57,53 +55,6 @@ class _SavedPlansScreenState extends ConsumerState<SavedPlansScreen> {
       MaterialPageRoute(
         builder: (_) =>
             ResultsScreen(plan: plan, cacheState: CacheReadResult.fresh),
-      ),
-    );
-  }
-
-  Widget _buildARSwipeBackground(TripPlan plan) {
-    final hasAR =
-        plan.itinerary.expand((d) => d.items).any((i) => i.arSupported);
-    return Container(
-      alignment: Alignment.centerLeft,
-      padding: const EdgeInsets.only(left: 20),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            Theme.of(context).colorScheme.primary.withValues(alpha: 0.8),
-            Theme.of(context).colorScheme.primary.withValues(alpha: 0.0),
-          ],
-        ),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Row(
-        children: [
-          Icon(Icons.view_in_ar, color: AppTheme.colors.black, size: 28),
-          if (hasAR) ...[
-            const SizedBox(width: 12),
-            Text(
-              AppLocalizations.of(context)!.viewInArLabel,
-              style: GoogleFonts.outfit(
-                color: AppTheme.colors.black,
-                fontWeight: FontWeight.w700,
-                fontSize: 14,
-              ),
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-
-  void _launchARShortcut(BuildContext context, String name) {
-    // TripPlan items currently carry only an AR flag, not verified model
-    // URLs. Keep this shortcut closed until that metadata is persisted and
-    // open the localized coming-soon experience instead of constructing fake
-    // coordinates or empty AR assets.
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => ARComingSoonScreen(placeName: name),
       ),
     );
   }
@@ -242,8 +193,8 @@ class _SavedPlansScreenState extends ConsumerState<SavedPlansScreen> {
 
         return Dismissible(
           key: Key(id),
-          direction: DismissDirection.horizontal,
-          background: _buildARSwipeBackground(plan),
+          direction: DismissDirection.endToStart,
+          background: Container(),
           secondaryBackground: Container(
             alignment: Alignment.centerRight,
             padding: const EdgeInsets.only(right: 20),
@@ -252,36 +203,10 @@ class _SavedPlansScreenState extends ConsumerState<SavedPlansScreen> {
                 borderRadius: BorderRadius.circular(20)),
             child: Icon(Icons.delete_outline, color: AppTheme.colors.white),
           ),
-          confirmDismiss: (direction) async {
-            if (direction == DismissDirection.startToEnd) {
-              final arItem = plan.itinerary
-                  .expand((day) => day.items)
-                  .where((item) => item.arSupported)
-                  .firstOrNull;
-              if (arItem != null) {
-                HapticFeedback.heavyImpact();
-                _launchARShortcut(context, arItem.title);
-              } else {
-                ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(l10n.noArSpotsSnackbar)));
-              }
-              return false;
-            }
-            return true;
-          },
+          confirmDismiss: (_) async => true,
           onDismissed: (_) => _deletePlan(id),
           child: GestureDetector(
             onTap: () => _openPlan(plan),
-            onLongPress: () {
-              final arItem = plan.itinerary
-                  .expand((day) => day.items)
-                  .where((item) => item.arSupported)
-                  .firstOrNull;
-              if (arItem != null) {
-                HapticFeedback.heavyImpact();
-                _launchARShortcut(context, arItem.title);
-              }
-            },
             child: Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -336,40 +261,6 @@ class _SavedPlansScreenState extends ConsumerState<SavedPlansScreen> {
                                 Icons.account_balance_wallet_outlined,
                                 l10n.tripBudgetChip(
                                     _fmt(summary.userBudgetLkr))),
-                            if (plan.itinerary.any((day) =>
-                                day.items.any((item) => item.arSupported)))
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 8, vertical: 4),
-                                decoration: BoxDecoration(
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .primary
-                                      .withValues(alpha: 0.1),
-                                  borderRadius: BorderRadius.circular(100),
-                                ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(Icons.view_in_ar_rounded,
-                                        size: 10,
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .primary),
-                                    SizedBox(width: 4),
-                                    Text(
-                                      l10n.arBadgeLabel,
-                                      style: TextStyle(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .primary,
-                                        fontWeight: FontWeight.w700,
-                                        fontSize: 10,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
                           ],
                         ),
                         const SizedBox(height: 8),

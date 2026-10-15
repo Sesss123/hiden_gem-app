@@ -260,7 +260,7 @@ class FirestoreService
      * a specific nested collection path directly, so it works for
      * subcollections without needing a Firestore collection-group index.
      */
-    public function listSubcollectionDocuments(string $parentPath, string $subcollection): array
+    public function listSubcollectionDocuments(string $parentPath, string $subcollection, bool $strict = false): array
     {
         try {
             $token = $this->getToken();
@@ -274,6 +274,9 @@ class FirestoreService
                 if (!$response->successful()) {
                     if ($response->status() === 404) break;
                     Log::error("Firestore REST list error for {$parentPath}/{$subcollection} ({$response->status()}): " . $response->body());
+                    if ($strict) {
+                        throw new \RuntimeException("Failed listing {$parentPath}/{$subcollection} ({$response->status()}).");
+                    }
                     return $results;
                 }
                 foreach (($response->json('documents') ?? []) as $doc) {
@@ -289,8 +292,42 @@ class FirestoreService
             return $results;
         } catch (\Exception $e) {
             Log::error("Firestore REST exception listing {$parentPath}/{$subcollection}: " . $e->getMessage());
+            if ($strict) {
+                throw $e;
+            }
             return $results ?? [];
         }
+    }
+
+    /**
+     * Deletes legacy documents whose owner was encoded only in the document
+     * ID. Pages through the entire collection and fails closed on any REST
+     * error so account deletion never reports a false success.
+     */
+    public function deleteDocumentsWithIdSuffix(string $collection, string $suffix): bool
+    {
+        $token = $this->getToken();
+        $base = "https://firestore.googleapis.com/v1/projects/{$this->projectId}/databases/(default)/documents";
+        $pageToken = null;
+
+        do {
+            $query = ['pageSize' => 300];
+            if ($pageToken) $query['pageToken'] = $pageToken;
+            $response = $this->client($token)->get("{$base}/{$collection}", $query);
+            if (!$response->successful()) {
+                if ($response->status() === 404) return true;
+                throw new \RuntimeException("Failed listing legacy {$collection} documents ({$response->status()}).");
+            }
+            foreach (($response->json('documents') ?? []) as $document) {
+                $id = basename($document['name']);
+                if (str_ends_with($id, $suffix) && !$this->deleteDocument($collection, $id)) {
+                    throw new \RuntimeException("Failed deleting legacy {$collection}/{$id}.");
+                }
+            }
+            $pageToken = $response->json('nextPageToken');
+        } while ($pageToken);
+
+        return true;
     }
 
     private function deleteDocumentPathRecursively(string $documentPath): bool
@@ -298,7 +335,11 @@ class FirestoreService
         $token = $this->getToken();
         $base = "https://firestore.googleapis.com/v1/projects/{$this->projectId}/databases/(default)/documents";
         $pageToken = null;
+        $collectionIds = [];
 
+        // Capture the collection IDs before mutating their contents. Paging a
+        // collection while deleting the current page can invalidate the next
+        // token and silently skip documents.
         do {
             $body = ['pageSize' => 1000];
             if ($pageToken) $body['pageToken'] = $pageToken;
@@ -310,29 +351,31 @@ class FirestoreService
                 throw new \RuntimeException("Failed listing subcollections for {$documentPath} ({$collectionsResponse->status()}).");
             }
 
-            foreach (($collectionsResponse->json('collectionIds') ?? []) as $collectionId) {
-                $documentsPageToken = null;
-                do {
-                    $query = ['pageSize' => 1000];
-                    if ($documentsPageToken) $query['pageToken'] = $documentsPageToken;
-                    $documentsResponse = $this->client($token)->get("{$base}/{$documentPath}/{$collectionId}", $query);
-                    if (!$documentsResponse->successful()) {
-                        if ($documentsResponse->status() === 404) {
-                            break;
-                        }
-                        throw new \RuntimeException("Failed listing {$documentPath}/{$collectionId} ({$documentsResponse->status()}).");
-                    }
-                    foreach (($documentsResponse->json('documents') ?? []) as $document) {
-                        $childPath = explode('/documents/', $document['name'], 2)[1] ?? null;
-                        if (!$childPath || !$this->deleteDocumentPathRecursively($childPath)) {
-                            throw new \RuntimeException("Failed recursively deleting a child of {$documentPath}.");
-                        }
-                    }
-                    $documentsPageToken = $documentsResponse->json('nextPageToken');
-                } while ($documentsPageToken);
-            }
+            $collectionIds = array_merge($collectionIds, $collectionsResponse->json('collectionIds') ?? []);
             $pageToken = $collectionsResponse->json('nextPageToken');
         } while ($pageToken);
+
+        foreach (array_unique($collectionIds) as $collectionId) {
+            do {
+                // Always request the first page. Once it is deleted, the next
+                // batch naturally becomes the new first page.
+                $documentsResponse = $this->client($token)->get(
+                    "{$base}/{$documentPath}/{$collectionId}",
+                    ['pageSize' => 300]
+                );
+                if (!$documentsResponse->successful()) {
+                    if ($documentsResponse->status() === 404) break;
+                    throw new \RuntimeException("Failed listing {$documentPath}/{$collectionId} ({$documentsResponse->status()}).");
+                }
+                $documents = $documentsResponse->json('documents') ?? [];
+                foreach ($documents as $document) {
+                    $childPath = explode('/documents/', $document['name'], 2)[1] ?? null;
+                    if (!$childPath || !$this->deleteDocumentPathRecursively($childPath)) {
+                        throw new \RuntimeException("Failed recursively deleting a child of {$documentPath}.");
+                    }
+                }
+            } while (!empty($documents));
+        }
 
         $response = $this->client($token)->delete("{$base}/{$documentPath}");
         return $response->successful() || $response->status() === 404;

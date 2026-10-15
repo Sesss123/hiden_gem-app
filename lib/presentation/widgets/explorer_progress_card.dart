@@ -52,7 +52,6 @@ class _ExplorerProgressCardState extends State<ExplorerProgressCard>
 
     // Listen to any progress updates
     widget.service.visitedSites.addListener(_listenAndAnimate);
-    widget.service.arSessionCount.addListener(_listenAndAnimate);
     widget.service.badgeCount.addListener(_listenAndAnimate);
 
     // Sync from Firestore so progress card shows real data on load
@@ -64,7 +63,8 @@ class _ExplorerProgressCardState extends State<ExplorerProgressCard>
   void _listenAndAnimate() {
     final newTarget = widget.service.overallProgress;
     if (newTarget == _targetProgress) return;
-    _progressAnim = Tween<double>(begin: _targetProgress, end: newTarget).animate(
+    _progressAnim =
+        Tween<double>(begin: _targetProgress, end: newTarget).animate(
       CurvedAnimation(parent: _animController, curve: Curves.easeOutCubic),
     );
     _targetProgress = newTarget;
@@ -74,7 +74,6 @@ class _ExplorerProgressCardState extends State<ExplorerProgressCard>
   @override
   void dispose() {
     widget.service.visitedSites.removeListener(_listenAndAnimate);
-    widget.service.arSessionCount.removeListener(_listenAndAnimate);
     widget.service.badgeCount.removeListener(_listenAndAnimate);
     _animController.dispose();
     super.dispose();
@@ -82,9 +81,7 @@ class _ExplorerProgressCardState extends State<ExplorerProgressCard>
 
   @override
   Widget build(BuildContext context) {
-    return widget.compact
-        ? _buildCompact()
-        : _buildFull();
+    return widget.compact ? _buildCompact() : _buildFull();
   }
 
   // ── Full Card (Heritage Passport / Progress Screen) ──────────────────────
@@ -164,7 +161,8 @@ class _ExplorerProgressCardState extends State<ExplorerProgressCard>
                   'Next: ${ExplorerLevel.values[level.index + 1].title} ${ExplorerLevel.values[level.index + 1].emoji}',
                   style: GoogleFonts.inter(
                     fontSize: 10,
-                    color: AppTheme.textSecondary(context).withValues(alpha: 0.6),
+                    color:
+                        AppTheme.textSecondary(context).withValues(alpha: 0.6),
                     letterSpacing: 0.5,
                   ),
                 ),
@@ -191,15 +189,6 @@ class _ExplorerProgressCardState extends State<ExplorerProgressCard>
                 total: ExplorerProgressService.totalSites,
                 progress: widget.service.sitesProgress,
                 color: AppTheme.colors.primary, // Sites: Gold
-              ),
-              const SizedBox(height: 14),
-              _CategoryRow(
-                icon: Icons.view_in_ar_rounded,
-                label: 'AR Sessions',
-                current: widget.service.arSessionCount.value,
-                total: ExplorerProgressService.totalArSessions,
-                progress: widget.service.arProgress,
-                color: AppTheme.modernGreen(context), // AR: Green
               ),
               const SizedBox(height: 14),
               _CategoryRow(
@@ -240,9 +229,15 @@ class _ExplorerProgressCardState extends State<ExplorerProgressCard>
         return Container(
           width: double.infinity,
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-          decoration: AppTheme.glassDecoration(context, opacity: isDark ? 0.08 : 0.85, blur: 20, color: Theme.of(context).cardColor).copyWith(
+          decoration: AppTheme.glassDecoration(context,
+                  opacity: isDark ? 0.08 : 0.85,
+                  blur: 20,
+                  color: Theme.of(context).cardColor)
+              .copyWith(
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: _levelColor(level).withValues(alpha: isDark ? 0.3 : 0.5)),
+            border: Border.all(
+                color:
+                    _levelColor(level).withValues(alpha: isDark ? 0.3 : 0.5)),
           ),
           child: Row(
             children: [
@@ -253,10 +248,12 @@ class _ExplorerProgressCardState extends State<ExplorerProgressCard>
                 decoration: BoxDecoration(
                   color: _levelColor(level).withValues(alpha: 0.15),
                   shape: BoxShape.circle,
-                  border: Border.all(color: _levelColor(level).withValues(alpha: 0.4)),
+                  border: Border.all(
+                      color: _levelColor(level).withValues(alpha: 0.4)),
                 ),
                 child: Center(
-                  child: Text(level.emoji, style: const TextStyle(fontSize: 22)),
+                  child:
+                      Text(level.emoji, style: const TextStyle(fontSize: 22)),
                 ),
               ),
               const SizedBox(width: 16),
@@ -290,8 +287,12 @@ class _ExplorerProgressCardState extends State<ExplorerProgressCard>
                       borderRadius: BorderRadius.circular(4),
                       child: LinearProgressIndicator(
                         value: progress,
-                        backgroundColor: (isDark ? AppTheme.colors.white : AppTheme.colors.black).withValues(alpha: 0.1),
-                        valueColor: AlwaysStoppedAnimation<Color>(_levelColor(level)),
+                        backgroundColor: (isDark
+                                ? AppTheme.colors.white
+                                : AppTheme.colors.black)
+                            .withValues(alpha: 0.1),
+                        valueColor:
+                            AlwaysStoppedAnimation<Color>(_levelColor(level)),
                         minHeight: 5,
                       ),
                     ),
@@ -323,10 +324,14 @@ class _ExplorerProgressCardState extends State<ExplorerProgressCard>
 
   Color _levelColor(ExplorerLevel level) {
     switch (level) {
-      case ExplorerLevel.beginner:    return AppTheme.colors.primary; // Green
-      case ExplorerLevel.discoverer:  return AppTheme.colors.primary; // Blue
-      case ExplorerLevel.hunter:      return AppTheme.colors.primary; // Gold
-      case ExplorerLevel.master:      return AppTheme.colors.primary; // Violet
+      case ExplorerLevel.beginner:
+        return AppTheme.colors.primary; // Green
+      case ExplorerLevel.discoverer:
+        return AppTheme.colors.primary; // Blue
+      case ExplorerLevel.hunter:
+        return AppTheme.colors.primary; // Gold
+      case ExplorerLevel.master:
+        return AppTheme.colors.primary; // Violet
     }
   }
 }
@@ -339,10 +344,14 @@ class _LevelBadge extends StatelessWidget {
 
   Color get _color {
     switch (level) {
-      case ExplorerLevel.beginner:    return AppTheme.colors.primary;
-      case ExplorerLevel.discoverer:  return AppTheme.colors.primary;
-      case ExplorerLevel.hunter:      return AppTheme.colors.primary;
-      case ExplorerLevel.master:      return AppTheme.colors.primary;
+      case ExplorerLevel.beginner:
+        return AppTheme.colors.primary;
+      case ExplorerLevel.discoverer:
+        return AppTheme.colors.primary;
+      case ExplorerLevel.hunter:
+        return AppTheme.colors.primary;
+      case ExplorerLevel.master:
+        return AppTheme.colors.primary;
     }
   }
 
@@ -410,7 +419,10 @@ class _AnimatedProgressBar extends StatelessWidget {
             Container(
               height: 10,
               decoration: BoxDecoration(
-                color: (Theme.of(context).brightness == Brightness.dark ? AppTheme.colors.white : AppTheme.colors.black).withValues(alpha: isDark ? 0.1 : 0.15),
+                color: (Theme.of(context).brightness == Brightness.dark
+                        ? AppTheme.colors.white
+                        : AppTheme.colors.black)
+                    .withValues(alpha: isDark ? 0.1 : 0.15),
                 borderRadius: BorderRadius.circular(8),
               ),
             ),
@@ -425,7 +437,8 @@ class _AnimatedProgressBar extends StatelessWidget {
                   ),
                   borderRadius: BorderRadius.circular(8),
                   boxShadow: [
-                    BoxShadow(color: color.withValues(alpha: 0.4), blurRadius: 8),
+                    BoxShadow(
+                        color: color.withValues(alpha: 0.4), blurRadius: 8),
                   ],
                 ),
               ),
@@ -499,7 +512,11 @@ class _CategoryRow extends StatelessWidget {
                 borderRadius: BorderRadius.circular(4),
                 child: LinearProgressIndicator(
                   value: progress,
-                  backgroundColor: (Theme.of(context).brightness == Brightness.dark ? AppTheme.colors.white : AppTheme.colors.black).withValues(alpha: isDark ? 0.08 : 0.12),
+                  backgroundColor:
+                      (Theme.of(context).brightness == Brightness.dark
+                              ? AppTheme.colors.white
+                              : AppTheme.colors.black)
+                          .withValues(alpha: isDark ? 0.08 : 0.12),
                   valueColor: AlwaysStoppedAnimation<Color>(color),
                   minHeight: 4,
                 ),
@@ -525,8 +542,10 @@ class _MotivationBanner extends StatelessWidget {
 
   String get _message {
     final remaining = total - visited;
-    if (remaining <= 0) return 'You have explored every Hidden Gem in Sri Lanka! 👑';
-    if (visited == 0) return 'Begin your AR journey to unlock explorer progress!';
+    if (remaining <= 0)
+      return 'You have explored every Hidden Gem in Sri Lanka! 👑';
+    if (visited == 0)
+      return 'Visit your first hidden gem to unlock explorer progress!';
     return 'Explore $remaining more ${remaining == 1 ? "site" : "sites"} to ${_nextLevelName()}';
   }
 
@@ -542,9 +561,12 @@ class _MotivationBanner extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: AppTheme.borderColor(context).withValues(alpha: isDark ? 0.1 : 0.15),
+        color: AppTheme.borderColor(context)
+            .withValues(alpha: isDark ? 0.1 : 0.15),
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppTheme.borderColor(context).withValues(alpha: isDark ? 0.2 : 0.25)),
+        border: Border.all(
+            color: AppTheme.borderColor(context)
+                .withValues(alpha: isDark ? 0.2 : 0.25)),
       ),
       child: Row(
         children: [
