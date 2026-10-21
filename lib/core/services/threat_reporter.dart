@@ -1,37 +1,31 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 /// [ThreatReporter] — Real-time Security Notification System.
-/// 
-/// Pushes critical security events (like Spectre breaches) to 
+///
+/// Pushes critical security events (like Spectre breaches) to
 /// a dedicated collection for Admin monitoring.
 class ThreatReporter {
   static final ThreatReporter _instance = ThreatReporter._internal();
   factory ThreatReporter() => _instance;
   ThreatReporter._internal();
 
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   Future<void> reportSpectreBreach(List<String> signals) async {
     try {
       final info = await PackageInfo.fromPlatform();
-      final uid = _auth.currentUser?.uid ?? 'UNAUTHENTICATED_PROBE';
-      
-      await _firestore.collection('threat_notifications').add({
-        'category': 'SPECTRE',
-        'severity': 'critical',
-        'uid': uid,
+      if (_auth.currentUser == null) return;
+      final callable =
+          FirebaseFunctions.instance.httpsCallable('report_threat_probe');
+      await callable.call({
         'signals': signals,
-        'timestamp': FieldValue.serverTimestamp(),
         'appVersion': info.version,
         'buildNumber': info.buildNumber,
-        'status': 'active',
-        'details': 'Sophisticated debugger/dev-mode interference detected in a production build.',
       });
-      
+
       debugPrint('[ThreatReporter] 🕷️ SPECTRE ALERT BROADCASTED.');
     } catch (e) {
       debugPrint('[ThreatReporter] Failed to report breach: $e');

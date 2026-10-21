@@ -1,7 +1,5 @@
 import 'dart:convert';
-import 'package:crypto/crypto.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'integrity_shield.dart';
@@ -14,8 +12,6 @@ class DeviceTrustGraph {
   factory DeviceTrustGraph() => _instance;
   DeviceTrustGraph._internal();
 
-  final _firestore = FirebaseFirestore.instance;
-  final _auth = FirebaseAuth.instance;
   final _shield = IntegrityShield();
 
   // Thresholds
@@ -25,31 +21,10 @@ class DeviceTrustGraph {
 
   /// Records the device–account binding and includes IP hashing for forensics.
   Future<DeviceTrustResult> recordAndVerifyLogin({
-    required String deviceHash,
     required String platform,
-    String? rawIp, // 🛡️ POINT 13: IP Hashing Correlation
   }) async {
-    final uid = _auth.currentUser?.uid;
-    if (uid == null) return DeviceTrustResult.unknown;
-
-    final hashedIp = rawIp != null ? _hashIp(rawIp) : null;
-
     try {
-      final batch = _firestore.batch();
-      final bindingRef = _firestore.collection('device_trust').doc('${deviceHash}_$uid');
-
-      batch.set(bindingRef, {
-        'uid': uid,
-        'deviceHash': deviceHash,
-        'hashedIp': hashedIp,
-        'platform': platform,
-        'lastSeenAt': FieldValue.serverTimestamp(),
-        'loginCount': FieldValue.increment(1),
-      }, SetOptions(merge: true));
-
-      await batch.commit();
-
-      final deviceAccounts = await _countAccountsForDevice(deviceHash);
+      final deviceAccounts = await _countAccountsForDevice(platform);
       if (deviceAccounts > _maxAccountsPerDevice) {
         _shield.reportRuntimeAnomaly('multi_account_device', weight: 30);
         return DeviceTrustResult.suspicious;
@@ -64,21 +39,16 @@ class DeviceTrustGraph {
 
   // --- Internal ---
 
-  String _hashIp(String ip) {
-    // 🛡️ POINT 13: Salted HMAC approach for IP tracking
-    const salt = 'ZENITH_NET_FORENSIC_SALT_2026';
-    final bytes = utf8.encode('$ip|$salt');
-    return sha256.convert(bytes).toString().substring(0, 32); // Truncated for privacy
-  }
-
   /// Counts distinct accounts bound to this device hash, via the Laravel
   /// backend — firestore.rules only allows admins to read device_trust
   /// directly (a regular client can write its own binding, but can never
   /// query other users' bindings), so this must be resolved server-side.
-  Future<int> _countAccountsForDevice(String deviceHash) async {
+  Future<int> _countAccountsForDevice(String platform) async {
     try {
       final client = SecureHttpClient(http.Client());
-      final uri = Uri.parse('${AppConfig.laravelUrl}/security/device-account-count?deviceHash=$deviceHash');
+      final uri =
+          Uri.parse('${AppConfig.laravelUrl}/security/device-account-count')
+              .replace(queryParameters: {'platform': platform});
       final response = await client.get(
         uri,
         headers: {

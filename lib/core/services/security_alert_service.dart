@@ -1,4 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/foundation.dart';
 import '../models/forensic_payload.dart';
 
@@ -10,8 +10,6 @@ class SecurityAlertService {
       SecurityAlertService._internal();
   factory SecurityAlertService() => _instance;
   SecurityAlertService._internal();
-
-  final _firestore = FirebaseFirestore.instance;
 
   // In-memory deduplication logic (Point 13 recommendation 2)
   final Map<String, DateTime> _lastAlertSent = {};
@@ -25,25 +23,17 @@ class SecurityAlertService {
     required String code,
     required SecuritySeverity severity,
     required Map<String, dynamic> details,
-    String? userId,
   }) async {
-    // 1. Persist to /security_alerts
-    final alertDoc = {
-      'code': code,
-      'severity': severity.name,
-      'details': details,
-      'userId': userId,
-      'status': 'open',
-      'createdAt': FieldValue.serverTimestamp(),
-    };
-
-    final docRef = await _firestore.collection('security_alerts').add(alertDoc);
+    final callable =
+        FirebaseFunctions.instance.httpsCallable('report_security_alert');
+    final response = await callable.call({'code': code, 'details': details});
+    final accepted = (response.data as Map?)?['accepted'] == true;
 
     // A trusted Cloud Function watching this document owns FCM delivery.
     // Client code must never enqueue messages to the administrator topic.
     if (severity == SecuritySeverity.high) _shouldSendHighAlert(code);
     debugPrint(
-        '[SecurityAlert] Recorded alert ${docRef.id}; server evaluates escalation.');
+        '[SecurityAlert] Server accepted alert: $accepted; severity is server-derived.');
   }
 
   // --- Internal ---

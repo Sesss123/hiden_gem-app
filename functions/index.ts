@@ -85,6 +85,80 @@ export const push_sos_alert = functions.firestore
         return null;
     });
 
+const trustedClientAlertSeverity: Record<string, 'high' | 'critical'> = {
+    admin_route_probe: 'high',
+    repeated_token_failure: 'high',
+    honeypot_triggered: 'critical',
+};
+
+export const report_security_alert = functions.https.onCall(async (data: any, context: functions.https.CallableContext) => {
+    if (!context.auth) throw new functions.https.HttpsError('unauthenticated', 'Authentication required.');
+    if (!context.app) throw new functions.https.HttpsError('failed-precondition', 'App verification is required.');
+    const code = String(data?.code || '');
+    const severity = trustedClientAlertSeverity[code];
+    if (!severity) throw new functions.https.HttpsError('invalid-argument', 'Unknown security alert code.');
+    const details = data?.details && typeof data.details === 'object' ? data.details : {};
+    if (JSON.stringify(details).length > 2000) {
+        throw new functions.https.HttpsError('invalid-argument', 'Security alert details are too large.');
+    }
+
+    const uid = context.auth.uid;
+    const markerRef = admin.firestore().collection('security_alert_rate').doc(`${uid}_${code}`);
+    const alertRef = admin.firestore().collection('security_alerts').doc();
+    const now = Date.now();
+    const accepted = await admin.firestore().runTransaction(async (transaction) => {
+        const marker = await transaction.get(markerRef);
+        const lastReportedAtMs = Number(marker.data()?.lastReportedAtMs || 0);
+        if (now - lastReportedAtMs < 10 * 60 * 1000) return false;
+        transaction.set(markerRef, { uid, code, lastReportedAtMs: now });
+        transaction.set(alertRef, {
+            code,
+            severity,
+            details,
+            userId: uid,
+            status: 'open',
+            createdAt: admin.firestore.FieldValue.serverTimestamp(),
+            source: 'app_check_callable',
+        });
+        return true;
+    });
+    return { accepted };
+});
+
+export const report_threat_probe = functions.https.onCall(async (data: any, context: functions.https.CallableContext) => {
+    if (!context.auth) throw new functions.https.HttpsError('unauthenticated', 'Authentication required.');
+    if (!context.app) throw new functions.https.HttpsError('failed-precondition', 'App verification is required.');
+    const signals = Array.isArray(data?.signals)
+        ? data.signals.map(String).filter((value: string) => value.length > 0 && value.length <= 100).slice(0, 20)
+        : [];
+    if (signals.length === 0) throw new functions.https.HttpsError('invalid-argument', 'Threat signals are required.');
+
+    const uid = context.auth.uid;
+    const markerRef = admin.firestore().collection('security_alert_rate').doc(`${uid}_spectre`);
+    const threatRef = admin.firestore().collection('threat_notifications').doc();
+    const now = Date.now();
+    const accepted = await admin.firestore().runTransaction(async (transaction) => {
+        const marker = await transaction.get(markerRef);
+        const lastReportedAtMs = Number(marker.data()?.lastReportedAtMs || 0);
+        if (now - lastReportedAtMs < 60 * 60 * 1000) return false;
+        transaction.set(markerRef, { uid, code: 'spectre', lastReportedAtMs: now });
+        transaction.set(threatRef, {
+            category: 'SPECTRE',
+            severity: 'critical',
+            uid,
+            signals,
+            timestamp: admin.firestore.FieldValue.serverTimestamp(),
+            appVersion: String(data?.appVersion || '').slice(0, 40),
+            buildNumber: String(data?.buildNumber || '').slice(0, 20),
+            status: 'active',
+            details: 'Production integrity interference reported by an App Check verified client.',
+            source: 'app_check_callable',
+        });
+        return true;
+    });
+    return { accepted };
+});
+
 /** Only trusted server code may deliver to the private administrator topic. */
 export const escalate_security_alert = functions.firestore
     .document('security_alerts/{alertId}')

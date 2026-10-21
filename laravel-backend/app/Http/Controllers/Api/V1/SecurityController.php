@@ -12,9 +12,34 @@ class SecurityController extends Controller
 {
     private function uid(Request $request): string { return (string) $request->user()->firebase_uid; }
 
+    private function hasFreshFirebaseIdentity(Request $request, string $firebaseIdToken): bool
+    {
+        try {
+            $credentials = config('services.firebase_credentials');
+            $factory = new \Kreait\Firebase\Factory();
+            $factory = $credentials
+                ? $factory->withServiceAccount(json_decode($credentials, true))
+                : $factory->withServiceAccount(base_path(config('firebase.credentials')));
+            $verified = $factory->createAuth()->verifyIdToken($firebaseIdToken);
+            $authenticatedAt = (int) $verified->claims()->get('auth_time');
+            $age = time() - $authenticatedAt;
+
+            return $verified->claims()->get('sub') === $this->uid($request)
+                && $age >= 0
+                && $age <= 300;
+        } catch (\Throwable $error) {
+            Log::warning('Fresh Firebase identity verification failed.', [
+                'uid' => $this->uid($request),
+                'error' => $error->getMessage(),
+            ]);
+            return false;
+        }
+    }
+
     public function registerDeviceKey(Request $request, FirestoreService $firestore)
     {
-        $d=$request->validate(['deviceId'=>'required|string|max:100','publicKeyPem'=>'required|string|max:2000','platform'=>'nullable|string|max:30']);
+        $d=$request->validate(['deviceId'=>'required|string|max:100','publicKeyPem'=>'required|string|max:2000','platform'=>'nullable|string|max:30','firebaseIdToken'=>'required|string']);
+        if (!$this->hasFreshFirebaseIdentity($request, $d['firebaseIdToken'])) return response()->json(['error'=>'Fresh authentication required.'],403);
         if(!openssl_pkey_get_public($d['publicKeyPem'])) return response()->json(['error'=>'Invalid public key.'],422);
         $uid=$this->uid($request);$path="users/{$uid}/devices";$old=$firestore->getDocument($path,$d['deviceId']);
         if($old&&($old['keyVersion']??null)==='native-v1'&&!hash_equals((string)$old['publicKeyPem'],$d['publicKeyPem'])) return response()->json(['error'=>'Key replacement requires revocation.'],403);
@@ -24,8 +49,9 @@ class SecurityController extends Controller
 
     public function rotateSession(Request $request, FirestoreService $firestore)
     {
-        $d=$request->validate(['sessionId'=>'required|string|max:100','deviceId'=>'required|string|max:100','presentedTokenHash'=>'nullable|string|size:64']);$uid=$this->uid($request);$path="users/{$uid}/sessions";$s=$firestore->getDocument($path,$d['sessionId']);$p=$d['presentedTokenHash']??'';
+        $d=$request->validate(['sessionId'=>'required|string|max:100','deviceId'=>'required|string|max:100','presentedTokenHash'=>'nullable|string|size:64','firebaseIdToken'=>'nullable|string']);$uid=$this->uid($request);$path="users/{$uid}/sessions";$s=$firestore->getDocument($path,$d['sessionId']);$p=$d['presentedTokenHash']??'';
         if(!$firestore->getDocument("users/{$uid}/devices",$d['deviceId']))return response()->json(['error'=>'Unregistered device.'],403);
+        if(!$s&&(!(($d['firebaseIdToken']??null))||!$this->hasFreshFirebaseIdentity($request,$d['firebaseIdToken'])))return response()->json(['error'=>'Fresh authentication required to create a device session.'],403);
         if($s&&(($s['isRevoked']??false)||time()-(strtotime($s['createdAt']??'')?:0)>43200||($s['deviceId']??null)!==$d['deviceId']||!$p||!hash_equals((string)($s['currentActiveTokenHash']??''),$p)||in_array($p,$s['consumedTokenHashes']??[],true))){$firestore->patchDocument($path,$d['sessionId'],['isRevoked'=>true,'revokedAt'=>gmdate('c')]);return response()->json(['error'=>'Session revoked.'],403);}
         if(!$s&&$p)return response()->json(['error'=>'Unknown session.'],403);$token=Str::random(64);$used=$s['consumedTokenHashes']??[];if($p)$used[]=$p;
         $ok=$firestore->patchDocument($path,$d['sessionId'],['sessionId'=>$d['sessionId'],'familyId'=>$s['familyId']??(string)Str::uuid(),'deviceId'=>$d['deviceId'],'createdAt'=>$s['createdAt']??gmdate('c'),'lastSeenAt'=>gmdate('c'),'currentActiveTokenHash'=>hash('sha256',$token),'consumedTokenHashes'=>array_slice($used,-100),'isRevoked'=>false]);
@@ -35,7 +61,7 @@ class SecurityController extends Controller
     public function issueStepUpGrant(Request $request, FirestoreService $firestore)
     {
         $d=$request->validate(['action'=>'required|in:change_email,change_password,admin_moderation,guide_payout,subscription_change','deviceId'=>'required|string|max:100','firebaseIdToken'=>'required|string']);$uid=$this->uid($request);$secret=config('services.step_up_hmac_secret');if(!$secret||strlen($secret)<32)return response()->json(['error'=>'Step-up not configured.'],503);
-        try{$credentials=config('services.firebase_credentials');$factory=new \Kreait\Firebase\Factory();$factory=$credentials?$factory->withServiceAccount(json_decode($credentials,true)):$factory->withServiceAccount(base_path(config('firebase.credentials')));$verified=$factory->createAuth()->verifyIdToken($d['firebaseIdToken']);if($verified->claims()->get('sub')!==$uid||time()-(int)$verified->claims()->get('auth_time')>300)return response()->json(['error'=>'Fresh authentication required.'],403);}catch(\Throwable $e){return response()->json(['error'=>'Invalid authentication proof.'],403);}
+        if(!$this->hasFreshFirebaseIdentity($request,$d['firebaseIdToken']))return response()->json(['error'=>'Fresh authentication required.'],403);
         $id=bin2hex(random_bytes(16));$expires=(int)round(microtime(true)*1000)+600000;$token=hash_hmac('sha256',"{$uid}|{$d['action']}|{$id}|{$expires}",$secret);$firestore->patchDocument("users/{$uid}/step_up_grants",$id,['grantId'=>$id,'action'=>$d['action'],'deviceId'=>$d['deviceId'],'expiresAt'=>$expires,'isUsed'=>false]);
         return response()->json(['grantId'=>$id,'grantToken'=>$token,'expiresAt'=>$expires,'action'=>$d['action']]);
     }
@@ -77,11 +103,6 @@ class SecurityController extends Controller
      */
     public function deviceAccountCount(Request $request, FirestoreService $firestore)
     {
-        $deviceHash = $request->query('deviceHash');
-        if (!$deviceHash) {
-            return response()->json(['error' => 'deviceHash is required'], 422);
-        }
-
         // Security: the legitimate caller (DeviceTrustGraph.recordAndVerifyLogin)
         // always queries its OWN device's hash, right after binding it — never
         // an arbitrary one. Without this check, any authenticated user could
@@ -90,12 +111,19 @@ class SecurityController extends Controller
         // endpoint exists to bridge around. Requiring the caller's own binding
         // to already exist confirms they're asking about their own device.
         $callerUid = (string) $request->user()->firebase_uid;
-        $ownBinding = $firestore->getDocument('device_trust', "{$deviceHash}_{$callerUid}");
-        if (!$ownBinding) {
-            return response()->json(['error' => 'No binding found for this device and caller.'], 403);
-        }
+        $deviceId = (string) $request->header('X-Zenith-Device-Id');
+        if ($deviceId === '') return response()->json(['error' => 'Verified device identity is required.'], 403);
+        $deviceHash = hash('sha256', $deviceId);
+        $bindingId = "{$deviceHash}_{$callerUid}";
 
         try {
+            $firestore->patchDocument('device_trust', $bindingId, [
+                'uid' => $callerUid,
+                'deviceHash' => $deviceHash,
+                'platform' => substr((string) $request->query('platform', 'unknown'), 0, 30),
+                'lastSeenAt' => gmdate('c'),
+                'source' => 'zenith_verified_device',
+            ]);
             $bindings = $firestore->queryDocuments('device_trust', 'deviceHash', 'EQUAL', $deviceHash);
             $distinctAccounts = collect($bindings)->pluck('uid')->unique()->count();
 

@@ -72,6 +72,26 @@ test('clients cannot enqueue administrator topic notifications', async () => {
   }));
 });
 
+test('clients cannot forge critical security alerts', async () => {
+  await seed('users/alice', { role: 'user' });
+  const alice = env.authenticatedContext('alice').firestore();
+  await assertFails(alice.doc('security_alerts/forged').set({
+    userId: 'alice', code: 'forged', severity: 'critical', status: 'open',
+  }));
+  await assertFails(alice.doc('threat_notifications/forged').set({
+    uid: 'alice', category: 'SPECTRE', severity: 'critical', status: 'active',
+    signals: ['forged'], appVersion: '1', buildNumber: '1', details: 'forged',
+  }));
+});
+
+test('clients cannot forge device trust bindings', async () => {
+  await seed('users/alice', { role: 'user' });
+  const alice = env.authenticatedContext('alice').firestore();
+  await assertFails(alice.doc('device_trust/random_alice').set({
+    uid: 'alice', deviceHash: 'random', platform: 'android',
+  }));
+});
+
 test('family booking guest count and package capacity are enforced', async () => {
   await seed('users/tourist', { role: 'user' });
   await seed('guide_listings/guide', {
@@ -107,6 +127,27 @@ test('tourists cannot forge payment or refund fields', async () => {
   await assertFails(tourist.doc('booking_requests/booking').update({
     refundStatus: 'completed', refundedAt: new Date().toISOString(),
   }));
+});
+
+test('reviews require a real paid completed booking linked to the session', async () => {
+  await seed('users/tourist', { role: 'user' });
+  await seed('tour_sessions/session', {
+    bookingId: 'booking', guideId: 'guide', touristIds: ['tourist'],
+    reviewEligibleTouristIds: ['tourist'], status: 'completed',
+  });
+  const review = {
+    sessionId: 'session', touristId: 'tourist', guideId: 'guide',
+    moderationStatus: 'under_review', comment: 'Good', overallRating: 5,
+    knowledgeRating: 5, communicationRating: 5, punctualityRating: 5,
+    safetyRating: 5, friendlinessRating: 5,
+  };
+  const tourist = env.authenticatedContext('tourist').firestore();
+  await assertFails(tourist.doc('tour_reviews/session_tourist').set(review));
+  await seed('booking_requests/booking', {
+    linkedSessionId: 'session', touristId: 'tourist', guideId: 'guide',
+    payoutStatus: 'paid', status: 'completed',
+  });
+  await assertSucceeds(tourist.doc('tour_reviews/session_tourist').set(review));
 });
 
 test('family QR joins cannot be performed by a direct client write', async () => {

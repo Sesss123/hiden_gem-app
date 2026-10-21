@@ -250,8 +250,9 @@ class AuthService {
   /// signed-in account. This never signs into a different phone-only account.
   Future<PhoneSignInChallenge> startGuidePhoneLink(String phoneNumber) async {
     final current = _auth.currentUser;
-    if (current == null)
+    if (current == null) {
       throw StateError('Sign in before verifying a phone number.');
+    }
     if (kIsWeb) {
       throw UnsupportedError(
           'Guide phone linking is available in the Android/iOS app.');
@@ -269,8 +270,9 @@ class AuthService {
       verificationCompleted: (credential) async {
         try {
           await _linkPhoneCredential(current, credential);
-          if (!completer.isCompleted)
+          if (!completer.isCompleted) {
             completer.complete(const PhoneSignInChallenge());
+          }
         } catch (error, stack) {
           if (!completer.isCompleted) completer.completeError(error, stack);
         }
@@ -279,14 +281,16 @@ class AuthService {
         if (!completer.isCompleted) completer.completeError(error);
       },
       codeSent: (verificationId, _) {
-        if (!completer.isCompleted)
+        if (!completer.isCompleted) {
           completer
               .complete(PhoneSignInChallenge(verificationId: verificationId));
+        }
       },
       codeAutoRetrievalTimeout: (verificationId) {
-        if (!completer.isCompleted)
+        if (!completer.isCompleted) {
           completer
               .complete(PhoneSignInChallenge(verificationId: verificationId));
+        }
       },
     );
     return completer.future.timeout(const Duration(seconds: 75));
@@ -294,8 +298,9 @@ class AuthService {
 
   Future<void> confirmGuidePhoneLink(
       PhoneSignInChallenge challenge, String smsCode) async {
-    if (challenge.verificationId == null)
+    if (challenge.verificationId == null) {
       return; // Android auto-verification completed.
+    }
     final code = smsCode.trim();
     if (!RegExp(r'^\d{6}$').hasMatch(code)) {
       throw FirebaseAuthException(
@@ -322,8 +327,9 @@ class AuthService {
     final refreshed = _auth.currentUser!;
     await refreshed.getIdToken(true);
     final phone = refreshed.phoneNumber;
-    if (phone == null)
+    if (phone == null) {
       throw StateError('Firebase did not confirm the phone number.');
+    }
     await FirebaseFirestore.instance
         .collection('users')
         .doc(refreshed.uid)
@@ -564,9 +570,7 @@ class AuthService {
         final token = data['data']['access_token'];
         if (token != null) {
           await UserPreferenceService.saveAuthToken(token);
-          final deviceId = await VaultService.getDeviceId();
           await ZenithSecurityFacade().onUserLogin(
-            deviceHash: deviceId,
             platform: kIsWeb ? 'web' : Platform.operatingSystem,
           );
         }

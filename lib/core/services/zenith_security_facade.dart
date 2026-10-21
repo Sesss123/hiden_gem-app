@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -36,7 +37,8 @@ export 'step_up_auth_service.dart';
 /// │  StepUpAuthService    → High-risk operation challenge gates │
 /// └─────────────────────────────────────────────────────────────┘
 class ZenithSecurityFacade {
-  static final ZenithSecurityFacade _instance = ZenithSecurityFacade._internal();
+  static final ZenithSecurityFacade _instance =
+      ZenithSecurityFacade._internal();
   factory ZenithSecurityFacade() => _instance;
   ZenithSecurityFacade._internal();
 
@@ -72,16 +74,36 @@ class ZenithSecurityFacade {
   /// Call after successful user login.
   /// Binds hardware ECDSA public key to user record on the backend (Zero-Trust Phase 1).
   Future<void> onUserLogin({
-    required String deviceHash,
     required String platform,
   }) async {
     // Register before any API call that requires a device-bound session.
     try {
       final deviceId = await VaultService.getDeviceId();
       final pubKeyPem = await VaultService.getDevicePublicKeyPem();
-      final token=await _storage.read(key:'auth_token');
-      final response=await http.post(Uri.parse('${AppConfig.laravelUrl}/security/device-key'),headers:{'Content-Type':'application/json','Authorization':'Bearer $token','X-API-KEY':AppConfig.hiddenGemsApiKey},body:jsonEncode({'deviceId':deviceId,'publicKeyPem':pubKeyPem,'platform':platform})).timeout(const Duration(seconds:15));
-      if(response.statusCode!=200) throw StateError('Device registration failed (${response.statusCode}).');
+      final token = await _storage.read(key: 'auth_token');
+      final firebaseIdToken =
+          await FirebaseAuth.instance.currentUser?.getIdToken(true);
+      if (firebaseIdToken == null) {
+        throw StateError('Fresh Firebase authentication is required.');
+      }
+      final response = await http
+          .post(Uri.parse('${AppConfig.laravelUrl}/security/device-key'),
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer $token',
+                'X-API-KEY': AppConfig.hiddenGemsApiKey
+              },
+              body: jsonEncode({
+                'deviceId': deviceId,
+                'publicKeyPem': pubKeyPem,
+                'platform': platform,
+                'firebaseIdToken': firebaseIdToken
+              }))
+          .timeout(const Duration(seconds: 15));
+      if (response.statusCode != 200) {
+        throw StateError(
+            'Device registration failed (${response.statusCode}).');
+      }
       debugPrint('[ZenithSecurity] Device key registered successfully.');
       await SessionTokenManager.startNewSession();
     } catch (e) {
@@ -90,7 +112,6 @@ class ZenithSecurityFacade {
     }
 
     await deviceTrust.recordAndVerifyLogin(
-      deviceHash: deviceHash,
       platform: platform,
     );
 
@@ -112,7 +133,7 @@ class ZenithSecurityFacade {
   /// Revoke current session on server.
   Future<void> revokeCurrentSession(String sessionId) async {
     try {
-      await _postSecurity('/security/session/revoke', {'sessionId':sessionId});
+      await _postSecurity('/security/session/revoke', {'sessionId': sessionId});
     } catch (e) {
       debugPrint('[ZenithSecurity] Session revocation error: $e');
     }
@@ -128,10 +149,20 @@ class ZenithSecurityFacade {
     }
   }
 
-  Future<void> _postSecurity(String path, Map<String,dynamic> body) async {
-    final token=await _storage.read(key:'auth_token');
-    final response=await http.post(Uri.parse('${AppConfig.laravelUrl}$path'),headers:{'Content-Type':'application/json','Authorization':'Bearer $token','X-API-KEY':AppConfig.hiddenGemsApiKey},body:jsonEncode(body)).timeout(const Duration(seconds:15));
-    if(response.statusCode!=200) throw StateError('Security request failed (${response.statusCode}).');
+  Future<void> _postSecurity(String path, Map<String, dynamic> body) async {
+    final token = await _storage.read(key: 'auth_token');
+    final response = await http
+        .post(Uri.parse('${AppConfig.laravelUrl}$path'),
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer $token',
+              'X-API-KEY': AppConfig.hiddenGemsApiKey
+            },
+            body: jsonEncode(body))
+        .timeout(const Duration(seconds: 15));
+    if (response.statusCode != 200) {
+      throw StateError('Security request failed (${response.statusCode}).');
+    }
   }
 
   // --- Quick Access Guards (Synchronous) ---

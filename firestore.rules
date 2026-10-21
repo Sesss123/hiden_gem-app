@@ -336,6 +336,7 @@ service cloud.firestore {
     // •  Moderation fields (status, flag, hidden) can only be changed by admins.
     function reviewEligibleForSession(reviewData) {
       let session = get(/databases/$(database)/documents/tour_sessions/$(reviewData.sessionId)).data;
+      let booking = get(/databases/$(database)/documents/booking_requests/$(session.bookingId)).data;
       // Note: the review-window expiry (reviewWindowEndsAt) is intentionally
       // NOT re-checked here. It's stored as a Dart .toIso8601String() in
       // local (non-UTC) time, which can't be safely compared against
@@ -349,7 +350,12 @@ service cloud.firestore {
       // is enforced below.
       return session.status == 'completed' &&
         reviewData.guideId == session.guideId &&
-        request.auth.uid in session.reviewEligibleTouristIds;
+        request.auth.uid in session.reviewEligibleTouristIds &&
+        booking.linkedSessionId == reviewData.sessionId &&
+        booking.guideId == session.guideId &&
+        booking.touristId == request.auth.uid &&
+        booking.payoutStatus == 'paid' &&
+        booking.status == 'completed';
     }
     match /tour_reviews/{reviewId} {
       allow read: if isSignedIn() && resource.data.moderationStatus == 'active';
@@ -786,12 +792,13 @@ service cloud.firestore {
     // user could forge a high-severity alert naming a victim uid with no
     // constraint at all, to get a trusting admin to manually act on it.
     match /security_alerts/{alertId} {
-      allow create: if isSignedIn() &&
-        (!('userId' in request.resource.data) || request.resource.data.userId == null ||
-         request.resource.data.userId == request.auth.uid) &&
-        request.resource.data.severity in ['low', 'medium', 'high', 'critical'];
+      allow create: if false;
       allow read: if isAdmin();
       allow update, delete: if false;
+    }
+
+    match /security_alert_rate/{markerId} {
+      allow read, write: if false;
     }
 
     // ── Pending Notifications (Point 13: FCM Escalation) ─────────────────
@@ -838,8 +845,7 @@ service cloud.firestore {
 
     // ── Device Trust Graph (Phase 3: Account-Device Bindings) ────────────
     match /device_trust/{bindingId} {
-      allow create, update: if isSignedIn() &&
-        request.resource.data.uid == request.auth.uid;
+      allow create, update: if false;
       allow read: if isAdmin();
       allow delete: if isAdmin();
     }
@@ -921,16 +927,7 @@ service cloud.firestore {
     // admin to act on it. Constrain to the real shape ThreatReporter sends,
     // and require category/severity to be one of its actual known values.
     match /threat_notifications/{notiId} {
-      allow create: if request.resource.data.keys().hasOnly(
-          ['category', 'severity', 'uid', 'signals', 'timestamp', 'appVersion', 'buildNumber', 'status', 'details']) &&
-        request.resource.data.category == 'SPECTRE' &&
-        request.resource.data.severity == 'critical' &&
-        request.resource.data.status == 'active' &&
-        request.resource.data.uid is string && request.resource.data.uid.size() <= 128 &&
-        request.resource.data.signals is list && request.resource.data.signals.size() <= 20 &&
-        request.resource.data.appVersion is string && request.resource.data.appVersion.size() <= 40 &&
-        request.resource.data.buildNumber is string && request.resource.data.buildNumber.size() <= 20 &&
-        (!isSignedIn() || request.resource.data.uid == request.auth.uid || request.resource.data.uid == 'UNAUTHENTICATED_PROBE');
+      allow create: if false;
       allow read, update, delete: if isAdmin();
     }
   }

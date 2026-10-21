@@ -42,7 +42,7 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.validateJoinToken = exports.detectLocationSpoof = exports.track_profile_view = exports.daily_subscription_safety_net = exports.revenuecat_webhook = exports.report_forensic_signals = exports.verify_entitlements = exports.escalate_security_alert = exports.push_sos_alert = exports.push_user_notification = void 0;
+exports.validateJoinToken = exports.detectLocationSpoof = exports.track_profile_view = exports.daily_subscription_safety_net = exports.revenuecat_webhook = exports.report_forensic_signals = exports.verify_entitlements = exports.escalate_security_alert = exports.report_threat_probe = exports.report_security_alert = exports.push_sos_alert = exports.push_user_notification = void 0;
 const functions = __importStar(require("firebase-functions/v1"));
 const admin = __importStar(require("firebase-admin"));
 const crypto = __importStar(require("crypto"));
@@ -117,6 +117,85 @@ exports.push_sos_alert = functions.firestore
     }
     await batch.commit();
     return null;
+});
+const trustedClientAlertSeverity = {
+    admin_route_probe: 'high',
+    repeated_token_failure: 'high',
+    honeypot_triggered: 'critical',
+};
+exports.report_security_alert = functions.https.onCall(async (data, context) => {
+    if (!context.auth)
+        throw new functions.https.HttpsError('unauthenticated', 'Authentication required.');
+    if (!context.app)
+        throw new functions.https.HttpsError('failed-precondition', 'App verification is required.');
+    const code = String((data === null || data === void 0 ? void 0 : data.code) || '');
+    const severity = trustedClientAlertSeverity[code];
+    if (!severity)
+        throw new functions.https.HttpsError('invalid-argument', 'Unknown security alert code.');
+    const details = (data === null || data === void 0 ? void 0 : data.details) && typeof data.details === 'object' ? data.details : {};
+    if (JSON.stringify(details).length > 2000) {
+        throw new functions.https.HttpsError('invalid-argument', 'Security alert details are too large.');
+    }
+    const uid = context.auth.uid;
+    const markerRef = admin.firestore().collection('security_alert_rate').doc(`${uid}_${code}`);
+    const alertRef = admin.firestore().collection('security_alerts').doc();
+    const now = Date.now();
+    const accepted = await admin.firestore().runTransaction(async (transaction) => {
+        var _a;
+        const marker = await transaction.get(markerRef);
+        const lastReportedAtMs = Number(((_a = marker.data()) === null || _a === void 0 ? void 0 : _a.lastReportedAtMs) || 0);
+        if (now - lastReportedAtMs < 10 * 60 * 1000)
+            return false;
+        transaction.set(markerRef, { uid, code, lastReportedAtMs: now });
+        transaction.set(alertRef, {
+            code,
+            severity,
+            details,
+            userId: uid,
+            status: 'open',
+            createdAt: admin.firestore.FieldValue.serverTimestamp(),
+            source: 'app_check_callable',
+        });
+        return true;
+    });
+    return { accepted };
+});
+exports.report_threat_probe = functions.https.onCall(async (data, context) => {
+    if (!context.auth)
+        throw new functions.https.HttpsError('unauthenticated', 'Authentication required.');
+    if (!context.app)
+        throw new functions.https.HttpsError('failed-precondition', 'App verification is required.');
+    const signals = Array.isArray(data === null || data === void 0 ? void 0 : data.signals)
+        ? data.signals.map(String).filter((value) => value.length > 0 && value.length <= 100).slice(0, 20)
+        : [];
+    if (signals.length === 0)
+        throw new functions.https.HttpsError('invalid-argument', 'Threat signals are required.');
+    const uid = context.auth.uid;
+    const markerRef = admin.firestore().collection('security_alert_rate').doc(`${uid}_spectre`);
+    const threatRef = admin.firestore().collection('threat_notifications').doc();
+    const now = Date.now();
+    const accepted = await admin.firestore().runTransaction(async (transaction) => {
+        var _a;
+        const marker = await transaction.get(markerRef);
+        const lastReportedAtMs = Number(((_a = marker.data()) === null || _a === void 0 ? void 0 : _a.lastReportedAtMs) || 0);
+        if (now - lastReportedAtMs < 60 * 60 * 1000)
+            return false;
+        transaction.set(markerRef, { uid, code: 'spectre', lastReportedAtMs: now });
+        transaction.set(threatRef, {
+            category: 'SPECTRE',
+            severity: 'critical',
+            uid,
+            signals,
+            timestamp: admin.firestore.FieldValue.serverTimestamp(),
+            appVersion: String((data === null || data === void 0 ? void 0 : data.appVersion) || '').slice(0, 40),
+            buildNumber: String((data === null || data === void 0 ? void 0 : data.buildNumber) || '').slice(0, 20),
+            status: 'active',
+            details: 'Production integrity interference reported by an App Check verified client.',
+            source: 'app_check_callable',
+        });
+        return true;
+    });
+    return { accepted };
 });
 /** Only trusted server code may deliver to the private administrator topic. */
 exports.escalate_security_alert = functions.firestore

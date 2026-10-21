@@ -10,6 +10,69 @@ use Illuminate\Support\Facades\Validator;
 
 class BookingController extends Controller
 {
+    public function cancelByTourist(Request $request, string $bookingId, FirestoreService $firestore)
+    {
+        $booking = $firestore->getDocument('booking_requests', $bookingId);
+        $touristId = (string) $request->user()->firebase_uid;
+        if (!$booking || ($booking['touristId'] ?? null) !== $touristId) {
+            return response()->json(['error' => 'This booking does not belong to you.'], 403);
+        }
+        if (($booking['payoutStatus'] ?? 'pending') === 'paid' || ($booking['paymentStatus'] ?? null) === 'paid') {
+            return response()->json(['error' => 'Paid bookings require a refund review.'], 409);
+        }
+        if (!in_array($booking['status'] ?? null, ['pending', 'accepted', 'session_ready'], true)) {
+            return response()->json(['error' => 'This booking can no longer be cancelled.'], 409);
+        }
+
+        $now = now()->toIso8601String();
+        $writes = [[
+            'collection' => 'booking_requests',
+            'id' => $bookingId,
+            'data' => [
+                'status' => 'cancelled_by_tourist',
+                'cancelledAt' => $now,
+                'responseNote' => 'Cancelled by tourist before payment.',
+            ],
+            'updateMask' => ['status', 'cancelledAt', 'responseNote'],
+            'exists' => true,
+        ]];
+        $sessionId = $booking['linkedSessionId'] ?? null;
+        if (is_string($sessionId) && $sessionId !== '') {
+            $session = $firestore->getDocument('tour_sessions', $sessionId);
+            if ($session && ($session['status'] ?? null) === 'initial') {
+                $writes[] = [
+                    'collection' => 'tour_sessions',
+                    'id' => $sessionId,
+                    'data' => [
+                        'status' => 'cancelled',
+                        'currentPhase' => 'cancelled',
+                        'trackingEnabled' => false,
+                        'isJoinOpen' => false,
+                        'cancelledAt' => $now,
+                    ],
+                    'updateMask' => ['status', 'currentPhase', 'trackingEnabled', 'isJoinOpen', 'cancelledAt'],
+                    'exists' => true,
+                ];
+            }
+        }
+
+        if (!$firestore->commitDocuments($writes)) {
+            return response()->json(['error' => 'Booking cancellation could not be saved.'], 503);
+        }
+        if (!empty($booking['guideId'])) {
+            $firestore->patchDocument('user_notifications', 'cancel_' . sha1($bookingId . '|' . $now), [
+                'recipientId' => $booking['guideId'],
+                'title' => 'Booking cancelled',
+                'body' => 'A tourist cancelled an unpaid booking request.',
+                'type' => 'booking_cancelled',
+                'bookingId' => $bookingId,
+                'isRead' => false,
+                'createdAt' => $now,
+            ]);
+        }
+        return response()->json(['status' => 'cancelled']);
+    }
+
     public function acceptWithSession(Request $request, string $bookingId, FirestoreService $firestore)
     {
         if (!$request->user()->phone_verified_at || !$request->user()->phone_number) {
@@ -39,8 +102,11 @@ class BookingController extends Controller
         }
 
         $session = $request->input('session');
+        $session['bookingId'] = $bookingId;
         $session['guideId'] = $guideId;
         $session['touristIds'] = [$booking['touristId']];
+        $session['maxTourists'] = max(1, min(20, (int) ($booking['guestCount'] ?? 1)));
+        $session['redeemedCount'] = 1;
         $session['status'] = 'initial';
         $session['currentPhase'] = 'assembling';
         $session['trackingEnabled'] = false;

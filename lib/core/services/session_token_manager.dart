@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:crypto/crypto.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
 import 'package:uuid/uuid.dart';
 
@@ -24,7 +25,9 @@ class SessionTokenManager {
     final expiryRaw = await _storage.read(key: _sessionExpiryKey);
     final expiry = int.tryParse(expiryRaw ?? '');
     final token = await _storage.read(key: _sessionTokenKey);
-    final shouldRotate = forceRotate || token == null || expiry == null ||
+    final shouldRotate = forceRotate ||
+        token == null ||
+        expiry == null ||
         DateTime.now().millisecondsSinceEpoch >= expiry - 5 * 60 * 1000;
     if (!shouldRotate) return;
 
@@ -48,13 +51,35 @@ class SessionTokenManager {
 
     final bearer = await _storage.read(key: 'auth_token');
     if (bearer == null) throw StateError('Laravel session is unavailable.');
-    final response = await http.post(
-      Uri.parse('${AppConfig.laravelUrl}/security/session/rotate'),
-      headers: {'Content-Type':'application/json','Accept':'application/json','Authorization':'Bearer $bearer','X-API-KEY':AppConfig.hiddenGemsApiKey},
-      body: jsonEncode({'sessionId':sessionId,'presentedTokenHash':presentedHash,'deviceId':deviceId}),
-    ).timeout(const Duration(seconds: 15));
-    if (response.statusCode != 200) throw StateError('Session rotation failed (${response.statusCode}).');
-    final data = jsonDecode(response.body) as Map<String,dynamic>;
+    String? firebaseIdToken;
+    if (currentToken == null) {
+      firebaseIdToken =
+          await FirebaseAuth.instance.currentUser?.getIdToken(true);
+      if (firebaseIdToken == null) {
+        throw StateError('Fresh Firebase authentication is required.');
+      }
+    }
+    final response = await http
+        .post(
+          Uri.parse('${AppConfig.laravelUrl}/security/session/rotate'),
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': 'Bearer $bearer',
+            'X-API-KEY': AppConfig.hiddenGemsApiKey
+          },
+          body: jsonEncode({
+            'sessionId': sessionId,
+            'presentedTokenHash': presentedHash,
+            'deviceId': deviceId,
+            'firebaseIdToken': firebaseIdToken
+          }),
+        )
+        .timeout(const Duration(seconds: 15));
+    if (response.statusCode != 200) {
+      throw StateError('Session rotation failed (${response.statusCode}).');
+    }
+    final data = jsonDecode(response.body) as Map<String, dynamic>;
     final newToken = data['newToken'] as String?;
     if (newToken == null || newToken.isEmpty) {
       throw StateError('Session rotation returned no token.');
@@ -64,8 +89,8 @@ class SessionTokenManager {
     await _storage.write(key: _sessionTokenKey, value: newToken);
     await _storage.write(
       key: _sessionExpiryKey,
-      value: (DateTime.now().millisecondsSinceEpoch + expiresIn * 1000)
-          .toString(),
+      value:
+          (DateTime.now().millisecondsSinceEpoch + expiresIn * 1000).toString(),
     );
   }
 
