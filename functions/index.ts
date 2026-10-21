@@ -39,6 +39,52 @@ async function sendToAccountDevices(
     }
 }
 
+export const push_user_notification = functions.firestore
+    .document('user_notifications/{notificationId}')
+    .onCreate(async (snapshot) => {
+        const notification = snapshot.data();
+        const recipientId = String(notification.recipientId || '');
+        if (!recipientId) return null;
+        const title = String(notification.title || 'TripMe update').slice(0, 200);
+        const body = String(notification.body || '').slice(0, 1000);
+        const user = await admin.firestore().collection('users').doc(recipientId).get();
+        await sendToAccountDevices(recipientId, user.data(), title, body);
+        return null;
+    });
+
+export const push_sos_alert = functions.firestore
+    .document('sos_alerts/{alertId}')
+    .onCreate(async (snapshot, context) => {
+        const alert = snapshot.data();
+        const sessionId = String(alert.sessionId || '');
+        if (!sessionId) return null;
+        const session = await admin.firestore().collection('tour_sessions').doc(sessionId).get();
+        if (!session.exists) return null;
+        const sessionData = session.data()!;
+        const recipients = new Set<string>([
+            String(sessionData.guideId || ''),
+            ...(Array.isArray(sessionData.touristIds) ? sessionData.touristIds.map(String) : []),
+        ]);
+        recipients.delete('');
+        recipients.delete(String(alert.triggeredBy || ''));
+        const batch = admin.firestore().batch();
+        for (const recipientId of recipients) {
+            const ref = admin.firestore().collection('user_notifications').doc();
+            batch.set(ref, {
+                recipientId,
+                title: 'Emergency alert',
+                body: 'An SOS was triggered for your active tour session.',
+                type: 'sos_alert',
+                sessionId,
+                alertId: context.params.alertId,
+                isRead: false,
+                createdAt: admin.firestore.FieldValue.serverTimestamp(),
+            });
+        }
+        await batch.commit();
+        return null;
+    });
+
 /** Only trusted server code may deliver to the private administrator topic. */
 export const escalate_security_alert = functions.firestore
     .document('security_alerts/{alertId}')
@@ -460,8 +506,11 @@ export const detectLocationSpoof = functions.https.onCall(async (data: any, cont
  */
 export const validateJoinToken = functions.https.onCall(async (data: any, context: functions.https.CallableContext) => {
     if (!context.auth) throw new functions.https.HttpsError('unauthenticated', 'Sign in required to join a tour.');
+    if (!context.app) throw new functions.https.HttpsError('failed-precondition', 'App verification is required.');
     const token = (data?.token || '').toString().trim().toUpperCase();
     if (!token) throw new functions.https.HttpsError('invalid-argument', 'A join code is required.');
+    const mode = data?.mode === 'join' ? 'join' : 'preview';
+    const trackingConsent = data?.trackingConsent === true;
 
     const uid = context.auth.uid;
     const attemptRef = admin.firestore().collection('join_attempts').doc(uid);
@@ -484,21 +533,74 @@ export const validateJoinToken = functions.https.onCall(async (data: any, contex
         windowStartedAt: withinWindow ? windowStartedAt : now,
     }, { merge: true });
 
-    const snapshot = await admin.firestore()
+    const query = admin.firestore()
         .collection('tour_sessions')
         .where('joinToken', '==', token)
         .where('isJoinOpen', '==', true)
-        .limit(1)
-        .get();
+        .limit(1);
+    const result = await admin.firestore().runTransaction(async (transaction) => {
+        const snapshot = await transaction.get(query);
+        if (snapshot.empty) return null;
 
-    if (snapshot.empty) {
-        return { found: false };
-    }
+        const doc = snapshot.docs[0];
+        const session = doc.data();
+        const expiresAtRaw = session.tokenExpiresAt;
+        const expiresAtMs = expiresAtRaw instanceof admin.firestore.Timestamp
+            ? expiresAtRaw.toMillis()
+            : Date.parse(String(expiresAtRaw || ''));
+        if (!Number.isFinite(expiresAtMs) || expiresAtMs <= now) {
+            throw new functions.https.HttpsError('deadline-exceeded', 'This join code has expired.');
+        }
+        if (session.currentPhase !== 'assembling' || session.isLocked === true) {
+            throw new functions.https.HttpsError('failed-precondition', 'This tour can no longer be joined.');
+        }
 
-    const doc = snapshot.docs[0];
+        const touristIds = Array.isArray(session.touristIds) ? session.touristIds.map(String) : [];
+        const maxTourists = Number(session.maxTourists || 0);
+        if (!touristIds.includes(uid) && (maxTourists < 1 || touristIds.length >= maxTourists)) {
+            throw new functions.https.HttpsError('resource-exhausted', 'This tour is full.');
+        }
+
+        if (mode === 'join' && !touristIds.includes(uid)) {
+            const nextTourists = [...touristIds, uid];
+            transaction.update(doc.ref, {
+                touristIds: nextTourists,
+                redeemedCount: nextTourists.length,
+            });
+            const linkId = `${doc.id}_${uid}`;
+            transaction.set(admin.firestore().collection('tour_links').doc(linkId), {
+                linkId,
+                sessionId: doc.id,
+                guideId: String(session.guideId || ''),
+                touristId: uid,
+                linkedAt: new Date(now).toISOString(),
+                linkMethod: 'qr',
+                trackingConsent,
+                isActive: true,
+            });
+        }
+
+        return {
+            sessionId: doc.id,
+            session: {
+                sessionId: doc.id,
+                guideId: String(session.guideId || ''),
+                guideName: String(session.guideName || ''),
+                meetingPointName: String(session.meetingPointName || ''),
+                vehicleNumber: session.vehicleNumber == null ? null : String(session.vehicleNumber),
+                status: String(session.status || 'initial'),
+                currentPhase: String(session.currentPhase || 'assembling'),
+                maxTourists,
+                redeemedCount: touristIds.length + (mode === 'join' && !touristIds.includes(uid) ? 1 : 0),
+                isJoinOpen: true,
+            },
+        };
+    });
+
+    if (!result) return { found: false };
     // On a real match, reset the counter so a legitimate user isn't
     // penalized for earlier typos once they get it right.
     await attemptRef.set({ count: 0, windowStartedAt: now }, { merge: true });
-    return { found: true, sessionId: doc.id };
+    return { found: true, ...result };
 });
 

@@ -10,13 +10,15 @@ const {
 
 let env;
 const projectId = 'hidden-gems-rules-test';
+const [firestoreHost, firestorePort] =
+  (process.env.FIRESTORE_EMULATOR_HOST || '127.0.0.1:8085').split(':');
 
 before(async () => {
   env = await initializeTestEnvironment({
     projectId,
     firestore: {
-      host: '127.0.0.1',
-      port: 8080,
+      host: firestoreHost,
+      port: Number(firestorePort),
       rules: fs.readFileSync(path.resolve(__dirname, '../../firestore.rules'), 'utf8'),
     },
   });
@@ -68,4 +70,77 @@ test('clients cannot enqueue administrator topic notifications', async () => {
   await assertFails(alice.doc('pending_notifications/forged').set({
     topic: 'security-admins', status: 'queued', title: 'forged', body: 'forged',
   }));
+});
+
+test('family booking guest count and package capacity are enforced', async () => {
+  await seed('users/tourist', { role: 'user' });
+  await seed('guide_listings/guide', {
+    guideId: 'guide', status: 'published', moderationStatus: 'approved',
+  });
+  await seed('tour_packages/pkg', {
+    ownerId: 'guide', isActive: true, maxGuests: 4,
+  });
+  const tourist = env.authenticatedContext('tourist').firestore();
+  const booking = {
+    bookingId: 'booking-ok', touristId: 'tourist', guideId: 'guide',
+    packageId: 'pkg', guestCount: 4, status: 'pending', payoutStatus: 'pending',
+  };
+  await assertSucceeds(tourist.doc('booking_requests/booking-ok').set(booking));
+  await assertFails(tourist.doc('booking_requests/booking-too-large').set({
+    ...booking, bookingId: 'booking-too-large', guestCount: 5,
+  }));
+  await assertFails(tourist.doc('booking_requests/booking-invalid').set({
+    ...booking, bookingId: 'booking-invalid', packageId: null, guestCount: 21,
+  }));
+});
+
+test('tourists cannot forge payment or refund fields', async () => {
+  await seed('users/tourist', { role: 'user' });
+  await seed('booking_requests/booking', {
+    touristId: 'tourist', guideId: 'guide', status: 'session_ready',
+    payoutStatus: 'pending', quotedPrice: 1000,
+  });
+  const tourist = env.authenticatedContext('tourist').firestore();
+  await assertFails(tourist.doc('booking_requests/booking').update({
+    payoutStatus: 'paid', paymentStatus: 'paid', paidAmount: 1000,
+  }));
+  await assertFails(tourist.doc('booking_requests/booking').update({
+    refundStatus: 'completed', refundedAt: new Date().toISOString(),
+  }));
+});
+
+test('family QR joins cannot be performed by a direct client write', async () => {
+  await seed('tour_sessions/session', {
+    guideId: 'guide', touristIds: ['owner'], redeemedCount: 1,
+    maxTourists: 2, isLocked: false, currentPhase: 'assembling',
+  });
+  const member = env.authenticatedContext('member').firestore();
+  await assertFails(member.doc('tour_sessions/session').update({
+    touristIds: ['owner', 'member'], redeemedCount: 2,
+  }));
+
+  await seed('tour_sessions/duplicate', {
+    guideId: 'guide', touristIds: ['owner', 'member'], redeemedCount: 2,
+    maxTourists: 3, isLocked: false, currentPhase: 'assembling',
+  });
+  await assertFails(member.doc('tour_sessions/duplicate').update({
+    touristIds: ['owner', 'member'], redeemedCount: 3,
+  }));
+
+  await seed('tour_sessions/full', {
+    guideId: 'guide', touristIds: ['owner', 'other'], redeemedCount: 2,
+    maxTourists: 2, isLocked: false, currentPhase: 'assembling',
+  });
+  await assertFails(member.doc('tour_sessions/full').update({
+    touristIds: ['owner', 'other', 'member'], redeemedCount: 3,
+  }));
+});
+
+test('open tour sessions are not enumerable by unrelated users', async () => {
+  await seed('tour_sessions/session', {
+    guideId: 'guide', touristIds: ['owner'], redeemedCount: 1,
+    maxTourists: 2, isJoinOpen: true, currentPhase: 'assembling',
+  });
+  const stranger = env.authenticatedContext('stranger').firestore();
+  await assertFails(stranger.doc('tour_sessions/session').get());
 });

@@ -1,11 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../../core/utils/secure_logger.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/tour_session.dart';
-import '../models/tour_link.dart';
-import 'package:uuid/uuid.dart';
 import 'dart:math';
 
 final tourSessionRepositoryProvider =
@@ -22,34 +19,47 @@ class TourSessionRepository {
   }
 
   Future<void> startSession(String sessionId) async {
-    await _firestore.collection('tour_sessions').doc(sessionId).update({
-      'status': 'active',
-      'actualStartTime': FieldValue.serverTimestamp(),
-      'sessionStartedAt': DateTime.now().toIso8601String(),
-      'startedAt': DateTime.now().toIso8601String(),
-      'trackingEnabled': true,
-    });
+    final guideId = FirebaseAuth.instance.currentUser?.uid;
+    if (guideId == null) throw StateError('Guide sign-in is required.');
+    final bookingQuery = await _firestore
+        .collection('booking_requests')
+        .where('guideId', isEqualTo: guideId)
+        .where('linkedSessionId', isEqualTo: sessionId)
+        .limit(1)
+        .get();
+    final sessionRef = _firestore.collection('tour_sessions').doc(sessionId);
+    final bookingRef =
+        bookingQuery.docs.isEmpty ? null : bookingQuery.docs.first.reference;
+    final now = DateTime.now().toIso8601String();
 
-    try {
-      final guideId = FirebaseAuth.instance.currentUser?.uid;
-      if (guideId == null) return;
-      // Scoped by guideId: an unscoped linkedSessionId-only query can't be
-      // proven safe by firestore.rules (it could match another guide's
-      // booking), so Firestore rejects it with permission-denied.
-      final bookingQuery = await _firestore
-          .collection('booking_requests')
-          .where('guideId', isEqualTo: guideId)
-          .where('linkedSessionId', isEqualTo: sessionId)
-          .get();
-      for (final bookingDoc in bookingQuery.docs) {
-        await bookingDoc.reference.update({
+    await _firestore.runTransaction((transaction) async {
+      final sessionSnapshot = await transaction.get(sessionRef);
+      if (!sessionSnapshot.exists ||
+          sessionSnapshot.data()?['guideId'] != guideId) {
+        throw StateError('Tour session was not found for this guide.');
+      }
+      if (bookingRef != null) {
+        final bookingSnapshot = await transaction.get(bookingRef);
+        final booking = bookingSnapshot.data();
+        if (booking == null ||
+            booking['status'] != 'confirmed' ||
+            booking['payoutStatus'] != 'paid') {
+          throw StateError(
+              'The linked booking must be paid and confirmed before starting.');
+        }
+        transaction.update(bookingRef, {
           'status': 'in_progress',
-          'startedAt': DateTime.now().toIso8601String(),
+          'startedAt': now,
         });
       }
-    } catch (e, st) {
-      SecureLogger.error("Exception caught: $e\n$st");
-    }
+      transaction.update(sessionRef, {
+        'status': 'active',
+        'actualStartTime': FieldValue.serverTimestamp(),
+        'sessionStartedAt': now,
+        'startedAt': now,
+        'trackingEnabled': true,
+      });
+    });
   }
 
   Future<void> endSession(String sessionId,
@@ -62,48 +72,48 @@ class TourSessionRepository {
     final now = DateTime.now();
     final reviewWindow = now.add(const Duration(days: 14));
 
-    await _firestore.collection('tour_sessions').doc(sessionId).update({
-      'status': 'completed',
-      'currentPhase': 'completed',
-      'endedAt': now.toIso8601String(),
-      'completedAt': now.toIso8601String(),
-      'completionStatus': status,
-      'reviewWindowEndsAt': reviewWindow.toIso8601String(),
-      'reviewEligibleTouristIds': touristIds, // Snapshot participants at end
-      'trackingEnabled': false,
-      'sosActive': false,
-      'isLocked': true,
-      'isReviewEnabled': true,
-    });
+    final guideId = FirebaseAuth.instance.currentUser?.uid;
+    if (guideId == null) throw StateError('Guide sign-in is required.');
+    final bookingQuery = await _firestore
+        .collection('booking_requests')
+        .where('guideId', isEqualTo: guideId)
+        .where('linkedSessionId', isEqualTo: sessionId)
+        .limit(1)
+        .get();
+    final sessionRef = _firestore.collection('tour_sessions').doc(sessionId);
+    final bookingRef =
+        bookingQuery.docs.isEmpty ? null : bookingQuery.docs.first.reference;
 
-    // Update linked booking requests (Phase 2 Financial & Completion Linkage)
-    //
-    // commissionAmount/guideNetAmount/payoutStatus are NOT set here — they're
-    // locked to admin/webhook-only writes in firestore.rules (see
-    // booking_requests match block: any client update() touching those keys
-    // is rejected outright), and PayHereController::notify() (the PayHere
-    // payment webhook, running with the Admin SDK) is the actual authoritative
-    // writer once a payment clears — see its 10%-commission-split comment.
-    // An earlier version of this method tried to compute and write those
-    // fields directly from the client, which firestore.rules has always
-    // silently rejected (caught below, only logged) — removed as dead code.
-    try {
-      final guideId = FirebaseAuth.instance.currentUser?.uid;
-      if (guideId == null) return;
-      final bookingQuery = await _firestore
-          .collection('booking_requests')
-          .where('guideId', isEqualTo: guideId)
-          .where('linkedSessionId', isEqualTo: sessionId)
-          .get();
-      for (final bookingDoc in bookingQuery.docs) {
-        await bookingDoc.reference.update({
+    await _firestore.runTransaction((transaction) async {
+      final sessionSnapshot = await transaction.get(sessionRef);
+      if (!sessionSnapshot.exists ||
+          sessionSnapshot.data()?['guideId'] != guideId) {
+        throw StateError('Tour session was not found for this guide.');
+      }
+      if (bookingRef != null) {
+        final bookingSnapshot = await transaction.get(bookingRef);
+        if (bookingSnapshot.data()?['status'] != 'in_progress') {
+          throw StateError('The linked booking is not in progress.');
+        }
+        transaction.update(bookingRef, {
           'status': 'completed',
           'completedAt': now.toIso8601String(),
         });
       }
-    } catch (e, st) {
-      SecureLogger.error("Exception caught: $e\n$st");
-    }
+      transaction.update(sessionRef, {
+        'status': 'completed',
+        'currentPhase': 'completed',
+        'endedAt': now.toIso8601String(),
+        'completedAt': now.toIso8601String(),
+        'completionStatus': status,
+        'reviewWindowEndsAt': reviewWindow.toIso8601String(),
+        'reviewEligibleTouristIds': touristIds,
+        'trackingEnabled': false,
+        'sosActive': false,
+        'isLocked': true,
+        'isReviewEnabled': true,
+      });
+    });
   }
 
   Future<TourSession?> getActiveOrInitialSessionForGuide(String guideId) async {
@@ -171,21 +181,6 @@ class TourSessionRepository {
     });
   }
 
-  Future<void> joinSession(String sessionId, String touristId) async {
-    final doc =
-        await _firestore.collection('tour_sessions').doc(sessionId).get();
-    if (!doc.exists) return;
-
-    final phase = doc.get('currentPhase') ?? 'assembling';
-    if (phase != 'assembling') {
-      throw Exception("JOIN_BLOCKED: Tour has already started movement.");
-    }
-
-    await _firestore.collection('tour_sessions').doc(sessionId).update({
-      'touristIds': FieldValue.arrayUnion([touristId]),
-    });
-  }
-
   Future<String> generateJoinToken(String sessionId) async {
     final token =
         _generateShortToken(); // 6-char human readable or UUID fragment
@@ -206,27 +201,18 @@ class TourSessionRepository {
     });
   }
 
-  Future<TourSession> validateAndJoin({
-    required String token,
-    required String touristId,
-    required bool consent,
-  }) async {
-    // 1. Find session with this active token — routed through a rate-limited
-    // Cloud Function (validateJoinToken) rather than a bare client-side
-    // query. The 6-char token has ~30 bits of entropy (not brute-forceable
-    // by hand, but a scripted client with no rate limit could enumerate
-    // guesses); the function caps attempts to 5 per 10 minutes per user
-    // before revealing whether any guess matched.
+  Future<TourSession> previewJoinSession(String token) async {
     final Map<String, dynamic> result;
     try {
       final callable =
           FirebaseFunctions.instance.httpsCallable('validateJoinToken');
-      final response = await callable.call({'token': token});
+      final response =
+          await callable.call({'token': token, 'mode': 'preview'});
       result = Map<String, dynamic>.from(response.data as Map);
-    } on FirebaseFunctionsException catch (e) {
-      if (e.code == 'resource-exhausted') {
+    } on FirebaseFunctionsException catch (error) {
+      if (error.code == 'resource-exhausted') {
         throw Exception(
-            "TOO_MANY_ATTEMPTS: ${e.message ?? 'Please wait a few minutes and try again.'}");
+            "TOO_MANY_ATTEMPTS: ${error.message ?? 'Please wait a few minutes and try again.'}");
       }
       rethrow;
     }
@@ -235,63 +221,39 @@ class TourSessionRepository {
       throw Exception("INVALID_TOKEN: No active session found for this code.");
     }
 
-    final sessionId = result['sessionId'] as String;
-    final doc =
-        await _firestore.collection('tour_sessions').doc(sessionId).get();
-    if (!doc.exists) {
+    final sessionData = result['session'];
+    if (sessionData is! Map) {
       throw Exception("INVALID_TOKEN: No active session found for this code.");
     }
-    final session = TourSession.fromJson(doc.data()!);
+    return TourSession.fromJson(Map<String, dynamic>.from(sessionData));
+  }
 
-    // 2. Check Expiry
-    if (session.tokenExpiresAt != null &&
-        session.tokenExpiresAt!.isBefore(DateTime.now())) {
-      throw Exception("EXPIRED_TOKEN: This join code has expired.");
+  Future<TourSession> validateAndJoin({
+    required String token,
+    required String touristId,
+    required bool consent,
+  }) async {
+    if (touristId != FirebaseAuth.instance.currentUser?.uid) {
+      throw StateError('The signed-in tourist does not match the join request.');
     }
-
-    // 3. Check Limits
-    if (session.redeemedCount >= session.maxTourists) {
-      throw Exception("LIMIT_REACHED: This session is full.");
-    }
-
-    // 4. Check Phase
-    if (session.currentPhase != 'assembling') {
-      throw Exception("JOIN_BLOCKED: Tour is already in progress.");
-    }
-
-    // 5. Atomic Join Transaction
-    await _firestore.runTransaction((transaction) async {
-      final sessionRef =
-          _firestore.collection('tour_sessions').doc(session.sessionId);
-
-      // Create TourLink
-      final linkId = const Uuid().v4();
-      final tourLink = TourLink(
-        linkId: linkId,
-        sessionId: session.sessionId,
-        guideId: session.guideId,
-        touristId: touristId,
-        linkedAt: DateTime.now(),
-        linkMethod: 'qr',
-        trackingConsent: consent,
-      );
-
-      transaction.set(
-          _firestore.collection('tour_links').doc(linkId), tourLink.toJson());
-
-      // Update Session
-      transaction.update(sessionRef, {
-        'touristIds': FieldValue.arrayUnion([touristId]),
-        'redeemedCount': FieldValue.increment(1),
-      });
+    final callable =
+        FirebaseFunctions.instance.httpsCallable('validateJoinToken');
+    final response = await callable.call({
+      'token': token,
+      'mode': 'join',
+      'trackingConsent': consent,
     });
-
-    return session;
+    final result = Map<String, dynamic>.from(response.data as Map);
+    if (result['found'] != true || result['session'] is! Map) {
+      throw Exception("INVALID_TOKEN: No active session found for this code.");
+    }
+    return TourSession.fromJson(
+        Map<String, dynamic>.from(result['session'] as Map));
   }
 
   String _generateShortToken() {
     const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-    final rnd = Random();
+    final rnd = Random.secure();
     return String.fromCharCodes(Iterable.generate(
         6, (_) => chars.codeUnitAt(rnd.nextInt(chars.length))));
   }

@@ -12,6 +12,15 @@ service cloud.firestore {
       return isSignedIn() && request.auth.uid == userId;
     }
 
+    function blockDocumentId(blockerId, blockedUserId) {
+      return blockerId + '_' + blockedUserId;
+    }
+
+    function usersHaveNotBlockedEachOther(firstUserId, secondUserId) {
+      return !exists(/databases/$(database)/documents/user_blocks/$(blockDocumentId(firstUserId, secondUserId))) &&
+        !exists(/databases/$(database)/documents/user_blocks/$(blockDocumentId(secondUserId, firstUserId)));
+    }
+
     // BUG-F01 Fix: Check JWT custom claims first to eliminate billed document reads & latency
     function isAdmin() {
       return isSignedIn() && (
@@ -177,6 +186,7 @@ service cloud.firestore {
         request.resource.data.guideId == request.auth.uid &&
         request.resource.data.hourlyRate is number && request.resource.data.hourlyRate > 0 &&
         request.resource.data.hourlyRate <= 1000000 &&
+        request.resource.data.yearsExperience is int && request.resource.data.yearsExperience >= 0 && request.resource.data.yearsExperience <= 80 &&
         request.resource.data.currency in ['LKR', 'USD', 'EUR', 'GBP'] &&
         (request.resource.data.status != 'published' || hasVerifiedPhone()) &&
         (!('moderationStatus' in request.resource.data) || request.resource.data.moderationStatus == 'pending') &&
@@ -186,6 +196,7 @@ service cloud.firestore {
         request.resource.data.guideId == resource.data.guideId &&
         request.resource.data.hourlyRate is number && request.resource.data.hourlyRate > 0 &&
         request.resource.data.hourlyRate <= 1000000 &&
+        request.resource.data.yearsExperience is int && request.resource.data.yearsExperience >= 0 && request.resource.data.yearsExperience <= 80 &&
         request.resource.data.currency in ['LKR', 'USD', 'EUR', 'GBP'] &&
         (request.resource.data.status != 'published' || hasVerifiedPhone()) &&
         request.resource.data.moderationStatus == 'pending' &&
@@ -250,10 +261,20 @@ service cloud.firestore {
       // TourSessionRepository.endSession()'s commission math as if real.
       allow create: if isSignedIn() && isNotBlocked() && request.resource.data.touristId == request.auth.uid &&
         request.resource.data.guideId is string &&
+        request.resource.data.guestCount is int &&
+        request.resource.data.guestCount >= 1 &&
+        request.resource.data.guestCount <= 20 &&
+        usersHaveNotBlockedEachOther(request.auth.uid, request.resource.data.guideId) &&
         exists(/databases/$(database)/documents/guide_listings/$(request.resource.data.guideId)) &&
         get(/databases/$(database)/documents/guide_listings/$(request.resource.data.guideId)).data.guideId == request.resource.data.guideId &&
         get(/databases/$(database)/documents/guide_listings/$(request.resource.data.guideId)).data.status == 'published' &&
         get(/databases/$(database)/documents/guide_listings/$(request.resource.data.guideId)).data.moderationStatus == 'approved' &&
+        (request.resource.data.packageId == null ||
+          (request.resource.data.packageId is string &&
+           exists(/databases/$(database)/documents/tour_packages/$(request.resource.data.packageId)) &&
+           get(/databases/$(database)/documents/tour_packages/$(request.resource.data.packageId)).data.ownerId == request.resource.data.guideId &&
+           get(/databases/$(database)/documents/tour_packages/$(request.resource.data.packageId)).data.isActive == true &&
+           request.resource.data.guestCount <= get(/databases/$(database)/documents/tour_packages/$(request.resource.data.packageId)).data.maxGuests)) &&
         request.resource.data.status == 'pending' &&
         (!('payoutStatus' in request.resource.data) || request.resource.data.payoutStatus == 'pending') &&
         (!('quotedPrice' in request.resource.data) || request.resource.data.quotedPrice == null) &&
@@ -269,7 +290,9 @@ service cloud.firestore {
       allow update: if isSignedIn() && (
         !request.resource.data.diff(resource.data).affectedKeys()
           .hasAny(['quotedPrice', 'commissionAmount', 'guideNetAmount', 'operatorNetAmount', 'payoutStatus',
-                   'paidAt', 'paidAmount', 'paymentId', 'guideId', 'touristId']) &&
+                   'paidAt', 'paidAmount', 'paymentId', 'paymentStatus', 'paymentMismatchAt',
+                   'refundStatus', 'refundStartedAt', 'refundReason', 'refundedAt',
+                   'guideId', 'touristId']) &&
         (
           (resource.data.guideId == request.auth.uid && validGuideStatusTransition()) ||
           (resource.data.touristId == request.auth.uid &&
@@ -289,8 +312,14 @@ service cloud.firestore {
       // constructor defaults isFeatured to false.
       allow create: if isVerifiedGuide() &&
         request.resource.data.ownerId == request.auth.uid &&
+        request.resource.data.maxGuests is int &&
+        request.resource.data.maxGuests >= 1 &&
+        request.resource.data.maxGuests <= 20 &&
         (!('isFeatured' in request.resource.data) || request.resource.data.isFeatured == false);
       allow update: if (isOwner(resource.data.ownerId) &&
+        request.resource.data.maxGuests is int &&
+        request.resource.data.maxGuests >= 1 &&
+        request.resource.data.maxGuests <= 20 &&
         !request.resource.data.diff(resource.data).affectedKeys().hasAny(['isFeatured', 'ownerId'])) ||
         isAdmin();
       allow delete: if isOwner(resource.data.ownerId) || isAdmin();
@@ -337,14 +366,23 @@ service cloud.firestore {
       allow create: if isSignedIn() && isNotBlocked() &&
         request.resource.data.touristId == request.auth.uid &&
         reviewId == request.resource.data.sessionId + '_' + request.auth.uid &&
+        request.resource.data.moderationStatus == 'under_review' &&
+        request.resource.data.comment is string &&
+        request.resource.data.comment.size() <= 1000 &&
         request.resource.data.overallRating is number &&
         request.resource.data.overallRating >= 1 && request.resource.data.overallRating <= 5 &&
+        request.resource.data.knowledgeRating is number &&
+        request.resource.data.knowledgeRating >= 1 && request.resource.data.knowledgeRating <= 5 &&
+        request.resource.data.communicationRating is number &&
+        request.resource.data.communicationRating >= 1 && request.resource.data.communicationRating <= 5 &&
+        request.resource.data.punctualityRating is number &&
+        request.resource.data.punctualityRating >= 1 && request.resource.data.punctualityRating <= 5 &&
+        request.resource.data.safetyRating is number &&
+        request.resource.data.safetyRating >= 1 && request.resource.data.safetyRating <= 5 &&
+        request.resource.data.friendlinessRating is number &&
+        request.resource.data.friendlinessRating >= 1 && request.resource.data.friendlinessRating <= 5 &&
         reviewEligibleForSession(request.resource.data);
-      allow update: if (isOwner(resource.data.touristId) &&
-        !request.resource.data.diff(resource.data).affectedKeys()
-          .hasAny(['moderationStatus', 'isFlagged', 'flagReason', 'hiddenByAdmin', 'hiddenReason',
-                   'isVerifiedSession', 'reviewWindowValidated'])) ||
-        isAdmin();
+      allow update: if isAdmin();
       allow delete: if isAdmin();
     }
 
@@ -359,12 +397,10 @@ service cloud.firestore {
       // join it via code — that window ends (isJoinOpen is cleared) once
       // the tour actually starts, well before trackingEnabled ever turns on.
       allow read: if isSignedIn() && (
-        resource.data.isJoinOpen == true ||
-        (
-          resource.data.guideId == request.auth.uid ||
-          request.auth.uid in resource.data.touristIds ||
-          isAdmin()
-        ));
+        resource.data.guideId == request.auth.uid ||
+        request.auth.uid in resource.data.touristIds ||
+        isAdmin()
+      );
       allow create: if isVerifiedGuide() &&
         request.resource.data.guideId == request.auth.uid;
       allow update: if isSignedIn() && (
@@ -372,11 +408,6 @@ service cloud.firestore {
          request.resource.data.guideId == resource.data.guideId) ||
         (request.auth.uid in resource.data.touristIds &&
          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['sosActive'])) ||
-        (!resource.data.isLocked && resource.data.currentPhase == 'assembling' &&
-         request.resource.data.diff(resource.data).affectedKeys().hasOnly(['touristIds', 'redeemedCount']) &&
-         request.auth.uid in request.resource.data.touristIds &&
-         request.resource.data.touristIds.hasAll(resource.data.touristIds) &&
-         request.resource.data.redeemedCount == resource.data.redeemedCount + 1) ||
         isAdmin()
       );
       allow delete: if isAdmin();
@@ -417,7 +448,27 @@ service cloud.firestore {
         );
         // Only the guide sends broadcasts; tourists may only update to acknowledge.
         allow create: if isSignedIn() &&
-          get(/databases/$(database)/documents/tour_sessions/$(sessionId)).data.guideId == request.auth.uid;
+          get(/databases/$(database)/documents/tour_sessions/$(sessionId)).data.guideId == request.auth.uid &&
+          messageId == request.resource.data.messageId &&
+          request.resource.data.sessionId == sessionId &&
+          request.resource.data.guideId == request.auth.uid &&
+          request.resource.data.type in ['departure', 'meetingPoint', 'delay', 'weather', 'vehicleChange', 'safety', 'general'] &&
+          request.resource.data.priority in ['low', 'normal', 'high', 'critical'] &&
+          request.resource.data.title is string &&
+          request.resource.data.title.size() > 0 &&
+          request.resource.data.title.size() <= 50 &&
+          request.resource.data.body is string &&
+          request.resource.data.body.size() > 0 &&
+          request.resource.data.body.size() <= 500 &&
+          request.resource.data.requiresAck is bool &&
+          request.resource.data.acknowledgedBy is list &&
+          request.resource.data.acknowledgedBy.size() == 0 &&
+          request.resource.data.isActive == true &&
+          request.resource.data.keys().hasOnly([
+            'messageId', 'sessionId', 'guideId', 'type', 'title', 'body',
+            'priority', 'createdAt', 'expiresAt', 'requiresAck',
+            'acknowledgedBy', 'isActive'
+          ]);
         allow update: if isSignedIn() && (
           get(/databases/$(database)/documents/tour_sessions/$(sessionId)).data.guideId == request.auth.uid ||
           (request.auth.uid in get(/databases/$(database)/documents/tour_sessions/$(sessionId)).data.touristIds &&
@@ -435,12 +486,7 @@ service cloud.firestore {
     // guideId/touristId are immutable after creation to prevent link hijacking.
     match /tour_links/{linkId} {
       allow read: if isSignedIn() && (resource.data.touristId == request.auth.uid || resource.data.guideId == request.auth.uid || isAdmin());
-      allow create: if isSignedIn() &&
-        request.resource.data.linkId == linkId &&
-        request.resource.data.touristId == request.auth.uid &&
-        request.resource.data.sessionId is string &&
-        request.resource.data.guideId == getAfter(/databases/$(database)/documents/tour_sessions/$(request.resource.data.sessionId)).data.guideId &&
-        request.auth.uid in getAfter(/databases/$(database)/documents/tour_sessions/$(request.resource.data.sessionId)).data.touristIds;
+      allow create: if false;
       allow update: if isSignedIn() && (
         !request.resource.data.diff(resource.data).affectedKeys().hasAny(['guideId', 'touristId']) &&
         ((resource.data.touristId == request.auth.uid &&
@@ -602,7 +648,6 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
-    // ── AR Sessions ─────────────────────────────────────────────────────────
     // ── Knowledge Base Config ────────────────────────────────────────────────
     match /kb_config/{configId} {
       allow read: if isSignedIn();
@@ -655,8 +700,64 @@ service cloud.firestore {
     // ── Abuse Reports / Events ──────────────────────────────────────────────
     match /abuse_reports/{reportId} {
       allow create: if isSignedIn() &&
-        request.resource.data.reportedBy == request.auth.uid;
+        request.resource.data.reportedBy == request.auth.uid &&
+        request.resource.data.reportedUserId is string &&
+        request.resource.data.targetId is string &&
+        request.resource.data.targetType in ['review', 'guide_profile', 'listing', 'user', 'photo', 'message'] &&
+        request.resource.data.reason in ['inappropriate', 'spam', 'harassment', 'impersonation', 'fraud', 'safety', 'other'] &&
+        request.resource.data.details is string &&
+        request.resource.data.details.size() <= 500 &&
+        request.resource.data.status == 'pending' &&
+        request.resource.data.createdAt == request.time &&
+        request.resource.data.keys().hasOnly([
+          'reportedBy', 'reportedUserId', 'targetType', 'targetId',
+          'reason', 'details', 'status', 'createdAt'
+        ]);
       allow read, update, delete: if isAdmin();
+    }
+
+    // In-product reporting for generated itineraries, recommendations,
+    // translations, voice replies, and food-analysis output.
+    match /ai_output_reports/{reportId} {
+      allow create: if isSignedIn() &&
+        request.resource.data.reportedBy == request.auth.uid &&
+        request.resource.data.feature in ['trip_plan', 'recommendation', 'translation', 'oracle_reply', 'food_scan'] &&
+        request.resource.data.outputId is string &&
+        request.resource.data.outputId.size() > 0 &&
+        request.resource.data.outputId.size() <= 200 &&
+        request.resource.data.reason in ['incorrect', 'unsafe', 'offensive', 'other'] &&
+        request.resource.data.details is string &&
+        request.resource.data.details.size() <= 500 &&
+        request.resource.data.outputPreview is string &&
+        request.resource.data.outputPreview.size() <= 1000 &&
+        request.resource.data.status == 'pending' &&
+        request.resource.data.createdAt == request.time &&
+        request.resource.data.keys().hasOnly([
+          'reportedBy', 'feature', 'outputId', 'reason', 'details',
+          'outputPreview', 'status', 'createdAt'
+        ]);
+      allow read, update, delete: if isAdmin();
+    }
+
+    // User-controlled safety blocks. The deterministic document ID lets
+    // booking rules enforce blocks in either direction without exposing one
+    // user's private block list to another user.
+    match /user_blocks/{blockId} {
+      allow create: if isSignedIn() &&
+        request.resource.data.blockerId == request.auth.uid &&
+        request.resource.data.blockedUserId is string &&
+        request.resource.data.blockedUserId != request.auth.uid &&
+        blockId == blockDocumentId(request.auth.uid, request.resource.data.blockedUserId) &&
+        request.resource.data.status == 'active' &&
+        request.resource.data.createdAt == request.time &&
+        request.resource.data.keys().hasOnly([
+          'blockerId', 'blockedUserId', 'status', 'createdAt'
+        ]);
+      allow read: if isAdmin() ||
+        (isSignedIn() && resource.data.blockerId == request.auth.uid);
+      allow delete: if isAdmin() ||
+        (isSignedIn() && resource.data.blockerId == request.auth.uid);
+      allow update: if false;
     }
 
     // Self-instrumentation: client reports suspicious activity involving its
@@ -773,28 +874,6 @@ service cloud.firestore {
       allow read, write: if isOwner(userId) || isAdmin();
     }
 
-    // ── AR Treasure Hunt Gamification ─────────────────────────────────────
-    // points/found_artifacts are unbounded client-set values by design (no
-    // money/trust impact — a vanity leaderboard stat), but a raw write could
-    // still fabricate an arbitrarily large score with zero real artifacts
-    // found. Require points to only ever increase, by a sane per-write
-    // ceiling (well above any single real artifact's value — see
-    // ARArtifact.points, defaulting to 100), and found_artifacts to only
-    // grow, never shrink/replace (can't "unfind" something to game a rank).
-    match /user_gamification/{userId} {
-      allow read: if isOwner(userId) || isAdmin();
-      allow create: if isOwner(userId) &&
-        request.resource.data.points is int && request.resource.data.points >= 0 &&
-        request.resource.data.points <= 10000;
-      allow update: if isOwner(userId) &&
-        request.resource.data.points is int &&
-        request.resource.data.points >= resource.data.points &&
-        request.resource.data.points <= resource.data.points + 10000 &&
-        (!('found_artifacts' in resource.data) || !('found_artifacts' in request.resource.data) ||
-         request.resource.data.found_artifacts.hasAll(resource.data.found_artifacts));
-      allow write: if isAdmin();
-    }
-
     // ── Community Memory Drops (Geo-tagged public posts) ──────────────────
     match /community_memories/{memoryId} {
       allow read: if isSignedIn();
@@ -802,12 +881,6 @@ service cloud.firestore {
       allow update: if (isOwner(resource.data.userId) &&
         request.resource.data.userId == resource.data.userId) || isAdmin();
       allow delete: if isOwner(resource.data.userId) || isAdmin();
-    }
-
-    // ── AR Content Locations (Read-only, admin-managed) ────────────────────
-    match /locations/{locationId} {
-      allow read: if isSignedIn();
-      allow write: if isAdmin();
     }
 
     // ── Subscription Plan Definitions (Read-only, admin-managed) ──────────

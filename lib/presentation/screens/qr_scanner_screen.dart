@@ -17,7 +17,9 @@ import './tourist_companion_hub.dart';
 
 /// Premium themed QR Code Scanner Screen for Guide Tour Companion Sync
 class QRScannerScreen extends StatefulWidget {
-  const QRScannerScreen({super.key});
+  final String? initialToken;
+
+  const QRScannerScreen({super.key, this.initialToken});
 
   @override
   State<QRScannerScreen> createState() => _QRScannerScreenState();
@@ -40,6 +42,12 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
       facing: CameraFacing.back,
       torchEnabled: false,
     );
+    final initialToken = widget.initialToken;
+    if (initialToken != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _beginToken(initialToken);
+      });
+    }
   }
 
   @override
@@ -73,46 +81,44 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
         return;
       }
 
-      final token = data['token'];
-      if (_scannedToken == token) return; // Prevent duplicate processing
-
-      setState(() {
-        _scannedToken = token;
-        _isProcessing = true;
-      });
-
-      HapticFeedback.mediumImpact();
-      _fetchPreview(token);
+      _beginToken(data['token'].toString());
     } catch (e) {
       _showError(AppLocalizations.of(context)!.unrecognizedQrCodeMessage);
     }
   }
 
+  void _beginToken(String rawToken) {
+    final token = rawToken.trim().toUpperCase();
+    if (!RegExp(r'^[A-HJ-NP-Z2-9]{6}$').hasMatch(token)) {
+      _showError(AppLocalizations.of(context)!.invalidQrCodeFormatMessage);
+      return;
+    }
+    if (_isProcessing || _scannedToken == token) return;
+    setState(() {
+      _scannedToken = token;
+      _isProcessing = true;
+    });
+    HapticFeedback.mediumImpact();
+    _fetchPreview(token);
+  }
+
   Future<void> _fetchPreview(String token) async {
     try {
-      final query = await FirebaseFirestore.instance
-          .collection('tour_sessions')
-          .where('joinToken', isEqualTo: token)
-          .where('isJoinOpen', isEqualTo: true)
-          .limit(1)
-          .get();
-
-      if (query.docs.isEmpty) {
-        if (!mounted) return;
-        _showError(AppLocalizations.of(context)!.sessionNotFoundClosedMessage);
-        setState(() => _isProcessing = false);
-        return;
-      }
-
-      final session = TourSession.fromJson(query.docs.first.data());
-      final guideDoc = await FirebaseFirestore.instance.collection('users').doc(session.guideId).get();
+      final session = await _sessionRepo.previewJoinSession(token);
 
       if (mounted) {
-        _showJoinSheet(session, guideDoc.data() ?? {});
+        _showJoinSheet(session, {'displayName': session.guideName});
       }
     } catch (e) {
       if (!mounted) return;
-      _showError(AppLocalizations.of(context)!.connectionErrorMessage);
+      final error = e.toString();
+      if (error.contains('EXPIRED_TOKEN')) {
+        _showError(AppLocalizations.of(context)!.invalidSessionCodeMessage);
+      } else if (error.contains('LIMIT_REACHED')) {
+        _showError(AppLocalizations.of(context)!.invalidSessionCodeMessage);
+      } else {
+        _showError(AppLocalizations.of(context)!.connectionErrorMessage);
+      }
     } finally {
       if (mounted) setState(() => _isProcessing = false);
     }
@@ -130,8 +136,10 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
             decoration: BoxDecoration(
               color: AppPaletteDark.surface.withValues(alpha: 0.96),
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
-              border: Border.all(color: AppPaletteDark.gold.withValues(alpha: 0.2)),
+              borderRadius:
+                  const BorderRadius.vertical(top: Radius.circular(32)),
+              border:
+                  Border.all(color: AppPaletteDark.gold.withValues(alpha: 0.2)),
               boxShadow: [
                 BoxShadow(
                   color: AppTheme.colors.black.withValues(alpha: 0.6),
@@ -173,15 +181,21 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                   decoration: BoxDecoration(
                     color: AppPaletteDark.card,
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: AppPaletteDark.gold.withValues(alpha: 0.15)),
+                    border: Border.all(
+                        color: AppPaletteDark.gold.withValues(alpha: 0.15)),
                   ),
                   child: Row(
                     children: [
                       CircleAvatar(
                         radius: 26,
                         backgroundColor: AppPalette.rust.withValues(alpha: 0.2),
-                        backgroundImage: guideData['profileImagePath'] != null ? NetworkImage(guideData['profileImagePath']) : null,
-                        child: guideData['profileImagePath'] == null ? const Icon(Icons.person, color: AppPaletteDark.gold) : null,
+                        backgroundImage: guideData['profileImagePath'] != null
+                            ? NetworkImage(guideData['profileImagePath'])
+                            : null,
+                        child: guideData['profileImagePath'] == null
+                            ? const Icon(Icons.person,
+                                color: AppPaletteDark.gold)
+                            : null,
                       ),
                       const SizedBox(width: 16),
                       Expanded(
@@ -189,7 +203,9 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              guideData['displayName'] ?? AppLocalizations.of(context)!.localGuideFallback,
+                              guideData['displayName'] ??
+                                  AppLocalizations.of(context)!
+                                      .localGuideFallback,
                               style: GoogleFonts.outfit(
                                 fontWeight: FontWeight.w700,
                                 fontSize: 16,
@@ -201,14 +217,16 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                               session.meetingPointName,
                               style: GoogleFonts.inter(
                                 fontSize: 12,
-                                color: AppTheme.colors.white.withValues(alpha: 0.6),
+                                color: AppTheme.colors.white
+                                    .withValues(alpha: 0.6),
                               ),
                               overflow: TextOverflow.ellipsis,
                             ),
                           ],
                         ),
                       ),
-                      const Icon(Icons.verified_rounded, color: AppPaletteDark.gold, size: 22),
+                      const Icon(Icons.verified_rounded,
+                          color: AppPaletteDark.gold, size: 22),
                     ],
                   ),
                 ),
@@ -216,17 +234,20 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
 
                 if (session.vehicleNumber != null)
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 14, vertical: 10),
                     decoration: BoxDecoration(
                       color: AppTheme.colors.white.withValues(alpha: 0.04),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.directions_car_filled_rounded, color: AppPaletteDark.gold, size: 18),
+                        const Icon(Icons.directions_car_filled_rounded,
+                            color: AppPaletteDark.gold, size: 18),
                         const SizedBox(width: 10),
                         Text(
-                          AppLocalizations.of(context)!.vehicleNumberLabel(session.vehicleNumber!),
+                          AppLocalizations.of(context)!
+                              .vehicleNumberLabel(session.vehicleNumber!),
                           style: GoogleFonts.inter(
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
@@ -250,7 +271,8 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                         value: _hasConsent,
                         activeColor: AppPalette.rust,
                         checkColor: Colors.white,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(4)),
                         onChanged: (val) {
                           setSheetState(() => _hasConsent = val ?? false);
                           setState(() => _hasConsent = val ?? false);
@@ -276,8 +298,11 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                   height: 52,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: _hasConsent ? AppPalette.rust : AppTheme.colors.white.withValues(alpha: 0.06),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                      backgroundColor: _hasConsent
+                          ? AppPalette.rust
+                          : AppTheme.colors.white.withValues(alpha: 0.06),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16)),
                       elevation: _hasConsent ? 4 : 0,
                       shadowColor: AppPalette.rust.withValues(alpha: 0.5),
                     ),
@@ -287,7 +312,9 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                       style: GoogleFonts.inter(
                         fontWeight: FontWeight.w700,
                         fontSize: 14,
-                        color: _hasConsent ? Colors.white : AppTheme.colors.white24,
+                        color: _hasConsent
+                            ? Colors.white
+                            : AppTheme.colors.white24,
                       ),
                     ),
                   ),
@@ -344,7 +371,8 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
             decoration: BoxDecoration(
               color: AppPaletteDark.surface.withValues(alpha: 0.96),
               borderRadius: BorderRadius.circular(28),
-              border: Border.all(color: AppPaletteDark.gold.withValues(alpha: 0.25)),
+              border: Border.all(
+                  color: AppPaletteDark.gold.withValues(alpha: 0.25)),
               boxShadow: [
                 BoxShadow(
                   color: AppTheme.colors.black.withValues(alpha: 0.6),
@@ -363,7 +391,8 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                     color: const Color(0xFF10B981).withValues(alpha: 0.15),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.link_rounded, color: Color(0xFF10B981), size: 40)
+                  child: const Icon(Icons.link_rounded,
+                          color: Color(0xFF10B981), size: 40)
                       .animate()
                       .scale(duration: 600.ms, curve: Curves.elasticOut),
                 ),
@@ -381,7 +410,9 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                 Text(
                   AppLocalizations.of(context)!.safetyProtocolsActiveMessage,
                   textAlign: TextAlign.center,
-                  style: GoogleFonts.inter(fontSize: 13, color: AppTheme.colors.white.withValues(alpha: 0.7)),
+                  style: GoogleFonts.inter(
+                      fontSize: 13,
+                      color: AppTheme.colors.white.withValues(alpha: 0.7)),
                 ),
                 const SizedBox(height: 28),
                 SizedBox(
@@ -390,7 +421,8 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppPalette.rust,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16)),
                       elevation: 4,
                       shadowColor: AppPalette.rust.withValues(alpha: 0.5),
                     ),
@@ -398,7 +430,9 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                       Navigator.pop(context); // Close dialog
                       Navigator.pushReplacement(
                         context,
-                        MaterialPageRoute(builder: (context) => TouristCompanionHub(sessionId: sessionId)),
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                TouristCompanionHub(sessionId: sessionId)),
                       );
                     },
                     child: Text(
@@ -423,7 +457,8 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message, style: GoogleFonts.outfit(fontWeight: FontWeight.bold)),
+        content: Text(message,
+            style: GoogleFonts.outfit(fontWeight: FontWeight.bold)),
         backgroundColor: AppTheme.colors.redAccent,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
@@ -453,7 +488,8 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                 color: AppPaletteDark.surface.withValues(alpha: 0.75),
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: borderColor ?? AppTheme.colors.white.withValues(alpha: 0.15),
+                  color: borderColor ??
+                      AppTheme.colors.white.withValues(alpha: 0.15),
                   width: 1.2,
                 ),
                 boxShadow: [
@@ -498,9 +534,8 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
             ),
           ],
         ),
-      )
-          .animate(onPlay: (controller) => controller.repeat(reverse: true))
-          .moveY(begin: 0, end: maxHeight, duration: 1800.ms, curve: Curves.easeInOut),
+      ).animate(onPlay: (controller) => controller.repeat(reverse: true)).moveY(
+          begin: 0, end: maxHeight, duration: 1800.ms, curve: Curves.easeInOut),
     );
   }
 
@@ -566,7 +601,8 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
             child: SafeArea(
               top: true,
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -597,11 +633,16 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                               width: 7,
                               height: 7,
                               decoration: BoxDecoration(
-                                color: _isProcessing ? AppPaletteDark.gold : const Color(0xFF10B981),
+                                color: _isProcessing
+                                    ? AppPaletteDark.gold
+                                    : const Color(0xFF10B981),
                                 shape: BoxShape.circle,
                                 boxShadow: [
                                   BoxShadow(
-                                    color: (_isProcessing ? AppPaletteDark.gold : const Color(0xFF10B981)).withValues(alpha: 0.6),
+                                    color: (_isProcessing
+                                            ? AppPaletteDark.gold
+                                            : const Color(0xFF10B981))
+                                        .withValues(alpha: 0.6),
                                     blurRadius: 6,
                                   ),
                                 ],
@@ -610,13 +651,15 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                             const SizedBox(width: 6),
                             Text(
                               _isProcessing
-                                  ? (l10n?.decryptingTokenMessage ?? 'VERIFYING...')
+                                  ? (l10n?.decryptingTokenMessage ??
+                                      'VERIFYING...')
                                   : 'READY TO SCAN',
                               style: GoogleFonts.inter(
                                 fontSize: 10.5,
                                 fontWeight: FontWeight.w600,
                                 letterSpacing: 0.5,
-                                color: AppTheme.colors.white.withValues(alpha: 0.8),
+                                color: AppTheme.colors.white
+                                    .withValues(alpha: 0.8),
                               ),
                             ),
                           ],
@@ -629,9 +672,15 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         _buildGlassIconButton(
-                          icon: _isTorchOn ? Icons.flashlight_on_rounded : Icons.flashlight_off_rounded,
-                          iconColor: _isTorchOn ? AppPaletteDark.gold : AppTheme.colors.white,
-                          borderColor: _isTorchOn ? AppPaletteDark.gold.withValues(alpha: 0.6) : null,
+                          icon: _isTorchOn
+                              ? Icons.flashlight_on_rounded
+                              : Icons.flashlight_off_rounded,
+                          iconColor: _isTorchOn
+                              ? AppPaletteDark.gold
+                              : AppTheme.colors.white,
+                          borderColor: _isTorchOn
+                              ? AppPaletteDark.gold.withValues(alpha: 0.6)
+                              : null,
                           onTap: _toggleTorch,
                         ),
                         const SizedBox(width: 8),
@@ -655,7 +704,8 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
             child: SafeArea(
               bottom: true,
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(24),
                   child: BackdropFilter(
@@ -696,7 +746,8 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                               borderRadius: BorderRadius.circular(16),
                               boxShadow: [
                                 BoxShadow(
-                                  color: AppPalette.rust.withValues(alpha: 0.45),
+                                  color:
+                                      AppPalette.rust.withValues(alpha: 0.45),
                                   blurRadius: 12,
                                   offset: const Offset(0, 4),
                                 ),
@@ -709,7 +760,9 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                                       height: 22,
                                       child: CircularProgressIndicator(
                                         strokeWidth: 2.5,
-                                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                        valueColor:
+                                            AlwaysStoppedAnimation<Color>(
+                                                Colors.white),
                                       ),
                                     ),
                                   )
@@ -726,7 +779,8 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  l10n?.tourVerificationTitle ?? 'Tour Verification',
+                                  l10n?.tourVerificationTitle ??
+                                      'Tour Verification',
                                   style: GoogleFonts.outfit(
                                     fontSize: 15,
                                     fontWeight: FontWeight.w700,
@@ -737,11 +791,14 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                                 const SizedBox(height: 3),
                                 Text(
                                   _isProcessing
-                                      ? (l10n?.decryptingTokenMessage ?? 'Verifying guide token...')
-                                      : (l10n?.scanGuideTourCodeMessage ?? 'Scan your guide\'s tour code'),
+                                      ? (l10n?.decryptingTokenMessage ??
+                                          'Verifying guide token...')
+                                      : (l10n?.scanGuideTourCodeMessage ??
+                                          'Scan your guide\'s tour code'),
                                   style: GoogleFonts.inter(
                                     fontSize: 12,
-                                    color: AppTheme.colors.white.withValues(alpha: 0.75),
+                                    color: AppTheme.colors.white
+                                        .withValues(alpha: 0.75),
                                     height: 1.3,
                                   ),
                                 ),
@@ -783,7 +840,8 @@ class _ScannerOverlayPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final backgroundPaint = Paint()..color = overlayColor;
-    final rrect = RRect.fromRectAndRadius(scanWindow, Radius.circular(borderRadius));
+    final rrect =
+        RRect.fromRectAndRadius(scanWindow, Radius.circular(borderRadius));
 
     // Draw darkened mask outside the scan window
     final backgroundPath = Path()
