@@ -32,6 +32,7 @@ import '../../data/models/broadcast_message.dart';
 import '../../l10n/app_localizations.dart';
 import '../../core/localization/traveler_safety_copy.dart';
 import '../../core/utils/secure_logger.dart';
+import '../../core/services/current_location_service.dart';
 
 class GuideDashboardScreen extends StatefulWidget {
   const GuideDashboardScreen({super.key});
@@ -40,7 +41,8 @@ class GuideDashboardScreen extends StatefulWidget {
   State<GuideDashboardScreen> createState() => _GuideDashboardScreenState();
 }
 
-class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
+class _GuideDashboardScreenState extends State<GuideDashboardScreen>
+    with WidgetsBindingObserver {
   TourSession? _activeSession;
   List<Vehicle> _vehicles = [];
   bool _isLoading = true;
@@ -59,11 +61,47 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _loadInitialData();
   }
 
   @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _refreshActiveSession();
+    } else if (state == AppLifecycleState.paused ||
+        state == AppLifecycleState.inactive ||
+        state == AppLifecycleState.detached) {
+      _locationTimer?.cancel();
+      _locationTimer = null;
+    }
+  }
+
+  Future<void> _refreshActiveSession() async {
+    try {
+      final currentSession = _activeSession;
+      if (currentSession == null) {
+        await _loadActiveSession();
+        return;
+      }
+      final refreshed = await _sessionRepo.getSession(currentSession.sessionId);
+      if (!mounted) return;
+      setState(() => _activeSession = refreshed);
+      if (refreshed?.status == 'active' && refreshed?.isLocked == false) {
+        _startLocationSync();
+      } else {
+        _locationTimer?.cancel();
+        _locationTimer = null;
+      }
+    } catch (error, stackTrace) {
+      SecureLogger.error('Guide session resume refresh failed', error,
+          stackTrace, 'GuideDashboard');
+    }
+  }
+
+  @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _locationTimer?.cancel();
     _monsoonSub?.cancel();
     super.dispose();
@@ -218,21 +256,15 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
     final uid = AuthService().currentUser?.uid ?? "unknown";
     final guideName = AuthService().currentUser?.displayName;
 
-    // BUG-4 FIX: Wrap GPS call in try/catch so a denied permission or
-    // location timeout shows a friendly message instead of crashing the app.
-    double lat = 6.9271; // Default: Colombo (fallback only)
-    double lng = 79.8612;
+    late final Position position;
     try {
-      final pos = await Geolocator.getCurrentPosition(
-        locationSettings: const LocationSettings(
-          accuracy: LocationAccuracy.high,
-          timeLimit: Duration(seconds: 10),
-        ),
+      position = await CurrentLocationService.getRequiredPosition(
+        accuracy: LocationAccuracy.high,
+        timeout: const Duration(seconds: 10),
       );
-      lat = pos.latitude;
-      lng = pos.longitude;
     } catch (e) {
       if (mounted) {
+        setState(() => _isLoading = false);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(AppLocalizations.of(context)!
@@ -241,6 +273,7 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
           ),
         );
       }
+      return;
     }
 
     final newSession = TourSession(
@@ -249,8 +282,8 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
       guideName: guideName,
       vehicleId: vehicle.id,
       meetingPointName: 'Initial Meeting Point',
-      meetingPointLat: lat,
-      meetingPointLng: lng,
+      meetingPointLat: position.latitude,
+      meetingPointLng: position.longitude,
       touristIds: const [],
       status: 'active',
       startedAt: DateTime.now(),
@@ -1029,7 +1062,8 @@ class _GuideDashboardScreenState extends State<GuideDashboardScreen> {
                   }
                   if (mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(TravelerSafetyCopy.hubShared(context))),
+                      SnackBar(
+                          content: Text(TravelerSafetyCopy.hubShared(context))),
                     );
                   }
                 },

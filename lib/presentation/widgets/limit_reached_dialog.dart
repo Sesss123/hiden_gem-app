@@ -34,10 +34,17 @@ class LimitReachedDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final effectivePlanName = planName ?? l10n.heritagePremiumTitle;
-    final effectivePrice = planPrice ?? PriceLocalization.display(l10n,
-        PriceCatalogService.instance.price('subscriptions.heritage.monthly'));
-    final effectivePerks = perks ?? [l10n.featureUnlimitedAiItineraries,
-      l10n.featureFullHeritageArAccess, l10n.featureAllOfflineFeatures];
+    final effectivePrice = planPrice ??
+        PriceLocalization.display(
+            l10n,
+            PriceCatalogService.instance
+                .price('subscriptions.heritage.monthly'));
+    final effectivePerks = perks ??
+        [
+          l10n.featureUnlimitedAiItineraries,
+          l10n.premiumFeatureNoAds,
+          l10n.featureAllOfflineFeatures,
+        ];
     return Dialog(
       backgroundColor: AppTheme.colors.transparent,
       insetPadding: const EdgeInsets.symmetric(horizontal: 24),
@@ -49,7 +56,8 @@ class LimitReachedDialog extends StatelessWidget {
           opacity: 0.9,
           blur: 20,
         ).copyWith(
-          border: Border.all(color: AppTheme.warningAmber.withValues(alpha: 0.5)),
+          border:
+              Border.all(color: AppTheme.warningAmber.withValues(alpha: 0.5)),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -60,7 +68,8 @@ class LimitReachedDialog extends StatelessWidget {
                 shape: BoxShape.circle,
                 color: AppTheme.warningAmber.withValues(alpha: 0.1),
               ),
-              child: const Icon(Icons.stars_rounded, size: 48, color: AppTheme.warningAmber),
+              child: const Icon(Icons.stars_rounded,
+                  size: 48, color: AppTheme.warningAmber),
             ),
             const SizedBox(height: 16),
             Text(
@@ -77,7 +86,10 @@ class LimitReachedDialog extends StatelessWidget {
               l10n.usageLimitReachedMessage(featureName, effectivePlanName),
               style: GoogleFonts.inter(
                 fontSize: 14,
-                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+                color: Theme.of(context)
+                    .colorScheme
+                    .onSurface
+                    .withValues(alpha: 0.7),
                 height: 1.5,
               ),
               textAlign: TextAlign.center,
@@ -96,7 +108,8 @@ class LimitReachedDialog extends StatelessWidget {
                           padding: const EdgeInsets.symmetric(vertical: 4),
                           child: Row(
                             children: [
-                              const Icon(Icons.check_circle_rounded, size: 17, color: AppTheme.warningAmber),
+                              const Icon(Icons.check_circle_rounded,
+                                  size: 17, color: AppTheme.warningAmber),
                               const SizedBox(width: 10),
                               Expanded(
                                 child: Text(
@@ -104,7 +117,10 @@ class LimitReachedDialog extends StatelessWidget {
                                   style: GoogleFonts.inter(
                                     fontSize: 13,
                                     fontWeight: FontWeight.w600,
-                                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.85),
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurface
+                                        .withValues(alpha: 0.85),
                                   ),
                                 ),
                               ),
@@ -131,18 +147,21 @@ class LimitReachedDialog extends StatelessWidget {
                   backgroundColor: AppTheme.warningAmber,
                   foregroundColor: AppTheme.colors.black,
                   padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
                 ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
                       l10n.getPlanButton(effectivePlanName),
-                      style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 16),
+                      style: GoogleFonts.outfit(
+                          fontWeight: FontWeight.bold, fontSize: 16),
                     ),
                     Text(
                       effectivePrice,
-                      style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 12),
+                      style: GoogleFonts.inter(
+                          fontWeight: FontWeight.w600, fontSize: 12),
                     ),
                   ],
                 ),
@@ -159,15 +178,24 @@ class LimitReachedDialog extends StatelessWidget {
                     Navigator.pop(context);
                     onWatchAd!();
                   },
-                  icon: Icon(Icons.play_circle_outline_rounded, size: 18, color: Theme.of(context).colorScheme.primary),
+                  icon: Icon(Icons.play_circle_outline_rounded,
+                      size: 18, color: Theme.of(context).colorScheme.primary),
                   label: Text(
                     l10n.watchAdForOneMore,
-                    style: GoogleFonts.outfit(fontWeight: FontWeight.w700, fontSize: 13, color: Theme.of(context).colorScheme.primary),
+                    style: GoogleFonts.outfit(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 13,
+                        color: Theme.of(context).colorScheme.primary),
                   ),
                   style: OutlinedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 14),
-                    side: BorderSide(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.4)),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    side: BorderSide(
+                        color: Theme.of(context)
+                            .colorScheme
+                            .primary
+                            .withValues(alpha: 0.4)),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12)),
                   ),
                 ),
               ),
@@ -178,7 +206,10 @@ class LimitReachedDialog extends StatelessWidget {
               child: Text(
                 l10n.maybeLater,
                 style: GoogleFonts.inter(
-                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+                  color: Theme.of(context)
+                      .colorScheme
+                      .onSurface
+                      .withValues(alpha: 0.5),
                   fontWeight: FontWeight.w600,
                 ),
               ),

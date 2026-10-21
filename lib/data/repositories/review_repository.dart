@@ -6,6 +6,8 @@ import '../models/tour_review.dart';
 import '../../core/config/app_config.dart';
 import '../../core/network/secure_http_client.dart';
 import '../../core/utils/secure_logger.dart';
+import '../../core/services/content_moderation_service.dart';
+import 'user_safety_repository.dart';
 
 final reviewRepositoryProvider = Provider((ref) => ReviewRepository());
 
@@ -43,6 +45,13 @@ class ReviewRepository {
   /// Creates a verified tour review.
   /// Enforces: session completion, eligibility (participant list), and review window.
   Future<void> submitReview(TourReview review) async {
+    final moderatedComment = review.comment.trim().isEmpty
+        ? ''
+        : ContentModerationService.validateAndNormalize(
+            review.comment,
+            fieldName: 'Review',
+            maxLength: 1000,
+          );
     // 1. Verify Session Eligibility & Window
     final sessionDoc = await _firestore
         .collection('tour_sessions')
@@ -56,13 +65,16 @@ class ReviewRepository {
     final endsAtStr = sessionDoc.get('reviewWindowEndsAt');
     if (endsAtStr != null) {
       final endsAt = DateTime.parse(endsAtStr);
-      if (DateTime.now().isAfter(endsAt)) throw Exception("REVIEW_WINDOW_EXPIRED");
+      if (DateTime.now().isAfter(endsAt)) {
+        throw Exception("REVIEW_WINDOW_EXPIRED");
+      }
     }
 
     final eligibleIds =
         List<String>.from(sessionDoc.get('reviewEligibleTouristIds') ?? []);
     if (!eligibleIds.contains(review.touristId)) {
-      throw Exception("NOT_ELIGIBLE: Participant was not linked to this session.");
+      throw Exception(
+          "NOT_ELIGIBLE: Participant was not linked to this session.");
     }
 
     // 2. Prevent Duplicate Reviews — atomically, via a deterministic
@@ -89,12 +101,12 @@ class ReviewRepository {
       punctualityRating: review.punctualityRating,
       safetyRating: review.safetyRating,
       friendlinessRating: review.friendlinessRating,
-      comment: review.comment,
+      comment: moderatedComment,
       createdAt: DateTime.now(),
       isVerifiedSession: true,
       reviewWindowValidated: true,
       submittedFromDeviceHash: review.submittedFromDeviceHash,
-      moderationStatus: 'active',
+      moderationStatus: 'under_review',
     );
 
     await _firestore.runTransaction((transaction) async {
@@ -111,24 +123,30 @@ class ReviewRepository {
     await _notifyBackendReviewChanged(doc.id, review.guideId);
   }
 
-  Future<void> _notifyBackendReviewChanged(String reviewId, String guideId) async {
+  Future<void> _notifyBackendReviewChanged(
+      String reviewId, String guideId) async {
     // Drop this guide's session cache immediately so a subsequent
     // getGuideReviews() call on this device re-fetches instead of serving a
     // stale pre-change snapshot for up to _sessionCacheTtl.
     _sessionCache.remove(guideId);
     try {
       final client = SecureHttpClient(http.Client());
-      final uri = Uri.parse('${AppConfig.laravelUrl}/reviews/$reviewId/recalculate');
-      await client.post(
-        uri,
-        headers: {
-          'Content-Type': 'application/json',
-          'X-API-KEY': AppConfig.hiddenGemsApiKey,
-        },
-        body: json.encode({'guideId': guideId}),
-      ).timeout(const Duration(seconds: 8));
+      final uri =
+          Uri.parse('${AppConfig.laravelUrl}/reviews/$reviewId/recalculate');
+      await client
+          .post(
+            uri,
+            headers: {
+              'Content-Type': 'application/json',
+              'X-API-KEY': AppConfig.hiddenGemsApiKey,
+            },
+            body: json.encode({'guideId': guideId}),
+          )
+          .timeout(const Duration(seconds: 8));
     } catch (e) {
-      SecureLogger.warning("Failed to notify backend of new review (guide stats will be stale until retried): $e", tag: "Reviews");
+      SecureLogger.warning(
+          "Failed to notify backend of new review (guide stats will be stale until retried): $e",
+          tag: "Reviews");
     }
   }
 
@@ -164,12 +182,16 @@ class ReviewRepository {
             .map((r) => TourReview.fromJson(r as Map<String, dynamic>))
             .toList();
         final page = ReviewPage(reviews: list, hasMore: false);
-        _sessionCache[guideId] = _CachedReviewPage(page, DateTime.now().add(_sessionCacheTtl));
+        _sessionCache[guideId] =
+            _CachedReviewPage(page, DateTime.now().add(_sessionCacheTtl));
         return page;
       }
-      SecureLogger.warning("Guide reviews fetch returned ${response.statusCode}", tag: "Reviews");
+      SecureLogger.warning(
+          "Guide reviews fetch returned ${response.statusCode}",
+          tag: "Reviews");
     } catch (e) {
-      SecureLogger.warning("Failed to fetch guide reviews from backend: $e", tag: "Reviews");
+      SecureLogger.warning("Failed to fetch guide reviews from backend: $e",
+          tag: "Reviews");
     }
     // A stale-but-present cache is still useful to show. Only when there's
     // truly nothing cached do we surface the failure — returning an empty
@@ -183,19 +205,26 @@ class ReviewRepository {
 
   Future<void> flagReview(String reviewId, String reason) async {
     final doc = await _reviewRef.doc(reviewId).get();
-    final guideId = doc.data()?['guideId'] as String?;
+    final data = doc.data();
+    if (data == null) throw StateError('Review not found.');
 
-    await _reviewRef.doc(reviewId).update({
-      'moderationStatus': 'under_review',
-      'isFlagged': true,
-      'flagReason': reason,
-    });
+    await UserSafetyRepository().report(
+      targetType: 'review',
+      targetId: reviewId,
+      reportedUserId: data['touristId'] as String,
+      reason: _normalizeReportReason(reason),
+    );
 
     // A flagged review drops out of the guide's "active" review set — refresh
     // reviewCount/ratingAverage and the guideReviews() cache (write-through).
-    if (guideId != null) {
-      await _notifyBackendReviewChanged(reviewId, guideId);
-    }
+  }
+
+  String _normalizeReportReason(String reason) {
+    final value = reason.toLowerCase();
+    if (value.contains('spam')) return 'spam';
+    if (value.contains('harass')) return 'harassment';
+    if (value.contains('inappropriate')) return 'inappropriate';
+    return 'other';
   }
 
   Future<void> hideReview(
@@ -225,8 +254,9 @@ class ReviewRepository {
         .orderBy('createdAt', descending: true)
         .limit(50) // Safety cap
         .snapshots()
-        .map((snapshot) =>
-            snapshot.docs.map((doc) => TourReview.fromJson(doc.data())).toList());
+        .map((snapshot) => snapshot.docs
+            .map((doc) => TourReview.fromJson(doc.data()))
+            .toList());
   }
 }
 
@@ -250,5 +280,3 @@ class _CachedReviewPage {
 
   const _CachedReviewPage(this.page, this.expiresAt);
 }
-
-

@@ -659,14 +659,7 @@ class PlaceController extends Controller
                     'surfing' => $item['Surfing'] ?? $item['surfing'] ?? 'no',
                     'risk_tags' => is_array($item['riskTags'] ?? null) ? $item['riskTags'] : [],
                     'facilities' => is_array($item['facilities'] ?? null) ? $item['facilities'] : [],
-                    'ar_supported' => (bool) ($item['arSupported'] ?? false),
-                    'ar_tier' => (int) ($item['arTier'] ?? 3),
-                    'ar_brand_name' => $item['arBrandName'] ?? '',
-                    'ar_model_url' => $item['arModelUrl'] ?? '',
-                    'ar_historical_model_url' => $item['arHistoricalModelUrl'] ?? '',
-                    'ar_model_scale' => (float) ($item['arModelScale'] ?? 0.01),
                     'historical_period' => $item['historicalPeriod'] ?? '',
-                    'ar_file_size_mb' => (float) ($item['ar_file_size_mb'] ?? 0),
                     'audio_guide_url_si' => $item['audio_guide_url_si'] ?? '',
                     'audio_guide_url_en' => $item['audio_guide_url_en'] ?? '',
                     'geohash' => $item['geohash'] ?? '',
@@ -790,14 +783,7 @@ class PlaceController extends Controller
             'length_km' => 'nullable|string|max:50',
             'surfing' => 'nullable|string|max:50',
             'road_condition' => 'nullable|string|max:255',
-            'ar_supported' => 'nullable|boolean',
-            'ar_tier' => 'nullable|integer',
-            'ar_brand_name' => 'nullable|string|max:100',
-            'ar_model_url' => 'nullable|string|max:500',
-            'ar_historical_model_url' => 'nullable|string|max:500',
-            'ar_model_scale' => 'nullable|numeric',
             'historical_period' => 'nullable|string|max:100',
-            'ar_file_size_mb' => 'nullable|numeric',
             'audio_guide_url_si' => 'nullable|string|max:500',
             'audio_guide_url_en' => 'nullable|string|max:500',
             'geohash' => 'nullable|string|max:20',
@@ -818,10 +804,6 @@ class PlaceController extends Controller
         // moment someone edits coordinates without remembering to update it.
         $data['geohash'] = GeohashService::encode((float) $data['lat'], (float) $data['lng']);
         
-        // HTML checkboxes are omitted from the request if unchecked. We must
-        // explicitly set it to false so that we can turn off AR support after
-        // it was previously turned on.
-        $data['ar_supported'] = $request->has('ar_supported');
         $data['temporarily_closed'] = $request->boolean('temporarily_closed');
         if (!empty($data['closure_until'])) {
             $data['closure_until'] = Carbon::parse(

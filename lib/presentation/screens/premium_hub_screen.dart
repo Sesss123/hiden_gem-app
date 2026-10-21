@@ -59,8 +59,9 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen>
           _annualPackage = pkg;
         }
       }
-      if (mounted && (_monthlyPackage != null || _annualPackage != null))
+      if (mounted && (_monthlyPackage != null || _annualPackage != null)) {
         setState(() {});
+      }
     } catch (_) {
       // RevenueCat not configured (dev/example keys) — static fallback prices used.
     }
@@ -116,7 +117,7 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen>
               padding: EdgeInsets.symmetric(horizontal: 24),
               child: _buildPricingCard(isPremium),
             ),
-            SizedBox(height: 100),
+            SizedBox(height: 48),
           ],
         ),
       ),
@@ -184,7 +185,8 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen>
           ),
           SizedBox(height: 8),
           Text(
-            AppLocalizations.of(context)!.fullArUnlimitedAiTripsMessage,
+            AppLocalizations.of(context)!.premiumCtaDescription,
+            textAlign: TextAlign.center,
             style: GoogleFonts.inter(
               fontSize: 13,
               color: AppTheme.colors.white.withValues(alpha: 0.7),
@@ -395,7 +397,7 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen>
             billingCycle: l10n.billedMonthlyLabel,
             features: [
               l10n.featureAiItineraries20,
-              l10n.featureSelectedArPlaces,
+              l10n.premiumFeatureNoAds,
               l10n.featureOfflineMapsBasic
             ],
             color: AppTheme.colors.primary,
@@ -430,7 +432,7 @@ class _PremiumHubScreenState extends ConsumerState<PremiumHubScreen>
                   : l10n.billedMonthlyLabel,
               features: [
                 l10n.featureUnlimitedAiItineraries,
-                l10n.featureFullHeritageArAccess,
+                l10n.premiumFeatureNoAds,
                 l10n.featureAllOfflineFeatures,
                 if (trialLabel != null) trialLabel,
               ],

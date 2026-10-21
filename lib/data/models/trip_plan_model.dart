@@ -74,23 +74,30 @@ class TripPlan extends Equatable {
 
   factory TripPlan.fromJson(Map<String, dynamic> json) {
     if (!json.containsKey('trip_summary') || json['trip_summary'] is! Map) {
-      throw const FormatException("Corrupted JSON: 'trip_summary' is missing or not a Map.");
+      throw const FormatException(
+          "Corrupted JSON: 'trip_summary' is missing or not a Map.");
     }
     if (!json.containsKey('itinerary') || json['itinerary'] is! List) {
-      throw const FormatException("Corrupted JSON: 'itinerary' is missing or not a List.");
+      throw const FormatException(
+          "Corrupted JSON: 'itinerary' is missing or not a List.");
     }
-    
+
     final summaryMap = json['trip_summary'] as Map<String, dynamic>;
-    if (summaryMap['from_city'] == null || summaryMap['from_city'].toString().isEmpty) {
-      throw const FormatException("Corrupted JSON: 'trip_summary.from_city' is empty or null.");
+    if (summaryMap['from_city'] == null ||
+        summaryMap['from_city'].toString().isEmpty) {
+      throw const FormatException(
+          "Corrupted JSON: 'trip_summary.from_city' is empty or null.");
     }
-    if (summaryMap['destination_city'] == null || summaryMap['destination_city'].toString().isEmpty) {
-      throw const FormatException("Corrupted JSON: 'trip_summary.destination_city' is empty or null.");
+    if (summaryMap['destination_city'] == null ||
+        summaryMap['destination_city'].toString().isEmpty) {
+      throw const FormatException(
+          "Corrupted JSON: 'trip_summary.destination_city' is empty or null.");
     }
 
     final itineraryList = json['itinerary'] as List;
     if (itineraryList.isEmpty) {
-      throw const FormatException("Corrupted JSON: 'itinerary' cannot be empty.");
+      throw const FormatException(
+          "Corrupted JSON: 'itinerary' cannot be empty.");
     }
 
     return TripPlan(
@@ -98,12 +105,15 @@ class TripPlan extends Equatable {
       itinerary: (json['itinerary'] as List? ?? [])
           .map((d) => ItineraryDay.fromJson(d))
           .toList(),
-      planB: PlanBItem.fromJson(json['plan_b'] ?? json['plan_b_rain']?[0] ?? {}),
+      planB:
+          PlanBItem.fromJson(json['plan_b'] ?? json['plan_b_rain']?[0] ?? {}),
       styleVariants: StyleVariants.fromJson(json['style_variants'] ?? {}),
       safetyTip: json['safety_tip'] ?? (json['tips'] as List?)?.first ?? '',
       humanText: json['human_text'] ?? '',
-      verifiedScore: json['verified_score'] ?? ((json['confidence'] ?? 0.0) * 100).toInt(),
-      kbCitations: List<String>.from(json['kb_citations'] ?? json['sources'] ?? []),
+      verifiedScore:
+          json['verified_score'] ?? ((json['confidence'] ?? 0.0) * 100).toInt(),
+      kbCitations:
+          List<String>.from(json['kb_citations'] ?? json['sources'] ?? []),
       cachedAt: json['cached_at'] != null
           ? DateTime.tryParse(json['cached_at'])
           : DateTime.now(),
@@ -216,7 +226,16 @@ class TripSummary extends Equatable {
       };
 
   @override
-  List<Object?> get props => [fromCity, destinationCity, days, startDate, groupType, pace, style, userBudgetLkr];
+  List<Object?> get props => [
+        fromCity,
+        destinationCity,
+        days,
+        startDate,
+        groupType,
+        pace,
+        style,
+        userBudgetLkr
+      ];
 }
 
 class ItineraryDay extends Equatable {
@@ -257,13 +276,13 @@ class ItineraryDay extends Equatable {
 class ItineraryItem extends Equatable {
   final String time;
   final String title;
-  final String type; // transport|attraction|food|rest|hotel|shopping|nature|culture
+  final String
+      type; // transport|attraction|food|rest|hotel|shopping|nature|culture
   final int durationMin;
   final int costLkr;
   final double lat;
   final double lng;
   final String notes;
-  final bool arSupported;
   final String? ecoTip;
   final String? etiquette;
   final int? transportCostLkr;
@@ -277,7 +296,6 @@ class ItineraryItem extends Equatable {
     required this.lat,
     required this.lng,
     required this.notes,
-    this.arSupported = false,
     this.ecoTip,
     this.etiquette,
     this.transportCostLkr,
@@ -293,7 +311,6 @@ class ItineraryItem extends Equatable {
       lat: (json['lat'] as num?)?.toDouble() ?? 0.0,
       lng: (json['lng'] as num?)?.toDouble() ?? 0.0,
       notes: json['notes'] ?? '',
-      arSupported: json['ar_supported'] as bool? ?? false,
       ecoTip: json['eco_tip'],
       etiquette: json['etiquette'],
       transportCostLkr: _toInt(json['transport_cost_lkr']),
@@ -309,14 +326,25 @@ class ItineraryItem extends Equatable {
         'lat': lat,
         'lng': lng,
         'notes': notes,
-        'ar_supported': arSupported,
         'eco_tip': ecoTip,
         'etiquette': etiquette,
         'transport_cost_lkr': transportCostLkr,
       };
 
   @override
-  List<Object?> get props => [time, title, type, durationMin, costLkr, lat, lng, notes, arSupported, ecoTip, etiquette, transportCostLkr];
+  List<Object?> get props => [
+        time,
+        title,
+        type,
+        durationMin,
+        costLkr,
+        lat,
+        lng,
+        notes,
+        ecoTip,
+        etiquette,
+        transportCostLkr
+      ];
 
   bool get isFood => type == 'food';
   bool get isRest => type == 'rest';
@@ -369,7 +397,8 @@ class BudgetBreakdown extends Equatable {
       };
 
   @override
-  List<Object?> get props => [transport, stay, food, tickets, misc, buffer10Percent, total];
+  List<Object?> get props =>
+      [transport, stay, food, tickets, misc, buffer10Percent, total];
 }
 
 class PlanBItem extends Equatable {
@@ -455,8 +484,8 @@ class Expense extends Equatable {
       title: json['title'] ?? '',
       amountLkr: _toInt(json['amount_lkr'] ?? 0),
       category: json['category'] ?? 'misc',
-      timestamp: json['timestamp'] != null 
-          ? DateTime.parse(json['timestamp']) 
+      timestamp: json['timestamp'] != null
+          ? DateTime.parse(json['timestamp'])
           : DateTime.now(),
     );
   }

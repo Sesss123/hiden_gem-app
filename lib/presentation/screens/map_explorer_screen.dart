@@ -77,8 +77,9 @@ class _MapExplorerScreenState extends ConsumerState<MapExplorerScreen> {
       for (final doc in snapshot.docs) {
         final data = doc.data();
         final expiresAt = DateTime.tryParse('${data['expiresAt'] ?? ''}');
-        if (expiresAt != null && expiresAt.isBefore(DateTime.now().toUtc()))
+        if (expiresAt != null && expiresAt.isBefore(DateTime.now().toUtc())) {
           continue;
+        }
         final geometry = data['hazard_geometry'] ?? data['hazardGeometry'];
         if (geometry is! List) continue;
         final points = geometry
@@ -113,7 +114,7 @@ class _MapExplorerScreenState extends ConsumerState<MapExplorerScreen> {
           strokeWidth: 2,
         ));
       }
-      if (mounted)
+      if (mounted) {
         setState(() {
           _hazardPolygons
             ..clear()
@@ -123,6 +124,7 @@ class _MapExplorerScreenState extends ConsumerState<MapExplorerScreen> {
             ..addAll(closedRoads);
           _hazardFeedOffline = false;
         });
+      }
     }, onError: (_) {
       if (mounted) setState(() => _hazardFeedOffline = true);
     });

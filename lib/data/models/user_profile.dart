@@ -6,30 +6,33 @@ class UserProfile {
   List<String> preferredStyles;
   double avgBudgetLkr;
   List<String> visitedPlaces;
-  List<String> bookmarkedPlaces;   // Persisted bookmarks (Bug #19)
-  List<String> itineraryPlaceIds;  // "Add to Destiny" itinerary (Bug #19b)
-  List<String> recentlyViewedPlaces; // Traveler experience P1: recently viewed history
+  List<String> bookmarkedPlaces; // Persisted bookmarks (Bug #19)
+  List<String> itineraryPlaceIds; // "Add to Destiny" itinerary (Bug #19b)
+  List<String>
+      recentlyViewedPlaces; // Traveler experience P1: recently viewed history
   String vibe; // "luxury", "explorer", "photographer", "budget"
   int totalTripsGenerated;
   String? languageCode;
   String? profileImagePath;
   List<String> sosContacts;
-  String vibeTheme; // "ceylon_blue" | "jungle_green" | "sunset_red" | "lotus_pink" | "midnight_gold"
+  String
+      vibeTheme; // "ceylon_blue" | "jungle_green" | "sunset_red" | "lotus_pink" | "midnight_gold"
   String themeMode; // "system", "light", "dark"
   List<String> tripHistory; // past destinations for AI memory
   bool showScreenshotButton; // Whether to show the floating camera button
   bool hasAgreedToTerms; // Whether the user accepted Privacy Policy & Terms
-  bool hasCompletedOnboarding; // Whether the user completed the onboarding presentation
-  String role; // "user", "admin", "banned", "premium_user" -- guide-approval state lives in guideStatus, not here (legacy "guide_pending"/"guide_approved" values may still be read for back-compat but are no longer written)
+  bool
+      hasCompletedOnboarding; // Whether the user completed the onboarding presentation
+  String
+      role; // "user", "admin", "banned", "premium_user" -- guide-approval state lives in guideStatus, not here (legacy "guide_pending"/"guide_approved" values may still be read for back-compat but are no longer written)
   bool isPremium;
   String? premiumPlan; // "monthly", "yearly"
   String? premiumSource; // "app_store", "google_play"
   DateTime? premiumStartedAt;
   DateTime? premiumExpiresAt;
   bool trialUsed;
-  List<String> ownedArPacks;
   String? premiumSignature; // HMAC proof of expiry (Point 5)
-  
+
   // Phase A: Production Trust Layer
   GuideStatus guideStatus;
   GuideProfile? guideProfile;
@@ -40,11 +43,10 @@ class UserProfile {
   String? guideBio;
   bool isGuideApproved;
   int totalTouristsServed;
-  String? currentBatchId; 
+  String? currentBatchId;
 
   // Tourism SaaS Limits Tracking
   int aiTripsUsedThisMonth;
-  int arSessionsUsedThisMonth;
   int offlineDownloadsUsed;
   int oracleChatsUsedThisMonth;
   DateTime? usageResetDate;
@@ -72,7 +74,6 @@ class UserProfile {
     this.premiumStartedAt,
     this.premiumExpiresAt,
     this.trialUsed = false,
-    List<String>? ownedArPacks,
     this.guideStatus = GuideStatus.none,
     this.guideProfile,
     this.hasMigratedToZenith = false,
@@ -82,7 +83,6 @@ class UserProfile {
     this.totalTouristsServed = 0,
     this.currentBatchId,
     this.aiTripsUsedThisMonth = 0,
-    this.arSessionsUsedThisMonth = 0,
     this.offlineDownloadsUsed = 0,
     this.oracleChatsUsedThisMonth = 0,
     this.usageResetDate,
@@ -92,7 +92,6 @@ class UserProfile {
     List<String>? recentlyViewedPlaces,
   })  : sosContacts = sosContacts ?? [],
         tripHistory = tripHistory ?? [],
-        ownedArPacks = ownedArPacks ?? [],
         bookmarkedPlaces = bookmarkedPlaces ?? [],
         itineraryPlaceIds = itineraryPlaceIds ?? [],
         recentlyViewedPlaces = recentlyViewedPlaces ?? [];
@@ -112,9 +111,7 @@ class UserProfile {
       role: 'user',
       isPremium: false,
       trialUsed: false,
-      ownedArPacks: [],
       aiTripsUsedThisMonth: 0,
-      arSessionsUsedThisMonth: 0,
       offlineDownloadsUsed: 0,
       oracleChatsUsedThisMonth: 0,
       usageResetDate: DateTime.now().add(const Duration(days: 30)),
@@ -144,7 +141,6 @@ class UserProfile {
         'premiumStartedAt': premiumStartedAt?.toIso8601String(),
         'premiumExpiresAt': premiumExpiresAt?.toIso8601String(),
         'trialUsed': trialUsed,
-        'ownedArPacks': ownedArPacks,
         'guideStatus': guideStatus.name,
         'guideProfile': guideProfile?.toJson(),
         'hasMigratedToZenith': hasMigratedToZenith,
@@ -154,7 +150,6 @@ class UserProfile {
         'totalTouristsServed': totalTouristsServed,
         'currentBatchId': currentBatchId,
         'aiTripsUsedThisMonth': aiTripsUsedThisMonth,
-        'arSessionsUsedThisMonth': arSessionsUsedThisMonth,
         'offlineDownloadsUsed': offlineDownloadsUsed,
         'oracleChatsUsedThisMonth': oracleChatsUsedThisMonth,
         'usageResetDate': usageResetDate?.toIso8601String(),
@@ -166,49 +161,60 @@ class UserProfile {
 
   factory UserProfile.fromJson(Map<String, dynamic> json) {
     final roleStr = json['role'] ?? 'user';
-    final isApprovedGuide = roleStr == 'guide_approved' || (json['isGuideApproved'] == true) || (json['guideStatus'] == 'approved');
+    final isApprovedGuide = roleStr == 'guide_approved' ||
+        (json['isGuideApproved'] == true) ||
+        (json['guideStatus'] == 'approved');
     return UserProfile(
-        uid: json['uid'] ?? 'N/A',
-        preferredStyles: List<String>.from(json['preferredStyles'] ?? []),
-        avgBudgetLkr: (json['avgBudgetLkr'] ?? 50000).toDouble(),
-        visitedPlaces: List<String>.from(json['visitedPlaces'] ?? []),
-        vibe: json['vibe'] ?? 'explorer',
-        totalTripsGenerated: json['totalTripsGenerated'] ?? 0,
-        languageCode: json['languageCode'],
-        profileImagePath: json['profileImagePath'],
-        sosContacts: List<String>.from(json['sosContacts'] ?? []),
-        vibeTheme: json['vibeTheme'] ?? 'ceylon_blue',
-        themeMode: json['themeMode'] ?? 'system',
-        tripHistory: List<String>.from(json['tripHistory'] ?? []),
-        showScreenshotButton: json['showScreenshotButton'] ?? true,
-        hasAgreedToTerms: json['hasAgreedToTerms'] ?? false,
-        hasCompletedOnboarding: json['hasCompletedOnboarding'] ?? false,
-        role: roleStr,
-        isPremium: json['isPremium'] ?? false,
-        premiumPlan: json['premiumPlan'],
-        premiumSource: json['premiumSource'],
-        premiumStartedAt: json['premiumStartedAt'] != null ? DateTime.parse(json['premiumStartedAt']) : null,
-        premiumExpiresAt: json['premiumExpiresAt'] != null ? DateTime.parse(json['premiumExpiresAt']) : null,
-        trialUsed: json['trialUsed'] ?? false,
-        ownedArPacks: List<String>.from(json['ownedArPacks'] ?? []),
-        guideStatus: isApprovedGuide ? GuideStatus.approved : GuideStatus.values.byName(json['guideStatus'] ?? 'none'),
-        guideProfile: json['guideProfile'] != null ? GuideProfile.fromJson(json['guideProfile']) : null,
-        hasMigratedToZenith: json['hasMigratedToZenith'] ?? false,
-        guideLicense: json['guideLicense'],
-        guideBio: json['guideBio'],
-        isGuideApproved: isApprovedGuide,
-        totalTouristsServed: json['totalTouristsServed'] ?? 0,
-        currentBatchId: json['currentBatchId'],
-        aiTripsUsedThisMonth: json['aiTripsUsedThisMonth'] ?? 0,
-        arSessionsUsedThisMonth: json['arSessionsUsedThisMonth'] ?? 0,
-        offlineDownloadsUsed: json['offlineDownloadsUsed'] ?? 0,
-        oracleChatsUsedThisMonth: json['oracleChatsUsedThisMonth'] ?? 0,
-        usageResetDate: json['usageResetDate'] != null ? DateTime.parse(json['usageResetDate']) : null,
-        premiumSignature: json['premiumSignature'],
-        bookmarkedPlaces: List<String>.from(json['bookmarkedPlaces'] ?? []),
-        itineraryPlaceIds: List<String>.from(json['itineraryPlaceIds'] ?? []),
-        recentlyViewedPlaces: List<String>.from(json['recentlyViewedPlaces'] ?? []),
-      );
+      uid: json['uid'] ?? 'N/A',
+      preferredStyles: List<String>.from(json['preferredStyles'] ?? []),
+      avgBudgetLkr: (json['avgBudgetLkr'] ?? 50000).toDouble(),
+      visitedPlaces: List<String>.from(json['visitedPlaces'] ?? []),
+      vibe: json['vibe'] ?? 'explorer',
+      totalTripsGenerated: json['totalTripsGenerated'] ?? 0,
+      languageCode: json['languageCode'],
+      profileImagePath: json['profileImagePath'],
+      sosContacts: List<String>.from(json['sosContacts'] ?? []),
+      vibeTheme: json['vibeTheme'] ?? 'ceylon_blue',
+      themeMode: json['themeMode'] ?? 'system',
+      tripHistory: List<String>.from(json['tripHistory'] ?? []),
+      showScreenshotButton: json['showScreenshotButton'] ?? true,
+      hasAgreedToTerms: json['hasAgreedToTerms'] ?? false,
+      hasCompletedOnboarding: json['hasCompletedOnboarding'] ?? false,
+      role: roleStr,
+      isPremium: json['isPremium'] ?? false,
+      premiumPlan: json['premiumPlan'],
+      premiumSource: json['premiumSource'],
+      premiumStartedAt: json['premiumStartedAt'] != null
+          ? DateTime.parse(json['premiumStartedAt'])
+          : null,
+      premiumExpiresAt: json['premiumExpiresAt'] != null
+          ? DateTime.parse(json['premiumExpiresAt'])
+          : null,
+      trialUsed: json['trialUsed'] ?? false,
+      guideStatus: isApprovedGuide
+          ? GuideStatus.approved
+          : GuideStatus.values.byName(json['guideStatus'] ?? 'none'),
+      guideProfile: json['guideProfile'] != null
+          ? GuideProfile.fromJson(json['guideProfile'])
+          : null,
+      hasMigratedToZenith: json['hasMigratedToZenith'] ?? false,
+      guideLicense: json['guideLicense'],
+      guideBio: json['guideBio'],
+      isGuideApproved: isApprovedGuide,
+      totalTouristsServed: json['totalTouristsServed'] ?? 0,
+      currentBatchId: json['currentBatchId'],
+      aiTripsUsedThisMonth: json['aiTripsUsedThisMonth'] ?? 0,
+      offlineDownloadsUsed: json['offlineDownloadsUsed'] ?? 0,
+      oracleChatsUsedThisMonth: json['oracleChatsUsedThisMonth'] ?? 0,
+      usageResetDate: json['usageResetDate'] != null
+          ? DateTime.parse(json['usageResetDate'])
+          : null,
+      premiumSignature: json['premiumSignature'],
+      bookmarkedPlaces: List<String>.from(json['bookmarkedPlaces'] ?? []),
+      itineraryPlaceIds: List<String>.from(json['itineraryPlaceIds'] ?? []),
+      recentlyViewedPlaces:
+          List<String>.from(json['recentlyViewedPlaces'] ?? []),
+    );
   }
 
   /// Single source of truth for guide-approval state. Use this instead of

@@ -21,6 +21,7 @@ import '../widgets/custom_buttons.dart';
 import '../widgets/skeleton_loaders.dart';
 import '../widgets/kinetic_timeline_view.dart';
 import '../widgets/limit_reached_dialog.dart';
+import '../widgets/ai_output_report_button.dart';
 import 'map_route_screen.dart';
 import 'budget_tracker_screen.dart';
 
@@ -82,17 +83,20 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
 
     _initBanner();
     _triggerPostGenerationEvents();
-    
+
     _activePlan = widget.plan;
     DynamicItineraryService.setPlan(_activePlan);
 
     // Check if this plan is already saved in Oracle cache
     final savedPlans = TripCacheService.getSavedPlans();
     for (final entry in savedPlans) {
-      if (entry.plan.tripSummary.destinationCity == _activePlan.tripSummary.destinationCity &&
-          entry.plan.tripSummary.startDate == _activePlan.tripSummary.startDate &&
+      if (entry.plan.tripSummary.destinationCity ==
+              _activePlan.tripSummary.destinationCity &&
+          entry.plan.tripSummary.startDate ==
+              _activePlan.tripSummary.startDate &&
           entry.plan.tripSummary.days == _activePlan.tripSummary.days &&
-          entry.plan.tripSummary.userBudgetLkr == _activePlan.tripSummary.userBudgetLkr) {
+          entry.plan.tripSummary.userBudgetLkr ==
+              _activePlan.tripSummary.userBudgetLkr) {
         _isSaved = true;
         _savedId = entry.id;
         break;
@@ -101,7 +105,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
 
     // Listen for mutations from the Oracle
     DynamicItineraryService.currentPlan.addListener(_onPlanMutated);
-    
+
     // Stage 5: Cinematic Feedback Listener
     VoiceAssistantService.state.addListener(_onOracleStateChanged);
 
@@ -120,7 +124,8 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
           _activePlan.itinerary.expand((day) => day.items).toList(),
         );
       } else {
-        SecureLogger.info('[ResultsScreen] Location permission not granted — skipping Geo-Aware guiding.');
+        SecureLogger.info(
+            '[ResultsScreen] Location permission not granted — skipping Geo-Aware guiding.');
       }
     } catch (e) {
       SecureLogger.warning('[ResultsScreen] Permission check failed: $e');
@@ -195,7 +200,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
   void _onOracleStateChanged() {
     if (mounted) {
       // Logic for haptics remains, but we remove setState
-      
+
       // Haptic Patterns for Stage 5
       switch (VoiceAssistantService.state.value) {
         case OracleState.listening:
@@ -228,249 +233,299 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
           child: Stack(
             children: [
               NestedScrollView(
-            headerSliverBuilder: (context, innerBoxIsScrolled) {
-              return [
-                SliverAppBar(
-                  expandedHeight: 280,
-                  pinned: true,
-                  stretch: true,
-                  backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-                  elevation: 0,
-                  scrolledUnderElevation: 0,
-                  leading: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: CircleAvatar(
-                      backgroundColor: AppTheme.colors.white.withValues(alpha: 0.8),
-                      child: IconButton(
-                        icon: Icon(Icons.arrow_back_ios_new, color: AppTheme.textPrimary(context), size: 18),
-                        onPressed: () async {
-                          HapticFeedback.mediumImpact();
-                          // Free users: show one interstitial at this natural
-                          // break-point (finished viewing the plan, leaving the
-                          // screen). Self-throttled by the frequency cap in
-                          // MonetizationService (min 3 min gap, 4/session), so
-                          // it won't fire every time — premium users never see
-                          // it. We don't await the show blocking the pop: the
-                          // ad (if any) fills the transition, then we return.
-                          if (!isPremium) {
-                            await MonetizationService().showInterstitialAd();
-                          }
-                          if (context.mounted) Navigator.pop(context);
-                        },
+                headerSliverBuilder: (context, innerBoxIsScrolled) {
+                  return [
+                    SliverAppBar(
+                      expandedHeight: 280,
+                      pinned: true,
+                      stretch: true,
+                      backgroundColor:
+                          Theme.of(context).scaffoldBackgroundColor,
+                      elevation: 0,
+                      scrolledUnderElevation: 0,
+                      leading: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: CircleAvatar(
+                          backgroundColor:
+                              AppTheme.colors.white.withValues(alpha: 0.8),
+                          child: IconButton(
+                            icon: Icon(Icons.arrow_back_ios_new,
+                                color: AppTheme.textPrimary(context), size: 18),
+                            onPressed: () async {
+                              HapticFeedback.mediumImpact();
+                              // Free users: show one interstitial at this natural
+                              // break-point (finished viewing the plan, leaving the
+                              // screen). Self-throttled by the frequency cap in
+                              // MonetizationService (min 3 min gap, 4/session), so
+                              // it won't fire every time — premium users never see
+                              // it. We don't await the show blocking the pop: the
+                              // ad (if any) fills the transition, then we return.
+                              if (!isPremium) {
+                                await MonetizationService()
+                                    .showInterstitialAd();
+                              }
+                              if (context.mounted) Navigator.pop(context);
+                            },
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                  actions: [
-                    _buildSaveButton(context, plan),
-                    SizedBox(width: 8),
-                    IconButton(
-                      icon: Icon(Icons.public, color: Theme.of(context).colorScheme.primary),
-                      onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => MapRouteScreen(plan: plan))),
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.picture_as_pdf_outlined, color: Theme.of(context).colorScheme.secondary),
-                      onPressed: () {
-                        // TripPlan has no id field — fall back to the plan's
-                        // object identity when it has no cache key yet (a
-                        // freshly-generated, not-yet-saved plan).
-                        final tripKey = widget.cacheKey ?? identityHashCode(plan).toString();
-                        if (isPremium || PremiumUnlockService.hasTripPdfAccess(tripKey)) {
-                          PdfService.generateAndShareTripPdf(plan);
-                        } else {
-                          // Free users get an ad-watch path alongside the
-                          // upgrade CTA, instead of a hard paywall snackbar —
-                          // unlocks PDF export for just this trip.
-                          showDialog(
-                            context: context,
-                            builder: (_) => LimitReachedDialog(
-                              featureName: 'PDF Export',
-                              onWatchAd: () {
-                                MonetizationService().showRewardedAd(
-                                  context: context,
-                                  onRewardEarned: (reward) {
-                                    PremiumUnlockService.unlockTripPdf(tripKey);
-                                    if (context.mounted) {
-                                      PdfService.generateAndShareTripPdf(plan);
-                                    }
+                      actions: [
+                        AiOutputReportButton(
+                          feature: 'trip_plan',
+                          outputId: widget.cacheKey ??
+                              '${plan.tripSummary.destinationCity}-${plan.itinerary.length}',
+                          outputText:
+                              '${plan.tripSummary.destinationCity}; ${plan.itinerary.length} day itinerary',
+                          color: AppTheme.colors.white,
+                        ),
+                        _buildSaveButton(context, plan),
+                        SizedBox(width: 8),
+                        IconButton(
+                          icon: Icon(Icons.public,
+                              color: Theme.of(context).colorScheme.primary),
+                          onPressed: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (_) => MapRouteScreen(plan: plan))),
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.picture_as_pdf_outlined,
+                              color: Theme.of(context).colorScheme.secondary),
+                          onPressed: () {
+                            // TripPlan has no id field — fall back to the plan's
+                            // object identity when it has no cache key yet (a
+                            // freshly-generated, not-yet-saved plan).
+                            final tripKey = widget.cacheKey ??
+                                identityHashCode(plan).toString();
+                            if (isPremium ||
+                                PremiumUnlockService.hasTripPdfAccess(
+                                    tripKey)) {
+                              PdfService.generateAndShareTripPdf(plan);
+                            } else {
+                              // Free users get an ad-watch path alongside the
+                              // upgrade CTA, instead of a hard paywall snackbar —
+                              // unlocks PDF export for just this trip.
+                              showDialog(
+                                context: context,
+                                builder: (_) => LimitReachedDialog(
+                                  featureName: 'PDF Export',
+                                  onWatchAd: () {
+                                    MonetizationService().showRewardedAd(
+                                      context: context,
+                                      onRewardEarned: (reward) {
+                                        PremiumUnlockService.unlockTripPdf(
+                                            tripKey);
+                                        if (context.mounted) {
+                                          PdfService.generateAndShareTripPdf(
+                                              plan);
+                                        }
+                                      },
+                                    );
                                   },
-                                );
-                              },
-                            ),
-                          );
-                        }
-                      },
-                    ),
-                    SizedBox(width: 8),
-                  ],
-                  flexibleSpace: FlexibleSpaceBar(
-                    stretchModes: const [StretchMode.zoomBackground, StretchMode.blurBackground],
-                    titlePadding: EdgeInsets.only(left: 20, bottom: 64),
-                    title: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          _activePlan.tripSummary.destinationCity,
-                          style: GoogleFonts.outfit(
-                            fontWeight: FontWeight.w800,
-                            fontSize: 26,
-                            letterSpacing: -0.5,
-                            color: AppTheme.colors.white,
-                            shadows: [Shadow(color: AppTheme.colors.black.withValues(alpha: 0.8), blurRadius: 20)],
-                          ),
+                                ),
+                              );
+                            }
+                          },
                         ),
-                        const SizedBox(height: 6),
-                        Text(
-                          l10n.tripDurationStyleLabel(_activePlan.tripSummary.days, _activePlan.tripSummary.style),
-                          style: GoogleFonts.inter(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w500,
-                            color: AppTheme.colors.white70,
-                            shadows: [Shadow(color: AppTheme.colors.black.withValues(alpha: 0.8), blurRadius: 10)],
-                          ),
-                        ),
+                        SizedBox(width: 8),
                       ],
-                    ),
-                    background: Stack(
-                      fit: StackFit.expand,
-                      children: [
-                        CachedNetworkImage(
-                          imageUrl: _getDestinationImage(_activePlan.tripSummary.destinationCity),
-                          fit: BoxFit.cover,
-                          memCacheWidth: 600,
-                          memCacheHeight: 400,
-                        ),
-                        Container(
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [
-                                Theme.of(context).scaffoldBackgroundColor.withValues(alpha: 0.2),
-                                AppTheme.colors.transparent,
-                                Theme.of(context).scaffoldBackgroundColor,
-                              ],
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                              stops: const [0.0, 0.4, 1.0],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  bottom: PreferredSize(
-                    preferredSize: const Size.fromHeight(48),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 4),
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.surface,
-                        borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(24),
-                          topRight: Radius.circular(24),
-                        ),
-                      ),
-                      child: TabBar(
-                        controller: _tabController,
-                        isScrollable: true,
-                        dividerColor: AppTheme.colors.transparent,
-                        indicator: BoxDecoration(
-                          color: Theme.of(context).colorScheme.primary,
-                          borderRadius: BorderRadius.circular(100),
-                        ),
-                        indicatorSize: TabBarIndicatorSize.tab,
-                        indicatorPadding: const EdgeInsets.symmetric(horizontal: -12, vertical: 8),
-                        labelColor: AppTheme.colors.white,
-                        unselectedLabelColor: AppTheme.textSecondary(context),
-                        labelStyle: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 10),
-                        unselectedLabelStyle: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 10),
-                        tabs: [
-                          Tab(text: l10n.itinerary),
-                          Tab(text: l10n.budgetTabLabel),
-                          Tab(text: l10n.mapTabLabel),
-                          Tab(text: l10n.planB),
-                          Tab(text: l10n.tips),
+                      flexibleSpace: FlexibleSpaceBar(
+                        stretchModes: const [
+                          StretchMode.zoomBackground,
+                          StretchMode.blurBackground
                         ],
+                        titlePadding: EdgeInsets.only(left: 20, bottom: 64),
+                        title: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              _activePlan.tripSummary.destinationCity,
+                              style: GoogleFonts.outfit(
+                                fontWeight: FontWeight.w800,
+                                fontSize: 26,
+                                letterSpacing: -0.5,
+                                color: AppTheme.colors.white,
+                                shadows: [
+                                  Shadow(
+                                      color: AppTheme.colors.black
+                                          .withValues(alpha: 0.8),
+                                      blurRadius: 20)
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 6),
+                            Text(
+                              l10n.tripDurationStyleLabel(
+                                  _activePlan.tripSummary.days,
+                                  _activePlan.tripSummary.style),
+                              style: GoogleFonts.inter(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w500,
+                                color: AppTheme.colors.white70,
+                                shadows: [
+                                  Shadow(
+                                      color: AppTheme.colors.black
+                                          .withValues(alpha: 0.8),
+                                      blurRadius: 10)
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        background: Stack(
+                          fit: StackFit.expand,
+                          children: [
+                            CachedNetworkImage(
+                              imageUrl: _getDestinationImage(
+                                  _activePlan.tripSummary.destinationCity),
+                              fit: BoxFit.cover,
+                              memCacheWidth: 600,
+                              memCacheHeight: 400,
+                            ),
+                            Container(
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: [
+                                    Theme.of(context)
+                                        .scaffoldBackgroundColor
+                                        .withValues(alpha: 0.2),
+                                    AppTheme.colors.transparent,
+                                    Theme.of(context).scaffoldBackgroundColor,
+                                  ],
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                  stops: const [0.0, 0.4, 1.0],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      bottom: PreferredSize(
+                        preferredSize: const Size.fromHeight(48),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 4),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.surface,
+                            borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(24),
+                              topRight: Radius.circular(24),
+                            ),
+                          ),
+                          child: TabBar(
+                            controller: _tabController,
+                            isScrollable: true,
+                            dividerColor: AppTheme.colors.transparent,
+                            indicator: BoxDecoration(
+                              color: Theme.of(context).colorScheme.primary,
+                              borderRadius: BorderRadius.circular(100),
+                            ),
+                            indicatorSize: TabBarIndicatorSize.tab,
+                            indicatorPadding: const EdgeInsets.symmetric(
+                                horizontal: -12, vertical: 8),
+                            labelColor: AppTheme.colors.white,
+                            unselectedLabelColor:
+                                AppTheme.textSecondary(context),
+                            labelStyle: GoogleFonts.inter(
+                                fontWeight: FontWeight.w600, fontSize: 10),
+                            unselectedLabelStyle: GoogleFonts.inter(
+                                fontWeight: FontWeight.w600, fontSize: 10),
+                            tabs: [
+                              Tab(text: l10n.itinerary),
+                              Tab(text: l10n.budgetTabLabel),
+                              Tab(text: l10n.mapTabLabel),
+                              Tab(text: l10n.planB),
+                              Tab(text: l10n.tips),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ];
+                },
+                body: _isInit
+                    ? TabBarView(
+                        controller: _tabController,
+                        children: [
+                          _buildItineraryTab(plan, l10n),
+                          _buildBudgetTab(context, plan),
+                          _buildMapTab(plan),
+                          _buildPlanBTab(plan, isPremium),
+                          _buildTipsTab(plan),
+                        ],
+                      ).animate().fadeIn(duration: 800.ms)
+                    : const ResultsTabSkeleton(),
+              ),
+
+              // Oracle Aura Overlay (Granular Rebuild Pattern)
+              ValueListenableBuilder<OracleState>(
+                valueListenable: VoiceAssistantService.state,
+                builder: (context, state, _) {
+                  if (state == OracleState.idle) return const SizedBox.shrink();
+                  return Positioned.fill(
+                    child: Container(
+                      color: AppTheme.colors.black45,
+                      child: BackdropFilter(
+                        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                        child: OracleUI.auraBackground(
+                          isVisible: true,
+                          baseColor: _getOracleColor(context, state),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+
+              // Ad Banner at bottom (Optimized & Polished)
+              if (!isPremium && _isBannerLoaded && _bannerAd != null)
+                Positioned(
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).scaffoldBackgroundColor,
+                      border: Border(
+                          top: BorderSide(
+                              color: AppTheme.primaryBorder(context))),
+                      boxShadow: [
+                        BoxShadow(
+                            color:
+                                AppTheme.colors.black.withValues(alpha: 0.05),
+                            blurRadius: 10,
+                            offset: const Offset(0, -2))
+                      ],
+                    ),
+                    child: SafeArea(
+                      top: false,
+                      child: SizedBox(
+                        width: _bannerAd!.size.width.toDouble(),
+                        height: _bannerAd!.size.height.toDouble(),
+                        child: AdWidget(ad: _bannerAd!),
                       ),
                     ),
                   ),
                 ),
-              ];
-            },
-            body: _isInit 
-                ? TabBarView(
-                    controller: _tabController,
-                    children: [
-                      _buildItineraryTab(plan, l10n),
-                      _buildBudgetTab(context, plan),
-                      _buildMapTab(plan),
-                      _buildPlanBTab(plan, isPremium),
-                      _buildTipsTab(plan),
-                    ],
-                  ).animate().fadeIn(duration: 800.ms)
-                : const ResultsTabSkeleton(),
-          ),
 
-          // Oracle Aura Overlay (Granular Rebuild Pattern)
-          ValueListenableBuilder<OracleState>(
-            valueListenable: VoiceAssistantService.state,
-            builder: (context, state, _) {
-              if (state == OracleState.idle) return const SizedBox.shrink();
-              return Positioned.fill(
+              // Time-Aware Dynamic Overlay
+              IgnorePointer(
                 child: Container(
-                  color: AppTheme.colors.black45,
-                  child: BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                    child: OracleUI.auraBackground(
-                      isVisible: true,
-                      baseColor: _getOracleColor(context, state),
-                    ),
-                  ),
-                ),
-              );
-            },
-          ),
-          
-          // Ad Banner at bottom (Optimized & Polished)
-          if (!isPremium && _isBannerLoaded && _bannerAd != null)
-            Positioned(
-              bottom: 0,
-              left: 0,
-              right: 0,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Theme.of(context).scaffoldBackgroundColor,
-                  border: Border(top: BorderSide(color: AppTheme.primaryBorder(context))),
-                  boxShadow: [
-                    BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, -2))
-                  ],
-                ),
-                child: SafeArea(
-                  top: false,
-                  child: SizedBox(
-                    width: _bannerAd!.size.width.toDouble(),
-                    height: _bannerAd!.size.height.toDouble(),
-                    child: AdWidget(ad: _bannerAd!),
-                  ),
+                  color: AppTheme.getDynamicOverlay(),
                 ),
               ),
-            ),
-
-          // Time-Aware Dynamic Overlay
-          IgnorePointer(
-            child: Container(
-              color: AppTheme.getDynamicOverlay(),
-            ),
+            ],
           ),
-        ],
+        ),
       ),
-    ),
-  ),
-);
-}
+    );
+  }
 
-
-  Widget _buildVoiceButton(BuildContext context, TripPlan plan, bool isPremium) {
+  Widget _buildVoiceButton(
+      BuildContext context, TripPlan plan, bool isPremium) {
     final localeCode = ref.read(localeProvider)?.languageCode ?? 'en';
-    
+
     return IconButton(
       icon: Icon(
         _isListening ? Icons.stop_circle_outlined : Icons.play_circle_fill,
@@ -481,7 +536,8 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
         if (!isPremium) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(AppLocalizations.of(context)!.premiumFeatureSnackbar('Voice Guide')),
+              content: Text(AppLocalizations.of(context)!
+                  .premiumFeatureSnackbar('Voice Guide')),
               backgroundColor: AppTheme.accentOchre(context),
             ),
           );
@@ -505,7 +561,9 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
     return IconButton(
       icon: Icon(
         _isSaved ? Icons.bookmark : Icons.bookmark_border_rounded,
-        color: _isSaved ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onSurface,
+        color: _isSaved
+            ? Theme.of(context).colorScheme.primary
+            : Theme.of(context).colorScheme.onSurface,
       ),
       onPressed: () async {
         if (!_isSaved) {
@@ -514,7 +572,9 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
             if (context.mounted) {
               showDialog(
                 context: context,
-                builder: (_) => LimitReachedDialog(featureName: AppLocalizations.of(context)!.savedPlansFeatureName),
+                builder: (_) => LimitReachedDialog(
+                    featureName:
+                        AppLocalizations.of(context)!.savedPlansFeatureName),
               );
             }
             return;
@@ -531,10 +591,13 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
           if (idToDelete == null) {
             final savedPlans = TripCacheService.getSavedPlans();
             for (final entry in savedPlans) {
-              if (entry.plan.tripSummary.destinationCity == plan.tripSummary.destinationCity &&
-                  entry.plan.tripSummary.startDate == plan.tripSummary.startDate &&
+              if (entry.plan.tripSummary.destinationCity ==
+                      plan.tripSummary.destinationCity &&
+                  entry.plan.tripSummary.startDate ==
+                      plan.tripSummary.startDate &&
                   entry.plan.tripSummary.days == plan.tripSummary.days &&
-                  entry.plan.tripSummary.userBudgetLkr == plan.tripSummary.userBudgetLkr) {
+                  entry.plan.tripSummary.userBudgetLkr ==
+                      plan.tripSummary.userBudgetLkr) {
                 idToDelete = entry.id;
                 break;
               }
@@ -554,17 +617,20 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
     );
   }
 
-
-
   String _getDestinationImage(String city) {
     // High-quality placeholders for key cities
     final images = {
-      'Kandy': 'https://images.unsplash.com/photo-1588598116346-6019f6f67f67?auto=format&fit=crop&q=80&w=800',
-      'Ella': 'https://images.unsplash.com/photo-1546708973-b339540b51bd?auto=format&fit=crop&q=80&w=800',
-      'Galle': 'https://images.unsplash.com/photo-1625484478269-95333f8e6c4a?auto=format&fit=crop&q=80&w=800',
-      'Colombo': 'https://images.unsplash.com/photo-1582298538104-fe2e74c27f59?auto=format&fit=crop&q=80&w=800',
+      'Kandy':
+          'https://images.unsplash.com/photo-1588598116346-6019f6f67f67?auto=format&fit=crop&q=80&w=800',
+      'Ella':
+          'https://images.unsplash.com/photo-1546708973-b339540b51bd?auto=format&fit=crop&q=80&w=800',
+      'Galle':
+          'https://images.unsplash.com/photo-1625484478269-95333f8e6c4a?auto=format&fit=crop&q=80&w=800',
+      'Colombo':
+          'https://images.unsplash.com/photo-1582298538104-fe2e74c27f59?auto=format&fit=crop&q=80&w=800',
     };
-    return images[city] ?? 'https://images.unsplash.com/photo-1549880338-65ddcdfd017b?auto=format&fit=crop&q=80&w=800';
+    return images[city] ??
+        'https://images.unsplash.com/photo-1549880338-65ddcdfd017b?auto=format&fit=crop&q=80&w=800';
   }
 
   // ═══════════════════════════════════════════════════════════════════
@@ -581,7 +647,10 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.explore_off_outlined, size: 64, color: AppTheme.textSecondary(context).withValues(alpha: 0.3)),
+              Icon(Icons.explore_off_outlined,
+                  size: 64,
+                  color:
+                      AppTheme.textSecondary(context).withValues(alpha: 0.3)),
               const SizedBox(height: 16),
               Text(
                 l10n.noPathFoundTitle,
@@ -611,7 +680,7 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
       children: [
         if (widget.cacheState != CacheReadResult.fresh)
           OfflineHighlightsWidget(destination: plan.destination),
-        
+
         // Oracle's Summary & Voice Guide
         Padding(
           padding: const EdgeInsets.fromLTRB(20, 24, 20, 0),
@@ -657,11 +726,10 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
           child: SingleChildScrollView(
             // BUG-108: Adjust tab view horizontal/vertical margins dynamically for larger tablet displays
             padding: EdgeInsets.fromLTRB(
-              MediaQuery.of(context).size.width > 600 ? 40 : 20, 
-              24, 
-              MediaQuery.of(context).size.width > 600 ? 40 : 20, 
-              120
-            ),
+                MediaQuery.of(context).size.width > 600 ? 40 : 20,
+                24,
+                MediaQuery.of(context).size.width > 600 ? 40 : 20,
+                120),
             child: KineticTimelineView(days: plan.itinerary),
           ),
         ),
@@ -699,25 +767,29 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
         }
       }
     }
-    
+
     final userBudget = plan.tripSummary.userBudgetLkr;
-    final progress = userBudget > 0 ? (totalCost / userBudget).clamp(0.0, 1.0) : 0.0;
+    final progress =
+        userBudget > 0 ? (totalCost / userBudget).clamp(0.0, 1.0) : 0.0;
     final isOverBudget = totalCost > userBudget && userBudget > 0;
 
     // BUG-108: Dynamic padding spacing adjustments for tablet layouts
-    final double paddingValue = MediaQuery.of(context).size.width > 600 ? 40.0 : 20.0;
+    final double paddingValue =
+        MediaQuery.of(context).size.width > 600 ? 40.0 : 20.0;
     return SingleChildScrollView(
       padding: EdgeInsets.fromLTRB(paddingValue, 24, paddingValue, 100),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildHeroBudgetCard(context, totalCost, userBudget, progress, isOverBudget),
+          _buildHeroBudgetCard(
+              context, totalCost, userBudget, progress, isOverBudget),
           SizedBox(height: paddingValue),
           _buildSectionHeader(context, l10n.expenseBreakdownTitle),
           SizedBox(height: 16),
-          ...categories.entries.where((e) => e.value > 0).map((e) => _buildBudgetRow(context, e.key, e.value, totalCost)),
+          ...categories.entries
+              .where((e) => e.value > 0)
+              .map((e) => _buildBudgetRow(context, e.key, e.value, totalCost)),
           SizedBox(height: paddingValue),
-
           ModernGradientButton(
             label: l10n.openExpenseTrackerButton,
             onPressed: () {
@@ -740,7 +812,8 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
     );
   }
 
-  Widget _buildHeroBudgetCard(BuildContext context, int total, int userBudget, double progress, bool isOver) {
+  Widget _buildHeroBudgetCard(BuildContext context, int total, int userBudget,
+      double progress, bool isOver) {
     final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.all(24),
@@ -770,16 +843,17 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
                   fontSize: 12,
                 ),
               ),
-              if (isOver) 
-                Icon(Icons.warning_amber_rounded, color: AppTheme.colors.orangeAccent, size: 20),
+              if (isOver)
+                Icon(Icons.warning_amber_rounded,
+                    color: AppTheme.colors.orangeAccent, size: 20),
             ],
           ),
           SizedBox(height: 8),
           Text(
-            _fmtLkr(total), 
+            _fmtLkr(total),
             style: GoogleFonts.outfit(
-              color: AppTheme.darkText(context), 
-              fontSize: 32, 
+              color: AppTheme.darkText(context),
+              fontSize: 32,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -789,9 +863,12 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
             child: LinearProgressIndicator(
               value: progress,
               minHeight: 12,
-              backgroundColor: Theme.of(context).dividerColor.withValues(alpha: 0.1),
+              backgroundColor:
+                  Theme.of(context).dividerColor.withValues(alpha: 0.1),
               valueColor: AlwaysStoppedAnimation<Color>(
-                isOver ? AppTheme.colors.orangeAccent : Theme.of(context).colorScheme.primary,
+                isOver
+                    ? AppTheme.colors.orangeAccent
+                    : Theme.of(context).colorScheme.primary,
               ),
             ),
           ),
@@ -802,15 +879,20 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
               Text(
                 l10n.userBudgetLabel(_fmtLkr(userBudget)),
                 style: TextStyle(
-                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                  color: Theme.of(context)
+                      .colorScheme
+                      .onSurface
+                      .withValues(alpha: 0.6),
                   fontSize: 12,
                 ),
               ),
               Text(
                 l10n.percentUsedLabel((progress * 100).toInt()),
                 style: TextStyle(
-                  color: isOver ? AppTheme.colors.orangeAccent : Theme.of(context).colorScheme.primary, 
-                  fontSize: 12, 
+                  color: isOver
+                      ? AppTheme.colors.orangeAccent
+                      : Theme.of(context).colorScheme.primary,
+                  fontSize: 12,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -821,7 +903,8 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
     );
   }
 
-  Widget _buildBudgetRow(BuildContext context, String label, int amount, int total) {
+  Widget _buildBudgetRow(
+      BuildContext context, String label, int amount, int total) {
     final l10n = AppLocalizations.of(context)!;
     final displayLabel = switch (label) {
       'Transport' => l10n.budgetCategoryTransport,
@@ -840,7 +923,10 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
         // BUG-088: Unified border radius (24px) for cards to prevent sharp clash
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
-          BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.05), blurRadius: 14, offset: const Offset(0, 5)),
+          BoxShadow(
+              color: AppTheme.colors.black.withValues(alpha: 0.05),
+              blurRadius: 14,
+              offset: const Offset(0, 5)),
         ],
       ),
       child: Row(
@@ -848,8 +934,11 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
           Container(
             width: 40,
             height: 40,
-            decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary, shape: BoxShape.circle),
-            child: Icon(_getCategoryIcon(label), color: AppTheme.colors.white, size: 20),
+            decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.primary,
+                shape: BoxShape.circle),
+            child: Icon(_getCategoryIcon(label),
+                color: AppTheme.colors.white, size: 20),
           ),
           SizedBox(width: 16),
           // BUG-128: Wrap label text to prevent overflow on large text sizes
@@ -869,7 +958,10 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
                 Text(
                   l10n.percentOfTotalLabel(percent),
                   style: TextStyle(
-                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5), 
+                    color: Theme.of(context)
+                        .colorScheme
+                        .onSurface
+                        .withValues(alpha: 0.5),
                     fontSize: 10,
                   ),
                   maxLines: 1,
@@ -882,9 +974,12 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
           Flexible(
             flex: 0,
             child: Text(
-              _fmtLkr(amount), 
+              _fmtLkr(amount),
               style: GoogleFonts.outfit(
-                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.8), 
+                color: Theme.of(context)
+                    .colorScheme
+                    .onSurface
+                    .withValues(alpha: 0.8),
                 fontWeight: FontWeight.bold,
               ),
               maxLines: 1,
@@ -896,14 +991,18 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
     );
   }
 
-
   IconData _getCategoryIcon(String label) {
     switch (label) {
-      case 'Transport': return Icons.directions_bus_outlined;
-      case 'Food': return Icons.restaurant_outlined;
-      case 'Hotel': return Icons.hotel_outlined;
-      case 'Attractions': return Icons.map_outlined;
-      default: return Icons.more_horiz;
+      case 'Transport':
+        return Icons.directions_bus_outlined;
+      case 'Food':
+        return Icons.restaurant_outlined;
+      case 'Hotel':
+        return Icons.hotel_outlined;
+      case 'Attractions':
+        return Icons.map_outlined;
+      default:
+        return Icons.more_horiz;
     }
   }
 
@@ -918,10 +1017,12 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
           Container(
             padding: EdgeInsets.all(24),
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+              color:
+                  Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
-            child: Icon(Icons.map_rounded, size: 64, color: Theme.of(context).colorScheme.primary),
+            child: Icon(Icons.map_rounded,
+                size: 64, color: Theme.of(context).colorScheme.primary),
           ),
           SizedBox(height: 32),
           Text(
@@ -937,7 +1038,10 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
             l10n.visualTourRouteDescription,
             textAlign: TextAlign.center,
             style: TextStyle(
-              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+              color: Theme.of(context)
+                  .colorScheme
+                  .onSurface
+                  .withValues(alpha: 0.7),
               height: 1.5,
             ),
           ),
@@ -945,8 +1049,11 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
           ModernGradientButton(
             label: l10n.openRouteMapButton,
             onPressed: () {
-               HapticFeedback.heavyImpact();
-               Navigator.push(context, MaterialPageRoute(builder: (_) => MapRouteScreen(plan: plan)));
+              HapticFeedback.heavyImpact();
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (_) => MapRouteScreen(plan: plan)));
             },
           ),
         ],
@@ -964,22 +1071,26 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
     }
 
     final item = plan.planB;
-    final double paddingValue = MediaQuery.of(context).size.width > 600 ? 40.0 : 20.0;
+    final double paddingValue =
+        MediaQuery.of(context).size.width > 600 ? 40.0 : 20.0;
     return SingleChildScrollView(
-      padding: EdgeInsets.only(left: paddingValue, right: paddingValue, top: 20, bottom: 80),
+      padding: EdgeInsets.only(
+          left: paddingValue, right: paddingValue, top: 20, bottom: 80),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
             padding: EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+              color:
+                  Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
               // BUG-088: Unified card border-radii
               borderRadius: BorderRadius.circular(24),
             ),
             child: Row(
               children: [
-                Icon(Icons.umbrella, color: AppTheme.accentOchre(context), size: 28),
+                Icon(Icons.umbrella,
+                    color: AppTheme.accentOchre(context), size: 28),
                 SizedBox(width: 16),
                 Expanded(
                   child: Column(
@@ -996,7 +1107,10 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
                       Text(
                         l10n.oracleRainPlanSubtitle,
                         style: TextStyle(
-                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7), 
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onSurface
+                              .withValues(alpha: 0.7),
                           fontSize: 12,
                         ),
                       ),
@@ -1014,7 +1128,6 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
       ),
     );
   }
-
 
   Widget _buildRewardedGate() {
     final l10n = AppLocalizations.of(context)!;
@@ -1043,7 +1156,8 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
                   color: AppTheme.accentOchre(context).withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(Icons.lock_outline, color: AppTheme.accentOchre(context), size: 48),
+                child: Icon(Icons.lock_outline,
+                    color: AppTheme.accentOchre(context), size: 48),
               ),
               SizedBox(height: 24),
               Text(
@@ -1058,32 +1172,42 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
               Text(
                 l10n.oracleVaultDescription,
                 textAlign: TextAlign.center,
-                style: GoogleFonts.inter(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7)),
+                style: GoogleFonts.inter(
+                    color: Theme.of(context)
+                        .colorScheme
+                        .onSurface
+                        .withValues(alpha: 0.7)),
               ),
               SizedBox(height: 32),
-            ElevatedButton.icon(
-              onPressed: () {
-                MonetizationService().showRewardedAd(onRewardEarned: (reward) {
-                  if (!mounted) return;
-                  setState(() => _planBUnlocked = true);
-                });
-              },
-              icon: Icon(Icons.play_circle_fill),
-              label: Text(l10n.unlockWithAdButton),
-              style: AppTheme.primaryButtonStyle(context),
-            ),
-            TextButton(
-              onPressed: () => ref.read(premiumProvider.notifier).buyPremium(),
-              child: Text(
-                l10n.goPremiumAdFreeButton,
-                style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6)),
+              ElevatedButton.icon(
+                onPressed: () {
+                  MonetizationService().showRewardedAd(
+                      onRewardEarned: (reward) {
+                    if (!mounted) return;
+                    setState(() => _planBUnlocked = true);
+                  });
+                },
+                icon: Icon(Icons.play_circle_fill),
+                label: Text(l10n.unlockWithAdButton),
+                style: AppTheme.primaryButtonStyle(context),
               ),
-            ),
-          ],
+              TextButton(
+                onPressed: () =>
+                    ref.read(premiumProvider.notifier).buyPremium(),
+                child: Text(
+                  l10n.goPremiumAdFreeButton,
+                  style: TextStyle(
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onSurface
+                          .withValues(alpha: 0.6)),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
-    ),
-   );
+    );
   }
 
   Widget _buildPremiumCTA() {
@@ -1095,7 +1219,8 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.15),
+            color:
+                Theme.of(context).colorScheme.primary.withValues(alpha: 0.15),
             blurRadius: 24,
             offset: const Offset(0, 10),
           ),
@@ -1106,8 +1231,11 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
           Stack(
             alignment: Alignment.center,
             children: [
-              Icon(Icons.stars, color: AppTheme.accentOchre(context).withValues(alpha: 0.2), size: 80),
-              Icon(Icons.rocket_launch_rounded, color: AppTheme.primaryBlue(context), size: 40),
+              Icon(Icons.stars,
+                  color: AppTheme.accentOchre(context).withValues(alpha: 0.2),
+                  size: 80),
+              Icon(Icons.rocket_launch_rounded,
+                  color: AppTheme.primaryBlue(context), size: 40),
             ],
           ),
           SizedBox(height: 20),
@@ -1124,7 +1252,12 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
           Text(
             l10n.premiumCtaDescription,
             textAlign: TextAlign.center,
-            style: GoogleFonts.inter(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7), fontSize: 13),
+            style: GoogleFonts.inter(
+                color: Theme.of(context)
+                    .colorScheme
+                    .onSurface
+                    .withValues(alpha: 0.7),
+                fontSize: 13),
           ),
           SizedBox(height: 24),
           Row(
@@ -1153,13 +1286,16 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
               onPressed: () => ref.read(premiumProvider.notifier).buyPremium(),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppTheme.accentOchre(context),
-                foregroundColor: AppTheme.colors.white, // Keep white for branding contrast against ochre
+                foregroundColor: AppTheme.colors
+                    .white, // Keep white for branding contrast against ochre
                 elevation: 0,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(100)),
               ),
               child: Text(
                 l10n.unleashOracleButton,
-                style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 14),
+                style: GoogleFonts.inter(
+                    fontWeight: FontWeight.w700, fontSize: 14),
               ),
             ),
           ),
@@ -1173,9 +1309,21 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
       padding: EdgeInsets.symmetric(horizontal: 12),
       child: Column(
         children: [
-          Icon(icon, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7), size: 20),
+          Icon(icon,
+              color: Theme.of(context)
+                  .colorScheme
+                  .onSurface
+                  .withValues(alpha: 0.7),
+              size: 20),
           SizedBox(height: 4),
-          Text(label, style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5))),
+          Text(label,
+              style: GoogleFonts.inter(
+                  fontSize: 10,
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context)
+                      .colorScheme
+                      .onSurface
+                      .withValues(alpha: 0.5))),
         ],
       ),
     );
@@ -1199,52 +1347,58 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-            Text(
-              item.title,
-              style: GoogleFonts.outfit(
-                fontWeight: FontWeight.bold, 
-                fontSize: 18, 
-                color: Theme.of(context).colorScheme.onSurface,
+          Text(
+            item.title,
+            style: GoogleFonts.outfit(
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
+          ),
+          SizedBox(height: 12),
+          Text(
+            item.reason,
+            style: GoogleFonts.inter(
+              fontSize: 14,
+              color: Theme.of(context)
+                  .colorScheme
+                  .onSurface
+                  .withValues(alpha: 0.7),
+              height: 1.5,
+            ),
+          ),
+          SizedBox(height: 20),
+          Row(
+            children: [
+              Icon(Icons.location_on, color: AppTheme.errorRed, size: 16),
+              SizedBox(width: 4),
+              Text(
+                  "${item.lat.toStringAsFixed(4)}, ${item.lng.toStringAsFixed(4)}",
+                  style: GoogleFonts.inter(
+                      fontSize: 12, color: AppTheme.textSecondary(context))),
+              const Spacer(),
+              TextButton.icon(
+                onPressed: () async {
+                  final mapsUrl =
+                      'https://www.google.com/maps/search/?api=1&query=${item.lat},${item.lng}';
+                  final uri = Uri.parse(mapsUrl);
+                  final messenger = ScaffoldMessenger.of(context);
+                  final l10n = AppLocalizations.of(context)!;
+                  if (await canLaunchUrl(uri)) {
+                    await launchUrl(uri, mode: LaunchMode.externalApplication);
+                  } else {
+                    messenger.showSnackBar(
+                      SnackBar(content: Text(l10n.couldNotOpenMap)),
+                    );
+                  }
+                },
+                icon: const Icon(Icons.map_outlined, size: 18),
+                label: Text(AppLocalizations.of(context)!.viewOnMapButton),
               ),
-            ),
-            SizedBox(height: 12),
-            Text(
-              item.reason, 
-              style: GoogleFonts.inter(
-                fontSize: 14, 
-                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7), 
-                height: 1.5,
-              ),
-            ),
-            SizedBox(height: 20),
-            Row(
-              children: [
-                Icon(Icons.location_on, color: AppTheme.errorRed, size: 16),
-                SizedBox(width: 4),
-                Text("${item.lat.toStringAsFixed(4)}, ${item.lng.toStringAsFixed(4)}", 
-                  style: GoogleFonts.inter(fontSize: 12, color: AppTheme.textSecondary(context))),
-                const Spacer(),
-                TextButton.icon(
-                  onPressed: () async {
-                    final mapsUrl = 'https://www.google.com/maps/search/?api=1&query=${item.lat},${item.lng}';
-                    final uri = Uri.parse(mapsUrl);
-                    final messenger = ScaffoldMessenger.of(context);
-                    final l10n = AppLocalizations.of(context)!;
-                    if (await canLaunchUrl(uri)) {
-                      await launchUrl(uri, mode: LaunchMode.externalApplication);
-                    } else {
-                      messenger.showSnackBar(
-                        SnackBar(content: Text(l10n.couldNotOpenMap)),
-                      );
-                    }
-                  },
-                  icon: const Icon(Icons.map_outlined, size: 18),
-                  label: Text(AppLocalizations.of(context)!.viewOnMapButton),
-                ),
-              ],
-            ),
-          ],
-        ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 
@@ -1259,7 +1413,11 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
       children: [
         _buildSafetyHero(plan.safetyTip),
         SizedBox(height: 24),
-        Text(l10n.verificationSourcesTitle, style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 16, color: Theme.of(context).colorScheme.onSurface)),
+        Text(l10n.verificationSourcesTitle,
+            style: GoogleFonts.outfit(
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+                color: Theme.of(context).colorScheme.onSurface)),
         SizedBox(height: 12),
         Wrap(
           spacing: 8,
@@ -1267,7 +1425,13 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
           children: plan.kbCitations.map((c) => _sourceChip(c)).toList(),
         ),
         SizedBox(height: 32),
-        Text(l10n.proTipsForSriLanka, style: TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7))),
+        Text(l10n.proTipsForSriLanka,
+            style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Theme.of(context)
+                    .colorScheme
+                    .onSurface
+                    .withValues(alpha: 0.7))),
         SizedBox(height: 12),
         ...plan.tips.map((t) => _tipItem(t)),
       ],
@@ -1289,13 +1453,21 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
         children: [
           Row(
             children: [
-              Icon(Icons.shield_outlined, color: AppTheme.warningAmber, size: 24),
+              Icon(Icons.shield_outlined,
+                  color: AppTheme.warningAmber, size: 24),
               SizedBox(width: 10),
-              Text(l10n.oracleLocalTipTitle, style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: AppTheme.warningAmber)),
+              Text(l10n.oracleLocalTipTitle,
+                  style: GoogleFonts.outfit(
+                      fontWeight: FontWeight.bold,
+                      color: AppTheme.warningAmber)),
             ],
           ),
           SizedBox(height: 12),
-          Text(tip, style: GoogleFonts.inter(fontSize: 15, color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.w500)),
+          Text(tip,
+              style: GoogleFonts.inter(
+                  fontSize: 15,
+                  color: Theme.of(context).colorScheme.onSurface,
+                  fontWeight: FontWeight.w500)),
         ],
       ),
     );
@@ -1309,7 +1481,14 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
         borderRadius: BorderRadius.circular(8),
         border: Border.all(color: AppTheme.primaryBorder(context)),
       ),
-      child: Text(label, style: GoogleFonts.inter(fontSize: 11, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7), fontWeight: FontWeight.bold)),
+      child: Text(label,
+          style: GoogleFonts.inter(
+              fontSize: 11,
+              color: Theme.of(context)
+                  .colorScheme
+                  .onSurface
+                  .withValues(alpha: 0.7),
+              fontWeight: FontWeight.bold)),
     );
   }
 
@@ -1321,10 +1500,18 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
         children: [
           Padding(
             padding: EdgeInsets.only(top: 4),
-            child: Icon(Icons.check_circle, size: 16, color: AppTheme.accentOchre(context)),
+            child: Icon(Icons.check_circle,
+                size: 16, color: AppTheme.accentOchre(context)),
           ),
           SizedBox(width: 12),
-          Expanded(child: Text(tip, style: GoogleFonts.inter(fontSize: 13, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7)))),
+          Expanded(
+              child: Text(tip,
+                  style: GoogleFonts.inter(
+                      fontSize: 13,
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onSurface
+                          .withValues(alpha: 0.7)))),
         ],
       ),
     );
@@ -1346,7 +1533,6 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
         return AppTheme.colors.transparent;
     }
   }
-
 
   String _fmtLkr(int n) {
     if (n >= 100000) {
@@ -1374,5 +1560,4 @@ class _ResultsScreenState extends ConsumerState<ResultsScreen>
       ),
     );
   }
-
 }

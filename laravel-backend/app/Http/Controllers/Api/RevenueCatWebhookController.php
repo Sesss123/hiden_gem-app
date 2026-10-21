@@ -120,6 +120,13 @@ class RevenueCatWebhookController extends Controller
                     'planId' => $planId,
                     'expiresAt' => $expiresAt,
                 ], fn ($v) => $v !== null));
+                if (!isset($existingSubscription['subscriptionId'])) {
+                    $subUpdate['subscriptionId'] = $subscriptionId;
+                }
+                if (!isset($existingSubscription['startedAt'])) {
+                    $purchasedAtMs = (int) ($payload['purchased_at_ms'] ?? $eventAtMs);
+                    $subUpdate['startedAt'] = date('c', (int) ($purchasedAtMs / 1000));
+                }
             } elseif ($eventType === self::CANCELLATION_EVENT_TYPE) {
                 // Still entitled until expiry — only flip autoRenew off.
                 $accountUpdate = ['autoRenew' => false];

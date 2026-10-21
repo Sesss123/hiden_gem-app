@@ -43,7 +43,7 @@ android {
     defaultConfig {
         applicationId = "com.hidden.gems.hidden_gems_sl"
         minSdk = 28
-        targetSdk = 35
+        targetSdk = 36
         versionCode = flutter.versionCode
         versionName = flutter.versionName
         multiDexEnabled = true
@@ -96,7 +96,7 @@ android {
 }
 
 dependencies {
-    // 🔥 REQUIRED for Java 17 + older plugins (ARCore fix)
+    // Required for Java 17 compatibility with older plugins.
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
 }
 

@@ -77,7 +77,6 @@ class _UsageMeterWidgetState extends State<UsageMeterWidget> {
     final aiPercent = _aiLimit > 0 ? (aiUsed / _aiLimit).clamp(0.0, 1.0) : 0.0;
     final isAiHigh = aiPercent >= 0.8 && _aiLimit < 100;
 
-    // AR Sessions
     // Offline Downloads
     final offlineUsed = profile.offlineDownloadsUsed;
     final offlinePercent = _offlineLimit > 0 && _offlineLimit < 9999
@@ -205,7 +204,6 @@ class _UsageMeterWidgetState extends State<UsageMeterWidget> {
             ),
             const SizedBox(height: 14),
 
-            // AR Sessions Progress Bar
             // Offline Downloads Progress Bar
             _buildProgressBar(
               title: 'Offline Island Guides',

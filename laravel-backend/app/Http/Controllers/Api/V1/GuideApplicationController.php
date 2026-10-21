@@ -56,6 +56,17 @@ class GuideApplicationController extends Controller
         $validated['status'] = 'pending';
         $validated['applied_at'] = now();
 
+        $existingApplication = GuideApplication::where(
+            'user_id',
+            (string) $request->user()->firebase_uid
+        )->first();
+        if ($existingApplication?->status === 'approved') {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'An approved guide application cannot be resubmitted.',
+            ], 409);
+        }
+
         $application = GuideApplication::updateOrCreate(
             ['user_id' => (string) $request->user()->firebase_uid],
             $validated
@@ -64,7 +75,7 @@ class GuideApplicationController extends Controller
         $firestoreSynced = false;
         try {
             $firestore = new FirestoreService();
-            $firestoreSynced = $firestore->patchDocument(
+            $applicationSynced = $firestore->patchDocument(
                 'guide_applications',
                 (string) $request->user()->firebase_uid,
                 array_filter([
@@ -80,6 +91,16 @@ class GuideApplicationController extends Controller
                     'applied_at' => $application->applied_at->toIso8601String(),
                 ], fn ($value) => $value !== null)
             );
+            $userSynced = $firestore->patchDocument(
+                'users',
+                (string) $request->user()->firebase_uid,
+                [
+                    'guideStatus' => 'pending',
+                    'isGuideApproved' => false,
+                    'guideRejectionReason' => '',
+                ]
+            );
+            $firestoreSynced = $applicationSynced && $userSynced;
         } catch (\Throwable $e) {
             Log::error('Guide application Firestore sync failed', [
                 'user_id' => $application->user_id,

@@ -1,4 +1,5 @@
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart'
+    show TargetPlatform, defaultTargetPlatform, kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter/services.dart';
@@ -675,50 +676,56 @@ class _LoginScreenState extends State<LoginScreen> {
                                   ],
                                 ),
                                 const SizedBox(height: 20),
-                                Container(
-                                  height: 52,
-                                  decoration: BoxDecoration(
-                                    color: isDark
-                                        ? AppTheme.colors.white
-                                            .withValues(alpha: 0.03)
-                                        : AppTheme.colors.white,
-                                    borderRadius: BorderRadius.circular(100),
-                                    border: Border.all(
-                                      color: AppTheme.secondaryBorder(context),
-                                      width: 1.5,
-                                    ),
-                                  ),
-                                  child: Material(
-                                    color: AppTheme.colors.transparent,
-                                    child: InkWell(
-                                      onTap: _isLoading
-                                          ? null
-                                          : _handleGoogleSignIn,
+                                if (kIsWeb ||
+                                    defaultTargetPlatform !=
+                                        TargetPlatform.iOS) ...[
+                                  Container(
+                                    height: 52,
+                                    decoration: BoxDecoration(
+                                      color: isDark
+                                          ? AppTheme.colors.white
+                                              .withValues(alpha: 0.03)
+                                          : AppTheme.colors.white,
                                       borderRadius: BorderRadius.circular(100),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          const SizedBox(
-                                              width: 20,
-                                              height: 20,
-                                              child: _GoogleLogo()),
-                                          const SizedBox(width: 10),
-                                          Text(
-                                            l10n.googleLabel,
-                                            style: GoogleFonts.inter(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 13,
-                                              color:
-                                                  AppTheme.textPrimary(context),
+                                      border: Border.all(
+                                        color:
+                                            AppTheme.secondaryBorder(context),
+                                        width: 1.5,
+                                      ),
+                                    ),
+                                    child: Material(
+                                      color: AppTheme.colors.transparent,
+                                      child: InkWell(
+                                        onTap: _isLoading
+                                            ? null
+                                            : _handleGoogleSignIn,
+                                        borderRadius:
+                                            BorderRadius.circular(100),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            const SizedBox(
+                                                width: 20,
+                                                height: 20,
+                                                child: _GoogleLogo()),
+                                            const SizedBox(width: 10),
+                                            Text(
+                                              l10n.googleLabel,
+                                              style: GoogleFonts.inter(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 13,
+                                                color: AppTheme.textPrimary(
+                                                    context),
+                                              ),
                                             ),
-                                          ),
-                                        ],
+                                          ],
+                                        ),
                                       ),
                                     ),
                                   ),
-                                ),
-                                const SizedBox(height: 12),
+                                  const SizedBox(height: 12),
+                                ],
                                 Container(
                                   height: 52,
                                   decoration: BoxDecoration(
@@ -762,7 +769,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                     ),
                                   ),
                                 ),
-                                if (!kIsWeb) ...[
+                                if (!kIsWeb &&
+                                    defaultTargetPlatform ==
+                                        TargetPlatform.iOS) ...[
                                   const SizedBox(height: 12),
                                   Container(
                                     height: 52,

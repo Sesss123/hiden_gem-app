@@ -147,6 +147,7 @@
                             ['route' => 'admin.subscriptions.index', 'match' => 'admin.subscriptions.*', 'icon' => 'fa-crown', 'label' => 'Subscriptions', 'color' => 'text-amber-400'],
                         ],
                         'Safety' => [
+                            ['route' => 'admin.safety-reports.index', 'match' => 'admin.safety-reports.*', 'icon' => 'fa-shield-halved', 'label' => 'Safety Reports', 'color' => 'text-red-400'],
                             ['route' => 'admin.incidents.index', 'match' => 'admin.incidents.*', 'icon' => 'fa-triangle-exclamation', 'label' => 'Incidents', 'color' => 'text-red-400', 'badgeKey' => 'openIncidentCount'],
                             ['route' => 'admin.travel-alerts.index', 'match' => 'admin.travel-alerts.*', 'icon' => 'fa-cloud-bolt', 'label' => 'Travel Alerts', 'color' => 'text-orange-400'],
                             ['route' => 'admin.family-share.index', 'match' => 'admin.family-share.*', 'icon' => 'fa-people-arrows', 'label' => 'Family Share', 'color' => 'text-sky-400'],

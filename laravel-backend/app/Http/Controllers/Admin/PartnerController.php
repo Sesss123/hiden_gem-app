@@ -10,7 +10,7 @@ use Illuminate\Support\Str;
 
 /**
  * Manages the Firestore `partners` collection — boutique stays/cafes shown
- * in the app's "Nearby Partners" (AR viewer) feature and, when flagged with
+ * in the app's nearby partners feature and, when flagged with
  * a discount, the tourist-facing "Curator Deals" premium benefit.
  *
  * No MySQL table backs this — `partners` was already Firestore-only and

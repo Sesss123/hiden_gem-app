@@ -57,15 +57,8 @@ return new class extends Migration
             $table->json('risk_tags')->nullable();
             $table->json('facilities')->nullable();
             
-            // AR & Heritage features
-            $table->boolean('ar_supported')->default(false)->index();
-            $table->unsignedTinyInteger('ar_tier')->default(3);
-            $table->string('ar_brand_name')->nullable();
-            $table->string('ar_model_url')->nullable();
-            $table->string('ar_historical_model_url')->nullable();
-            $table->decimal('ar_model_scale', 8, 4)->default(0.0100);
+            // Heritage metadata
             $table->string('historical_period')->nullable();
-            $table->decimal('ar_file_size_mb', 8, 2)->default(0.00);
             $table->string('audio_guide_url_si')->nullable();
             $table->string('audio_guide_url_en')->nullable();
             $table->string('geohash', 20)->nullable()->index();
@@ -85,7 +78,6 @@ return new class extends Migration
             // Composite indices for common query patterns (BUG-037)
             $table->index(['is_deleted', 'district']);
             $table->index(['is_deleted', 'category']);
-            $table->index(['is_deleted', 'ar_supported']);
         });
     }
 

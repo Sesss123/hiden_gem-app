@@ -53,14 +53,7 @@ class Place extends Model
     public const COL_HEIGHT_M = 'height_m';
     public const COL_LENGTH_KM = 'length_km';
     public const COL_SURFING = 'surfing';
-    public const COL_AR_SUPPORTED = 'ar_supported';
-    public const COL_AR_TIER = 'ar_tier';
-    public const COL_AR_BRAND_NAME = 'ar_brand_name';
-    public const COL_AR_MODEL_URL = 'ar_model_url';
-    public const COL_AR_HISTORICAL_MODEL_URL = 'ar_historical_model_url';
-    public const COL_AR_MODEL_SCALE = 'ar_model_scale';
     public const COL_HISTORICAL_PERIOD = 'historical_period';
-    public const COL_AR_FILE_SIZE_MB = 'ar_file_size_mb';
     public const COL_AUDIO_GUIDE_URL_SI = 'audio_guide_url_si';
     public const COL_AUDIO_GUIDE_URL_EN = 'audio_guide_url_en';
     public const COL_GEOHASH = 'geohash';
@@ -92,8 +85,7 @@ class Place extends Model
         self::COL_FOOD_NEARBY, self::COL_WHEELCHAIR_ACCESS, self::COL_CAMPING_ALLOWED, self::COL_SAFETY_LEVEL,
         self::COL_WILDLIFE_HAZARD, self::COL_GUIDE_REQUIRED, self::COL_RAIN_SENSITIVITY, self::COL_MONSOON_NOTE,
         self::COL_HEIGHT_M, self::COL_LENGTH_KM, self::COL_SURFING,
-        self::COL_AR_SUPPORTED, self::COL_AR_TIER, self::COL_AR_BRAND_NAME, self::COL_AR_MODEL_URL, self::COL_AR_HISTORICAL_MODEL_URL,
-        self::COL_AR_MODEL_SCALE, self::COL_HISTORICAL_PERIOD, self::COL_AR_FILE_SIZE_MB,
+        self::COL_HISTORICAL_PERIOD,
         self::COL_AUDIO_GUIDE_URL_SI, self::COL_AUDIO_GUIDE_URL_EN, self::COL_GEOHASH, self::COL_IMAGE_URL,
         self::COL_ACCESS_TIER, self::COL_STATUS, self::COL_REVIEWED_BY, self::COL_REVIEW_REASON, self::COL_CREATED_BY,
         self::COL_VERIFIED_AT
@@ -103,10 +95,6 @@ class Place extends Model
         self::COL_LAT => 'float',
         self::COL_LNG => 'float',
         self::COL_RATING => 'float',
-        self::COL_AR_SUPPORTED => 'boolean',
-        self::COL_AR_TIER => 'integer',
-        self::COL_AR_MODEL_SCALE => 'float',
-        self::COL_AR_FILE_SIZE_MB => 'float',
         self::COL_IS_DELETED => 'boolean',
         self::COL_RISK_TAGS => 'array',
         self::COL_FACILITIES => 'array',

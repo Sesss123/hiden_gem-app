@@ -1,6 +1,5 @@
 import 'package:hidden_gems_sl/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hidden_gems_sl/data/datasources/trip_cache_service.dart';

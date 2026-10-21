@@ -81,6 +81,10 @@ backend/tripme.db
 backend/uploads/
 data/cache/
 analysis_full.txt
+/.firebase/
+/tmp/
+*.aab
+*.apks
 
 # Obsolete large media tracker
 assets/videos/splash.mp4

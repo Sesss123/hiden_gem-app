@@ -17,10 +17,12 @@ class GuideAvailabilityScreen extends ConsumerStatefulWidget {
   const GuideAvailabilityScreen({super.key, this.listing});
 
   @override
-  ConsumerState<GuideAvailabilityScreen> createState() => _GuideAvailabilityScreenState();
+  ConsumerState<GuideAvailabilityScreen> createState() =>
+      _GuideAvailabilityScreenState();
 }
 
-class _GuideAvailabilityScreenState extends ConsumerState<GuideAvailabilityScreen> {
+class _GuideAvailabilityScreenState
+    extends ConsumerState<GuideAvailabilityScreen> {
   bool _isLoading = true;
   bool _isSaving = false;
   late String _listingId;
@@ -29,13 +31,20 @@ class _GuideAvailabilityScreenState extends ConsumerState<GuideAvailabilityScree
   bool _instantBookEnabled = false;
   String _advanceNoticeHours = '24';
   List<DateTime> _blackoutDates = [];
-  final Map<int, RecurringSlot?> _weeklySlots = {}; // dayOfWeek (1-7) -> slot or null if off
+  final Map<int, RecurringSlot?> _weeklySlots =
+      {}; // dayOfWeek (1-7) -> slot or null if off
 
   final List<String> _noticeOptions = ['2', '6', '12', '24', '48', '72'];
 
   List<String> _daysOfWeek(AppLocalizations l10n) => [
-    l10n.dayMonday, l10n.dayTuesday, l10n.dayWednesday, l10n.dayThursday, l10n.dayFriday, l10n.daySaturday, l10n.daySunday,
-  ];
+        l10n.dayMonday,
+        l10n.dayTuesday,
+        l10n.dayWednesday,
+        l10n.dayThursday,
+        l10n.dayFriday,
+        l10n.daySaturday,
+        l10n.daySunday,
+      ];
 
   @override
   void initState() {
@@ -60,14 +69,16 @@ class _GuideAvailabilityScreenState extends ConsumerState<GuideAvailabilityScree
         final listing = await repo.getListing(uid);
         avail = listing?.availability;
       } catch (e, st) {
-        SecureLogger.error("Error fetching availability", e, st, "GuideAvailability");
+        SecureLogger.error(
+            "Error fetching availability", e, st, "GuideAvailability");
       }
     }
 
     // Initialize defaults (Mon-Fri 08:00 - 17:00)
     for (int i = 1; i <= 7; i++) {
       if (i <= 5) {
-        _weeklySlots[i] = RecurringSlot(dayOfWeek: i, startTime: '08:00', endTime: '17:00');
+        _weeklySlots[i] =
+            RecurringSlot(dayOfWeek: i, startTime: '08:00', endTime: '17:00');
       } else {
         _weeklySlots[i] = null; // Weekend off by default
       }
@@ -117,7 +128,10 @@ class _GuideAvailabilityScreenState extends ConsumerState<GuideAvailabilityScree
     if (!mounted) return;
     if (picked != null) {
       final dateOnly = DateTime(picked.year, picked.month, picked.day);
-      if (!_blackoutDates.any((d) => d.year == dateOnly.year && d.month == dateOnly.month && d.day == dateOnly.day)) {
+      if (!_blackoutDates.any((d) =>
+          d.year == dateOnly.year &&
+          d.month == dateOnly.month &&
+          d.day == dateOnly.day)) {
         setState(() {
           _blackoutDates.add(dateOnly);
           _blackoutDates.sort((a, b) => a.compareTo(b));
@@ -131,15 +145,21 @@ class _GuideAvailabilityScreenState extends ConsumerState<GuideAvailabilityScree
     final currentSlot = _weeklySlots[dayIndex];
     if (currentSlot == null) return;
 
-    final parts = (isStart ? currentSlot.startTime : currentSlot.endTime).split(':');
-    final initialTime = TimeOfDay(hour: int.parse(parts[0]), minute: int.parse(parts[1]));
+    final parts =
+        (isStart ? currentSlot.startTime : currentSlot.endTime).split(':');
+    final initialTime =
+        TimeOfDay(hour: int.parse(parts[0]), minute: int.parse(parts[1]));
 
     final picked = await showTimePicker(
       context: context,
       initialTime: initialTime,
       builder: (context, child) => Theme(
         data: ThemeData.dark().copyWith(
-          colorScheme: ColorScheme.dark(primary: AppTheme.colors.amber, onPrimary: AppTheme.colors.black, surface: AppTheme.colors.primary, onSurface: AppTheme.colors.white),
+          colorScheme: ColorScheme.dark(
+              primary: AppTheme.colors.amber,
+              onPrimary: AppTheme.colors.black,
+              surface: AppTheme.colors.primary,
+              onSurface: AppTheme.colors.white),
         ),
         child: child!,
       ),
@@ -147,7 +167,8 @@ class _GuideAvailabilityScreenState extends ConsumerState<GuideAvailabilityScree
 
     if (!mounted) return;
     if (picked != null) {
-      final formatted = '${picked.hour.toString().padLeft(2, '0')}:${picked.minute.toString().padLeft(2, '0')}';
+      final formatted =
+          '${picked.hour.toString().padLeft(2, '0')}:${picked.minute.toString().padLeft(2, '0')}';
       setState(() {
         _weeklySlots[dayIndex] = RecurringSlot(
           dayOfWeek: dayIndex,
@@ -163,7 +184,8 @@ class _GuideAvailabilityScreenState extends ConsumerState<GuideAvailabilityScree
     setState(() => _isSaving = true);
 
     try {
-      final activeSlots = _weeklySlots.values.whereType<RecurringSlot>().toList();
+      final activeSlots =
+          _weeklySlots.values.whereType<RecurringSlot>().toList();
       final customNotes = {
         'instantBookEnabled': _instantBookEnabled ? 'true' : 'false',
         'advanceNoticeHours': _advanceNoticeHours,
@@ -183,22 +205,30 @@ class _GuideAvailabilityScreenState extends ConsumerState<GuideAvailabilityScree
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(AppLocalizations.of(context)!.availabilityScheduleUpdatedMessage, style: GoogleFonts.inter(fontWeight: FontWeight.w600)),
+            content: Text(
+                AppLocalizations.of(context)!
+                    .availabilityScheduleUpdatedMessage,
+                style: GoogleFonts.inter(fontWeight: FontWeight.w600)),
             backgroundColor: AppTheme.colors.greenAccent,
             behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
           ),
         );
-        Navigator.pop(context);
+        Navigator.pop(context, newAvail);
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(AppLocalizations.of(context)!.errorSavingAvailabilityMessage(e.toString()), style: GoogleFonts.inter(fontWeight: FontWeight.w600)),
+            content: Text(
+                AppLocalizations.of(context)!
+                    .errorSavingAvailabilityMessage(e.toString()),
+                style: GoogleFonts.inter(fontWeight: FontWeight.w600)),
             backgroundColor: AppTheme.colors.redAccent,
             behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
           ),
         );
       }
@@ -212,7 +242,9 @@ class _GuideAvailabilityScreenState extends ConsumerState<GuideAvailabilityScree
     if (_isLoading) {
       return Scaffold(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        body: Center(child: CircularProgressIndicator(color: Theme.of(context).colorScheme.primary)),
+        body: Center(
+            child: CircularProgressIndicator(
+                color: Theme.of(context).colorScheme.primary)),
       );
     }
 
@@ -228,7 +260,8 @@ class _GuideAvailabilityScreenState extends ConsumerState<GuideAvailabilityScree
             backgroundColor: Theme.of(context).scaffoldBackgroundColor,
             elevation: 0,
             leading: IconButton(
-              icon: Icon(Icons.arrow_back_ios_new, size: 20, color: AppTheme.textPrimary(context)),
+              icon: Icon(Icons.arrow_back_ios_new,
+                  size: 20, color: AppTheme.textPrimary(context)),
               onPressed: () => Navigator.pop(context),
             ),
             title: Text(
@@ -255,7 +288,10 @@ class _GuideAvailabilityScreenState extends ConsumerState<GuideAvailabilityScree
                       gradient: LinearGradient(
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
-                        colors: [Theme.of(context).colorScheme.primary, AppPalette.rustDim],
+                        colors: [
+                          Theme.of(context).colorScheme.primary,
+                          AppPalette.rustDim
+                        ],
                       ),
                     ),
                     child: Row(
@@ -267,7 +303,8 @@ class _GuideAvailabilityScreenState extends ConsumerState<GuideAvailabilityScree
                             color: AppTheme.colors.white.withValues(alpha: 0.2),
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          child: const Icon(Icons.calendar_today_rounded, size: 20, color: Colors.white),
+                          child: const Icon(Icons.calendar_today_rounded,
+                              size: 20, color: Colors.white),
                         ),
                         const SizedBox(width: 14),
                         Expanded(
@@ -276,21 +313,29 @@ class _GuideAvailabilityScreenState extends ConsumerState<GuideAvailabilityScree
                             children: [
                               Text(
                                 l10n.whenYoureFreeToGuideTitle,
-                                style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.w700, color: AppTheme.colors.white),
+                                style: GoogleFonts.outfit(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w700,
+                                    color: AppTheme.colors.white),
                               ),
                               const SizedBox(height: 4),
                               Text(
                                 l10n.touristsOnlySeeOpenSlotsMessage,
-                                style: GoogleFonts.inter(fontSize: 11, color: AppTheme.colors.white.withValues(alpha: 0.85)),
+                                style: GoogleFonts.inter(
+                                    fontSize: 11,
+                                    color: AppTheme.colors.white
+                                        .withValues(alpha: 0.85)),
                               ),
                             ],
                           ),
                         ),
                       ],
                     ),
-                  ).animate().fadeIn(duration: 500.ms).slideY(begin: 0.08, end: 0),
+                  )
+                      .animate()
+                      .fadeIn(duration: 500.ms)
+                      .slideY(begin: 0.08, end: 0),
                   const SizedBox(height: 28),
-
                   _buildSectionTitle(context, l10n.instantBookNoticeTitle),
                   const SizedBox(height: 12),
                   Container(
@@ -299,20 +344,34 @@ class _GuideAvailabilityScreenState extends ConsumerState<GuideAvailabilityScree
                       color: Theme.of(context).colorScheme.surface,
                       borderRadius: BorderRadius.circular(20),
                       boxShadow: [
-                        BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.05), blurRadius: 16, offset: const Offset(0, 6)),
+                        BoxShadow(
+                            color:
+                                AppTheme.colors.black.withValues(alpha: 0.05),
+                            blurRadius: 16,
+                            offset: const Offset(0, 6)),
                       ],
                     ),
                     child: Column(
                       children: [
                         SwitchListTile(
-                          title: Text(l10n.instantBookLabel, style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.w700, fontSize: 14)),
-                          subtitle: Text(l10n.instantBookSubtitle, style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 12)),
+                          title: Text(l10n.instantBookLabel,
+                              style: GoogleFonts.outfit(
+                                  color: AppTheme.textPrimary(context),
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 14)),
+                          subtitle: Text(l10n.instantBookSubtitle,
+                              style: GoogleFonts.inter(
+                                  color: AppTheme.textSecondary(context),
+                                  fontSize: 12)),
                           value: _instantBookEnabled,
-                          activeThumbColor: Theme.of(context).colorScheme.primary,
+                          activeThumbColor:
+                              Theme.of(context).colorScheme.primary,
                           contentPadding: EdgeInsets.zero,
-                          onChanged: (val) => setState(() => _instantBookEnabled = val),
+                          onChanged: (val) =>
+                              setState(() => _instantBookEnabled = val),
                         ),
-                        Divider(color: AppTheme.borderColor(context), height: 24),
+                        Divider(
+                            color: AppTheme.borderColor(context), height: 24),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -320,26 +379,49 @@ class _GuideAvailabilityScreenState extends ConsumerState<GuideAvailabilityScree
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(l10n.advanceNoticeLabel, style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.w700, fontSize: 13)),
+                                  Text(l10n.advanceNoticeLabel,
+                                      style: GoogleFonts.outfit(
+                                          color: AppTheme.textPrimary(context),
+                                          fontWeight: FontWeight.w700,
+                                          fontSize: 13)),
                                   const SizedBox(height: 2),
-                                  Text(l10n.advanceNoticeSubtitle, style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 11)),
+                                  Text(l10n.advanceNoticeSubtitle,
+                                      style: GoogleFonts.inter(
+                                          color:
+                                              AppTheme.textSecondary(context),
+                                          fontSize: 11)),
                                 ],
                               ),
                             ),
                             const SizedBox(width: 8),
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 14, vertical: 6),
                               decoration: BoxDecoration(
                                 color: AppTheme.surfaceMuted(context),
                                 borderRadius: BorderRadius.circular(100),
                               ),
                               child: DropdownButton<String>(
                                 value: _advanceNoticeHours,
-                                dropdownColor: Theme.of(context).colorScheme.surface,
+                                dropdownColor:
+                                    Theme.of(context).colorScheme.surface,
                                 underline: const SizedBox(),
-                                icon: Icon(Icons.expand_more_rounded, color: Theme.of(context).colorScheme.primary, size: 20),
-                                items: _noticeOptions.map((e) => DropdownMenuItem(value: e, child: Text(l10n.hoursShortLabel(e), style: GoogleFonts.inter(color: AppTheme.textPrimary(context), fontWeight: FontWeight.w700, fontSize: 13)))).toList(),
-                                onChanged: (val) => setState(() => _advanceNoticeHours = val!),
+                                icon: Icon(Icons.expand_more_rounded,
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
+                                    size: 20),
+                                items: _noticeOptions
+                                    .map((e) => DropdownMenuItem(
+                                        value: e,
+                                        child: Text(l10n.hoursShortLabel(e),
+                                            style: GoogleFonts.inter(
+                                                color: AppTheme.textPrimary(
+                                                    context),
+                                                fontWeight: FontWeight.w700,
+                                                fontSize: 13))))
+                                    .toList(),
+                                onChanged: (val) =>
+                                    setState(() => _advanceNoticeHours = val!),
                               ),
                             ),
                           ],
@@ -348,10 +430,12 @@ class _GuideAvailabilityScreenState extends ConsumerState<GuideAvailabilityScree
                     ),
                   ),
                   const SizedBox(height: 28),
-
                   _buildSectionTitle(context, l10n.weeklyScheduleTitle),
                   const SizedBox(height: 4),
-                  Text(l10n.weeklyScheduleSubtitle, style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 12)),
+                  Text(l10n.weeklyScheduleSubtitle,
+                      style: GoogleFonts.inter(
+                          color: AppTheme.textSecondary(context),
+                          fontSize: 12)),
                   const SizedBox(height: 14),
                   ...List.generate(7, (index) {
                     final dayIndex = index + 1;
@@ -362,13 +446,25 @@ class _GuideAvailabilityScreenState extends ConsumerState<GuideAvailabilityScree
 
                     return Container(
                       margin: const EdgeInsets.only(bottom: 10),
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 12),
                       decoration: BoxDecoration(
-                        color: isWorking ? Theme.of(context).colorScheme.surface : AppTheme.surfaceMuted(context),
+                        color: isWorking
+                            ? Theme.of(context).colorScheme.surface
+                            : AppTheme.surfaceMuted(context),
                         borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: isWorking ? primary.withValues(alpha: 0.3) : AppTheme.borderColor(context)),
+                        border: Border.all(
+                            color: isWorking
+                                ? primary.withValues(alpha: 0.3)
+                                : AppTheme.borderColor(context)),
                         boxShadow: isWorking
-                            ? [BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.04), blurRadius: 10, offset: const Offset(0, 4))]
+                            ? [
+                                BoxShadow(
+                                    color: AppTheme.colors.black
+                                        .withValues(alpha: 0.04),
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 4))
+                              ]
                             : null,
                       ),
                       child: Row(
@@ -377,7 +473,9 @@ class _GuideAvailabilityScreenState extends ConsumerState<GuideAvailabilityScree
                             child: Text(
                               dayName,
                               style: GoogleFonts.outfit(
-                                color: isWorking ? AppTheme.textPrimary(context) : AppTheme.textSecondary(context),
+                                color: isWorking
+                                    ? AppTheme.textPrimary(context)
+                                    : AppTheme.textSecondary(context),
                                 fontWeight: FontWeight.w700,
                                 fontSize: 14,
                               ),
@@ -389,7 +487,10 @@ class _GuideAvailabilityScreenState extends ConsumerState<GuideAvailabilityScree
                             onChanged: (val) {
                               setState(() {
                                 if (val) {
-                                  _weeklySlots[dayIndex] = RecurringSlot(dayOfWeek: dayIndex, startTime: '08:00', endTime: '17:00');
+                                  _weeklySlots[dayIndex] = RecurringSlot(
+                                      dayOfWeek: dayIndex,
+                                      startTime: '08:00',
+                                      endTime: '17:00');
                                 } else {
                                   _weeklySlots[dayIndex] = null;
                                 }
@@ -401,41 +502,74 @@ class _GuideAvailabilityScreenState extends ConsumerState<GuideAvailabilityScree
                             GestureDetector(
                               onTap: () => _pickTime(dayIndex, true),
                               child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                                decoration: BoxDecoration(color: AppTheme.surfaceMuted(context), borderRadius: BorderRadius.circular(100)),
-                                child: Text(slot.startTime, style: GoogleFonts.inter(color: primary, fontWeight: FontWeight.w700, fontSize: 12)),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 10, vertical: 6),
+                                decoration: BoxDecoration(
+                                    color: AppTheme.surfaceMuted(context),
+                                    borderRadius: BorderRadius.circular(100)),
+                                child: Text(slot.startTime,
+                                    style: GoogleFonts.inter(
+                                        color: primary,
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: 12)),
                               ),
                             ),
                             Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 6),
-                              child: Text('–', style: TextStyle(color: AppTheme.textSecondary(context))),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 6),
+                              child: Text('–',
+                                  style: TextStyle(
+                                      color: AppTheme.textSecondary(context))),
                             ),
                             GestureDetector(
                               onTap: () => _pickTime(dayIndex, false),
                               child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                                decoration: BoxDecoration(color: AppTheme.surfaceMuted(context), borderRadius: BorderRadius.circular(100)),
-                                child: Text(slot.endTime, style: GoogleFonts.inter(color: primary, fontWeight: FontWeight.w700, fontSize: 12)),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 10, vertical: 6),
+                                decoration: BoxDecoration(
+                                    color: AppTheme.surfaceMuted(context),
+                                    borderRadius: BorderRadius.circular(100)),
+                                child: Text(slot.endTime,
+                                    style: GoogleFonts.inter(
+                                        color: primary,
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: 12)),
                               ),
                             ),
                           ] else ...[
                             const SizedBox(width: 8),
-                            Text(l10n.dayOffLabel, style: GoogleFonts.inter(color: AppTheme.textSecondary(context).withValues(alpha: 0.6), fontSize: 12, fontWeight: FontWeight.w600)),
+                            Text(l10n.dayOffLabel,
+                                style: GoogleFonts.inter(
+                                    color: AppTheme.textSecondary(context)
+                                        .withValues(alpha: 0.6),
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600)),
                           ],
                         ],
                       ),
                     );
                   }),
                   const SizedBox(height: 28),
-
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      _buildSectionTitle(context, l10n.blackoutDatesTitle + (_blackoutDates.isNotEmpty ? l10n.blackoutDatesCountSuffix(_blackoutDates.length) : '')),
+                      _buildSectionTitle(
+                          context,
+                          l10n.blackoutDatesTitle +
+                              (_blackoutDates.isNotEmpty
+                                  ? l10n.blackoutDatesCountSuffix(
+                                      _blackoutDates.length)
+                                  : '')),
                       TextButton.icon(
                         onPressed: _pickBlackoutDate,
-                        icon: Icon(Icons.add_circle_outline_rounded, color: Theme.of(context).colorScheme.primary, size: 18),
-                        label: Text(l10n.addDateButtonLabel, style: GoogleFonts.inter(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.w700, fontSize: 12)),
+                        icon: Icon(Icons.add_circle_outline_rounded,
+                            color: Theme.of(context).colorScheme.primary,
+                            size: 18),
+                        label: Text(l10n.addDateButtonLabel,
+                            style: GoogleFonts.inter(
+                                color: Theme.of(context).colorScheme.primary,
+                                fontWeight: FontWeight.w700,
+                                fontSize: 12)),
                       ),
                     ],
                   ),
@@ -452,7 +586,9 @@ class _GuideAvailabilityScreenState extends ConsumerState<GuideAvailabilityScree
                       child: Text(
                         l10n.noBlackoutDatesMessage,
                         textAlign: TextAlign.center,
-                        style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 12),
+                        style: GoogleFonts.inter(
+                            color: AppTheme.textSecondary(context),
+                            fontSize: 12),
                       ),
                     )
                   else
@@ -461,11 +597,20 @@ class _GuideAvailabilityScreenState extends ConsumerState<GuideAvailabilityScree
                       runSpacing: 10,
                       children: _blackoutDates.map((date) {
                         return Chip(
-                          backgroundColor: AppTheme.colors.redAccent.withValues(alpha: 0.1),
-                          side: BorderSide(color: AppTheme.colors.redAccent.withValues(alpha: 0.35)),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
-                          label: Text(dateFormat.format(date), style: GoogleFonts.inter(color: AppTheme.textPrimary(context), fontWeight: FontWeight.w600, fontSize: 12)),
-                          deleteIcon: Icon(Icons.close_rounded, size: 16, color: AppTheme.colors.redAccent),
+                          backgroundColor:
+                              AppTheme.colors.redAccent.withValues(alpha: 0.1),
+                          side: BorderSide(
+                              color: AppTheme.colors.redAccent
+                                  .withValues(alpha: 0.35)),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(100)),
+                          label: Text(dateFormat.format(date),
+                              style: GoogleFonts.inter(
+                                  color: AppTheme.textPrimary(context),
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 12)),
+                          deleteIcon: Icon(Icons.close_rounded,
+                              size: 16, color: AppTheme.colors.redAccent),
                           onDeleted: () {
                             setState(() {
                               _blackoutDates.remove(date);
@@ -475,7 +620,6 @@ class _GuideAvailabilityScreenState extends ConsumerState<GuideAvailabilityScree
                       }).toList(),
                     ),
                   const SizedBox(height: 36),
-
                   SizedBox(
                     width: double.infinity,
                     height: 56,
@@ -485,11 +629,18 @@ class _GuideAvailabilityScreenState extends ConsumerState<GuideAvailabilityScree
                         backgroundColor: Theme.of(context).colorScheme.primary,
                         foregroundColor: AppTheme.colors.white,
                         elevation: 0,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(100)),
                       ),
                       child: _isSaving
-                          ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                          : Text(l10n.saveAvailabilityButton, style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 14)),
+                          ? const SizedBox(
+                              width: 22,
+                              height: 22,
+                              child: CircularProgressIndicator(
+                                  strokeWidth: 2, color: Colors.white))
+                          : Text(l10n.saveAvailabilityButton,
+                              style: GoogleFonts.inter(
+                                  fontWeight: FontWeight.w700, fontSize: 14)),
                     ),
                   ),
                 ],

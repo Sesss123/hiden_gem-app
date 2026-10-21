@@ -7,6 +7,7 @@ import '../../core/theme/oracle_ui_system.dart';
 import '../../data/models/tour_review.dart';
 import '../../data/models/guide_analytics_snapshot.dart';
 import '../../data/repositories/review_repository.dart';
+import '../../data/repositories/user_safety_repository.dart';
 import '../../data/repositories/analytics_repository.dart';
 import '../../data/services/subscription_service.dart';
 import 'review_submission_screen.dart';
@@ -24,6 +25,21 @@ class GuideReviewsScreen extends ConsumerStatefulWidget {
 }
 
 class _GuideReviewsScreenState extends ConsumerState<GuideReviewsScreen> {
+  Set<String> _blockedReviewerIds = const {};
+
+  @override
+  void initState() {
+    super.initState();
+    _loadBlockedReviewers();
+  }
+
+  Future<void> _loadBlockedReviewers() async {
+    final blocked =
+        await ref.read(userSafetyRepositoryProvider).getBlockedUserIds();
+    if (!mounted) return;
+    setState(() => _blockedReviewerIds = blocked);
+  }
+
   @override
   Widget build(BuildContext context) {
     final reviewRepo = ref.watch(reviewRepositoryProvider);
@@ -38,7 +54,8 @@ class _GuideReviewsScreenState extends ConsumerState<GuideReviewsScreen> {
             MaterialPageRoute(
               builder: (context) => ReviewSubmissionScreen(
                 guideId: widget.guideId,
-                sessionId: 'direct_review_${DateTime.now().millisecondsSinceEpoch}',
+                sessionId:
+                    'direct_review_${DateTime.now().millisecondsSinceEpoch}',
                 touristId: userId,
               ),
             ),
@@ -46,7 +63,9 @@ class _GuideReviewsScreenState extends ConsumerState<GuideReviewsScreen> {
         },
         backgroundColor: AppTheme.colors.amberAccent,
         icon: Icon(Icons.edit_note, color: AppTheme.colors.black87),
-        label: Text(AppLocalizations.of(context)!.writeReviewButton, style: GoogleFonts.outfit(color: AppTheme.colors.black87, fontWeight: FontWeight.bold)),
+        label: Text(AppLocalizations.of(context)!.writeReviewButton,
+            style: GoogleFonts.outfit(
+                color: AppTheme.colors.black87, fontWeight: FontWeight.bold)),
       ),
       body: OracleUI.auraBackground(
         child: CustomScrollView(
@@ -57,11 +76,13 @@ class _GuideReviewsScreenState extends ConsumerState<GuideReviewsScreen> {
                 future: _canViewAnalytics(),
                 builder: (context, entSnapshot) {
                   if (entSnapshot.connectionState == ConnectionState.waiting) {
-                    return const SizedBox(height: 200, child: Center(child: CircularProgressIndicator()));
+                    return const SizedBox(
+                        height: 200,
+                        child: Center(child: CircularProgressIndicator()));
                   }
-                  
+
                   final hasAccess = entSnapshot.data ?? false;
-                  
+
                   if (!hasAccess) {
                     return _buildLockedPremiumFeature();
                   }
@@ -70,7 +91,9 @@ class _GuideReviewsScreenState extends ConsumerState<GuideReviewsScreen> {
                     future: analyticsRepo.getLatestSnapshot(widget.guideId),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const SizedBox(height: 200, child: Center(child: CircularProgressIndicator()));
+                        return const SizedBox(
+                            height: 200,
+                            child: Center(child: CircularProgressIndicator()));
                       }
                       final data = snapshot.data;
                       if (data == null) return const SizedBox.shrink();
@@ -84,10 +107,12 @@ class _GuideReviewsScreenState extends ConsumerState<GuideReviewsScreen> {
               future: reviewRepo.getGuideReviews(widget.guideId),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const SliverFillRemaining(child: Center(child: CircularProgressIndicator()));
+                  return const SliverFillRemaining(
+                      child: Center(child: CircularProgressIndicator()));
                 }
                 if (snapshot.hasError) {
-                  SecureLogger.error("Failed to load guide reviews", snapshot.error);
+                  SecureLogger.error(
+                      "Failed to load guide reviews", snapshot.error);
                   return SliverFillRemaining(
                     child: Center(
                       child: Padding(
@@ -95,11 +120,14 @@ class _GuideReviewsScreenState extends ConsumerState<GuideReviewsScreen> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.error_outline, color: AppTheme.colors.redAccent, size: 48),
+                            Icon(Icons.error_outline,
+                                color: AppTheme.colors.redAccent, size: 48),
                             const SizedBox(height: 16),
                             Text(
-                              AppLocalizations.of(context)!.failedToLoadReviewsMessage,
-                              style: GoogleFonts.inter(color: AppTheme.colors.white70),
+                              AppLocalizations.of(context)!
+                                  .failedToLoadReviewsMessage,
+                              style: GoogleFonts.inter(
+                                  color: AppTheme.colors.white70),
                             ),
                           ],
                         ),
@@ -107,13 +135,17 @@ class _GuideReviewsScreenState extends ConsumerState<GuideReviewsScreen> {
                     ),
                   );
                 }
-                final reviews = snapshot.data?.reviews ?? [];
+                final reviews = (snapshot.data?.reviews ?? [])
+                    .where((review) =>
+                        !_blockedReviewerIds.contains(review.touristId))
+                    .toList(growable: false);
                 if (reviews.isEmpty) {
                   return SliverFillRemaining(child: _buildEmptyState());
                 }
 
                 return SliverPadding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
                   sliver: SliverList(
                     delegate: SliverChildBuilderDelegate(
                       (context, index) => OracleUI.staggeredEntrance(
@@ -140,7 +172,8 @@ class _GuideReviewsScreenState extends ConsumerState<GuideReviewsScreen> {
       pinned: true,
       leading: Builder(
         builder: (context) => IconButton(
-          icon: Icon(Icons.arrow_back_ios_new_rounded, color: AppTheme.textPrimary(context), size: 20),
+          icon: Icon(Icons.arrow_back_ios_new_rounded,
+              color: AppTheme.textPrimary(context), size: 20),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -149,7 +182,11 @@ class _GuideReviewsScreenState extends ConsumerState<GuideReviewsScreen> {
           titlePadding: const EdgeInsets.only(left: 56, bottom: 16),
           title: Text(
             AppLocalizations.of(context)!.reviewsTitle,
-            style: GoogleFonts.outfit(fontWeight: FontWeight.w800, letterSpacing: -0.5, fontSize: 20, color: AppTheme.textPrimary(context)),
+            style: GoogleFonts.outfit(
+                fontWeight: FontWeight.w800,
+                letterSpacing: -0.5,
+                fontSize: 20,
+                color: AppTheme.textPrimary(context)),
           ),
         ),
       ),
@@ -159,17 +196,19 @@ class _GuideReviewsScreenState extends ConsumerState<GuideReviewsScreen> {
   Future<bool> _canViewAnalytics() async {
     final userId = FirebaseAuth.instance.currentUser?.uid;
     if (userId == null) return false;
-    
+
     // If the guide is viewing their own dashboard, enforce the entitlement.
     if (userId == widget.guideId) {
       try {
-        return await ref.read(subscriptionServiceProvider).hasEntitlement(userId, 'analyticsAccess');
+        return await ref
+            .read(subscriptionServiceProvider)
+            .hasEntitlement(userId, 'advancedAnalytics');
       } catch (e) {
         SecureLogger.warning("Entitlement verification failed: $e");
         return false;
       }
     }
-    
+
     // Public profile visitors (Tourists, Operators) can see public stats.
     return true;
   }
@@ -183,30 +222,41 @@ class _GuideReviewsScreenState extends ConsumerState<GuideReviewsScreen> {
         borderColor: AppTheme.colors.amber.withValues(alpha: 0.3),
         child: Column(
           children: [
-            Icon(Icons.lock_person_rounded, size: 48, color: AppTheme.colors.amber),
+            Icon(Icons.lock_person_rounded,
+                size: 48, color: AppTheme.colors.amber),
             const SizedBox(height: 16),
             Text(
               AppLocalizations.of(context)!.premiumAnalyticsLockedTitle,
-              style: GoogleFonts.outfit(color: AppTheme.colors.amber, fontSize: 14, fontWeight: FontWeight.w900, letterSpacing: 2),
+              style: GoogleFonts.outfit(
+                  color: AppTheme.colors.amber,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 2),
             ),
             const SizedBox(height: 8),
             Text(
               AppLocalizations.of(context)!.premiumAnalyticsLockedMessage,
               textAlign: TextAlign.center,
-              style: GoogleFonts.inter(color: AppTheme.colors.white70, fontSize: 12),
+              style: GoogleFonts.inter(
+                  color: AppTheme.colors.white70, fontSize: 12),
             ),
             const SizedBox(height: 24),
             ElevatedButton(
               onPressed: () {
                 // Navigate to subscription screen
-                Navigator.push(context, MaterialPageRoute(builder: (_) => const SubscriptionScreen()));
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (_) => const SubscriptionScreen()));
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppTheme.colors.amber,
                 foregroundColor: AppTheme.colors.black,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20)),
               ),
-              child: Text(AppLocalizations.of(context)!.upgradeNowButton, style: GoogleFonts.outfit(fontWeight: FontWeight.bold)),
+              child: Text(AppLocalizations.of(context)!.upgradeNowButton,
+                  style: GoogleFonts.outfit(fontWeight: FontWeight.bold)),
             ),
           ],
         ),
@@ -230,7 +280,10 @@ class _GuideReviewsScreenState extends ConsumerState<GuideReviewsScreen> {
             ),
             borderRadius: BorderRadius.circular(24),
             boxShadow: [
-              BoxShadow(color: primary.withValues(alpha: 0.25), blurRadius: 20, offset: const Offset(0, 10)),
+              BoxShadow(
+                  color: primary.withValues(alpha: 0.25),
+                  blurRadius: 20,
+                  offset: const Offset(0, 10)),
             ],
           ),
           child: Column(
@@ -244,12 +297,18 @@ class _GuideReviewsScreenState extends ConsumerState<GuideReviewsScreen> {
                     children: [
                       Text(
                         AppLocalizations.of(context)!.trustScoreLabel,
-                        style: GoogleFonts.inter(color: AppTheme.colors.white.withValues(alpha: 0.8), fontSize: 12, fontWeight: FontWeight.w600),
+                        style: GoogleFonts.inter(
+                            color: AppTheme.colors.white.withValues(alpha: 0.8),
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600),
                       ),
                       const SizedBox(height: 6),
                       Text(
                         "${snapshot.trustScore.toInt()}%",
-                        style: GoogleFonts.outfit(fontSize: 30, fontWeight: FontWeight.w800, color: AppTheme.colors.white),
+                        style: GoogleFonts.outfit(
+                            fontSize: 30,
+                            fontWeight: FontWeight.w800,
+                            color: AppTheme.colors.white),
                       ),
                     ],
                   ),
@@ -257,14 +316,20 @@ class _GuideReviewsScreenState extends ConsumerState<GuideReviewsScreen> {
                 ],
               ),
               const SizedBox(height: 22),
-              Divider(color: AppTheme.colors.white.withValues(alpha: 0.15), height: 1),
+              Divider(
+                  color: AppTheme.colors.white.withValues(alpha: 0.15),
+                  height: 1),
               const SizedBox(height: 18),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  _buildMiniStat(snapshot.completedTours.toString(), AppLocalizations.of(context)!.miniStatTrips),
-                  _buildMiniStat("${snapshot.ratingAverage.toStringAsFixed(1)} ★", AppLocalizations.of(context)!.miniStatRating),
-                  _buildMiniStat(snapshot.totalSafetyIncidents.toString(), AppLocalizations.of(context)!.miniStatIncidents),
+                  _buildMiniStat(snapshot.completedTours.toString(),
+                      AppLocalizations.of(context)!.miniStatTrips),
+                  _buildMiniStat(
+                      "${snapshot.ratingAverage.toStringAsFixed(1)} ★",
+                      AppLocalizations.of(context)!.miniStatRating),
+                  _buildMiniStat(snapshot.totalSafetyIncidents.toString(),
+                      AppLocalizations.of(context)!.miniStatIncidents),
                 ],
               ),
             ],
@@ -294,7 +359,10 @@ class _GuideReviewsScreenState extends ConsumerState<GuideReviewsScreen> {
         ),
         child: Text(
           tier,
-          style: GoogleFonts.inter(color: AppTheme.colors.white, fontSize: 11, fontWeight: FontWeight.w700),
+          style: GoogleFonts.inter(
+              color: AppTheme.colors.white,
+              fontSize: 11,
+              fontWeight: FontWeight.w700),
         ),
       );
     });
@@ -303,9 +371,17 @@ class _GuideReviewsScreenState extends ConsumerState<GuideReviewsScreen> {
   Widget _buildMiniStat(String value, String label) {
     return Column(
       children: [
-        Text(value, style: GoogleFonts.outfit(color: AppTheme.colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+        Text(value,
+            style: GoogleFonts.outfit(
+                color: AppTheme.colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.bold)),
         const SizedBox(height: 2),
-        Text(label, style: GoogleFonts.inter(color: AppTheme.colors.white.withValues(alpha: 0.75), fontSize: 11, fontWeight: FontWeight.w600)),
+        Text(label,
+            style: GoogleFonts.inter(
+                color: AppTheme.colors.white.withValues(alpha: 0.75),
+                fontSize: 11,
+                fontWeight: FontWeight.w600)),
       ],
     );
   }
@@ -319,7 +395,10 @@ class _GuideReviewsScreenState extends ConsumerState<GuideReviewsScreen> {
           color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(18),
           boxShadow: [
-            BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.05), blurRadius: 14, offset: const Offset(0, 5)),
+            BoxShadow(
+                color: AppTheme.colors.black.withValues(alpha: 0.05),
+                blurRadius: 14,
+                offset: const Offset(0, 5)),
           ],
         ),
         child: Column(
@@ -327,64 +406,113 @@ class _GuideReviewsScreenState extends ConsumerState<GuideReviewsScreen> {
           children: [
             Row(
               children: [
-                ...List.generate(5, (index) => Icon(
-                  Icons.star_rounded,
-                  size: 14,
-                  color: index < review.overallRating ? AppTheme.colors.amber : AppTheme.surfaceMuted(context),
-                )),
+                ...List.generate(
+                    5,
+                    (index) => Icon(
+                          Icons.star_rounded,
+                          size: 14,
+                          color: index < review.overallRating
+                              ? AppTheme.colors.amber
+                              : AppTheme.surfaceMuted(context),
+                        )),
                 const Spacer(),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
                     color: AppTheme.colors.greenAccent.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(100),
                   ),
                   child: Row(
                     children: [
-                      Icon(Icons.verified_rounded, color: AppTheme.colors.greenAccent, size: 10),
+                      Icon(Icons.verified_rounded,
+                          color: AppTheme.colors.greenAccent, size: 10),
                       const SizedBox(width: 4),
                       Text(
                         AppLocalizations.of(context)!.verifiedTripBadge,
-                        style: GoogleFonts.inter(color: AppTheme.colors.greenAccent, fontSize: 10, fontWeight: FontWeight.w700),
+                        style: GoogleFonts.inter(
+                            color: AppTheme.colors.greenAccent,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w700),
                       ),
                     ],
                   ),
                 ),
                 const SizedBox(width: 8),
-                InkWell(
-                  onTap: () => _showReportDialog(context, review.reviewId),
-                  borderRadius: BorderRadius.circular(100),
-                  child: Padding(
-                    padding: const EdgeInsets.all(4),
-                    child: Icon(Icons.flag_outlined, size: 16, color: AppTheme.textSecondary(context)),
-                  ),
+                PopupMenuButton<String>(
+                  tooltip: 'Review safety options',
+                  padding: EdgeInsets.zero,
+                  iconSize: 18,
+                  icon: Icon(Icons.more_vert_rounded,
+                      color: AppTheme.textSecondary(context)),
+                  onSelected: (value) {
+                    if (value == 'report') {
+                      _showReportDialog(context, review.reviewId);
+                    } else if (value == 'block') {
+                      _confirmBlockReviewer(review);
+                    }
+                  },
+                  itemBuilder: (context) => const [
+                    PopupMenuItem(
+                      value: 'report',
+                      child: ListTile(
+                        contentPadding: EdgeInsets.zero,
+                        leading: Icon(Icons.flag_outlined),
+                        title: Text('Report review'),
+                      ),
+                    ),
+                    PopupMenuItem(
+                      value: 'block',
+                      child: ListTile(
+                        contentPadding: EdgeInsets.zero,
+                        leading: Icon(Icons.block_rounded),
+                        title: Text('Block reviewer'),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
             const SizedBox(height: 16),
             Text(
               review.comment,
-              style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 14, height: 1.6).copyWith(
-                fontFamilyFallback: [GoogleFonts.abhayaLibre().fontFamily!, GoogleFonts.hindGuntur().fontFamily!],
+              style: GoogleFonts.inter(
+                      color: AppTheme.textSecondary(context),
+                      fontSize: 14,
+                      height: 1.6)
+                  .copyWith(
+                fontFamilyFallback: [
+                  GoogleFonts.abhayaLibre().fontFamily!,
+                  GoogleFonts.hindGuntur().fontFamily!
+                ],
               ),
             ),
             const SizedBox(height: 20),
             Row(
               children: [
                 Container(
-                  width: 24, height: 24,
-                  decoration: BoxDecoration(color: AppTheme.surfaceMuted(context), shape: BoxShape.circle),
-                  child: Icon(Icons.person_rounded, color: AppTheme.textSecondary(context), size: 14),
+                  width: 24,
+                  height: 24,
+                  decoration: BoxDecoration(
+                      color: AppTheme.surfaceMuted(context),
+                      shape: BoxShape.circle),
+                  child: Icon(Icons.person_rounded,
+                      color: AppTheme.textSecondary(context), size: 14),
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  AppLocalizations.of(context)!.touristShortIdLabel(review.touristId.substring(0, 4)),
-                  style: GoogleFonts.inter(color: AppTheme.textPrimary(context), fontSize: 12, fontWeight: FontWeight.w600),
+                  AppLocalizations.of(context)!
+                      .touristShortIdLabel(review.touristId.substring(0, 4)),
+                  style: GoogleFonts.inter(
+                      color: AppTheme.textPrimary(context),
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600),
                 ),
                 const Spacer(),
                 Text(
                   "${review.createdAt.day}/${review.createdAt.month}/${review.createdAt.year}",
-                  style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 11),
+                  style: GoogleFonts.inter(
+                      color: AppTheme.textSecondary(context), fontSize: 11),
                 ),
               ],
             ),
@@ -406,12 +534,16 @@ class _GuideReviewsScreenState extends ConsumerState<GuideReviewsScreen> {
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: Text(l10n.reportReviewTitle, style: GoogleFonts.outfit(fontWeight: FontWeight.w700)),
+        title: Text(l10n.reportReviewTitle,
+            style: GoogleFonts.outfit(fontWeight: FontWeight.w700)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(l10n.reportReviewSubtitle, style: GoogleFonts.inter(fontSize: 13, color: AppTheme.textSecondary(dialogContext))),
+            Text(l10n.reportReviewSubtitle,
+                style: GoogleFonts.inter(
+                    fontSize: 13,
+                    color: AppTheme.textSecondary(dialogContext))),
             const SizedBox(height: 16),
             ...reasons.map((reason) => ListTile(
                   contentPadding: EdgeInsets.zero,
@@ -445,7 +577,58 @@ class _GuideReviewsScreenState extends ConsumerState<GuideReviewsScreen> {
       SecureLogger.error("Failed to flag review", e);
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.reportFailedMessage), backgroundColor: AppTheme.colors.redAccent),
+        SnackBar(
+            content: Text(l10n.reportFailedMessage),
+            backgroundColor: AppTheme.colors.redAccent),
+      );
+    }
+  }
+
+  Future<void> _confirmBlockReviewer(TourReview review) async {
+    final currentUserId = FirebaseAuth.instance.currentUser?.uid;
+    if (currentUserId == null || currentUserId == review.touristId) return;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Block this reviewer?'),
+        content: const Text(
+          'Their reviews and other marketplace content will be hidden from you. You can unblock them later.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: const Text('Block'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+
+    try {
+      await ref.read(userSafetyRepositoryProvider).blockUser(review.touristId);
+      if (!mounted) return;
+      setState(() {
+        _blockedReviewerIds = {
+          ..._blockedReviewerIds,
+          review.touristId,
+        };
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Reviewer blocked.')),
+      );
+    } catch (error, stackTrace) {
+      SecureLogger.error(
+          'Failed to block reviewer', error, stackTrace, 'UserSafety');
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Could not block this reviewer. Try again.'),
+          backgroundColor: AppTheme.colors.redAccent,
+        ),
       );
     }
   }
@@ -456,17 +639,24 @@ class _GuideReviewsScreenState extends ConsumerState<GuideReviewsScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.rate_review_outlined, size: 56, color: AppTheme.textSecondary(context).withValues(alpha: 0.3)),
+            Icon(Icons.rate_review_outlined,
+                size: 56,
+                color: AppTheme.textSecondary(context).withValues(alpha: 0.3)),
             const SizedBox(height: 16),
             Text(
               AppLocalizations.of(context)!.noReviewsYetTitle,
-              style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.w700, fontSize: 18, letterSpacing: -0.3),
+              style: GoogleFonts.outfit(
+                  color: AppTheme.textPrimary(context),
+                  fontWeight: FontWeight.w700,
+                  fontSize: 18,
+                  letterSpacing: -0.3),
             ),
             const SizedBox(height: 8),
             Text(
               AppLocalizations.of(context)!.noReviewsYetSubtitle,
               textAlign: TextAlign.center,
-              style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 13),
+              style: GoogleFonts.inter(
+                  color: AppTheme.textSecondary(context), fontSize: 13),
             ),
           ],
         ),

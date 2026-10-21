@@ -8,7 +8,8 @@ class AnalyticsService {
 
   final FirebaseAnalytics _analytics = FirebaseAnalytics.instance;
 
-  FirebaseAnalyticsObserver get observer => FirebaseAnalyticsObserver(analytics: _analytics);
+  FirebaseAnalyticsObserver get observer =>
+      FirebaseAnalyticsObserver(analytics: _analytics);
 
   Future<void> logEvent(String name, {Map<String, Object>? parameters}) async {
     final Map<String, Object>? safeParams = _truncateParameters(parameters);
@@ -58,51 +59,9 @@ class AnalyticsService {
     });
   }
 
-  Future<void> setUserProperties({required String userId, required String role}) async {
+  Future<void> setUserProperties(
+      {required String userId, required String role}) async {
     await _analytics.setUserId(id: userId);
     await _analytics.setUserProperty(name: 'user_role', value: role);
-  }
-
-  // Phase 9: AR Mode Analytics
-  Future<void> logARSessionStarted({
-    required String placeName,
-    required int tier,
-    required String mode, // 'full', 'demo', 'fallback'
-  }) async {
-    await logEvent('ar_session_started', parameters: {
-      'place_name': placeName,
-      'ar_tier': tier,
-      'mode': mode,
-    });
-  }
-
-  Future<void> logARPhotoShared({
-    required String placeName,
-    required String platform,
-  }) async {
-    await logEvent('ar_photo_shared', parameters: {
-      'place_name': placeName,
-      'platform': platform,
-    });
-  }
-
-  Future<void> logARHotspotTapped({
-    required String placeName,
-    required String hotspotId,
-  }) async {
-    await logEvent('ar_hotspot_tapped', parameters: {
-      'place_name': placeName,
-      'hotspot_id': hotspotId,
-    });
-  }
-
-  Future<void> logARUpgradeClicked({
-    required String placeName,
-    required String source, // 'details', 'viewer', 'demo'
-  }) async {
-    await logEvent('ar_upgrade_clicked', parameters: {
-      'place_name': placeName,
-      'source': source,
-    });
   }
 }

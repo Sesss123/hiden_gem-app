@@ -57,6 +57,9 @@ import 'core/services/explorer_progress_service.dart';
 import 'core/services/family_share_sync_service.dart';
 import 'package:freerasp/freerasp.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+import 'package:app_links/app_links.dart';
+import 'core/navigation/app_deep_link.dart';
+import 'presentation/screens/qr_scanner_screen.dart';
 
 class InitializationResult {
   final bool hiveSuccess;
@@ -83,13 +86,21 @@ class InitializationResult {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  if (kReleaseMode) {
+    debugPrint = (String? message, {int? wrapWidth}) {};
+  }
 
   // Initialize Global Error Handling
   FlutterError.onError = (errorDetails) {
     // 1. Report to Crashlytics (Mobile Native only)
     try {
       if (!kIsWeb) {
-        FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
+        FirebaseCrashlytics.instance.recordError(
+          StateError(SecureLogger.errorType(errorDetails.exception)),
+          SecureLogger.sanitizedStackTrace(errorDetails.stack),
+          fatal: true,
+          reason: 'Uncaught Flutter framework error',
+        );
       }
     } catch (e) {
       SecureLogger.error("Suppressing Crashlytics error during reporting: $e");
@@ -98,8 +109,7 @@ void main() async {
     // 2. Log to Analytics (Safe for Web/Mobile)
     try {
       AnalyticsService().logEvent('runtime_error', parameters: {
-        'exception': errorDetails.exceptionAsString(),
-        'stack': errorDetails.stack.toString(),
+        'exception_type': SecureLogger.errorType(errorDetails.exception),
       });
     } catch (e) {
       SecureLogger.warning(
@@ -117,7 +127,12 @@ void main() async {
   PlatformDispatcher.instance.onError = (error, stack) {
     try {
       if (!kIsWeb) {
-        FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+        FirebaseCrashlytics.instance.recordError(
+          StateError(SecureLogger.errorType(error)),
+          SecureLogger.sanitizedStackTrace(stack),
+          fatal: true,
+          reason: 'Uncaught platform error',
+        );
       }
     } catch (e) {
       SecureLogger.error("Suppressing Crashlytics error in dispatcher: $e");
@@ -178,7 +193,7 @@ void main() async {
           teamId: const String.fromEnvironment('TALSEC_TEAM_ID',
               defaultValue: 'PLACEHOLDER_TEAM_ID'),
         ),
-        watcherMail: 'support@hiddengemssl.com',
+        watcherMail: 'pathiranasehas3@gmail.com',
         isProd: kReleaseMode,
       );
       final callback = ThreatCallback(
@@ -537,7 +552,9 @@ Future<void> initializeOtherServices() async {
 
   // Remote Ad Settings & Voice Pre-load
   try {
-    await MonetizationService().syncRemoteAdConfig().timeout(const Duration(seconds: 4));
+    await MonetizationService()
+        .syncRemoteAdConfig()
+        .timeout(const Duration(seconds: 4));
   } catch (e) {
     debugPrint("[main] Remote ad config sync error: $e");
   }
@@ -549,7 +566,9 @@ Future<void> initializeOtherServices() async {
   MonetizationService().startRemoteConfigPolling();
 
   try {
-    await PriceCatalogService.instance.sync().timeout(const Duration(seconds: 6));
+    await PriceCatalogService.instance
+        .sync()
+        .timeout(const Duration(seconds: 6));
   } catch (e) {
     debugPrint('[main] Price catalog sync error: $e');
   }
@@ -586,11 +605,15 @@ class _HiddenGemsAppState extends ConsumerState<HiddenGemsApp>
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
   StreamSubscription? _notifSubscription;
   StreamSubscription? _openedNotifSubscription;
+  StreamSubscription<Uri>? _appLinkSubscription;
+  Uri? _pendingAppLink;
+  String? _lastHandledAppLink;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    _initializeAppLinks();
 
     // BUG-N01 Fix: Listen for foreground push messages and present a floating Snackbar
     _notifSubscription =
@@ -632,10 +655,13 @@ class _HiddenGemsAppState extends ConsumerState<HiddenGemsApp>
               onPressed: () {
                 final nav = navigatorKey.currentState;
                 if (nav == null) return;
-                if (message.data['type'] == 'travel_alert' || message.data.containsKey('alertId')) {
-                  nav.push(MaterialPageRoute(builder: (_) => const EmergencyKitScreen()));
+                if (message.data['type'] == 'travel_alert' ||
+                    message.data.containsKey('alertId')) {
+                  nav.push(MaterialPageRoute(
+                      builder: (_) => const EmergencyKitScreen()));
                 } else if (message.data['type'] == 'new_booking') {
-                  nav.push(MaterialPageRoute(builder: (_) => const BookingInboxScreen()));
+                  nav.push(MaterialPageRoute(
+                      builder: (_) => const BookingInboxScreen()));
                 }
               },
             ),
@@ -643,10 +669,12 @@ class _HiddenGemsAppState extends ConsumerState<HiddenGemsApp>
         );
       }
     });
-    _openedNotifSubscription = NotificationService().onOpenedMessage.listen((message) {
+    _openedNotifSubscription =
+        NotificationService().onOpenedMessage.listen((message) {
       final nav = navigatorKey.currentState;
       if (nav == null) return;
-      if (message.data['type'] == 'travel_alert' || message.data.containsKey('alertId')) {
+      if (message.data['type'] == 'travel_alert' ||
+          message.data.containsKey('alertId')) {
         nav.push(MaterialPageRoute(builder: (_) => const EmergencyKitScreen()));
       } else if (message.data['type'] == 'new_booking') {
         nav.push(MaterialPageRoute(builder: (_) => const BookingInboxScreen()));
@@ -654,10 +682,54 @@ class _HiddenGemsAppState extends ConsumerState<HiddenGemsApp>
     });
   }
 
+  Future<void> _initializeAppLinks() async {
+    if (kIsWeb) return;
+    final appLinks = AppLinks();
+    try {
+      final initialLink = await appLinks.getInitialLink();
+      if (initialLink != null) _queueAppLink(initialLink);
+    } catch (error, stackTrace) {
+      SecureLogger.error(
+          'Unable to read initial app link', error, stackTrace, 'DeepLink');
+    }
+    _appLinkSubscription = appLinks.uriLinkStream.listen(
+      _queueAppLink,
+      onError: (Object error, StackTrace stackTrace) => SecureLogger.error(
+          'Unable to process app link', error, stackTrace, 'DeepLink'),
+    );
+  }
+
+  void _queueAppLink(Uri uri) {
+    _pendingAppLink = uri;
+    WidgetsBinding.instance.addPostFrameCallback((_) => _openPendingAppLink());
+  }
+
+  void _openPendingAppLink() {
+    if (!_showMainApp) return;
+    final uri = _pendingAppLink;
+    final deepLink = uri == null ? null : AppDeepLink.parse(uri);
+    if (uri == null || deepLink == null) {
+      _pendingAppLink = null;
+      return;
+    }
+    if (_lastHandledAppLink == uri.toString()) {
+      _pendingAppLink = null;
+      return;
+    }
+    final navigator = navigatorKey.currentState;
+    if (navigator == null) return;
+    _lastHandledAppLink = uri.toString();
+    _pendingAppLink = null;
+    navigator.push(MaterialPageRoute(
+      builder: (_) => QRScannerScreen(initialToken: deepLink.joinToken),
+    ));
+  }
+
   @override
   void dispose() {
     _notifSubscription?.cancel();
     _openedNotifSubscription?.cancel();
+    _appLinkSubscription?.cancel();
     MonetizationService().stopRemoteConfigPolling();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
@@ -668,6 +740,8 @@ class _HiddenGemsAppState extends ConsumerState<HiddenGemsApp>
     if (state == AppLifecycleState.resumed) {
       MonetizationService().syncRemoteAdConfig();
       _syncPlacesOnResume();
+      _refreshIdentityOnResume();
+      _openPendingAppLink();
     }
     // Flush any debounced bookmark/itinerary Firestore sync immediately on
     // pause/detach/hidden, so backgrounding or closing the app doesn't
@@ -676,6 +750,16 @@ class _HiddenGemsAppState extends ConsumerState<HiddenGemsApp>
         state == AppLifecycleState.detached ||
         state == AppLifecycleState.hidden) {
       UserPreferenceService.flushPendingFirestoreSync();
+    }
+  }
+
+  Future<void> _refreshIdentityOnResume() async {
+    try {
+      await FirebaseAuth.instance.currentUser?.reload();
+      SecureEntitlements().forceRefresh();
+    } catch (error, stackTrace) {
+      SecureLogger.error(
+          'Resume identity refresh failed', error, stackTrace, 'Lifecycle');
     }
   }
 
@@ -746,7 +830,11 @@ class _HiddenGemsAppState extends ConsumerState<HiddenGemsApp>
             return _buildHomeModule(initState.result);
           }
           return SplashScreen(
-            onFinish: () => setState(() => _showMainApp = true),
+            onFinish: () {
+              setState(() => _showMainApp = true);
+              WidgetsBinding.instance
+                  .addPostFrameCallback((_) => _openPendingAppLink());
+            },
             isReady: true,
           );
         },
@@ -759,7 +847,9 @@ class _HiddenGemsAppState extends ConsumerState<HiddenGemsApp>
           body: GracefulErrorWidget(
             icon: Icons.storage_rounded,
             title: "Oracle Cannot Start",
-            subtitle: error.toString(),
+            subtitle: kReleaseMode
+                ? 'Please check your connection and try again.'
+                : SecureLogger.redact(error.toString()),
             buttonLabel: "Retry",
             onRetry: () => ref.invalidate(appInitializationProvider),
           ),

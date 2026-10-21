@@ -8,6 +8,7 @@ import '../../core/services/usage_limiter_service.dart';
 import '../../data/datasources/monetization_service.dart';
 import '../../l10n/app_localizations.dart';
 import 'limit_reached_dialog.dart';
+import 'ai_output_report_button.dart';
 
 class OracleOrb extends StatefulWidget {
   const OracleOrb({super.key});
@@ -29,7 +30,7 @@ class _OracleOrbState extends State<OracleOrb> {
     }
 
     // Gate every new query on the monthly Oracle-chat quota — mirrors the
-    // check-then-consume pattern used for AR sessions (place_details_screen)
+    // check-then-consume pattern used by other metered features
     // so a rapid double-tap can't slip past the check before it's consumed.
     final canAccess = await UsageLimiterService.canAccessOracleChat();
     if (!mounted) return;
@@ -60,7 +61,9 @@ class _OracleOrbState extends State<OracleOrb> {
             ? "${position.latitude}, ${position.longitude}"
             : "Mystical Coordinates";
 
-        final reply = await VoiceAssistantService.getOracleLogic(_words, contextLoc, position: position);
+        final reply = await VoiceAssistantService.getOracleLogic(
+            _words, contextLoc,
+            position: position);
         await VoiceAssistantService.speak(reply);
 
         if (mounted) {
@@ -105,7 +108,8 @@ class _OracleOrbState extends State<OracleOrb> {
             children: [
               Row(
                 children: [
-                  Icon(Icons.auto_awesome_rounded, color: AppTheme.modernGreen(context), size: 16),
+                  Icon(Icons.auto_awesome_rounded,
+                      color: AppTheme.modernGreen(context), size: 16),
                   const SizedBox(width: 8),
                   OracleUI.neonText(
                     "ORACLE SUPREME",
@@ -115,6 +119,14 @@ class _OracleOrbState extends State<OracleOrb> {
                       color: AppTheme.modernGreen(context),
                       letterSpacing: 2,
                     ),
+                  ),
+                  const Spacer(),
+                  AiOutputReportButton(
+                    feature: 'oracle_reply',
+                    outputId: DateTime.now().millisecondsSinceEpoch.toString(),
+                    outputText: text,
+                    color: AppTheme.textPrimary(context),
+                    compact: true,
                   ),
                 ],
               ),
@@ -129,7 +141,10 @@ class _OracleOrbState extends State<OracleOrb> {
               ),
             ],
           ),
-        ).animate().fadeIn(duration: 400.ms).scale(begin: const Offset(0.9, 0.9), curve: Curves.easeOutBack),
+        )
+            .animate()
+            .fadeIn(duration: 400.ms)
+            .scale(begin: const Offset(0.9, 0.9), curve: Curves.easeOutBack),
       ),
     );
 
@@ -156,7 +171,10 @@ class _OracleOrbState extends State<OracleOrb> {
           ),
           boxShadow: [
             BoxShadow(
-              color: Theme.of(context).colorScheme.primary.withValues(alpha: _isListening ? 0.45 : 0.28),
+              color: Theme.of(context)
+                  .colorScheme
+                  .primary
+                  .withValues(alpha: _isListening ? 0.45 : 0.28),
               blurRadius: _isListening ? 30 : 18,
               spreadRadius: _isListening ? 8 : 0,
               offset: const Offset(0, 8),
@@ -168,9 +186,11 @@ class _OracleOrbState extends State<OracleOrb> {
           color: AppTheme.colors.white,
           size: 32,
         ),
-      )
-      .animate(onPlay: (c) => c.repeat(reverse: true))
-      .scale(begin: const Offset(0.95, 0.95), end: const Offset(1.05, 1.05), duration: 2.seconds, curve: Curves.easeInOut),
+      ).animate(onPlay: (c) => c.repeat(reverse: true)).scale(
+          begin: const Offset(0.95, 0.95),
+          end: const Offset(1.05, 1.05),
+          duration: 2.seconds,
+          curve: Curves.easeInOut),
     );
   }
 }

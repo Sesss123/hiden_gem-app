@@ -12,9 +12,12 @@ import '../../core/constants/tour_types.dart';
 import '../../core/network/secure_http_client.dart';
 import '../../core/services/reverb_channel_service.dart';
 import '../../core/utils/secure_logger.dart';
+import '../../core/utils/image_upload_validator.dart';
+import 'user_safety_repository.dart';
 
-final marketplaceRepositoryProvider =
-    Provider((ref) => MarketplaceRepository());
+final marketplaceRepositoryProvider = Provider((ref) => MarketplaceRepository(
+      safetyRepository: ref.watch(userSafetyRepositoryProvider),
+    ));
 
 /// [MarketplaceRepository] — Scalability-hardened data layer.
 ///
@@ -34,7 +37,11 @@ final marketplaceRepositoryProvider =
 /// This design ensures that 10,000 concurrent users don't each hold open
 /// a Firestore listener — a mistake that would cause exponential read costs.
 class MarketplaceRepository {
+  MarketplaceRepository({UserSafetyRepository? safetyRepository})
+      : _safetyRepository = safetyRepository ?? UserSafetyRepository();
+
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final UserSafetyRepository _safetyRepository;
 
   CollectionReference<Map<String, dynamic>> get _listingRef =>
       _firestore.collection('guide_listings');
@@ -72,9 +79,10 @@ class MarketplaceRepository {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body) as Map<String, dynamic>;
-        _featuredCache = (data['listings'] as List<dynamic>? ?? [])
+        final listings = (data['listings'] as List<dynamic>? ?? [])
             .map((l) => GuideListing.fromJson(l as Map<String, dynamic>))
             .toList();
+        _featuredCache = await _withoutBlockedGuides(listings);
         _featuredCacheExpiry = DateTime.now().add(const Duration(minutes: 5));
         return _featuredCache!;
       }
@@ -202,10 +210,11 @@ class MarketplaceRepository {
       throw Exception('Marketplace search failed (${response.statusCode})');
     }
     final data = json.decode(response.body) as Map<String, dynamic>;
+    final listings = (data['listings'] as List<dynamic>? ?? [])
+        .map((e) => GuideListing.fromJson(e as Map<String, dynamic>))
+        .toList();
     return MarketplacePage(
-      listings: (data['listings'] as List<dynamic>? ?? [])
-          .map((e) => GuideListing.fromJson(e as Map<String, dynamic>))
-          .toList(),
+      listings: await _withoutBlockedGuides(listings),
       hasMore: data['has_more'] == true,
       nextPage: (data['next_page'] as num?)?.toInt(),
     );
@@ -217,6 +226,15 @@ class MarketplaceRepository {
     final doc = await _listingRef.doc(listingId).get();
     if (!doc.exists) return null;
     return GuideListing.fromJson(doc.data()!);
+  }
+
+  Future<List<GuideListing>> _withoutBlockedGuides(
+      List<GuideListing> listings) async {
+    final blockedUserIds = await _safetyRepository.getBlockedUserIds();
+    if (blockedUserIds.isEmpty) return listings;
+    return listings
+        .where((listing) => !blockedUserIds.contains(listing.guideId))
+        .toList(growable: false);
   }
 
   Future<void> trackProfileView(String listingId) async {
@@ -267,6 +285,7 @@ class MarketplaceRepository {
   Future<String?> uploadListingPhoto(
       {required XFile file, required String photoType}) async {
     try {
+      await ImageUploadValidator.validate(file);
       final client = SecureHttpClient(http.Client());
       final uri = Uri.parse('${AppConfig.laravelUrl}/marketplace/photos');
       final request = http.MultipartRequest('POST', uri)
@@ -285,10 +304,12 @@ class MarketplaceRepository {
         return data['data']['full_url'] as String?;
       }
       SecureLogger.error(
-          "Listing photo upload returned status ${response.statusCode}: ${response.body}");
-    } catch (e) {
+          'Listing photo upload returned status ${response.statusCode}');
+    } on ImageValidationException {
+      rethrow;
+    } catch (e, stackTrace) {
       SecureLogger.error(
-          "Failed to upload listing photo to Laravel Backend: $e");
+          'Failed to upload listing photo to Laravel Backend', e, stackTrace);
     }
     return null;
   }

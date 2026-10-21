@@ -14,6 +14,7 @@ import '../../data/repositories/booking_repository.dart';
 import '../../data/datasources/user_preference_service.dart';
 import '../../core/services/calendar_sync_service.dart';
 import '../../core/notifications/notification_service.dart';
+import '../../core/services/current_location_service.dart';
 import 'tourist_companion_hub.dart';
 import '../../l10n/app_localizations.dart';
 
@@ -628,7 +629,8 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
   /// Shows a dialog for the guide to enter a price before accepting. Returns
   /// null if the guide cancels — the caller must not proceed with accept in
   /// that case, leaving the booking untouched at 'pending'.
-  Future<double?> _showQuoteDialog(AppLocalizations l10n, String currency) async {
+  Future<double?> _showQuoteDialog(
+      AppLocalizations l10n, String currency) async {
     final controller = TextEditingController();
     return showDialog<double>(
       context: context,
@@ -685,21 +687,10 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
       // caused every accepted booking's session to pin its meeting point
       // to Colombo on the Tourist Companion Hub map regardless of where
       // the guide actually is.
-      double sessionLat = 6.9271; // Fallback: Colombo
-      double sessionLng = 79.8612;
-      try {
-        final pos = await Geolocator.getCurrentPosition(
-          locationSettings: const LocationSettings(
-            accuracy: LocationAccuracy.medium,
-            timeLimit: Duration(seconds: 8),
-          ),
-        );
-        sessionLat = pos.latitude;
-        sessionLng = pos.longitude;
-      } catch (_) {
-        // GPS unavailable — use Colombo as fallback. The guide can update
-        // the meeting point manually from the Tour Dashboard later.
-      }
+      final position = await CurrentLocationService.getRequiredPosition(
+        accuracy: LocationAccuracy.medium,
+        timeout: const Duration(seconds: 8),
+      );
 
       final session = TourSession(
         sessionId: sessionId,
@@ -707,13 +698,14 @@ class _BookingInboxScreenState extends ConsumerState<BookingInboxScreen> {
         guideName: FirebaseAuth.instance.currentUser?.displayName,
         touristIds: [request.touristId],
         meetingPointName: l10n.meetingPointPendingLabel,
-        meetingPointLat: sessionLat,
-        meetingPointLng: sessionLng,
+        meetingPointLat: position.latitude,
+        meetingPointLng: position.longitude,
         status: 'initial',
         currentPhase: 'assembling',
         sessionCode: (100000 + (DateTime.now().millisecondsSinceEpoch % 900000))
             .toString(),
         maxTourists: request.guestCount,
+        redeemedCount: 1,
         notes: request.notes,
         isReviewEnabled: true,
       );

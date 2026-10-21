@@ -11,7 +11,7 @@ import '../../core/theme/app_theme.dart';
 /// Shows:
 /// - Explorer level badge (with emoji + title)
 /// - Animated overall progress arc or bar
-/// - Per-category breakdown: Sites / AR Sessions / Badges
+/// - Per-category breakdown: Sites / Badges
 /// - "X / Y sites explored" motivation text
 ///
 /// Usage:
@@ -542,10 +542,12 @@ class _MotivationBanner extends StatelessWidget {
 
   String get _message {
     final remaining = total - visited;
-    if (remaining <= 0)
+    if (remaining <= 0) {
       return 'You have explored every Hidden Gem in Sri Lanka! 👑';
-    if (visited == 0)
+    }
+    if (visited == 0) {
       return 'Visit your first hidden gem to unlock explorer progress!';
+    }
     return 'Explore $remaining more ${remaining == 1 ? "site" : "sites"} to ${_nextLevelName()}';
   }
 

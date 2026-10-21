@@ -39,7 +39,7 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
     HapticFeedback.mediumImpact();
     final uri = Uri(
       scheme: 'mailto',
-      path: 'support@hiddengems.lk',
+      path: 'pathiranasehas3@gmail.com',
       query: 'subject=Privacy%20and%20Data%20Protection%20Request',
     );
     if (await canLaunchUrl(uri)) {
@@ -177,7 +177,8 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
                   color: AppTheme.modernGreen(context).withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(16),
                 ),
-                child: Icon(Icons.shield_rounded, color: AppTheme.modernGreen(context), size: 28),
+                child: Icon(Icons.shield_rounded,
+                    color: AppTheme.modernGreen(context), size: 28),
               ),
               const SizedBox(width: 16),
               Expanded(
@@ -195,11 +196,15 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
                     ),
                     const SizedBox(height: 4),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 4),
                       decoration: BoxDecoration(
-                        color: AppTheme.modernGreen(context).withValues(alpha: 0.1),
+                        color: AppTheme.modernGreen(context)
+                            .withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: AppTheme.modernGreen(context).withValues(alpha: 0.3)),
+                        border: Border.all(
+                            color: AppTheme.modernGreen(context)
+                                .withValues(alpha: 0.3)),
                       ),
                       child: Text(
                         l10n.lastUpdatedDate,
@@ -240,7 +245,8 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
           backgroundColor: primaryColor,
           foregroundColor: AppTheme.colors.white,
           padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 24),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           elevation: 4,
           shadowColor: primaryColor.withValues(alpha: 0.4),
         ),
@@ -323,13 +329,18 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
                 ],
               ),
             ),
-            crossFadeState: isExpanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+            crossFadeState: isExpanded
+                ? CrossFadeState.showSecond
+                : CrossFadeState.showFirst,
             duration: const Duration(milliseconds: 300),
             sizeCurve: Curves.easeInOutCubic,
           ),
         ],
       ),
-    ).animate().fadeIn(duration: 500.ms, delay: (150 + index * 50).ms).slideY(begin: 0.05);
+    )
+        .animate()
+        .fadeIn(duration: 500.ms, delay: (150 + index * 50).ms)
+        .slideY(begin: 0.05);
   }
 
   Widget _buildFooter(AppLocalizations l10n) {

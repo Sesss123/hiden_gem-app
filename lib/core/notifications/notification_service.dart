@@ -147,8 +147,11 @@ class NotificationService {
             if (data['type'] == 'new_booking') {
               unreadBookingCount.value++;
             }
-            final createdAt =
-                (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now();
+            final rawCreatedAt = data['createdAt'];
+            final createdAt = rawCreatedAt is Timestamp
+                ? rawCreatedAt.toDate()
+                : DateTime.tryParse(rawCreatedAt?.toString() ?? '') ??
+                    DateTime.now();
             // Only trigger alert for notifications created within the last 15 minutes
             if (DateTime.now().difference(createdAt).inMinutes < 15) {
               final title = data['title'] as String? ?? 'New Notification';

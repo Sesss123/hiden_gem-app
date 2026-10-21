@@ -43,6 +43,4 @@
 -dontwarn io.grpc.**
 -dontwarn com.squareup.okhttp.**
 
-# ARCore & Sceneform — same rationale as Firebase above: rely on the
-# library's own consumer rules instead of a blanket keep that blocks shrinking.
 -dontwarn com.google.devtools.build.android.desugar.runtime.**

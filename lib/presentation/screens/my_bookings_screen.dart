@@ -27,6 +27,7 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen> {
   final Map<String, String> _guideNames = {};
   bool _isLoading = true;
   String? _payingBookingId;
+  String? _cancellingBookingId;
 
   @override
   void initState() {
@@ -202,6 +203,7 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen> {
             ),
           ],
           _buildPaymentRow(context, l10n, booking),
+          _buildCancellationRow(context, l10n, booking),
         ],
       ),
     ).animate().fadeIn(duration: 300.ms).slideY(begin: 0.05);
@@ -292,6 +294,69 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen> {
         ],
       ),
     );
+  }
+
+  Widget _buildCancellationRow(
+      BuildContext context, AppLocalizations l10n, BookingRequest booking) {
+    final canCancel = booking.payoutStatus != 'paid' &&
+        ['pending', 'accepted', 'session_ready'].contains(booking.status);
+    if (!canCancel) return const SizedBox.shrink();
+    final isCancelling = _cancellingBookingId == booking.bookingId;
+    return Align(
+      alignment: Alignment.centerRight,
+      child: TextButton(
+        onPressed:
+            isCancelling ? null : () => _cancelBooking(context, l10n, booking),
+        child: isCancelling
+            ? const SizedBox(
+                width: 16,
+                height: 16,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              )
+            : Text(l10n.cancel),
+      ),
+    );
+  }
+
+  Future<void> _cancelBooking(BuildContext context, AppLocalizations l10n,
+      BookingRequest booking) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n.cancel),
+        content: Text(l10n.bookingStatusCancelledLabel),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child:
+                Text(MaterialLocalizations.of(dialogContext).cancelButtonLabel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: Text(l10n.cancel),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+    setState(() => _cancellingBookingId = booking.bookingId);
+    try {
+      await ref
+          .read(bookingRepositoryProvider)
+          .cancelByTourist(booking.bookingId);
+      await _load();
+    } catch (error) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(error.toString().replaceFirst('Exception: ', '')),
+            backgroundColor: AppPalette.error,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _cancellingBookingId = null);
+    }
   }
 
   Future<void> _handlePayNow(

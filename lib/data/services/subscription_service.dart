@@ -3,7 +3,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/subscription_record.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
-import 'package:uuid/uuid.dart';
 import 'package:flutter/services.dart';
 import '../../core/config/app_config.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -25,7 +24,10 @@ class SubscriptionService {
         .get();
 
     if (snapshot.docs.isEmpty) return null;
-    final record = SubscriptionRecord.fromJson(snapshot.docs.first.data());
+    final document = snapshot.docs.first;
+    final data = document.data();
+    data.putIfAbsent('subscriptionId', () => document.id);
+    final record = SubscriptionRecord.fromJson(data);
     // SAFETY NET CHECK: Immediately fall back to free-tier if local date is past expiresAt
     if (record.expiresAt.isBefore(DateTime.now())) {
       return null;
@@ -75,7 +77,7 @@ class SubscriptionService {
 
   int _getPlanLimit(String planId, String key) {
     final limits = {
-      'free': {'maxTeamSize': 1, 'maxPackages': 3, 'monthlyBookingQuota': 5},
+      'free': {'maxTeamSize': 1, 'maxPackages': 0, 'monthlyBookingQuota': 5},
       'pro': {'maxTeamSize': 5, 'maxPackages': 10, 'monthlyBookingQuota': 50},
       'elite': {
         'maxTeamSize': 20,
@@ -112,7 +114,7 @@ class SubscriptionService {
   }
 
   /// Initiates a real payment via RevenueCat.
-  Future<void> purchasePlan(
+  Future<SubscriptionRecord> purchasePlan(
       String planId, String accountId, String accountType) async {
     // Dev-mode bypass: RevenueCat's SDK is never configured when only dummy
     // API keys are present (see premium_service.dart's identical check), so
@@ -127,7 +129,8 @@ class SubscriptionService {
     // test a paid plan locally, grant it server-side (Firebase console /
     // Admin SDK script) rather than through this client path.
     if (kDebugMode && _revenueCatUnconfigured) {
-      return;
+      throw StateError(
+          'RevenueCat is not configured. Add a real Android public SDK key before testing subscriptions.');
     }
 
     // Map internal plan IDs to RevenueCat product identifiers
@@ -169,23 +172,22 @@ class SubscriptionService {
           await Purchases.purchase(PurchaseParams.package(packageToBuy));
 
       // 4. If successful, sync the active subscription with our Firestore database
-      if (purchaseResult.customerInfo.entitlements.all.isNotEmpty) {
-        final record = SubscriptionRecord(
-          subscriptionId: const Uuid().v4(),
-          accountId: accountId,
-          accountType: accountType,
-          planId: planId,
-          status: 'active',
-          startedAt: DateTime.now(),
-          expiresAt: DateTime.now().add(const Duration(
-              days: 30)), // Basic estimation, real expiry is in RevenueCat
-          entitlements: {},
-        );
-        await startSubscription(record);
-      } else {
+      final purchasedProductIsActive = purchaseResult
+          .customerInfo.entitlements.active.values
+          .any((entitlement) =>
+              entitlement.productIdentifier == revenueCatProductId);
+      if (!purchasedProductIsActive) {
         throw Exception(
-            "Purchase completed but no entitlements were unlocked.");
+            "Purchase completed but the selected plan entitlement is not active.");
       }
+
+      for (var attempt = 0; attempt < 6; attempt++) {
+        final subscription = await getActiveSubscription(accountId);
+        if (subscription?.planId == planId) return subscription!;
+        if (attempt < 5) await Future.delayed(const Duration(seconds: 2));
+      }
+      throw StateError(
+          'Purchase was received, but account activation is still syncing. Use Restore Purchases in a moment.');
     } on PlatformException catch (e) {
       final errorCode = PurchasesErrorHelper.getErrorCode(e);
       if (errorCode == PurchasesErrorCode.purchaseCancelledError) {
@@ -195,19 +197,6 @@ class SubscriptionService {
       }
     }
   }
-
-  /// No-op by design. The subscriptions/{subId} doc — and the isPremium/
-  /// planId fields it drives via hasEntitlement()/getLimit() — can only be
-  /// written by the revenuecat_webhook Cloud Function (Admin SDK), never by
-  /// the client directly. firestore.rules previously allowed
-  /// accountId == request.auth.uid clients to write their own subscription
-  /// doc, which let a user self-grant an Elite plan for free; that hole is
-  /// now closed (allow write: if false) and this method deliberately does
-  /// nothing. RevenueCat calls revenuecat_webhook itself immediately after
-  /// purchasePlan()'s Purchases.purchase() succeeds — the UI should read the
-  /// resulting state via getActiveSubscription()/hasEntitlement() rather
-  /// than trust a client-written optimistic record.
-  Future<void> startSubscription(SubscriptionRecord record) async {}
 
   /// Restores store purchases only after binding RevenueCat to the current
   /// Firebase UID, then waits for the server webhook projection. This keeps a
@@ -243,28 +232,5 @@ class SubscriptionService {
     return snapshot.docs
         .map((doc) => SubscriptionRecord.fromJson(doc.data()))
         .toList();
-  }
-
-  /// Cancels an active subscription.
-  Future<void> cancelSubscription(String subscriptionId) async {
-    final docSnap = await _subscriptionRef.doc(subscriptionId).get();
-    await _subscriptionRef.doc(subscriptionId).update({
-      'status': 'cancelled',
-      'autoRenew': false,
-      'cancelledAt': DateTime.now().toIso8601String(),
-    });
-
-    if (docSnap.exists && docSnap.data() != null) {
-      final data = docSnap.data()!;
-      final accountId = data['accountId'] as String?;
-      final accountType = data['accountType'] as String?;
-      if (accountId != null && accountType != null) {
-        final collection =
-            accountType == 'guide' ? 'users' : 'operator_accounts';
-        await _firestore.collection(collection).doc(accountId).update({
-          'autoRenew': false,
-        });
-      }
-    }
   }
 }

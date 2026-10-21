@@ -155,12 +155,16 @@ class _LoadingPlanScreenState extends State<LoadingPlanScreen>
       startDate: widget.startDate,
     );
 
-    final normOrigin = widget.origin.trim().toLowerCase();
-    final coords = _cityCoordinates[normOrigin] ?? [6.9271, 79.8612];
-    final originLat = coords[0];
-    final originLng = coords[1];
-
     try {
+      final normOrigin = widget.origin.trim().toLowerCase();
+      final coords = _cityCoordinates[normOrigin];
+      if (coords == null) {
+        throw StateError(
+            'No verified coordinates are available for ${widget.origin}. Please select a supported city.');
+      }
+      final originLat = coords[0];
+      final originLng = coords[1];
+
       final TripPlan plan = await AiTripService.generateTrip(
         origin: widget.origin,
         fromLat: originLat,

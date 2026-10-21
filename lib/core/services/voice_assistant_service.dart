@@ -235,7 +235,7 @@ class VoiceAssistantService {
       return "The spice of Lanka awaits! Use my SavorLanka Vision to unlock the secrets of our traditional clay-pot wonders. Shall I guide you to a local tavern?";
     }
 
-    // AR Time Travel trigger
+    // Nearby discovery trigger
     if (userQuery.toLowerCase().contains("near me") ||
         userQuery.toLowerCase().contains("hidden gem")) {
       // Find true nearest gem using Haversine (Stage 5 Fix)

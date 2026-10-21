@@ -56,6 +56,7 @@ import 'package:hidden_gems_sl/presentation/screens/privacy_policy_screen.dart';
 import 'package:hidden_gems_sl/presentation/screens/terms_screen.dart';
 import '../../core/services/secure_entitlements.dart';
 import '../../core/services/consent_service.dart';
+import '../../core/utils/image_upload_validator.dart';
 import 'admin_guide_verification_screen.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
@@ -412,12 +413,15 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
           mainAxisSize: MainAxisSize.min,
           children: [
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                _photoOption(
-                    Icons.camera_alt_outlined, l10n.camera, ImageSource.camera),
-                _photoOption(Icons.photo_library_outlined, l10n.gallery,
-                    ImageSource.gallery),
+                Expanded(
+                  child: _photoOption(Icons.camera_alt_outlined, l10n.camera,
+                      ImageSource.camera),
+                ),
+                Expanded(
+                  child: _photoOption(Icons.photo_library_outlined,
+                      l10n.gallery, ImageSource.gallery),
+                ),
               ],
             ),
             if (profile.profileImagePath != null) ...[
@@ -444,13 +448,28 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
     );
 
     if (source != null) {
-      final XFile? image =
-          await picker.pickImage(source: source, maxWidth: 800);
-      if (image != null) {
-        await UserPreferenceService.updateProfileImagePath(image.path);
-        if (mounted) {
-          setState(() => profile = UserPreferenceService.getProfile());
+      try {
+        final XFile? image = await picker.pickImage(
+          source: source,
+          imageQuality: 80,
+          maxWidth: 800,
+          maxHeight: 800,
+        );
+        if (image != null) {
+          await ImageUploadValidator.validate(
+            image,
+            maxBytes: 5 * 1024 * 1024,
+          );
+          await UserPreferenceService.updateProfileImagePath(image.path);
+          if (mounted) {
+            setState(() => profile = UserPreferenceService.getProfile());
+          }
         }
+      } on ImageValidationException catch (error) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(error.message)),
+        );
       }
     }
   }
@@ -533,7 +552,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                       ).animate().fadeIn(delay: 150.ms).slideY(begin: 0.1),
                       const SizedBox(height: 20),
 
-                      // Premium / AR Status
+                      // Premium Status
                       _buildPremiumCard(isPremium),
                       const SizedBox(height: 20),
 
@@ -756,6 +775,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
         const SizedBox(height: 2),
         Text(
           label,
+          textAlign: TextAlign.center,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
           style: GoogleFonts.inter(
               fontSize: 10,
               color: AppTheme.colors.white.withValues(alpha: 0.75),
@@ -808,8 +830,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                 const SizedBox(height: 2),
                 Text(
                   isPremium
-                      ? l10n.fullArAiAccessGranted
-                      : l10n.unlockArAiFeatures,
+                      ? l10n.premiumActiveLabel(
+                          profile.premiumPlan ?? l10n.premiumFallback)
+                      : l10n.premiumCtaDescription,
                   style: GoogleFonts.inter(
                       color: AppTheme.colors.white.withValues(alpha: 0.6),
                       fontSize: 11),
@@ -1810,7 +1833,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
         _tile(Icons.support_agent_rounded, l10n.support, onTap: () async {
           final uri = Uri(
               scheme: 'mailto',
-              path: 'support@hiddengems.lk',
+              path: 'pathiranasehas3@gmail.com',
               query: 'subject=Support%20Request');
           if (await canLaunchUrl(uri)) await launchUrl(uri);
         }),

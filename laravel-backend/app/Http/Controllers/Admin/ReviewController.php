@@ -92,8 +92,8 @@ class ReviewController extends Controller
         $this->recalculateGuideStats($review['guideId'] ?? null);
         $this->logAdminAction('review.restored', 'Review', $id, []);
 
-        return redirect()->route('admin.reviews.index', ['status' => 'flagged'])
-            ->with('success', 'Review restored to active.');
+        return redirect()->route('admin.reviews.index', ['status' => 'under_review'])
+            ->with('success', 'Review approved and published.');
     }
 
     /**

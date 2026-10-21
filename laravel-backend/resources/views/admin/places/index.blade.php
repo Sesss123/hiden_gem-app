@@ -93,7 +93,7 @@
                         <th class="py-4 px-6">Gem Name & ID</th>
                         <th class="py-4 px-6 hidden sm:table-cell">Location</th>
                         <th class="py-4 px-6 hidden lg:table-cell">Category</th>
-                        <th class="py-4 px-6 hidden lg:table-cell">AR / Rating</th>
+                        <th class="py-4 px-6 hidden lg:table-cell">Rating</th>
                         <th class="py-4 px-6 hidden xl:table-cell">Sync Version</th>
                         <th class="py-4 px-6">Status</th>
                         <th class="py-4 px-6 text-right">Actions</th>
@@ -130,9 +130,6 @@
                         </td>
                         <td class="py-3 px-6 hidden lg:table-cell">
                             <div class="flex items-center gap-2">
-                                @if($place->ar_supported)
-                                    <span class="bg-purple-500/20 text-purple-300 border border-purple-500/30 text-[10px] font-bold px-2 py-0.5 rounded uppercase">AR Tier {{ $place->ar_tier }}</span>
-                                @endif
                                 <span class="text-amber-400 font-bold text-xs flex items-center gap-1">
                                     <i class="fa-solid fa-star"></i> {{ number_format((float)($place->rating ?? 0), 1) }}
                                 </span>

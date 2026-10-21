@@ -244,12 +244,6 @@ abstract class AppLocalizations {
   /// **'Saved Places & Journey Hub'**
   String get savedJourneyHubTitle;
 
-  /// No description provided for @bookmarkedCount.
-  ///
-  /// In en, this message translates to:
-  /// **'Bookmarked ({count})'**
-  String bookmarkedCount(int count);
-
   /// No description provided for @wantToVisitCount.
   ///
   /// In en, this message translates to:
@@ -267,18 +261,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Saved places could not be loaded.'**
   String get savedPlacesLoadError;
-
-  /// No description provided for @noBookmarkedPlaces.
-  ///
-  /// In en, this message translates to:
-  /// **'No bookmarked places yet'**
-  String get noBookmarkedPlaces;
-
-  /// No description provided for @noBookmarkedPlacesHint.
-  ///
-  /// In en, this message translates to:
-  /// **'Tap the bookmark icon on a place to save it here.'**
-  String get noBookmarkedPlacesHint;
 
   /// No description provided for @wantToVisitEmpty.
   ///
@@ -370,12 +352,6 @@ abstract class AppLocalizations {
   /// **'Prices are supplied by the service and may change. Confirm before purchase.'**
   String get serverManagedPriceNote;
 
-  /// No description provided for @hydrationSummary.
-  ///
-  /// In en, this message translates to:
-  /// **'Local drinks · sealed water guidance · safer ice guidance'**
-  String get hydrationSummary;
-
   /// The title of the application
   ///
   /// In en, this message translates to:
@@ -466,12 +442,6 @@ abstract class AppLocalizations {
   /// **'Language'**
   String get language;
 
-  /// No description provided for @itinerary.
-  ///
-  /// In en, this message translates to:
-  /// **'Itinerary'**
-  String get itinerary;
-
   /// No description provided for @style.
   ///
   /// In en, this message translates to:
@@ -519,12 +489,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Discovery'**
   String get discovery;
-
-  /// No description provided for @nearYou.
-  ///
-  /// In en, this message translates to:
-  /// **'Near You'**
-  String get nearYou;
 
   /// No description provided for @aiReason.
   ///
@@ -622,29 +586,11 @@ abstract class AppLocalizations {
   /// **'Discover'**
   String get discoveryHeader;
 
-  /// No description provided for @searchHint.
-  ///
-  /// In en, this message translates to:
-  /// **'Search for hidden gems...'**
-  String get searchHint;
-
   /// No description provided for @picksForYou.
   ///
   /// In en, this message translates to:
   /// **'Hidden Gems SL Picks for you'**
   String get picksForYou;
-
-  /// No description provided for @exploreInAr.
-  ///
-  /// In en, this message translates to:
-  /// **'Explore in AR'**
-  String get exploreInAr;
-
-  /// No description provided for @bestNatureNearby.
-  ///
-  /// In en, this message translates to:
-  /// **'Best Nature nearby'**
-  String get bestNatureNearby;
 
   /// No description provided for @topCultureSpots.
   ///
@@ -657,18 +603,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Village & Authentic Stays'**
   String get villageStayTitle;
-
-  /// No description provided for @allNearbyPlacesTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'All Nearby Places'**
-  String get allNearbyPlacesTitle;
-
-  /// No description provided for @noMatchesNearby.
-  ///
-  /// In en, this message translates to:
-  /// **'No matches nearby'**
-  String get noMatchesNearby;
 
   /// No description provided for @tryIncreasingDistance.
   ///
@@ -723,12 +657,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Budget 💸'**
   String get filterBudget;
-
-  /// No description provided for @filterAr.
-  ///
-  /// In en, this message translates to:
-  /// **'AR Places 🏛'**
-  String get filterAr;
 
   /// No description provided for @categoryNature.
   ///
@@ -790,12 +718,6 @@ abstract class AppLocalizations {
   /// **'Best at {time}'**
   String bestAtLabel(String time);
 
-  /// No description provided for @arHeritageReady.
-  ///
-  /// In en, this message translates to:
-  /// **'AR Heritage ready'**
-  String get arHeritageReady;
-
   /// No description provided for @theKnowledge.
   ///
   /// In en, this message translates to:
@@ -856,47 +778,11 @@ abstract class AppLocalizations {
   /// **'REALITY'**
   String get reality;
 
-  /// No description provided for @aerDimensionReady.
-  ///
-  /// In en, this message translates to:
-  /// **'AER DIMENSION READY'**
-  String get aerDimensionReady;
-
-  /// No description provided for @invokeAr.
-  ///
-  /// In en, this message translates to:
-  /// **'INVOKE AR'**
-  String get invokeAr;
-
   /// No description provided for @addToDestiny.
   ///
   /// In en, this message translates to:
   /// **'ADD TO DESTINY'**
   String get addToDestiny;
-
-  /// No description provided for @distanceLockTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'DISTANCE LOCK'**
-  String get distanceLockTitle;
-
-  /// No description provided for @distanceLockMessage.
-  ///
-  /// In en, this message translates to:
-  /// **'You are {distance} KM away. Seekers can only access the AER dimension within 500M of the site.'**
-  String distanceLockMessage(Object distance);
-
-  /// No description provided for @arCoreNotDetected.
-  ///
-  /// In en, this message translates to:
-  /// **'AR CORE NOT DETECTED'**
-  String get arCoreNotDetected;
-
-  /// No description provided for @arCoreMessage.
-  ///
-  /// In en, this message translates to:
-  /// **'Traveler, the ancient visions require ARCore to manifest. Please ensure it is installed and updated on your device.'**
-  String get arCoreMessage;
 
   /// No description provided for @road.
   ///
@@ -910,35 +796,11 @@ abstract class AppLocalizations {
   /// **'ACCESS'**
   String get access;
 
-  /// No description provided for @parking.
-  ///
-  /// In en, this message translates to:
-  /// **'PARKING'**
-  String get parking;
-
-  /// No description provided for @syncingResonance.
-  ///
-  /// In en, this message translates to:
-  /// **'Syncing with ancient resonance...'**
-  String get syncingResonance;
-
-  /// No description provided for @resonanceLost.
-  ///
-  /// In en, this message translates to:
-  /// **'Resonance Lost'**
-  String get resonanceLost;
-
   /// No description provided for @gpsRequired.
   ///
   /// In en, this message translates to:
   /// **'We couldn\'t verify your location. Ensure GPS is active.'**
   String get gpsRequired;
-
-  /// No description provided for @unlockTeleport.
-  ///
-  /// In en, this message translates to:
-  /// **'UNLOCK TELEPORT'**
-  String get unlockTeleport;
 
   /// No description provided for @close.
   ///
@@ -951,102 +813,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Understood'**
   String get understood;
-
-  /// No description provided for @ancestralPortalOpen.
-  ///
-  /// In en, this message translates to:
-  /// **'ANCESTRAL PORTAL OPEN'**
-  String get ancestralPortalOpen;
-
-  /// No description provided for @stepIntoHistory.
-  ///
-  /// In en, this message translates to:
-  /// **'Step into history'**
-  String get stepIntoHistory;
-
-  /// No description provided for @viewEraIn360.
-  ///
-  /// In en, this message translates to:
-  /// **'View {era} in 360°'**
-  String viewEraIn360(Object era);
-
-  /// No description provided for @arDemoLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'10-Second AR Demo'**
-  String get arDemoLabel;
-
-  /// No description provided for @fullHeritageAr.
-  ///
-  /// In en, this message translates to:
-  /// **'Full Heritage AR'**
-  String get fullHeritageAr;
-
-  /// No description provided for @ancientHeritageSite.
-  ///
-  /// In en, this message translates to:
-  /// **'Ancient Heritage Site'**
-  String get ancientHeritageSite;
-
-  /// No description provided for @arTipPlace.
-  ///
-  /// In en, this message translates to:
-  /// **'Tap the surface to place the 3D reconstruction'**
-  String get arTipPlace;
-
-  /// No description provided for @arTipTime.
-  ///
-  /// In en, this message translates to:
-  /// **'Swipe \"Then/Now\" to travel through time'**
-  String get arTipTime;
-
-  /// No description provided for @arTipAudio.
-  ///
-  /// In en, this message translates to:
-  /// **'Audio guide available in Sinhala & English'**
-  String get arTipAudio;
-
-  /// No description provided for @arTipGroup.
-  ///
-  /// In en, this message translates to:
-  /// **'Host or join a group AR tour'**
-  String get arTipGroup;
-
-  /// No description provided for @openArPortal.
-  ///
-  /// In en, this message translates to:
-  /// **'OPEN AR PORTAL'**
-  String get openArPortal;
-
-  /// No description provided for @enterDemo.
-  ///
-  /// In en, this message translates to:
-  /// **'ENTER DEMO (10s)'**
-  String get enterDemo;
-
-  /// No description provided for @offlineReady.
-  ///
-  /// In en, this message translates to:
-  /// **'Offline Ready'**
-  String get offlineReady;
-
-  /// No description provided for @assetsCached.
-  ///
-  /// In en, this message translates to:
-  /// **'Heritage assets cached for offline use!'**
-  String get assetsCached;
-
-  /// No description provided for @downloadFailed.
-  ///
-  /// In en, this message translates to:
-  /// **'Download failed. Please check connection.'**
-  String get downloadFailed;
-
-  /// No description provided for @downloadForOffline.
-  ///
-  /// In en, this message translates to:
-  /// **'Download for Offline'**
-  String get downloadForOffline;
 
   /// No description provided for @initiateTravel.
   ///
@@ -1099,7 +865,7 @@ abstract class AppLocalizations {
   /// No description provided for @couldNotOpenEmail.
   ///
   /// In en, this message translates to:
-  /// **'Could not open email client. Please email support@hiddengems.lk'**
+  /// **'Could not open email client. Please email pathiranasehas3@gmail.com'**
   String get couldNotOpenEmail;
 
   /// No description provided for @getDirections.
@@ -1132,23 +898,11 @@ abstract class AppLocalizations {
   /// **'Bike'**
   String get travelModeBike;
 
-  /// No description provided for @travelModeCar.
-  ///
-  /// In en, this message translates to:
-  /// **'Car'**
-  String get travelModeCar;
-
   /// No description provided for @openInMaps.
   ///
   /// In en, this message translates to:
   /// **'Open in Maps'**
   String get openInMaps;
-
-  /// No description provided for @nearbyNowLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'{km} km away — nearby now'**
-  String nearbyNowLabel(String km);
 
   /// No description provided for @photosLabel.
   ///
@@ -1219,7 +973,7 @@ abstract class AppLocalizations {
   /// No description provided for @privacySection5Body.
   ///
   /// In en, this message translates to:
-  /// **'Under the Personal Data Protection Act No. 9 of 2022, you hold fundamental rights regarding your personal data:\n\n• Right of Access & Correction: You may review, download, or edit your account information and profile data directly within the app\'s Profile Screen.\n• Withdrawal of Consent: You may withdraw consent for location tracking or data processing at any time by disabling location permissions in device settings or revoking active Family Sharing links.\n• Right to Deletion (Right to be Forgotten): You can request permanent account deletion directly via Profile > Privacy > Account Deletion, or by emailing our data protection officer at support@hiddengems.lk.'**
+  /// **'Under the Personal Data Protection Act No. 9 of 2022, you hold fundamental rights regarding your personal data:\n\n• Right of Access & Correction: You may review, download, or edit your account information and profile data directly within the app\'s Profile Screen.\n• Withdrawal of Consent: You may withdraw consent for location tracking or data processing at any time by disabling location permissions in device settings or revoking active Family Sharing links.\n• Right to Deletion (Right to be Forgotten): You can request permanent account deletion directly via Profile > Privacy > Account Deletion, or by emailing our data protection officer at pathiranasehas3@gmail.com.'**
   String get privacySection5Body;
 
   /// No description provided for @privacySection6Title.
@@ -1279,7 +1033,7 @@ abstract class AppLocalizations {
   /// No description provided for @privacyFooterAddress.
   ///
   /// In en, this message translates to:
-  /// **'Registered Office: Colombo, Sri Lanka • support@hiddengems.lk'**
+  /// **'Registered Office: Colombo, Sri Lanka • pathiranasehas3@gmail.com'**
   String get privacyFooterAddress;
 
   /// No description provided for @termsAndPrivacyTitle.
@@ -1375,7 +1129,7 @@ abstract class AppLocalizations {
   /// No description provided for @updateReadyBody.
   ///
   /// In en, this message translates to:
-  /// **'Better maps, faster AI trips, and improved AR are waiting for you.'**
+  /// **'Better maps, faster AI trips, and new travel tools are waiting for you.'**
   String get updateReadyBody;
 
   /// No description provided for @updateNow.
@@ -1485,12 +1239,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Insufficient complexity'**
   String get insufficientComplexity;
-
-  /// No description provided for @atLeast6Chars.
-  ///
-  /// In en, this message translates to:
-  /// **'At least 6 characters'**
-  String get atLeast6Chars;
 
   /// No description provided for @forgotPassword.
   ///
@@ -1666,18 +1414,6 @@ abstract class AppLocalizations {
   /// **'Food AI'**
   String get foodAiAction;
 
-  /// No description provided for @arPortalsAction.
-  ///
-  /// In en, this message translates to:
-  /// **'AR Portals'**
-  String get arPortalsAction;
-
-  /// No description provided for @localGemsNearby.
-  ///
-  /// In en, this message translates to:
-  /// **'Local Gems Nearby'**
-  String get localGemsNearby;
-
   /// No description provided for @todayInSriLanka.
   ///
   /// In en, this message translates to:
@@ -1695,12 +1431,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Let the Oracle guide your path'**
   String get letOracleGuide;
-
-  /// No description provided for @searchSecretLocations.
-  ///
-  /// In en, this message translates to:
-  /// **'Search secret locations...'**
-  String get searchSecretLocations;
 
   /// No description provided for @offlineModeLabel.
   ///
@@ -1810,18 +1540,6 @@ abstract class AppLocalizations {
   /// **'The Essentials'**
   String get step1Subtitle;
 
-  /// No description provided for @startingPointLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Starting Point'**
-  String get startingPointLabel;
-
-  /// No description provided for @startingPointHint.
-  ///
-  /// In en, this message translates to:
-  /// **'Airport, Colombo...'**
-  String get startingPointHint;
-
   /// No description provided for @destinationLabel.
   ///
   /// In en, this message translates to:
@@ -1833,12 +1551,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Ella, Galle, Kandy...'**
   String get destinationHint;
-
-  /// No description provided for @startDateLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Start Date'**
-  String get startDateLabel;
 
   /// No description provided for @step2Title.
   ///
@@ -1863,12 +1575,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{days} days'**
   String tripLengthDaysValue(int days);
-
-  /// No description provided for @travelStandardLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Travel Standard'**
-  String get travelStandardLabel;
 
   /// No description provided for @step3Title.
   ///
@@ -2080,18 +1786,6 @@ abstract class AppLocalizations {
   /// **'Premium'**
   String get priceRangePremium;
 
-  /// No description provided for @heritageArSearchTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'HERITAGE AR SEARCH'**
-  String get heritageArSearchTitle;
-
-  /// No description provided for @onlyShowArEnabledSpots.
-  ///
-  /// In en, this message translates to:
-  /// **'ONLY SHOW AR ENABLED SPOTS'**
-  String get onlyShowArEnabledSpots;
-
   /// No description provided for @revealDestinies.
   ///
   /// In en, this message translates to:
@@ -2122,18 +1816,6 @@ abstract class AppLocalizations {
   /// **'See all'**
   String get seeAll;
 
-  /// No description provided for @arBadge.
-  ///
-  /// In en, this message translates to:
-  /// **'AR'**
-  String get arBadge;
-
-  /// No description provided for @heritageArBadge.
-  ///
-  /// In en, this message translates to:
-  /// **'HERITAGE AR'**
-  String get heritageArBadge;
-
   /// No description provided for @tripDurationStyleLabel.
   ///
   /// In en, this message translates to:
@@ -2151,12 +1833,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Map'**
   String get mapTabLabel;
-
-  /// No description provided for @premiumFeatureSnackbar.
-  ///
-  /// In en, this message translates to:
-  /// **'{featureName} is a Premium feature.'**
-  String premiumFeatureSnackbar(String featureName);
 
   /// No description provided for @savedPlansFeatureName.
   ///
@@ -2380,12 +2056,6 @@ abstract class AppLocalizations {
   /// **'Localization error'**
   String get localizationError;
 
-  /// No description provided for @appearance.
-  ///
-  /// In en, this message translates to:
-  /// **'Appearance'**
-  String get appearance;
-
   /// No description provided for @settingsSectionLabel.
   ///
   /// In en, this message translates to:
@@ -2446,18 +2116,6 @@ abstract class AppLocalizations {
   /// **'Go Premium'**
   String get goPremium;
 
-  /// No description provided for @fullArAiAccessGranted.
-  ///
-  /// In en, this message translates to:
-  /// **'Full AR & AI access granted'**
-  String get fullArAiAccessGranted;
-
-  /// No description provided for @unlockArAiFeatures.
-  ///
-  /// In en, this message translates to:
-  /// **'Unlock AR & AI features'**
-  String get unlockArAiFeatures;
-
   /// No description provided for @upgrade.
   ///
   /// In en, this message translates to:
@@ -2470,12 +2128,6 @@ abstract class AppLocalizations {
   /// **'Light'**
   String get themeLight;
 
-  /// No description provided for @themeDark.
-  ///
-  /// In en, this message translates to:
-  /// **'Dark'**
-  String get themeDark;
-
   /// No description provided for @journeyHub.
   ///
   /// In en, this message translates to:
@@ -2487,12 +2139,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'AI Budget Concierge'**
   String get aiBudgetConcierge;
-
-  /// No description provided for @smartExpenseAdvisor.
-  ///
-  /// In en, this message translates to:
-  /// **'Smart expense advisor'**
-  String get smartExpenseAdvisor;
 
   /// No description provided for @heritagePassport.
   ///
@@ -2536,119 +2182,11 @@ abstract class AppLocalizations {
   /// **'Your ethical travel score measures your positive impact on local communities and heritage preservation across Sri Lanka.'**
   String get ethicalScoreDescription;
 
-  /// No description provided for @howToEarnPointsHeading.
-  ///
-  /// In en, this message translates to:
-  /// **'HOW TO EARN POINTS:'**
-  String get howToEarnPointsHeading;
-
-  /// No description provided for @earnPointsReviewsTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Leave Place Reviews'**
-  String get earnPointsReviewsTitle;
-
-  /// No description provided for @earnPointsReviewsAmount.
-  ///
-  /// In en, this message translates to:
-  /// **'+10 Pts'**
-  String get earnPointsReviewsAmount;
-
-  /// No description provided for @earnPointsReviewsSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Support local guides and travelers'**
-  String get earnPointsReviewsSubtitle;
-
-  /// No description provided for @earnPointsFoodTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Sample Local Food'**
-  String get earnPointsFoodTitle;
-
-  /// No description provided for @earnPointsFoodAmount.
-  ///
-  /// In en, this message translates to:
-  /// **'+15 Pts'**
-  String get earnPointsFoodAmount;
-
-  /// No description provided for @earnPointsFoodSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Empower authentic local eateries'**
-  String get earnPointsFoodSubtitle;
-
-  /// No description provided for @earnPointsHeritageTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Visit Heritage Sites'**
-  String get earnPointsHeritageTitle;
-
-  /// No description provided for @earnPointsHeritageAmount.
-  ///
-  /// In en, this message translates to:
-  /// **'+20 Pts'**
-  String get earnPointsHeritageAmount;
-
-  /// No description provided for @earnPointsHeritageSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Promote cultural preservation'**
-  String get earnPointsHeritageSubtitle;
-
-  /// No description provided for @rewardsPerksHeading.
-  ///
-  /// In en, this message translates to:
-  /// **'REWARDS & PERKS YOU UNLOCK:'**
-  String get rewardsPerksHeading;
-
-  /// No description provided for @rewardEcoGuardianBadgeTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Eco Guardian Badge'**
-  String get rewardEcoGuardianBadgeTitle;
-
-  /// No description provided for @rewardEcoGuardianBadgeSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Stand out on leaderboards & reviews'**
-  String get rewardEcoGuardianBadgeSubtitle;
-
-  /// No description provided for @rewardPartnerDiscountsTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Partner Discounts'**
-  String get rewardPartnerDiscountsTitle;
-
-  /// No description provided for @rewardPartnerDiscountsSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'5%-15% off at verified eco-stays & cafes'**
-  String get rewardPartnerDiscountsSubtitle;
-
-  /// No description provided for @rewardFreePremiumPerksTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Free Premium Perks'**
-  String get rewardFreePremiumPerksTitle;
-
   /// No description provided for @rewardFreePremiumPerksSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Unlock AR guides & offline maps with points'**
+  /// **'Unlock offline maps and premium tools with points'**
   String get rewardFreePremiumPerksSubtitle;
-
-  /// No description provided for @rewardRealWorldImpactTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Real-World Impact'**
-  String get rewardRealWorldImpactTitle;
-
-  /// No description provided for @rewardRealWorldImpactSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Reach 500 Pts & we plant a tree in SL for you!'**
-  String get rewardRealWorldImpactSubtitle;
 
   /// No description provided for @gotItKeepExploring.
   ///
@@ -2673,30 +2211,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'ACTIVE'**
   String get activeStatusBadge;
-
-  /// No description provided for @tourDashboard.
-  ///
-  /// In en, this message translates to:
-  /// **'Tour Dashboard'**
-  String get tourDashboard;
-
-  /// No description provided for @tourDashboardSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Active tour, QR, listing & safety'**
-  String get tourDashboardSubtitle;
-
-  /// No description provided for @earnings.
-  ///
-  /// In en, this message translates to:
-  /// **'Earnings'**
-  String get earnings;
-
-  /// No description provided for @earningsSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Payouts & stats'**
-  String get earningsSubtitle;
 
   /// No description provided for @clients.
   ///
@@ -2770,12 +2284,6 @@ abstract class AppLocalizations {
   /// **'My Bookings'**
   String get myBookings;
 
-  /// No description provided for @familySharing.
-  ///
-  /// In en, this message translates to:
-  /// **'Family Sharing'**
-  String get familySharing;
-
   /// No description provided for @scanGuideQr.
   ///
   /// In en, this message translates to:
@@ -2848,18 +2356,6 @@ abstract class AppLocalizations {
   /// **'Are you sure you want to sign out?'**
   String get confirmSignOutMessage;
 
-  /// No description provided for @shareAppMessage.
-  ///
-  /// In en, this message translates to:
-  /// **'Join Hidden Gems SL! 🌍 https://hiddengems.lk'**
-  String get shareAppMessage;
-
-  /// No description provided for @shareAppSubject.
-  ///
-  /// In en, this message translates to:
-  /// **'Join me on Hidden Gems SL!'**
-  String get shareAppSubject;
-
   /// No description provided for @somethingWentWrong.
   ///
   /// In en, this message translates to:
@@ -2871,12 +2367,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Camera Permission Required'**
   String get cameraPermissionRequiredTitle;
-
-  /// No description provided for @cameraPermissionRequiredMessage.
-  ///
-  /// In en, this message translates to:
-  /// **'Camera access is required for the AR experience. Please enable it in Settings.'**
-  String get cameraPermissionRequiredMessage;
 
   /// No description provided for @openSettings.
   ///
@@ -2890,35 +2380,11 @@ abstract class AppLocalizations {
   /// **'Live scanning is coming soon.\n\nReal-time landmark and object recognition through your camera is on the way. We\'ll let you know the moment it\'s ready.'**
   String get liveScanningComingSoonMessage;
 
-  /// No description provided for @landmarkScannerTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Landmark scanner'**
-  String get landmarkScannerTitle;
-
   /// No description provided for @identifyingLabel.
   ///
   /// In en, this message translates to:
   /// **'Identifying…'**
   String get identifyingLabel;
-
-  /// No description provided for @analyzeLandmarkButton.
-  ///
-  /// In en, this message translates to:
-  /// **'Analyze landmark'**
-  String get analyzeLandmarkButton;
-
-  /// No description provided for @unlockLandmarkScanningTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Unlock landmark scanning'**
-  String get unlockLandmarkScanningTitle;
-
-  /// No description provided for @unlockLandmarkScanningSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Point your camera at any site to reveal its hidden history.'**
-  String get unlockLandmarkScanningSubtitle;
 
   /// No description provided for @oracleVerifiedLabel.
   ///
@@ -2931,24 +2397,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Failed to load map data: {error}'**
   String mapLoadErrorMessage(String error);
-
-  /// No description provided for @guideLiveMarkerLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'YOUR GUIDE (LIVE)'**
-  String get guideLiveMarkerLabel;
-
-  /// No description provided for @vehicleMarkerLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'YOUR VEHICLE'**
-  String get vehicleMarkerLabel;
-
-  /// No description provided for @meetingPointMarkerLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'MEETING POINT: {pointName}'**
-  String meetingPointMarkerLabel(String pointName);
 
   /// No description provided for @sosEmergencySignalTitle.
   ///
@@ -3022,12 +2470,6 @@ abstract class AppLocalizations {
   /// **'Failed to save map: {error}'**
   String failedToSaveMapError(String error);
 
-  /// No description provided for @mapMarkerDaySnippet.
-  ///
-  /// In en, this message translates to:
-  /// **'Day {day} • {time}'**
-  String mapMarkerDaySnippet(int day, String time);
-
   /// No description provided for @visualRouteTitle.
   ///
   /// In en, this message translates to:
@@ -3058,35 +2500,11 @@ abstract class AppLocalizations {
   /// **'FOCUS'**
   String get focusButtonLabel;
 
-  /// No description provided for @planRemovedSnackbar.
-  ///
-  /// In en, this message translates to:
-  /// **'Plan removed from Oracle cache'**
-  String get planRemovedSnackbar;
-
-  /// No description provided for @viewInArLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'View in AR'**
-  String get viewInArLabel;
-
   /// No description provided for @savedTripsTitle.
   ///
   /// In en, this message translates to:
   /// **'Saved trips'**
   String get savedTripsTitle;
-
-  /// No description provided for @clearSavedTripsTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Clear saved trips'**
-  String get clearSavedTripsTitle;
-
-  /// No description provided for @clearSavedTripsMessage.
-  ///
-  /// In en, this message translates to:
-  /// **'This will permanently remove all saved trips from this device.'**
-  String get clearSavedTripsMessage;
 
   /// No description provided for @eraseAllButton.
   ///
@@ -3112,12 +2530,6 @@ abstract class AppLocalizations {
   /// **'Unknown date'**
   String get unknownDateLabel;
 
-  /// No description provided for @noArSpotsSnackbar.
-  ///
-  /// In en, this message translates to:
-  /// **'No AR spots in this plan'**
-  String get noArSpotsSnackbar;
-
   /// No description provided for @tripRouteLabel.
   ///
   /// In en, this message translates to:
@@ -3135,12 +2547,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Rs {amount}'**
   String tripBudgetChip(String amount);
-
-  /// No description provided for @arBadgeLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'AR'**
-  String get arBadgeLabel;
 
   /// No description provided for @savedTimeAgoLabel.
   ///
@@ -3358,47 +2764,11 @@ abstract class AppLocalizations {
   /// **'Avoid using soap/shampoo in natural pools'**
   String get etiquetteTipNoSoapInPools;
 
-  /// No description provided for @arTierHeritageShort.
-  ///
-  /// In en, this message translates to:
-  /// **'Heritage'**
-  String get arTierHeritageShort;
-
-  /// No description provided for @arTierExploreShort.
-  ///
-  /// In en, this message translates to:
-  /// **'Explore'**
-  String get arTierExploreShort;
-
-  /// No description provided for @arTierStoryShort.
-  ///
-  /// In en, this message translates to:
-  /// **'Story'**
-  String get arTierStoryShort;
-
   /// No description provided for @notAvailableShort.
   ///
   /// In en, this message translates to:
   /// **'N/A'**
   String get notAvailableShort;
-
-  /// No description provided for @arBadgeHeritage.
-  ///
-  /// In en, this message translates to:
-  /// **'HERITAGE AR'**
-  String get arBadgeHeritage;
-
-  /// No description provided for @arBadgeExplore.
-  ///
-  /// In en, this message translates to:
-  /// **'EXPLORE AR'**
-  String get arBadgeExplore;
-
-  /// No description provided for @arBadgeStory.
-  ///
-  /// In en, this message translates to:
-  /// **'STORY VIEW'**
-  String get arBadgeStory;
 
   /// No description provided for @noRiskTagsFound.
   ///
@@ -3430,12 +2800,6 @@ abstract class AppLocalizations {
   /// **'Activities'**
   String get fieldNoteActivities;
 
-  /// No description provided for @fieldNotePopularity.
-  ///
-  /// In en, this message translates to:
-  /// **'Popularity'**
-  String get fieldNotePopularity;
-
   /// No description provided for @fieldNoteFamilyFriendly.
   ///
   /// In en, this message translates to:
@@ -3454,12 +2818,6 @@ abstract class AppLocalizations {
   /// **'Toilets'**
   String get fieldNoteToilets;
 
-  /// No description provided for @fieldNoteFoodNearby.
-  ///
-  /// In en, this message translates to:
-  /// **'Food Nearby'**
-  String get fieldNoteFoodNearby;
-
   /// No description provided for @fieldNoteWheelchairAccess.
   ///
   /// In en, this message translates to:
@@ -3477,12 +2835,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Safety Level'**
   String get fieldNoteSafetyLevel;
-
-  /// No description provided for @fieldNoteWildlifeHazard.
-  ///
-  /// In en, this message translates to:
-  /// **'Wildlife Hazard'**
-  String get fieldNoteWildlifeHazard;
 
   /// No description provided for @fieldNoteGuideRequired.
   ///
@@ -3520,30 +2872,6 @@ abstract class AppLocalizations {
   /// **'Length'**
   String get fieldNoteLength;
 
-  /// No description provided for @bookmarkAddedSnackbar.
-  ///
-  /// In en, this message translates to:
-  /// **'✨ Marked in your journey!'**
-  String get bookmarkAddedSnackbar;
-
-  /// No description provided for @bookmarkRemovedSnackbar.
-  ///
-  /// In en, this message translates to:
-  /// **'Removed from bookmarks.'**
-  String get bookmarkRemovedSnackbar;
-
-  /// No description provided for @itineraryAddedSnackbar.
-  ///
-  /// In en, this message translates to:
-  /// **'🗺️ {placeName} added to your destiny!'**
-  String itineraryAddedSnackbar(String placeName);
-
-  /// No description provided for @itineraryRemovedSnackbar.
-  ///
-  /// In en, this message translates to:
-  /// **'Removed from itinerary.'**
-  String get itineraryRemovedSnackbar;
-
   /// No description provided for @featureNameHeritageSessions.
   ///
   /// In en, this message translates to:
@@ -3556,53 +2884,11 @@ abstract class AppLocalizations {
   /// **'Oracle Queries'**
   String get featureNameOracleQueries;
 
-  /// No description provided for @bonusSessionUnlockedSnackbar.
-  ///
-  /// In en, this message translates to:
-  /// **'Bonus Session Unlocked! Try launching again.'**
-  String get bonusSessionUnlockedSnackbar;
-
-  /// No description provided for @oracleRewardActiveSnackbar.
-  ///
-  /// In en, this message translates to:
-  /// **'✨ Oracle reward active! AR session unlocked.'**
-  String get oracleRewardActiveSnackbar;
-
   /// No description provided for @okButton.
   ///
   /// In en, this message translates to:
   /// **'OK'**
   String get okButton;
-
-  /// No description provided for @arComingSoonTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'AR Experience Coming Soon'**
-  String get arComingSoonTitle;
-
-  /// No description provided for @arComingSoonMessage.
-  ///
-  /// In en, this message translates to:
-  /// **'We\'re putting the finishing touches on the AR experience for {placeName}. Check back in a future update.'**
-  String arComingSoonMessage(String placeName);
-
-  /// No description provided for @arBrandNameHeritage.
-  ///
-  /// In en, this message translates to:
-  /// **'Heritage AR'**
-  String get arBrandNameHeritage;
-
-  /// No description provided for @arBrandNameExplore.
-  ///
-  /// In en, this message translates to:
-  /// **'Explore AR'**
-  String get arBrandNameExplore;
-
-  /// No description provided for @bonusDownloadUnlockedSnackbar.
-  ///
-  /// In en, this message translates to:
-  /// **'Bonus Download Unlocked! Try downloading again.'**
-  String get bonusDownloadUnlockedSnackbar;
 
   /// No description provided for @featureNameOfflineDownloads.
   ///
@@ -3850,29 +3136,11 @@ abstract class AppLocalizations {
   /// **'No accepted bookings to sync yet.'**
   String get noBookingsToSyncMessage;
 
-  /// No description provided for @calendarEventTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Tour: {touristName} ({guestCount} guests)'**
-  String calendarEventTitle(String touristName, int guestCount);
-
   /// No description provided for @defaultTouristName.
   ///
   /// In en, this message translates to:
   /// **'Traveler'**
   String get defaultTouristName;
-
-  /// No description provided for @calendarSyncSuccessMessage.
-  ///
-  /// In en, this message translates to:
-  /// **'{count, plural, one{Synced 1 booking to your calendar.} other{Synced {count} bookings to your calendar.}}'**
-  String calendarSyncSuccessMessage(int count);
-
-  /// No description provided for @calendarSyncFailedMessage.
-  ///
-  /// In en, this message translates to:
-  /// **'Calendar sync failed: {error}'**
-  String calendarSyncFailedMessage(String error);
 
   /// No description provided for @loginRequiredMessage.
   ///
@@ -3885,12 +3153,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Bookings'**
   String get bookingsScreenTitle;
-
-  /// No description provided for @syncToCalendarTooltip.
-  ///
-  /// In en, this message translates to:
-  /// **'Sync to calendar'**
-  String get syncToCalendarTooltip;
 
   /// No description provided for @inboxLoadErrorMessage.
   ///
@@ -3964,12 +3226,6 @@ abstract class AppLocalizations {
   /// **'Pending'**
   String get payoutPendingLabel;
 
-  /// No description provided for @earningsAwaitingConfirmationNote.
-  ///
-  /// In en, this message translates to:
-  /// **'{count, plural, one {1 booking} other {{count} bookings}} still awaiting server payout confirmation'**
-  String earningsAwaitingConfirmationNote(int count);
-
   /// No description provided for @tourNotesLabel.
   ///
   /// In en, this message translates to:
@@ -3993,12 +3249,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Accept'**
   String get acceptButtonLabel;
-
-  /// No description provided for @startTourSessionButtonLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Start / launch tour session'**
-  String get startTourSessionButtonLabel;
 
   /// No description provided for @bookingAcceptedMessage.
   ///
@@ -4174,192 +3424,6 @@ abstract class AppLocalizations {
   /// **'TRANSMIT FEEDBACK'**
   String get transmitFeedbackButton;
 
-  /// No description provided for @familyShareLinkLimitReached.
-  ///
-  /// In en, this message translates to:
-  /// **'⚠️ You\'ve reached the limit of {maxLinks} active share links. Remove one to create another.'**
-  String familyShareLinkLimitReached(int maxLinks);
-
-  /// No description provided for @familyShareRecipientNameRequired.
-  ///
-  /// In en, this message translates to:
-  /// **'⚠️ Please enter a recipient name.'**
-  String get familyShareRecipientNameRequired;
-
-  /// No description provided for @familyShareNoActiveSessionError.
-  ///
-  /// In en, this message translates to:
-  /// **'⚠️ Start an active tour session first — there\'s nothing to share yet.'**
-  String get familyShareNoActiveSessionError;
-
-  /// No description provided for @familyShareLinkGeneratedSuccess.
-  ///
-  /// In en, this message translates to:
-  /// **'✅ Mission link generated for \"{name}\"!'**
-  String familyShareLinkGeneratedSuccess(String name);
-
-  /// No description provided for @familyShareActiveLinksTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Active links'**
-  String get familyShareActiveLinksTitle;
-
-  /// No description provided for @familyShareNewLinkButton.
-  ///
-  /// In en, this message translates to:
-  /// **'+ New'**
-  String get familyShareNewLinkButton;
-
-  /// No description provided for @familyShareAppBarTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Family sharing'**
-  String get familyShareAppBarTitle;
-
-  /// No description provided for @familyShareHeroSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Let family track your trip status securely'**
-  String get familyShareHeroSubtitle;
-
-  /// No description provided for @familyShareNoActiveSessionNotice.
-  ///
-  /// In en, this message translates to:
-  /// **'No active tour right now — start or join a tour to generate a live share link.'**
-  String get familyShareNoActiveSessionNotice;
-
-  /// No description provided for @familyShareEmptyStateMessage.
-  ///
-  /// In en, this message translates to:
-  /// **'No active sharing links found'**
-  String get familyShareEmptyStateMessage;
-
-  /// No description provided for @familyShareExpiredBadge.
-  ///
-  /// In en, this message translates to:
-  /// **'Expired'**
-  String get familyShareExpiredBadge;
-
-  /// No description provided for @familyShareViewedCountBadge.
-  ///
-  /// In en, this message translates to:
-  /// **'Viewed {count}x'**
-  String familyShareViewedCountBadge(int count);
-
-  /// No description provided for @familyShareLinkNoLongerValid.
-  ///
-  /// In en, this message translates to:
-  /// **'No longer valid'**
-  String get familyShareLinkNoLongerValid;
-
-  /// No description provided for @familyShareLinkExpiresAt.
-  ///
-  /// In en, this message translates to:
-  /// **'Expires {time}'**
-  String familyShareLinkExpiresAt(String time);
-
-  /// No description provided for @familyShareCopyLinkSnackbar.
-  ///
-  /// In en, this message translates to:
-  /// **'📋 Invite code copied to clipboard!'**
-  String get familyShareCopyLinkSnackbar;
-
-  /// No description provided for @familyShareRemoveLinkDialogTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Remove Link?'**
-  String get familyShareRemoveLinkDialogTitle;
-
-  /// No description provided for @familyShareRemoveLinkDialogBody.
-  ///
-  /// In en, this message translates to:
-  /// **'This will revoke \"{recipientName}\"\'s shared access.'**
-  String familyShareRemoveLinkDialogBody(String recipientName);
-
-  /// No description provided for @familyShareLinkRemovedSnackbar.
-  ///
-  /// In en, this message translates to:
-  /// **'Link for \"{recipientName}\" removed.'**
-  String familyShareLinkRemovedSnackbar(String recipientName);
-
-  /// No description provided for @familyShareRemoveButton.
-  ///
-  /// In en, this message translates to:
-  /// **'Remove'**
-  String get familyShareRemoveButton;
-
-  /// No description provided for @familyShareCreateSheetTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Create share link'**
-  String get familyShareCreateSheetTitle;
-
-  /// No description provided for @familyShareRecipientNameLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Recipient name'**
-  String get familyShareRecipientNameLabel;
-
-  /// No description provided for @familyShareRecipientNameHint.
-  ///
-  /// In en, this message translates to:
-  /// **'E.g. Mom, Dad, Home office'**
-  String get familyShareRecipientNameHint;
-
-  /// No description provided for @familyShareExpiryLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Expiry'**
-  String get familyShareExpiryLabel;
-
-  /// No description provided for @familyShareDuration4Hours.
-  ///
-  /// In en, this message translates to:
-  /// **'4 hours'**
-  String get familyShareDuration4Hours;
-
-  /// No description provided for @familyShareDuration12Hours.
-  ///
-  /// In en, this message translates to:
-  /// **'12 hours'**
-  String get familyShareDuration12Hours;
-
-  /// No description provided for @familyShareDuration24Hours.
-  ///
-  /// In en, this message translates to:
-  /// **'24 hours'**
-  String get familyShareDuration24Hours;
-
-  /// No description provided for @familyShareToggleStatusLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Share live status'**
-  String get familyShareToggleStatusLabel;
-
-  /// No description provided for @familyShareToggleIdentityLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Share guide identity'**
-  String get familyShareToggleIdentityLabel;
-
-  /// No description provided for @familyShareToggleMeetingPointLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Share meeting point'**
-  String get familyShareToggleMeetingPointLabel;
-
-  /// No description provided for @familyShareToggleEmergencyLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Share emergency alerts'**
-  String get familyShareToggleEmergencyLabel;
-
-  /// No description provided for @familyShareGenerateLinkButton.
-  ///
-  /// In en, this message translates to:
-  /// **'Generate link'**
-  String get familyShareGenerateLinkButton;
-
   /// No description provided for @categoryAll.
   ///
   /// In en, this message translates to:
@@ -4401,12 +3465,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Photography'**
   String get categoryPhotography;
-
-  /// No description provided for @marketplaceSearchHint.
-  ///
-  /// In en, this message translates to:
-  /// **'Search by name, language, or city...'**
-  String get marketplaceSearchHint;
 
   /// No description provided for @verifiedGuidesEyebrow.
   ///
@@ -4471,7 +3529,7 @@ abstract class AppLocalizations {
   /// No description provided for @couldNotGetLocationMessage.
   ///
   /// In en, this message translates to:
-  /// **'Could not get your location. Using default coordinates. ({error})'**
+  /// **'Could not get your location. The action was cancelled to avoid using an incorrect location. ({error})'**
   String couldNotGetLocationMessage(String error);
 
   /// No description provided for @failedToUpdatePhaseMessage.
@@ -4522,23 +3580,11 @@ abstract class AppLocalizations {
   /// **'Failed to set meeting point: {error}'**
   String failedToSetMeetingPointMessage(String error);
 
-  /// No description provided for @vehiclePositionMarkedMessage.
-  ///
-  /// In en, this message translates to:
-  /// **'Vehicle position marked'**
-  String get vehiclePositionMarkedMessage;
-
   /// No description provided for @failedToUpdateVehicleLocationMessage.
   ///
   /// In en, this message translates to:
   /// **'Failed to update vehicle location: {error}'**
   String failedToUpdateVehicleLocationMessage(String error);
-
-  /// No description provided for @tourDashboardTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Tour dashboard'**
-  String get tourDashboardTitle;
 
   /// No description provided for @bottomNavTour.
   ///
@@ -4612,18 +3658,6 @@ abstract class AppLocalizations {
   /// **'Travelers and meeting point confirmed. Tap below when you and the travelers arrive at the meeting point to officially start the timer and tracking.'**
   String get upcomingTourSessionReadyMessage;
 
-  /// No description provided for @startTourSessionButton.
-  ///
-  /// In en, this message translates to:
-  /// **'Start tour session'**
-  String get startTourSessionButton;
-
-  /// No description provided for @tourSessionStartedMessage.
-  ///
-  /// In en, this message translates to:
-  /// **'🚀 Tour Session Started!'**
-  String get tourSessionStartedMessage;
-
   /// No description provided for @statLabelTravelers.
   ///
   /// In en, this message translates to:
@@ -4653,12 +3687,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Set point'**
   String get setPointButton;
-
-  /// No description provided for @markVehicleButton.
-  ///
-  /// In en, this message translates to:
-  /// **'Mark vehicle'**
-  String get markVehicleButton;
 
   /// No description provided for @joinStatusLabel.
   ///
@@ -4768,12 +3796,6 @@ abstract class AppLocalizations {
   /// **'Traveler {shortId}'**
   String travelerTileLabel(String shortId);
 
-  /// No description provided for @weatherHazardLoggedMessage.
-  ///
-  /// In en, this message translates to:
-  /// **'✅ Weather hazard logged to Safety Console!'**
-  String get weatherHazardLoggedMessage;
-
   /// No description provided for @errorLoggingIncidentMessage.
   ///
   /// In en, this message translates to:
@@ -4804,29 +3826,11 @@ abstract class AppLocalizations {
   /// **'Severe weather warning in your tour district.'**
   String get defaultMonsoonAlertMessage;
 
-  /// No description provided for @earningsTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Earnings'**
-  String get earningsTitle;
-
-  /// No description provided for @pleaseLogInViewEarningsMessage.
-  ///
-  /// In en, this message translates to:
-  /// **'Please log in to view earnings.'**
-  String get pleaseLogInViewEarningsMessage;
-
   /// No description provided for @errorLoadingFinancialDataMessage.
   ///
   /// In en, this message translates to:
   /// **'Error loading financial data: {error}'**
   String errorLoadingFinancialDataMessage(String error);
-
-  /// No description provided for @totalNetEarningsLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Total net earnings'**
-  String get totalNetEarningsLabel;
 
   /// No description provided for @netPercentageLabel.
   ///
@@ -5308,12 +4312,6 @@ abstract class AppLocalizations {
   /// **'Booking history'**
   String get bookingHistoryTitle;
 
-  /// No description provided for @guestCountParenthesesLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'{count} guest(s)'**
-  String guestCountParenthesesLabel(int count);
-
   /// No description provided for @becomeAGuideTitle.
   ///
   /// In en, this message translates to:
@@ -5475,18 +4473,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Congratulations! Your guide identity is active. You can access the Guide Dashboard from your profile.'**
   String get approvedGuideMessage;
-
-  /// No description provided for @shareLocalKnowledgeTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Share your local knowledge'**
-  String get shareLocalKnowledgeTitle;
-
-  /// No description provided for @guideTravelersEarnSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Guide travelers and earn on your own schedule.'**
-  String get guideTravelersEarnSubtitle;
 
   /// No description provided for @guideCategoryLabel.
   ///
@@ -5800,12 +4786,6 @@ abstract class AppLocalizations {
   /// **'Delay'**
   String get broadcastTypeDelay;
 
-  /// No description provided for @broadcastTypeDeparture.
-  ///
-  /// In en, this message translates to:
-  /// **'Departure'**
-  String get broadcastTypeDeparture;
-
   /// No description provided for @broadcastTypeVehicleChange.
   ///
   /// In en, this message translates to:
@@ -6004,12 +4984,6 @@ abstract class AppLocalizations {
   /// **'Tap a package to book it directly'**
   String get tapPackageToBookMessage;
 
-  /// No description provided for @standardPackageLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Standard package'**
-  String get standardPackageLabel;
-
   /// No description provided for @durationHoursShortLabel.
   ///
   /// In en, this message translates to:
@@ -6039,12 +5013,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Experience'**
   String get experienceStatLabel;
-
-  /// No description provided for @yearsExperienceLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'{years} years'**
-  String yearsExperienceLabel(String years);
 
   /// No description provided for @ratingStatLabel.
   ///
@@ -6111,12 +5079,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Category & specialties'**
   String get categorySpecialtiesTitle;
-
-  /// No description provided for @primaryCategoryLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Primary Category'**
-  String get primaryCategoryLabel;
 
   /// No description provided for @languagesCommaLabel.
   ///
@@ -6201,12 +5163,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Cover photos ({count})'**
   String coverPhotosCountTitle(int count);
-
-  /// No description provided for @availabilityCalendarTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Availability calendar'**
-  String get availabilityCalendarTitle;
 
   /// No description provided for @visibilityBoostTitle.
   ///
@@ -6393,12 +5349,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No critical incidents'**
   String get noCriticalIncidentsTitle;
-
-  /// No description provided for @sessionWithinSafetyParamsMessage.
-  ///
-  /// In en, this message translates to:
-  /// **'Session operations are within safety parameters.'**
-  String get sessionWithinSafetyParamsMessage;
 
   /// No description provided for @reportIncidentButton.
   ///
@@ -6856,12 +5806,6 @@ abstract class AppLocalizations {
   /// **'Critical contacts'**
   String get criticalContactsTitle;
 
-  /// No description provided for @medicalFacilitiesNearbyTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Medical facilities nearby'**
-  String get medicalFacilitiesNearbyTitle;
-
   /// No description provided for @emergencyProtocolLabel.
   ///
   /// In en, this message translates to:
@@ -6922,24 +5866,6 @@ abstract class AppLocalizations {
   /// **'Fire Dept'**
   String get contactNameFireDept;
 
-  /// No description provided for @privateGuardiansTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Private guardians'**
-  String get privateGuardiansTitle;
-
-  /// No description provided for @noGuardiansAssignedMessage.
-  ///
-  /// In en, this message translates to:
-  /// **'No guardians assigned. Signals will default to emergency services.'**
-  String get noGuardiansAssignedMessage;
-
-  /// No description provided for @nearestHospitalTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Nearest hospital, wherever you are'**
-  String get nearestHospitalTitle;
-
   /// No description provided for @checkingLocationAccessMessage.
   ///
   /// In en, this message translates to:
@@ -6957,36 +5883,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Opens Google Maps using your live GPS — shows every government and private hospital nearby, no matter where you are in Sri Lanka.'**
   String get hospitalMapsExplanationMessage;
-
-  /// No description provided for @findNearestHospitalButton.
-  ///
-  /// In en, this message translates to:
-  /// **'Find nearest hospital on Maps'**
-  String get findNearestHospitalButton;
-
-  /// No description provided for @addGuardianTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Add guardian'**
-  String get addGuardianTitle;
-
-  /// No description provided for @guardianPhoneNumberHint.
-  ///
-  /// In en, this message translates to:
-  /// **'Guardian phone number'**
-  String get guardianPhoneNumberHint;
-
-  /// No description provided for @addGuardianButton.
-  ///
-  /// In en, this message translates to:
-  /// **'Add guardian'**
-  String get addGuardianButton;
-
-  /// No description provided for @sosAlertsPreparedLoggedMessage.
-  ///
-  /// In en, this message translates to:
-  /// **'Phone/SMS app opened. Complete the call or tap Send; emergency services are not contacted automatically. The incident was logged where possible.'**
-  String get sosAlertsPreparedLoggedMessage;
 
   /// No description provided for @sosCriticalAlertTitle.
   ///
@@ -7023,12 +5919,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'View Plans'**
   String get viewPlansButton;
-
-  /// No description provided for @monsoonHazardAlertTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'MONSOON HAZARD ALERT'**
-  String get monsoonHazardAlertTitle;
 
   /// No description provided for @districtLabel.
   ///
@@ -7077,12 +5967,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Tour active'**
   String get tourActiveTitle;
-
-  /// No description provided for @preparingTourTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Preparing tour'**
-  String get preparingTourTitle;
 
   /// No description provided for @everythingOnTrackMessage.
   ///
@@ -7150,12 +6034,6 @@ abstract class AppLocalizations {
   /// **'Find vehicle'**
   String get findVehicleLabel;
 
-  /// No description provided for @parkedSpotLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Parked spot'**
-  String get parkedSpotLabel;
-
   /// No description provided for @meetingPointLabel.
   ///
   /// In en, this message translates to:
@@ -7203,12 +6081,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'More'**
   String get moreLabel;
-
-  /// No description provided for @shareLiveLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Share live'**
-  String get shareLiveLabel;
 
   /// No description provided for @familyAccessLabel.
   ///
@@ -7360,12 +6232,6 @@ abstract class AppLocalizations {
   /// **'Festival'**
   String get categoryFestival;
 
-  /// No description provided for @categoryParty.
-  ///
-  /// In en, this message translates to:
-  /// **'Party'**
-  String get categoryParty;
-
   /// No description provided for @availableEventsTitle.
   ///
   /// In en, this message translates to:
@@ -7419,18 +6285,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Sync preferences'**
   String get syncPreferencesButton;
-
-  /// No description provided for @failedToShareTimelineMessage.
-  ///
-  /// In en, this message translates to:
-  /// **'Failed to share timeline: {error}'**
-  String failedToShareTimelineMessage(String error);
-
-  /// No description provided for @hazardWarningMessage.
-  ///
-  /// In en, this message translates to:
-  /// **'🚨 HAZARD WARNING: {message}'**
-  String hazardWarningMessage(String message);
 
   /// No description provided for @extremeWeatherAlertFallback.
   ///
@@ -7570,12 +6424,6 @@ abstract class AppLocalizations {
   /// **'Recent transactions'**
   String get recentTransactionsTitle;
 
-  /// No description provided for @totalSpentSoFarLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Total spent so far'**
-  String get totalSpentSoFarLabel;
-
   /// No description provided for @approxUsdLabel.
   ///
   /// In en, this message translates to:
@@ -7647,12 +6495,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'PLAN: {planId}'**
   String planLabel(String planId);
-
-  /// No description provided for @startedLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'STARTED'**
-  String get startedLabel;
 
   /// No description provided for @expiresLabel.
   ///
@@ -7744,12 +6586,6 @@ abstract class AppLocalizations {
   /// **'Verified Badge'**
   String get featureVerifiedBadge;
 
-  /// No description provided for @featureStandardSos.
-  ///
-  /// In en, this message translates to:
-  /// **'Standard SOS'**
-  String get featureStandardSos;
-
   /// No description provided for @proCommanderTitle.
   ///
   /// In en, this message translates to:
@@ -7804,12 +6640,6 @@ abstract class AppLocalizations {
   /// **'Team Management'**
   String get featureTeamManagement;
 
-  /// No description provided for @featureOperatorDashboard.
-  ///
-  /// In en, this message translates to:
-  /// **'Operator Dashboard'**
-  String get featureOperatorDashboard;
-
   /// No description provided for @featureWhiteLabelBranding.
   ///
   /// In en, this message translates to:
@@ -7858,12 +6688,6 @@ abstract class AppLocalizations {
   /// **'Manage'**
   String get manageButton;
 
-  /// No description provided for @mostPopularLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Most popular'**
-  String get mostPopularLabel;
-
   /// No description provided for @perMonthSlashLabel.
   ///
   /// In en, this message translates to:
@@ -7887,24 +6711,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Go Premium'**
   String get goPremiumTitle;
-
-  /// No description provided for @fullArUnlimitedAiTripsMessage.
-  ///
-  /// In en, this message translates to:
-  /// **'Full AR & unlimited AI trips'**
-  String get fullArUnlimitedAiTripsMessage;
-
-  /// No description provided for @heritageArModeTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Heritage AR Mode'**
-  String get heritageArModeTitle;
-
-  /// No description provided for @heritageArModeDescription.
-  ///
-  /// In en, this message translates to:
-  /// **'See ancient ruins reconstructed in 1:1 scale with historical audio guides.'**
-  String get heritageArModeDescription;
 
   /// No description provided for @oracleAiTripIntelligenceTitle.
   ///
@@ -7941,18 +6747,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Access to member-only discounts at handpicked boutique stays.'**
   String get exclusiveCuratorDealsDescription;
-
-  /// No description provided for @guardianEmergencyTranslatorTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Guardian Emergency Translator'**
-  String get guardianEmergencyTranslatorTitle;
-
-  /// No description provided for @guardianEmergencyTranslatorDescription.
-  ///
-  /// In en, this message translates to:
-  /// **'Instantly explain your situation to Sri Lankan police or hospital staff in spoken Sinhala during an SOS.'**
-  String get guardianEmergencyTranslatorDescription;
 
   /// No description provided for @premiumActiveLabel.
   ///
@@ -7996,29 +6790,11 @@ abstract class AppLocalizations {
   /// **'Premium reset. Pricing tiers are back.'**
   String get premiumResetMessage;
 
-  /// No description provided for @smartTravelerTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Smart Traveler'**
-  String get smartTravelerTitle;
-
   /// No description provided for @billedMonthlyLabel.
   ///
   /// In en, this message translates to:
   /// **'Billed monthly'**
   String get billedMonthlyLabel;
-
-  /// No description provided for @featureAiItineraries20.
-  ///
-  /// In en, this message translates to:
-  /// **'20 AI Itineraries/mo'**
-  String get featureAiItineraries20;
-
-  /// No description provided for @featureSelectedArPlaces.
-  ///
-  /// In en, this message translates to:
-  /// **'Selected AR Places'**
-  String get featureSelectedArPlaces;
 
   /// No description provided for @featureOfflineMapsBasic.
   ///
@@ -8031,24 +6807,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Heritage Premium'**
   String get heritagePremiumTitle;
-
-  /// No description provided for @billedYearlySaveLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Billed yearly · save ~17%'**
-  String get billedYearlySaveLabel;
-
-  /// No description provided for @featureUnlimitedAiItineraries.
-  ///
-  /// In en, this message translates to:
-  /// **'Unlimited AI Itineraries'**
-  String get featureUnlimitedAiItineraries;
-
-  /// No description provided for @featureFullHeritageArAccess.
-  ///
-  /// In en, this message translates to:
-  /// **'Full Heritage AR Access'**
-  String get featureFullHeritageArAccess;
 
   /// No description provided for @featureAllOfflineFeatures.
   ///
@@ -8128,12 +6886,6 @@ abstract class AppLocalizations {
   /// **'Monthly'**
   String get monthlyLabel;
 
-  /// No description provided for @yearlySaveLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Yearly · Save 17%'**
-  String get yearlySaveLabel;
-
   /// No description provided for @lockedLabelShort.
   ///
   /// In en, this message translates to:
@@ -8176,12 +6928,6 @@ abstract class AppLocalizations {
   /// **'{count, plural, one{1 month} other{{count} months}} free trial'**
   String trialMonthsLabel(int count);
 
-  /// No description provided for @trialYearsLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'{count, plural, one{1 year} other{{count} years}} free trial'**
-  String trialYearsLabel(int count);
-
   /// No description provided for @trialPeriodLabel.
   ///
   /// In en, this message translates to:
@@ -8199,12 +6945,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'SAVORLANKA AI'**
   String get savorLankaAiTitle;
-
-  /// No description provided for @culinaryVisionEngineLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'CULINARY VISION ENGINE V2'**
-  String get culinaryVisionEngineLabel;
 
   /// No description provided for @liveRealTimeScannerLabel.
   ///
@@ -8224,12 +6964,6 @@ abstract class AppLocalizations {
   /// **'NEURAL REASONING'**
   String get neuralReasoningLabel;
 
-  /// No description provided for @aiVisualMarkersFallback.
-  ///
-  /// In en, this message translates to:
-  /// **'AI identified visual culinary markers consistent with {label}.'**
-  String aiVisualMarkersFallback(String label);
-
   /// No description provided for @authenticityIntelligenceTitle.
   ///
   /// In en, this message translates to:
@@ -8241,12 +6975,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'INGREDIENT CERTAINTY'**
   String get ingredientCertaintyTitle;
-
-  /// No description provided for @manualCulinaryOverrideTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'MANUAL CULINARY OVERRIDE'**
-  String get manualCulinaryOverrideTitle;
 
   /// No description provided for @refineIngredientsHint.
   ///
@@ -8320,12 +7048,6 @@ abstract class AppLocalizations {
   /// **'TEXTURE: {texture}'**
   String textureColonLabel(String texture);
 
-  /// No description provided for @heritageNarrativeEngineTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'HERITAGE NARRATIVE ENGINE'**
-  String get heritageNarrativeEngineTitle;
-
   /// No description provided for @verifiedLegacyTitle.
   ///
   /// In en, this message translates to:
@@ -8337,18 +7059,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'REGIONAL TRADITION'**
   String get regionalTraditionTitle;
-
-  /// No description provided for @folkloreNarrativeTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'FOLKLORE NARRATIVE'**
-  String get folkloreNarrativeTitle;
-
-  /// No description provided for @culinaryGapPairingEngineTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'CULINARY GAP & PAIRING ENGINE'**
-  String get culinaryGapPairingEngineTitle;
 
   /// No description provided for @missingCompanionsLabel.
   ///
@@ -8403,12 +7113,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Protein'**
   String get proteinLabel;
-
-  /// No description provided for @carbsLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Carbs'**
-  String get carbsLabel;
 
   /// No description provided for @fatLabel.
   ///
@@ -8500,29 +7204,11 @@ abstract class AppLocalizations {
   /// **'VOICE GUIDE'**
   String get voiceGuideLabel;
 
-  /// No description provided for @savorLankaShareText.
-  ///
-  /// In en, this message translates to:
-  /// **'Check out this {name} recipe I found on Hidden Gems SL.ai! It\'s an authentic Sri Lankan delicacy. \n\nOracle Score: {score}%'**
-  String savorLankaShareText(String name, String score);
-
-  /// No description provided for @savorLankaShareSubject.
-  ///
-  /// In en, this message translates to:
-  /// **'Hidden Gems SL.ai - Savor Lanka Recipe'**
-  String get savorLankaShareSubject;
-
   /// No description provided for @phase3CrossMatchTitle.
   ///
   /// In en, this message translates to:
   /// **'PHASE 3: CROSS-MATCH SUBSTITUTION'**
   String get phase3CrossMatchTitle;
-
-  /// No description provided for @visuallySimilarAlternativesLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'VISUALLY SIMILAR ALTERNATIVES'**
-  String get visuallySimilarAlternativesLabel;
 
   /// No description provided for @aiCrossMatchReasoningLabel.
   ///
@@ -8548,12 +7234,6 @@ abstract class AppLocalizations {
   /// **'INTEGRITY'**
   String get integrityLabel;
 
-  /// No description provided for @popularLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Popular'**
-  String get popularLabel;
-
   /// No description provided for @curatorDealsTitle.
   ///
   /// In en, this message translates to:
@@ -8565,12 +7245,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No deals right now'**
   String get noDealsRightNowTitle;
-
-  /// No description provided for @newPartnerDiscountsMessage.
-  ///
-  /// In en, this message translates to:
-  /// **'New partner discounts are added regularly — check back soon.'**
-  String get newPartnerDiscountsMessage;
 
   /// No description provided for @percentOffLabel.
   ///
@@ -8626,36 +7300,6 @@ abstract class AppLocalizations {
   /// **'Verifiable hash'**
   String get verifiableHashLabel;
 
-  /// No description provided for @shareCollectibleButton.
-  ///
-  /// In en, this message translates to:
-  /// **'Share collectible'**
-  String get shareCollectibleButton;
-
-  /// No description provided for @shareCollectibleMessage.
-  ///
-  /// In en, this message translates to:
-  /// **'I just earned the {placeName} heritage stamp ({rarity}) on Hidden Gems SL!'**
-  String shareCollectibleMessage(String placeName, String rarity);
-
-  /// No description provided for @stampRarityCommon.
-  ///
-  /// In en, this message translates to:
-  /// **'Common'**
-  String get stampRarityCommon;
-
-  /// No description provided for @stampRarityRare.
-  ///
-  /// In en, this message translates to:
-  /// **'Rare'**
-  String get stampRarityRare;
-
-  /// No description provided for @stampRarityMythic.
-  ///
-  /// In en, this message translates to:
-  /// **'Mythic'**
-  String get stampRarityMythic;
-
   /// No description provided for @audioGuideLabel.
   ///
   /// In en, this message translates to:
@@ -8704,18 +7348,6 @@ abstract class AppLocalizations {
   /// **'JOIN'**
   String get joinButtonUppercase;
 
-  /// No description provided for @tapFlatSurfaceMessage.
-  ///
-  /// In en, this message translates to:
-  /// **'👆 Tap a flat surface to place the model'**
-  String get tapFlatSurfaceMessage;
-
-  /// No description provided for @groupTourStartedCodeLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Group Tour Started! Code: {code}'**
-  String groupTourStartedCodeLabel(String code);
-
   /// No description provided for @invalidSessionCodeMessage.
   ///
   /// In en, this message translates to:
@@ -8745,96 +7377,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'CODE: {code}'**
   String codeColonLabel(String code);
-
-  /// No description provided for @thenLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'THEN'**
-  String get thenLabel;
-
-  /// No description provided for @nowLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'NOW'**
-  String get nowLabel;
-
-  /// No description provided for @resetLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Reset'**
-  String get resetLabel;
-
-  /// No description provided for @scalePlusLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Scale+'**
-  String get scalePlusLabel;
-
-  /// No description provided for @scaleMinusLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Scale-'**
-  String get scaleMinusLabel;
-
-  /// No description provided for @memoryLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Memory'**
-  String get memoryLabel;
-
-  /// No description provided for @removeLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Remove'**
-  String get removeLabel;
-
-  /// No description provided for @placeLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Place'**
-  String get placeLabel;
-
-  /// No description provided for @historicalInfoComingSoonMessage.
-  ///
-  /// In en, this message translates to:
-  /// **'Historical information coming soon.'**
-  String get historicalInfoComingSoonMessage;
-
-  /// No description provided for @preparingHeritageAssetsMessage.
-  ///
-  /// In en, this message translates to:
-  /// **'Preparing Heritage Assets...'**
-  String get preparingHeritageAssetsMessage;
-
-  /// No description provided for @progressSizeLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'{progress}% • {size} MB'**
-  String progressSizeLabel(int progress, String size);
-
-  /// No description provided for @arModelPlacementFailedMessage.
-  ///
-  /// In en, this message translates to:
-  /// **'This model couldn\'t be placed — it may be missing or corrupted. Try again or pick another location.'**
-  String get arModelPlacementFailedMessage;
-
-  /// No description provided for @arSessionErrorMessage.
-  ///
-  /// In en, this message translates to:
-  /// **'AR error: {message}'**
-  String arSessionErrorMessage(String message);
-
-  /// No description provided for @largeDownloadWarningTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Large download'**
-  String get largeDownloadWarningTitle;
-
-  /// No description provided for @largeDownloadWarningMessage.
-  ///
-  /// In en, this message translates to:
-  /// **'This 3D model is about {size} MB. Downloading it now will use your mobile data. Continue?'**
-  String largeDownloadWarningMessage(String size);
 
   /// No description provided for @downloadAnywayButtonLabel.
   ///
@@ -8878,41 +7420,11 @@ abstract class AppLocalizations {
   /// **'PREMIUM HERITAGE SESSION'**
   String get premiumHeritageSessionLabel;
 
-  /// No description provided for @artifactDiscoveredLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'ARTIFACT DISCOVERED!'**
-  String get artifactDiscoveredLabel;
-
-  /// No description provided for @ptsRarityLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'+{points} PTS • {rarity}'**
-  String ptsRarityLabel(int points, String rarity);
-
-  /// No description provided for @hiddenGemsSlWatermark.
-  ///
-  /// In en, this message translates to:
-  /// **'HIDDEN GEMS SL'**
-  String get hiddenGemsSlWatermark;
-
-  /// No description provided for @heritageArWatermark.
-  ///
-  /// In en, this message translates to:
-  /// **'HERITAGE AR'**
-  String get heritageArWatermark;
-
   /// No description provided for @captureSuccessfulTitle.
   ///
   /// In en, this message translates to:
   /// **'Capture Successful!'**
   String get captureSuccessfulTitle;
-
-  /// No description provided for @shareDiscoveryMessage.
-  ///
-  /// In en, this message translates to:
-  /// **'Share your historical discovery with the world'**
-  String get shareDiscoveryMessage;
 
   /// No description provided for @instagramLabel.
   ///
@@ -8932,35 +7444,11 @@ abstract class AppLocalizations {
   /// **'Saved'**
   String get savedLabelShort;
 
-  /// No description provided for @sharePlatformCaptionInstagram.
-  ///
-  /// In en, this message translates to:
-  /// **'Exploring {placeName} in AR with #HiddenGemsSL'**
-  String sharePlatformCaptionInstagram(String placeName);
-
-  /// No description provided for @sharePlatformCaptionTiktok.
-  ///
-  /// In en, this message translates to:
-  /// **'History comes alive! #HiddenGemsSL #HeritageAR'**
-  String get sharePlatformCaptionTiktok;
-
   /// No description provided for @photoSavedGalleryMessage.
   ///
   /// In en, this message translates to:
   /// **'Photo saved to your gallery!'**
   String get photoSavedGalleryMessage;
-
-  /// No description provided for @backToArButton.
-  ///
-  /// In en, this message translates to:
-  /// **'Back to AR'**
-  String get backToArButton;
-
-  /// No description provided for @distanceToTargetLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'{distance}m to {placeName}'**
-  String distanceToTargetLabel(String distance, String placeName);
 
   /// No description provided for @recommendedLabel.
   ///
@@ -8980,18 +7468,6 @@ abstract class AppLocalizations {
   /// **'VIEW'**
   String get viewButtonUppercase;
 
-  /// No description provided for @loginToLeaveMemoryMessage.
-  ///
-  /// In en, this message translates to:
-  /// **'Login to leave an AR memory!'**
-  String get loginToLeaveMemoryMessage;
-
-  /// No description provided for @leaveArMemoryTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Leave an AR Memory'**
-  String get leaveArMemoryTitle;
-
   /// No description provided for @whatDoYouSeeHereHint.
   ///
   /// In en, this message translates to:
@@ -9010,12 +7486,6 @@ abstract class AppLocalizations {
   /// **'Drop'**
   String get dropButton;
 
-  /// No description provided for @memoryDroppedMessage.
-  ///
-  /// In en, this message translates to:
-  /// **'Memory dropped into the AR universe!'**
-  String get memoryDroppedMessage;
-
   /// No description provided for @explorerFallback.
   ///
   /// In en, this message translates to:
@@ -9028,47 +7498,11 @@ abstract class AppLocalizations {
   /// **'SIGNAL: {percent}%'**
   String signalPercentLabel(int percent);
 
-  /// No description provided for @searchingLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'SEARCHING...'**
-  String get searchingLabel;
-
   /// No description provided for @cameraAccessNeededTitle.
   ///
   /// In en, this message translates to:
   /// **'Camera access needed'**
   String get cameraAccessNeededTitle;
-
-  /// No description provided for @arNotAvailableDeviceTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'AR isn\'t available on this device'**
-  String get arNotAvailableDeviceTitle;
-
-  /// No description provided for @arCouldntLoadTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'AR couldn\'t load this time'**
-  String get arCouldntLoadTitle;
-
-  /// No description provided for @cameraAccessNeededMessage.
-  ///
-  /// In en, this message translates to:
-  /// **'Camera access is needed for AR features. Here\'s a cinematic reconstruction instead.'**
-  String get cameraAccessNeededMessage;
-
-  /// No description provided for @arNotAvailableMessage.
-  ///
-  /// In en, this message translates to:
-  /// **'Here\'s a cinematic 360° view of the same era instead.'**
-  String get arNotAvailableMessage;
-
-  /// No description provided for @arCouldntLoadMessage.
-  ///
-  /// In en, this message translates to:
-  /// **'We couldn\'t load the historical 3D model. Here\'s the cinematic fallback view instead.'**
-  String get arCouldntLoadMessage;
 
   /// No description provided for @closeButtonLabel.
   ///
@@ -9081,18 +7515,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Watch ad to unlock'**
   String get watchAdToUnlockButton;
-
-  /// No description provided for @oracleRewardFallbackMessage.
-  ///
-  /// In en, this message translates to:
-  /// **'✨ Oracle reward active! Fallback modes and premium content unlocked.'**
-  String get oracleRewardFallbackMessage;
-
-  /// No description provided for @arNotAvailableInfoBarMessage.
-  ///
-  /// In en, this message translates to:
-  /// **'AR isn\'t available on this device · Showing 360° view'**
-  String get arNotAvailableInfoBarMessage;
 
   /// No description provided for @cinematicPreviewUnavailableMessage.
   ///
@@ -9130,12 +7552,6 @@ abstract class AppLocalizations {
   /// **'Sri Lanka\'s heritage runs deep into the fabric of time. This site, dating back to the {era}, was once the center of a thriving civilization that pioneered hydraulic engineering and spiritual architecture.\n\nThe stupa we see today was constructed using over 100 million sun-baked bricks, standing as a testament to the engineering marvels of ancient kings...'**
   String heritageStoryBody(String era);
 
-  /// No description provided for @listenToNarrationLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Listen to narration'**
-  String get listenToNarrationLabel;
-
   /// No description provided for @sinhalaEnglishAvailableLabel.
   ///
   /// In en, this message translates to:
@@ -9148,12 +7564,6 @@ abstract class AppLocalizations {
   /// **'Illustration: Ancient Engineering (Concept Art)'**
   String get illustrationCaptionLabel;
 
-  /// No description provided for @mode360Label.
-  ///
-  /// In en, this message translates to:
-  /// **'360°'**
-  String get mode360Label;
-
   /// No description provided for @mode3dLabel.
   ///
   /// In en, this message translates to:
@@ -9165,36 +7575,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Story'**
   String get modeStoryLabel;
-
-  /// No description provided for @unlockArHeritageModeTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Unlock AR Heritage Mode'**
-  String get unlockArHeritageModeTitle;
-
-  /// No description provided for @arHeritageModeSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Experience Sri Lanka as it looked thousands of years ago.'**
-  String get arHeritageModeSubtitle;
-
-  /// No description provided for @featureAncient3dReconstruction.
-  ///
-  /// In en, this message translates to:
-  /// **'Ancient 3D Reconstruction'**
-  String get featureAncient3dReconstruction;
-
-  /// No description provided for @featureAudioNarrationBilingual.
-  ///
-  /// In en, this message translates to:
-  /// **'Audio Narration (සිංහල / English)'**
-  String get featureAudioNarrationBilingual;
-
-  /// No description provided for @featureArPhotoCapture.
-  ///
-  /// In en, this message translates to:
-  /// **'AR Photo Capture & Social Share'**
-  String get featureArPhotoCapture;
 
   /// No description provided for @pricingTrialLabel.
   ///
@@ -9225,12 +7605,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Not Now'**
   String get notNowButtonLabel;
-
-  /// No description provided for @ancientArtifactsLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'ANCIENT ARTIFACTS'**
-  String get ancientArtifactsLabel;
 
   /// No description provided for @adminGuideVerificationTile.
   ///
@@ -9430,18 +7804,6 @@ abstract class AppLocalizations {
   /// **'Tours Offered'**
   String get tourTypesSectionTitle;
 
-  /// No description provided for @tourTypeBoatSafari.
-  ///
-  /// In en, this message translates to:
-  /// **'Boat Safari'**
-  String get tourTypeBoatSafari;
-
-  /// No description provided for @tourTypeWildlifeSafari.
-  ///
-  /// In en, this message translates to:
-  /// **'Wildlife Safari'**
-  String get tourTypeWildlifeSafari;
-
   /// No description provided for @tourTypeHiking.
   ///
   /// In en, this message translates to:
@@ -9484,12 +7846,6 @@ abstract class AppLocalizations {
   /// **'Spam'**
   String get reportReasonSpam;
 
-  /// No description provided for @reportReasonHarassment.
-  ///
-  /// In en, this message translates to:
-  /// **'Harassment'**
-  String get reportReasonHarassment;
-
   /// No description provided for @reportReasonOther.
   ///
   /// In en, this message translates to:
@@ -9526,12 +7882,6 @@ abstract class AppLocalizations {
   /// **'Apply Filters'**
   String get filterApplyButton;
 
-  /// No description provided for @filterClearButton.
-  ///
-  /// In en, this message translates to:
-  /// **'Clear'**
-  String get filterClearButton;
-
   /// No description provided for @filterRegionLabel.
   ///
   /// In en, this message translates to:
@@ -9555,12 +7905,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could not open the phone or SMS app. Call 119 or 1990 now.'**
   String get sosFailedAppLaunch;
-
-  /// No description provided for @weatherConditionClear.
-  ///
-  /// In en, this message translates to:
-  /// **'Clear Sky'**
-  String get weatherConditionClear;
 
   /// No description provided for @weatherConditionClouds.
   ///
@@ -9607,7 +7951,7 @@ abstract class AppLocalizations {
   /// No description provided for @moreToolsSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Food AI, AR Portals, Oracle, Passport & Budget'**
+  /// **'Food AI, Oracle, Passport & Budget'**
   String get moreToolsSubtitle;
 
   /// No description provided for @savedPlacesHubTitle.
@@ -9639,12 +7983,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Food scanner'**
   String get foodScannerTooltip;
-
-  /// No description provided for @familyShareTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Family Share'**
-  String get familyShareTitle;
 
   /// No description provided for @waterSafetyTitle.
   ///
@@ -9718,12 +8056,6 @@ abstract class AppLocalizations {
   /// **'Ice shape does not prove safety; ask whether potable water was used or avoid ice'**
   String get iceSafetyTip;
 
-  /// No description provided for @tapWaterWarning.
-  ///
-  /// In en, this message translates to:
-  /// **'Water quality varies; when unsure use properly boiled, filtered or sealed water'**
-  String get tapWaterWarning;
-
   /// No description provided for @jeewaniTip.
   ///
   /// In en, this message translates to:
@@ -9795,6 +8127,1086 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'General guidance only; seek professional care for persistent or severe symptoms.'**
   String get foodSafetyDisclaimer;
+
+  /// No description provided for @bookmarkedCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Bookmarked ({count})'**
+  String bookmarkedCount(int count);
+
+  /// No description provided for @noBookmarkedPlaces.
+  ///
+  /// In en, this message translates to:
+  /// **'No bookmarked places yet'**
+  String get noBookmarkedPlaces;
+
+  /// No description provided for @noBookmarkedPlacesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap the bookmark icon on a place to save it here.'**
+  String get noBookmarkedPlacesHint;
+
+  /// No description provided for @hydrationSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Local drinks · sealed water guidance · safer ice guidance'**
+  String get hydrationSummary;
+
+  /// No description provided for @itinerary.
+  ///
+  /// In en, this message translates to:
+  /// **'Itinerary'**
+  String get itinerary;
+
+  /// No description provided for @nearYou.
+  ///
+  /// In en, this message translates to:
+  /// **'Near You'**
+  String get nearYou;
+
+  /// No description provided for @searchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search for hidden gems...'**
+  String get searchHint;
+
+  /// No description provided for @bestNatureNearby.
+  ///
+  /// In en, this message translates to:
+  /// **'Best Nature nearby'**
+  String get bestNatureNearby;
+
+  /// No description provided for @allNearbyPlacesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'All Nearby Places'**
+  String get allNearbyPlacesTitle;
+
+  /// No description provided for @noMatchesNearby.
+  ///
+  /// In en, this message translates to:
+  /// **'No matches nearby'**
+  String get noMatchesNearby;
+
+  /// No description provided for @parking.
+  ///
+  /// In en, this message translates to:
+  /// **'PARKING'**
+  String get parking;
+
+  /// No description provided for @travelModeCar.
+  ///
+  /// In en, this message translates to:
+  /// **'Car'**
+  String get travelModeCar;
+
+  /// No description provided for @nearbyNowLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{km} km away — nearby now'**
+  String nearbyNowLabel(String km);
+
+  /// No description provided for @atLeast6Chars.
+  ///
+  /// In en, this message translates to:
+  /// **'At least 6 characters'**
+  String get atLeast6Chars;
+
+  /// No description provided for @localGemsNearby.
+  ///
+  /// In en, this message translates to:
+  /// **'Local Gems Nearby'**
+  String get localGemsNearby;
+
+  /// No description provided for @searchSecretLocations.
+  ///
+  /// In en, this message translates to:
+  /// **'Search secret locations...'**
+  String get searchSecretLocations;
+
+  /// No description provided for @startingPointLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Starting Point'**
+  String get startingPointLabel;
+
+  /// No description provided for @startingPointHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Airport, Colombo...'**
+  String get startingPointHint;
+
+  /// No description provided for @startDateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Start Date'**
+  String get startDateLabel;
+
+  /// No description provided for @travelStandardLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Travel Standard'**
+  String get travelStandardLabel;
+
+  /// No description provided for @premiumFeatureSnackbar.
+  ///
+  /// In en, this message translates to:
+  /// **'{featureName} is a Premium feature.'**
+  String premiumFeatureSnackbar(String featureName);
+
+  /// No description provided for @appearance.
+  ///
+  /// In en, this message translates to:
+  /// **'Appearance'**
+  String get appearance;
+
+  /// No description provided for @themeDark.
+  ///
+  /// In en, this message translates to:
+  /// **'Dark'**
+  String get themeDark;
+
+  /// No description provided for @smartExpenseAdvisor.
+  ///
+  /// In en, this message translates to:
+  /// **'Smart expense advisor'**
+  String get smartExpenseAdvisor;
+
+  /// No description provided for @howToEarnPointsHeading.
+  ///
+  /// In en, this message translates to:
+  /// **'HOW TO EARN POINTS:'**
+  String get howToEarnPointsHeading;
+
+  /// No description provided for @earnPointsReviewsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave Place Reviews'**
+  String get earnPointsReviewsTitle;
+
+  /// No description provided for @earnPointsReviewsAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'+10 Pts'**
+  String get earnPointsReviewsAmount;
+
+  /// No description provided for @earnPointsReviewsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Support local guides and travelers'**
+  String get earnPointsReviewsSubtitle;
+
+  /// No description provided for @earnPointsFoodTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sample Local Food'**
+  String get earnPointsFoodTitle;
+
+  /// No description provided for @earnPointsFoodAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'+15 Pts'**
+  String get earnPointsFoodAmount;
+
+  /// No description provided for @earnPointsFoodSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Empower authentic local eateries'**
+  String get earnPointsFoodSubtitle;
+
+  /// No description provided for @earnPointsHeritageTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Visit Heritage Sites'**
+  String get earnPointsHeritageTitle;
+
+  /// No description provided for @earnPointsHeritageAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'+20 Pts'**
+  String get earnPointsHeritageAmount;
+
+  /// No description provided for @earnPointsHeritageSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Promote cultural preservation'**
+  String get earnPointsHeritageSubtitle;
+
+  /// No description provided for @rewardsPerksHeading.
+  ///
+  /// In en, this message translates to:
+  /// **'REWARDS & PERKS YOU UNLOCK:'**
+  String get rewardsPerksHeading;
+
+  /// No description provided for @rewardEcoGuardianBadgeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Eco Guardian Badge'**
+  String get rewardEcoGuardianBadgeTitle;
+
+  /// No description provided for @rewardEcoGuardianBadgeSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Stand out on leaderboards & reviews'**
+  String get rewardEcoGuardianBadgeSubtitle;
+
+  /// No description provided for @rewardPartnerDiscountsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Partner Discounts'**
+  String get rewardPartnerDiscountsTitle;
+
+  /// No description provided for @rewardPartnerDiscountsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'5%-15% off at verified eco-stays & cafes'**
+  String get rewardPartnerDiscountsSubtitle;
+
+  /// No description provided for @rewardFreePremiumPerksTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Free Premium Perks'**
+  String get rewardFreePremiumPerksTitle;
+
+  /// No description provided for @rewardRealWorldImpactTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Real-World Impact'**
+  String get rewardRealWorldImpactTitle;
+
+  /// No description provided for @rewardRealWorldImpactSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reach 500 Pts & we plant a tree in SL for you!'**
+  String get rewardRealWorldImpactSubtitle;
+
+  /// No description provided for @tourDashboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Tour Dashboard'**
+  String get tourDashboard;
+
+  /// No description provided for @tourDashboardSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Active tour, QR, listing & safety'**
+  String get tourDashboardSubtitle;
+
+  /// No description provided for @earnings.
+  ///
+  /// In en, this message translates to:
+  /// **'Earnings'**
+  String get earnings;
+
+  /// No description provided for @earningsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Payouts & stats'**
+  String get earningsSubtitle;
+
+  /// No description provided for @familySharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Family Sharing'**
+  String get familySharing;
+
+  /// No description provided for @shareAppMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Join Hidden Gems SL! 🌍 https://hiddengems.lk'**
+  String get shareAppMessage;
+
+  /// No description provided for @shareAppSubject.
+  ///
+  /// In en, this message translates to:
+  /// **'Join me on Hidden Gems SL!'**
+  String get shareAppSubject;
+
+  /// No description provided for @landmarkScannerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Landmark scanner'**
+  String get landmarkScannerTitle;
+
+  /// No description provided for @analyzeLandmarkButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Analyze landmark'**
+  String get analyzeLandmarkButton;
+
+  /// No description provided for @unlockLandmarkScanningTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock landmark scanning'**
+  String get unlockLandmarkScanningTitle;
+
+  /// No description provided for @unlockLandmarkScanningSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Point your camera at any site to reveal its hidden history.'**
+  String get unlockLandmarkScanningSubtitle;
+
+  /// No description provided for @guideLiveMarkerLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'YOUR GUIDE (LIVE)'**
+  String get guideLiveMarkerLabel;
+
+  /// No description provided for @vehicleMarkerLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'YOUR VEHICLE'**
+  String get vehicleMarkerLabel;
+
+  /// No description provided for @meetingPointMarkerLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'MEETING POINT: {pointName}'**
+  String meetingPointMarkerLabel(String pointName);
+
+  /// No description provided for @mapMarkerDaySnippet.
+  ///
+  /// In en, this message translates to:
+  /// **'Day {day} • {time}'**
+  String mapMarkerDaySnippet(int day, String time);
+
+  /// No description provided for @planRemovedSnackbar.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan removed from Oracle cache'**
+  String get planRemovedSnackbar;
+
+  /// No description provided for @clearSavedTripsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear saved trips'**
+  String get clearSavedTripsTitle;
+
+  /// No description provided for @clearSavedTripsMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This will permanently remove all saved trips from this device.'**
+  String get clearSavedTripsMessage;
+
+  /// No description provided for @fieldNotePopularity.
+  ///
+  /// In en, this message translates to:
+  /// **'Popularity'**
+  String get fieldNotePopularity;
+
+  /// No description provided for @fieldNoteFoodNearby.
+  ///
+  /// In en, this message translates to:
+  /// **'Food Nearby'**
+  String get fieldNoteFoodNearby;
+
+  /// No description provided for @fieldNoteWildlifeHazard.
+  ///
+  /// In en, this message translates to:
+  /// **'Wildlife Hazard'**
+  String get fieldNoteWildlifeHazard;
+
+  /// No description provided for @bookmarkAddedSnackbar.
+  ///
+  /// In en, this message translates to:
+  /// **'✨ Marked in your journey!'**
+  String get bookmarkAddedSnackbar;
+
+  /// No description provided for @bookmarkRemovedSnackbar.
+  ///
+  /// In en, this message translates to:
+  /// **'Removed from bookmarks.'**
+  String get bookmarkRemovedSnackbar;
+
+  /// No description provided for @itineraryAddedSnackbar.
+  ///
+  /// In en, this message translates to:
+  /// **'🗺️ {placeName} added to your destiny!'**
+  String itineraryAddedSnackbar(String placeName);
+
+  /// No description provided for @itineraryRemovedSnackbar.
+  ///
+  /// In en, this message translates to:
+  /// **'Removed from itinerary.'**
+  String get itineraryRemovedSnackbar;
+
+  /// No description provided for @bonusSessionUnlockedSnackbar.
+  ///
+  /// In en, this message translates to:
+  /// **'Bonus Session Unlocked! Try launching again.'**
+  String get bonusSessionUnlockedSnackbar;
+
+  /// No description provided for @bonusDownloadUnlockedSnackbar.
+  ///
+  /// In en, this message translates to:
+  /// **'Bonus Download Unlocked! Try downloading again.'**
+  String get bonusDownloadUnlockedSnackbar;
+
+  /// No description provided for @calendarEventTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Tour: {touristName} ({guestCount} guests)'**
+  String calendarEventTitle(String touristName, int guestCount);
+
+  /// No description provided for @calendarSyncSuccessMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{Synced 1 booking to your calendar.} other{Synced {count} bookings to your calendar.}}'**
+  String calendarSyncSuccessMessage(int count);
+
+  /// No description provided for @calendarSyncFailedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Calendar sync failed: {error}'**
+  String calendarSyncFailedMessage(String error);
+
+  /// No description provided for @syncToCalendarTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync to calendar'**
+  String get syncToCalendarTooltip;
+
+  /// No description provided for @earningsAwaitingConfirmationNote.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one {1 booking} other {{count} bookings}} still awaiting server payout confirmation'**
+  String earningsAwaitingConfirmationNote(int count);
+
+  /// No description provided for @startTourSessionButtonLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Start / launch tour session'**
+  String get startTourSessionButtonLabel;
+
+  /// No description provided for @familyShareLinkLimitReached.
+  ///
+  /// In en, this message translates to:
+  /// **'⚠️ You\'ve reached the limit of {maxLinks} active share links. Remove one to create another.'**
+  String familyShareLinkLimitReached(int maxLinks);
+
+  /// No description provided for @familyShareRecipientNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'⚠️ Please enter a recipient name.'**
+  String get familyShareRecipientNameRequired;
+
+  /// No description provided for @familyShareNoActiveSessionError.
+  ///
+  /// In en, this message translates to:
+  /// **'⚠️ Start an active tour session first — there\'s nothing to share yet.'**
+  String get familyShareNoActiveSessionError;
+
+  /// No description provided for @familyShareLinkGeneratedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'✅ Mission link generated for \"{name}\"!'**
+  String familyShareLinkGeneratedSuccess(String name);
+
+  /// No description provided for @familyShareActiveLinksTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Active links'**
+  String get familyShareActiveLinksTitle;
+
+  /// No description provided for @familyShareNewLinkButton.
+  ///
+  /// In en, this message translates to:
+  /// **'+ New'**
+  String get familyShareNewLinkButton;
+
+  /// No description provided for @familyShareAppBarTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Family sharing'**
+  String get familyShareAppBarTitle;
+
+  /// No description provided for @familyShareHeroSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Let family track your trip status securely'**
+  String get familyShareHeroSubtitle;
+
+  /// No description provided for @familyShareNoActiveSessionNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'No active tour right now — start or join a tour to generate a live share link.'**
+  String get familyShareNoActiveSessionNotice;
+
+  /// No description provided for @familyShareEmptyStateMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'No active sharing links found'**
+  String get familyShareEmptyStateMessage;
+
+  /// No description provided for @familyShareExpiredBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Expired'**
+  String get familyShareExpiredBadge;
+
+  /// No description provided for @familyShareViewedCountBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Viewed {count}x'**
+  String familyShareViewedCountBadge(int count);
+
+  /// No description provided for @familyShareLinkNoLongerValid.
+  ///
+  /// In en, this message translates to:
+  /// **'No longer valid'**
+  String get familyShareLinkNoLongerValid;
+
+  /// No description provided for @familyShareLinkExpiresAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Expires {time}'**
+  String familyShareLinkExpiresAt(String time);
+
+  /// No description provided for @familyShareCopyLinkSnackbar.
+  ///
+  /// In en, this message translates to:
+  /// **'📋 Invite code copied to clipboard!'**
+  String get familyShareCopyLinkSnackbar;
+
+  /// No description provided for @familyShareRemoveLinkDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove Link?'**
+  String get familyShareRemoveLinkDialogTitle;
+
+  /// No description provided for @familyShareRemoveLinkDialogBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This will revoke \"{recipientName}\"\'s shared access.'**
+  String familyShareRemoveLinkDialogBody(String recipientName);
+
+  /// No description provided for @familyShareLinkRemovedSnackbar.
+  ///
+  /// In en, this message translates to:
+  /// **'Link for \"{recipientName}\" removed.'**
+  String familyShareLinkRemovedSnackbar(String recipientName);
+
+  /// No description provided for @familyShareRemoveButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get familyShareRemoveButton;
+
+  /// No description provided for @familyShareCreateSheetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Create share link'**
+  String get familyShareCreateSheetTitle;
+
+  /// No description provided for @familyShareRecipientNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Recipient name'**
+  String get familyShareRecipientNameLabel;
+
+  /// No description provided for @familyShareRecipientNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'E.g. Mom, Dad, Home office'**
+  String get familyShareRecipientNameHint;
+
+  /// No description provided for @familyShareExpiryLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Expiry'**
+  String get familyShareExpiryLabel;
+
+  /// No description provided for @familyShareDuration4Hours.
+  ///
+  /// In en, this message translates to:
+  /// **'4 hours'**
+  String get familyShareDuration4Hours;
+
+  /// No description provided for @familyShareDuration12Hours.
+  ///
+  /// In en, this message translates to:
+  /// **'12 hours'**
+  String get familyShareDuration12Hours;
+
+  /// No description provided for @familyShareDuration24Hours.
+  ///
+  /// In en, this message translates to:
+  /// **'24 hours'**
+  String get familyShareDuration24Hours;
+
+  /// No description provided for @familyShareToggleStatusLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Share live status'**
+  String get familyShareToggleStatusLabel;
+
+  /// No description provided for @familyShareToggleIdentityLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Share guide identity'**
+  String get familyShareToggleIdentityLabel;
+
+  /// No description provided for @familyShareToggleMeetingPointLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Share meeting point'**
+  String get familyShareToggleMeetingPointLabel;
+
+  /// No description provided for @familyShareToggleEmergencyLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Share emergency alerts'**
+  String get familyShareToggleEmergencyLabel;
+
+  /// No description provided for @familyShareGenerateLinkButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Generate link'**
+  String get familyShareGenerateLinkButton;
+
+  /// No description provided for @marketplaceSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by name, language, or city...'**
+  String get marketplaceSearchHint;
+
+  /// No description provided for @vehiclePositionMarkedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Vehicle position marked'**
+  String get vehiclePositionMarkedMessage;
+
+  /// No description provided for @tourDashboardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Tour dashboard'**
+  String get tourDashboardTitle;
+
+  /// No description provided for @startTourSessionButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Start tour session'**
+  String get startTourSessionButton;
+
+  /// No description provided for @tourSessionStartedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'🚀 Tour Session Started!'**
+  String get tourSessionStartedMessage;
+
+  /// No description provided for @markVehicleButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark vehicle'**
+  String get markVehicleButton;
+
+  /// No description provided for @weatherHazardLoggedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'✅ Weather hazard logged to Safety Console!'**
+  String get weatherHazardLoggedMessage;
+
+  /// No description provided for @earningsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Earnings'**
+  String get earningsTitle;
+
+  /// No description provided for @pleaseLogInViewEarningsMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Please log in to view earnings.'**
+  String get pleaseLogInViewEarningsMessage;
+
+  /// No description provided for @totalNetEarningsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Total net earnings'**
+  String get totalNetEarningsLabel;
+
+  /// No description provided for @guestCountParenthesesLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} guest(s)'**
+  String guestCountParenthesesLabel(int count);
+
+  /// No description provided for @shareLocalKnowledgeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Share your local knowledge'**
+  String get shareLocalKnowledgeTitle;
+
+  /// No description provided for @guideTravelersEarnSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Guide travelers and earn on your own schedule.'**
+  String get guideTravelersEarnSubtitle;
+
+  /// No description provided for @broadcastTypeDeparture.
+  ///
+  /// In en, this message translates to:
+  /// **'Departure'**
+  String get broadcastTypeDeparture;
+
+  /// No description provided for @standardPackageLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Standard package'**
+  String get standardPackageLabel;
+
+  /// No description provided for @yearsExperienceLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{years} years'**
+  String yearsExperienceLabel(String years);
+
+  /// No description provided for @primaryCategoryLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Primary Category'**
+  String get primaryCategoryLabel;
+
+  /// No description provided for @availabilityCalendarTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Availability calendar'**
+  String get availabilityCalendarTitle;
+
+  /// No description provided for @sessionWithinSafetyParamsMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Session operations are within safety parameters.'**
+  String get sessionWithinSafetyParamsMessage;
+
+  /// No description provided for @medicalFacilitiesNearbyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Medical facilities nearby'**
+  String get medicalFacilitiesNearbyTitle;
+
+  /// No description provided for @privateGuardiansTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Private guardians'**
+  String get privateGuardiansTitle;
+
+  /// No description provided for @noGuardiansAssignedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'No guardians assigned. Signals will default to emergency services.'**
+  String get noGuardiansAssignedMessage;
+
+  /// No description provided for @nearestHospitalTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Nearest hospital, wherever you are'**
+  String get nearestHospitalTitle;
+
+  /// No description provided for @findNearestHospitalButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Find nearest hospital on Maps'**
+  String get findNearestHospitalButton;
+
+  /// No description provided for @addGuardianTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add guardian'**
+  String get addGuardianTitle;
+
+  /// No description provided for @guardianPhoneNumberHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Guardian phone number'**
+  String get guardianPhoneNumberHint;
+
+  /// No description provided for @addGuardianButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Add guardian'**
+  String get addGuardianButton;
+
+  /// No description provided for @sosAlertsPreparedLoggedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone/SMS app opened. Complete the call or tap Send; emergency services are not contacted automatically. The incident was logged where possible.'**
+  String get sosAlertsPreparedLoggedMessage;
+
+  /// No description provided for @monsoonHazardAlertTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'MONSOON HAZARD ALERT'**
+  String get monsoonHazardAlertTitle;
+
+  /// No description provided for @preparingTourTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Preparing tour'**
+  String get preparingTourTitle;
+
+  /// No description provided for @parkedSpotLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Parked spot'**
+  String get parkedSpotLabel;
+
+  /// No description provided for @shareLiveLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Share live'**
+  String get shareLiveLabel;
+
+  /// No description provided for @categoryParty.
+  ///
+  /// In en, this message translates to:
+  /// **'Party'**
+  String get categoryParty;
+
+  /// No description provided for @failedToShareTimelineMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to share timeline: {error}'**
+  String failedToShareTimelineMessage(String error);
+
+  /// No description provided for @hazardWarningMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'🚨 HAZARD WARNING: {message}'**
+  String hazardWarningMessage(String message);
+
+  /// No description provided for @totalSpentSoFarLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Total spent so far'**
+  String get totalSpentSoFarLabel;
+
+  /// No description provided for @startedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'STARTED'**
+  String get startedLabel;
+
+  /// No description provided for @featureStandardSos.
+  ///
+  /// In en, this message translates to:
+  /// **'Standard SOS'**
+  String get featureStandardSos;
+
+  /// No description provided for @featureOperatorDashboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Operator Dashboard'**
+  String get featureOperatorDashboard;
+
+  /// No description provided for @mostPopularLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Most popular'**
+  String get mostPopularLabel;
+
+  /// No description provided for @guardianEmergencyTranslatorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Guardian Emergency Translator'**
+  String get guardianEmergencyTranslatorTitle;
+
+  /// No description provided for @guardianEmergencyTranslatorDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Instantly explain your situation to Sri Lankan police or hospital staff in spoken Sinhala during an SOS.'**
+  String get guardianEmergencyTranslatorDescription;
+
+  /// No description provided for @smartTravelerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Smart Traveler'**
+  String get smartTravelerTitle;
+
+  /// No description provided for @featureAiItineraries20.
+  ///
+  /// In en, this message translates to:
+  /// **'20 AI Itineraries/mo'**
+  String get featureAiItineraries20;
+
+  /// No description provided for @billedYearlySaveLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Billed yearly · save ~17%'**
+  String get billedYearlySaveLabel;
+
+  /// No description provided for @featureUnlimitedAiItineraries.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlimited AI Itineraries'**
+  String get featureUnlimitedAiItineraries;
+
+  /// No description provided for @yearlySaveLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Yearly · Save 17%'**
+  String get yearlySaveLabel;
+
+  /// No description provided for @trialYearsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{1 year} other{{count} years}} free trial'**
+  String trialYearsLabel(int count);
+
+  /// No description provided for @culinaryVisionEngineLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'CULINARY VISION ENGINE V2'**
+  String get culinaryVisionEngineLabel;
+
+  /// No description provided for @aiVisualMarkersFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'AI identified visual culinary markers consistent with {label}.'**
+  String aiVisualMarkersFallback(String label);
+
+  /// No description provided for @manualCulinaryOverrideTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'MANUAL CULINARY OVERRIDE'**
+  String get manualCulinaryOverrideTitle;
+
+  /// No description provided for @heritageNarrativeEngineTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'HERITAGE NARRATIVE ENGINE'**
+  String get heritageNarrativeEngineTitle;
+
+  /// No description provided for @folkloreNarrativeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'FOLKLORE NARRATIVE'**
+  String get folkloreNarrativeTitle;
+
+  /// No description provided for @culinaryGapPairingEngineTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'CULINARY GAP & PAIRING ENGINE'**
+  String get culinaryGapPairingEngineTitle;
+
+  /// No description provided for @carbsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Carbs'**
+  String get carbsLabel;
+
+  /// No description provided for @savorLankaShareText.
+  ///
+  /// In en, this message translates to:
+  /// **'Check out this {name} recipe I found on Hidden Gems SL.ai! It\'s an authentic Sri Lankan delicacy. \n\nOracle Score: {score}%'**
+  String savorLankaShareText(String name, String score);
+
+  /// No description provided for @savorLankaShareSubject.
+  ///
+  /// In en, this message translates to:
+  /// **'Hidden Gems SL.ai - Savor Lanka Recipe'**
+  String get savorLankaShareSubject;
+
+  /// No description provided for @visuallySimilarAlternativesLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'VISUALLY SIMILAR ALTERNATIVES'**
+  String get visuallySimilarAlternativesLabel;
+
+  /// No description provided for @popularLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Popular'**
+  String get popularLabel;
+
+  /// No description provided for @newPartnerDiscountsMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'New partner discounts are added regularly — check back soon.'**
+  String get newPartnerDiscountsMessage;
+
+  /// No description provided for @shareCollectibleButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Share collectible'**
+  String get shareCollectibleButton;
+
+  /// No description provided for @shareCollectibleMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'I just earned the {placeName} heritage stamp ({rarity}) on Hidden Gems SL!'**
+  String shareCollectibleMessage(String placeName, String rarity);
+
+  /// No description provided for @stampRarityCommon.
+  ///
+  /// In en, this message translates to:
+  /// **'Common'**
+  String get stampRarityCommon;
+
+  /// No description provided for @stampRarityRare.
+  ///
+  /// In en, this message translates to:
+  /// **'Rare'**
+  String get stampRarityRare;
+
+  /// No description provided for @stampRarityMythic.
+  ///
+  /// In en, this message translates to:
+  /// **'Mythic'**
+  String get stampRarityMythic;
+
+  /// No description provided for @groupTourStartedCodeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Group Tour Started! Code: {code}'**
+  String groupTourStartedCodeLabel(String code);
+
+  /// No description provided for @ptsRarityLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'+{points} PTS • {rarity}'**
+  String ptsRarityLabel(int points, String rarity);
+
+  /// No description provided for @tourTypeBoatSafari.
+  ///
+  /// In en, this message translates to:
+  /// **'Boat Safari'**
+  String get tourTypeBoatSafari;
+
+  /// No description provided for @tourTypeWildlifeSafari.
+  ///
+  /// In en, this message translates to:
+  /// **'Wildlife Safari'**
+  String get tourTypeWildlifeSafari;
+
+  /// No description provided for @reportReasonHarassment.
+  ///
+  /// In en, this message translates to:
+  /// **'Harassment'**
+  String get reportReasonHarassment;
+
+  /// No description provided for @filterClearButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get filterClearButton;
+
+  /// No description provided for @weatherConditionClear.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear Sky'**
+  String get weatherConditionClear;
+
+  /// No description provided for @familyShareTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Family Share'**
+  String get familyShareTitle;
+
+  /// No description provided for @tapWaterWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Water quality varies; when unsure use properly boiled, filtered or sealed water'**
+  String get tapWaterWarning;
 }
 
 class _AppLocalizationsDelegate

@@ -28,6 +28,7 @@ import 'emergency_translator_screen.dart';
 import 'premium_hub_screen.dart';
 import '../../l10n/app_localizations.dart';
 import '../../core/localization/traveler_safety_copy.dart';
+import '../../data/repositories/user_safety_repository.dart';
 
 class TouristCompanionHub extends StatefulWidget {
   final String sessionId;
@@ -41,6 +42,7 @@ class _TouristCompanionHubState extends State<TouristCompanionHub> {
   final _sessionRepo = TourSessionRepository();
   final _broadcastRepo = BroadcastRepository();
   final _presenceRepo = PresenceRepository();
+  final _userSafetyRepo = UserSafetyRepository();
   DateTime? _lastSosTime;
   OfflineSnapshot? _cachedSnapshot;
   StreamSubscription? _broadcastSub;
@@ -620,6 +622,35 @@ class _TouristCompanionHubState extends State<TouristCompanionHub> {
                       style: GoogleFonts.inter(
                           fontSize: 9, color: AppTheme.textSecondary(context)),
                     ),
+                    PopupMenuButton<String>(
+                      tooltip: 'Safety options',
+                      icon: const Icon(Icons.more_vert_rounded, size: 20),
+                      onSelected: (value) {
+                        if (value == 'report') {
+                          _reportBroadcast(latest);
+                        } else if (value == 'block') {
+                          _blockGuide(latest.guideId);
+                        }
+                      },
+                      itemBuilder: (context) => const [
+                        PopupMenuItem(
+                          value: 'report',
+                          child: ListTile(
+                            contentPadding: EdgeInsets.zero,
+                            leading: Icon(Icons.flag_outlined),
+                            title: Text('Report message'),
+                          ),
+                        ),
+                        PopupMenuItem(
+                          value: 'block',
+                          child: ListTile(
+                            contentPadding: EdgeInsets.zero,
+                            leading: Icon(Icons.block_rounded),
+                            title: Text('Block guide'),
+                          ),
+                        ),
+                      ],
+                    ),
                   ],
                 ),
                 const SizedBox(height: 12),
@@ -675,6 +706,135 @@ class _TouristCompanionHubState extends State<TouristCompanionHub> {
         );
       },
     );
+  }
+
+  Future<void> _reportBroadcast(BroadcastMessage message) async {
+    var reason = 'inappropriate';
+    final detailsController = TextEditingController();
+    final submitted = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          title: const Text('Report guide message'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              DropdownButtonFormField<String>(
+                initialValue: reason,
+                decoration: const InputDecoration(labelText: 'Reason'),
+                items: const [
+                  DropdownMenuItem(
+                      value: 'inappropriate', child: Text('Inappropriate')),
+                  DropdownMenuItem(value: 'spam', child: Text('Spam')),
+                  DropdownMenuItem(
+                      value: 'harassment', child: Text('Harassment')),
+                  DropdownMenuItem(
+                      value: 'fraud', child: Text('Fraud or scam')),
+                  DropdownMenuItem(
+                      value: 'safety', child: Text('Safety concern')),
+                  DropdownMenuItem(value: 'other', child: Text('Other')),
+                ],
+                onChanged: (value) {
+                  if (value != null) setDialogState(() => reason = value);
+                },
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: detailsController,
+                maxLength: 500,
+                maxLines: 3,
+                decoration:
+                    const InputDecoration(labelText: 'Details (optional)'),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, false),
+              child: const Text('Cancel'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(dialogContext, true),
+              child: const Text('Submit report'),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    if (submitted == true) {
+      try {
+        await _userSafetyRepo.report(
+          targetType: 'message',
+          targetId: message.messageId,
+          reportedUserId: message.guideId,
+          reason: reason,
+          details: detailsController.text,
+        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Message reported for review.')),
+          );
+        }
+      } catch (error, stackTrace) {
+        SecureLogger.error(
+          'Failed to report guide message',
+          error,
+          stackTrace,
+          'UserSafety',
+        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Could not submit the report.')),
+          );
+        }
+      }
+    }
+    detailsController.dispose();
+  }
+
+  Future<void> _blockGuide(String guideId) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Block this guide?'),
+        content: const Text(
+          'Their marketplace content will be hidden and new bookings between you will be blocked. Active tour safety messages may remain visible.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: const Text('Block'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+
+    try {
+      await _userSafetyRepo.blockUser(guideId);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Guide blocked.')),
+        );
+      }
+    } catch (error, stackTrace) {
+      SecureLogger.error(
+        'Failed to block guide',
+        error,
+        stackTrace,
+        'UserSafety',
+      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Could not block this guide.')),
+        );
+      }
+    }
   }
 
   Widget _buildPhaseDSafetyInfo(TourSession session) {

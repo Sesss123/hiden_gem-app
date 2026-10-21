@@ -88,20 +88,9 @@ class DiscoveryPlace {
   final String updatedAt;
   final String verifiedAt;
   final int syncVersion;
-  final bool arSupported;
-  final int arTier;
-  final String arBrandName;
-  final String arModelUrl;
-  final String arHistoricalModelUrl;
-  final double arModelScale;
   final String historicalPeriod;
-  final double arFileSizeMb;
-  final String arAuthor;
-  final int arContentVersion;
   final String audioUrlSi;
   final String audioUrlEn;
-  final String fallbackVideoUrl;
-  final List<dynamic> arHotspots;
 
   final String geohash;
   final List<PlaceImageModel> images;
@@ -164,20 +153,9 @@ class DiscoveryPlace {
     this.updatedAt = '',
     this.verifiedAt = '',
     this.syncVersion = 0,
-    this.arSupported = false,
-    this.arTier = 3,
-    this.arBrandName = '',
-    this.arModelUrl = '',
-    this.arHistoricalModelUrl = '',
-    this.arModelScale = 0.01,
     this.historicalPeriod = '',
-    this.arFileSizeMb = 0.0,
-    this.arAuthor = 'Hidden Gems SL',
-    this.arContentVersion = 1,
     this.audioUrlSi = '',
     this.audioUrlEn = '',
-    this.fallbackVideoUrl = '',
-    this.arHotspots = const [],
     this.geohash = '',
     this.images = const [],
     this.distanceKm = 0.0,
@@ -305,37 +283,11 @@ class DiscoveryPlace {
       syncVersion: (json['syncVersion'] as num?)?.toInt() ??
           (json['sync_version'] as num?)?.toInt() ??
           0,
-      arSupported: json['arSupported'] as bool? ??
-          json['ar_supported'] as bool? ??
-          false,
-      // Fail closed: a payload missing this field defaults to Tier 1
-      // (Heritage/gated), not Tier 3 (free) — PremiumUnlockService.hasAccess()
-      // treats any tier > 1 as free-to-view, so defaulting to a permissive
-      // value here silently bypassed the paywall for any place whose data
-      // was missing arTier (partial migration, data-entry gap, etc.).
-      arTier: json['arTier'] as int? ?? json['ar_tier'] as int? ?? 1,
-      arBrandName: json['arBrandName'] as String? ??
-          json['ar_brand_name'] as String? ??
-          '',
-      arModelUrl: json['arModelUrl'] as String? ??
-          json['ar_model_url'] as String? ??
-          '',
-      arHistoricalModelUrl: json['arHistoricalModelUrl'] as String? ??
-          json['ar_historical_model_url'] as String? ??
-          '',
-      arModelScale: (json['arModelScale'] as num?)?.toDouble() ??
-          (json['ar_model_scale'] as num?)?.toDouble() ??
-          0.01,
       historicalPeriod: json['historicalPeriod'] as String? ??
           json['historical_period'] as String? ??
           '',
-      arFileSizeMb: (json['ar_file_size_mb'] as num?)?.toDouble() ?? 0.0,
-      arAuthor: json['ar_author'] as String? ?? 'Hidden Gems SL',
-      arContentVersion: json['ar_content_version'] as int? ?? 1,
       audioUrlSi: json['audio_guide_url_si'] as String? ?? '',
       audioUrlEn: json['audio_guide_url_en'] as String? ?? '',
-      fallbackVideoUrl: json['fallback_video_url'] as String? ?? '',
-      arHotspots: json['ar_hotspots'] as List<dynamic>? ?? [],
       geohash: json['geohash'] as String? ?? '',
       imageUrl:
           json['imageUrl'] as String? ?? json['image_url'] as String? ?? '',
@@ -365,8 +317,9 @@ class DiscoveryPlace {
     final geoPoint = data['geoPoint'] as GeoPoint?;
 
     double parseCoord(dynamic val, double? geoVal) {
-      if (geoVal != null)
+      if (geoVal != null) {
         return double.tryParse(geoVal.toStringAsFixed(8)) ?? geoVal;
+      }
       if (val == null) return 0.0;
       double? parsed =
           val is num ? val.toDouble() : double.tryParse(val.toString());
@@ -434,15 +387,7 @@ class DiscoveryPlace {
       syncVersion: (data['syncVersion'] as num?)?.toInt() ??
           (data['sync_version'] as num?)?.toInt() ??
           0,
-      arSupported: data['arSupported'] ?? false,
-      // Fail closed — see matching comment in fromJson() above.
-      arTier: data['arTier'] ?? 1,
-      arBrandName: data['arBrandName'] ?? '',
-      arModelUrl: data['arModelUrl'] ?? '',
-      arHistoricalModelUrl: data['arHistoricalModelUrl'] ?? '',
-      arModelScale: (data['arModelScale'] as num?)?.toDouble() ?? 0.01,
       historicalPeriod: data['historicalPeriod'] ?? '',
-      arFileSizeMb: (data['ar_file_size_mb'] as num?)?.toDouble() ?? 0.0,
       audioUrlSi: data['audio_guide_url_si'] ?? '',
       audioUrlEn: data['audio_guide_url_en'] ?? '',
       geohash: data['geohash'] ?? '',
@@ -523,26 +468,10 @@ class DiscoveryPlace {
       'verified_at': verifiedAt,
       'syncVersion': syncVersion,
       'sync_version': syncVersion,
-      'arSupported': arSupported,
-      'ar_supported': arSupported,
-      'arTier': arTier,
-      'ar_tier': arTier,
-      'arBrandName': arBrandName,
-      'ar_brand_name': arBrandName,
-      'arModelUrl': arModelUrl,
-      'ar_model_url': arModelUrl,
-      'arHistoricalModelUrl': arHistoricalModelUrl,
-      'ar_historical_model_url': arHistoricalModelUrl,
-      'arModelScale': arModelScale,
-      'ar_model_scale': arModelScale,
       'historicalPeriod': historicalPeriod,
       'historical_period': historicalPeriod,
-      'ar_file_size_mb': arFileSizeMb,
-      'ar_author': arAuthor,
-      'ar_content_version': arContentVersion,
       'audio_guide_url_si': audioUrlSi,
       'audio_guide_url_en': audioUrlEn,
-      'fallback_video_url': fallbackVideoUrl,
       'geohash': geohash,
       'imageUrl': imageUrl,
       'image_url': imageUrl,

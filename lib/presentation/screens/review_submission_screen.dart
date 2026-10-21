@@ -13,18 +13,19 @@ class ReviewSubmissionScreen extends ConsumerStatefulWidget {
   final String sessionId;
   final String guideId;
   final String touristId;
-  const ReviewSubmissionScreen({
-    super.key, 
-    required this.sessionId, 
-    required this.guideId, 
-    required this.touristId
-  });
+  const ReviewSubmissionScreen(
+      {super.key,
+      required this.sessionId,
+      required this.guideId,
+      required this.touristId});
 
   @override
-  ConsumerState<ReviewSubmissionScreen> createState() => _ReviewSubmissionScreenState();
+  ConsumerState<ReviewSubmissionScreen> createState() =>
+      _ReviewSubmissionScreenState();
 }
 
-class _ReviewSubmissionScreenState extends ConsumerState<ReviewSubmissionScreen> {
+class _ReviewSubmissionScreenState
+    extends ConsumerState<ReviewSubmissionScreen> {
   double _overallRating = 5.0;
   double _knowledgeRating = 5.0;
   double _communicationRating = 5.0;
@@ -64,13 +65,18 @@ class _ReviewSubmissionScreenState extends ConsumerState<ReviewSubmissionScreen>
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context)!.reviewSubmitSuccessMessage)),
+        SnackBar(
+            content:
+                Text(AppLocalizations.of(context)!.reviewSubmitSuccessMessage)),
       );
       Navigator.pop(context);
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context)!.reviewSubmitErrorMessage(e.toString())), backgroundColor: AppTheme.colors.red),
+        SnackBar(
+            content: Text(AppLocalizations.of(context)!
+                .reviewSubmitErrorMessage(e.toString())),
+            backgroundColor: AppTheme.colors.red),
       );
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
@@ -90,7 +96,8 @@ class _ReviewSubmissionScreenState extends ConsumerState<ReviewSubmissionScreen>
               const SizedBox(height: 48),
               _buildHeader(l10n),
               const SizedBox(height: 40),
-              _buildRatingSection(l10n.overallExperienceLabel, _overallRating, (v) => setState(() => _overallRating = v)),
+              _buildRatingSection(l10n.overallExperienceLabel, _overallRating,
+                  (v) => setState(() => _overallRating = v)),
               const SizedBox(height: 32),
               _buildFactorGrid(l10n),
               const SizedBox(height: 40),
@@ -111,34 +118,50 @@ class _ReviewSubmissionScreenState extends ConsumerState<ReviewSubmissionScreen>
       children: [
         IconButton(
           onPressed: () => Navigator.pop(context),
-          icon: Icon(Icons.close_rounded, color: AppTheme.colors.white, size: 28),
+          icon:
+              Icon(Icons.close_rounded, color: AppTheme.colors.white, size: 28),
         ),
         const SizedBox(height: 24),
         OracleUI.neonText(
           l10n.missionFeedbackEyebrow,
-          style: GoogleFonts.outfit(fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: 4, color: AppTheme.colors.white24),
+          style: GoogleFonts.outfit(
+              fontSize: 12,
+              fontWeight: FontWeight.w900,
+              letterSpacing: 4,
+              color: AppTheme.colors.white24),
         ),
         const SizedBox(height: 8),
         Text(
           l10n.rateGuidePerformanceTitle,
-          style: GoogleFonts.outfit(color: AppTheme.colors.white, fontSize: 28, fontWeight: FontWeight.w900),
+          style: GoogleFonts.outfit(
+              color: AppTheme.colors.white,
+              fontSize: 28,
+              fontWeight: FontWeight.w900),
         ).animate().fadeIn().slideY(begin: 0.1),
         const SizedBox(height: 12),
         Text(
           l10n.trustScoreDisclaimer,
-          style: GoogleFonts.inter(color: AppTheme.colors.white10, fontSize: 13, fontWeight: FontWeight.bold),
+          style: GoogleFonts.inter(
+              color: AppTheme.colors.white10,
+              fontSize: 13,
+              fontWeight: FontWeight.bold),
         ),
       ],
     );
   }
 
-  Widget _buildRatingSection(String title, double value, Function(double) onChanged) {
+  Widget _buildRatingSection(
+      String title, double value, Function(double) onChanged) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           title,
-          style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: 2, color: AppTheme.colors.white60),
+          style: GoogleFonts.inter(
+              fontSize: 12,
+              fontWeight: FontWeight.w900,
+              letterSpacing: 2,
+              color: AppTheme.colors.white60),
         ),
         const SizedBox(height: 24),
         Center(
@@ -146,8 +169,14 @@ class _ReviewSubmissionScreenState extends ConsumerState<ReviewSubmissionScreen>
             children: [
               Text(
                 value.toStringAsFixed(1),
-                style: GoogleFonts.outfit(fontSize: 64, fontWeight: FontWeight.w900, color: Theme.of(context).colorScheme.primary),
-              ).animate(target: value).scale(begin: const Offset(1, 1), end: const Offset(1.1, 1.1), duration: 200.ms),
+                style: GoogleFonts.outfit(
+                    fontSize: 64,
+                    fontWeight: FontWeight.w900,
+                    color: Theme.of(context).colorScheme.primary),
+              ).animate(target: value).scale(
+                  begin: const Offset(1, 1),
+                  end: const Offset(1.1, 1.1),
+                  duration: 200.ms),
               const SizedBox(height: 16),
               Slider(
                 value: value,
@@ -161,8 +190,17 @@ class _ReviewSubmissionScreenState extends ConsumerState<ReviewSubmissionScreen>
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(AppLocalizations.of(context)!.ratingScaleAverageLabel, style: GoogleFonts.inter(color: AppTheme.colors.white10, fontSize: 10, fontWeight: FontWeight.bold)),
-                  Text(AppLocalizations.of(context)!.ratingScaleExceptionalLabel, style: GoogleFonts.inter(color: AppTheme.colors.white10, fontSize: 10, fontWeight: FontWeight.bold)),
+                  Text(AppLocalizations.of(context)!.ratingScaleAverageLabel,
+                      style: GoogleFonts.inter(
+                          color: AppTheme.colors.white10,
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold)),
+                  Text(
+                      AppLocalizations.of(context)!.ratingScaleExceptionalLabel,
+                      style: GoogleFonts.inter(
+                          color: AppTheme.colors.white10,
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold)),
                 ],
               ),
             ],
@@ -181,16 +219,22 @@ class _ReviewSubmissionScreenState extends ConsumerState<ReviewSubmissionScreen>
       crossAxisSpacing: 16,
       childAspectRatio: 1.5,
       children: [
-        _buildFactorItem(l10n.knowledgeFactorLabel, _knowledgeRating, (v) => setState(() => _knowledgeRating = v)),
-        _buildFactorItem(l10n.communicationFactorLabel, _communicationRating, (v) => setState(() => _communicationRating = v)),
-        _buildFactorItem(l10n.punctualityFactorLabel, _punctualityRating, (v) => setState(() => _punctualityRating = v)),
-        _buildFactorItem(l10n.safetyFactorLabel, _safetyRating, (v) => setState(() => _safetyRating = v)),
-        _buildFactorItem(l10n.friendlinessFactorLabel, _friendlinessRating, (v) => setState(() => _friendlinessRating = v)),
+        _buildFactorItem(l10n.knowledgeFactorLabel, _knowledgeRating,
+            (v) => setState(() => _knowledgeRating = v)),
+        _buildFactorItem(l10n.communicationFactorLabel, _communicationRating,
+            (v) => setState(() => _communicationRating = v)),
+        _buildFactorItem(l10n.punctualityFactorLabel, _punctualityRating,
+            (v) => setState(() => _punctualityRating = v)),
+        _buildFactorItem(l10n.safetyFactorLabel, _safetyRating,
+            (v) => setState(() => _safetyRating = v)),
+        _buildFactorItem(l10n.friendlinessFactorLabel, _friendlinessRating,
+            (v) => setState(() => _friendlinessRating = v)),
       ],
     ).animate().fadeIn(delay: 400.ms);
   }
 
-  Widget _buildFactorItem(String label, double value, Function(double) onChanged) {
+  Widget _buildFactorItem(
+      String label, double value, Function(double) onChanged) {
     return OracleUI.glassContainer(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       borderRadius: BorderRadius.circular(16),
@@ -200,7 +244,11 @@ class _ReviewSubmissionScreenState extends ConsumerState<ReviewSubmissionScreen>
         children: [
           Text(
             label,
-            style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.w900, color: AppTheme.colors.white24, letterSpacing: 1),
+            style: GoogleFonts.inter(
+                fontSize: 10,
+                fontWeight: FontWeight.w900,
+                color: AppTheme.colors.white24,
+                letterSpacing: 1),
           ),
           const SizedBox(height: 8),
           Row(
@@ -208,15 +256,20 @@ class _ReviewSubmissionScreenState extends ConsumerState<ReviewSubmissionScreen>
             children: [
               IconButton(
                 onPressed: () => value > 1 ? onChanged(value - 1) : null,
-                icon: Icon(Icons.remove_rounded, color: AppTheme.colors.white10, size: 20),
+                icon: Icon(Icons.remove_rounded,
+                    color: AppTheme.colors.white10, size: 20),
               ),
               Text(
                 value.toInt().toString(),
-                style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.w900, color: AppTheme.colors.white),
+                style: GoogleFonts.outfit(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w900,
+                    color: AppTheme.colors.white),
               ),
               IconButton(
                 onPressed: () => value < 5 ? onChanged(value + 1) : null,
-                icon: Icon(Icons.add_rounded, color: AppTheme.colors.white10, size: 20),
+                icon: Icon(Icons.add_rounded,
+                    color: AppTheme.colors.white10, size: 20),
               ),
             ],
           ),
@@ -231,7 +284,11 @@ class _ReviewSubmissionScreenState extends ConsumerState<ReviewSubmissionScreen>
       children: [
         Text(
           l10n.fieldNotesLabelUppercase,
-          style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: 2, color: AppTheme.colors.white60),
+          style: GoogleFonts.inter(
+              fontSize: 12,
+              fontWeight: FontWeight.w900,
+              letterSpacing: 2,
+              color: AppTheme.colors.white60),
         ),
         const SizedBox(height: 16),
         OracleUI.glassContainer(
@@ -241,10 +298,12 @@ class _ReviewSubmissionScreenState extends ConsumerState<ReviewSubmissionScreen>
           child: TextField(
             controller: _commentController,
             maxLines: 4,
+            maxLength: 1000,
             style: TextStyle(color: AppTheme.colors.white),
             decoration: InputDecoration(
               hintText: l10n.commentFieldHint,
-              hintStyle: GoogleFonts.inter(color: AppTheme.colors.white12, fontSize: 13, height: 1.5),
+              hintStyle: GoogleFonts.inter(
+                  color: AppTheme.colors.white12, fontSize: 13, height: 1.5),
               border: InputBorder.none,
             ),
           ),
@@ -262,17 +321,24 @@ class _ReviewSubmissionScreenState extends ConsumerState<ReviewSubmissionScreen>
         style: ElevatedButton.styleFrom(
           backgroundColor: Theme.of(context).colorScheme.primary,
           foregroundColor: AppTheme.colors.black,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           elevation: 20,
-          shadowColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
+          shadowColor:
+              Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
         ),
         child: _isSubmitting
-          ? CircularProgressIndicator(color: AppTheme.colors.black)
-          : Text(
-              l10n.transmitFeedbackButton,
-              style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w900, letterSpacing: 2),
-            ),
-      ).animate(onPlay: (c) => c.repeat()).shimmer(duration: 3.seconds, color: AppTheme.colors.white24),
+            ? CircularProgressIndicator(color: AppTheme.colors.black)
+            : Text(
+                l10n.transmitFeedbackButton,
+                style: GoogleFonts.outfit(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 2),
+              ),
+      )
+          .animate(onPlay: (c) => c.repeat())
+          .shimmer(duration: 3.seconds, color: AppTheme.colors.white24),
     );
   }
 }

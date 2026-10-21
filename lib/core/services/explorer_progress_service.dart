@@ -7,11 +7,10 @@ import 'dart:async';
 ///
 /// Centralised service that tracks a user's exploration journey across
 /// Hidden Gems SL. Calculates overall progress percentage, explorer level
-/// title, and per-category progress (sites, AR sessions, badges).
+/// title, and per-category progress (sites and badges).
 ///
 /// Data is synced bi-directionally with Firestore:
 ///   - [recordSiteVisit] → call when user visits a place
-///   - [recordArSession] → call after a successful AR session
 ///   - [recordBadgeEarned] → call when a badge is unlocked
 class ExplorerProgressService {
   static final ExplorerProgressService _instance =
@@ -81,7 +80,6 @@ class ExplorerProgressService {
         '[ExplorerProgress] Site visited: $siteId | Total: ${updated.length}');
   }
 
-  /// Call this after each completed AR session.
   /// Call when a badge is newly earned directly (e.g. a future non-milestone
   /// badge type). Milestone badges below are auto-awarded — no need to call
   /// this for those.
@@ -94,7 +92,7 @@ class ExplorerProgressService {
         {'earnedBadgeIds': updated.toList(), 'badges': updated.length});
   }
 
-  /// Checks visitedSites/arSessionCount against [ExplorerBadge.milestones]
+  /// Checks visited sites against [ExplorerBadge.milestones]
   /// and auto-awards any badge whose threshold has just been crossed.
   Future<void> _checkMilestoneBadges() async {
     for (final badge in ExplorerBadge.milestones) {
@@ -110,7 +108,7 @@ class ExplorerProgressService {
   // ── Progress Calculations ──────────────────────────────────────────────────
 
   /// Overall weighted progress (0.0 – 1.0)
-  /// Weighted: Sites 50%, AR 30%, Badges 20%
+  /// Weighted: Sites 75%, Badges 25%
   double get overallProgress {
     final sitePct = (visitedSites.value / totalSites).clamp(0.0, 1.0);
     final badgePct = (badgeCount.value / totalBadges).clamp(0.0, 1.0);
@@ -120,7 +118,6 @@ class ExplorerProgressService {
   /// Sites progress (0.0 – 1.0)
   double get sitesProgress => (visitedSites.value / totalSites).clamp(0.0, 1.0);
 
-  /// AR sessions progress (0.0 – 1.0)
   /// Badges progress (0.0 – 1.0)
   double get badgesProgress => (badgeCount.value / totalBadges).clamp(0.0, 1.0);
 
@@ -231,18 +228,6 @@ class ExplorerBadge {
         description: 'Visit every site in Sri Lanka',
         type: ExplorerBadgeType.sites,
         threshold: 85),
-    /*
-    ExplorerBadge(id: 'ar_pioneer_1', title: 'AR Pioneer', emoji: '🔭',
-        description: 'Complete your first AR session', type: ExplorerBadgeType.arSessions, threshold: 1),
-    ExplorerBadge(id: 'ar_enthusiast_5', title: 'AR Enthusiast', emoji: '✨',
-        description: 'Complete 5 AR sessions', type: ExplorerBadgeType.arSessions, threshold: 5),
-    ExplorerBadge(id: 'ar_master_15', title: 'AR Master', emoji: '🎇',
-        description: 'Complete 15 AR sessions', type: ExplorerBadgeType.arSessions, threshold: 15),
-    ExplorerBadge(id: 'ar_veteran_30', title: 'AR Veteran', emoji: '🌟',
-        description: 'Complete 30 AR sessions', type: ExplorerBadgeType.arSessions, threshold: 30),
-    ExplorerBadge(id: 'ar_legend_50', title: 'AR Legend', emoji: '💫',
-        description: 'Complete 50 AR sessions', type: ExplorerBadgeType.arSessions, threshold: 50),
-    */
   ];
 }
 

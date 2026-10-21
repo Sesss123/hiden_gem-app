@@ -29,14 +29,6 @@
   "reviewRouteAction": "මාර්ගය බලන්න",
   "continueAction": "ඉදිරියට",
   "savedJourneyHubTitle": "සුරැකි ස්ථාන සහ ගමන් හබ්",
-  "bookmarkedCount": "සලකුණු කළ ({count})",
-  "@bookmarkedCount": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "wantToVisitCount": "යන්න කැමති ({count})",
   "@wantToVisitCount": {
     "placeholders": {
@@ -54,8 +46,6 @@
     }
   },
   "savedPlacesLoadError": "සුරැකි ස්ථාන load කළ නොහැකි විය.",
-  "noBookmarkedPlaces": "තවම සලකුණු කළ ස්ථාන නැත",
-  "noBookmarkedPlacesHint": "ස්ථානයක් මෙහි සුරැකීමට bookmark ලකුණ ඔබන්න.",
   "wantToVisitEmpty": "යන්න කැමති ලැයිස්තුව හිස්ය",
   "wantToVisitEmptyHint": "ස්ථාන විස්තර පිටුවෙන් ස්ථාන එක් කරන්න.",
   "noRecentlyViewedPlaces": "මෑතක බැලූ ස්ථාන නැත",
@@ -112,7 +102,6 @@
     }
   },
   "serverManagedPriceNote": "මිල සේවාවෙන් සපයන අතර වෙනස් විය හැක. මිලදී ගැනීමට පෙර තහවුරු කරන්න.",
-  "hydrationSummary": "දේශීය පාන · මුද්‍රා කළ ජල උපදෙස් · ආරක්ෂිත අයිස් උපදෙස්",
   "appTitle": "Hidden Gems SL",
   "goodMorningAdmin": "සුභ උදෑසනක්, පරිපාලක",
   "oracleToday": "අද ඔරකල් සමඟ සිදුවන දේ මෙන්න.",
@@ -128,7 +117,6 @@
   "profile": "පැතිකඩ",
   "settings": "සැකසුම්",
   "language": "භාෂාව",
-  "itinerary": "සංචාරක මාර්ගය",
   "style": "සිරිත / ක්‍රමය",
   "planB": "Plan B",
   "tips": "ඉඟි",
@@ -137,7 +125,6 @@
   "gallery": "ගැලරිය",
   "removePhoto": "ඡායාරූපය ඉවත් කරන්න",
   "discovery": "ගවේෂණය",
-  "nearYou": "ඔබ අසල",
   "aiReason": "මෙම ස්ථානය ඇයි?",
   "filters": "පෙරහන්",
   "distance": "දුර",
@@ -154,14 +141,9 @@
   "cancel": "අවලංගු කරන්න",
   "deleteForever": "ස්ථිරවම මකා දමන්න",
   "discoveryHeader": "ගවේෂණය කරන්න",
-  "searchHint": "සැඟවුණු මැණික් සොයන්න...",
   "picksForYou": "ඔබ සඳහා සංචාරක නිර්දේශ",
-  "exploreInAr": "AR හරහා ගවේෂණය කරන්න",
-  "bestNatureNearby": "අසල ඇති හොඳම ස්වභාවික ස්ථාන",
   "topCultureSpots": "ප්‍රධාන සංස්කෘතික ස්ථාන",
   "villageStayTitle": "ග්‍රාමීය හා අව්‍යාජ නැවතුම්",
-  "allNearbyPlacesTitle": "අවට සියලුම ස්ථාන",
-  "noMatchesNearby": "අසල ගැලපෙන ස්ථාන නොමැත",
   "tryIncreasingDistance": "දුර වැඩි කිරීමට හෝ පෙරහන් ඉවත් කිරීමට උත්සාහ කරන්න.",
   "filterAll": "සියල්ල",
   "filterNature": "ස්වභාවය 🌿",
@@ -171,7 +153,6 @@
   "filterCoastal": "වෙරළබඩ 🌊",
   "filterFamily": "පවුල 👨‍👩‍👧‍👦",
   "filterBudget": "අවම පිරිවැය 💸",
-  "filterAr": "AR ස්ථාන 🏛",
   "categoryNature": "ස්වභාවය",
   "categoryWaterfall": "දියඇල්ල",
   "categoryHiking": "කඳු තරණය",
@@ -189,7 +170,6 @@
       }
     }
   },
-  "arHeritageReady": "AR උරුම අත්දැකීම සූදානම්",
   "theKnowledge": "විස්තරාත්මක තොරතුරු",
   "safetyProtocols": "ආරක්ෂක පිළිවෙත්",
   "provisions": "පහසුකම්",
@@ -200,38 +180,12 @@
   "moment": "හොඳම වේලාව",
   "offering": "ප්‍රවේශ පත්‍ර",
   "reality": "යථාර්ථය",
-  "aerDimensionReady": "AER මානය සූදානම්",
-  "invokeAr": "AR සක්‍රීය කරන්න",
   "addToDestiny": "ගමනට එක් කරන්න",
-  "distanceLockTitle": "දුර ප්‍රමාණය සීමිතයි",
-  "distanceLockMessage": "ඔබ සිටින්නේ කි.මී. {distance} ක් දුරිනි. AER මානයට පිවිසිය හැක්කේ ස්ථානයට මීටර් 500 ක් ඇතුළත සිට පමණි.",
-  "arCoreNotDetected": "AR CORE හඳුනාගත නොහැක",
-  "arCoreMessage": "සංචාරකයා, පුරාණ දර්ශන දැකීමට ARCore අවශ්‍ය වේ. කරුණාකර එය ඔබගේ උපාංගයේ ස්ථාපනය කර යාවත්කාලීන කර ඇති බව සහතික කරගන්න.",
   "road": "මාර්ගය",
   "access": "ප්‍රවේශය",
-  "parking": "වාහන නැවැත්වීම",
-  "syncingResonance": "පැරණි අනුනාදය සමඟ සමමුහුර්ත වෙමින් පවතී...",
-  "resonanceLost": "අනුනාදය බිඳ වැටී ඇත",
   "gpsRequired": "අපට ඔබගේ ස්ථානය තහවුරු කළ නොහැක. GPS සක්‍රීය බව සහතික කරගන්න.",
-  "unlockTeleport": "ටෙලිපෝට් අගුළු හරින්න",
   "close": "වසා දමන්න",
   "understood": "තේරුම් ගත්තා",
-  "ancestralPortalOpen": "පැරණි ද්වාරය විවෘතයි",
-  "stepIntoHistory": "ඉතිහාසයට පිවිසෙන්න",
-  "viewEraIn360": "ත්‍රිමාණව {era} නරඹන්න",
-  "arDemoLabel": "තත්පර 10 AR පෙරදසුන",
-  "fullHeritageAr": "සම්පූර්ණ උරුම AR",
-  "ancientHeritageSite": "පැරණි උරුම ස්ථානය",
-  "arTipPlace": "ත්‍රිමාණ නිර්මාණය ස්ථාපනය කිරීමට මතුපිට ස්පර්ශ කරන්න",
-  "arTipTime": "කාලය හරහා ගමන් කිරීමට \"එදා/අද\" ස්වයිප් කරන්න",
-  "arTipAudio": "සිංහල සහ ඉංග්‍රීසි භාෂාවලින් ශ්‍රව්‍ය මාර්ගෝපදේශය ලබා ගත හැකිය",
-  "arTipGroup": "කණ්ඩායම් AR සංචාරයක් පවත්වන්න හෝ එක්වන්න",
-  "openArPortal": "AR ද්වාරය විවෘත කරන්න",
-  "enterDemo": "පෙරදසුනට පිවිසෙන්න (තත් 10)",
-  "offlineReady": "නොබැඳිව භාවිත කළ හැක",
-  "assetsCached": "නොබැඳි භාවිතය සඳහා උරුම දත්ත ගබඩා කරන ලදී!",
-  "downloadFailed": "බාගැනීම අසාර්ථක විය. කරුණාකර සම්බන්ධතාවය පරීක්ෂා කරන්න.",
-  "downloadForOffline": "නොබැඳි භාවිතය සඳහා බාගන්න",
   "initiateTravel": "ගමන් අනුක්‍රමය ආරම්භ කරන්න",
   "selectOracleLanguage": "ඔබේ ඔරකල් භාෂාව තෝරන්න",
   "skipForNow": "දැනට මඟහරින්න",
@@ -240,22 +194,13 @@
   "lastUpdatedDate": "අවසන් යාවත්කාලීන කිරීම: 2026 ජූලි 5",
   "privacyIntro": "අපි ඔබේ පෞද්ගලිකත්වය සහ දත්ත පරමාධිපත්‍යය අගය කරමු. Hidden Gems Sri Lanka (Pvt) Ltd ශ්‍රී ලංකා නීතිය යටතේ ඔබේ පුද්ගලික තොරතුරු එකතු කරන, ආරක්ෂා කරන සහ පාලනය කරන ආකාරය මෙම ලේඛනයෙන් විස්තර කෙරේ.",
   "contactUsAboutData": "ඔබේ දත්ත පිළිබඳව අප අමතන්න",
-  "couldNotOpenEmail": "විද්‍යුත් තැපැල් යෙදුම විවෘත කළ නොහැක. කරුණාකර support@hiddengems.lk වෙත විද්‍යුත් තැපෑලක් යවන්න.",
+  "couldNotOpenEmail": "විද්‍යුත් තැපැල් යෙදුම විවෘත කළ නොහැක. කරුණාකර pathiranasehas3@gmail.com වෙත විද්‍යුත් තැපෑලක් යවන්න.",
   "getDirections": "මාර්ග උපදෙස්",
   "couldNotOpenMaps": "මෙම උපාංගයේ සිතියම් යෙදුමක් විවෘත කළ නොහැක.",
   "awayLabel": "දුරින්",
   "travelModeWalk": "ඇවිදීම",
   "travelModeBike": "බයික්",
-  "travelModeCar": "කාර්",
   "openInMaps": "සිතියමේ විවෘත කරන්න",
-  "nearbyNowLabel": "km {km} ක් දුරින් — දැන් ළඟින්",
-  "@nearbyNowLabel": {
-    "placeholders": {
-      "km": {
-        "type": "String"
-      }
-    }
-  },
   "photosLabel": "ඡායාරූප",
   "scheduleOngoingLabel": "පවතී — දිනය පසුව නිවේදනය කෙරේ",
   "privacySection1Title": "1. අප එකතු කරන දත්ත",
@@ -267,7 +212,7 @@
   "privacySection4Title": "4. වගකීම් සීමා කිරීම සහ ප්‍රතික්ෂේප කිරීම්",
   "privacySection4Body": "අදාළ නීතිය මගින් අවසර දෙන උපරිම ප්‍රමාණයට, යෙදුම භාවිතා කිරීම පහත සීමාවන්ට යටත් වේ:\n\n• සම්බන්ධක වේදිකා භූමිකාව: Hidden Gems Sri Lanka සංචාරකයන් ස්වාධීන දේශීය මාර්ගෝපදේශකයන් සහ සේවා සමඟ සම්බන්ධ කරන තොරතුරු සහ සම්බන්ධක වේදිකාවක් ලෙස ක්‍රියා කරයි. යෙදුම හරහා සම්බන්ධ වූ ඕනෑම මාර්ගෝපදේශකයෙකුගේ, රියදුරෙකුගේ, හෝ තෙවන පාර්ශ්ව සේවාවක හැසිරීම, ආරක්ෂාව, බලපත්‍ර වලංගුභාවය, හෝ ක්‍රියාවන් සඳහා අප වගකිව යුතු නොවේ.\n• හදිසි සහ ස්ථාන විශේෂාංග සීමාවන්: ස්ථාන-බෙදාගැනීම, 'Family Sharing', සහ හදිසි ඇඟවීම් සංඥා හොඳම-උත්සාහ තාක්ෂණික පදනමක් මත ලබා දෙනු ලැබේ. ඒවා නිල හදිසි සේවාවන්ට ආදේශකයක් නොවේ. හදිසි අවස්ථාවක, සැමවිටම ශ්‍රී ලංකා පොලිසිය (119), සංචාරක පොලිසිය (+94 11 242 1052), හෝ සුවසැරිය ගිලන් රථය (1990) අමතන්න. ජාල ප්‍රමාද, GPS නොිරවද්‍යතා, හෝ දැනුම්දීම් ලබාදීමේ අසාර්ථකත්වයන් සඳහා සමාගම කිසිදු වගකීමක් නොගනී.\n• ස්වාධීන සත්‍යාපනය: සංචාරයට පෙර මාර්ගෝපදේශක අක්තපත්‍ර, වාහන ආරක්ෂාව, සහ පුද්ගලික ආරක්ෂාව ස්වාධීනව සත්‍යාපනය කිරීම සඳහා පරිශීලකයන් තනිවම වගකිව යුතුය.\n• ව්‍යවස්ථාපිත වගකීම් සීමාව: ශ්‍රී ලංකා නීතිය යටතේ, වේදිකාව භාවිතා කිරීමෙන් ඇතිවන Hidden Gems Sri Lanka (Pvt) Ltd හි ඕනෑම වගකීමක් ආරවුලේ ඇති නිශ්චිත සේවාව සඳහා ඔබ සමාගමට ගෙවූ මුළු ගාස්තු වලට දැඩි ලෙස සීමා වේ.",
   "privacySection5Title": "5. පරිශීලක අයිතිවාසිකම් සහ දත්ත පාලනය",
-  "privacySection5Body": "2022 අංක 9 දරන පුද්ගලික දත්ත ආරක්ෂණ පනත යටතේ, ඔබේ පුද්ගලික දත්ත සම්බන්ධයෙන් ඔබට මූලික අයිතිවාසිකම් ඇත:\n\n• ප්‍රවේශ සහ නිවැරදි කිරීමේ අයිතිය: ඔබට යෙදුමේ පැතිකඩ තිරයේ ඔබේ ගිණුම් තොරතුරු සහ පැතිකඩ දත්ත සමාලෝචනය කිරීමට, බාගත කිරීමට, හෝ සංස්කරණය කිරීමට හැකිය.\n• කැමැත්ත ඉවත් කර ගැනීම: උපාංග සැකසුම්වල ස්ථාන අවසර අබල කිරීමෙන් හෝ සක්‍රීය Family Sharing සබැඳි අවලංගු කිරීමෙන් ඔබට ඕනෑම වේලාවක ස්ථාන ලුහුබැඳීම හෝ දත්ත සැකසීම සඳහා කැමැත්ත ඉවත් කර ගත හැකිය.\n• මකා දැමීමේ අයිතිය: Profile > Privacy > Account Deletion හරහා හෝ support@hiddengems.lk වෙත අපගේ දත්ත ආරක්ෂණ නිලධාරියාට විද්‍යුත් තැපෑලක් යැවීමෙන් ඔබට ස්ථිර ගිණුම් මකා දැමීමක් ඉල්ලා සිටිය හැකිය.",
+  "privacySection5Body": "2022 අංක 9 දරන පුද්ගලික දත්ත ආරක්ෂණ පනත යටතේ, ඔබේ පුද්ගලික දත්ත සම්බන්ධයෙන් ඔබට මූලික අයිතිවාසිකම් ඇත:\n\n• ප්‍රවේශ සහ නිවැරදි කිරීමේ අයිතිය: ඔබට යෙදුමේ පැතිකඩ තිරයේ ඔබේ ගිණුම් තොරතුරු සහ පැතිකඩ දත්ත සමාලෝචනය කිරීමට, බාගත කිරීමට, හෝ සංස්කරණය කිරීමට හැකිය.\n• කැමැත්ත ඉවත් කර ගැනීම: උපාංග සැකසුම්වල ස්ථාන අවසර අබල කිරීමෙන් හෝ සක්‍රීය Family Sharing සබැඳි අවලංගු කිරීමෙන් ඔබට ඕනෑම වේලාවක ස්ථාන ලුහුබැඳීම හෝ දත්ත සැකසීම සඳහා කැමැත්ත ඉවත් කර ගත හැකිය.\n• මකා දැමීමේ අයිතිය: Profile > Privacy > Account Deletion හරහා හෝ pathiranasehas3@gmail.com වෙත අපගේ දත්ත ආරක්ෂණ නිලධාරියාට විද්‍යුත් තැපෑලක් යැවීමෙන් ඔබට ස්ථිර ගිණුම් මකා දැමීමක් ඉල්ලා සිටිය හැකිය.",
   "privacySection6Title": "6. දත්ත රඳවා තබා ගැනීම සහ ඉවත් කිරීම",
   "privacySection6Body": "මෙම ප්‍රතිපත්තියේ දක්වා ඇති අරමුණු සඳහා අවශ්‍ය තාක් කාලයක් පමණක් අපි පුද්ගලික දත්ත රඳවා තබා ගනිමු:\n\n• Family Sharing සහ ස්ථාන දත්ත: තාවකාලික බෙදාගැනීමේ සබැඳි සහ ඒ ආශ්‍රිත සජීවී ස්ථාන ඉතිහාසය සබැඳිය කල් ඉකුත් වූ විට හෝ අතින් අවලංගු කළ විට ස්වයංක්‍රීයව සක්‍රීය දත්ත සමුදායන්ගෙන් ඉවත් කරනු ලැබේ.\n• ගිණුම් දත්ත: ගිණුම් මකා දැමීමේ ඉල්ලීමක් ඉදිරිපත් කිරීමෙන් පසු, ඔබේ පැතිකඩ, සුරකින ලද ලැයිස්තු, සහ පුද්ගලික හඳුනාගැනීම් දින 30ක් ඇතුළත අපගේ නිෂ්පාදන සර්වර වලින් ස්ථිරවම ඉවත් කරනු ලැබේ.",
   "privacySection7Title": "7. ළමා පෞද්ගලිකත්ව ආරක්ෂණය",
@@ -277,7 +222,7 @@
   "privacySection9Title": "9. අවසාන නීතිමය ප්‍රතික්ෂේප කිරීම",
   "privacySection9Body": "මෙම ප්‍රතිපත්තිය සාමාන්‍ය තොරතුරු අරමුණු සඳහා සපයනු ලබන අතර විධිමත් නීතිමය උපදෙස් ලෙස සැලකිය නොහැක. 2022 අංක 9 දරන පුද්ගලික දත්ත ආරක්ෂණ පනතට, 2005 අංක 38 දරන සංචාරක පනතට, සහ වෙනත් අදාළ ව්‍යවස්ථාපිත රෙගුලාසිවලට සම්පූර්ණ අනුකූලතාව තහවුරු කර ගැනීමට ශ්‍රී ලංකාවේ ස්වාධීන නීති උපදේශනයක් ලබා ගන්නා ලෙස Hidden Gems Sri Lanka (Pvt) Ltd / TripMe.ai නිර්දේශ කරයි.",
   "privacyFooterCompany": "HIDDEN GEMS SRI LANKA (PVT) LTD",
-  "privacyFooterAddress": "ලියාපදිංචි කාර්යාලය: කොළඹ, ශ්‍රී ලංකාව • support@hiddengems.lk",
+  "privacyFooterAddress": "ලියාපදිංචි කාර්යාලය: කොළඹ, ශ්‍රී ලංකාව • pathiranasehas3@gmail.com",
   "termsAndPrivacyTitle": "නියම සහ පෞද්ගලිකත්වය",
   "reviewBeforeContinuing": "ඉදිරියට යාමට පෙර සමාලෝචනය කරන්න",
   "dataPrivacySectionTitle": "දත්ත සහ පෞද්ගලිකත්වය",
@@ -293,7 +238,7 @@
   "updateRequiredTitle": "යාවත්කාලීන කිරීමක් අවශ්‍යයි",
   "updateReadyTitle": "නව අනුවාදයක් සූදානම්",
   "updateRequiredBody": "ඔබේ ගමන දිගටම කරගෙන යාමට යෙදුම යාවත්කාලීන කරන්න.",
-  "updateReadyBody": "වඩා හොඳ සිතියම්, වේගවත් AI සංචාර, සහ වැඩිදියුණු කළ AR ඔබ බලා සිටී.",
+  "updateReadyBody": "වඩා හොඳ සිතියම්, වේගවත් AI සංචාර සහ නව සංචාරක මෙවලම් ඔබ බලා සිටී.",
   "updateNow": "දැන් යාවත්කාලීන කරන්න",
   "maybeLater": "පසුව",
   "couldNotOpenStore": "වෙළඳසැල විවෘත කිරීම අසාර්ථක විය. කරුණාකර හස්තීයව යාවත්කාලීන කරන්න.",
@@ -312,7 +257,6 @@
   "identifierRequired": "අනන්‍යතාවය අවශ්‍යයි",
   "invalidAddress": "වලංගු නොවන ලිපිනය",
   "insufficientComplexity": "ප්‍රමාණවත් සංකීර්ණත්වයක් නැත",
-  "atLeast6Chars": "අවම වශයෙන් අක්ෂර 6ක්",
   "forgotPassword": "මුරපදය අමතකද?",
   "orContinueWith": "නැතහොත් මේවායින් ඉදිරියට යන්න",
   "googleLabel": "Google",
@@ -384,12 +328,9 @@
   "planTripAction": "සංචාරය සැලසුම් කරන්න",
   "findGuideAction": "මාර්ගෝපදේශකයෙකු සොයන්න",
   "foodAiAction": "ආහාර AI",
-  "arPortalsAction": "AR ද්වාර",
-  "localGemsNearby": "ආසන්නයේ ඇති දේශීය මැණික්",
   "todayInSriLanka": "අද ශ්‍රී ලංකාවේ",
   "discoverSriLanka": "ශ්‍රී ලංකාව සොයා ගන්න",
   "letOracleGuide": "ඔරකල්ට ඔබේ මාර්ගය මාර්ගෝපදේශනය කිරීමට ඉඩ දෙන්න",
-  "searchSecretLocations": "රහසිගත ස්ථාන සොයන්න...",
   "offlineModeLabel": "නොබැඳි ප්‍රකාරය",
   "ayubowanGreeting": "ආයුබෝවන්, {name}!",
   "@ayubowanGreeting": {
@@ -439,11 +380,8 @@
   },
   "step1Title": "අපි ඔබව මාර්ගෝපදේශනය කළ යුත්තේ කොහෙටද?",
   "step1Subtitle": "අත්‍යවශ්‍ය කරුණු",
-  "startingPointLabel": "ආරම්භක ස්ථානය",
-  "startingPointHint": "ගුවන්තොටුපළ, කොළඹ...",
   "destinationLabel": "ගමනාන්තය",
   "destinationHint": "ඇල්ල, ගාල්ල, මහනුවර...",
-  "startDateLabel": "ආරම්භක දිනය",
   "step2Title": "ඔබේ ගමනේ ස්වභාවය නිර්වචනය කරන්න.",
   "step2Subtitle": "අයවැය සහ රටාව",
   "tripLengthLabel": "සංචාරයේ දිග",
@@ -455,7 +393,6 @@
       }
     }
   },
-  "travelStandardLabel": "සංචාරක ප්‍රමිතිය",
   "step3Title": "ඔබ සංචාරය කරන්නේ කා සමඟද?",
   "step3Subtitle": "සහචරයන් සහ රිද්මය",
   "companionsLabel": "සහචරයන්",
@@ -505,8 +442,6 @@
   "priceRangeFree": "නොමිලේ",
   "priceRangeEconomy": "ආර්ථික",
   "priceRangePremium": "ප්‍රීමියම්",
-  "heritageArSearchTitle": "උරුම AR සෙවීම",
-  "onlyShowArEnabledSpots": "AR සක්‍රීය ස්ථාන පමණක් පෙන්වන්න",
   "revealDestinies": "ගමනාන්ත හෙළි කරන්න",
   "hostedByName": "සත්කාරකත්වය {hostName} විසිනි",
   "@hostedByName": {
@@ -526,8 +461,6 @@
   },
   "resetAllFilters": "සියලුම පෙරහන් යළි සකසන්න",
   "seeAll": "සියල්ල බලන්න",
-  "arBadge": "AR",
-  "heritageArBadge": "උරුම AR",
   "tripDurationStyleLabel": "දින {days} {style} සංචාරය",
   "@tripDurationStyleLabel": {
     "placeholders": {
@@ -541,14 +474,6 @@
   },
   "budgetTabLabel": "අයවැය",
   "mapTabLabel": "සිතියම",
-  "premiumFeatureSnackbar": "{featureName} ප්‍රීමියම් විශේෂාංගයකි.",
-  "@premiumFeatureSnackbar": {
-    "placeholders": {
-      "featureName": {
-        "type": "String"
-      }
-    }
-  },
   "savedPlansFeatureName": "සුරකින ලද සැලසුම්",
   "noPathFoundTitle": "මාර්ගයක් හමු නොවීය",
   "noPathFoundMessage": "මෙම ගමනාන්තය සඳහා මාර්ගයක් සැලසුම් කිරීමට ඔරකල්ට නොහැකි විය. ඔබේ අයවැය හෝ රටා මනාපයන් සකසා නැවත උත්සාහ කරන්න.",
@@ -607,7 +532,6 @@
   "budgetCategoryOther": "වෙනත්",
   "profilePhoto": "පැතිකඩ ඡායාරූපය",
   "localizationError": "දේශීයකරණ දෝෂයකි",
-  "appearance": "පෙනුම",
   "settingsSectionLabel": "සැකසුම්",
   "profileErrorDetails": "පැතිකඩ දෝෂය:\n{error}\n\n{stack}",
   "@profileErrorDetails": {
@@ -638,14 +562,10 @@
   "statLabelLevel": "මට්ටම",
   "oracleExplorer": "ඔරකල් ගවේෂකයා",
   "goPremium": "ප්‍රීමියම් වෙත යන්න",
-  "fullArAiAccessGranted": "සම්පූර්ණ AR සහ AI ප්‍රවේශය ලබා දී ඇත",
-  "unlockArAiFeatures": "AR සහ AI විශේෂාංග අගුළු හරින්න",
   "upgrade": "උසස් කරන්න",
   "themeLight": "ආලෝකමත්",
-  "themeDark": "අඳුරු",
   "journeyHub": "ගමන් කේන්ද්‍රය",
   "aiBudgetConcierge": "AI අයවැය සහායක",
-  "smartExpenseAdvisor": "බුද්ධිමත් වියදම් උපදේශක",
   "heritagePassport": "උරුම ගමන් බලපත්‍රය",
   "verifiableVisitCollection": "සත්‍යාපනය කළ හැකි සංචාර එකතුව",
   "ethicalTravelMeter": "සදාචාරාත්මක සංචාරක මීටරය",
@@ -673,33 +593,11 @@
     }
   },
   "ethicalScoreDescription": "ඔබේ සදාචාරාත්මක සංචාරක ලකුණු ශ්‍රී ලංකාව පුරා දේශීය ප්‍රජාවන් සහ උරුම සංරක්ෂණය මත ඔබේ ධනාත්මක බලපෑම මනිනු ලබයි.",
-  "howToEarnPointsHeading": "ලකුණු උපයන ආකාරය:",
-  "earnPointsReviewsTitle": "ස්ථාන සමාලෝචන ලියන්න",
-  "earnPointsReviewsAmount": "ලකුණු +10",
-  "earnPointsReviewsSubtitle": "දේශීය මාර්ගෝපදේශකයන් සහ සංචාරකයන් සහාය කරන්න",
-  "earnPointsFoodTitle": "දේශීය ආහාර රසවිඳින්න",
-  "earnPointsFoodAmount": "ලකුණු +15",
-  "earnPointsFoodSubtitle": "අව්‍යාජ දේශීය අවන්හල් සවිබල ගන්වන්න",
-  "earnPointsHeritageTitle": "උරුම ස්ථාන වෙත පිවිසෙන්න",
-  "earnPointsHeritageAmount": "ලකුණු +20",
-  "earnPointsHeritageSubtitle": "සංස්කෘතික සංරක්ෂණය ප්‍රවර්ධනය කරන්න",
-  "rewardsPerksHeading": "ඔබ අගුළු හරින ත්‍යාග සහ වරප්‍රසාද:",
-  "rewardEcoGuardianBadgeTitle": "පාරිසරික ආරක්ෂක ලාංඡනය",
-  "rewardEcoGuardianBadgeSubtitle": "ප්‍රමුඛ පුවරු සහ සමාලෝචනවල කැපී පෙනෙන්න",
-  "rewardPartnerDiscountsTitle": "හවුල්කරු වට්ටම්",
-  "rewardPartnerDiscountsSubtitle": "සත්‍යාපිත පරිසර හිතකාමී නවාතැන් සහ කැෆේවලින් 5%-15% වට්ටම්",
-  "rewardFreePremiumPerksTitle": "නොමිලේ ප්‍රීමියම් වරප්‍රසාද",
-  "rewardFreePremiumPerksSubtitle": "ලකුණු සමඟ AR මාර්ගෝපදේශ සහ නොබැඳි සිතියම් අගුළු හරින්න",
-  "rewardRealWorldImpactTitle": "සැබෑ-ලෝක බලපෑම",
-  "rewardRealWorldImpactSubtitle": "ලකුණු 500ක් ළඟාවන්න, අපි ඔබ වෙනුවෙන් ශ්‍රී ලංකාවේ ගසක් සිටුවමු!",
+  "rewardFreePremiumPerksSubtitle": "ලකුණු සමඟ නොබැඳි සිතියම් සහ premium මෙවලම් අගුළු හරින්න",
   "gotItKeepExploring": "තේරුණා, ගවේෂණය දිගටම කරගෙන යන්න",
   "guideCommandHub": "මාර්ගෝපදේශක විධාන මධ්‍යස්ථානය",
   "guideCommandHubSubtitle": "ඔබේ මාර්ගෝපදේශක මෙවලම් වෙත ඉක්මන් ප්‍රවේශය",
   "activeStatusBadge": "සක්‍රීයයි",
-  "tourDashboard": "සංචාර උපකරණ පුවරුව",
-  "tourDashboardSubtitle": "සක්‍රීය සංචාරය, QR, ලැයිස්තුව සහ ආරක්ෂාව",
-  "earnings": "ආදායම්",
-  "earningsSubtitle": "ගෙවීම් සහ සංඛ්‍යාලේඛන",
   "clients": "සේවාදායකයන්",
   "clientsSubtitle": "ඉතිහාසය සහ සටහන්",
   "bookings": "වෙන්කිරීම්",
@@ -719,7 +617,6 @@
   "manageTeamSubtitle": "කණ්ඩායම, භූමිකා සහ සන්නාමකරණය",
   "becomeAGuide": "මාර්ගෝපදේශකයෙකු වන්න",
   "myBookings": "මගේ වෙන්කිරීම්",
-  "familySharing": "පවුල් බෙදාගැනීම",
   "scanGuideQr": "මාර්ගෝපදේශක QR ස්කෑන් කරන්න",
   "oracleLens": "ඔරකල් කාචය",
   "bilingualToggle": "ද්විභාෂා (EN/SI)",
@@ -739,33 +636,16 @@
   },
   "signOutDialogTitle": "පිටවන්න",
   "confirmSignOutMessage": "ඔබට පිටවීමට අවශ්‍ය බව විශ්වාසද?",
-  "shareAppMessage": "Hidden Gems SL එකට එකතු වන්න! 🌍 https://hiddengems.lk",
-  "shareAppSubject": "Hidden Gems SL එකේ මා සමඟ එකතු වන්න!",
   "somethingWentWrong": "යමක් වැරදී ගියේය. කරුණාකර යෙදුම නැවත ආරම්භ කරන්න.",
   "cameraPermissionRequiredTitle": "කැමරා අවසරය අවශ්‍යයි",
-  "cameraPermissionRequiredMessage": "AR අත්දැකීම සඳහා කැමරා ප්‍රවේශය අවශ්‍යයි. කරුණාකර සැකසුම් වලින් එය සක්‍රීය කරන්න.",
   "openSettings": "සැකසුම් විවෘත කරන්න",
   "liveScanningComingSoonMessage": "සජීවී ස්කෑන් කිරීම ඉක්මනින් පැමිණේ.\n\nඔබේ කැමරාව හරහා තථ්‍ය කාලීන අනාවරණ සහ වස්තු හඳුනාගැනීම මගදීයි. සූදානම් වූ විගසම අපි ඔබට දැනුම් දෙන්නෙමු.",
-  "landmarkScannerTitle": "අනාවරණ ස්කෑනරය",
   "identifyingLabel": "හඳුනාගනිමින්…",
-  "analyzeLandmarkButton": "අනාවරණය විශ්ලේෂණය කරන්න",
-  "unlockLandmarkScanningTitle": "අනාවරණ ස්කෑන් කිරීම අගුළු හරින්න",
-  "unlockLandmarkScanningSubtitle": "ඕනෑම ස්ථානයක සැඟවුණු ඉතිහාසය හෙළිදරව් කිරීමට ඔබේ කැමරාව යොමු කරන්න.",
   "oracleVerifiedLabel": "ඔරකල් තහවුරු කළේය",
   "mapLoadErrorMessage": "සිතියම් දත්ත පූරණය කිරීම අසාර්ථකයි: {error}",
   "@mapLoadErrorMessage": {
     "placeholders": {
       "error": {
-        "type": "String"
-      }
-    }
-  },
-  "guideLiveMarkerLabel": "ඔබේ මාර්ගෝපදේශකයා (සජීවී)",
-  "vehicleMarkerLabel": "ඔබේ වාහනය",
-  "meetingPointMarkerLabel": "හමුවීමේ ස්ථානය: {pointName}",
-  "@meetingPointMarkerLabel": {
-    "placeholders": {
-      "pointName": {
         "type": "String"
       }
     }
@@ -796,17 +676,6 @@
       }
     }
   },
-  "mapMarkerDaySnippet": "දිනය {day} • {time}",
-  "@mapMarkerDaySnippet": {
-    "placeholders": {
-      "day": {
-        "type": "int"
-      },
-      "time": {
-        "type": "String"
-      }
-    }
-  },
   "visualRouteTitle": "දෘශ්‍ය මාර්ගය",
   "journeyVisualizerTitle": "ගමන් දෘශ්‍යකරණය",
   "journeyVisualizerSubtitle": "{destination} හරහා දින {dayCount}",
@@ -822,16 +691,11 @@
   },
   "saveOfflineMapTooltip": "නොබැඳි සිතියම සුරකින්න",
   "focusButtonLabel": "අවධානය",
-  "planRemovedSnackbar": "ඔරකල් කැෂ් එකෙන් සැලැස්ම ඉවත් කරන ලදී",
-  "viewInArLabel": "AR වලින් බලන්න",
   "savedTripsTitle": "සුරකින ලද සංචාර",
-  "clearSavedTripsTitle": "සුරකින ලද සංචාර ඉවත් කරන්න",
-  "clearSavedTripsMessage": "මෙය මෙම උපාංගයෙන් සුරකින ලද සියලුම සංචාර ස්ථිරවම ඉවත් කරයි.",
   "eraseAllButton": "සියල්ල මකන්න",
   "noSavedTripsTitle": "තවම සුරකින ලද සංචාර නැත",
   "noSavedTripsSubtitle": "සංචාරයක් සැලසුම් කරන්න එය මෙහි සුරැකෙනු බලන්න.",
   "unknownDateLabel": "නොදන්නා දිනය",
-  "noArSpotsSnackbar": "මෙම සැලැස්මේ AR ස්ථාන නැත",
   "tripRouteLabel": "{fromCity} → {destinationCity}",
   "@tripRouteLabel": {
     "placeholders": {
@@ -859,7 +723,6 @@
       }
     }
   },
-  "arBadgeLabel": "AR",
   "savedTimeAgoLabel": "සුරකින ලද {timeAgo}",
   "@savedTimeAgoLabel": {
     "placeholders": {
@@ -931,61 +794,27 @@
   "etiquetteTipPackOutTrash": "ඔබේ සියලුම කසළ රැගෙන යන්න (සලකුණු නොතබා යන්න)",
   "etiquetteTipNoFeedingAnimals": "වන සතුන්ට ආහාර නොදෙන්න හෝ බාධා නොකරන්න",
   "etiquetteTipNoSoapInPools": "ස්වාභාවික තටාක වල සබන්/ෂැම්පු භාවිතා කිරීමෙන් වළකින්න",
-  "arTierHeritageShort": "උරුමය",
-  "arTierExploreShort": "ගවේෂණය",
-  "arTierStoryShort": "කතාව",
   "notAvailableShort": "නොමැත",
-  "arBadgeHeritage": "උරුම AR",
-  "arBadgeExplore": "ගවේෂණ AR",
-  "arBadgeStory": "කතා දර්ශනය",
   "noRiskTagsFound": "අනාවරණයන් හඳුනාගෙන නැත.",
   "noFacilitiesFound": "අවම පහසුකම් හමු විය.",
   "fieldNoteMobileSignal": "ජංගම සංඥාව",
   "fieldNoteRoadCondition": "මාර්ග තත්ත්වය",
   "fieldNoteActivities": "ක්‍රියාකාරකම්",
-  "fieldNotePopularity": "ජනප්‍රියත්වය",
   "fieldNoteFamilyFriendly": "පවුල් හිතකාමී",
   "fieldNoteBudget": "අයවැය",
   "fieldNoteToilets": "වැසිකිලි",
-  "fieldNoteFoodNearby": "ආසන්නයේ ආහාර",
   "fieldNoteWheelchairAccess": "රෝද පුටු ප්‍රවේශය",
   "fieldNoteCamping": "කඳවුරු බැඳීම",
   "fieldNoteSafetyLevel": "ආරක්ෂිත මට්ටම",
-  "fieldNoteWildlifeHazard": "වන සත්ව අනතුරු",
   "fieldNoteGuideRequired": "මාර්ගෝපදේශකයෙකු අවශ්‍යයි",
   "fieldNoteRainSensitivity": "වැසි සංවේදීතාව",
   "fieldNoteMonsoonNote": "මෝසම් සටහන",
   "fieldNoteSurfing": "සර්ෆින්",
   "fieldNoteHeight": "උස",
   "fieldNoteLength": "දිග",
-  "bookmarkAddedSnackbar": "✨ ඔබේ ගමනට සලකුණු කරන ලදී!",
-  "bookmarkRemovedSnackbar": "පිටු සලකුණු වලින් ඉවත් කරන ලදී.",
-  "itineraryAddedSnackbar": "🗺️ {placeName} ඔබේ ඉරණමට එකතු කරන ලදී!",
-  "@itineraryAddedSnackbar": {
-    "placeholders": {
-      "placeName": {
-        "type": "String"
-      }
-    }
-  },
-  "itineraryRemovedSnackbar": "සංචාර සැලැස්මෙන් ඉවත් කරන ලදී.",
   "featureNameHeritageSessions": "උරුම සැසි",
   "featureNameOracleQueries": "Oracle විමසුම්",
-  "bonusSessionUnlockedSnackbar": "ප්‍රසාද සැසිය අගුළු හැරී ඇත! නැවත ආරම්භ කිරීමට උත්සාහ කරන්න.",
-  "oracleRewardActiveSnackbar": "✨ ඔරකල් ත්‍යාගය සක්‍රීයයි! AR සැසිය අගුළු හැරී ඇත.",
   "okButton": "හරි",
-  "arComingSoonTitle": "AR අත්දැකීම ඉක්මනින්",
-  "arComingSoonMessage": "{placeName} සඳහා AR අත්දැකීම අවසන් කරමින් සිටිමු. ඉදිරි update එකකදී නැවත බලන්න.",
-  "@arComingSoonMessage": {
-    "placeholders": {
-      "placeName": {
-        "type": "String"
-      }
-    }
-  },
-  "arBrandNameHeritage": "උරුම AR",
-  "arBrandNameExplore": "ගවේෂණ AR",
-  "bonusDownloadUnlockedSnackbar": "ප්‍රසාද බාගැනීම අගුළු හැරී ඇත! නැවත බාගැනීමට උත්සාහ කරන්න.",
   "featureNameOfflineDownloads": "නොබැඳි බාගැනීම්",
   "myBookingsTitle": "මගේ වෙන්කිරීම්",
   "myBookingsEmptyTitle": "තවම වෙන්කිරීම් නැත",
@@ -1034,37 +863,9 @@
   "requestSentMessage": "ඔබේ වෙන්කිරීමේ ඉල්ලීම මාර්ගෝපදේශකයා වෙත යවා ඇත. ඔවුන් ප්‍රතිචාර දැක්වූ විගස ඔබට දැනුම්දීමක් ලැබෙනු ඇත.",
   "closeButton": "වසන්න",
   "noBookingsToSyncMessage": "සමමුහුර්ත කිරීමට පිළිගත් වෙන්කිරීම් තවම නැත.",
-  "calendarEventTitle": "සංචාරය: {touristName} (අමුත්තන් {guestCount})",
-  "@calendarEventTitle": {
-    "placeholders": {
-      "touristName": {
-        "type": "String"
-      },
-      "guestCount": {
-        "type": "int"
-      }
-    }
-  },
   "defaultTouristName": "සංචාරකයා",
-  "calendarSyncSuccessMessage": "{count, plural, one{වෙන්කිරීම් 1ක් ඔබේ දින දර්ශනයට සමමුහුර්ත කරන ලදී.} other{වෙන්කිරීම් {count}ක් ඔබේ දින දර්ශනයට සමමුහුර්ත කරන ලදී.}}",
-  "@calendarSyncSuccessMessage": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "calendarSyncFailedMessage": "දින දර්ශන සමමුහුර්තකරණය අසාර්ථකයි: {error}",
-  "@calendarSyncFailedMessage": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "loginRequiredMessage": "වෙන්කිරීමේ ඉල්ලීම් බැලීමට කරුණාකර පිවිසෙන්න.",
   "bookingsScreenTitle": "වෙන්කිරීම්",
-  "syncToCalendarTooltip": "දින දර්ශනයට සමමුහුර්ත කරන්න",
   "inboxLoadErrorMessage": "එන ලිපි ලේඛන පූරණය කිරීමේ දෝෂයකි: {error}",
   "@inboxLoadErrorMessage": {
     "placeholders": {
@@ -1112,12 +913,6 @@
   "netPayoutLabel": "ඔබේ ශුද්ධ ගෙවීම",
   "notAvailableAbbrev": "නොමැත",
   "payoutPendingLabel": "අපේක්ෂිතයි",
-  "earningsAwaitingConfirmationNote": "Bookings {count}ක් තවම server payout confirmation එකක් එනකම් ඉන්නවා",
-  "@earningsAwaitingConfirmationNote": {
-    "placeholders": {
-      "count": { "type": "int" }
-    }
-  },
   "tourNotesLabel": "සංචාර සටහන් / අවශ්‍යතා",
   "responseNoteLabel": "ඔබේ ප්‍රතිචාර සටහන: {note}",
   "@responseNoteLabel": {
@@ -1129,7 +924,6 @@
   },
   "declineButtonLabel": "ප්‍රතික්ෂේප කරන්න",
   "acceptButtonLabel": "පිළිගන්න",
-  "startTourSessionButtonLabel": "සංචාර සැසිය ආරම්භ කරන්න / දියත් කරන්න",
   "bookingAcceptedMessage": "🎉 වෙන්කිරීම පිළිගන්නා ලදී සහ සංචාර සැසිය සාදන ලදී!",
   "acceptBookingErrorMessage": "වෙන්කිරීම පිළිගැනීමේ දෝෂයකි: {error}",
   "@acceptBookingErrorMessage": {
@@ -1180,79 +974,6 @@
   "fieldNotesLabelUppercase": "ක්ෂේත්‍ර සටහන්",
   "commentFieldHint": "ඔබට කැපී පෙනුනේ මොකක්ද? ඔවුන්ට වැඩිදියුණු කළ හැක්කේ කොහෙද?",
   "transmitFeedbackButton": "ප්‍රතිපෝෂණය යවන්න",
-  "familyShareLinkLimitReached": "⚠️ ඔබ සක්‍රීය බෙදාගැනීමේ සබැඳි {maxLinks}ක සීමාවට පැමිණ ඇත. තවත් එකක් සෑදීමට එකක් ඉවත් කරන්න.",
-  "@familyShareLinkLimitReached": {
-    "placeholders": {
-      "maxLinks": {
-        "type": "int"
-      }
-    }
-  },
-  "familyShareRecipientNameRequired": "⚠️ කරුණාකර ලබන්නාගේ නමක් ඇතුළත් කරන්න.",
-  "familyShareNoActiveSessionError": "⚠️ මුලින්ම සක්‍රීය සංචාර සැසියක් ආරම්භ කරන්න — බෙදාගැනීමට කිසිවක් නැත.",
-  "familyShareLinkGeneratedSuccess": "✅ \"{name}\" සඳහා මෙහෙයුම් සබැඳිය සාදන ලදී!",
-  "@familyShareLinkGeneratedSuccess": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
-  },
-  "familyShareActiveLinksTitle": "සක්‍රීය සබැඳි",
-  "familyShareNewLinkButton": "+ අලුත්",
-  "familyShareAppBarTitle": "පවුල් බෙදාගැනීම",
-  "familyShareHeroSubtitle": "ඔබේ පවුලට ඔබේ සංචාර තත්ත්වය ආරක්ෂිතව නිරීක්ෂණය කිරීමට ඉඩ දෙන්න",
-  "familyShareNoActiveSessionNotice": "දැනට සක්‍රීය සංචාරයක් නැත — සජීවී බෙදාගැනීමේ සබැඳියක් සෑදීමට සංචාරයක් ආරම්භ කරන්න හෝ එකතු වන්න.",
-  "familyShareEmptyStateMessage": "සක්‍රීය බෙදාගැනීමේ සබැඳි හමු නොවීය",
-  "familyShareExpiredBadge": "කල් ඉකුත් විය",
-  "familyShareViewedCountBadge": "{count} වතාවක් නරඹන ලදී",
-  "@familyShareViewedCountBadge": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "familyShareLinkNoLongerValid": "තවදුරටත් වලංගු නැත",
-  "familyShareLinkExpiresAt": "{time}ට කල් ඉකුත් වේ",
-  "@familyShareLinkExpiresAt": {
-    "placeholders": {
-      "time": {
-        "type": "String"
-      }
-    }
-  },
-  "familyShareCopyLinkSnackbar": "📋 ආරාධනා කේතය පසුරු පුවරුවට පිටපත් කරන ලදී!",
-  "familyShareRemoveLinkDialogTitle": "සබැඳිය ඉවත් කරන්නද?",
-  "familyShareRemoveLinkDialogBody": "මෙය \"{recipientName}\"ගේ බෙදාගත් ප්‍රවේශය අවලංගු කරයි.",
-  "@familyShareRemoveLinkDialogBody": {
-    "placeholders": {
-      "recipientName": {
-        "type": "String"
-      }
-    }
-  },
-  "familyShareLinkRemovedSnackbar": "\"{recipientName}\" සඳහා සබැඳිය ඉවත් කරන ලදී.",
-  "@familyShareLinkRemovedSnackbar": {
-    "placeholders": {
-      "recipientName": {
-        "type": "String"
-      }
-    }
-  },
-  "familyShareRemoveButton": "ඉවත් කරන්න",
-  "familyShareCreateSheetTitle": "බෙදාගැනීමේ සබැඳියක් සාදන්න",
-  "familyShareRecipientNameLabel": "ලබන්නාගේ නම",
-  "familyShareRecipientNameHint": "උදා. අම්මා, තාත්තා, නිවාස කාර්යාලය",
-  "familyShareExpiryLabel": "කල් ඉකුත්වීම",
-  "familyShareDuration4Hours": "පැය 4",
-  "familyShareDuration12Hours": "පැය 12",
-  "familyShareDuration24Hours": "පැය 24",
-  "familyShareToggleStatusLabel": "සජීවී තත්ත්වය බෙදාගන්න",
-  "familyShareToggleIdentityLabel": "මාර්ගෝපදේශක අනන්‍යතාවය බෙදාගන්න",
-  "familyShareToggleMeetingPointLabel": "හමුවීමේ ස්ථානය බෙදාගන්න",
-  "familyShareToggleEmergencyLabel": "හදිසි ඇඟවීම් බෙදාගන්න",
-  "familyShareGenerateLinkButton": "සබැඳිය සාදන්න",
   "categoryAll": "සියල්ල",
   "categoryChauffeur": "රියදුරු",
   "categorySiteGuide": "ස්ථාන මාර්ගෝපදේශක",
@@ -1260,7 +981,6 @@
   "categoryWildlife": "වන සතුන්",
   "categoryHeritage": "උරුමය",
   "categoryPhotography": "ඡායාරූප",
-  "marketplaceSearchHint": "නම, භාෂාව, හෝ නගරය අනුව සොයන්න...",
   "verifiedGuidesEyebrow": "සත්‍යාපිත මාර්ගෝපදේශකයන්",
   "findYourExpertTitle": "ඔබේ විශේෂඥයා සොයන්න",
   "noVerifiedGuidesEmptyState": "තවම සත්‍යාපිත මාර්ගෝපදේශකයන් ප්‍රකාශයට පත් කර නැත.",
@@ -1302,7 +1022,7 @@
       }
     }
   },
-  "couldNotGetLocationMessage": "ඔබේ ස්ථානය ලබාගත නොහැකි විය. පෙරනිමි ඛණ්ඩාංක භාවිතා කරමින්. ({error})",
+  "couldNotGetLocationMessage": "ඔබේ ස්ථානය ලබාගත නොහැකි විය. වැරදි ස්ථානයක් භාවිතා වීම වැළැක්වීමට ක්‍රියාව අවලංගු කරන ලදී. ({error})",
   "@couldNotGetLocationMessage": {
     "placeholders": {
       "error": {
@@ -1339,7 +1059,6 @@
       }
     }
   },
-  "vehiclePositionMarkedMessage": "වාහන ස්ථානය සලකුණු කරන ලදී",
   "failedToUpdateVehicleLocationMessage": "වාහන ස්ථානය යාවත්කාලීන කිරීමට අසමත් විය: {error}",
   "@failedToUpdateVehicleLocationMessage": {
     "placeholders": {
@@ -1348,7 +1067,6 @@
       }
     }
   },
-  "tourDashboardTitle": "සංචාර උපකරණ පුවරුව",
   "bottomNavTour": "සංචාරය",
   "bottomNavPlan": "සැලැස්ම",
   "bottomNavReviews": "සමාලෝචන",
@@ -1361,14 +1079,11 @@
   "sessionDataUnavailableMessage": "සැසි දත්ත නොමැත.",
   "upcomingTourSessionReadyTitle": "ඉදිරි සංචාර සැසිය සූදානම්",
   "upcomingTourSessionReadyMessage": "සංචාරකයින් සහ හමුවීමේ ස්ථානය තහවුරු කර ඇත. ඔබ සහ සංචාරකයින් හමුවීමේ ස්ථානයට පැමිණි විට කාල ගණකය සහ ලුහුබැඳීම නිල වශයෙන් ආරම්භ කිරීමට පහත තට්ටු කරන්න.",
-  "startTourSessionButton": "සංචාර සැසිය ආරම්භ කරන්න",
-  "tourSessionStartedMessage": "🚀 සංචාර සැසිය ආරම්භ විය!",
   "statLabelTravelers": "සංචාරකයින්",
   "statLabelRating": "ශ්‍රේණිගත කිරීම",
   "statLabelServed": "සේවය කළ",
   "updatePointButton": "ස්ථානය යාවත්කාලීන කරන්න",
   "setPointButton": "ස්ථානය සකසන්න",
-  "markVehicleButton": "වාහනය සලකුණු කරන්න",
   "joinStatusLabel": "එකතුවීමේ තත්ත්වය",
   "openToScansLabel": "ස්කෑන් සඳහා විවෘතයි",
   "lockedLabel": "අගුළු දමා ඇත",
@@ -1401,7 +1116,6 @@
       }
     }
   },
-  "weatherHazardLoggedMessage": "✅ කාලගුණ අනතුර ආරක්ෂක කවුන්සලයට වාර්තා විය!",
   "errorLoggingIncidentMessage": "සිද්ධිය වාර්තා කිරීමේදී දෝෂයක්: {error}",
   "@errorLoggingIncidentMessage": {
     "placeholders": {
@@ -1414,8 +1128,6 @@
   "safetyConsoleButtonUppercase": "ආරක්ෂක කවුන්සලය",
   "defaultMonsoonAlertTitle": "🚨 හදිසි මෝසම් අනතුරු ඇඟවීම",
   "defaultMonsoonAlertMessage": "ඔබේ සංචාර දිස්ත්‍රික්කයේ දරුණු කාලගුණ අනතුරු ඇඟවීමකි.",
-  "earningsTitle": "ඉපැයීම්",
-  "pleaseLogInViewEarningsMessage": "ඉපැයීම් බැලීමට කරුණාකර පුරන්න.",
   "errorLoadingFinancialDataMessage": "මූල්‍ය දත්ත පූරණය කිරීමේ දෝෂයක්: {error}",
   "@errorLoadingFinancialDataMessage": {
     "placeholders": {
@@ -1424,7 +1136,6 @@
       }
     }
   },
-  "totalNetEarningsLabel": "මුළු ශුද්ධ ඉපැයීම්",
   "netPercentageLabel": "ශුද්ධ 90%",
   "lkrAmountLabel": "රු. {amount}",
   "@lkrAmountLabel": {
@@ -1581,14 +1292,6 @@
   "saveNoteButton": "සටහන සුරකින්න",
   "noteSavedMessage": "සටහන සුරැකිණි",
   "bookingHistoryTitle": "වෙන්කිරීම් ඉතිහාසය",
-  "guestCountParenthesesLabel": "අමුත්තන් {count} (දෙනා)",
-  "@guestCountParenthesesLabel": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "becomeAGuideTitle": "මාර්ගෝපදේශකයෙක් වන්න",
   "fieldsMissingMessage": "ක්ෂේත්‍ර අස්ථානගතයි: කරුණාකර සියල්ල පුරවා ලේඛන උඩුගත කරන්න.",
   "uploadingDocumentsMessage": "ලේඛන උඩුගත කරමින්...",
@@ -1637,8 +1340,6 @@
   "guidePollRejectionReason": "කරුණාකර ඔබේ බලපත්‍ර ලේඛන සහ ඡායාරූප පැහැදිලි හා වලංගු බව සහතික කර ගන්න.",
   "approvedGuideTitle": "ඔබ අනුමත මාර්ගෝපදේශකයෙකි",
   "approvedGuideMessage": "සුබ පැතුම්! ඔබේ මාර්ගෝපදේශක අනන්‍යතාව සක්‍රීයයි. ඔබට ඔබේ පැතිකඩෙන් මාර්ගෝපදේශක උපකරණ පුවරුවට ප්‍රවේශ විය හැක.",
-  "shareLocalKnowledgeTitle": "ඔබේ ප්‍රාදේශීය දැනුම බෙදාගන්න",
-  "guideTravelersEarnSubtitle": "සංචාරකයින්ට මඟපෙන්වා ඔබේම කාලසටහනට අනුව උපයන්න.",
   "guideCategoryLabel": "මාර්ගෝපදේශක ප්‍රවර්ගය",
   "categoryNational": "ජාතික",
   "categoryProvincial": "පළාත්",
@@ -1732,7 +1433,6 @@
   "broadcastTypeWeather": "කාලගුණය",
   "broadcastTypeMeetingPoint": "හමුවීමේ ස්ථානය",
   "broadcastTypeDelay": "ප්‍රමාදය",
-  "broadcastTypeDeparture": "පිටත්වීම",
   "broadcastTypeVehicleChange": "වාහන වෙනස",
   "broadcastTypeSafety": "ආරක්ෂාව",
   "broadcastPriorityLow": "අඩු",
@@ -1773,7 +1473,6 @@
   "vehicleProvidedByGuideMessage": "සංචාර සඳහා මාර්ගෝපදේශකයා විසින් සපයනු ලැබේ",
   "packagesSectionTitle": "පැකේජ",
   "tapPackageToBookMessage": "පැකේජයක් සෘජුව වෙන්කරගැනීමට තට්ටු කරන්න",
-  "standardPackageLabel": "සම්මත පැකේජය",
   "durationHoursShortLabel": "පැය {hours}",
   "@durationHoursShortLabel": {
     "placeholders": {
@@ -1793,14 +1492,6 @@
   "totalLabel": "එකතුව",
   "requestThisGuideButton": "මෙම මාර්ගෝපදේශකයා ඉල්ලන්න",
   "experienceStatLabel": "පළපුරුද්ද",
-  "yearsExperienceLabel": "අවුරුදු {years}",
-  "@yearsExperienceLabel": {
-    "placeholders": {
-      "years": {
-        "type": "String"
-      }
-    }
-  },
   "ratingStatLabel": "ශ්‍රේණිගත කිරීම",
   "rankStatLabel": "ශ්‍රේණිය",
   "licensedGuideLabel": "බලපත්‍රලාභී මාර්ගෝපදේශකයා • {licenseNumber}",
@@ -1819,7 +1510,6 @@
   "aboutMeBioLabel": "මා ගැන (ජීවදත්ත)",
   "aboutMeBioHint": "ඔබේ උනන්දුව, පළපුරුද්ද, සහ ප්‍රියතම ස්ථාන ගැන සංචාරකයින්ට කියන්න...",
   "categorySpecialtiesTitle": "ප්‍රවර්ගය සහ විශේෂත්ව",
-  "primaryCategoryLabel": "ප්‍රධාන ප්‍රවර්ගය",
   "languagesCommaLabel": "භාෂා (කොමා වලින් වෙන් කර)",
   "languagesCommaHint": "උදා: ඉංග්‍රීසි, සිංහල, ජර්මන්",
   "specializationsCommaLabel": "විශේෂත්ව (කොමා වලින් වෙන් කර)",
@@ -1841,7 +1531,6 @@
       }
     }
   },
-  "availabilityCalendarTitle": "ලබාගත හැකි දින දර්ශනය",
   "visibilityBoostTitle": "දෘශ්‍යතා වර්ධනය",
   "saveDraftButton": "කෙටුම්පත සුරකින්න",
   "publishListingButton": "ලැයිස්තුව ප්‍රකාශයට පත් කරන්න",
@@ -1894,7 +1583,6 @@
     }
   },
   "noCriticalIncidentsTitle": "විවේචනාත්මක සිද්ධීන් නැත",
-  "sessionWithinSafetyParamsMessage": "සැසි මෙහෙයුම් ආරක්ෂක පරාමිතීන් තුළ පවතී.",
   "reportIncidentButton": "සිද්ධියක් වාර්තා කරන්න",
   "fileAnIncidentTitle": "සිද්ධියක් ගොනු කරන්න",
   "incidentAuditTrailMessage": "නිවැරදි විස්තර සපයන්න, මෙය විගණන මාර්ගයක් සමඟ වාර්තා කර ඇත.",
@@ -2030,7 +1718,6 @@
   "playAgainButton": "නැවත වාදනය කරන්න",
   "emergencyTitle": "හදිසි",
   "criticalContactsTitle": "තීරණාත්මක සම්බන්ධතා",
-  "medicalFacilitiesNearbyTitle": "අවට වෛද්‍ය පහසුකම්",
   "emergencyProtocolLabel": "හදිසි ප්‍රොටෝකෝලය",
   "sendingAlertMessage": "අනතුරු ඇඟවීම යවමින්…",
   "keepHoldingToConfirmMessage": "තහවුරු කිරීමට දිගටම අල්ලාගෙන සිටින්න…",
@@ -2041,24 +1728,15 @@
   "contactNameAmbulance": "ගිලන් රථය",
   "contactNameTouristPolice": "සංචාරක පොලීසිය",
   "contactNameFireDept": "ගිනි නිවීමේ දෙපාර්තමේන්තුව",
-  "privateGuardiansTitle": "පුද්ගලික භාරකරුවන්",
-  "noGuardiansAssignedMessage": "භාරකරුවන් පවරා නැත. සංඥා පෙරනිමියෙන් හදිසි සේවාවන්ට යොමු වේ.",
-  "nearestHospitalTitle": "ඔබ කොහේ සිටියත් ආසන්නතම රෝහල",
   "checkingLocationAccessMessage": "ස්ථාන ප්‍රවේශය පරීක්ෂා කරමින්…",
   "locationAccessDeniedGeneralMessage": "ස්ථාන ප්‍රවේශය ප්‍රතික්ෂේප විය — ඒ වෙනුවට සාමාන්‍යයෙන් සොයනු ඇත.",
   "hospitalMapsExplanationMessage": "ඔබේ සජීවී GPS භාවිතයෙන් Google සිතියම් විවෘත කරයි — ඔබ ශ්‍රී ලංකාවේ කොහේ සිටියත්, අවට සියලුම රාජ්‍ය සහ පෞද්ගලික රෝහල් පෙන්වයි.",
-  "findNearestHospitalButton": "සිතියම් වල ආසන්නතම රෝහල සොයන්න",
-  "addGuardianTitle": "භාරකරුවෙකු එකතු කරන්න",
-  "guardianPhoneNumberHint": "භාරකරුගේ දුරකථන අංකය",
-  "addGuardianButton": "භාරකරු එකතු කරන්න",
-  "sosAlertsPreparedLoggedMessage": "දුරකථන/SMS app එක විවෘත කළා. ඇමතුම සම්පූර්ණ කරන්න හෝ Send ඔබන්න; හදිසි සේවා ස්වයංක්‍රීයව සම්බන්ධ නොවේ.",
   "sosCriticalAlertTitle": "විවේචනාත්මක SOS අනතුරු ඇඟවීම",
   "sosDistressSignalDescription": "Guardian පද්ධතියෙන් හදිසි විපත් සංඥාවක් අවුලුවන ලදී.",
   "locationPermissionsPermanentlyDeniedMessage": "ස්ථාන අවසර ස්ථිරවම ප්‍රතික්ෂේප කර ඇත.",
   "emergencyTranslatorPremiumMessage": "ශ්‍රී ලාංකික පොලිසියට හෝ රෝහල් සේවකයින්ට ඔබේ තත්ත්වය කථන සිංහලෙන් ක්ෂණිකව පැහැදිලි කරන්න — වාරික ආරක්ෂක විශේෂාංගයකි.",
   "notNowButton": "දැන් නොවේ",
   "viewPlansButton": "සැලසුම් බලන්න",
-  "monsoonHazardAlertTitle": "මෝසම් අනතුරු ඇඟවීම",
   "districtLabel": "දිස්ත්‍රික්කය: {district}",
   "@districtLabel": {
     "placeholders": {
@@ -2081,7 +1759,6 @@
   "sessionNotFoundMessage": "සැසිය හමු නොවීය",
   "yourTourTitle": "ඔබේ සංචාරය",
   "tourActiveTitle": "සංචාරය සක්‍රීයයි",
-  "preparingTourTitle": "සංචාරය සූදානම් කරමින්",
   "everythingOnTrackMessage": "සියල්ල නිසි පරිදි සිදුවෙමින් පවතී",
   "statusColonValueLabel": "තත්ත්වය: {status}",
   "@statusColonValueLabel": {
@@ -2100,7 +1777,6 @@
   "findGuideLabel": "මාර්ගෝපදේශකයා සොයන්න",
   "liveTrackingLabel": "සජීවී ලුහුබැඳීම",
   "findVehicleLabel": "වාහනය සොයන්න",
-  "parkedSpotLabel": "නවතා ඇති ස්ථානය",
   "meetingPointLabel": "හමුවීමේ ස්ථානය",
   "returnHereIfLostMessage": "නැති වුවහොත් හෝ කණ්ඩායමෙන් වෙන් වුවහොත් මෙහි ආපසු එන්න.",
   "navigateToPointButton": "ස්ථානයට මාර්ගගත කරන්න",
@@ -2109,7 +1785,6 @@
   "acknowledgedLabel": "පිළිගන්නා ලදී",
   "iAcknowledgeButton": "මම පිළිගනිමි",
   "moreLabel": "තවත්",
-  "shareLiveLabel": "සජීවීව බෙදාගන්න",
   "familyAccessLabel": "පවුල් ප්‍රවේශය",
   "rateTourLabel": "සංචාරය ශ්‍රේණිගත කරන්න",
   "buildReputationLabel": "කීර්තිය ගොඩනඟන්න",
@@ -2142,7 +1817,6 @@
   "categorySports": "ක්‍රීඩා",
   "categorySeasonal": "සමයානුකූල",
   "categoryFestival": "උත්සව",
-  "categoryParty": "සාදය",
   "availableEventsTitle": "ලබාගත හැකි සිදුවීම්",
   "temporalDataLabel": "කාලීන දත්ත",
   "acquirePassButton": "ප්‍රවේශපත්‍රය ලබාගන්න",
@@ -2152,22 +1826,6 @@
   "musicPreferencesTitle": "සංගීත මනාපයන්",
   "fineTuneOracleMessage": "ඔබේ විලාසිතාමය මනාපයන් සමඟ කාලීන අනාවැකිකරු සියුම්ව සකසන්න.",
   "syncPreferencesButton": "මනාපයන් සමමුහුර්ත කරන්න",
-  "failedToShareTimelineMessage": "කාල රේඛාව බෙදාගැනීමට අසමත් විය: {error}",
-  "@failedToShareTimelineMessage": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
-  "hazardWarningMessage": "🚨 අනතුරු ඇඟවීම: {message}",
-  "@hazardWarningMessage": {
-    "placeholders": {
-      "message": {
-        "type": "String"
-      }
-    }
-  },
   "extremeWeatherAlertFallback": "අන්ත කාලගුණ අනතුරු ඇඟවීමක්!",
   "recommendedForYouLabel": "ඔබ සඳහා නිර්දේශිතයි",
   "eventLocationCategoryLabel": "{location} · {category}",
@@ -2208,7 +1866,6 @@
   "analyzingSpendingPatternsMessage": "ඔබේ වියදම් රටා විශ්ලේෂණය කරමින්...",
   "localAdviceMessage": "ඔබේ වියදම් වේගය දූපත් සංචාරක ප්‍රමිතීන් සමඟ හොඳින් සමපාත වේ. විනිවිද පෙනෙන ප්‍රවාහන ගාස්තු සඳහා PickMe හෝ Uber භාවිතා කිරීමට, සහ ඔබේ වටිනාකම උපරිම කිරීමට දේශීය අවන්හල් සාම්පල කිරීමට අපි නිර්දේශ කරමු.",
   "recentTransactionsTitle": "මෑත ගනුදෙනු",
-  "totalSpentSoFarLabel": "මෙතෙක් වියදම් කළ මුළු මුදල",
   "approxUsdLabel": "≈ US$ {amount}",
   "@approxUsdLabel": {
     "placeholders": {
@@ -2242,7 +1899,6 @@
       }
     }
   },
-  "startedLabel": "ආරම්භ විය",
   "expiresLabel": "කල් ඉකුත් වේ",
   "idLabel": "හැඳුනුම්පත: {subscriptionId}",
   "@idLabel": {
@@ -2286,7 +1942,6 @@
   "freeTierDescription": "තහවුරු කළ මාර්ගෝපදේශකයින් සඳහා අත්‍යවශ්‍ය සංචාර මෙවලම්.",
   "featureBasicOperations": "මූලික මෙහෙයුම්",
   "featureVerifiedBadge": "තහවුරු කළ බැජ්",
-  "featureStandardSos": "සම්මත SOS",
   "proCommanderTitle": "Pro Commander",
   "proCommanderDescription": "ඔබේ දෘශ්‍යතාව සහ මෙවලම් උසස් කරන්න.",
   "featureFeaturedListings": "විශේෂාංගගත ලැයිස්තු",
@@ -2296,7 +1951,6 @@
   "eliteAgencyTitle": "Elite Agency",
   "eliteAgencyDescription": "සම්පූර්ණ රථ වාහන සහ සමාගම් කළමනාකරණය.",
   "featureTeamManagement": "කණ්ඩායම් කළමනාකරණය",
-  "featureOperatorDashboard": "ක්‍රියාකරු උපකරණ පුවරුව",
   "featureWhiteLabelBranding": "White-label වෙළඳ නාමකරණය",
   "fleetPlansTitle": "රථ වාහන සැලසුම්",
   "restoreButton": "ප්‍රතිසාධනය කරන්න",
@@ -2312,22 +1966,16 @@
   },
   "upgradeButton": "උසස් කරන්න",
   "manageButton": "කළමනාකරණය කරන්න",
-  "mostPopularLabel": "වඩාත් ජනප්‍රිය",
   "perMonthSlashLabel": "/මාසයට",
   "currentPlanButton": "වත්මන් සැලසුම",
   "selectThisPlanButton": "මෙම සැලසුම තෝරන්න",
   "goPremiumTitle": "වාරික වෙත යන්න",
-  "fullArUnlimitedAiTripsMessage": "සම්පූර්ණ AR සහ අසීමිත AI සංචාර",
-  "heritageArModeTitle": "උරුම AR මාදිලිය",
-  "heritageArModeDescription": "ඓතිහාසික ශ්‍රව්‍ය මාර්ගෝපදේශ සමඟ 1:1 පරිමාණයෙන් ප්‍රතිනිර්මාණය කළ පුරාණ නටබුන් බලන්න.",
   "oracleAiTripIntelligenceTitle": "Oracle AI සංචාර බුද්ධිය",
   "oracleAiTripIntelligenceDescription": "Oracle එන්ජිම මගින් බලගැන්වූ අසීමිත අධි-පුද්ගලීකරණය කළ සංචාර සැලසුම්.",
   "offlineDigitalTwinsTitle": "නොබැඳි ඩිජිටල් නිරූපණ",
   "offlineDigitalTwinsDescription": "අඩු සංඥා ප්‍රදේශ සඳහා අධි-විභේදන සිතියම් සහ උනන්දුවක් දක්වන ස්ථාන 100+ බාගන්න.",
   "exclusiveCuratorDealsTitle": "සුවිශේෂී පරිපාලක ගණුදෙනු",
   "exclusiveCuratorDealsDescription": "තෝරාගත් බුටික් නවාතැන් වල සාමාජික-පමණක් වට්ටම් වෙත ප්‍රවේශය.",
-  "guardianEmergencyTranslatorTitle": "Guardian හදිසි පරිවර්තකය",
-  "guardianEmergencyTranslatorDescription": "SOS අතරතුර ශ්‍රී ලාංකික පොලිසියට හෝ රෝහල් සේවකයින්ට ඔබේ තත්ත්වය කථන සිංහලෙන් ක්ෂණිකව පැහැදිලි කරන්න.",
   "premiumActiveLabel": "{plan} සක්‍රීයයි",
   "@premiumActiveLabel": {
     "placeholders": {
@@ -2356,15 +2004,9 @@
   "storeFallback": "වෙළඳසැල",
   "resetPremiumDevButton": "වාරික නැවත සකසන්න (සංවර්ධන පමණි)",
   "premiumResetMessage": "වාරික නැවත සකසන ලදී. මිල මට්ටම් ආපසු ලැබී ඇත.",
-  "smartTravelerTitle": "දක්ෂ සංචාරකයා",
   "billedMonthlyLabel": "මාසිකව බිල් කරනු ලැබේ",
-  "featureAiItineraries20": "මසකට AI සංචාර සැලසුම් 20",
-  "featureSelectedArPlaces": "තෝරාගත් AR ස්ථාන",
   "featureOfflineMapsBasic": "නොබැඳි සිතියම් (මූලික)",
   "heritagePremiumTitle": "උරුම වාරිකය",
-  "billedYearlySaveLabel": "වාර්ෂිකව බිල් කරනු ලැබේ · ~17% ඉතිරි කරන්න",
-  "featureUnlimitedAiItineraries": "අසීමිත AI සංචාර සැලසුම්",
-  "featureFullHeritageArAccess": "සම්පූර්ණ උරුම AR ප්‍රවේශය",
   "featureAllOfflineFeatures": "සියලුම නොබැඳි විශේෂාංග",
   "ultraExplorerTitle": "Ultra Explorer",
   "waitlistLabel": "රැඳී සිටින ලැයිස්තුව",
@@ -2378,7 +2020,6 @@
   "testBuyDevButton": "පරීක්ෂණ මිලදී ගැනීම (සංවර්ධන පමණි)",
   "mockPurchaseSimulatedMessage": "🚀 ව්‍යාජ මිලදී ගැනීම අනුකරණය කරන ලදී. නැවුම් කරමින්...",
   "monthlyLabel": "මාසිකව",
-  "yearlySaveLabel": "වාර්ෂිකව · 17% ඉතිරි කරන්න",
   "lockedLabelShort": "අගුළු දමා ඇත",
   "perMonthLabel": "/ මාසයට",
   "comingSoonButton": "ළඟදීම",
@@ -2407,14 +2048,6 @@
       }
     }
   },
-  "trialYearsLabel": "{count, plural, one{වසරක්} other{වසර {count}}} නොමිලේ අත්හදා බැලීම",
-  "@trialYearsLabel": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "trialPeriodLabel": "කාල පරිච්ඡේද {count}ක් නොමිලේ අත්හදා බැලීම",
   "@trialPeriodLabel": {
     "placeholders": {
@@ -2432,7 +2065,6 @@
     }
   },
   "savorLankaAiTitle": "SAVORLANKA AI",
-  "culinaryVisionEngineLabel": "ආහාරපාන දෘශ්‍ය එන්ජිම V2",
   "liveRealTimeScannerLabel": "සජීවී තථ්‍ය-කාලීන ස්කෑනරය",
   "nutritionReliabilityLabel": "පෝෂණ විශ්වසනීයත්වය: {reliability}",
   "@nutritionReliabilityLabel": {
@@ -2443,17 +2075,8 @@
     }
   },
   "neuralReasoningLabel": "ස්නායු තර්කනය",
-  "aiVisualMarkersFallback": "AI විසින් {label} සමඟ අනුකූල දෘශ්‍ය ආහාරපාන සලකුණු හඳුනාගෙන ඇත.",
-  "@aiVisualMarkersFallback": {
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
   "authenticityIntelligenceTitle": "සත්‍යතා බුද්ධිය",
   "ingredientCertaintyTitle": "අමුද්‍රව්‍ය විශ්වාසනීයත්වය",
-  "manualCulinaryOverrideTitle": "අතින් ආහාරපාන අභිබවා යාම",
   "refineIngredientsHint": "අමුද්‍රව්‍ය සකසන්න (කොමා වලින් වෙන් කර)...",
   "cancelButtonUppercaseAlt": "අවලංගු කරන්න",
   "applyOverrideButton": "අභිබවා යාම යොදන්න",
@@ -2494,11 +2117,8 @@
       }
     }
   },
-  "heritageNarrativeEngineTitle": "උරුම කථා එන්ජිම",
   "verifiedLegacyTitle": "තහවුරු කළ උරුමය",
   "regionalTraditionTitle": "ප්‍රාදේශීය සම්ප්‍රදාය",
-  "folkloreNarrativeTitle": "ජනශ්‍රැති කථාව",
-  "culinaryGapPairingEngineTitle": "ආහාරපාන හිඩැස් සහ යුගල එන්ජිම",
   "missingCompanionsLabel": "අස්ථානගත සහායක ආහාර:",
   "engineNotesLabel": "එන්ජින් සටහන්:",
   "recipeRefactorEngineTitle": "වට්ටෝරු වෙනස් කිරීමේ එන්ජිම",
@@ -2508,7 +2128,6 @@
   "levelMetricLabel": "මට්ටම",
   "calMetricLabel": "කැලරි",
   "proteinLabel": "ප්‍රෝටීන්",
-  "carbsLabel": "කාබෝහයිඩ්‍රේට්",
   "fatLabel": "මේදය",
   "fiberLabel": "තන්තු",
   "healthRatingLabel": "සෞඛ්‍ය ශ්‍රේණිගත කිරීම",
@@ -2531,28 +2150,13 @@
   "savedLabel": "සුරැකිණි",
   "saveToCookbookLabel": "වට්ටෝරු පොතට සුරකින්න",
   "voiceGuideLabel": "හඬ මාර්ගෝපදේශය",
-  "savorLankaShareText": "Hidden Gems SL.ai හි මට හමු වූ මෙම {name} වට්ටෝරුව බලන්න! එය සත්‍ය ශ්‍රී ලාංකික රසවත් ආහාරයකි. \n\nOracle ලකුණු: {score}%",
-  "@savorLankaShareText": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      },
-      "score": {
-        "type": "String"
-      }
-    }
-  },
-  "savorLankaShareSubject": "Hidden Gems SL.ai - Savor Lanka වට්ටෝරුව",
   "phase3CrossMatchTitle": "අදියර 3: හරස්-ගැලපුම් ආදේශනය",
-  "visuallySimilarAlternativesLabel": "දෘශ්‍යමය වශයෙන් සමාන විකල්ප",
   "aiCrossMatchReasoningLabel": "AI හරස්-ගැලපුම් තර්කනය:",
   "phase6HygienePresentationTitle": "අදියර 6: සනීපාරක්ෂාව සහ ඉදිරිපත් කිරීම",
   "presentationLabel": "ඉදිරිපත් කිරීම",
   "integrityLabel": "අඛණ්ඩතාව",
-  "popularLabel": "ජනප්‍රිය",
   "curatorDealsTitle": "පරිපාලක ගණුදෙනු",
   "noDealsRightNowTitle": "දැනට ගණුදෙනු නැත",
-  "newPartnerDiscountsMessage": "නව හවුල්කරු වට්ටම් නිතිපතා එකතු කෙරේ — ඉක්මනින් නැවත පරීක්ෂා කරන්න.",
   "percentOffLabel": "{percent}% වට්ටම්",
   "@percentOffLabel": {
     "placeholders": {
@@ -2583,17 +2187,6 @@
     }
   },
   "verifiableHashLabel": "සත්‍යාපනය කළ හැකි හැෂ්",
-  "shareCollectibleButton": "එකතුව බෙදාගන්න",
-  "shareCollectibleMessage": "මට Hidden Gems SL එකේ {placeName} heritage stamp එක ({rarity}) ලැබුණා!",
-  "@shareCollectibleMessage": {
-    "placeholders": {
-      "placeName": { "type": "String" },
-      "rarity": { "type": "String" }
-    }
-  },
-  "stampRarityCommon": "සාමාන්‍ය",
-  "stampRarityRare": "දුර්ලභ",
-  "stampRarityMythic": "පුරාණෝක්ති",
   "audioGuideLabel": "ශ්‍රව්‍ය මාර්ගෝපදේශය",
   "audioGuideUnavailable": "මෙම ශ්‍රව්‍ය මාර්ගෝපදේශය දැනට ලබා ගත නොහැක. නැවත උත්සාහ කිරීමට තට්ටු කරන්න.",
   "sinhalaShortLabel": "සිංහල",
@@ -2602,15 +2195,6 @@
   "enterSixDigitCodeMessage": "ඔබේ මාර්ගෝපදේශකයා විසින් සපයන ලද අංක 6 කේතය ඇතුළත් කරන්න.",
   "cancelButtonUppercaseThird": "අවලංගු කරන්න",
   "joinButtonUppercase": "එකතු වන්න",
-  "tapFlatSurfaceMessage": "👆 සමතලා මතුපිටක් ස්ථානගත කිරීමට තට්ටු කරන්න",
-  "groupTourStartedCodeLabel": "සමූහ සංචාරය ආරම්භ විය! කේතය: {code}",
-  "@groupTourStartedCodeLabel": {
-    "placeholders": {
-      "code": {
-        "type": "String"
-      }
-    }
-  },
   "invalidSessionCodeMessage": "වලංගු නොවන සැසි කේතය",
   "couldNotLoadAudioMessage": "ශ්‍රව්‍ය විස්තරය පූරණය කළ නොහැකි විය.",
   "galleryPermissionDeniedMessage": "ගැලරි අවසරය ප්‍රතික්ෂේප විය",
@@ -2630,32 +2214,7 @@
       }
     }
   },
-  "thenLabel": "එවිට",
-  "nowLabel": "දැන්",
-  "resetLabel": "යළි සකසන්න",
-  "scalePlusLabel": "විශාල+",
-  "scaleMinusLabel": "කුඩා-",
-  "memoryLabel": "මතකය",
-  "removeLabel": "ඉවත් කරන්න",
-  "placeLabel": "ස්ථානගත කරන්න",
-  "historicalInfoComingSoonMessage": "ඓතිහාසික තොරතුරු ළඟදීම එනු ඇත.",
-  "preparingHeritageAssetsMessage": "උරුම වත්කම් සූදානම් කරමින්...",
-  "progressSizeLabel": "{progress}% • {size} MB",
-  "arModelPlacementFailedMessage": "මෙම මාදිලිය තැබිය නොහැකි විය — එය නැති වී හෝ දූෂිත විය හැක. නැවත උත්සාහ කරන්න හෝ වෙනත් ස්ථානයක් තෝරන්න.",
-  "arSessionErrorMessage": "AR දෝෂය: {message}",
-  "largeDownloadWarningTitle": "විශාල බාගැනීමක්",
-  "largeDownloadWarningMessage": "මෙම 3D මාදිලිය ආසන්න වශයෙන් MB {size} කි. දැන් බාගත කිරීමෙන් ඔබේ ජංගම දත්ත භාවිතා වේ. දිගටම කරගෙන යනවාද?",
   "downloadAnywayButtonLabel": "කෙසේ වෙතත් බාගන්න",
-  "@progressSizeLabel": {
-    "placeholders": {
-      "progress": {
-        "type": "int"
-      },
-      "size": {
-        "type": "String"
-      }
-    }
-  },
   "modelColonNameLabel": "ආකෘතිය: {name}",
   "@modelColonNameLabel": {
     "placeholders": {
@@ -2683,47 +2242,11 @@
     }
   },
   "premiumHeritageSessionLabel": "වාරික උරුම සැසිය",
-  "artifactDiscoveredLabel": "පුරාවස්තුවක් සොයාගන්නා ලදී!",
-  "ptsRarityLabel": "+ලකුණු {points} • {rarity}",
-  "@ptsRarityLabel": {
-    "placeholders": {
-      "points": {
-        "type": "int"
-      },
-      "rarity": {
-        "type": "String"
-      }
-    }
-  },
-  "hiddenGemsSlWatermark": "HIDDEN GEMS SL",
-  "heritageArWatermark": "HERITAGE AR",
   "captureSuccessfulTitle": "ග්‍රහණය සාර්ථකයි!",
-  "shareDiscoveryMessage": "ඔබේ ඓතිහාසික සොයාගැනීම ලෝකය සමඟ බෙදාගන්න",
   "instagramLabel": "Instagram",
   "tiktokLabel": "TikTok",
   "savedLabelShort": "සුරැකිණි",
-  "sharePlatformCaptionInstagram": "AR හි {placeName} ගවේෂණය කරමින් #HiddenGemsSL සමඟ",
-  "@sharePlatformCaptionInstagram": {
-    "placeholders": {
-      "placeName": {
-        "type": "String"
-      }
-    }
-  },
-  "sharePlatformCaptionTiktok": "ඉතිහාසය ජීවමාන වේ! #HiddenGemsSL #HeritageAR",
   "photoSavedGalleryMessage": "ඡායාරූපය ඔබේ ගැලරියට සුරැකිණි!",
-  "backToArButton": "AR වෙත ආපසු",
-  "distanceToTargetLabel": "{placeName} වෙත මීටර් {distance}",
-  "@distanceToTargetLabel": {
-    "placeholders": {
-      "distance": {
-        "type": "String"
-      },
-      "placeName": {
-        "type": "String"
-      }
-    }
-  },
   "recommendedLabel": "නිර්දේශිතයි",
   "categoryRatingLabel": "{category} • {rating} ★",
   "@categoryRatingLabel": {
@@ -2737,12 +2260,9 @@
     }
   },
   "viewButtonUppercase": "බලන්න",
-  "loginToLeaveMemoryMessage": "AR මතකයක් තැබීමට පුරන්න!",
-  "leaveArMemoryTitle": "AR මතකයක් තබන්න",
   "whatDoYouSeeHereHint": "ඔබ මෙහි දකින්නේ කුමක්ද?",
   "cancelButton2": "අවලංගු කරන්න",
   "dropButton": "තබන්න",
-  "memoryDroppedMessage": "මතකය AR විශ්වයට තැබිණි!",
   "explorerFallback": "ගවේෂකයා",
   "signalPercentLabel": "සංඥාව: {percent}%",
   "@signalPercentLabel": {
@@ -2752,17 +2272,9 @@
       }
     }
   },
-  "searchingLabel": "සොයමින්...",
   "cameraAccessNeededTitle": "කැමරා ප්‍රවේශය අවශ්‍යයි",
-  "arNotAvailableDeviceTitle": "මෙම උපාංගයේ AR ලබාගත නොහැක",
-  "arCouldntLoadTitle": "මෙවර AR පූරණය කළ නොහැක",
-  "cameraAccessNeededMessage": "AR විශේෂාංග සඳහා කැමරා ප්‍රවේශය අවශ්‍යයි. ඒ වෙනුවට මෙන්න සිනමාපටමය ප්‍රතිනිර්මාණයක්.",
-  "arNotAvailableMessage": "ඒ වෙනුවට එම යුගයේම සිනමාපටමය 360° දර්ශනයක් මෙන්න.",
-  "arCouldntLoadMessage": "ඓතිහාසික 3D ආකෘතිය පූරණය කළ නොහැකි විය. ඒ වෙනුවට සිනමාපටමය විකල්ප දර්ශනය මෙන්න.",
   "closeButtonLabel": "වසන්න",
   "watchAdToUnlockButton": "අගුළු හැරීමට දැන්වීමක් නරඹන්න",
-  "oracleRewardFallbackMessage": "✨ Oracle ත්‍යාගය සක්‍රීයයි! විකල්ප මාදිලි සහ වාරික අන්තර්ගතය අගුළු හැරී ඇත.",
-  "arNotAvailableInfoBarMessage": "මෙම උපාංගයේ AR ලබාගත නොහැක · 360° දර්ශනය පෙන්වමින්",
   "cinematicPreviewUnavailableMessage": "සිනමාපටමය පෙරදසුන ලබාගත නොහැක",
   "interactive3dViewTitle": "අන්තර්ක්‍රියාකාරී 3D දර්ශනය",
   "touchToRotateMonumentMessage": "ස්මාරකය භ්‍රමණය කිරීමට ස්පර්ශ කරන්න",
@@ -2783,23 +2295,15 @@
       }
     }
   },
-  "listenToNarrationLabel": "විස්තරය අසන්න",
   "sinhalaEnglishAvailableLabel": "සිංහල සහ ඉංග්‍රීසි ලබාගත හැක",
   "illustrationCaptionLabel": "නිදර්ශනය: පුරාණ ඉංජිනේරු විද්‍යාව (සංකල්ප කලාව)",
-  "mode360Label": "360°",
   "mode3dLabel": "3D",
   "modeStoryLabel": "කථාව",
-  "unlockArHeritageModeTitle": "AR උරුම මාදිලිය අගුළු හරින්න",
-  "arHeritageModeSubtitle": "දහස් ගණන් වසර පෙර ශ්‍රී ලංකාව පෙනී සිටි ආකාරයම අත්විඳින්න.",
-  "featureAncient3dReconstruction": "පුරාණ 3D ප්‍රතිනිර්මාණය",
-  "featureAudioNarrationBilingual": "ශ්‍රව්‍ය විස්තරය (සිංහල / English)",
-  "featureArPhotoCapture": "AR ඡායාරූප ග්‍රහණය සහ සමාජ බෙදාගැනීම",
   "pricingTrialLabel": "Store එකෙන් ලබාදෙන විට නොමිලේ අත්හදා බැලීම",
   "upgradeToPremiumButton": "වාරික වෙත උසස් කරන්න",
   "watch10SecPreviewButton": "තත්පර 10ක පෙරදසුන නරඹන්න",
   "watchAdUnlockSessionButton": "සැසිය අගුළු හැරීමට දැන්වීමක් නරඹන්න",
   "notNowButtonLabel": "දැන් නොවේ",
-  "ancientArtifactsLabel": "පුරාණ පුරාවස්තු",
   "adminGuideVerificationTile": "මාර්ගෝපදේශක සත්‍යාපන",
   "adminVerificationConsoleTitle": "සත්‍යාපන කවුළුව",
   "pendingReviewsSubtitle": "ඉදිරිපත් කළ මාර්ගෝපදේශක අයදුම්පත් සහ ලේඛන සමාලෝචනය කරන්න.",
@@ -2861,8 +2365,6 @@
   "selectExpiryDateButton": "බලපත්‍ර කල් ඉකුත් වන දිනය තෝරන්න",
   "languagesSectionTitle": "කථා කරන භාෂා",
   "tourTypesSectionTitle": "සංචාරන ලබා දෙනු ලැබේ",
-  "tourTypeBoatSafari": "බෝට්ටු සෆාරි",
-  "tourTypeWildlifeSafari": "වන්‍යජීවී සෆාරි",
   "tourTypeHiking": "කඳු නැගීම",
   "tourTypeDiving": "කිමිදීම",
   "tourTypeCulturalTours": "සංස්කෘතික සංචාර",
@@ -2870,19 +2372,16 @@
   "reportReviewSubtitle": "ඔබ මෙම සමාලෝචනය වාර්තා කරන්නේ ඇයි?",
   "reportReasonInappropriate": "නුසුදුසු අන්තර්ගතය",
   "reportReasonSpam": "ස්පෑම්",
-  "reportReasonHarassment": "හිරිහැරය",
   "reportReasonOther": "වෙනත්",
   "reportSubmittedMessage": "ස්තූතියි — මෙම සමාලෝචනය සමාලෝචනය සඳහා වාර්තා කර ඇත.",
   "reportFailedMessage": "මෙම සමාලෝචනය වාර්තා කිරීමට අසමත් විය. නැවත උත්සාහ කරන්න.",
   "filterSheetTitle": "මාර්ගෝපදේශකයින් පෙරහන් කරන්න",
   "filterHasVehicle": "වාහනයක් තිබේ",
   "filterApplyButton": "පෙරහන් යොදන්න",
-  "filterClearButton": "ඉවත් කරන්න",
   "filterRegionLabel": "ප්‍රදේශය",
   "filterLanguageLabel": "භාෂාව",
   "sosDispatchMessage": "හදිසි අවස්ථාවකි: මට උදව් අවශ්‍යයි. මගේ වත්මන් ස්ථානය: {mapUrl} (Hidden Gems SL මඟින් එවන ලදී)",
   "sosFailedAppLaunch": "දුරකථන හෝ SMS යෙදුම විවෘත කළ නොහැකි විය. කරුණාකර දැන්ම 119 හෝ 1990 අමතන්න.",
-  "weatherConditionClear": "පැහැදිලි අහස",
   "weatherConditionClouds": "වලාකුළු සහිතයි",
   "weatherConditionRain": "වැසි සහිතයි",
   "weatherConditionThunderstorm": "ගිගුරුම් සහිත වැසි",
@@ -2890,13 +2389,12 @@
   "weatherConditionMist": "මීදුම සහිතයි",
   "rainSafetyAdvisory": "වැසි / ගිගුරුම් අනතුරු ඇඟවීම: කුඩයක් රැගෙන යන්න, කඳුකර වංගු සහිත මාර්ග වල ප්‍රවේශම් වන්න.",
   "moreToolsTitle": "තවත් මෙවලම් සහ විශේෂාංග",
-  "moreToolsSubtitle": "Food AI, AR Portals, Oracle, Passport සහ Budget",
+  "moreToolsSubtitle": "Food AI, Oracle, Passport සහ Budget",
   "savedPlacesHubTitle": "සුරැකි ස්ථාන සහ ප්‍රාර්ථනා ලැයිස්තුව",
   "savedPlacesHubSubtitle": "පිටු සලකුණු, යාමට කැමති ස්ථාන සහ ඉතිහාසය",
   "mapActionLabel": "සිතියම",
   "safetyActionLabel": "ආරක්ෂාව",
   "foodScannerTooltip": "ආහාර ස්කෑනරය",
-  "familyShareTitle": "පවුලේ බෙදාගැනීම",
   "waterSafetyTitle": "පානීය ජලය සහ දේශීය ස්වභාවික පාන",
   "waterSafetySubtitle": "දේශීය පාන සහ ප්‍රවේශම්කාරී ජල ආරක්ෂණ උපදෙස්",
   "drinkLocalHeroTitle": "ශ්‍රී ලංකාවේ දේශීය පාන",
@@ -2909,7 +2407,6 @@
   "herbalTeaFairPrice": "වත්මන් රුපියල් මිල තහවුරු කරන්න",
   "slsCertificationTip": "බෝතල් කළ ජලය මිලදී ගැනීමේදී SLS 894 ප්‍රමිති මුද්‍රාව සහ මුද්‍රිත මූඩිය පරීක්ෂා කරන්න",
   "iceSafetyTip": "අයිස් හැඩය ආරක්ෂාව තහවුරු නොකරයි; පානීය ජලය භාවිත කළාද විමසන්න හෝ අයිස් නොගන්න",
-  "tapWaterWarning": "ජල තත්ත්වය ස්ථානය අනුව වෙනස් වේ; සැකයක් ඇත්නම් උණු කළ, පෙරූ හෝ මුද්‍රා තැබූ ජලය භාවිතා කරන්න",
   "jeewaniTip": "ලියාපදිංචි ORS ගැන ඖෂධවේදියෙකුගෙන් විමසා පැකට් උපදෙස් පිළිපදින්න; බරපතළ ලක්ෂණ සඳහා වෛද්‍ය උපකාර ගන්න",
   "findSafeWaterAction": "ආසන්නයේ ඇති ආරක්ෂිත ජල අලෙවිසැල් සොයන්න",
   "landslideAlertTitle": "NBRO නායයෑම් සංචාරක අනතුරු ඇඟවීම",
@@ -2921,5 +2418,211 @@
   "disasterHelplineTitle": "ආපදා සහන හදිසි ඇමතුම් (DMC): 117",
   "landslideAlertSubtitle": "NBRO නායයෑම් උපදෙස් සහ ගංගා ගංවතුර ආරක්ෂාව",
   "foodSafetyTipsTitle": "ආහාර සුරක්ෂිතතා උපදෙස්",
-  "foodSafetyDisclaimer": "සාමාන්‍ය මඟපෙන්වීම සඳහා පමණි; රෝග ලක්ෂණ පවතින්නේ නම් වෛද්‍ය ප්‍රතිකාර ලබාගන්න."
+  "foodSafetyDisclaimer": "සාමාන්‍ය මඟපෙන්වීම සඳහා පමණි; රෝග ලක්ෂණ පවතින්නේ නම් වෛද්‍ය ප්‍රතිකාර ලබාගන්න.",
+  "bookmarkedCount": "සලකුණු කළ ({count})",
+  "@bookmarkedCount": {"placeholders":{"count":{"type":"int"}}},
+  "noBookmarkedPlaces": "තවම සලකුණු කළ ස්ථාන නැත",
+  "noBookmarkedPlacesHint": "ස්ථානයක් මෙහි සුරැකීමට bookmark ලකුණ ඔබන්න.",
+  "hydrationSummary": "දේශීය පාන · මුද්‍රා කළ ජල උපදෙස් · ආරක්ෂිත අයිස් උපදෙස්",
+  "itinerary": "සංචාරක මාර්ගය",
+  "nearYou": "ඔබ අසල",
+  "searchHint": "සැඟවුණු මැණික් සොයන්න...",
+  "bestNatureNearby": "අසල ඇති හොඳම ස්වභාවික ස්ථාන",
+  "allNearbyPlacesTitle": "අවට සියලුම ස්ථාන",
+  "noMatchesNearby": "අසල ගැලපෙන ස්ථාන නොමැත",
+  "parking": "වාහන නැවැත්වීම",
+  "travelModeCar": "කාර්",
+  "nearbyNowLabel": "km {km} ක් දුරින් — දැන් ළඟින්",
+  "@nearbyNowLabel": {"placeholders":{"km":{"type":"String"}}},
+  "atLeast6Chars": "අවම වශයෙන් අක්ෂර 6ක්",
+  "localGemsNearby": "ආසන්නයේ ඇති දේශීය මැණික්",
+  "searchSecretLocations": "රහසිගත ස්ථාන සොයන්න...",
+  "startingPointLabel": "ආරම්භක ස්ථානය",
+  "startingPointHint": "ගුවන්තොටුපළ, කොළඹ...",
+  "startDateLabel": "ආරම්භක දිනය",
+  "travelStandardLabel": "සංචාරක ප්‍රමිතිය",
+  "premiumFeatureSnackbar": "{featureName} ප්‍රීමියම් විශේෂාංගයකි.",
+  "@premiumFeatureSnackbar": {"placeholders":{"featureName":{"type":"String"}}},
+  "appearance": "පෙනුම",
+  "themeDark": "අඳුරු",
+  "smartExpenseAdvisor": "බුද්ධිමත් වියදම් උපදේශක",
+  "howToEarnPointsHeading": "ලකුණු උපයන ආකාරය:",
+  "earnPointsReviewsTitle": "ස්ථාන සමාලෝචන ලියන්න",
+  "earnPointsReviewsAmount": "ලකුණු +10",
+  "earnPointsReviewsSubtitle": "දේශීය මාර්ගෝපදේශකයන් සහ සංචාරකයන් සහාය කරන්න",
+  "earnPointsFoodTitle": "දේශීය ආහාර රසවිඳින්න",
+  "earnPointsFoodAmount": "ලකුණු +15",
+  "earnPointsFoodSubtitle": "අව්‍යාජ දේශීය අවන්හල් සවිබල ගන්වන්න",
+  "earnPointsHeritageTitle": "උරුම ස්ථාන වෙත පිවිසෙන්න",
+  "earnPointsHeritageAmount": "ලකුණු +20",
+  "earnPointsHeritageSubtitle": "සංස්කෘතික සංරක්ෂණය ප්‍රවර්ධනය කරන්න",
+  "rewardsPerksHeading": "ඔබ අගුළු හරින ත්‍යාග සහ වරප්‍රසාද:",
+  "rewardEcoGuardianBadgeTitle": "පාරිසරික ආරක්ෂක ලාංඡනය",
+  "rewardEcoGuardianBadgeSubtitle": "ප්‍රමුඛ පුවරු සහ සමාලෝචනවල කැපී පෙනෙන්න",
+  "rewardPartnerDiscountsTitle": "හවුල්කරු වට්ටම්",
+  "rewardPartnerDiscountsSubtitle": "සත්‍යාපිත පරිසර හිතකාමී නවාතැන් සහ කැෆේවලින් 5%-15% වට්ටම්",
+  "rewardFreePremiumPerksTitle": "නොමිලේ ප්‍රීමියම් වරප්‍රසාද",
+  "rewardRealWorldImpactTitle": "සැබෑ-ලෝක බලපෑම",
+  "rewardRealWorldImpactSubtitle": "ලකුණු 500ක් ළඟාවන්න, අපි ඔබ වෙනුවෙන් ශ්‍රී ලංකාවේ ගසක් සිටුවමු!",
+  "tourDashboard": "සංචාර උපකරණ පුවරුව",
+  "tourDashboardSubtitle": "සක්‍රීය සංචාරය, QR, ලැයිස්තුව සහ ආරක්ෂාව",
+  "earnings": "ආදායම්",
+  "earningsSubtitle": "ගෙවීම් සහ සංඛ්‍යාලේඛන",
+  "familySharing": "පවුල් බෙදාගැනීම",
+  "shareAppMessage": "Hidden Gems SL එකට එකතු වන්න! 🌍 https://hiddengems.lk",
+  "shareAppSubject": "Hidden Gems SL එකේ මා සමඟ එකතු වන්න!",
+  "landmarkScannerTitle": "අනාවරණ ස්කෑනරය",
+  "analyzeLandmarkButton": "අනාවරණය විශ්ලේෂණය කරන්න",
+  "unlockLandmarkScanningTitle": "අනාවරණ ස්කෑන් කිරීම අගුළු හරින්න",
+  "unlockLandmarkScanningSubtitle": "ඕනෑම ස්ථානයක සැඟවුණු ඉතිහාසය හෙළිදරව් කිරීමට ඔබේ කැමරාව යොමු කරන්න.",
+  "guideLiveMarkerLabel": "ඔබේ මාර්ගෝපදේශකයා (සජීවී)",
+  "vehicleMarkerLabel": "ඔබේ වාහනය",
+  "meetingPointMarkerLabel": "හමුවීමේ ස්ථානය: {pointName}",
+  "@meetingPointMarkerLabel": {"placeholders":{"pointName":{"type":"String"}}},
+  "mapMarkerDaySnippet": "දිනය {day} • {time}",
+  "@mapMarkerDaySnippet": {"placeholders":{"day":{"type":"int"},"time":{"type":"String"}}},
+  "planRemovedSnackbar": "ඔරකල් කැෂ් එකෙන් සැලැස්ම ඉවත් කරන ලදී",
+  "clearSavedTripsTitle": "සුරකින ලද සංචාර ඉවත් කරන්න",
+  "clearSavedTripsMessage": "මෙය මෙම උපාංගයෙන් සුරකින ලද සියලුම සංචාර ස්ථිරවම ඉවත් කරයි.",
+  "fieldNotePopularity": "ජනප්‍රියත්වය",
+  "fieldNoteFoodNearby": "ආසන්නයේ ආහාර",
+  "fieldNoteWildlifeHazard": "වන සත්ව අනතුරු",
+  "bookmarkAddedSnackbar": "✨ ඔබේ ගමනට සලකුණු කරන ලදී!",
+  "bookmarkRemovedSnackbar": "පිටු සලකුණු වලින් ඉවත් කරන ලදී.",
+  "itineraryAddedSnackbar": "🗺️ {placeName} ඔබේ ඉරණමට එකතු කරන ලදී!",
+  "@itineraryAddedSnackbar": {"placeholders":{"placeName":{"type":"String"}}},
+  "itineraryRemovedSnackbar": "සංචාර සැලැස්මෙන් ඉවත් කරන ලදී.",
+  "bonusSessionUnlockedSnackbar": "ප්‍රසාද සැසිය අගුළු හැරී ඇත! නැවත ආරම්භ කිරීමට උත්සාහ කරන්න.",
+  "bonusDownloadUnlockedSnackbar": "ප්‍රසාද බාගැනීම අගුළු හැරී ඇත! නැවත බාගැනීමට උත්සාහ කරන්න.",
+  "calendarEventTitle": "සංචාරය: {touristName} (අමුත්තන් {guestCount})",
+  "@calendarEventTitle": {"placeholders":{"touristName":{"type":"String"},"guestCount":{"type":"int"}}},
+  "calendarSyncSuccessMessage": "{count, plural, one{වෙන්කිරීම් 1ක් ඔබේ දින දර්ශනයට සමමුහුර්ත කරන ලදී.} other{වෙන්කිරීම් {count}ක් ඔබේ දින දර්ශනයට සමමුහුර්ත කරන ලදී.}}",
+  "@calendarSyncSuccessMessage": {"placeholders":{"count":{"type":"int"}}},
+  "calendarSyncFailedMessage": "දින දර්ශන සමමුහුර්තකරණය අසාර්ථකයි: {error}",
+  "@calendarSyncFailedMessage": {"placeholders":{"error":{"type":"String"}}},
+  "syncToCalendarTooltip": "දින දර්ශනයට සමමුහුර්ත කරන්න",
+  "earningsAwaitingConfirmationNote": "Bookings {count}ක් තවම server payout confirmation එකක් එනකම් ඉන්නවා",
+  "@earningsAwaitingConfirmationNote": {"placeholders":{"count":{"type":"int"}}},
+  "startTourSessionButtonLabel": "සංචාර සැසිය ආරම්භ කරන්න / දියත් කරන්න",
+  "familyShareLinkLimitReached": "⚠️ ඔබ සක්‍රීය බෙදාගැනීමේ සබැඳි {maxLinks}ක සීමාවට පැමිණ ඇත. තවත් එකක් සෑදීමට එකක් ඉවත් කරන්න.",
+  "@familyShareLinkLimitReached": {"placeholders":{"maxLinks":{"type":"int"}}},
+  "familyShareRecipientNameRequired": "⚠️ කරුණාකර ලබන්නාගේ නමක් ඇතුළත් කරන්න.",
+  "familyShareNoActiveSessionError": "⚠️ මුලින්ම සක්‍රීය සංචාර සැසියක් ආරම්භ කරන්න — බෙදාගැනීමට කිසිවක් නැත.",
+  "familyShareLinkGeneratedSuccess": "✅ \"{name}\" සඳහා මෙහෙයුම් සබැඳිය සාදන ලදී!",
+  "@familyShareLinkGeneratedSuccess": {"placeholders":{"name":{"type":"String"}}},
+  "familyShareActiveLinksTitle": "සක්‍රීය සබැඳි",
+  "familyShareNewLinkButton": "+ අලුත්",
+  "familyShareAppBarTitle": "පවුල් බෙදාගැනීම",
+  "familyShareHeroSubtitle": "ඔබේ පවුලට ඔබේ සංචාර තත්ත්වය ආරක්ෂිතව නිරීක්ෂණය කිරීමට ඉඩ දෙන්න",
+  "familyShareNoActiveSessionNotice": "දැනට සක්‍රීය සංචාරයක් නැත — සජීවී බෙදාගැනීමේ සබැඳියක් සෑදීමට සංචාරයක් ආරම්භ කරන්න හෝ එකතු වන්න.",
+  "familyShareEmptyStateMessage": "සක්‍රීය බෙදාගැනීමේ සබැඳි හමු නොවීය",
+  "familyShareExpiredBadge": "කල් ඉකුත් විය",
+  "familyShareViewedCountBadge": "{count} වතාවක් නරඹන ලදී",
+  "@familyShareViewedCountBadge": {"placeholders":{"count":{"type":"int"}}},
+  "familyShareLinkNoLongerValid": "තවදුරටත් වලංගු නැත",
+  "familyShareLinkExpiresAt": "{time}ට කල් ඉකුත් වේ",
+  "@familyShareLinkExpiresAt": {"placeholders":{"time":{"type":"String"}}},
+  "familyShareCopyLinkSnackbar": "📋 ආරාධනා කේතය පසුරු පුවරුවට පිටපත් කරන ලදී!",
+  "familyShareRemoveLinkDialogTitle": "සබැඳිය ඉවත් කරන්නද?",
+  "familyShareRemoveLinkDialogBody": "මෙය \"{recipientName}\"ගේ බෙදාගත් ප්‍රවේශය අවලංගු කරයි.",
+  "@familyShareRemoveLinkDialogBody": {"placeholders":{"recipientName":{"type":"String"}}},
+  "familyShareLinkRemovedSnackbar": "\"{recipientName}\" සඳහා සබැඳිය ඉවත් කරන ලදී.",
+  "@familyShareLinkRemovedSnackbar": {"placeholders":{"recipientName":{"type":"String"}}},
+  "familyShareRemoveButton": "ඉවත් කරන්න",
+  "familyShareCreateSheetTitle": "බෙදාගැනීමේ සබැඳියක් සාදන්න",
+  "familyShareRecipientNameLabel": "ලබන්නාගේ නම",
+  "familyShareRecipientNameHint": "උදා. අම්මා, තාත්තා, නිවාස කාර්යාලය",
+  "familyShareExpiryLabel": "කල් ඉකුත්වීම",
+  "familyShareDuration4Hours": "පැය 4",
+  "familyShareDuration12Hours": "පැය 12",
+  "familyShareDuration24Hours": "පැය 24",
+  "familyShareToggleStatusLabel": "සජීවී තත්ත්වය බෙදාගන්න",
+  "familyShareToggleIdentityLabel": "මාර්ගෝපදේශක අනන්‍යතාවය බෙදාගන්න",
+  "familyShareToggleMeetingPointLabel": "හමුවීමේ ස්ථානය බෙදාගන්න",
+  "familyShareToggleEmergencyLabel": "හදිසි ඇඟවීම් බෙදාගන්න",
+  "familyShareGenerateLinkButton": "සබැඳිය සාදන්න",
+  "marketplaceSearchHint": "නම, භාෂාව, හෝ නගරය අනුව සොයන්න...",
+  "vehiclePositionMarkedMessage": "වාහන ස්ථානය සලකුණු කරන ලදී",
+  "tourDashboardTitle": "සංචාර උපකරණ පුවරුව",
+  "startTourSessionButton": "සංචාර සැසිය ආරම්භ කරන්න",
+  "tourSessionStartedMessage": "🚀 සංචාර සැසිය ආරම්භ විය!",
+  "markVehicleButton": "වාහනය සලකුණු කරන්න",
+  "weatherHazardLoggedMessage": "✅ කාලගුණ අනතුර ආරක්ෂක කවුන්සලයට වාර්තා විය!",
+  "earningsTitle": "ඉපැයීම්",
+  "pleaseLogInViewEarningsMessage": "ඉපැයීම් බැලීමට කරුණාකර පුරන්න.",
+  "totalNetEarningsLabel": "මුළු ශුද්ධ ඉපැයීම්",
+  "guestCountParenthesesLabel": "අමුත්තන් {count} (දෙනා)",
+  "@guestCountParenthesesLabel": {"placeholders":{"count":{"type":"int"}}},
+  "shareLocalKnowledgeTitle": "ඔබේ ප්‍රාදේශීය දැනුම බෙදාගන්න",
+  "guideTravelersEarnSubtitle": "සංචාරකයින්ට මඟපෙන්වා ඔබේම කාලසටහනට අනුව උපයන්න.",
+  "broadcastTypeDeparture": "පිටත්වීම",
+  "standardPackageLabel": "සම්මත පැකේජය",
+  "yearsExperienceLabel": "අවුරුදු {years}",
+  "@yearsExperienceLabel": {"placeholders":{"years":{"type":"String"}}},
+  "primaryCategoryLabel": "ප්‍රධාන ප්‍රවර්ගය",
+  "availabilityCalendarTitle": "ලබාගත හැකි දින දර්ශනය",
+  "sessionWithinSafetyParamsMessage": "සැසි මෙහෙයුම් ආරක්ෂක පරාමිතීන් තුළ පවතී.",
+  "medicalFacilitiesNearbyTitle": "අවට වෛද්‍ය පහසුකම්",
+  "privateGuardiansTitle": "පුද්ගලික භාරකරුවන්",
+  "noGuardiansAssignedMessage": "භාරකරුවන් පවරා නැත. සංඥා පෙරනිමියෙන් හදිසි සේවාවන්ට යොමු වේ.",
+  "nearestHospitalTitle": "ඔබ කොහේ සිටියත් ආසන්නතම රෝහල",
+  "findNearestHospitalButton": "සිතියම් වල ආසන්නතම රෝහල සොයන්න",
+  "addGuardianTitle": "භාරකරුවෙකු එකතු කරන්න",
+  "guardianPhoneNumberHint": "භාරකරුගේ දුරකථන අංකය",
+  "addGuardianButton": "භාරකරු එකතු කරන්න",
+  "sosAlertsPreparedLoggedMessage": "දුරකථන/SMS app එක විවෘත කළා. ඇමතුම සම්පූර්ණ කරන්න හෝ Send ඔබන්න; හදිසි සේවා ස්වයංක්‍රීයව සම්බන්ධ නොවේ.",
+  "monsoonHazardAlertTitle": "මෝසම් අනතුරු ඇඟවීම",
+  "preparingTourTitle": "සංචාරය සූදානම් කරමින්",
+  "parkedSpotLabel": "නවතා ඇති ස්ථානය",
+  "shareLiveLabel": "සජීවීව බෙදාගන්න",
+  "categoryParty": "සාදය",
+  "failedToShareTimelineMessage": "කාල රේඛාව බෙදාගැනීමට අසමත් විය: {error}",
+  "@failedToShareTimelineMessage": {"placeholders":{"error":{"type":"String"}}},
+  "hazardWarningMessage": "🚨 අනතුරු ඇඟවීම: {message}",
+  "@hazardWarningMessage": {"placeholders":{"message":{"type":"String"}}},
+  "totalSpentSoFarLabel": "මෙතෙක් වියදම් කළ මුළු මුදල",
+  "startedLabel": "ආරම්භ විය",
+  "featureStandardSos": "සම්මත SOS",
+  "featureOperatorDashboard": "ක්‍රියාකරු උපකරණ පුවරුව",
+  "mostPopularLabel": "වඩාත් ජනප්‍රිය",
+  "guardianEmergencyTranslatorTitle": "Guardian හදිසි පරිවර්තකය",
+  "guardianEmergencyTranslatorDescription": "SOS අතරතුර ශ්‍රී ලාංකික පොලිසියට හෝ රෝහල් සේවකයින්ට ඔබේ තත්ත්වය කථන සිංහලෙන් ක්ෂණිකව පැහැදිලි කරන්න.",
+  "smartTravelerTitle": "දක්ෂ සංචාරකයා",
+  "featureAiItineraries20": "මසකට AI සංචාර සැලසුම් 20",
+  "billedYearlySaveLabel": "වාර්ෂිකව බිල් කරනු ලැබේ · ~17% ඉතිරි කරන්න",
+  "featureUnlimitedAiItineraries": "අසීමිත AI සංචාර සැලසුම්",
+  "yearlySaveLabel": "වාර්ෂිකව · 17% ඉතිරි කරන්න",
+  "trialYearsLabel": "{count, plural, one{වසරක්} other{වසර {count}}} නොමිලේ අත්හදා බැලීම",
+  "@trialYearsLabel": {"placeholders":{"count":{"type":"int"}}},
+  "culinaryVisionEngineLabel": "ආහාරපාන දෘශ්‍ය එන්ජිම V2",
+  "aiVisualMarkersFallback": "AI විසින් {label} සමඟ අනුකූල දෘශ්‍ය ආහාරපාන සලකුණු හඳුනාගෙන ඇත.",
+  "@aiVisualMarkersFallback": {"placeholders":{"label":{"type":"String"}}},
+  "manualCulinaryOverrideTitle": "අතින් ආහාරපාන අභිබවා යාම",
+  "heritageNarrativeEngineTitle": "උරුම කථා එන්ජිම",
+  "folkloreNarrativeTitle": "ජනශ්‍රැති කථාව",
+  "culinaryGapPairingEngineTitle": "ආහාරපාන හිඩැස් සහ යුගල එන්ජිම",
+  "carbsLabel": "කාබෝහයිඩ්‍රේට්",
+  "savorLankaShareText": "Hidden Gems SL.ai හි මට හමු වූ මෙම {name} වට්ටෝරුව බලන්න! එය සත්‍ය ශ්‍රී ලාංකික රසවත් ආහාරයකි. \n\nOracle ලකුණු: {score}%",
+  "@savorLankaShareText": {"placeholders":{"name":{"type":"String"},"score":{"type":"String"}}},
+  "savorLankaShareSubject": "Hidden Gems SL.ai - Savor Lanka වට්ටෝරුව",
+  "visuallySimilarAlternativesLabel": "දෘශ්‍යමය වශයෙන් සමාන විකල්ප",
+  "popularLabel": "ජනප්‍රිය",
+  "newPartnerDiscountsMessage": "නව හවුල්කරු වට්ටම් නිතිපතා එකතු කෙරේ — ඉක්මනින් නැවත පරීක්ෂා කරන්න.",
+  "shareCollectibleButton": "එකතුව බෙදාගන්න",
+  "shareCollectibleMessage": "මට Hidden Gems SL එකේ {placeName} heritage stamp එක ({rarity}) ලැබුණා!",
+  "@shareCollectibleMessage": {"placeholders":{"placeName":{"type":"String"},"rarity":{"type":"String"}}},
+  "stampRarityCommon": "සාමාන්‍ය",
+  "stampRarityRare": "දුර්ලභ",
+  "stampRarityMythic": "පුරාණෝක්ති",
+  "groupTourStartedCodeLabel": "සමූහ සංචාරය ආරම්භ විය! කේතය: {code}",
+  "@groupTourStartedCodeLabel": {"placeholders":{"code":{"type":"String"}}},
+  "ptsRarityLabel": "+ලකුණු {points} • {rarity}",
+  "@ptsRarityLabel": {"placeholders":{"points":{"type":"int"},"rarity":{"type":"String"}}},
+  "tourTypeBoatSafari": "බෝට්ටු සෆාරි",
+  "tourTypeWildlifeSafari": "වන්‍යජීවී සෆාරි",
+  "reportReasonHarassment": "හිරිහැරය",
+  "filterClearButton": "ඉවත් කරන්න",
+  "weatherConditionClear": "පැහැදිලි අහස",
+  "familyShareTitle": "පවුලේ බෙදාගැනීම",
+  "tapWaterWarning": "ජල තත්ත්වය ස්ථානය අනුව වෙනස් වේ; සැකයක් ඇත්නම් උණු කළ, පෙරූ හෝ මුද්‍රා තැබූ ජලය භාවිතා කරන්න"
 }

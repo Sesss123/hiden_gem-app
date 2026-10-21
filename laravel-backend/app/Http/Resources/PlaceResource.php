@@ -38,12 +38,6 @@ class PlaceResource extends JsonResource
         $bestTime = $this->best_time ?? $this->best_time_to_visit ?? '';
         $riskTags = $this->risk_tags ?? [];
         $facilities = $this->facilities ?? [];
-        $arSupported = (bool) $this->ar_supported;
-        $arTier = (int) ($this->ar_tier ?? 3);
-        $arBrandName = $this->ar_brand_name ?? '';
-        $arModelUrl = $this->ar_model_url ?? '';
-        $arHistoricalModelUrl = $this->ar_historical_model_url ?? '';
-        $arModelScale = (float) ($this->ar_model_scale ?? 0.01);
         $historicalPeriod = $this->historical_period ?? '';
         $accessTier = $this->access_tier ?? 'Free';
 
@@ -101,21 +95,8 @@ class PlaceResource extends JsonResource
             'risk_tags' => $riskTags,
             'riskTags' => $riskTags,
             'facilities' => $facilities,
-            'ar_supported' => $arSupported,
-            'arSupported' => $arSupported,
-            'ar_tier' => $arTier,
-            'arTier' => $arTier,
-            'ar_brand_name' => $arBrandName,
-            'arBrandName' => $arBrandName,
-            'ar_model_url' => $arModelUrl,
-            'arModelUrl' => $arModelUrl,
-            'ar_historical_model_url' => $arHistoricalModelUrl,
-            'arHistoricalModelUrl' => $arHistoricalModelUrl,
-            'ar_model_scale' => $arModelScale,
-            'arModelScale' => $arModelScale,
             'historical_period' => $historicalPeriod,
             'historicalPeriod' => $historicalPeriod,
-            'ar_file_size_mb' => (float) ($this->ar_file_size_mb ?? 0),
             'audio_guide_url_si' => $this->audio_guide_url_si ?? '',
             'audio_guide_url_en' => $this->audio_guide_url_en ?? '',
             'geohash' => $this->geohash ?? '',

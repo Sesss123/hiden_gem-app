@@ -19,7 +19,7 @@ class L10nUtils {
     if (normalized.contains('family')) return l10n.categoryFamily;
     if (normalized.contains('budget')) return l10n.categoryBudget;
     if (normalized.contains('free')) return l10n.categoryBudget;
-    
+
     return category; // Fallback to raw string if no mapping exists
   }
 
@@ -29,16 +29,24 @@ class L10nUtils {
     if (l10n == null) return filterKey;
 
     switch (filterKey) {
-      case 'all': return l10n.filterAll;
-      case 'nature': return l10n.filterNature;
-      case 'waterfall': return l10n.filterWaterfall;
-      case 'hiking': return l10n.filterHiking;
-      case 'culture': return l10n.filterCulture;
-      case 'coastal': return l10n.filterCoastal;
-      case 'family': return l10n.filterFamily;
-      case 'budget': return l10n.filterBudget;
-      case 'ar': return l10n.filterAr;
-      default: return filterKey;
+      case 'all':
+        return l10n.filterAll;
+      case 'nature':
+        return l10n.filterNature;
+      case 'waterfall':
+        return l10n.filterWaterfall;
+      case 'hiking':
+        return l10n.filterHiking;
+      case 'culture':
+        return l10n.filterCulture;
+      case 'coastal':
+        return l10n.filterCoastal;
+      case 'family':
+        return l10n.filterFamily;
+      case 'budget':
+        return l10n.filterBudget;
+      default:
+        return filterKey;
     }
   }
 }

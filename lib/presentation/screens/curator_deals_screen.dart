@@ -40,7 +40,8 @@ class _CuratorDealsScreenState extends State<CuratorDealsScreen> {
     final isPremium = await SecureEntitlements().verifyPremium();
     if (!mounted) return;
     if (!isPremium) {
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const PremiumHubScreen()));
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (_) => const PremiumHubScreen()));
       return;
     }
     _load();
@@ -63,13 +64,20 @@ class _CuratorDealsScreenState extends State<CuratorDealsScreen> {
         backgroundColor: AppTheme.colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new, size: 20, color: AppTheme.textPrimary(context)),
+          icon: Icon(Icons.arrow_back_ios_new,
+              size: 20, color: AppTheme.textPrimary(context)),
           onPressed: () => Navigator.pop(context),
         ),
-        title: Text(AppLocalizations.of(context)!.curatorDealsTitle, style: GoogleFonts.outfit(fontWeight: FontWeight.w800, fontSize: 18, color: AppTheme.textPrimary(context))),
+        title: Text(AppLocalizations.of(context)!.curatorDealsTitle,
+            style: GoogleFonts.outfit(
+                fontWeight: FontWeight.w800,
+                fontSize: 18,
+                color: AppTheme.textPrimary(context))),
       ),
       body: _isLoading
-          ? Center(child: CircularProgressIndicator(color: Theme.of(context).colorScheme.primary))
+          ? Center(
+              child: CircularProgressIndicator(
+                  color: Theme.of(context).colorScheme.primary))
           : _deals.isEmpty
               ? _buildEmptyState(context)
               : RefreshIndicator(
@@ -77,9 +85,11 @@ class _CuratorDealsScreenState extends State<CuratorDealsScreen> {
                   onRefresh: _load,
                   child: ListView.builder(
                     padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
-                    physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+                    physics: const AlwaysScrollableScrollPhysics(
+                        parent: BouncingScrollPhysics()),
                     itemCount: _deals.length,
-                    itemBuilder: (context, index) => _buildDealCard(context, _deals[index]),
+                    itemBuilder: (context, index) =>
+                        _buildDealCard(context, _deals[index]),
                   ),
                 ),
     );
@@ -92,14 +102,21 @@ class _CuratorDealsScreenState extends State<CuratorDealsScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.local_offer_outlined, size: 56, color: AppTheme.textSecondary(context).withValues(alpha: 0.3)),
+            Icon(Icons.local_offer_outlined,
+                size: 56,
+                color: AppTheme.textSecondary(context).withValues(alpha: 0.3)),
             const SizedBox(height: 16),
-            Text(AppLocalizations.of(context)!.noDealsRightNowTitle, style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.w700, color: AppTheme.textPrimary(context))),
+            Text(AppLocalizations.of(context)!.noDealsRightNowTitle,
+                style: GoogleFonts.outfit(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                    color: AppTheme.textPrimary(context))),
             const SizedBox(height: 8),
             Text(
               AppLocalizations.of(context)!.newPartnerDiscountsMessage,
               textAlign: TextAlign.center,
-              style: GoogleFonts.inter(fontSize: 13, color: AppTheme.textSecondary(context)),
+              style: GoogleFonts.inter(
+                  fontSize: 13, color: AppTheme.textSecondary(context)),
             ),
           ],
         ),
@@ -113,7 +130,12 @@ class _CuratorDealsScreenState extends State<CuratorDealsScreen> {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(20),
-        boxShadow: [BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.06), blurRadius: 18, offset: const Offset(0, 8))],
+        boxShadow: [
+          BoxShadow(
+              color: AppTheme.colors.black.withValues(alpha: 0.06),
+              blurRadius: 18,
+              offset: const Offset(0, 8))
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -121,17 +143,30 @@ class _CuratorDealsScreenState extends State<CuratorDealsScreen> {
           Stack(
             children: [
               ClipRRect(
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-                child: CachedImage(url: partner.imageUrl, height: 140, width: double.infinity, fit: BoxFit.cover),
+                borderRadius:
+                    const BorderRadius.vertical(top: Radius.circular(20)),
+                child: CachedImage(
+                    url: partner.imageUrl,
+                    height: 140,
+                    width: double.infinity,
+                    fit: BoxFit.cover),
               ),
               Positioned(
-                top: 12, left: 12,
+                top: 12,
+                left: 12,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                  decoration: BoxDecoration(color: AppPalette.rust, borderRadius: BorderRadius.circular(100)),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  decoration: BoxDecoration(
+                      color: AppPalette.rust,
+                      borderRadius: BorderRadius.circular(100)),
                   child: Text(
-                    AppLocalizations.of(context)!.percentOffLabel(partner.discountPercent),
-                    style: GoogleFonts.outfit(color: AppTheme.colors.white, fontSize: 12, fontWeight: FontWeight.w800),
+                    AppLocalizations.of(context)!
+                        .percentOffLabel(partner.discountPercent),
+                    style: GoogleFonts.outfit(
+                        color: AppTheme.colors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w800),
                   ),
                 ),
               ),
@@ -148,53 +183,82 @@ class _CuratorDealsScreenState extends State<CuratorDealsScreen> {
                       child: Row(
                         children: [
                           Flexible(
-                            child: Text(partner.name, overflow: TextOverflow.ellipsis, style: GoogleFonts.outfit(fontSize: 15, fontWeight: FontWeight.w700, color: AppTheme.textPrimary(context))),
+                            child: Text(partner.name,
+                                overflow: TextOverflow.ellipsis,
+                                style: GoogleFonts.outfit(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w700,
+                                    color: AppTheme.textPrimary(context))),
                           ),
-                          // Same trust-badge gap as the AR nearby-partners card —
+                          // Same trust-badge gap as the nearby-partners card —
                           // admin sets isVerified but it was never rendered anywhere.
                           if (partner.isVerified) ...[
                             const SizedBox(width: 4),
-                            Icon(Icons.verified_rounded, color: AppTheme.colors.greenAccent, size: 14),
+                            Icon(Icons.verified_rounded,
+                                color: AppTheme.colors.greenAccent, size: 14),
                           ],
                         ],
                       ),
                     ),
-                    Icon(Icons.star_rounded, color: AppTheme.colors.amber, size: 16),
+                    Icon(Icons.star_rounded,
+                        color: AppTheme.colors.amber, size: 16),
                     const SizedBox(width: 2),
-                    Text(partner.rating.toStringAsFixed(1), style: GoogleFonts.outfit(fontSize: 12, fontWeight: FontWeight.w700, color: AppTheme.textPrimary(context))),
+                    Text(partner.rating.toStringAsFixed(1),
+                        style: GoogleFonts.outfit(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w700,
+                            color: AppTheme.textPrimary(context))),
                   ],
                 ),
                 const SizedBox(height: 2),
                 Text(
                   partner.priceRange,
-                  style: GoogleFonts.inter(fontSize: 11, color: AppTheme.textSecondary(context), fontWeight: FontWeight.w600),
+                  style: GoogleFonts.inter(
+                      fontSize: 11,
+                      color: AppTheme.textSecondary(context),
+                      fontWeight: FontWeight.w600),
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  partner.dealDescription.isNotEmpty ? partner.dealDescription : partner.description,
+                  partner.dealDescription.isNotEmpty
+                      ? partner.dealDescription
+                      : partner.description,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.inter(fontSize: 12, color: AppTheme.textSecondary(context), height: 1.4),
+                  style: GoogleFonts.inter(
+                      fontSize: 12,
+                      color: AppTheme.textSecondary(context),
+                      height: 1.4),
                 ),
                 if (partner.dealValidUntil != null) ...[
                   const SizedBox(height: 8),
                   Text(
-                    AppLocalizations.of(context)!.validUntilLabel('${partner.dealValidUntil!.day}/${partner.dealValidUntil!.month}/${partner.dealValidUntil!.year}'),
-                    style: GoogleFonts.inter(fontSize: 11, color: AppTheme.textSecondary(context).withValues(alpha: 0.7), fontWeight: FontWeight.w600),
+                    AppLocalizations.of(context)!.validUntilLabel(
+                        '${partner.dealValidUntil!.day}/${partner.dealValidUntil!.month}/${partner.dealValidUntil!.year}'),
+                    style: GoogleFonts.inter(
+                        fontSize: 11,
+                        color: AppTheme.textSecondary(context)
+                            .withValues(alpha: 0.7),
+                        fontWeight: FontWeight.w600),
                   ),
                 ],
                 const SizedBox(height: 14),
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: partner.bookingUrl.isEmpty ? null : () => _openBooking(partner.bookingUrl),
+                    onPressed: partner.bookingUrl.isEmpty
+                        ? null
+                        : () => _openBooking(partner.bookingUrl),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Theme.of(context).colorScheme.primary,
                       foregroundColor: Theme.of(context).colorScheme.onPrimary,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(100)),
                       elevation: 0,
                     ),
-                    child: Text(AppLocalizations.of(context)!.claimDealButton, style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 13)),
+                    child: Text(AppLocalizations.of(context)!.claimDealButton,
+                        style: GoogleFonts.inter(
+                            fontWeight: FontWeight.w700, fontSize: 13)),
                   ),
                 ),
               ],

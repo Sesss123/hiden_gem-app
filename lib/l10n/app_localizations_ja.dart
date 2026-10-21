@@ -81,11 +81,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get savedJourneyHubTitle => '保存した場所と旅';
 
   @override
-  String bookmarkedCount(int count) {
-    return 'ブックマーク（$count）';
-  }
-
-  @override
   String wantToVisitCount(int count) {
     return '行きたい（$count）';
   }
@@ -97,12 +92,6 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get savedPlacesLoadError => '保存した場所を読み込めませんでした。';
-
-  @override
-  String get noBookmarkedPlaces => 'ブックマークはまだありません';
-
-  @override
-  String get noBookmarkedPlacesHint => '場所のブックマークをタップして保存できます。';
 
   @override
   String get wantToVisitEmpty => '行きたいリストは空です';
@@ -161,9 +150,6 @@ class AppLocalizationsJa extends AppLocalizations {
       '価格はサービスから提供され、変更される場合があります。購入前にご確認ください。';
 
   @override
-  String get hydrationSummary => '地元の飲み物・密封水・安全な氷の案内';
-
-  @override
   String get appTitle => 'Hidden Gems SL';
 
   @override
@@ -209,9 +195,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get language => '言語';
 
   @override
-  String get itinerary => '旅程';
-
-  @override
   String get style => 'スタイル';
 
   @override
@@ -234,9 +217,6 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get discovery => '発見';
-
-  @override
-  String get nearYou => '近く';
 
   @override
   String get aiReason => 'AIのおすすめ理由';
@@ -287,28 +267,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get discoveryHeader => '発見';
 
   @override
-  String get searchHint => '隠れた名所を検索...';
-
-  @override
   String get picksForYou => 'Hidden Gems SL あなたへのオススメ';
-
-  @override
-  String get exploreInAr => 'ARで探索';
-
-  @override
-  String get bestNatureNearby => '近くの最高の自然';
 
   @override
   String get topCultureSpots => 'トップ文化スポット';
 
   @override
   String get villageStayTitle => '村と本格的な滞在';
-
-  @override
-  String get allNearbyPlacesTitle => '近くのすべての場所';
-
-  @override
-  String get noMatchesNearby => '近くに一致するものはありません';
 
   @override
   String get tryIncreasingDistance => '距離を増やすか、フィルターを外してみてください。';
@@ -336,9 +301,6 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get filterBudget => '予算 💸';
-
-  @override
-  String get filterAr => 'AR スポット 🏛';
 
   @override
   String get categoryNature => '自然';
@@ -373,9 +335,6 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get arHeritageReady => 'AR遺産体験が利用可能';
-
-  @override
   String get theKnowledge => '知識';
 
   @override
@@ -406,27 +365,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get reality => '現実';
 
   @override
-  String get aerDimensionReady => 'AER ディメンションの準備完了';
-
-  @override
-  String get invokeAr => 'ARを呼び出す';
-
-  @override
   String get addToDestiny => '運命に追加';
-
-  @override
-  String get distanceLockTitle => '距離ロック';
-
-  @override
-  String distanceLockMessage(Object distance) {
-    return 'あなたは $distance km 離れています。AERディメンションには500m以内でのみアクセスできます。';
-  }
-
-  @override
-  String get arCoreNotDetected => 'AR CORE が検出されません';
-
-  @override
-  String get arCoreMessage => '古代のビジョンを表示するには ARCore が必要です。インストールと更新を確認してください。';
 
   @override
   String get road => '道路';
@@ -435,75 +374,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get access => 'アクセス';
 
   @override
-  String get parking => '駐車場';
-
-  @override
-  String get syncingResonance => '古代の共鳴と同期中...';
-
-  @override
-  String get resonanceLost => '共鳴が失われました';
-
-  @override
   String get gpsRequired => '位置情報を確認できませんでした。GPSを有効にしてください。';
-
-  @override
-  String get unlockTeleport => 'テレポートのロック解除';
 
   @override
   String get close => '閉じる';
 
   @override
   String get understood => '了解';
-
-  @override
-  String get ancestralPortalOpen => '祖先のポータルが開きました';
-
-  @override
-  String get stepIntoHistory => '歴史の中へ';
-
-  @override
-  String viewEraIn360(Object era) {
-    return '$era を360度で見る';
-  }
-
-  @override
-  String get arDemoLabel => '10秒間のARデモ';
-
-  @override
-  String get fullHeritageAr => 'フル ヘリテージ AR';
-
-  @override
-  String get ancientHeritageSite => '古代の遺産サイト';
-
-  @override
-  String get arTipPlace => '表面をタップして3Dモデルを配置';
-
-  @override
-  String get arTipTime => '「過去/現在」をスワイプしてタイムトラベル';
-
-  @override
-  String get arTipAudio => 'シンハラ語と英語の音声ガイド';
-
-  @override
-  String get arTipGroup => 'グループARツアーを主催または参加';
-
-  @override
-  String get openArPortal => 'ARポータルを開く';
-
-  @override
-  String get enterDemo => 'デモに参加 (10秒)';
-
-  @override
-  String get offlineReady => 'オフライン対応';
-
-  @override
-  String get assetsCached => '遺産アセットがオフライン用にキャッシュされました！';
-
-  @override
-  String get downloadFailed => 'ダウンロードに失敗しました。接続を確認してください。';
-
-  @override
-  String get downloadForOffline => 'オフライン用にダウンロード';
 
   @override
   String get initiateTravel => 'トラベルシーケンスを開始';
@@ -532,7 +409,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get couldNotOpenEmail =>
-      'メールクライアントを開けませんでした。support@hiddengems.lk までメールでお問い合わせください';
+      'メールクライアントを開けませんでした。pathiranasehas3@gmail.com までメールでお問い合わせください';
 
   @override
   String get getDirections => 'Get Directions';
@@ -550,15 +427,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get travelModeBike => 'Bike';
 
   @override
-  String get travelModeCar => 'Car';
-
-  @override
   String get openInMaps => 'Open in Maps';
-
-  @override
-  String nearbyNowLabel(String km) {
-    return '$km km away — nearby now';
-  }
 
   @override
   String get photosLabel => 'Photos';
@@ -599,7 +468,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get privacySection5Body =>
-      '個人データ保護法 No. 9 of 2022 の下、お客様は自身の個人データに関して以下の基本的権利を有します。\n\n• アクセスおよび訂正の権利：アプリの「プロフィール」画面から、アカウント情報やプロフィールデータを直接確認、ダウンロード、編集できます。\n• 同意の撤回：デバイス設定で位置情報の許可を無効にする、または有効なファミリー共有リンクを取り消すことにより、位置情報の追跡やデータ処理への同意をいつでも撤回できます。\n• 削除の権利（忘れられる権利）：「プロフィール」＞「プライバシー」＞「アカウント削除」から直接、またはデータ保護責任者宛て（support@hiddengems.lk）にメールを送ることで、アカウントの完全削除をリクエストできます。';
+      '個人データ保護法 No. 9 of 2022 の下、お客様は自身の個人データに関して以下の基本的権利を有します。\n\n• アクセスおよび訂正の権利：アプリの「プロフィール」画面から、アカウント情報やプロフィールデータを直接確認、ダウンロード、編集できます。\n• 同意の撤回：デバイス設定で位置情報の許可を無効にする、または有効なファミリー共有リンクを取り消すことにより、位置情報の追跡やデータ処理への同意をいつでも撤回できます。\n• 削除の権利（忘れられる権利）：「プロフィール」＞「プライバシー」＞「アカウント削除」から直接、またはデータ保護責任者宛て（pathiranasehas3@gmail.com）にメールを送ることで、アカウントの完全削除をリクエストできます。';
 
   @override
   String get privacySection6Title => '6. データの保持と消去';
@@ -633,7 +502,8 @@ class AppLocalizationsJa extends AppLocalizations {
   String get privacyFooterCompany => 'HIDDEN GEMS SRI LANKA (PVT) LTD';
 
   @override
-  String get privacyFooterAddress => '登録事務所：スリランカ、コロンボ • support@hiddengems.lk';
+  String get privacyFooterAddress =>
+      '登録事務所：スリランカ、コロンボ • pathiranasehas3@gmail.com';
 
   @override
   String get termsAndPrivacyTitle => '利用規約とプライバシー';
@@ -684,7 +554,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get updateRequiredBody => '旅を続けるには、アプリをアップデートしてください。';
 
   @override
-  String get updateReadyBody => 'より優れた地図、より高速なAI旅程プラン、改善されたARがお待ちしています。';
+  String get updateReadyBody => 'より優れた地図、より高速なAI旅程プラン、新しい旅行ツールがお待ちしています。';
 
   @override
   String get updateNow => '今すぐアップデート';
@@ -739,9 +609,6 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get insufficientComplexity => 'パスワードの複雑さが不十分です';
-
-  @override
-  String get atLeast6Chars => '6文字以上で入力してください';
 
   @override
   String get forgotPassword => 'パスワードをお忘れですか？';
@@ -844,12 +711,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get foodAiAction => 'フードAI';
 
   @override
-  String get arPortalsAction => 'ARポータル';
-
-  @override
-  String get localGemsNearby => '近くのローカルジェム';
-
-  @override
   String get todayInSriLanka => '今日のスリランカ';
 
   @override
@@ -857,9 +718,6 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get letOracleGuide => 'オラクルにあなたの旅を導いてもらいましょう';
-
-  @override
-  String get searchSecretLocations => '秘密のスポットを検索...';
 
   @override
   String get offlineModeLabel => 'オフラインモード';
@@ -924,19 +782,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get step1Subtitle => '基本情報';
 
   @override
-  String get startingPointLabel => '出発地';
-
-  @override
-  String get startingPointHint => '空港、コロンボ...';
-
-  @override
   String get destinationLabel => '目的地';
 
   @override
   String get destinationHint => 'エラ、ゴール、キャンディ...';
-
-  @override
-  String get startDateLabel => '出発日';
 
   @override
   String get step2Title => 'あなたの旅の雰囲気を決めましょう。';
@@ -951,9 +800,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String tripLengthDaysValue(int days) {
     return '$days日間';
   }
-
-  @override
-  String get travelStandardLabel => '旅行のグレード';
 
   @override
   String get step3Title => '誰と旅をしますか？';
@@ -1065,12 +911,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get priceRangePremium => 'プレミアム';
 
   @override
-  String get heritageArSearchTitle => 'ヘリテージAR検索';
-
-  @override
-  String get onlyShowArEnabledSpots => 'AR対応スポットのみ表示';
-
-  @override
   String get revealDestinies => '運命を明らかにする';
 
   @override
@@ -1090,12 +930,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get seeAll => 'すべて見る';
 
   @override
-  String get arBadge => 'AR';
-
-  @override
-  String get heritageArBadge => 'ヘリテージAR';
-
-  @override
   String tripDurationStyleLabel(int days, String style) {
     return '$days日間の$style旅行';
   }
@@ -1105,11 +939,6 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get mapTabLabel => '地図';
-
-  @override
-  String premiumFeatureSnackbar(String featureName) {
-    return '$featureName はプレミアム機能です。';
-  }
 
   @override
   String get savedPlansFeatureName => '保存済みプラン';
@@ -1232,9 +1061,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get localizationError => 'ローカライズエラー';
 
   @override
-  String get appearance => '外観';
-
-  @override
   String get settingsSectionLabel => '設定';
 
   @override
@@ -1269,28 +1095,16 @@ class AppLocalizationsJa extends AppLocalizations {
   String get goPremium => 'プレミアムに登録';
 
   @override
-  String get fullArAiAccessGranted => 'AR・AIへのフルアクセスが有効です';
-
-  @override
-  String get unlockArAiFeatures => 'AR・AI機能を解放';
-
-  @override
   String get upgrade => 'アップグレード';
 
   @override
   String get themeLight => 'ライト';
 
   @override
-  String get themeDark => 'ダーク';
-
-  @override
   String get journeyHub => 'ジャーニーハブ';
 
   @override
   String get aiBudgetConcierge => 'AI予算コンシェルジュ';
-
-  @override
-  String get smartExpenseAdvisor => 'スマート支出アドバイザー';
 
   @override
   String get heritagePassport => 'ヘリテージパスポート';
@@ -1319,61 +1133,7 @@ class AppLocalizationsJa extends AppLocalizations {
       'エシカルトラベルスコアは、地域コミュニティや文化遺産の保護に対するあなたの貢献度をスリランカ全土で測定します。';
 
   @override
-  String get howToEarnPointsHeading => 'ポイントの獲得方法：';
-
-  @override
-  String get earnPointsReviewsTitle => 'スポットのレビューを投稿';
-
-  @override
-  String get earnPointsReviewsAmount => '+10 ポイント';
-
-  @override
-  String get earnPointsReviewsSubtitle => '地元ガイドや旅行者を応援しよう';
-
-  @override
-  String get earnPointsFoodTitle => '地元料理を味わう';
-
-  @override
-  String get earnPointsFoodAmount => '+15 ポイント';
-
-  @override
-  String get earnPointsFoodSubtitle => '本格的な地元の飲食店を応援しよう';
-
-  @override
-  String get earnPointsHeritageTitle => '文化遺産を訪れる';
-
-  @override
-  String get earnPointsHeritageAmount => '+20 ポイント';
-
-  @override
-  String get earnPointsHeritageSubtitle => '文化の保護を促進しよう';
-
-  @override
-  String get rewardsPerksHeading => '獲得できる特典・報酬：';
-
-  @override
-  String get rewardEcoGuardianBadgeTitle => 'エコガーディアンバッジ';
-
-  @override
-  String get rewardEcoGuardianBadgeSubtitle => 'ランキングやレビューで目立とう';
-
-  @override
-  String get rewardPartnerDiscountsTitle => '提携先の割引';
-
-  @override
-  String get rewardPartnerDiscountsSubtitle => '認定エコ宿泊施設やカフェで5%～15%オフ';
-
-  @override
-  String get rewardFreePremiumPerksTitle => '無料プレミアム特典';
-
-  @override
-  String get rewardFreePremiumPerksSubtitle => 'ポイントでARガイドやオフライン地図を解放';
-
-  @override
-  String get rewardRealWorldImpactTitle => '現実世界へのインパクト';
-
-  @override
-  String get rewardRealWorldImpactSubtitle => '500ポイント達成でスリランカに植樹します！';
+  String get rewardFreePremiumPerksSubtitle => 'ポイントでオフライン地図やプレミアム機能を解放';
 
   @override
   String get gotItKeepExploring => '了解、探索を続ける';
@@ -1386,18 +1146,6 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get activeStatusBadge => '稼働中';
-
-  @override
-  String get tourDashboard => 'ツアーダッシュボード';
-
-  @override
-  String get tourDashboardSubtitle => '実施中のツアー、QR、掲載情報、安全管理';
-
-  @override
-  String get earnings => '収益';
-
-  @override
-  String get earningsSubtitle => '支払いと統計';
 
   @override
   String get clients => '顧客';
@@ -1444,9 +1192,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get myBookings => '予約履歴';
 
   @override
-  String get familySharing => 'ファミリー共有';
-
-  @override
   String get scanGuideQr => 'ガイドQRをスキャン';
 
   @override
@@ -1485,21 +1230,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get confirmSignOutMessage => '本当にサインアウトしますか？';
 
   @override
-  String get shareAppMessage =>
-      'Hidden Gems SL に参加しよう！🌍 https://hiddengems.lk';
-
-  @override
-  String get shareAppSubject => 'Hidden Gems SL に一緒に参加しませんか！';
-
-  @override
   String get somethingWentWrong => '問題が発生しました。アプリを再起動してください。';
 
   @override
   String get cameraPermissionRequiredTitle => 'カメラの許可が必要です';
-
-  @override
-  String get cameraPermissionRequiredMessage =>
-      'スキャナーを使用するには、アプリ設定でカメラへのアクセスを有効にしてください。';
 
   @override
   String get openSettings => '設定を開く';
@@ -1509,20 +1243,7 @@ class AppLocalizationsJa extends AppLocalizations {
       'ライブスキャン機能は近日公開予定です。\n\nカメラを通じたリアルタイムのランドマーク・物体認識を準備中です。準備が整い次第、お知らせします。';
 
   @override
-  String get landmarkScannerTitle => 'ランドマークスキャナー';
-
-  @override
   String get identifyingLabel => '識別中…';
-
-  @override
-  String get analyzeLandmarkButton => 'ランドマークを分析';
-
-  @override
-  String get unlockLandmarkScanningTitle => 'ランドマークスキャンを解放';
-
-  @override
-  String get unlockLandmarkScanningSubtitle =>
-      'カメラをどんな場所にかざすだけで、隠された歴史が明らかになります。';
 
   @override
   String get oracleVerifiedLabel => 'オラクル認証済み';
@@ -1530,17 +1251,6 @@ class AppLocalizationsJa extends AppLocalizations {
   @override
   String mapLoadErrorMessage(String error) {
     return '地図データの読み込みに失敗しました：$error';
-  }
-
-  @override
-  String get guideLiveMarkerLabel => 'あなたのガイド（ライブ）';
-
-  @override
-  String get vehicleMarkerLabel => 'あなたの車両';
-
-  @override
-  String meetingPointMarkerLabel(String pointName) {
-    return '待ち合わせ場所：$pointName';
   }
 
   @override
@@ -1584,11 +1294,6 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String mapMarkerDaySnippet(int day, String time) {
-    return '$day日目・$time';
-  }
-
-  @override
   String get visualRouteTitle => 'ビジュアルルート';
 
   @override
@@ -1606,19 +1311,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get focusButtonLabel => 'フォーカス';
 
   @override
-  String get planRemovedSnackbar => 'オラクルのキャッシュからプランを削除しました';
-
-  @override
-  String get viewInArLabel => 'ARで見る';
-
-  @override
   String get savedTripsTitle => '保存済みの旅行';
-
-  @override
-  String get clearSavedTripsTitle => '保存済みの旅行を削除';
-
-  @override
-  String get clearSavedTripsMessage => 'このデバイスに保存されているすべての旅行が完全に削除されます。';
 
   @override
   String get eraseAllButton => 'すべて削除';
@@ -1631,9 +1324,6 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get unknownDateLabel => '日付不明';
-
-  @override
-  String get noArSpotsSnackbar => 'このプランにはARスポットがありません';
 
   @override
   String tripRouteLabel(String fromCity, String destinationCity) {
@@ -1655,9 +1345,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String tripBudgetChip(String amount) {
     return 'Rs $amount';
   }
-
-  @override
-  String get arBadgeLabel => 'AR';
 
   @override
   String savedTimeAgoLabel(String timeAgo) {
@@ -1779,25 +1466,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get etiquetteTipNoSoapInPools => '自然の池での石鹸・シャンプーの使用は避けましょう';
 
   @override
-  String get arTierHeritageShort => 'ヘリテージ';
-
-  @override
-  String get arTierExploreShort => '探索';
-
-  @override
-  String get arTierStoryShort => 'ストーリー';
-
-  @override
   String get notAvailableShort => 'N/A';
-
-  @override
-  String get arBadgeHeritage => 'ヘリテージ AR';
-
-  @override
-  String get arBadgeExplore => 'エクスプローラー AR';
-
-  @override
-  String get arBadgeStory => 'ストーリービュー';
 
   @override
   String get noRiskTagsFound => '危険の兆候は検出されませんでした。';
@@ -1815,9 +1484,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get fieldNoteActivities => 'アクティビティ';
 
   @override
-  String get fieldNotePopularity => '人気度';
-
-  @override
   String get fieldNoteFamilyFriendly => 'ファミリー向け';
 
   @override
@@ -1827,9 +1493,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get fieldNoteToilets => 'トイレ';
 
   @override
-  String get fieldNoteFoodNearby => '周辺の飲食店';
-
-  @override
   String get fieldNoteWheelchairAccess => '車椅子でのアクセス';
 
   @override
@@ -1837,9 +1500,6 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get fieldNoteSafetyLevel => '安全レベル';
-
-  @override
-  String get fieldNoteWildlifeHazard => '野生動物の危険';
 
   @override
   String get fieldNoteGuideRequired => 'ガイド必須';
@@ -1860,52 +1520,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get fieldNoteLength => '長さ';
 
   @override
-  String get bookmarkAddedSnackbar => '✨ あなたの旅程に記録しました！';
-
-  @override
-  String get bookmarkRemovedSnackbar => 'ブックマークから削除しました。';
-
-  @override
-  String itineraryAddedSnackbar(String placeName) {
-    return '🗺️ $placeName があなたの運命に加わりました！';
-  }
-
-  @override
-  String get itineraryRemovedSnackbar => '旅程から削除しました。';
-
-  @override
   String get featureNameHeritageSessions => 'ヘリテージセッション';
 
   @override
   String get featureNameOracleQueries => 'Oracle Queries';
 
   @override
-  String get bonusSessionUnlockedSnackbar =>
-      'ボーナスセッションが解放されました！もう一度起動してみてください。';
-
-  @override
-  String get oracleRewardActiveSnackbar => '✨ オラクルの報酬が有効です！ARセッションが解放されました。';
-
-  @override
   String get okButton => 'OK';
-
-  @override
-  String get arComingSoonTitle => 'AR Experience Coming Soon';
-
-  @override
-  String arComingSoonMessage(String placeName) {
-    return 'We\'re putting the finishing touches on the AR experience for $placeName. Check back in a future update.';
-  }
-
-  @override
-  String get arBrandNameHeritage => 'ヘリテージ AR';
-
-  @override
-  String get arBrandNameExplore => 'エクスプローラー AR';
-
-  @override
-  String get bonusDownloadUnlockedSnackbar =>
-      'ボーナスダウンロードが解放されました！もう一度ダウンロードしてみてください。';
 
   @override
   String get featureNameOfflineDownloads => 'オフラインダウンロード';
@@ -2040,37 +1661,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get noBookingsToSyncMessage => '同期できる承認済みの予約はまだありません。';
 
   @override
-  String calendarEventTitle(String touristName, int guestCount) {
-    return 'ツアー：$touristName（ゲスト$guestCount名）';
-  }
-
-  @override
   String get defaultTouristName => '旅行者';
-
-  @override
-  String calendarSyncSuccessMessage(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '予約$count件をカレンダーに同期しました。',
-      one: '予約1件をカレンダーに同期しました。',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String calendarSyncFailedMessage(String error) {
-    return 'カレンダーの同期に失敗しました：$error';
-  }
 
   @override
   String get loginRequiredMessage => '予約リクエストを表示するにはログインしてください。';
 
   @override
   String get bookingsScreenTitle => '予約';
-
-  @override
-  String get syncToCalendarTooltip => 'カレンダーに同期';
 
   @override
   String inboxLoadErrorMessage(String error) {
@@ -2125,17 +1722,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get payoutPendingLabel => 'Pending';
 
   @override
-  String earningsAwaitingConfirmationNote(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count bookings',
-      one: '1 booking',
-    );
-    return '$_temp0 still awaiting server payout confirmation';
-  }
-
-  @override
   String get tourNotesLabel => 'ツアーに関する要望・注意事項';
 
   @override
@@ -2148,9 +1734,6 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get acceptButtonLabel => '承認';
-
-  @override
-  String get startTourSessionButtonLabel => 'ツアーセッションを開始';
 
   @override
   String get bookingAcceptedMessage => '🎉 予約が承認され、ツアーセッションが作成されました！';
@@ -2247,113 +1830,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get transmitFeedbackButton => 'フィードバックを送信';
 
   @override
-  String familyShareLinkLimitReached(int maxLinks) {
-    return '⚠️ アクティブな共有リンクの上限（$maxLinks件）に達しました。新しく作成するには、いずれかを削除してください。';
-  }
-
-  @override
-  String get familyShareRecipientNameRequired => '⚠️ 受信者の名前を入力してください。';
-
-  @override
-  String get familyShareNoActiveSessionError =>
-      '⚠️ まずアクティブなツアーセッションを開始してください。共有できる情報がまだありません。';
-
-  @override
-  String familyShareLinkGeneratedSuccess(String name) {
-    return '✅「$name」さん向けの共有リンクを作成しました！';
-  }
-
-  @override
-  String get familyShareActiveLinksTitle => '有効なリンク';
-
-  @override
-  String get familyShareNewLinkButton => '＋ 新規作成';
-
-  @override
-  String get familyShareAppBarTitle => 'ファミリー共有';
-
-  @override
-  String get familyShareHeroSubtitle => '家族が安全にあなたの旅の状況を確認できるようにします';
-
-  @override
-  String get familyShareNoActiveSessionNotice =>
-      '現在アクティブなツアーはありません。ツアーを開始または参加すると、ライブ共有リンクを作成できます。';
-
-  @override
-  String get familyShareEmptyStateMessage => '有効な共有リンクが見つかりません';
-
-  @override
-  String get familyShareExpiredBadge => '期限切れ';
-
-  @override
-  String familyShareViewedCountBadge(int count) {
-    return '閲覧$count回';
-  }
-
-  @override
-  String get familyShareLinkNoLongerValid => '無効になりました';
-
-  @override
-  String familyShareLinkExpiresAt(String time) {
-    return '有効期限：$time';
-  }
-
-  @override
-  String get familyShareCopyLinkSnackbar => '📋 招待コードをクリップボードにコピーしました！';
-
-  @override
-  String get familyShareRemoveLinkDialogTitle => 'リンクを削除しますか？';
-
-  @override
-  String familyShareRemoveLinkDialogBody(String recipientName) {
-    return '「$recipientName」さんの共有アクセスが取り消されます。';
-  }
-
-  @override
-  String familyShareLinkRemovedSnackbar(String recipientName) {
-    return '「$recipientName」さんへのリンクを削除しました。';
-  }
-
-  @override
-  String get familyShareRemoveButton => '削除';
-
-  @override
-  String get familyShareCreateSheetTitle => '共有リンクを作成';
-
-  @override
-  String get familyShareRecipientNameLabel => '受信者の名前';
-
-  @override
-  String get familyShareRecipientNameHint => '例：お母さん、お父さん、事務所';
-
-  @override
-  String get familyShareExpiryLabel => '有効期限';
-
-  @override
-  String get familyShareDuration4Hours => '4時間';
-
-  @override
-  String get familyShareDuration12Hours => '12時間';
-
-  @override
-  String get familyShareDuration24Hours => '24時間';
-
-  @override
-  String get familyShareToggleStatusLabel => 'リアルタイムの状況を共有';
-
-  @override
-  String get familyShareToggleIdentityLabel => 'ガイドの身元情報を共有';
-
-  @override
-  String get familyShareToggleMeetingPointLabel => '待ち合わせ場所を共有';
-
-  @override
-  String get familyShareToggleEmergencyLabel => '緊急アラートを共有';
-
-  @override
-  String get familyShareGenerateLinkButton => 'リンクを作成';
-
-  @override
   String get categoryAll => 'すべて';
 
   @override
@@ -2373,9 +1849,6 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get categoryPhotography => '写真撮影';
-
-  @override
-  String get marketplaceSearchHint => '名前、言語、都市で検索...';
 
   @override
   String get verifiedGuidesEyebrow => '認証済みガイド';
@@ -2417,7 +1890,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String couldNotGetLocationMessage(String error) {
-    return '現在地を取得できませんでした。デフォルトの座標を使用します。（$error）';
+    return '現在地を取得できませんでした。誤った位置情報を使用しないよう、操作をキャンセルしました。（$error）';
   }
 
   @override
@@ -2451,15 +1924,9 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get vehiclePositionMarkedMessage => '車両の位置をマークしました';
-
-  @override
   String failedToUpdateVehicleLocationMessage(String error) {
     return '車両の位置情報の更新に失敗しました: $error';
   }
-
-  @override
-  String get tourDashboardTitle => 'ツアーダッシュボード';
 
   @override
   String get bottomNavTour => 'ツアー';
@@ -2499,12 +1966,6 @@ class AppLocalizationsJa extends AppLocalizations {
       '旅行者と集合場所が確定しました。あなたと旅行者が集合場所に到着したら、下のボタンをタップしてタイマーとトラッキングを正式に開始してください。';
 
   @override
-  String get startTourSessionButton => 'ツアーセッションを開始';
-
-  @override
-  String get tourSessionStartedMessage => '🚀 ツアーセッションを開始しました！';
-
-  @override
   String get statLabelTravelers => '旅行者数';
 
   @override
@@ -2518,9 +1979,6 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get setPointButton => '地点を設定';
-
-  @override
-  String get markVehicleButton => '車両をマーク';
 
   @override
   String get joinStatusLabel => '参加ステータス';
@@ -2581,9 +2039,6 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get weatherHazardLoggedMessage => '✅ 気象ハザードを安全コンソールに記録しました！';
-
-  @override
   String errorLoggingIncidentMessage(String error) {
     return 'インシデントの記録中にエラーが発生しました: $error';
   }
@@ -2601,18 +2056,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get defaultMonsoonAlertMessage => 'あなたのツアー地区に悪天候警報が発令されています。';
 
   @override
-  String get earningsTitle => '収益';
-
-  @override
-  String get pleaseLogInViewEarningsMessage => '収益を表示するにはログインしてください。';
-
-  @override
   String errorLoadingFinancialDataMessage(String error) {
     return '財務データの読み込み中にエラーが発生しました: $error';
   }
-
-  @override
-  String get totalNetEarningsLabel => '純収益合計';
 
   @override
   String get netPercentageLabel => '手取り90%';
@@ -2884,11 +2330,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get bookingHistoryTitle => '予約履歴';
 
   @override
-  String guestCountParenthesesLabel(int count) {
-    return '$count 名';
-  }
-
-  @override
   String get becomeAGuideTitle => 'ガイドになる';
 
   @override
@@ -2977,12 +2418,6 @@ class AppLocalizationsJa extends AppLocalizations {
   @override
   String get approvedGuideMessage =>
       'おめでとうございます！あなたのガイドアイデンティティが有効になりました。プロフィールからガイドダッシュボードにアクセスできます。';
-
-  @override
-  String get shareLocalKnowledgeTitle => '地元の知識を共有しよう';
-
-  @override
-  String get guideTravelersEarnSubtitle => '旅行者をガイドして、自分のスケジュールで収入を得ましょう。';
 
   @override
   String get guideCategoryLabel => 'ガイドカテゴリー';
@@ -3151,9 +2586,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get broadcastTypeDelay => '遅延';
 
   @override
-  String get broadcastTypeDeparture => '出発';
-
-  @override
   String get broadcastTypeVehicleChange => '車両変更';
 
   @override
@@ -3257,9 +2689,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get tapPackageToBookMessage => 'パッケージをタップして直接予約';
 
   @override
-  String get standardPackageLabel => '標準パッケージ';
-
-  @override
   String durationHoursShortLabel(String hours) {
     return '$hours時間';
   }
@@ -3277,11 +2706,6 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get experienceStatLabel => '経験年数';
-
-  @override
-  String yearsExperienceLabel(String years) {
-    return '$years年';
-  }
 
   @override
   String get ratingStatLabel => '評価';
@@ -3317,9 +2741,6 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get categorySpecialtiesTitle => 'カテゴリーと専門分野';
-
-  @override
-  String get primaryCategoryLabel => '主なカテゴリー';
 
   @override
   String get languagesCommaLabel => '対応言語（カンマ区切り）';
@@ -3364,9 +2785,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String coverPhotosCountTitle(int count) {
     return 'カバー写真（$count枚）';
   }
-
-  @override
-  String get availabilityCalendarTitle => '空き状況カレンダー';
 
   @override
   String get visibilityBoostTitle => '表示アップ';
@@ -3467,9 +2885,6 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get noCriticalIncidentsTitle => '重大なインシデントはありません';
-
-  @override
-  String get sessionWithinSafetyParamsMessage => 'セッションの運用は安全基準の範囲内です。';
 
   @override
   String get reportIncidentButton => 'インシデントを報告';
@@ -3721,9 +3136,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get criticalContactsTitle => '重要連絡先';
 
   @override
-  String get medicalFacilitiesNearbyTitle => '近くの医療施設';
-
-  @override
   String get emergencyProtocolLabel => '緊急プロトコル';
 
   @override
@@ -3754,15 +3166,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get contactNameFireDept => '消防署';
 
   @override
-  String get privateGuardiansTitle => 'プライベート保護者';
-
-  @override
-  String get noGuardiansAssignedMessage => '保護者が設定されていません。信号は緊急サービスに自動送信されます。';
-
-  @override
-  String get nearestHospitalTitle => 'どこにいても最寄りの病院';
-
-  @override
   String get checkingLocationAccessMessage => '位置情報へのアクセスを確認中…';
 
   @override
@@ -3772,22 +3175,6 @@ class AppLocalizationsJa extends AppLocalizations {
   @override
   String get hospitalMapsExplanationMessage =>
       'ライブGPSを使用してGoogleマップを開きます — スリランカ国内のどこにいても、近隣のすべての公立・私立病院を表示します。';
-
-  @override
-  String get findNearestHospitalButton => '地図で最寄りの病院を探す';
-
-  @override
-  String get addGuardianTitle => '保護者を追加';
-
-  @override
-  String get guardianPhoneNumberHint => '保護者の電話番号';
-
-  @override
-  String get addGuardianButton => '保護者を追加';
-
-  @override
-  String get sosAlertsPreparedLoggedMessage =>
-      '電話／SMSアプリを開きました。通話を完了するか送信を押してください。緊急機関へ自動送信はされません。';
 
   @override
   String get sosCriticalAlertTitle => '緊急SOSアラート';
@@ -3808,9 +3195,6 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get viewPlansButton => 'プランを見る';
-
-  @override
-  String get monsoonHazardAlertTitle => 'モンスーン警報';
 
   @override
   String districtLabel(String district) {
@@ -3839,9 +3223,6 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get tourActiveTitle => 'ツアー進行中';
-
-  @override
-  String get preparingTourTitle => 'ツアー準備中';
 
   @override
   String get everythingOnTrackMessage => 'すべて順調です';
@@ -3879,9 +3260,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get findVehicleLabel => '車両を探す';
 
   @override
-  String get parkedSpotLabel => '駐車位置';
-
-  @override
   String get meetingPointLabel => '集合場所';
 
   @override
@@ -3904,9 +3282,6 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get moreLabel => 'もっと見る';
-
-  @override
-  String get shareLiveLabel => 'ライブ共有';
 
   @override
   String get familyAccessLabel => '家族アクセス';
@@ -3990,9 +3365,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get categoryFestival => 'フェスティバル';
 
   @override
-  String get categoryParty => 'パーティー';
-
-  @override
   String get availableEventsTitle => '開催中のイベント';
 
   @override
@@ -4018,16 +3390,6 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get syncPreferencesButton => '好みを同期';
-
-  @override
-  String failedToShareTimelineMessage(String error) {
-    return 'タイムラインの共有に失敗しました: $error';
-  }
-
-  @override
-  String hazardWarningMessage(String message) {
-    return '🚨 危険警報: $message';
-  }
 
   @override
   String get extremeWeatherAlertFallback => '異常気象警報！';
@@ -4104,9 +3466,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get recentTransactionsTitle => '最近の取引';
 
   @override
-  String get totalSpentSoFarLabel => '現在までの合計支出';
-
-  @override
   String approxUsdLabel(String amount) {
     return '≈ US\$ $amount';
   }
@@ -4147,9 +3506,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String planLabel(String planId) {
     return 'プラン: $planId';
   }
-
-  @override
-  String get startedLabel => '開始日';
 
   @override
   String get expiresLabel => '有効期限';
@@ -4205,9 +3561,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get featureVerifiedBadge => '認証済みバッジ';
 
   @override
-  String get featureStandardSos => '標準SOS';
-
-  @override
   String get proCommanderTitle => 'プロコマンダー';
 
   @override
@@ -4233,9 +3586,6 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get featureTeamManagement => 'チーム管理';
-
-  @override
-  String get featureOperatorDashboard => 'オペレーターダッシュボード';
 
   @override
   String get featureWhiteLabelBranding => 'ホワイトラベルブランディング';
@@ -4264,9 +3614,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get manageButton => '管理';
 
   @override
-  String get mostPopularLabel => '人気No.1';
-
-  @override
   String get perMonthSlashLabel => '/月';
 
   @override
@@ -4277,15 +3624,6 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get goPremiumTitle => 'プレミアムへ';
-
-  @override
-  String get fullArUnlimitedAiTripsMessage => 'フルAR体験と無制限のAI旅行プラン';
-
-  @override
-  String get heritageArModeTitle => '遺産ARモード';
-
-  @override
-  String get heritageArModeDescription => '歴史音声ガイド付きで、古代遺跡を実物大で再現して見ることができます。';
 
   @override
   String get oracleAiTripIntelligenceTitle => 'オラクルAI旅行インテリジェンス';
@@ -4307,13 +3645,6 @@ class AppLocalizationsJa extends AppLocalizations {
   @override
   String get exclusiveCuratorDealsDescription =>
       '厳選されたブティック宿泊施設での会員限定割引を利用できます。';
-
-  @override
-  String get guardianEmergencyTranslatorTitle => 'ガーディアン緊急翻訳';
-
-  @override
-  String get guardianEmergencyTranslatorDescription =>
-      'SOS発信時、スリランカの警察や病院スタッフに、話し言葉のシンハラ語で瞬時に状況を説明します。';
 
   @override
   String premiumActiveLabel(String plan) {
@@ -4343,31 +3674,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get premiumResetMessage => 'プレミアムをリセットしました。料金プランが再表示されます。';
 
   @override
-  String get smartTravelerTitle => 'スマートトラベラー';
-
-  @override
   String get billedMonthlyLabel => '月払い';
-
-  @override
-  String get featureAiItineraries20 => 'AI旅程 20回/月';
-
-  @override
-  String get featureSelectedArPlaces => '選択されたARスポット';
 
   @override
   String get featureOfflineMapsBasic => 'オフラインマップ（ベーシック）';
 
   @override
   String get heritagePremiumTitle => 'ヘリテージプレミアム';
-
-  @override
-  String get billedYearlySaveLabel => '年払い ・ 約17%お得';
-
-  @override
-  String get featureUnlimitedAiItineraries => '無制限のAI旅程';
-
-  @override
-  String get featureFullHeritageArAccess => '遺産ARへのフルアクセス';
 
   @override
   String get featureAllOfflineFeatures => 'すべてのオフライン機能';
@@ -4408,9 +3721,6 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get monthlyLabel => '月払い';
-
-  @override
-  String get yearlySaveLabel => '年払い ・ 17%お得';
 
   @override
   String get lockedLabelShort => 'ロック中';
@@ -4458,17 +3768,6 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String trialYearsLabel(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count年間',
-      one: '1年間',
-    );
-    return '$_temp0の無料トライアル';
-  }
-
-  @override
   String trialPeriodLabel(int count) {
     return '$count 期間分の無料トライアル';
   }
@@ -4482,9 +3781,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get savorLankaAiTitle => 'サヴォールランカAI';
 
   @override
-  String get culinaryVisionEngineLabel => 'カリナリービジョンエンジン V2';
-
-  @override
   String get liveRealTimeScannerLabel => 'リアルタイムライブスキャナー';
 
   @override
@@ -4496,18 +3792,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get neuralReasoningLabel => 'ニューラル推論';
 
   @override
-  String aiVisualMarkersFallback(String label) {
-    return 'AIは$labelと一致する視覚的な料理の特徴を識別しました。';
-  }
-
-  @override
   String get authenticityIntelligenceTitle => 'オーセンティシティ・インテリジェンス';
 
   @override
   String get ingredientCertaintyTitle => '食材確度';
-
-  @override
-  String get manualCulinaryOverrideTitle => '手動料理オーバーライド';
 
   @override
   String get refineIngredientsHint => '食材を調整（カンマ区切り）...';
@@ -4554,19 +3842,10 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get heritageNarrativeEngineTitle => 'ヘリテージ・ナラティブ・エンジン';
-
-  @override
   String get verifiedLegacyTitle => '検証済みの由来';
 
   @override
   String get regionalTraditionTitle => '地域の伝統';
-
-  @override
-  String get folkloreNarrativeTitle => '民間伝承の物語';
-
-  @override
-  String get culinaryGapPairingEngineTitle => '料理ギャップ＆ペアリングエンジン';
 
   @override
   String get missingCompanionsLabel => '不足している副菜:';
@@ -4594,9 +3873,6 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get proteinLabel => 'タンパク質';
-
-  @override
-  String get carbsLabel => '炭水化物';
 
   @override
   String get fatLabel => '脂質';
@@ -4647,18 +3923,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get voiceGuideLabel => '音声ガイド';
 
   @override
-  String savorLankaShareText(String name, String score) {
-    return 'Hidden Gems SL.aiで見つけたこの$nameのレシピをチェックしてください。本場スリランカの逸品です。 \n\nオラクルスコア: $score%';
-  }
-
-  @override
-  String get savorLankaShareSubject => 'Hidden Gems SL.ai - サヴォールランカのレシピ';
-
-  @override
   String get phase3CrossMatchTitle => 'フェーズ3: クロスマッチ代替提案';
-
-  @override
-  String get visuallySimilarAlternativesLabel => '見た目が似ている代替品';
 
   @override
   String get aiCrossMatchReasoningLabel => 'AIクロスマッチ推論:';
@@ -4673,16 +3938,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get integrityLabel => '総合信頼度';
 
   @override
-  String get popularLabel => '人気';
-
-  @override
   String get curatorDealsTitle => 'キュレーター特典';
 
   @override
   String get noDealsRightNowTitle => '現在お得な情報はありません';
-
-  @override
-  String get newPartnerDiscountsMessage => '新しいパートナー割引は随時追加されます。またチェックしてください。';
 
   @override
   String percentOffLabel(int percent) {
@@ -4719,23 +3978,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get verifiableHashLabel => '検証可能なハッシュ';
 
   @override
-  String get shareCollectibleButton => 'コレクションを共有';
-
-  @override
-  String shareCollectibleMessage(String placeName, String rarity) {
-    return 'I just earned the $placeName heritage stamp ($rarity) on Hidden Gems SL!';
-  }
-
-  @override
-  String get stampRarityCommon => 'コモン';
-
-  @override
-  String get stampRarityRare => 'レア';
-
-  @override
-  String get stampRarityMythic => 'ミシック';
-
-  @override
   String get audioGuideLabel => '音声ガイド';
 
   @override
@@ -4760,14 +4002,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get joinButtonUppercase => '参加';
 
   @override
-  String get tapFlatSurfaceMessage => '👆 平らな面をタップしてモデルを配置';
-
-  @override
-  String groupTourStartedCodeLabel(String code) {
-    return 'グループツアーが開始されました！コード: $code';
-  }
-
-  @override
   String get invalidSessionCodeMessage => '無効なセッションコードです';
 
   @override
@@ -4784,58 +4018,6 @@ class AppLocalizationsJa extends AppLocalizations {
   @override
   String codeColonLabel(String code) {
     return 'コード: $code';
-  }
-
-  @override
-  String get thenLabel => '変更前';
-
-  @override
-  String get nowLabel => '変更後';
-
-  @override
-  String get resetLabel => 'リセット';
-
-  @override
-  String get scalePlusLabel => '拡大+';
-
-  @override
-  String get scaleMinusLabel => '縮小-';
-
-  @override
-  String get memoryLabel => 'メモリー';
-
-  @override
-  String get removeLabel => '削除';
-
-  @override
-  String get placeLabel => '配置';
-
-  @override
-  String get historicalInfoComingSoonMessage => '史跡情報は近日公開予定です。';
-
-  @override
-  String get preparingHeritageAssetsMessage => '文化遺産アセットを準備中...';
-
-  @override
-  String progressSizeLabel(int progress, String size) {
-    return '$progress% • $size MB';
-  }
-
-  @override
-  String get arModelPlacementFailedMessage =>
-      'このモデルを配置できませんでした。データがないか破損している可能性があります。再試行してください。';
-
-  @override
-  String arSessionErrorMessage(String message) {
-    return 'ARエラー：$message';
-  }
-
-  @override
-  String get largeDownloadWarningTitle => '大容量ダウンロード';
-
-  @override
-  String largeDownloadWarningMessage(String size) {
-    return 'この3Dモデルは約$size MBです。モバイルデータを使用して続行しますか？';
   }
 
   @override
@@ -4866,24 +4048,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get premiumHeritageSessionLabel => 'プレミアム文化遺産セッション';
 
   @override
-  String get artifactDiscoveredLabel => '遺物を発見しました！';
-
-  @override
-  String ptsRarityLabel(int points, String rarity) {
-    return '+$points PTS • $rarity';
-  }
-
-  @override
-  String get hiddenGemsSlWatermark => 'HIDDEN GEMS SL';
-
-  @override
-  String get heritageArWatermark => 'HERITAGE AR';
-
-  @override
   String get captureSuccessfulTitle => '撮影に成功しました！';
-
-  @override
-  String get shareDiscoveryMessage => 'あなたの歴史的発見を世界とシェアしよう';
 
   @override
   String get instagramLabel => 'Instagram';
@@ -4895,23 +4060,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get savedLabelShort => '保存済み';
 
   @override
-  String sharePlatformCaptionInstagram(String placeName) {
-    return '$placeName をARで探索中 #HiddenGemsSL';
-  }
-
-  @override
-  String get sharePlatformCaptionTiktok => '歴史が蘇る！ #HiddenGemsSL #HeritageAR';
-
-  @override
   String get photoSavedGalleryMessage => '写真をギャラリーに保存しました！';
-
-  @override
-  String get backToArButton => 'ARに戻る';
-
-  @override
-  String distanceToTargetLabel(String distance, String placeName) {
-    return '$placeName まで ${distance}m';
-  }
 
   @override
   String get recommendedLabel => 'おすすめ';
@@ -4925,12 +4074,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get viewButtonUppercase => '表示';
 
   @override
-  String get loginToLeaveMemoryMessage => 'ARメモリーを残すにはログインしてください！';
-
-  @override
-  String get leaveArMemoryTitle => 'ARメモリーを残す';
-
-  @override
   String get whatDoYouSeeHereHint => 'ここで何が見えますか？';
 
   @override
@@ -4938,9 +4081,6 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get dropButton => 'ドロップ';
-
-  @override
-  String get memoryDroppedMessage => 'メモリーがAR空間にドロップされました！';
 
   @override
   String get explorerFallback => '探検者';
@@ -4951,40 +4091,13 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get searchingLabel => '検索中...';
-
-  @override
   String get cameraAccessNeededTitle => 'カメラへのアクセスが必要です';
-
-  @override
-  String get arNotAvailableDeviceTitle => 'このデバイスではARを利用できません';
-
-  @override
-  String get arCouldntLoadTitle => '今回はARを読み込めませんでした';
-
-  @override
-  String get cameraAccessNeededMessage =>
-      'AR機能にはカメラへのアクセスが必要です。代わりにシネマティックな再現映像をご覧ください。';
-
-  @override
-  String get arNotAvailableMessage => '代わりに同じ時代のシネマティックな360°ビューをご覧ください。';
-
-  @override
-  String get arCouldntLoadMessage =>
-      '史跡の3Dモデルを読み込めませんでした。代わりにシネマティックなフォールバックビューをご覧ください。';
 
   @override
   String get closeButtonLabel => '閉じる';
 
   @override
   String get watchAdToUnlockButton => '広告を見てアンロック';
-
-  @override
-  String get oracleRewardFallbackMessage =>
-      '✨ オラクル報酬が有効です！フォールバックモードとプレミアムコンテンツがアンロックされました。';
-
-  @override
-  String get arNotAvailableInfoBarMessage => 'このデバイスではARを利用できません・360°ビューを表示中';
 
   @override
   String get cinematicPreviewUnavailableMessage => 'シネマティックプレビューは利用できません';
@@ -5009,37 +4122,16 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get listenToNarrationLabel => 'ナレーションを聴く';
-
-  @override
   String get sinhalaEnglishAvailableLabel => 'シンハラ語・英語対応';
 
   @override
   String get illustrationCaptionLabel => 'イラスト: 古代の工学技術（コンセプトアート）';
 
   @override
-  String get mode360Label => '360°';
-
-  @override
   String get mode3dLabel => '3D';
 
   @override
   String get modeStoryLabel => 'ストーリー';
-
-  @override
-  String get unlockArHeritageModeTitle => 'AR文化遺産モードをアンロック';
-
-  @override
-  String get arHeritageModeSubtitle => '数千年前のスリランカの姿を体験しよう。';
-
-  @override
-  String get featureAncient3dReconstruction => '古代の3D再現';
-
-  @override
-  String get featureAudioNarrationBilingual => '音声ナレーション (සිංහල / English)';
-
-  @override
-  String get featureArPhotoCapture => 'AR写真撮影とSNSシェア';
 
   @override
   String get pricingTrialLabel => 'ストアで提供される場合は無料トライアル';
@@ -5055,9 +4147,6 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get notNowButtonLabel => '今はしない';
-
-  @override
-  String get ancientArtifactsLabel => '古代の遺物';
 
   @override
   String get adminGuideVerificationTile => 'ガイド認証';
@@ -5167,12 +4256,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get tourTypesSectionTitle => '提供ツアー';
 
   @override
-  String get tourTypeBoatSafari => 'ボートサファリ';
-
-  @override
-  String get tourTypeWildlifeSafari => '野生動物サファリ';
-
-  @override
   String get tourTypeHiking => 'ハイキング';
 
   @override
@@ -5194,9 +4277,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get reportReasonSpam => 'スパム';
 
   @override
-  String get reportReasonHarassment => '嫌がらせ';
-
-  @override
   String get reportReasonOther => 'その他';
 
   @override
@@ -5215,9 +4295,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get filterApplyButton => 'フィルターを適用';
 
   @override
-  String get filterClearButton => 'クリア';
-
-  @override
   String get filterRegionLabel => '地域';
 
   @override
@@ -5231,9 +4308,6 @@ class AppLocalizationsJa extends AppLocalizations {
   @override
   String get sosFailedAppLaunch =>
       '電話またはSMSアプリを開けませんでした。今すぐ 119 または 1990 に電話してください。';
-
-  @override
-  String get weatherConditionClear => '快晴';
 
   @override
   String get weatherConditionClouds => '曇り';
@@ -5257,7 +4331,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get moreToolsTitle => 'その他のツールと体験';
 
   @override
-  String get moreToolsSubtitle => 'グルメAI、ARポータル、オラクル、パスポート、予算管理';
+  String get moreToolsSubtitle => 'グルメAI、オラクル、パスポート、予算管理';
 
   @override
   String get savedPlacesHubTitle => '保存した場所と行きたい場所';
@@ -5273,9 +4347,6 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get foodScannerTooltip => 'フードスキャナー';
-
-  @override
-  String get familyShareTitle => 'ファミリー共有';
 
   @override
   String get waterSafetyTitle => '飲料水と地元の天然ドリンク';
@@ -5314,9 +4385,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get iceSafetyTip => '氷の形だけでは安全性を確認できません。飲用水製か確認するか氷を避けてください';
 
   @override
-  String get tapWaterWarning => '水質は場所により異なります。不明な場合は煮沸・ろ過済みまたは密封水を使用してください';
-
-  @override
   String get jeewaniTip => '登録済みORSについて薬剤師に相談し、包装の指示に従ってください。重い症状は受診してください';
 
   @override
@@ -5352,4 +4420,622 @@ class AppLocalizationsJa extends AppLocalizations {
   @override
   String get foodSafetyDisclaimer =>
       '一般的なガイダンスのみです。症状が続く場合や重度の場合は専門医の診察を受けてください。';
+
+  @override
+  String bookmarkedCount(int count) {
+    return 'ブックマーク（$count）';
+  }
+
+  @override
+  String get noBookmarkedPlaces => 'ブックマークはまだありません';
+
+  @override
+  String get noBookmarkedPlacesHint => '場所のブックマークをタップして保存できます。';
+
+  @override
+  String get hydrationSummary => '地元の飲み物・密封水・安全な氷の案内';
+
+  @override
+  String get itinerary => '旅程';
+
+  @override
+  String get nearYou => '近く';
+
+  @override
+  String get searchHint => '隠れた名所を検索...';
+
+  @override
+  String get bestNatureNearby => '近くの最高の自然';
+
+  @override
+  String get allNearbyPlacesTitle => '近くのすべての場所';
+
+  @override
+  String get noMatchesNearby => '近くに一致するものはありません';
+
+  @override
+  String get parking => '駐車場';
+
+  @override
+  String get travelModeCar => 'Car';
+
+  @override
+  String nearbyNowLabel(String km) {
+    return '$km km away — nearby now';
+  }
+
+  @override
+  String get atLeast6Chars => '6文字以上で入力してください';
+
+  @override
+  String get localGemsNearby => '近くのローカルジェム';
+
+  @override
+  String get searchSecretLocations => '秘密のスポットを検索...';
+
+  @override
+  String get startingPointLabel => '出発地';
+
+  @override
+  String get startingPointHint => '空港、コロンボ...';
+
+  @override
+  String get startDateLabel => '出発日';
+
+  @override
+  String get travelStandardLabel => '旅行のグレード';
+
+  @override
+  String premiumFeatureSnackbar(String featureName) {
+    return '$featureName はプレミアム機能です。';
+  }
+
+  @override
+  String get appearance => '外観';
+
+  @override
+  String get themeDark => 'ダーク';
+
+  @override
+  String get smartExpenseAdvisor => 'スマート支出アドバイザー';
+
+  @override
+  String get howToEarnPointsHeading => 'ポイントの獲得方法：';
+
+  @override
+  String get earnPointsReviewsTitle => 'スポットのレビューを投稿';
+
+  @override
+  String get earnPointsReviewsAmount => '+10 ポイント';
+
+  @override
+  String get earnPointsReviewsSubtitle => '地元ガイドや旅行者を応援しよう';
+
+  @override
+  String get earnPointsFoodTitle => '地元料理を味わう';
+
+  @override
+  String get earnPointsFoodAmount => '+15 ポイント';
+
+  @override
+  String get earnPointsFoodSubtitle => '本格的な地元の飲食店を応援しよう';
+
+  @override
+  String get earnPointsHeritageTitle => '文化遺産を訪れる';
+
+  @override
+  String get earnPointsHeritageAmount => '+20 ポイント';
+
+  @override
+  String get earnPointsHeritageSubtitle => '文化の保護を促進しよう';
+
+  @override
+  String get rewardsPerksHeading => '獲得できる特典・報酬：';
+
+  @override
+  String get rewardEcoGuardianBadgeTitle => 'エコガーディアンバッジ';
+
+  @override
+  String get rewardEcoGuardianBadgeSubtitle => 'ランキングやレビューで目立とう';
+
+  @override
+  String get rewardPartnerDiscountsTitle => '提携先の割引';
+
+  @override
+  String get rewardPartnerDiscountsSubtitle => '認定エコ宿泊施設やカフェで5%～15%オフ';
+
+  @override
+  String get rewardFreePremiumPerksTitle => '無料プレミアム特典';
+
+  @override
+  String get rewardRealWorldImpactTitle => '現実世界へのインパクト';
+
+  @override
+  String get rewardRealWorldImpactSubtitle => '500ポイント達成でスリランカに植樹します！';
+
+  @override
+  String get tourDashboard => 'ツアーダッシュボード';
+
+  @override
+  String get tourDashboardSubtitle => '実施中のツアー、QR、掲載情報、安全管理';
+
+  @override
+  String get earnings => '収益';
+
+  @override
+  String get earningsSubtitle => '支払いと統計';
+
+  @override
+  String get familySharing => 'ファミリー共有';
+
+  @override
+  String get shareAppMessage =>
+      'Hidden Gems SL に参加しよう！🌍 https://hiddengems.lk';
+
+  @override
+  String get shareAppSubject => 'Hidden Gems SL に一緒に参加しませんか！';
+
+  @override
+  String get landmarkScannerTitle => 'ランドマークスキャナー';
+
+  @override
+  String get analyzeLandmarkButton => 'ランドマークを分析';
+
+  @override
+  String get unlockLandmarkScanningTitle => 'ランドマークスキャンを解放';
+
+  @override
+  String get unlockLandmarkScanningSubtitle =>
+      'カメラをどんな場所にかざすだけで、隠された歴史が明らかになります。';
+
+  @override
+  String get guideLiveMarkerLabel => 'あなたのガイド（ライブ）';
+
+  @override
+  String get vehicleMarkerLabel => 'あなたの車両';
+
+  @override
+  String meetingPointMarkerLabel(String pointName) {
+    return '待ち合わせ場所：$pointName';
+  }
+
+  @override
+  String mapMarkerDaySnippet(int day, String time) {
+    return '$day日目・$time';
+  }
+
+  @override
+  String get planRemovedSnackbar => 'オラクルのキャッシュからプランを削除しました';
+
+  @override
+  String get clearSavedTripsTitle => '保存済みの旅行を削除';
+
+  @override
+  String get clearSavedTripsMessage => 'このデバイスに保存されているすべての旅行が完全に削除されます。';
+
+  @override
+  String get fieldNotePopularity => '人気度';
+
+  @override
+  String get fieldNoteFoodNearby => '周辺の飲食店';
+
+  @override
+  String get fieldNoteWildlifeHazard => '野生動物の危険';
+
+  @override
+  String get bookmarkAddedSnackbar => '✨ あなたの旅程に記録しました！';
+
+  @override
+  String get bookmarkRemovedSnackbar => 'ブックマークから削除しました。';
+
+  @override
+  String itineraryAddedSnackbar(String placeName) {
+    return '🗺️ $placeName があなたの運命に加わりました！';
+  }
+
+  @override
+  String get itineraryRemovedSnackbar => '旅程から削除しました。';
+
+  @override
+  String get bonusSessionUnlockedSnackbar =>
+      'ボーナスセッションが解放されました！もう一度起動してみてください。';
+
+  @override
+  String get bonusDownloadUnlockedSnackbar =>
+      'ボーナスダウンロードが解放されました！もう一度ダウンロードしてみてください。';
+
+  @override
+  String calendarEventTitle(String touristName, int guestCount) {
+    return 'ツアー：$touristName（ゲスト$guestCount名）';
+  }
+
+  @override
+  String calendarSyncSuccessMessage(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '予約$count件をカレンダーに同期しました。',
+      one: '予約1件をカレンダーに同期しました。',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String calendarSyncFailedMessage(String error) {
+    return 'カレンダーの同期に失敗しました：$error';
+  }
+
+  @override
+  String get syncToCalendarTooltip => 'カレンダーに同期';
+
+  @override
+  String earningsAwaitingConfirmationNote(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count bookings',
+      one: '1 booking',
+    );
+    return '$_temp0 still awaiting server payout confirmation';
+  }
+
+  @override
+  String get startTourSessionButtonLabel => 'ツアーセッションを開始';
+
+  @override
+  String familyShareLinkLimitReached(int maxLinks) {
+    return '⚠️ アクティブな共有リンクの上限（$maxLinks件）に達しました。新しく作成するには、いずれかを削除してください。';
+  }
+
+  @override
+  String get familyShareRecipientNameRequired => '⚠️ 受信者の名前を入力してください。';
+
+  @override
+  String get familyShareNoActiveSessionError =>
+      '⚠️ まずアクティブなツアーセッションを開始してください。共有できる情報がまだありません。';
+
+  @override
+  String familyShareLinkGeneratedSuccess(String name) {
+    return '✅「$name」さん向けの共有リンクを作成しました！';
+  }
+
+  @override
+  String get familyShareActiveLinksTitle => '有効なリンク';
+
+  @override
+  String get familyShareNewLinkButton => '＋ 新規作成';
+
+  @override
+  String get familyShareAppBarTitle => 'ファミリー共有';
+
+  @override
+  String get familyShareHeroSubtitle => '家族が安全にあなたの旅の状況を確認できるようにします';
+
+  @override
+  String get familyShareNoActiveSessionNotice =>
+      '現在アクティブなツアーはありません。ツアーを開始または参加すると、ライブ共有リンクを作成できます。';
+
+  @override
+  String get familyShareEmptyStateMessage => '有効な共有リンクが見つかりません';
+
+  @override
+  String get familyShareExpiredBadge => '期限切れ';
+
+  @override
+  String familyShareViewedCountBadge(int count) {
+    return '閲覧$count回';
+  }
+
+  @override
+  String get familyShareLinkNoLongerValid => '無効になりました';
+
+  @override
+  String familyShareLinkExpiresAt(String time) {
+    return '有効期限：$time';
+  }
+
+  @override
+  String get familyShareCopyLinkSnackbar => '📋 招待コードをクリップボードにコピーしました！';
+
+  @override
+  String get familyShareRemoveLinkDialogTitle => 'リンクを削除しますか？';
+
+  @override
+  String familyShareRemoveLinkDialogBody(String recipientName) {
+    return '「$recipientName」さんの共有アクセスが取り消されます。';
+  }
+
+  @override
+  String familyShareLinkRemovedSnackbar(String recipientName) {
+    return '「$recipientName」さんへのリンクを削除しました。';
+  }
+
+  @override
+  String get familyShareRemoveButton => '削除';
+
+  @override
+  String get familyShareCreateSheetTitle => '共有リンクを作成';
+
+  @override
+  String get familyShareRecipientNameLabel => '受信者の名前';
+
+  @override
+  String get familyShareRecipientNameHint => '例：お母さん、お父さん、事務所';
+
+  @override
+  String get familyShareExpiryLabel => '有効期限';
+
+  @override
+  String get familyShareDuration4Hours => '4時間';
+
+  @override
+  String get familyShareDuration12Hours => '12時間';
+
+  @override
+  String get familyShareDuration24Hours => '24時間';
+
+  @override
+  String get familyShareToggleStatusLabel => 'リアルタイムの状況を共有';
+
+  @override
+  String get familyShareToggleIdentityLabel => 'ガイドの身元情報を共有';
+
+  @override
+  String get familyShareToggleMeetingPointLabel => '待ち合わせ場所を共有';
+
+  @override
+  String get familyShareToggleEmergencyLabel => '緊急アラートを共有';
+
+  @override
+  String get familyShareGenerateLinkButton => 'リンクを作成';
+
+  @override
+  String get marketplaceSearchHint => '名前、言語、都市で検索...';
+
+  @override
+  String get vehiclePositionMarkedMessage => '車両の位置をマークしました';
+
+  @override
+  String get tourDashboardTitle => 'ツアーダッシュボード';
+
+  @override
+  String get startTourSessionButton => 'ツアーセッションを開始';
+
+  @override
+  String get tourSessionStartedMessage => '🚀 ツアーセッションを開始しました！';
+
+  @override
+  String get markVehicleButton => '車両をマーク';
+
+  @override
+  String get weatherHazardLoggedMessage => '✅ 気象ハザードを安全コンソールに記録しました！';
+
+  @override
+  String get earningsTitle => '収益';
+
+  @override
+  String get pleaseLogInViewEarningsMessage => '収益を表示するにはログインしてください。';
+
+  @override
+  String get totalNetEarningsLabel => '純収益合計';
+
+  @override
+  String guestCountParenthesesLabel(int count) {
+    return '$count 名';
+  }
+
+  @override
+  String get shareLocalKnowledgeTitle => '地元の知識を共有しよう';
+
+  @override
+  String get guideTravelersEarnSubtitle => '旅行者をガイドして、自分のスケジュールで収入を得ましょう。';
+
+  @override
+  String get broadcastTypeDeparture => '出発';
+
+  @override
+  String get standardPackageLabel => '標準パッケージ';
+
+  @override
+  String yearsExperienceLabel(String years) {
+    return '$years年';
+  }
+
+  @override
+  String get primaryCategoryLabel => '主なカテゴリー';
+
+  @override
+  String get availabilityCalendarTitle => '空き状況カレンダー';
+
+  @override
+  String get sessionWithinSafetyParamsMessage => 'セッションの運用は安全基準の範囲内です。';
+
+  @override
+  String get medicalFacilitiesNearbyTitle => '近くの医療施設';
+
+  @override
+  String get privateGuardiansTitle => 'プライベート保護者';
+
+  @override
+  String get noGuardiansAssignedMessage => '保護者が設定されていません。信号は緊急サービスに自動送信されます。';
+
+  @override
+  String get nearestHospitalTitle => 'どこにいても最寄りの病院';
+
+  @override
+  String get findNearestHospitalButton => '地図で最寄りの病院を探す';
+
+  @override
+  String get addGuardianTitle => '保護者を追加';
+
+  @override
+  String get guardianPhoneNumberHint => '保護者の電話番号';
+
+  @override
+  String get addGuardianButton => '保護者を追加';
+
+  @override
+  String get sosAlertsPreparedLoggedMessage =>
+      '電話／SMSアプリを開きました。通話を完了するか送信を押してください。緊急機関へ自動送信はされません。';
+
+  @override
+  String get monsoonHazardAlertTitle => 'モンスーン警報';
+
+  @override
+  String get preparingTourTitle => 'ツアー準備中';
+
+  @override
+  String get parkedSpotLabel => '駐車位置';
+
+  @override
+  String get shareLiveLabel => 'ライブ共有';
+
+  @override
+  String get categoryParty => 'パーティー';
+
+  @override
+  String failedToShareTimelineMessage(String error) {
+    return 'タイムラインの共有に失敗しました: $error';
+  }
+
+  @override
+  String hazardWarningMessage(String message) {
+    return '🚨 危険警報: $message';
+  }
+
+  @override
+  String get totalSpentSoFarLabel => '現在までの合計支出';
+
+  @override
+  String get startedLabel => '開始日';
+
+  @override
+  String get featureStandardSos => '標準SOS';
+
+  @override
+  String get featureOperatorDashboard => 'オペレーターダッシュボード';
+
+  @override
+  String get mostPopularLabel => '人気No.1';
+
+  @override
+  String get guardianEmergencyTranslatorTitle => 'ガーディアン緊急翻訳';
+
+  @override
+  String get guardianEmergencyTranslatorDescription =>
+      'SOS発信時、スリランカの警察や病院スタッフに、話し言葉のシンハラ語で瞬時に状況を説明します。';
+
+  @override
+  String get smartTravelerTitle => 'スマートトラベラー';
+
+  @override
+  String get featureAiItineraries20 => 'AI旅程 20回/月';
+
+  @override
+  String get billedYearlySaveLabel => '年払い ・ 約17%お得';
+
+  @override
+  String get featureUnlimitedAiItineraries => '無制限のAI旅程';
+
+  @override
+  String get yearlySaveLabel => '年払い ・ 17%お得';
+
+  @override
+  String trialYearsLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count年間',
+      one: '1年間',
+    );
+    return '$_temp0の無料トライアル';
+  }
+
+  @override
+  String get culinaryVisionEngineLabel => 'カリナリービジョンエンジン V2';
+
+  @override
+  String aiVisualMarkersFallback(String label) {
+    return 'AIは$labelと一致する視覚的な料理の特徴を識別しました。';
+  }
+
+  @override
+  String get manualCulinaryOverrideTitle => '手動料理オーバーライド';
+
+  @override
+  String get heritageNarrativeEngineTitle => 'ヘリテージ・ナラティブ・エンジン';
+
+  @override
+  String get folkloreNarrativeTitle => '民間伝承の物語';
+
+  @override
+  String get culinaryGapPairingEngineTitle => '料理ギャップ＆ペアリングエンジン';
+
+  @override
+  String get carbsLabel => '炭水化物';
+
+  @override
+  String savorLankaShareText(String name, String score) {
+    return 'Hidden Gems SL.aiで見つけたこの$nameのレシピをチェックしてください。本場スリランカの逸品です。 \n\nオラクルスコア: $score%';
+  }
+
+  @override
+  String get savorLankaShareSubject => 'Hidden Gems SL.ai - サヴォールランカのレシピ';
+
+  @override
+  String get visuallySimilarAlternativesLabel => '見た目が似ている代替品';
+
+  @override
+  String get popularLabel => '人気';
+
+  @override
+  String get newPartnerDiscountsMessage => '新しいパートナー割引は随時追加されます。またチェックしてください。';
+
+  @override
+  String get shareCollectibleButton => 'コレクションを共有';
+
+  @override
+  String shareCollectibleMessage(String placeName, String rarity) {
+    return 'I just earned the $placeName heritage stamp ($rarity) on Hidden Gems SL!';
+  }
+
+  @override
+  String get stampRarityCommon => 'コモン';
+
+  @override
+  String get stampRarityRare => 'レア';
+
+  @override
+  String get stampRarityMythic => 'ミシック';
+
+  @override
+  String groupTourStartedCodeLabel(String code) {
+    return 'グループツアーが開始されました！コード: $code';
+  }
+
+  @override
+  String ptsRarityLabel(int points, String rarity) {
+    return '+$points PTS • $rarity';
+  }
+
+  @override
+  String get tourTypeBoatSafari => 'ボートサファリ';
+
+  @override
+  String get tourTypeWildlifeSafari => '野生動物サファリ';
+
+  @override
+  String get reportReasonHarassment => '嫌がらせ';
+
+  @override
+  String get filterClearButton => 'クリア';
+
+  @override
+  String get weatherConditionClear => '快晴';
+
+  @override
+  String get familyShareTitle => 'ファミリー共有';
+
+  @override
+  String get tapWaterWarning => '水質は場所により異なります。不明な場合は煮沸・ろ過済みまたは密封水を使用してください';
 }

@@ -16,7 +16,8 @@ class GuidePackagesScreen extends ConsumerStatefulWidget {
   const GuidePackagesScreen({super.key});
 
   @override
-  ConsumerState<GuidePackagesScreen> createState() => _GuidePackagesScreenState();
+  ConsumerState<GuidePackagesScreen> createState() =>
+      _GuidePackagesScreenState();
 }
 
 class _GuidePackagesScreenState extends ConsumerState<GuidePackagesScreen> {
@@ -57,29 +58,39 @@ class _GuidePackagesScreenState extends ConsumerState<GuidePackagesScreen> {
         backgroundColor: AppTheme.colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new, size: 20, color: AppTheme.textPrimary(context)),
+          icon: Icon(Icons.arrow_back_ios_new,
+              size: 20, color: AppTheme.textPrimary(context)),
           onPressed: () => Navigator.pop(context),
         ),
-        title: Text(AppLocalizations.of(context)!.tourPackagesTitle, style: GoogleFonts.outfit(fontWeight: FontWeight.w800, fontSize: 20, letterSpacing: -0.5, color: AppTheme.textPrimary(context))),
+        title: Text(AppLocalizations.of(context)!.tourPackagesTitle,
+            style: GoogleFonts.outfit(
+                fontWeight: FontWeight.w800,
+                fontSize: 20,
+                letterSpacing: -0.5,
+                color: AppTheme.textPrimary(context))),
         centerTitle: false,
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Theme.of(context).colorScheme.primary,
         onPressed: () async {
-          final created = await Navigator.push<bool>(context, MaterialPageRoute(builder: (_) => const _PackageEditorScreen()));
+          final created = await Navigator.push<bool>(context,
+              MaterialPageRoute(builder: (_) => const _PackageEditorScreen()));
           if (created == true) _loadPackages();
         },
         child: const Icon(Icons.add, color: Colors.white),
       ),
       body: _isLoading
-          ? Center(child: CircularProgressIndicator(color: Theme.of(context).colorScheme.primary))
+          ? Center(
+              child: CircularProgressIndicator(
+                  color: Theme.of(context).colorScheme.primary))
           : _packages.isEmpty
               ? _buildEmptyState()
               : ListView.builder(
                   padding: const EdgeInsets.fromLTRB(20, 8, 20, 100),
                   physics: const BouncingScrollPhysics(),
                   itemCount: _packages.length,
-                  itemBuilder: (context, index) => _buildPackageCard(_packages[index]),
+                  itemBuilder: (context, index) =>
+                      _buildPackageCard(_packages[index]),
                 ),
     );
   }
@@ -91,14 +102,21 @@ class _GuidePackagesScreenState extends ConsumerState<GuidePackagesScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.local_offer_outlined, size: 56, color: AppTheme.textSecondary(context).withValues(alpha: 0.3)),
+            Icon(Icons.local_offer_outlined,
+                size: 56,
+                color: AppTheme.textSecondary(context).withValues(alpha: 0.3)),
             const SizedBox(height: 16),
-            Text(AppLocalizations.of(context)!.noPackagesYetTitle, style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.w700, color: AppTheme.textPrimary(context))),
+            Text(AppLocalizations.of(context)!.noPackagesYetTitle,
+                style: GoogleFonts.outfit(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                    color: AppTheme.textPrimary(context))),
             const SizedBox(height: 8),
             Text(
               AppLocalizations.of(context)!.noPackagesYetSubtitle,
               textAlign: TextAlign.center,
-              style: GoogleFonts.inter(fontSize: 13, color: AppTheme.textSecondary(context)),
+              style: GoogleFonts.inter(
+                  fontSize: 13, color: AppTheme.textSecondary(context)),
             ),
           ],
         ),
@@ -113,12 +131,20 @@ class _GuidePackagesScreenState extends ConsumerState<GuidePackagesScreen> {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(18),
-        boxShadow: [BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.05), blurRadius: 14, offset: const Offset(0, 5))],
+        boxShadow: [
+          BoxShadow(
+              color: AppTheme.colors.black.withValues(alpha: 0.05),
+              blurRadius: 14,
+              offset: const Offset(0, 5))
+        ],
       ),
       child: InkWell(
         borderRadius: BorderRadius.circular(18),
         onTap: () async {
-          final updated = await Navigator.push<bool>(context, MaterialPageRoute(builder: (_) => _PackageEditorScreen(existing: package)));
+          final updated = await Navigator.push<bool>(
+              context,
+              MaterialPageRoute(
+                  builder: (_) => _PackageEditorScreen(existing: package)));
           if (updated == true) _loadPackages();
         },
         child: Padding(
@@ -131,30 +157,49 @@ class _GuidePackagesScreenState extends ConsumerState<GuidePackagesScreen> {
                   children: [
                     Row(
                       children: [
-                        Expanded(child: Text(package.title, style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.w700, color: AppTheme.textPrimary(context)))),
+                        Expanded(
+                            child: Text(package.title,
+                                style: GoogleFonts.outfit(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w700,
+                                    color: AppTheme.textPrimary(context)))),
                         if (!package.isActive)
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                            decoration: BoxDecoration(color: AppTheme.surfaceMuted(context), borderRadius: BorderRadius.circular(100)),
-                            child: Text(l10n.inactiveLabel, style: GoogleFonts.inter(fontSize: 9, fontWeight: FontWeight.w700, color: AppTheme.textSecondary(context))),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 3),
+                            decoration: BoxDecoration(
+                                color: AppTheme.surfaceMuted(context),
+                                borderRadius: BorderRadius.circular(100)),
+                            child: Text(l10n.inactiveLabel,
+                                style: GoogleFonts.inter(
+                                    fontSize: 9,
+                                    fontWeight: FontWeight.w700,
+                                    color: AppTheme.textSecondary(context))),
                           ),
                       ],
                     ),
                     const SizedBox(height: 6),
                     Text(
-                      l10n.durationGuestsLabel(package.durationHours.toString(), package.maxGuests.toString()),
-                      style: GoogleFonts.inter(fontSize: 11, color: AppTheme.textSecondary(context)),
+                      l10n.durationGuestsLabel(package.durationHours.toString(),
+                          package.maxGuests.toString()),
+                      style: GoogleFonts.inter(
+                          fontSize: 11, color: AppTheme.textSecondary(context)),
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      l10n.currencyPriceLabel(package.currency, package.price.toStringAsFixed(0)),
-                      style: GoogleFonts.outfit(fontSize: 15, fontWeight: FontWeight.w800, color: Theme.of(context).colorScheme.primary),
+                      l10n.currencyPriceLabel(
+                          package.currency, package.price.toStringAsFixed(0)),
+                      style: GoogleFonts.outfit(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w800,
+                          color: Theme.of(context).colorScheme.primary),
                     ),
                   ],
                 ),
               ),
               IconButton(
-                icon: Icon(Icons.delete_outline_rounded, color: Theme.of(context).colorScheme.error, size: 20),
+                icon: Icon(Icons.delete_outline_rounded,
+                    color: Theme.of(context).colorScheme.error, size: 20),
                 onPressed: () => _deletePackage(package.packageId),
               ),
             ],
@@ -224,7 +269,11 @@ class _PackageEditorScreenState extends State<_PackageEditorScreen> {
     setState(() => _isSaving = true);
     try {
       final now = DateTime.now();
-      final inclusions = _inclusionsController.text.split(',').map((e) => e.trim()).where((e) => e.isNotEmpty).toList();
+      final inclusions = _inclusionsController.text
+          .split(',')
+          .map((e) => e.trim())
+          .where((e) => e.isNotEmpty)
+          .toList();
       final package = TourPackage(
         packageId: widget.existing?.packageId ?? '',
         ownerId: uid,
@@ -254,7 +303,10 @@ class _PackageEditorScreenState extends State<_PackageEditorScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.failedToSavePackageMessage(e.toString())), backgroundColor: Theme.of(context).colorScheme.error),
+          SnackBar(
+              content: Text(AppLocalizations.of(context)!
+                  .failedToSavePackageMessage(e.toString())),
+              backgroundColor: Theme.of(context).colorScheme.error),
         );
       }
     } finally {
@@ -271,12 +323,18 @@ class _PackageEditorScreenState extends State<_PackageEditorScreen> {
         backgroundColor: AppTheme.colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new, size: 20, color: AppTheme.textPrimary(context)),
+          icon: Icon(Icons.arrow_back_ios_new,
+              size: 20, color: AppTheme.textPrimary(context)),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          widget.existing == null ? l10n.newPackageTitle : l10n.editPackageTitle,
-          style: GoogleFonts.outfit(fontWeight: FontWeight.w800, fontSize: 18, color: AppTheme.textPrimary(context)),
+          widget.existing == null
+              ? l10n.newPackageTitle
+              : l10n.editPackageTitle,
+          style: GoogleFonts.outfit(
+              fontWeight: FontWeight.w800,
+              fontSize: 18,
+              color: AppTheme.textPrimary(context)),
         ),
       ),
       body: SafeArea(
@@ -286,15 +344,44 @@ class _PackageEditorScreenState extends State<_PackageEditorScreen> {
             padding: const EdgeInsets.all(20),
             physics: const BouncingScrollPhysics(),
             children: [
-              _buildTextField(controller: _titleController, label: l10n.packageTitleLabel, hint: l10n.packageTitleHint, validator: (v) => v == null || v.isEmpty ? l10n.requiredFieldMessage : null),
+              _buildTextField(
+                  controller: _titleController,
+                  label: l10n.packageTitleLabel,
+                  hint: l10n.packageTitleHint,
+                  validator: (v) => v == null || v.isEmpty
+                      ? l10n.requiredFieldMessage
+                      : null),
               const SizedBox(height: 16),
-              _buildTextField(controller: _descriptionController, label: l10n.descriptionLabel, hint: l10n.packageDescriptionHint, maxLines: 3),
+              _buildTextField(
+                  controller: _descriptionController,
+                  label: l10n.descriptionLabel,
+                  hint: l10n.packageDescriptionHint,
+                  maxLines: 3),
               const SizedBox(height: 16),
               Row(
                 children: [
-                  Expanded(child: _buildTextField(controller: _durationController, label: l10n.durationHoursLabel, hint: '4', keyboardType: TextInputType.number)),
+                  Expanded(
+                      child: _buildTextField(
+                          controller: _durationController,
+                          label: l10n.durationHoursLabel,
+                          hint: '4',
+                          keyboardType: TextInputType.number)),
                   const SizedBox(width: 12),
-                  Expanded(child: _buildTextField(controller: _maxGuestsController, label: l10n.maxGuestsLabel, hint: '4', keyboardType: TextInputType.number)),
+                  Expanded(
+                    child: _buildTextField(
+                      controller: _maxGuestsController,
+                      label: l10n.maxGuestsLabel,
+                      hint: '4',
+                      keyboardType: TextInputType.number,
+                      validator: (value) {
+                        final guests = int.tryParse(value?.trim() ?? '');
+                        if (guests == null || guests < 1 || guests > 20) {
+                          return l10n.requiredFieldMessage;
+                        }
+                        return null;
+                      },
+                    ),
+                  ),
                 ],
               ),
               const SizedBox(height: 16),
@@ -302,27 +389,49 @@ class _PackageEditorScreenState extends State<_PackageEditorScreen> {
                 children: [
                   Expanded(
                     flex: 2,
-                    child: _buildTextField(controller: _priceController, label: l10n.priceLabel, hint: '150', keyboardType: TextInputType.number, validator: (v) => v == null || v.isEmpty ? l10n.requiredFieldMessage : null),
+                    child: _buildTextField(
+                        controller: _priceController,
+                        label: l10n.priceLabel,
+                        hint: '150',
+                        keyboardType: TextInputType.number,
+                        validator: (v) => v == null || v.isEmpty
+                            ? l10n.requiredFieldMessage
+                            : null),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: DropdownButtonFormField<String>(
                       initialValue: _currency,
-                      items: _currencies.map((c) => DropdownMenuItem(value: c, child: Text(c))).toList(),
+                      items: _currencies
+                          .map(
+                              (c) => DropdownMenuItem(value: c, child: Text(c)))
+                          .toList(),
                       onChanged: (v) => setState(() => _currency = v ?? 'USD'),
-                      decoration: InputDecoration(labelText: l10n.currencyLabel, border: OutlineInputBorder(borderRadius: BorderRadius.circular(14))),
+                      decoration: InputDecoration(
+                          labelText: l10n.currencyLabel,
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(14))),
                     ),
                   ),
                 ],
               ),
               const SizedBox(height: 16),
-              _buildTextField(controller: _inclusionsController, label: l10n.inclusionsLabel, hint: l10n.inclusionsHint),
+              _buildTextField(
+                  controller: _inclusionsController,
+                  label: l10n.inclusionsLabel,
+                  hint: l10n.inclusionsHint),
               const SizedBox(height: 16),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                decoration: BoxDecoration(color: AppTheme.surfaceMuted(context), borderRadius: BorderRadius.circular(16)),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                decoration: BoxDecoration(
+                    color: AppTheme.surfaceMuted(context),
+                    borderRadius: BorderRadius.circular(16)),
                 child: SwitchListTile(
-                  title: Text(l10n.includesVehicleLabel, style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.w600)),
+                  title: Text(l10n.includesVehicleLabel,
+                      style: GoogleFonts.outfit(
+                          color: AppTheme.textPrimary(context),
+                          fontWeight: FontWeight.w600)),
                   value: _includesVehicle,
                   activeThumbColor: Theme.of(context).colorScheme.primary,
                   contentPadding: EdgeInsets.zero,
@@ -331,10 +440,16 @@ class _PackageEditorScreenState extends State<_PackageEditorScreen> {
               ),
               const SizedBox(height: 12),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                decoration: BoxDecoration(color: AppTheme.surfaceMuted(context), borderRadius: BorderRadius.circular(16)),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                decoration: BoxDecoration(
+                    color: AppTheme.surfaceMuted(context),
+                    borderRadius: BorderRadius.circular(16)),
                 child: SwitchListTile(
-                  title: Text(l10n.activeBookableLabel, style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.w600)),
+                  title: Text(l10n.activeBookableLabel,
+                      style: GoogleFonts.outfit(
+                          color: AppTheme.textPrimary(context),
+                          fontWeight: FontWeight.w600)),
                   value: _isActive,
                   activeThumbColor: Theme.of(context).colorScheme.primary,
                   contentPadding: EdgeInsets.zero,
@@ -350,12 +465,20 @@ class _PackageEditorScreenState extends State<_PackageEditorScreen> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Theme.of(context).colorScheme.primary,
                     foregroundColor: Theme.of(context).colorScheme.onPrimary,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(100)),
                     elevation: 0,
                   ),
                   child: _isSaving
-                      ? SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Theme.of(context).colorScheme.onPrimary))
-                      : Text(l10n.savePackageButton, style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 14)),
+                      ? SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Theme.of(context).colorScheme.onPrimary))
+                      : Text(l10n.savePackageButton,
+                          style: GoogleFonts.inter(
+                              fontWeight: FontWeight.w700, fontSize: 14)),
                 ),
               ),
             ],
@@ -383,7 +506,8 @@ class _PackageEditorScreenState extends State<_PackageEditorScreen> {
         labelText: label,
         hintText: hint,
         labelStyle: GoogleFonts.inter(color: AppTheme.textSecondary(context)),
-        hintStyle: GoogleFonts.inter(color: AppTheme.textSecondary(context).withValues(alpha: 0.6)),
+        hintStyle: GoogleFonts.inter(
+            color: AppTheme.textSecondary(context).withValues(alpha: 0.6)),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
         filled: true,
         fillColor: AppTheme.surfaceMuted(context),

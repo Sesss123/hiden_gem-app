@@ -276,15 +276,30 @@ class PayHereController extends Controller
             // actually charged — but it should be flagged for a human to
             // check rather than silently accepted as if it were expected.
             $quotedPrice = isset($booking['quotedPrice']) ? (float) $booking['quotedPrice'] : null;
-            if ($quotedPrice !== null && abs($quotedPrice - $amount) > 0.01) {
-                Log::warning("PayHere notify: paid amount does not match quoted price for {$orderId}.", [
+            $quotedCurrency = strtoupper((string) ($booking['currency'] ?? 'LKR'));
+            $paidCurrency = strtoupper((string) $payhereCurrency);
+            if ($quotedPrice === null || abs($quotedPrice - $amount) > 0.01 || $quotedCurrency !== $paidCurrency) {
+                Log::critical("PayHere notify: payment does not match the booking quote for {$orderId}.", [
                     'quoted_price' => $quotedPrice,
                     'payhere_amount' => $amount,
+                    'quoted_currency' => $quotedCurrency,
+                    'payhere_currency' => $paidCurrency,
                 ]);
+                $firestore->updateBooking($orderId, [
+                    'paymentStatus' => 'manual_reconciliation_required',
+                    'paymentId' => (string) $paymentId,
+                    'paidAmount' => $amount,
+                    'paymentMismatchAt' => date('c'),
+                ]);
+                if ($paymentId) {
+                    $this->markEventProcessed('payhere', (string) $paymentId);
+                }
+                return response('ok', 200);
             }
 
             $updated = $firestore->updateBooking($orderId, [
                 'payoutStatus' => 'paid',
+                'paymentStatus' => 'paid',
                 'status' => 'confirmed',
                 'paidAt' => date('c'),
                 'paymentId' => (string) $paymentId,
@@ -295,6 +310,15 @@ class PayHereController extends Controller
             if (!$updated) {
                 throw new \RuntimeException('Firestore did not confirm the payment update.');
             }
+            $firestore->patchDocument('user_notifications', 'payment_' . sha1((string) $paymentId . '|' . $orderId), [
+                'recipientId' => $booking['touristId'],
+                'title' => 'Payment confirmed',
+                'body' => 'Your tour booking payment was confirmed.',
+                'type' => 'payment_confirmed',
+                'bookingId' => $orderId,
+                'isRead' => false,
+                'createdAt' => date('c'),
+            ]);
             if ($paymentId) {
                 $this->markEventProcessed('payhere', (string) $paymentId);
             }

@@ -20,10 +20,10 @@ class UpdateScreen extends StatelessWidget {
 
   Future<void> _launchStore(BuildContext context) async {
     final bool isIOS = Platform.isIOS;
-    final Uri url = Uri.parse(isIOS 
+    final Uri url = Uri.parse(isIOS
         ? 'https://apps.apple.com/app/id${AppConfig.appStoreId}'
-        : 'https://play.google.com/store/apps/details?id=com.hidden_gems_sl');
-        
+        : 'https://play.google.com/store/apps/details?id=com.hidden.gems.hidden_gems_sl');
+
     try {
       if (await canLaunchUrl(url)) {
         await launchUrl(url, mode: LaunchMode.externalApplication);
@@ -54,105 +54,113 @@ class UpdateScreen extends StatelessWidget {
         body: Stack(
           fit: StackFit.expand,
           children: [
-          // Background Aesthetic
-          Container(
-            decoration: BoxDecoration(
-              gradient: RadialGradient(
-                center: Alignment.center,
-                radius: 1.2,
-                colors: [
-                  Theme.of(context).cardColor, 
-                  AppTheme.scaffoldColor(context)
-                ],
+            // Background Aesthetic
+            Container(
+              decoration: BoxDecoration(
+                gradient: RadialGradient(
+                  center: Alignment.center,
+                  radius: 1.2,
+                  colors: [
+                    Theme.of(context).cardColor,
+                    AppTheme.scaffoldColor(context)
+                  ],
+                ),
               ),
             ),
-          ),
-          
-          SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 40),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // Animated Icon/Logo
-                  Container(
-                    width: 88,
-                    height: 88,
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(28),
-                    ),
-                    child: Icon(
-                      Icons.system_update_rounded,
-                      size: 36,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                  ),
-                  const SizedBox(height: 32),
 
-                  // Text Content
-                  Text(
-                    isForce ? l10n.updateRequiredTitle : l10n.updateReadyTitle,
-                    style: GoogleFonts.outfit(
-                      fontSize: 24,
-                      fontWeight: FontWeight.w800,
-                      color: AppTheme.textPrimary(context),
-                      letterSpacing: -0.5,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    isForce ? l10n.updateRequiredBody : l10n.updateReadyBody,
-                    style: GoogleFonts.inter(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w500,
-                      color: AppTheme.textSecondary(context),
-                      height: 1.6,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 40),
-                  
-                  const ModernTracerIndicator(),
-                  const SizedBox(height: 48),
-
-                  // Actions
-                  Column(
-                    children: [
-                      _buildButton(
-                        context,
-                        label: l10n.updateNow,
-                        isPrimary: true,
-                        onTap: () => _launchStore(context),
+            SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 40),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // Animated Icon/Logo
+                    Container(
+                      width: 88,
+                      height: 88,
+                      decoration: BoxDecoration(
+                        color: Theme.of(context)
+                            .colorScheme
+                            .primary
+                            .withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(28),
                       ),
-                      if (!isForce) ...[
-                        const SizedBox(height: 16),
-                        TextButton(
-                          onPressed: onMaybeLater,
-                          child: Text(
-                            l10n.maybeLater,
-                            style: GoogleFonts.inter(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
-                              color: AppTheme.textSecondary(context),
+                      child: Icon(
+                        Icons.system_update_rounded,
+                        size: 36,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                    ),
+                    const SizedBox(height: 32),
+
+                    // Text Content
+                    Text(
+                      isForce
+                          ? l10n.updateRequiredTitle
+                          : l10n.updateReadyTitle,
+                      style: GoogleFonts.outfit(
+                        fontSize: 24,
+                        fontWeight: FontWeight.w800,
+                        color: AppTheme.textPrimary(context),
+                        letterSpacing: -0.5,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      isForce ? l10n.updateRequiredBody : l10n.updateReadyBody,
+                      style: GoogleFonts.inter(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                        color: AppTheme.textSecondary(context),
+                        height: 1.6,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 40),
+
+                    const ModernTracerIndicator(),
+                    const SizedBox(height: 48),
+
+                    // Actions
+                    Column(
+                      children: [
+                        _buildButton(
+                          context,
+                          label: l10n.updateNow,
+                          isPrimary: true,
+                          onTap: () => _launchStore(context),
+                        ),
+                        if (!isForce) ...[
+                          const SizedBox(height: 16),
+                          TextButton(
+                            onPressed: onMaybeLater,
+                            child: Text(
+                              l10n.maybeLater,
+                              style: GoogleFonts.inter(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                color: AppTheme.textSecondary(context),
+                              ),
                             ),
                           ),
-                        ),
+                        ],
                       ],
-                    ],
-                  ),
-                ],
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-    ),
     );
   }
 
-  Widget _buildButton(BuildContext context, {required String label, required bool isPrimary, required VoidCallback onTap}) {
+  Widget _buildButton(BuildContext context,
+      {required String label,
+      required bool isPrimary,
+      required VoidCallback onTap}) {
     final primary = Theme.of(context).colorScheme.primary;
     final onPrimary = Theme.of(context).colorScheme.onPrimary;
     return InkWell(

@@ -69,7 +69,9 @@ class PremiumNotifier extends _$PremiumNotifier {
     try {
       if (kIsWeb) return;
 
-      await Purchases.setLogLevel(LogLevel.debug);
+      await Purchases.setLogLevel(
+        kDebugMode ? LogLevel.debug : LogLevel.error,
+      );
 
       String apiKey = defaultTargetPlatform == TargetPlatform.iOS
           ? AppConfig.revenueCatApiKeyIos
@@ -322,7 +324,7 @@ class PremiumNotifier extends _$PremiumNotifier {
 
         PurchaseResult purchaseResult =
             await Purchases.purchase(PurchaseParams.package(package));
-        _updateStateFromCustomerInfo(purchaseResult.customerInfo);
+        await _updateStateFromCustomerInfo(purchaseResult.customerInfo);
       }
     } on PlatformException catch (e) {
       var errorCode = PurchasesErrorHelper.getErrorCode(e);
@@ -352,7 +354,8 @@ class PremiumNotifier extends _$PremiumNotifier {
   // 🛠️ MOCK UTILITY: Only for Dev/Internal testing to bypass RevenueCat
   Future<void> simulateMockPurchase() async {
     if (!kDebugMode) {
-      throw UnsupportedError('Mock purchases are strictly prohibited in production builds.');
+      throw UnsupportedError(
+          'Mock purchases are strictly prohibited in production builds.');
     }
     state = true;
     await UserPreferenceService.updatePremiumStatus(true,
@@ -367,7 +370,8 @@ class PremiumNotifier extends _$PremiumNotifier {
   // itself) are reachable again without reinstalling the app.
   Future<void> simulateMockCancel() async {
     if (!kDebugMode) {
-      throw UnsupportedError('Mock purchase cancellations are strictly prohibited in production builds.');
+      throw UnsupportedError(
+          'Mock purchase cancellations are strictly prohibited in production builds.');
     }
     state = false;
     await UserPreferenceService.updatePremiumStatus(false,

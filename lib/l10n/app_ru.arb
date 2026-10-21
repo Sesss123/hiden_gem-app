@@ -29,14 +29,6 @@
   "reviewRouteAction": "Проверить маршрут",
   "continueAction": "Продолжить",
   "savedJourneyHubTitle": "Сохранённые места и поездки",
-  "bookmarkedCount": "Закладки ({count})",
-  "@bookmarkedCount": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "wantToVisitCount": "Хочу посетить ({count})",
   "@wantToVisitCount": {
     "placeholders": {
@@ -54,8 +46,6 @@
     }
   },
   "savedPlacesLoadError": "Не удалось загрузить сохранённые места.",
-  "noBookmarkedPlaces": "Закладок пока нет",
-  "noBookmarkedPlacesHint": "Нажмите значок закладки у места, чтобы сохранить его.",
   "wantToVisitEmpty": "Список желаемых мест пуст",
   "wantToVisitEmptyHint": "Добавьте места со страницы сведений.",
   "noRecentlyViewedPlaces": "Недавно просмотренных мест нет",
@@ -112,7 +102,6 @@
     }
   },
   "serverManagedPriceNote": "Цены предоставляются сервисом и могут меняться. Уточняйте перед покупкой.",
-  "hydrationSummary": "Местные напитки · бутилированная вода · безопасный лёд",
   "appTitle": "Hidden Gems SL",
   "goodMorningAdmin": "Доброе утро, администратор",
   "oracleToday": "Вот что происходит сегодня с Оракулом.",
@@ -128,7 +117,6 @@
   "profile": "Профиль",
   "settings": "Настройки",
   "language": "Язык",
-  "itinerary": "Маршрут",
   "style": "Стиль",
   "planB": "План Б",
   "tips": "Советы",
@@ -136,12 +124,10 @@
   "camera": "Камера",
   "gallery": "Галерея",
   "discovery": "Открытия",
-  "nearYou": "Рядом с вами",
   "aiReason": "Почему это место?",
   "filters": "Фильтры",
   "distance": "Расстояние",
   "openOnMap": "Открыть на карте",
-  "searchHint": "Поиск скрытых жемчужин...",
   "planNewTrip": "Планировать новую поездку",
   "privacyPolicy": "Политика конфиденциальности",
   "termsOfService": "Условия предоставления услуг",
@@ -158,12 +144,8 @@
   "deleteForever": "Удалить навсегда",
   "discoveryHeader": "Открытия",
   "picksForYou": "Hidden Gems SL Выбор для вас",
-  "exploreInAr": "Исследовать в AR",
-  "bestNatureNearby": "Лучшая природа рядом",
   "topCultureSpots": "Топ культурных мест",
   "villageStayTitle": "Деревенский и аутентичный отдых",
-  "allNearbyPlacesTitle": "Все места поблизости",
-  "noMatchesNearby": "Поблизости нет совпадений",
   "tryIncreasingDistance": "Попробуйте увеличить расстояние или убрать фильтры.",
   "filterAll": "Все",
   "filterNature": "Природа 🌿",
@@ -173,7 +155,6 @@
   "filterCoastal": "Побережье 🌊",
   "filterFamily": "Семья 👨‍👩‍👧‍👦",
   "filterBudget": "Бюджет 💸",
-  "filterAr": "AR места 🏛",
   "categoryNature": "Природа",
   "categoryWaterfall": "Водопад",
   "categoryHiking": "Поход",
@@ -191,7 +172,6 @@
       }
     }
   },
-  "arHeritageReady": "AR-наследие готово",
   "theKnowledge": "ЗНАНИЯ",
   "safetyProtocols": "ПРОТОКОЛЫ БЕЗОПАСНОСТИ",
   "provisions": "ОБЕСПЕЧЕНИЕ",
@@ -202,38 +182,12 @@
   "moment": "МОМЕНТ",
   "offering": "ПРЕДЛОЖЕНИЕ",
   "reality": "РЕАЛЬНОСТЬ",
-  "aerDimensionReady": "AER ИЗМЕРЕНИЕ ГОТОВО",
-  "invokeAr": "ВЫЗВАТЬ AR",
   "addToDestiny": "ДОБАВИТЬ В МАРШРУТ",
-  "distanceLockTitle": "ОГРАНИЧЕНИЕ ПО РАССТОЯНИЮ",
-  "distanceLockMessage": "Вы находитесь в {distance} км. Доступ к AER измерению возможен только в пределах 500м от места.",
-  "arCoreNotDetected": "AR CORE НЕ ОБНАРУЖЕН",
-  "arCoreMessage": "Путешественник, для древних видений требуется ARCore. Пожалуйста, убедитесь, что он установлен и обновлен на вашем устройстве.",
   "road": "ДОРОГА",
   "access": "ДОСТУП",
-  "parking": "ПАРКОВКА",
-  "syncingResonance": "Синхронизация с древним резонансом...",
-  "resonanceLost": "Резонанс потерян",
   "gpsRequired": "Мы не смогли подтвердить ваше местоположение. Убедитесь, что GPS включен.",
-  "unlockTeleport": "РАЗБЛОКИРОВАТЬ ТЕЛЕПОРТ",
   "close": "ЗАКРЫТЬ",
   "understood": "Понятно",
-  "ancestralPortalOpen": "ДРЕВНИЙ ПОРТАЛ ОТКРЫТ",
-  "stepIntoHistory": "Шагнуть в историю",
-  "viewEraIn360": "Смотреть {era} на 360°",
-  "arDemoLabel": "10-секундное AR демо",
-  "fullHeritageAr": "Полное Наследие AR",
-  "ancientHeritageSite": "Объект древнего наследия",
-  "arTipPlace": "Коснитесь поверхности, чтобы разместить 3D реконструкцию",
-  "arTipTime": "Смахните «Тогда/Сейчас» для путешествия во времени",
-  "arTipAudio": "Доступен аудиогид на сингальском и английском языках",
-  "arTipGroup": "Организуйте или присоединяйтесь к групповому AR туру",
-  "openArPortal": "ОТКРЫТЬ AR ПОРТАЛ",
-  "enterDemo": "ВОЙТИ В ДЕМО (10с)",
-  "offlineReady": "Готово к офлайн",
-  "assetsCached": "Активы наследия кэшированы для использования офлайн!",
-  "downloadFailed": "Сбой загрузки. Пожалуйста, проверьте подключение.",
-  "downloadForOffline": "Скачать для офлайн",
   "initiateTravel": "НАЧАТЬ ПОСЛЕДОВАТЕЛЬНОСТЬ ПУТЕШЕСТВИЯ",
   "selectOracleLanguage": "ВЫБЕРИТЕ ЯЗЫК ОРАКУЛА",
   "skipForNow": "ПОКА ПРОПУСТИТЬ",
@@ -242,21 +196,12 @@
   "lastUpdatedDate": "ПОСЛЕДНЕЕ ОБНОВЛЕНИЕ: 5 ИЮЛЯ 2026 Г.",
   "privacyIntro": "Мы ценим вашу конфиденциальность и суверенитет данных. Этот документ описывает, как компания Hidden Gems Sri Lanka (Pvt) Ltd собирает, защищает и регулирует вашу личную информацию в соответствии с законодательством Шри-Ланки.",
   "contactUsAboutData": "СВЯЖИТЕСЬ С НАМИ ПО ВОПРОСАМ ВАШИХ ДАННЫХ",
-  "couldNotOpenEmail": "Не удалось открыть почтовый клиент. Пожалуйста, напишите на support@hiddengems.lk",
+  "couldNotOpenEmail": "Не удалось открыть почтовый клиент. Пожалуйста, напишите на pathiranasehas3@gmail.com",
   "getDirections": "Get Directions",
   "awayLabel": "away",
   "travelModeWalk": "Walk",
   "travelModeBike": "Bike",
-  "travelModeCar": "Car",
   "openInMaps": "Open in Maps",
-  "nearbyNowLabel": "{km} km away — nearby now",
-  "@nearbyNowLabel": {
-    "placeholders": {
-      "km": {
-        "type": "String"
-      }
-    }
-  },
   "couldNotOpenMaps": "Could not open a maps app on this device.",
   "photosLabel": "Photos",
   "scheduleOngoingLabel": "Ongoing — date to be announced",
@@ -269,7 +214,7 @@
   "privacySection4Title": "4. ОГРАНИЧЕНИЕ ОТВЕТСТВЕННОСТИ И ОТКАЗ ОТ ГАРАНТИЙ",
   "privacySection4Body": "В максимальной степени, разрешённой применимым законодательством, использование вами приложения регулируется следующими ограничениями:\n\n• Роль соединительной платформы: Hidden Gems Sri Lanka выступает в качестве информационной и соединительной платформы, связывающей туристов с независимыми местными гидами и услугами. Мы не несём ответственности за поведение, безопасность, действительность лицензии или действия любого гида, водителя или стороннего поставщика услуг, связанного через приложение.\n• Ограничения функций экстренной помощи и геолокации: обмен местоположением, «Семейный доступ» и сигналы экстренного оповещения предоставляются на основе технических возможностей и не гарантируют результата. ОНИ НЕ ЯВЛЯЮТСЯ ЗАМЕНОЙ ОФИЦИАЛЬНЫХ ЭКСТРЕННЫХ СЛУЖБ. В случае чрезвычайной ситуации всегда обращайтесь в полицию Шри-Ланки (119), туристическую полицию (+94 11 242 1052) или службу скорой помощи Suwaseriya (1990). Компания не несёт ответственности за задержки сети, неточности GPS или сбои доставки уведомлений.\n• Самостоятельная проверка: пользователи несут исключительную ответственность за самостоятельную проверку квалификации гида, безопасности транспортного средства и личной безопасности перед поездкой.\n• Установленный законом предел ответственности: согласно законодательству Шри-Ланки, любая ответственность Hidden Gems Sri Lanka (Pvt) Ltd, возникающая в связи с использованием вами платформы, строго ограничена общей суммой сборов, уплаченных вами компании за конкретную оспариваемую услугу.",
   "privacySection5Title": "5. ПРАВА ПОЛЬЗОВАТЕЛЯ И КОНТРОЛЬ НАД ДАННЫМИ",
-  "privacySection5Body": "В соответствии с Законом о защите личных данных № 9 от 2022 года вы обладаете основными правами в отношении своих персональных данных:\n\n• Право на доступ и исправление: вы можете просматривать, скачивать или редактировать информацию своего аккаунта и данные профиля непосредственно на экране профиля в приложении.\n• Отзыв согласия: вы можете в любое время отозвать согласие на отслеживание местоположения или обработку данных, отключив разрешения на доступ к местоположению в настройках устройства или отозвав активные ссылки семейного доступа.\n• Право на удаление (право быть забытым): вы можете запросить безвозвратное удаление аккаунта непосредственно через Профиль > Конфиденциальность > Удаление аккаунта или написав нашему сотруднику по защите данных на support@hiddengems.lk.",
+  "privacySection5Body": "В соответствии с Законом о защите личных данных № 9 от 2022 года вы обладаете основными правами в отношении своих персональных данных:\n\n• Право на доступ и исправление: вы можете просматривать, скачивать или редактировать информацию своего аккаунта и данные профиля непосредственно на экране профиля в приложении.\n• Отзыв согласия: вы можете в любое время отозвать согласие на отслеживание местоположения или обработку данных, отключив разрешения на доступ к местоположению в настройках устройства или отозвав активные ссылки семейного доступа.\n• Право на удаление (право быть забытым): вы можете запросить безвозвратное удаление аккаунта непосредственно через Профиль > Конфиденциальность > Удаление аккаунта или написав нашему сотруднику по защите данных на pathiranasehas3@gmail.com.",
   "privacySection6Title": "6. ХРАНЕНИЕ И УДАЛЕНИЕ ДАННЫХ",
   "privacySection6Body": "Мы храним личные данные только в течение времени, необходимого для достижения целей, изложенных в настоящей политике:\n\n• Данные семейного доступа и местоположения: временные ссылки для обмена и связанная с ними история местоположений в реальном времени автоматически удаляются из активных баз данных по истечении срока действия ссылки или при её ручном отзыве.\n• Данные аккаунта: после подачи запроса на удаление аккаунта ваш профиль, сохранённые списки желаний и личные идентификаторы безвозвратно удаляются с наших рабочих серверов в течение 30 дней, при этом сохраняются только обезличенные статистические данные, необходимые для аудита в регуляторных целях.",
   "privacySection7Title": "7. ЗАЩИТА ПРИВАТНОСТИ ДЕТЕЙ",
@@ -279,7 +224,7 @@
   "privacySection9Title": "9. ЗАКЛЮЧИТЕЛЬНЫЙ ПРАВОВОЙ ОТКАЗ ОТ ОТВЕТСТВЕННОСТИ",
   "privacySection9Body": "Настоящая политика предоставляется в общих информационных целях и не является официальной юридической консультацией. Hidden Gems Sri Lanka (Pvt) Ltd / TripMe.ai рекомендует пользователям и участникам туристической отрасли обращаться за независимой юридической консультацией в Шри-Ланке для подтверждения полного соответствия Закону о защите личных данных № 9 от 2022 года, Закону о туризме № 38 от 2005 года и любым другим применимым нормативным актам.",
   "privacyFooterCompany": "HIDDEN GEMS SRI LANKA (PVT) LTD",
-  "privacyFooterAddress": "Юридический адрес: Коломбо, Шри-Ланка • support@hiddengems.lk",
+  "privacyFooterAddress": "Юридический адрес: Коломбо, Шри-Ланка • pathiranasehas3@gmail.com",
   "termsAndPrivacyTitle": "Условия и конфиденциальность",
   "reviewBeforeContinuing": "Пожалуйста, ознакомьтесь перед продолжением",
   "dataPrivacySectionTitle": "Данные и конфиденциальность",
@@ -295,7 +240,7 @@
   "updateRequiredTitle": "Требуется обновление",
   "updateReadyTitle": "Готова новая версия",
   "updateRequiredBody": "Пожалуйста, обновите приложение, чтобы продолжить путешествие.",
-  "updateReadyBody": "Вас ждут улучшенные карты, более быстрые ИИ-поездки и улучшенное AR.",
+  "updateReadyBody": "Вас ждут улучшенные карты, более быстрые ИИ-поездки и новые инструменты для путешествий.",
   "updateNow": "Обновить сейчас",
   "maybeLater": "Может быть позже",
   "couldNotOpenStore": "Не удалось открыть магазин приложений. Пожалуйста, обновите вручную.",
@@ -314,7 +259,6 @@
   "identifierRequired": "Требуется идентификатор",
   "invalidAddress": "Неверный адрес",
   "insufficientComplexity": "Недостаточная сложность",
-  "atLeast6Chars": "Не менее 6 символов",
   "forgotPassword": "Забыли пароль?",
   "orContinueWith": "или продолжить с",
   "googleLabel": "Google",
@@ -386,12 +330,9 @@
   "planTripAction": "Спланировать поездку",
   "findGuideAction": "Найти гида",
   "foodAiAction": "ИИ по еде",
-  "arPortalsAction": "AR порталы",
-  "localGemsNearby": "Местные жемчужины рядом",
   "todayInSriLanka": "Сегодня в Шри-Ланке",
   "discoverSriLanka": "Откройте для себя Шри-Ланку",
   "letOracleGuide": "Позвольте Оракулу направлять ваш путь",
-  "searchSecretLocations": "Поиск секретных мест...",
   "offlineModeLabel": "ОФЛАЙН РЕЖИМ",
   "ayubowanGreeting": "Аюбован, {name}!",
   "@ayubowanGreeting": {
@@ -441,11 +382,8 @@
   },
   "step1Title": "Куда вас направить?",
   "step1Subtitle": "Основные данные",
-  "startingPointLabel": "Точка отправления",
-  "startingPointHint": "Аэропорт, Коломбо...",
   "destinationLabel": "Пункт назначения",
   "destinationHint": "Элла, Галле, Канди...",
-  "startDateLabel": "Дата начала",
   "step2Title": "Определите настроение вашего путешествия.",
   "step2Subtitle": "Бюджет и стиль",
   "tripLengthLabel": "Продолжительность поездки",
@@ -457,7 +395,6 @@
       }
     }
   },
-  "travelStandardLabel": "Уровень путешествия",
   "step3Title": "С кем вы путешествуете?",
   "step3Subtitle": "Спутники и темп",
   "companionsLabel": "Спутники",
@@ -507,8 +444,6 @@
   "priceRangeFree": "Бесплатно",
   "priceRangeEconomy": "Эконом",
   "priceRangePremium": "Премиум",
-  "heritageArSearchTitle": "ПОИСК AR НАСЛЕДИЯ",
-  "onlyShowArEnabledSpots": "ПОКАЗЫВАТЬ ТОЛЬКО МЕСТА С AR",
   "revealDestinies": "ПОКАЗАТЬ МАРШРУТЫ",
   "hostedByName": "Организатор: {hostName}",
   "@hostedByName": {
@@ -528,8 +463,6 @@
   },
   "resetAllFilters": "СБРОСИТЬ ВСЕ ФИЛЬТРЫ",
   "seeAll": "Смотреть все",
-  "arBadge": "AR",
-  "heritageArBadge": "AR НАСЛЕДИЕ",
   "tripDurationStyleLabel": "Поездка на {days} дн. в стиле «{style}»",
   "@tripDurationStyleLabel": {
     "placeholders": {
@@ -543,14 +476,6 @@
   },
   "budgetTabLabel": "Бюджет",
   "mapTabLabel": "Карта",
-  "premiumFeatureSnackbar": "{featureName} — это функция Premium.",
-  "@premiumFeatureSnackbar": {
-    "placeholders": {
-      "featureName": {
-        "type": "String"
-      }
-    }
-  },
   "savedPlansFeatureName": "Сохранённые планы",
   "noPathFoundTitle": "Маршрут не найден",
   "noPathFoundMessage": "Оракул не смог составить маршрут для этого пункта назначения. Попробуйте изменить бюджет или стиль поездки.",
@@ -610,7 +535,6 @@
   "profilePhoto": "ФОТО ПРОФИЛЯ",
   "removePhoto": "УДАЛИТЬ ФОТО",
   "localizationError": "Ошибка локализации",
-  "appearance": "Внешний вид",
   "settingsSectionLabel": "Настройки",
   "profileErrorDetails": "ОШИБКА ПРОФИЛЯ:\n{error}\n\n{stack}",
   "@profileErrorDetails": {
@@ -641,14 +565,10 @@
   "statLabelLevel": "Уровень",
   "oracleExplorer": "Исследователь Оракула",
   "goPremium": "Перейти на Premium",
-  "fullArAiAccessGranted": "Полный доступ к AR и ИИ предоставлен",
-  "unlockArAiFeatures": "Разблокировать функции AR и ИИ",
   "upgrade": "Улучшить",
   "themeLight": "Светлая",
-  "themeDark": "Тёмная",
   "journeyHub": "Центр путешествий",
   "aiBudgetConcierge": "ИИ Бюджетный консьерж",
-  "smartExpenseAdvisor": "Умный советник по расходам",
   "heritagePassport": "Паспорт наследия",
   "verifiableVisitCollection": "Проверяемая коллекция посещений",
   "ethicalTravelMeter": "Индикатор этичного туризма",
@@ -676,33 +596,11 @@
     }
   },
   "ethicalScoreDescription": "Ваш показатель этичного туризма измеряет ваше положительное влияние на местные сообщества и сохранение наследия по всей Шри-Ланке.",
-  "howToEarnPointsHeading": "КАК ЗАРАБОТАТЬ ОЧКИ:",
-  "earnPointsReviewsTitle": "Оставляйте отзывы о местах",
-  "earnPointsReviewsAmount": "+10 очк.",
-  "earnPointsReviewsSubtitle": "Поддержите местных гидов и путешественников",
-  "earnPointsFoodTitle": "Попробуйте местную еду",
-  "earnPointsFoodAmount": "+15 очк.",
-  "earnPointsFoodSubtitle": "Поддержите аутентичные местные заведения",
-  "earnPointsHeritageTitle": "Посещайте объекты наследия",
-  "earnPointsHeritageAmount": "+20 очк.",
-  "earnPointsHeritageSubtitle": "Способствуйте сохранению культуры",
-  "rewardsPerksHeading": "НАГРАДЫ И ПРИВИЛЕГИИ, КОТОРЫЕ ВЫ ОТКРОЕТЕ:",
-  "rewardEcoGuardianBadgeTitle": "Значок Эко-хранителя",
-  "rewardEcoGuardianBadgeSubtitle": "Выделяйтесь в рейтингах и отзывах",
-  "rewardPartnerDiscountsTitle": "Скидки от партнёров",
-  "rewardPartnerDiscountsSubtitle": "Скидка 5-15% в проверенных эко-отелях и кафе",
-  "rewardFreePremiumPerksTitle": "Бесплатные Premium-привилегии",
-  "rewardFreePremiumPerksSubtitle": "Открывайте AR-гиды и офлайн-карты за очки",
-  "rewardRealWorldImpactTitle": "Реальное влияние",
-  "rewardRealWorldImpactSubtitle": "Наберите 500 очков, и мы посадим дерево в Шри-Ланке для вас!",
+  "rewardFreePremiumPerksSubtitle": "Открывайте офлайн-карты и премиум-инструменты за баллы",
   "gotItKeepExploring": "ПОНЯТНО, ПРОДОЛЖИТЬ ИССЛЕДОВАНИЕ",
   "guideCommandHub": "ЦЕНТР УПРАВЛЕНИЯ ГИДА",
   "guideCommandHubSubtitle": "Быстрый доступ к инструментам гида",
   "activeStatusBadge": "АКТИВНО",
-  "tourDashboard": "Панель тура",
-  "tourDashboardSubtitle": "Активный тур, QR, объявление и безопасность",
-  "earnings": "Заработок",
-  "earningsSubtitle": "Выплаты и статистика",
   "clients": "Клиенты",
   "clientsSubtitle": "История и заметки",
   "bookings": "Бронирования",
@@ -722,7 +620,6 @@
   "manageTeamSubtitle": "Команда, роли и брендинг",
   "becomeAGuide": "Стать гидом",
   "myBookings": "Мои бронирования",
-  "familySharing": "Семейный доступ",
   "scanGuideQr": "Сканировать QR гида",
   "oracleLens": "Линза Оракула",
   "bilingualToggle": "Двуязычный режим (EN/SI)",
@@ -742,33 +639,16 @@
   },
   "signOutDialogTitle": "ВЫЙТИ ИЗ АККАУНТА",
   "confirmSignOutMessage": "Вы уверены, что хотите выйти из аккаунта?",
-  "shareAppMessage": "Присоединяйтесь к Hidden Gems SL! 🌍 https://hiddengems.lk",
-  "shareAppSubject": "Присоединяйтесь ко мне в Hidden Gems SL!",
   "somethingWentWrong": "Что-то пошло не так. Пожалуйста, перезапустите приложение.",
   "cameraPermissionRequiredTitle": "Требуется разрешение на использование камеры",
-  "cameraPermissionRequiredMessage": "Пожалуйста, разрешите доступ к камере в настройках приложения, чтобы использовать сканер.",
   "openSettings": "Открыть настройки",
   "liveScanningComingSoonMessage": "Сканирование в реальном времени скоро появится.\n\nРаспознавание достопримечательностей и объектов через камеру в реальном времени уже на подходе. Мы сообщим вам, как только оно будет готово.",
-  "landmarkScannerTitle": "Сканер достопримечательностей",
   "identifyingLabel": "Распознавание…",
-  "analyzeLandmarkButton": "Анализировать достопримечательность",
-  "unlockLandmarkScanningTitle": "Разблокировать сканирование достопримечательностей",
-  "unlockLandmarkScanningSubtitle": "Наведите камеру на любое место, чтобы раскрыть его скрытую историю.",
   "oracleVerifiedLabel": "Проверено Оракулом",
   "mapLoadErrorMessage": "Не удалось загрузить данные карты: {error}",
   "@mapLoadErrorMessage": {
     "placeholders": {
       "error": {
-        "type": "String"
-      }
-    }
-  },
-  "guideLiveMarkerLabel": "ВАШ ГИД (В РЕАЛЬНОМ ВРЕМЕНИ)",
-  "vehicleMarkerLabel": "ВАШ ТРАНСПОРТ",
-  "meetingPointMarkerLabel": "МЕСТО ВСТРЕЧИ: {pointName}",
-  "@meetingPointMarkerLabel": {
-    "placeholders": {
-      "pointName": {
         "type": "String"
       }
     }
@@ -799,17 +679,6 @@
       }
     }
   },
-  "mapMarkerDaySnippet": "День {day} • {time}",
-  "@mapMarkerDaySnippet": {
-    "placeholders": {
-      "day": {
-        "type": "int"
-      },
-      "time": {
-        "type": "String"
-      }
-    }
-  },
   "visualRouteTitle": "Визуальный маршрут",
   "journeyVisualizerTitle": "Визуализатор путешествия",
   "journeyVisualizerSubtitle": "{dayCount} дн. по региону {destination}",
@@ -825,16 +694,11 @@
   },
   "saveOfflineMapTooltip": "Сохранить офлайн-карту",
   "focusButtonLabel": "ФОКУС",
-  "planRemovedSnackbar": "План удалён из кэша Оракула",
-  "viewInArLabel": "Смотреть в AR",
   "savedTripsTitle": "Сохранённые поездки",
-  "clearSavedTripsTitle": "Очистить сохранённые поездки",
-  "clearSavedTripsMessage": "Это навсегда удалит все сохранённые поездки с этого устройства.",
   "eraseAllButton": "Удалить всё",
   "noSavedTripsTitle": "Пока нет сохранённых поездок",
   "noSavedTripsSubtitle": "Спланируйте поездку, чтобы увидеть её здесь.",
   "unknownDateLabel": "Дата неизвестна",
-  "noArSpotsSnackbar": "В этом плане нет мест с AR",
   "tripRouteLabel": "{fromCity} → {destinationCity}",
   "@tripRouteLabel": {
     "placeholders": {
@@ -862,7 +726,6 @@
       }
     }
   },
-  "arBadgeLabel": "AR",
   "savedTimeAgoLabel": "Сохранено {timeAgo}",
   "@savedTimeAgoLabel": {
     "placeholders": {
@@ -934,51 +797,26 @@
   "etiquetteTipPackOutTrash": "Забирайте весь свой мусор с собой (не оставляйте следов)",
   "etiquetteTipNoFeedingAnimals": "Не кормите диких животных и не беспокойте их",
   "etiquetteTipNoSoapInPools": "Не используйте мыло/шампунь в природных водоёмах",
-  "arTierHeritageShort": "Наследие",
-  "arTierExploreShort": "Исследование",
-  "arTierStoryShort": "История",
   "notAvailableShort": "Н/Д",
-  "arBadgeHeritage": "AR НАСЛЕДИЕ",
-  "arBadgeExplore": "AR ИССЛЕДОВАНИЕ",
-  "arBadgeStory": "ПРОСМОТР ИСТОРИИ",
   "noRiskTagsFound": "Проявлений не обнаружено.",
   "noFacilitiesFound": "Обнаружен минимальный набор удобств.",
   "fieldNoteMobileSignal": "Мобильная связь",
   "fieldNoteRoadCondition": "Состояние дороги",
   "fieldNoteActivities": "Активности",
-  "fieldNotePopularity": "Популярность",
   "fieldNoteFamilyFriendly": "Подходит для семьи",
   "fieldNoteBudget": "Бюджет",
   "fieldNoteToilets": "Туалеты",
-  "fieldNoteFoodNearby": "Еда поблизости",
   "fieldNoteWheelchairAccess": "Доступ для инвалидных колясок",
   "fieldNoteCamping": "Кемпинг",
   "fieldNoteSafetyLevel": "Уровень безопасности",
-  "fieldNoteWildlifeHazard": "Опасность диких животных",
   "fieldNoteGuideRequired": "Требуется гид",
   "fieldNoteRainSensitivity": "Чувствительность к дождю",
   "fieldNoteMonsoonNote": "Заметка о муссоне",
   "fieldNoteSurfing": "Сёрфинг",
   "fieldNoteHeight": "Высота",
   "fieldNoteLength": "Протяжённость",
-  "bookmarkAddedSnackbar": "✨ Отмечено в вашем путешествии!",
-  "bookmarkRemovedSnackbar": "Удалено из закладок.",
-  "itineraryAddedSnackbar": "🗺️ {placeName} добавлено в ваш маршрут судьбы!",
-  "@itineraryAddedSnackbar": {
-    "placeholders": {
-      "placeName": {
-        "type": "String"
-      }
-    }
-  },
-  "itineraryRemovedSnackbar": "Удалено из маршрута.",
   "featureNameHeritageSessions": "Сеансы наследия",
-  "bonusSessionUnlockedSnackbar": "Бонусный сеанс разблокирован! Попробуйте запустить снова.",
-  "oracleRewardActiveSnackbar": "✨ Награда Оракула активна! AR-сеанс разблокирован.",
   "okButton": "ОК",
-  "arBrandNameHeritage": "Наследие AR",
-  "arBrandNameExplore": "Исследование AR",
-  "bonusDownloadUnlockedSnackbar": "Бонусная загрузка разблокирована! Попробуйте загрузить снова.",
   "featureNameOfflineDownloads": "Офлайн-загрузки",
   "myBookingsTitle": "Мои бронирования",
   "myBookingsEmptyTitle": "Пока нет бронирований",
@@ -1015,37 +853,9 @@
   "requestSentMessage": "Ваш запрос на бронирование отправлен гиду. Вы получите уведомление, как только он ответит.",
   "closeButton": "Закрыть",
   "noBookingsToSyncMessage": "Пока нет принятых бронирований для синхронизации.",
-  "calendarEventTitle": "Тур: {touristName} ({guestCount} гостей)",
-  "@calendarEventTitle": {
-    "placeholders": {
-      "touristName": {
-        "type": "String"
-      },
-      "guestCount": {
-        "type": "int"
-      }
-    }
-  },
   "defaultTouristName": "Путешественник",
-  "calendarSyncSuccessMessage": "{count, plural, one{Синхронизировано {count} бронирование с вашим календарём.} few{Синхронизировано {count} бронирования с вашим календарём.} many{Синхронизировано {count} бронирований с вашим календарём.} other{Синхронизировано {count} бронирования с вашим календарём.}}",
-  "@calendarSyncSuccessMessage": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "calendarSyncFailedMessage": "Не удалось синхронизировать календарь: {error}",
-  "@calendarSyncFailedMessage": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "loginRequiredMessage": "Пожалуйста, войдите в аккаунт, чтобы просмотреть запросы на бронирование.",
   "bookingsScreenTitle": "Бронирования",
-  "syncToCalendarTooltip": "Синхронизировать с календарём",
   "inboxLoadErrorMessage": "Ошибка загрузки входящих: {error}",
   "@inboxLoadErrorMessage": {
     "placeholders": {
@@ -1093,12 +903,6 @@
   "netPayoutLabel": "Ваша чистая выплата",
   "notAvailableAbbrev": "Н/Д",
   "payoutPendingLabel": "Pending",
-  "earningsAwaitingConfirmationNote": "{count, plural, one {1 booking} other {{count} bookings}} still awaiting server payout confirmation",
-  "@earningsAwaitingConfirmationNote": {
-    "placeholders": {
-      "count": { "type": "int" }
-    }
-  },
   "tourNotesLabel": "Заметки / требования к туру",
   "responseNoteLabel": "Ваш комментарий к ответу: {note}",
   "@responseNoteLabel": {
@@ -1110,7 +914,6 @@
   },
   "declineButtonLabel": "Отклонить",
   "acceptButtonLabel": "Принять",
-  "startTourSessionButtonLabel": "Начать / запустить тур-сеанс",
   "bookingAcceptedMessage": "🎉 Бронирование принято, тур-сеанс создан!",
   "acceptBookingErrorMessage": "Ошибка при принятии бронирования: {error}",
   "@acceptBookingErrorMessage": {
@@ -1161,79 +964,6 @@
   "fieldNotesLabelUppercase": "ПОЛЕВЫЕ ЗАМЕТКИ",
   "commentFieldHint": "Что вас впечатлило? Что можно улучшить?",
   "transmitFeedbackButton": "ОТПРАВИТЬ ОТЗЫВ",
-  "familyShareLinkLimitReached": "⚠️ Вы достигли лимита в {maxLinks} активных ссылок для доступа. Удалите одну, чтобы создать новую.",
-  "@familyShareLinkLimitReached": {
-    "placeholders": {
-      "maxLinks": {
-        "type": "int"
-      }
-    }
-  },
-  "familyShareRecipientNameRequired": "⚠️ Пожалуйста, введите имя получателя.",
-  "familyShareNoActiveSessionError": "⚠️ Сначала начните активный тур-сеанс — пока делиться нечем.",
-  "familyShareLinkGeneratedSuccess": "✅ Ссылка создана для «{name}»!",
-  "@familyShareLinkGeneratedSuccess": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
-  },
-  "familyShareActiveLinksTitle": "Активные ссылки",
-  "familyShareNewLinkButton": "+ Новая",
-  "familyShareAppBarTitle": "Семейный доступ",
-  "familyShareHeroSubtitle": "Позвольте семье безопасно отслеживать статус вашей поездки",
-  "familyShareNoActiveSessionNotice": "Сейчас нет активного тура — начните или присоединитесь к туру, чтобы создать ссылку для доступа в реальном времени.",
-  "familyShareEmptyStateMessage": "Активные ссылки для доступа не найдены",
-  "familyShareExpiredBadge": "Истекла",
-  "familyShareViewedCountBadge": "Просмотрено {count} раз",
-  "@familyShareViewedCountBadge": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "familyShareLinkNoLongerValid": "Больше не действительна",
-  "familyShareLinkExpiresAt": "Истекает {time}",
-  "@familyShareLinkExpiresAt": {
-    "placeholders": {
-      "time": {
-        "type": "String"
-      }
-    }
-  },
-  "familyShareCopyLinkSnackbar": "📋 Код приглашения скопирован в буфер обмена!",
-  "familyShareRemoveLinkDialogTitle": "Удалить ссылку?",
-  "familyShareRemoveLinkDialogBody": "Это отзовёт общий доступ у «{recipientName}».",
-  "@familyShareRemoveLinkDialogBody": {
-    "placeholders": {
-      "recipientName": {
-        "type": "String"
-      }
-    }
-  },
-  "familyShareLinkRemovedSnackbar": "Ссылка для «{recipientName}» удалена.",
-  "@familyShareLinkRemovedSnackbar": {
-    "placeholders": {
-      "recipientName": {
-        "type": "String"
-      }
-    }
-  },
-  "familyShareRemoveButton": "Удалить",
-  "familyShareCreateSheetTitle": "Создать ссылку для доступа",
-  "familyShareRecipientNameLabel": "Имя получателя",
-  "familyShareRecipientNameHint": "Например: мама, папа, домашний офис",
-  "familyShareExpiryLabel": "Срок действия",
-  "familyShareDuration4Hours": "4 часа",
-  "familyShareDuration12Hours": "12 часов",
-  "familyShareDuration24Hours": "24 часа",
-  "familyShareToggleStatusLabel": "Делиться статусом в реальном времени",
-  "familyShareToggleIdentityLabel": "Делиться данными гида",
-  "familyShareToggleMeetingPointLabel": "Делиться местом встречи",
-  "familyShareToggleEmergencyLabel": "Делиться экстренными оповещениями",
-  "familyShareGenerateLinkButton": "Создать ссылку",
   "categoryAll": "Все",
   "categoryChauffeur": "Водитель",
   "categorySiteGuide": "Гид по месту",
@@ -1241,7 +971,6 @@
   "categoryWildlife": "Дикая природа",
   "categoryHeritage": "Наследие",
   "categoryPhotography": "Фотография",
-  "marketplaceSearchHint": "Поиск по имени, языку или городу...",
   "verifiedGuidesEyebrow": "Проверенные гиды",
   "findYourExpertTitle": "Найдите своего эксперта",
   "noVerifiedGuidesEmptyState": "Проверенные гиды пока не опубликованы.",
@@ -1283,7 +1012,7 @@
       }
     }
   },
-  "couldNotGetLocationMessage": "Не удалось определить ваше местоположение. Используются координаты по умолчанию. ({error})",
+  "couldNotGetLocationMessage": "Не удалось определить ваше местоположение. Действие отменено, чтобы не использовать неверные координаты. ({error})",
   "@couldNotGetLocationMessage": {
     "placeholders": {
       "error": {
@@ -1320,7 +1049,6 @@
       }
     }
   },
-  "vehiclePositionMarkedMessage": "Местоположение транспорта отмечено",
   "failedToUpdateVehicleLocationMessage": "Не удалось обновить местоположение транспорта: {error}",
   "@failedToUpdateVehicleLocationMessage": {
     "placeholders": {
@@ -1329,7 +1057,6 @@
       }
     }
   },
-  "tourDashboardTitle": "Панель тура",
   "bottomNavTour": "Тур",
   "bottomNavPlan": "План",
   "bottomNavReviews": "Отзывы",
@@ -1342,14 +1069,11 @@
   "sessionDataUnavailableMessage": "Данные сессии недоступны.",
   "upcomingTourSessionReadyTitle": "Предстоящая сессия тура готова",
   "upcomingTourSessionReadyMessage": "Путешественники и место встречи подтверждены. Нажмите ниже, когда вы и путешественники прибудете на место встречи, чтобы официально запустить таймер и отслеживание.",
-  "startTourSessionButton": "Начать сессию тура",
-  "tourSessionStartedMessage": "🚀 Сессия тура начата!",
   "statLabelTravelers": "Путешественники",
   "statLabelRating": "Рейтинг",
   "statLabelServed": "Обслужено",
   "updatePointButton": "Обновить точку",
   "setPointButton": "Указать точку",
-  "markVehicleButton": "Отметить транспорт",
   "joinStatusLabel": "Статус подключения",
   "openToScansLabel": "Открыто для сканирования",
   "lockedLabel": "Заблокировано",
@@ -1382,7 +1106,6 @@
       }
     }
   },
-  "weatherHazardLoggedMessage": "✅ Погодная опасность зафиксирована в Консоли безопасности!",
   "errorLoggingIncidentMessage": "Ошибка регистрации инцидента: {error}",
   "@errorLoggingIncidentMessage": {
     "placeholders": {
@@ -1395,8 +1118,6 @@
   "safetyConsoleButtonUppercase": "КОНСОЛЬ БЕЗОПАСНОСТИ",
   "defaultMonsoonAlertTitle": "🚨 ЭКСТРЕННОЕ ПРЕДУПРЕЖДЕНИЕ О МУССОНЕ",
   "defaultMonsoonAlertMessage": "Предупреждение о суровой погоде в районе вашего тура.",
-  "earningsTitle": "Доходы",
-  "pleaseLogInViewEarningsMessage": "Войдите в аккаунт, чтобы просматривать доходы.",
   "errorLoadingFinancialDataMessage": "Ошибка загрузки финансовых данных: {error}",
   "@errorLoadingFinancialDataMessage": {
     "placeholders": {
@@ -1405,7 +1126,6 @@
       }
     }
   },
-  "totalNetEarningsLabel": "Общий чистый доход",
   "netPercentageLabel": "90% чистыми",
   "lkrAmountLabel": "LKR {amount}",
   "@lkrAmountLabel": {
@@ -1562,14 +1282,6 @@
   "saveNoteButton": "Сохранить заметку",
   "noteSavedMessage": "Заметка сохранена",
   "bookingHistoryTitle": "История бронирований",
-  "guestCountParenthesesLabel": "{count} гостей",
-  "@guestCountParenthesesLabel": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "becomeAGuideTitle": "Стать гидом",
   "fieldsMissingMessage": "Отсутствуют поля: пожалуйста, заполните все поля и загрузите документы.",
   "uploadingDocumentsMessage": "Загрузка документов...",
@@ -1618,8 +1330,6 @@
   "guidePollRejectionReason": "Пожалуйста, убедитесь, что ваши лицензионные документы и фотографии чёткие и действительные.",
   "approvedGuideTitle": "Вы утверждены как гид",
   "approvedGuideMessage": "Поздравляем! Ваш статус гида активен. Вы можете открыть панель гида из вашего профиля.",
-  "shareLocalKnowledgeTitle": "Поделитесь своими знаниями о местности",
-  "guideTravelersEarnSubtitle": "Сопровождайте путешественников и зарабатывайте по собственному графику.",
   "guideCategoryLabel": "Категория гида",
   "categoryNational": "Национальный",
   "categoryProvincial": "Провинциальный",
@@ -1713,7 +1423,6 @@
   "broadcastTypeWeather": "Погода",
   "broadcastTypeMeetingPoint": "Место встречи",
   "broadcastTypeDelay": "Задержка",
-  "broadcastTypeDeparture": "Отправление",
   "broadcastTypeVehicleChange": "Смена транспорта",
   "broadcastTypeSafety": "Безопасность",
   "broadcastPriorityLow": "Низкий",
@@ -1754,7 +1463,6 @@
   "vehicleProvidedByGuideMessage": "Предоставляется гидом для туров",
   "packagesSectionTitle": "Пакеты",
   "tapPackageToBookMessage": "Нажмите на пакет, чтобы забронировать его напрямую",
-  "standardPackageLabel": "Стандартный пакет",
   "durationHoursShortLabel": "{hours} ч",
   "@durationHoursShortLabel": {
     "placeholders": {
@@ -1774,14 +1482,6 @@
   "totalLabel": "Итого",
   "requestThisGuideButton": "Запросить этого гида",
   "experienceStatLabel": "Опыт",
-  "yearsExperienceLabel": "{years} лет",
-  "@yearsExperienceLabel": {
-    "placeholders": {
-      "years": {
-        "type": "String"
-      }
-    }
-  },
   "ratingStatLabel": "Рейтинг",
   "rankStatLabel": "Ранг",
   "licensedGuideLabel": "Лицензированный гид • {licenseNumber}",
@@ -1800,7 +1500,6 @@
   "aboutMeBioLabel": "Обо мне (биография)",
   "aboutMeBioHint": "Расскажите туристам о своей страсти, опыте и любимых местах...",
   "categorySpecialtiesTitle": "Категория и специализации",
-  "primaryCategoryLabel": "Основная категория",
   "languagesCommaLabel": "Языки (через запятую)",
   "languagesCommaHint": "напр. английский, сингальский, немецкий",
   "specializationsCommaLabel": "Специализации (через запятую)",
@@ -1822,7 +1521,6 @@
       }
     }
   },
-  "availabilityCalendarTitle": "Календарь доступности",
   "visibilityBoostTitle": "Повышение видимости",
   "saveDraftButton": "Сохранить черновик",
   "publishListingButton": "Опубликовать объявление",
@@ -1875,7 +1573,6 @@
     }
   },
   "noCriticalIncidentsTitle": "Критических инцидентов нет",
-  "sessionWithinSafetyParamsMessage": "Работа сессии находится в пределах параметров безопасности.",
   "reportIncidentButton": "Сообщить об инциденте",
   "fileAnIncidentTitle": "Зарегистрировать инцидент",
   "incidentAuditTrailMessage": "Укажите точные данные — они будут зафиксированы с аудиторским следом.",
@@ -2011,7 +1708,6 @@
   "playAgainButton": "Воспроизвести снова",
   "emergencyTitle": "Экстренная помощь",
   "criticalContactsTitle": "Важные контакты",
-  "medicalFacilitiesNearbyTitle": "Медицинские учреждения поблизости",
   "emergencyProtocolLabel": "ЭКСТРЕННЫЙ ПРОТОКОЛ",
   "sendingAlertMessage": "Отправка сигнала…",
   "keepHoldingToConfirmMessage": "Продолжайте удерживать для подтверждения…",
@@ -2022,24 +1718,15 @@
   "contactNameAmbulance": "Скорая помощь",
   "contactNameTouristPolice": "Туристическая полиция",
   "contactNameFireDept": "Пожарная служба",
-  "privateGuardiansTitle": "Личные опекуны",
-  "noGuardiansAssignedMessage": "Опекуны не назначены. Сигналы будут по умолчанию направляться в экстренные службы.",
-  "nearestHospitalTitle": "Ближайшая больница, где бы вы ни находились",
   "checkingLocationAccessMessage": "Проверка доступа к местоположению…",
   "locationAccessDeniedGeneralMessage": "Доступ к местоположению запрещён — вместо этого будет выполнен общий поиск.",
   "hospitalMapsExplanationMessage": "Открывает Google Карты с использованием вашего GPS в реальном времени — показывает все государственные и частные больницы поблизости, где бы вы ни находились в Шри-Ланке.",
-  "findNearestHospitalButton": "Найти ближайшую больницу на карте",
-  "addGuardianTitle": "Добавить опекуна",
-  "guardianPhoneNumberHint": "Номер телефона опекуна",
-  "addGuardianButton": "Добавить опекуна",
-  "sosAlertsPreparedLoggedMessage": "Открыто приложение телефона/SMS. Завершите звонок или нажмите «Отправить»; экстренные службы не вызываются автоматически.",
   "sosCriticalAlertTitle": "КРИТИЧЕСКИЙ СИГНАЛ SOS",
   "sosDistressSignalDescription": "Сигнал бедствия активирован системой опекунов.",
   "locationPermissionsPermanentlyDeniedMessage": "Разрешения на использование местоположения запрещены навсегда.",
   "emergencyTranslatorPremiumMessage": "Мгновенно объясните вашу ситуацию шри-ланкийской полиции или персоналу больницы на сингальском языке — эксклюзивная функция Premium.",
   "notNowButton": "Не сейчас",
   "viewPlansButton": "Посмотреть тарифы",
-  "monsoonHazardAlertTitle": "ПРЕДУПРЕЖДЕНИЕ О МУССОННОЙ ОПАСНОСТИ",
   "districtLabel": "Округ: {district}",
   "@districtLabel": {
     "placeholders": {
@@ -2062,7 +1749,6 @@
   "sessionNotFoundMessage": "Сессия не найдена",
   "yourTourTitle": "Ваш тур",
   "tourActiveTitle": "Тур активен",
-  "preparingTourTitle": "Подготовка тура",
   "everythingOnTrackMessage": "Всё идёт по плану",
   "statusColonValueLabel": "Статус: {status}",
   "@statusColonValueLabel": {
@@ -2081,7 +1767,6 @@
   "findGuideLabel": "Найти гида",
   "liveTrackingLabel": "Отслеживание в реальном времени",
   "findVehicleLabel": "Найти транспорт",
-  "parkedSpotLabel": "Место парковки",
   "meetingPointLabel": "Место встречи",
   "returnHereIfLostMessage": "Возвращайтесь сюда, если потеряетесь или отстанете от группы.",
   "navigateToPointButton": "Проложить маршрут до точки",
@@ -2090,7 +1775,6 @@
   "acknowledgedLabel": "Подтверждено",
   "iAcknowledgeButton": "Подтверждаю",
   "moreLabel": "Ещё",
-  "shareLiveLabel": "Поделиться в реальном времени",
   "familyAccessLabel": "Доступ для семьи",
   "rateTourLabel": "Оценить тур",
   "buildReputationLabel": "Повысить репутацию",
@@ -2123,7 +1807,6 @@
   "categorySports": "Спорт",
   "categorySeasonal": "Сезонное",
   "categoryFestival": "Фестиваль",
-  "categoryParty": "Вечеринка",
   "availableEventsTitle": "Доступные события",
   "temporalDataLabel": "ВРЕМЕННЫЕ ДАННЫЕ",
   "acquirePassButton": "ПОЛУЧИТЬ ПРОПУСК",
@@ -2133,22 +1816,6 @@
   "musicPreferencesTitle": "Музыкальные предпочтения",
   "fineTuneOracleMessage": "Настройте временной оракул в соответствии с вашими стилистическими предпочтениями.",
   "syncPreferencesButton": "Синхронизировать предпочтения",
-  "failedToShareTimelineMessage": "Не удалось поделиться хронологией: {error}",
-  "@failedToShareTimelineMessage": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
-  "hazardWarningMessage": "🚨 ПРЕДУПРЕЖДЕНИЕ ОБ ОПАСНОСТИ: {message}",
-  "@hazardWarningMessage": {
-    "placeholders": {
-      "message": {
-        "type": "String"
-      }
-    }
-  },
   "extremeWeatherAlertFallback": "Предупреждение об экстремальной погоде!",
   "recommendedForYouLabel": "Рекомендовано для вас",
   "eventLocationCategoryLabel": "{location} · {category}",
@@ -2189,7 +1856,6 @@
   "analyzingSpendingPatternsMessage": "Анализируем ваши траты...",
   "localAdviceMessage": "Темп ваших расходов хорошо соответствует стандартам путешествий по острову. Рекомендуем пользоваться PickMe или Uber для прозрачных тарифов на транспорт и пробовать местные закусочные, чтобы получить максимум пользы.",
   "recentTransactionsTitle": "Недавние транзакции",
-  "totalSpentSoFarLabel": "Всего потрачено на данный момент",
   "approxUsdLabel": "≈ US$ {amount}",
   "@approxUsdLabel": {
     "placeholders": {
@@ -2223,7 +1889,6 @@
       }
     }
   },
-  "startedLabel": "НАЧАЛО",
   "expiresLabel": "ОКОНЧАНИЕ",
   "idLabel": "ID: {subscriptionId}",
   "@idLabel": {
@@ -2267,7 +1932,6 @@
   "freeTierDescription": "Основные инструменты для проверенных гидов.",
   "featureBasicOperations": "Базовые операции",
   "featureVerifiedBadge": "Значок проверенного гида",
-  "featureStandardSos": "Стандартный SOS",
   "proCommanderTitle": "Pro Commander",
   "proCommanderDescription": "Повысьте свою узнаваемость и расширьте инструментарий.",
   "featureFeaturedListings": "Рекомендуемые объявления",
@@ -2277,7 +1941,6 @@
   "eliteAgencyTitle": "Elite Agency",
   "eliteAgencyDescription": "Полное управление автопарком и компанией.",
   "featureTeamManagement": "Управление командой",
-  "featureOperatorDashboard": "Панель оператора",
   "featureWhiteLabelBranding": "Брендинг White-label",
   "fleetPlansTitle": "Тарифы для автопарка",
   "restoreButton": "Восстановить",
@@ -2293,22 +1956,16 @@
   },
   "upgradeButton": "Улучшить",
   "manageButton": "Управлять",
-  "mostPopularLabel": "Самый популярный",
   "perMonthSlashLabel": "/месяц",
   "currentPlanButton": "Текущий план",
   "selectThisPlanButton": "Выбрать этот план",
   "goPremiumTitle": "Перейти на Premium",
-  "fullArUnlimitedAiTripsMessage": "Полный AR и неограниченные AI-поездки",
-  "heritageArModeTitle": "Режим AR «Наследие»",
-  "heritageArModeDescription": "Смотрите на древние руины, восстановленные в масштабе 1:1, с историческими аудиогидами.",
   "oracleAiTripIntelligenceTitle": "Oracle AI — интеллект поездок",
   "oracleAiTripIntelligenceDescription": "Неограниченное число гиперперсонализированных маршрутов на основе движка Oracle.",
   "offlineDigitalTwinsTitle": "Офлайн цифровые двойники",
   "offlineDigitalTwinsDescription": "Скачивайте карты высокого разрешения и более 100 точек интереса для зон с плохим сигналом.",
   "exclusiveCuratorDealsTitle": "Эксклюзивные предложения кураторов",
   "exclusiveCuratorDealsDescription": "Доступ к скидкам только для участников в отобранных бутик-отелях.",
-  "guardianEmergencyTranslatorTitle": "Guardian — переводчик для экстренных ситуаций",
-  "guardianEmergencyTranslatorDescription": "Мгновенно объясните вашу ситуацию шри-ланкийской полиции или персоналу больницы на разговорном сингальском во время SOS.",
   "premiumActiveLabel": "{plan} активен",
   "@premiumActiveLabel": {
     "placeholders": {
@@ -2337,15 +1994,9 @@
   "storeFallback": "магазин",
   "resetPremiumDevButton": "СБРОСИТЬ PREMIUM (ТОЛЬКО ДЛЯ РАЗРАБОТКИ)",
   "premiumResetMessage": "Premium сброшен. Тарифные планы снова доступны.",
-  "smartTravelerTitle": "Smart Traveler",
   "billedMonthlyLabel": "Оплата ежемесячно",
-  "featureAiItineraries20": "20 AI-маршрутов в месяц",
-  "featureSelectedArPlaces": "Отдельные AR-места",
   "featureOfflineMapsBasic": "Офлайн-карты (базовые)",
   "heritagePremiumTitle": "Heritage Premium",
-  "billedYearlySaveLabel": "Оплата ежегодно · экономия ~17%",
-  "featureUnlimitedAiItineraries": "Неограниченные AI-маршруты",
-  "featureFullHeritageArAccess": "Полный доступ к AR «Наследие»",
   "featureAllOfflineFeatures": "Все офлайн-функции",
   "ultraExplorerTitle": "Ultra Explorer",
   "waitlistLabel": "Список ожидания",
@@ -2359,7 +2010,6 @@
   "testBuyDevButton": "ТЕСТОВАЯ ПОКУПКА (ТОЛЬКО ДЛЯ РАЗРАБОТКИ)",
   "mockPurchaseSimulatedMessage": "🚀 Тестовая покупка смоделирована. Обновляем...",
   "monthlyLabel": "Ежемесячно",
-  "yearlySaveLabel": "Ежегодно · Экономия 17%",
   "lockedLabelShort": "Заблокировано",
   "perMonthLabel": "/ месяц",
   "comingSoonButton": "Скоро",
@@ -2388,14 +2038,6 @@
       }
     }
   },
-  "trialYearsLabel": "{count, plural, one{Бесплатная пробная версия на 1 год} few{Бесплатная пробная версия на {count} года} many{Бесплатная пробная версия на {count} лет} other{Бесплатная пробная версия на {count} года}}",
-  "@trialYearsLabel": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "trialPeriodLabel": "Бесплатная пробная версия на {count} период",
   "@trialPeriodLabel": {
     "placeholders": {
@@ -2413,7 +2055,6 @@
     }
   },
   "savorLankaAiTitle": "SAVORLANKA AI",
-  "culinaryVisionEngineLabel": "КУЛИНАРНЫЙ ВИЖН-ДВИЖОК V2",
   "liveRealTimeScannerLabel": "СКАНЕР В РЕАЛЬНОМ ВРЕМЕНИ",
   "nutritionReliabilityLabel": "ДОСТОВЕРНОСТЬ ПИЩЕВОЙ ЦЕННОСТИ: {reliability}",
   "@nutritionReliabilityLabel": {
@@ -2424,17 +2065,8 @@
     }
   },
   "neuralReasoningLabel": "НЕЙРОННЫЕ РАССУЖДЕНИЯ",
-  "aiVisualMarkersFallback": "ИИ определил визуальные кулинарные признаки, соответствующие {label}.",
-  "@aiVisualMarkersFallback": {
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
   "authenticityIntelligenceTitle": "ИНТЕЛЛЕКТ ПОДЛИННОСТИ",
   "ingredientCertaintyTitle": "ТОЧНОСТЬ ИНГРЕДИЕНТОВ",
-  "manualCulinaryOverrideTitle": "РУЧНАЯ КУЛИНАРНАЯ КОРРЕКТИРОВКА",
   "refineIngredientsHint": "Уточните ингредиенты (через запятую)...",
   "cancelButtonUppercaseAlt": "ОТМЕНА",
   "applyOverrideButton": "ПРИМЕНИТЬ КОРРЕКТИРОВКУ",
@@ -2475,11 +2107,8 @@
       }
     }
   },
-  "heritageNarrativeEngineTitle": "ДВИЖОК ИСТОРИЧЕСКОГО ПОВЕСТВОВАНИЯ",
   "verifiedLegacyTitle": "ПОДТВЕРЖДЁННОЕ НАСЛЕДИЕ",
   "regionalTraditionTitle": "РЕГИОНАЛЬНАЯ ТРАДИЦИЯ",
-  "folkloreNarrativeTitle": "ФОЛЬКЛОРНОЕ ПОВЕСТВОВАНИЕ",
-  "culinaryGapPairingEngineTitle": "ДВИЖОК СОЧЕТАНИЙ И НЕДОСТАЮЩИХ БЛЮД",
   "missingCompanionsLabel": "НЕДОСТАЮЩИЕ ДОПОЛНЕНИЯ:",
   "engineNotesLabel": "ЗАМЕТКИ ДВИЖКА:",
   "recipeRefactorEngineTitle": "ДВИЖОК ПЕРЕРАБОТКИ РЕЦЕПТА",
@@ -2489,7 +2118,6 @@
   "levelMetricLabel": "УРОВЕНЬ",
   "calMetricLabel": "КАЛ",
   "proteinLabel": "Белки",
-  "carbsLabel": "Углеводы",
   "fatLabel": "Жиры",
   "fiberLabel": "Клетчатка",
   "healthRatingLabel": "ОЦЕНКА ПОЛЬЗЫ ДЛЯ ЗДОРОВЬЯ",
@@ -2512,28 +2140,13 @@
   "savedLabel": "СОХРАНЕНО",
   "saveToCookbookLabel": "СОХРАНИТЬ В КУЛИНАРНУЮ КНИГУ",
   "voiceGuideLabel": "ГОЛОСОВОЙ ГИД",
-  "savorLankaShareText": "Посмотрите рецепт {name}, который я нашёл в Hidden Gems SL.ai! Это настоящий шри-ланкийский деликатес. \n\nОценка оракула: {score}%",
-  "@savorLankaShareText": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      },
-      "score": {
-        "type": "String"
-      }
-    }
-  },
-  "savorLankaShareSubject": "Hidden Gems SL.ai — рецепт Savor Lanka",
   "phase3CrossMatchTitle": "ЭТАП 3: ПЕРЕКРЁСТНАЯ ЗАМЕНА ПО СХОДСТВУ",
-  "visuallySimilarAlternativesLabel": "ВИЗУАЛЬНО ПОХОЖИЕ АЛЬТЕРНАТИВЫ",
   "aiCrossMatchReasoningLabel": "ОБОСНОВАНИЕ ИИ ПРИ ПЕРЕКРЁСТНОМ СОПОСТАВЛЕНИИ:",
   "phase6HygienePresentationTitle": "ЭТАП 6: ГИГИЕНА И ПОДАЧА",
   "presentationLabel": "ПОДАЧА",
   "integrityLabel": "ЦЕЛОСТНОСТЬ",
-  "popularLabel": "Популярный",
   "curatorDealsTitle": "Предложения куратора",
   "noDealsRightNowTitle": "Сейчас нет предложений",
-  "newPartnerDiscountsMessage": "Новые скидки от партнёров добавляются регулярно — загляните позже.",
   "percentOffLabel": "-{percent}%",
   "@percentOffLabel": {
     "placeholders": {
@@ -2564,17 +2177,6 @@
     }
   },
   "verifiableHashLabel": "Проверяемый хеш",
-  "shareCollectibleButton": "Поделиться коллекционным предметом",
-  "shareCollectibleMessage": "I just earned the {placeName} heritage stamp ({rarity}) on Hidden Gems SL!",
-  "@shareCollectibleMessage": {
-    "placeholders": {
-      "placeName": { "type": "String" },
-      "rarity": { "type": "String" }
-    }
-  },
-  "stampRarityCommon": "Обычный",
-  "stampRarityRare": "Редкий",
-  "stampRarityMythic": "Мифический",
   "audioGuideLabel": "Аудиогид",
   "sinhalaShortLabel": "සිංහල",
   "englishShortLabel": "Английский",
@@ -2582,15 +2184,6 @@
   "enterSixDigitCodeMessage": "Введите 6-значный код, предоставленный вашим гидом.",
   "cancelButtonUppercaseThird": "ОТМЕНА",
   "joinButtonUppercase": "ПРИСОЕДИНИТЬСЯ",
-  "tapFlatSurfaceMessage": "👆 Коснитесь ровной поверхности, чтобы разместить модель",
-  "groupTourStartedCodeLabel": "Групповой тур начался! Код: {code}",
-  "@groupTourStartedCodeLabel": {
-    "placeholders": {
-      "code": {
-        "type": "String"
-      }
-    }
-  },
   "invalidSessionCodeMessage": "Неверный код сессии",
   "couldNotLoadAudioMessage": "Не удалось загрузить аудионарратив.",
   "galleryPermissionDeniedMessage": "Доступ к галерее запрещён",
@@ -2606,27 +2199,6 @@
   "@codeColonLabel": {
     "placeholders": {
       "code": {
-        "type": "String"
-      }
-    }
-  },
-  "thenLabel": "ТОГДА",
-  "nowLabel": "СЕЙЧАС",
-  "resetLabel": "Сбросить",
-  "scalePlusLabel": "Масштаб+",
-  "scaleMinusLabel": "Масштаб-",
-  "memoryLabel": "Воспоминание",
-  "removeLabel": "Удалить",
-  "placeLabel": "Разместить",
-  "historicalInfoComingSoonMessage": "Историческая информация появится скоро.",
-  "preparingHeritageAssetsMessage": "Подготовка объектов наследия...",
-  "progressSizeLabel": "{progress}% • {size} МБ",
-  "@progressSizeLabel": {
-    "placeholders": {
-      "progress": {
-        "type": "int"
-      },
-      "size": {
         "type": "String"
       }
     }
@@ -2658,47 +2230,11 @@
     }
   },
   "premiumHeritageSessionLabel": "ПРЕМИУМ-СЕССИЯ НАСЛЕДИЯ",
-  "artifactDiscoveredLabel": "АРТЕФАКТ ОБНАРУЖЕН!",
-  "ptsRarityLabel": "+{points} ОЧК • {rarity}",
-  "@ptsRarityLabel": {
-    "placeholders": {
-      "points": {
-        "type": "int"
-      },
-      "rarity": {
-        "type": "String"
-      }
-    }
-  },
-  "hiddenGemsSlWatermark": "HIDDEN GEMS SL",
-  "heritageArWatermark": "HERITAGE AR",
   "captureSuccessfulTitle": "Снимок успешно сделан!",
-  "shareDiscoveryMessage": "Поделитесь своим историческим открытием с миром",
   "instagramLabel": "Instagram",
   "tiktokLabel": "TikTok",
   "savedLabelShort": "Сохранено",
-  "sharePlatformCaptionInstagram": "Исследую {placeName} в AR с #HiddenGemsSL",
-  "@sharePlatformCaptionInstagram": {
-    "placeholders": {
-      "placeName": {
-        "type": "String"
-      }
-    }
-  },
-  "sharePlatformCaptionTiktok": "История оживает! #HiddenGemsSL #HeritageAR",
   "photoSavedGalleryMessage": "Фото сохранено в вашу галерею!",
-  "backToArButton": "Назад к AR",
-  "distanceToTargetLabel": "{distance} м до {placeName}",
-  "@distanceToTargetLabel": {
-    "placeholders": {
-      "distance": {
-        "type": "String"
-      },
-      "placeName": {
-        "type": "String"
-      }
-    }
-  },
   "recommendedLabel": "РЕКОМЕНДУЕТСЯ",
   "categoryRatingLabel": "{category} • {rating} ★",
   "@categoryRatingLabel": {
@@ -2712,12 +2248,9 @@
     }
   },
   "viewButtonUppercase": "СМОТРЕТЬ",
-  "loginToLeaveMemoryMessage": "Войдите, чтобы оставить AR-воспоминание!",
-  "leaveArMemoryTitle": "Оставить AR-воспоминание",
   "whatDoYouSeeHereHint": "Что вы здесь видите?",
   "cancelButton2": "Отмена",
   "dropButton": "Оставить",
-  "memoryDroppedMessage": "Воспоминание оставлено в AR-вселенной!",
   "explorerFallback": "Исследователь",
   "signalPercentLabel": "СИГНАЛ: {percent}%",
   "@signalPercentLabel": {
@@ -2727,17 +2260,9 @@
       }
     }
   },
-  "searchingLabel": "ПОИСК...",
   "cameraAccessNeededTitle": "Требуется доступ к камере",
-  "arNotAvailableDeviceTitle": "AR недоступен на этом устройстве",
-  "arCouldntLoadTitle": "На этот раз AR не загрузился",
-  "cameraAccessNeededMessage": "Для функций AR требуется доступ к камере. Вместо этого — кинематографичная реконструкция.",
-  "arNotAvailableMessage": "Вместо этого — кинематографичный 360°-обзор той же эпохи.",
-  "arCouldntLoadMessage": "Не удалось загрузить историческую 3D-модель. Вместо этого — кинематографичный резервный просмотр.",
   "closeButtonLabel": "Закрыть",
   "watchAdToUnlockButton": "Посмотреть рекламу, чтобы разблокировать",
-  "oracleRewardFallbackMessage": "✨ Награда оракула активна! Резервные режимы и премиум-контент разблокированы.",
-  "arNotAvailableInfoBarMessage": "AR недоступен на этом устройстве · Показан 360°-обзор",
   "cinematicPreviewUnavailableMessage": "Кинематографичный предпросмотр недоступен",
   "interactive3dViewTitle": "Интерактивный 3D-просмотр",
   "touchToRotateMonumentMessage": "Коснитесь, чтобы повернуть памятник",
@@ -2758,23 +2283,15 @@
       }
     }
   },
-  "listenToNarrationLabel": "Слушать нарратив",
   "sinhalaEnglishAvailableLabel": "Доступны сингальский и английский",
   "illustrationCaptionLabel": "Иллюстрация: Древняя инженерия (концепт-арт)",
-  "mode360Label": "360°",
   "mode3dLabel": "3D",
   "modeStoryLabel": "История",
-  "unlockArHeritageModeTitle": "Разблокировать режим AR-наследия",
-  "arHeritageModeSubtitle": "Ощутите Шри-Ланку такой, какой она выглядела тысячи лет назад.",
-  "featureAncient3dReconstruction": "Древняя 3D-реконструкция",
-  "featureAudioNarrationBilingual": "Аудионарратив (සිංහල / English)",
-  "featureArPhotoCapture": "AR-фотосъёмка и обмен в соцсетях",
   "pricingTrialLabel": "Бесплатный пробный период, если доступен в магазине",
   "upgradeToPremiumButton": "Перейти на Премиум",
   "watch10SecPreviewButton": "Посмотреть 10-секундный превью",
   "watchAdUnlockSessionButton": "Посмотреть рекламу, чтобы разблокировать сессию",
   "notNowButtonLabel": "Не сейчас",
-  "ancientArtifactsLabel": "ДРЕВНИЕ АРТЕФАКТЫ",
   "adminGuideVerificationTile": "Верификация гидов",
   "adminVerificationConsoleTitle": "Консоль верификации",
   "pendingReviewsSubtitle": "Просмотр поданных заявок гидов и документов.",
@@ -2836,8 +2353,6 @@
   "selectExpiryDateButton": "Выбрать дату окончания лицензии",
   "languagesSectionTitle": "Разговорные языки",
   "tourTypesSectionTitle": "Предлагаемые туры",
-  "tourTypeBoatSafari": "Лодочное сафари",
-  "tourTypeWildlifeSafari": "Сафари по дикой природе",
   "tourTypeHiking": "Пешие походы",
   "tourTypeDiving": "Дайвинг",
   "tourTypeCulturalTours": "Культурные туры",
@@ -2845,14 +2360,12 @@
   "reportReviewSubtitle": "Почему вы жалуетесь на этот отзыв?",
   "reportReasonInappropriate": "Неприемлемый контент",
   "reportReasonSpam": "Спам",
-  "reportReasonHarassment": "Оскорбления",
   "reportReasonOther": "Другое",
   "reportSubmittedMessage": "Спасибо — жалоба на этот отзыв отправлена на модерацию.",
   "reportFailedMessage": "Не удалось отправить жалобу на этот отзыв. Пожалуйста, попробуйте снова.",
   "filterSheetTitle": "Фильтр гидов",
   "filterHasVehicle": "Есть автомобиль",
   "filterApplyButton": "Применить фильтры",
-  "filterClearButton": "Очистить",
   "filterRegionLabel": "Регион",
   "filterLanguageLabel": "Язык",
   "receiptTitleLabel": "Payment Receipt",
@@ -2862,18 +2375,8 @@
   "receiptPaymentIdLabel": "Payment ID",
   "receiptTotalPaidLabel": "Total paid",
   "featureNameOracleQueries": "Oracle Queries",
-  "arComingSoonTitle": "AR Experience Coming Soon",
-  "arComingSoonMessage": "We're putting the finishing touches on the AR experience for {placeName}. Check back in a future update.",
-  "@arComingSoonMessage": {
-    "placeholders": {
-      "placeName": {
-        "type": "String"
-      }
-    }
-  },
   "sosDispatchMessage": "ЭКСТРЕННАЯ СИТУАЦИЯ: Мне нужна помощь. Мое местоположение: {mapUrl} (Отправлено через Hidden Gems SL)",
   "sosFailedAppLaunch": "Не удалось открыть приложение телефона или SMS. Позвоните 119 или 1990 прямо сейчас.",
-  "weatherConditionClear": "Ясно",
   "weatherConditionClouds": "Облачно",
   "weatherConditionRain": "Дождь",
   "weatherConditionThunderstorm": "Гроза",
@@ -2881,13 +2384,12 @@
   "weatherConditionMist": "Туман",
   "rainSafetyAdvisory": "Предупреждение о дожде и грозе: возьмите зонт и соблюдайте осторожность на извилистых дорогах.",
   "moreToolsTitle": "Дополнительные инструменты",
-  "moreToolsSubtitle": "Food AI, AR, Оракул, Паспорт и Бюджет",
+  "moreToolsSubtitle": "Food AI, Оракул, Паспорт и Бюджет",
   "savedPlacesHubTitle": "Сохраненные места и список желаний",
   "savedPlacesHubSubtitle": "Закладки, хочу посетить и история",
   "mapActionLabel": "Карта",
   "safetyActionLabel": "Безопасность",
   "foodScannerTooltip": "Сканер еды",
-  "familyShareTitle": "Семейный доступ",
   "waterSafetyTitle": "Питьевая вода и местные напитки",
   "waterSafetySubtitle": "Местные напитки и осторожные рекомендации по воде",
   "drinkLocalHeroTitle": "Натуральные электролитные напитки Шри-Ланки",
@@ -2900,7 +2402,6 @@
   "herbalTeaFairPrice": "Уточните текущую цену в LKR",
   "slsCertificationTip": "Проверяйте знак сертификации SLS 894 и целостность кольца на крышке бутылки",
   "iceSafetyTip": "Форма льда не гарантирует безопасность; уточните источник воды или откажитесь от льда",
-  "tapWaterWarning": "Качество воды различается; при сомнении используйте кипячёную, фильтрованную или запечатанную воду",
   "jeewaniTip": "Спросите фармацевта о зарегистрированном ОРС и следуйте инструкции; при тяжёлых симптомах обратитесь к врачу",
   "findSafeWaterAction": "Найти безопасную питьевую воду поблизости",
   "landslideAlertTitle": "Предупреждение об оползнях NBRO",
@@ -2910,12 +2411,8 @@
   "floodRiskTitle": "Предупреждение о паводках в бассейнах рек",
   "floodRiskMsg": "Низменные подъездные дороги могут быть затоплены. Пользуйтесь главными шоссе",
   "disasterHelplineTitle": "Горячая линия Центра управления стихийными бедствиями (DMC): 117",
-  "arModelPlacementFailedMessage": "Не удалось разместить модель — файл может отсутствовать или быть повреждён. Повторите попытку.",
-  "arSessionErrorMessage": "Ошибка AR: {message}",
   "audioGuideUnavailable": "Аудиогид сейчас недоступен. Нажмите, чтобы повторить попытку.",
   "downloadAnywayButtonLabel": "Всё равно скачать",
-  "largeDownloadWarningMessage": "Размер этой 3D-модели около {size} МБ. Загрузка использует мобильный интернет. Продолжить?",
-  "largeDownloadWarningTitle": "Большая загрузка",
   "noGuideListingError": "Гид ещё не настроил профиль. Выберите другого гида.",
   "payNowButtonLabel": "Оплатить сейчас",
   "paymentUnavailableError": "Сейчас оплатить бронирование нельзя. Обновите данные и повторите попытку.",
@@ -2924,5 +2421,211 @@
   "sendQuoteDialogTitle": "Установить цену",
   "landslideAlertSubtitle": "Руководство NBRO по оползням и безопасность при наводнениях",
   "foodSafetyTipsTitle": "Советы по безопасности пищевых продуктов",
-  "foodSafetyDisclaimer": "Только общее руководство; при сохранении симптомов обратитесь к врачу."
+  "foodSafetyDisclaimer": "Только общее руководство; при сохранении симптомов обратитесь к врачу.",
+  "bookmarkedCount": "Закладки ({count})",
+  "@bookmarkedCount": {"placeholders":{"count":{"type":"int"}}},
+  "noBookmarkedPlaces": "Закладок пока нет",
+  "noBookmarkedPlacesHint": "Нажмите значок закладки у места, чтобы сохранить его.",
+  "hydrationSummary": "Местные напитки · бутилированная вода · безопасный лёд",
+  "itinerary": "Маршрут",
+  "nearYou": "Рядом с вами",
+  "searchHint": "Поиск скрытых жемчужин...",
+  "bestNatureNearby": "Лучшая природа рядом",
+  "allNearbyPlacesTitle": "Все места поблизости",
+  "noMatchesNearby": "Поблизости нет совпадений",
+  "parking": "ПАРКОВКА",
+  "travelModeCar": "Car",
+  "nearbyNowLabel": "{km} km away — nearby now",
+  "@nearbyNowLabel": {"placeholders":{"km":{"type":"String"}}},
+  "atLeast6Chars": "Не менее 6 символов",
+  "localGemsNearby": "Местные жемчужины рядом",
+  "searchSecretLocations": "Поиск секретных мест...",
+  "startingPointLabel": "Точка отправления",
+  "startingPointHint": "Аэропорт, Коломбо...",
+  "startDateLabel": "Дата начала",
+  "travelStandardLabel": "Уровень путешествия",
+  "premiumFeatureSnackbar": "{featureName} — это функция Premium.",
+  "@premiumFeatureSnackbar": {"placeholders":{"featureName":{"type":"String"}}},
+  "appearance": "Внешний вид",
+  "themeDark": "Тёмная",
+  "smartExpenseAdvisor": "Умный советник по расходам",
+  "howToEarnPointsHeading": "КАК ЗАРАБОТАТЬ ОЧКИ:",
+  "earnPointsReviewsTitle": "Оставляйте отзывы о местах",
+  "earnPointsReviewsAmount": "+10 очк.",
+  "earnPointsReviewsSubtitle": "Поддержите местных гидов и путешественников",
+  "earnPointsFoodTitle": "Попробуйте местную еду",
+  "earnPointsFoodAmount": "+15 очк.",
+  "earnPointsFoodSubtitle": "Поддержите аутентичные местные заведения",
+  "earnPointsHeritageTitle": "Посещайте объекты наследия",
+  "earnPointsHeritageAmount": "+20 очк.",
+  "earnPointsHeritageSubtitle": "Способствуйте сохранению культуры",
+  "rewardsPerksHeading": "НАГРАДЫ И ПРИВИЛЕГИИ, КОТОРЫЕ ВЫ ОТКРОЕТЕ:",
+  "rewardEcoGuardianBadgeTitle": "Значок Эко-хранителя",
+  "rewardEcoGuardianBadgeSubtitle": "Выделяйтесь в рейтингах и отзывах",
+  "rewardPartnerDiscountsTitle": "Скидки от партнёров",
+  "rewardPartnerDiscountsSubtitle": "Скидка 5-15% в проверенных эко-отелях и кафе",
+  "rewardFreePremiumPerksTitle": "Бесплатные Premium-привилегии",
+  "rewardRealWorldImpactTitle": "Реальное влияние",
+  "rewardRealWorldImpactSubtitle": "Наберите 500 очков, и мы посадим дерево в Шри-Ланке для вас!",
+  "tourDashboard": "Панель тура",
+  "tourDashboardSubtitle": "Активный тур, QR, объявление и безопасность",
+  "earnings": "Заработок",
+  "earningsSubtitle": "Выплаты и статистика",
+  "familySharing": "Семейный доступ",
+  "shareAppMessage": "Присоединяйтесь к Hidden Gems SL! 🌍 https://hiddengems.lk",
+  "shareAppSubject": "Присоединяйтесь ко мне в Hidden Gems SL!",
+  "landmarkScannerTitle": "Сканер достопримечательностей",
+  "analyzeLandmarkButton": "Анализировать достопримечательность",
+  "unlockLandmarkScanningTitle": "Разблокировать сканирование достопримечательностей",
+  "unlockLandmarkScanningSubtitle": "Наведите камеру на любое место, чтобы раскрыть его скрытую историю.",
+  "guideLiveMarkerLabel": "ВАШ ГИД (В РЕАЛЬНОМ ВРЕМЕНИ)",
+  "vehicleMarkerLabel": "ВАШ ТРАНСПОРТ",
+  "meetingPointMarkerLabel": "МЕСТО ВСТРЕЧИ: {pointName}",
+  "@meetingPointMarkerLabel": {"placeholders":{"pointName":{"type":"String"}}},
+  "mapMarkerDaySnippet": "День {day} • {time}",
+  "@mapMarkerDaySnippet": {"placeholders":{"day":{"type":"int"},"time":{"type":"String"}}},
+  "planRemovedSnackbar": "План удалён из кэша Оракула",
+  "clearSavedTripsTitle": "Очистить сохранённые поездки",
+  "clearSavedTripsMessage": "Это навсегда удалит все сохранённые поездки с этого устройства.",
+  "fieldNotePopularity": "Популярность",
+  "fieldNoteFoodNearby": "Еда поблизости",
+  "fieldNoteWildlifeHazard": "Опасность диких животных",
+  "bookmarkAddedSnackbar": "✨ Отмечено в вашем путешествии!",
+  "bookmarkRemovedSnackbar": "Удалено из закладок.",
+  "itineraryAddedSnackbar": "🗺️ {placeName} добавлено в ваш маршрут судьбы!",
+  "@itineraryAddedSnackbar": {"placeholders":{"placeName":{"type":"String"}}},
+  "itineraryRemovedSnackbar": "Удалено из маршрута.",
+  "bonusSessionUnlockedSnackbar": "Бонусный сеанс разблокирован! Попробуйте запустить снова.",
+  "bonusDownloadUnlockedSnackbar": "Бонусная загрузка разблокирована! Попробуйте загрузить снова.",
+  "calendarEventTitle": "Тур: {touristName} ({guestCount} гостей)",
+  "@calendarEventTitle": {"placeholders":{"touristName":{"type":"String"},"guestCount":{"type":"int"}}},
+  "calendarSyncSuccessMessage": "{count, plural, one{Синхронизировано {count} бронирование с вашим календарём.} few{Синхронизировано {count} бронирования с вашим календарём.} many{Синхронизировано {count} бронирований с вашим календарём.} other{Синхронизировано {count} бронирования с вашим календарём.}}",
+  "@calendarSyncSuccessMessage": {"placeholders":{"count":{"type":"int"}}},
+  "calendarSyncFailedMessage": "Не удалось синхронизировать календарь: {error}",
+  "@calendarSyncFailedMessage": {"placeholders":{"error":{"type":"String"}}},
+  "syncToCalendarTooltip": "Синхронизировать с календарём",
+  "earningsAwaitingConfirmationNote": "{count, plural, one {1 booking} other {{count} bookings}} still awaiting server payout confirmation",
+  "@earningsAwaitingConfirmationNote": {"placeholders":{"count":{"type":"int"}}},
+  "startTourSessionButtonLabel": "Начать / запустить тур-сеанс",
+  "familyShareLinkLimitReached": "⚠️ Вы достигли лимита в {maxLinks} активных ссылок для доступа. Удалите одну, чтобы создать новую.",
+  "@familyShareLinkLimitReached": {"placeholders":{"maxLinks":{"type":"int"}}},
+  "familyShareRecipientNameRequired": "⚠️ Пожалуйста, введите имя получателя.",
+  "familyShareNoActiveSessionError": "⚠️ Сначала начните активный тур-сеанс — пока делиться нечем.",
+  "familyShareLinkGeneratedSuccess": "✅ Ссылка создана для «{name}»!",
+  "@familyShareLinkGeneratedSuccess": {"placeholders":{"name":{"type":"String"}}},
+  "familyShareActiveLinksTitle": "Активные ссылки",
+  "familyShareNewLinkButton": "+ Новая",
+  "familyShareAppBarTitle": "Семейный доступ",
+  "familyShareHeroSubtitle": "Позвольте семье безопасно отслеживать статус вашей поездки",
+  "familyShareNoActiveSessionNotice": "Сейчас нет активного тура — начните или присоединитесь к туру, чтобы создать ссылку для доступа в реальном времени.",
+  "familyShareEmptyStateMessage": "Активные ссылки для доступа не найдены",
+  "familyShareExpiredBadge": "Истекла",
+  "familyShareViewedCountBadge": "Просмотрено {count} раз",
+  "@familyShareViewedCountBadge": {"placeholders":{"count":{"type":"int"}}},
+  "familyShareLinkNoLongerValid": "Больше не действительна",
+  "familyShareLinkExpiresAt": "Истекает {time}",
+  "@familyShareLinkExpiresAt": {"placeholders":{"time":{"type":"String"}}},
+  "familyShareCopyLinkSnackbar": "📋 Код приглашения скопирован в буфер обмена!",
+  "familyShareRemoveLinkDialogTitle": "Удалить ссылку?",
+  "familyShareRemoveLinkDialogBody": "Это отзовёт общий доступ у «{recipientName}».",
+  "@familyShareRemoveLinkDialogBody": {"placeholders":{"recipientName":{"type":"String"}}},
+  "familyShareLinkRemovedSnackbar": "Ссылка для «{recipientName}» удалена.",
+  "@familyShareLinkRemovedSnackbar": {"placeholders":{"recipientName":{"type":"String"}}},
+  "familyShareRemoveButton": "Удалить",
+  "familyShareCreateSheetTitle": "Создать ссылку для доступа",
+  "familyShareRecipientNameLabel": "Имя получателя",
+  "familyShareRecipientNameHint": "Например: мама, папа, домашний офис",
+  "familyShareExpiryLabel": "Срок действия",
+  "familyShareDuration4Hours": "4 часа",
+  "familyShareDuration12Hours": "12 часов",
+  "familyShareDuration24Hours": "24 часа",
+  "familyShareToggleStatusLabel": "Делиться статусом в реальном времени",
+  "familyShareToggleIdentityLabel": "Делиться данными гида",
+  "familyShareToggleMeetingPointLabel": "Делиться местом встречи",
+  "familyShareToggleEmergencyLabel": "Делиться экстренными оповещениями",
+  "familyShareGenerateLinkButton": "Создать ссылку",
+  "marketplaceSearchHint": "Поиск по имени, языку или городу...",
+  "vehiclePositionMarkedMessage": "Местоположение транспорта отмечено",
+  "tourDashboardTitle": "Панель тура",
+  "startTourSessionButton": "Начать сессию тура",
+  "tourSessionStartedMessage": "🚀 Сессия тура начата!",
+  "markVehicleButton": "Отметить транспорт",
+  "weatherHazardLoggedMessage": "✅ Погодная опасность зафиксирована в Консоли безопасности!",
+  "earningsTitle": "Доходы",
+  "pleaseLogInViewEarningsMessage": "Войдите в аккаунт, чтобы просматривать доходы.",
+  "totalNetEarningsLabel": "Общий чистый доход",
+  "guestCountParenthesesLabel": "{count} гостей",
+  "@guestCountParenthesesLabel": {"placeholders":{"count":{"type":"int"}}},
+  "shareLocalKnowledgeTitle": "Поделитесь своими знаниями о местности",
+  "guideTravelersEarnSubtitle": "Сопровождайте путешественников и зарабатывайте по собственному графику.",
+  "broadcastTypeDeparture": "Отправление",
+  "standardPackageLabel": "Стандартный пакет",
+  "yearsExperienceLabel": "{years} лет",
+  "@yearsExperienceLabel": {"placeholders":{"years":{"type":"String"}}},
+  "primaryCategoryLabel": "Основная категория",
+  "availabilityCalendarTitle": "Календарь доступности",
+  "sessionWithinSafetyParamsMessage": "Работа сессии находится в пределах параметров безопасности.",
+  "medicalFacilitiesNearbyTitle": "Медицинские учреждения поблизости",
+  "privateGuardiansTitle": "Личные опекуны",
+  "noGuardiansAssignedMessage": "Опекуны не назначены. Сигналы будут по умолчанию направляться в экстренные службы.",
+  "nearestHospitalTitle": "Ближайшая больница, где бы вы ни находились",
+  "findNearestHospitalButton": "Найти ближайшую больницу на карте",
+  "addGuardianTitle": "Добавить опекуна",
+  "guardianPhoneNumberHint": "Номер телефона опекуна",
+  "addGuardianButton": "Добавить опекуна",
+  "sosAlertsPreparedLoggedMessage": "Открыто приложение телефона/SMS. Завершите звонок или нажмите «Отправить»; экстренные службы не вызываются автоматически.",
+  "monsoonHazardAlertTitle": "ПРЕДУПРЕЖДЕНИЕ О МУССОННОЙ ОПАСНОСТИ",
+  "preparingTourTitle": "Подготовка тура",
+  "parkedSpotLabel": "Место парковки",
+  "shareLiveLabel": "Поделиться в реальном времени",
+  "categoryParty": "Вечеринка",
+  "failedToShareTimelineMessage": "Не удалось поделиться хронологией: {error}",
+  "@failedToShareTimelineMessage": {"placeholders":{"error":{"type":"String"}}},
+  "hazardWarningMessage": "🚨 ПРЕДУПРЕЖДЕНИЕ ОБ ОПАСНОСТИ: {message}",
+  "@hazardWarningMessage": {"placeholders":{"message":{"type":"String"}}},
+  "totalSpentSoFarLabel": "Всего потрачено на данный момент",
+  "startedLabel": "НАЧАЛО",
+  "featureStandardSos": "Стандартный SOS",
+  "featureOperatorDashboard": "Панель оператора",
+  "mostPopularLabel": "Самый популярный",
+  "guardianEmergencyTranslatorTitle": "Guardian — переводчик для экстренных ситуаций",
+  "guardianEmergencyTranslatorDescription": "Мгновенно объясните вашу ситуацию шри-ланкийской полиции или персоналу больницы на разговорном сингальском во время SOS.",
+  "smartTravelerTitle": "Smart Traveler",
+  "featureAiItineraries20": "20 AI-маршрутов в месяц",
+  "billedYearlySaveLabel": "Оплата ежегодно · экономия ~17%",
+  "featureUnlimitedAiItineraries": "Неограниченные AI-маршруты",
+  "yearlySaveLabel": "Ежегодно · Экономия 17%",
+  "trialYearsLabel": "{count, plural, one{Бесплатная пробная версия на 1 год} few{Бесплатная пробная версия на {count} года} many{Бесплатная пробная версия на {count} лет} other{Бесплатная пробная версия на {count} года}}",
+  "@trialYearsLabel": {"placeholders":{"count":{"type":"int"}}},
+  "culinaryVisionEngineLabel": "КУЛИНАРНЫЙ ВИЖН-ДВИЖОК V2",
+  "aiVisualMarkersFallback": "ИИ определил визуальные кулинарные признаки, соответствующие {label}.",
+  "@aiVisualMarkersFallback": {"placeholders":{"label":{"type":"String"}}},
+  "manualCulinaryOverrideTitle": "РУЧНАЯ КУЛИНАРНАЯ КОРРЕКТИРОВКА",
+  "heritageNarrativeEngineTitle": "ДВИЖОК ИСТОРИЧЕСКОГО ПОВЕСТВОВАНИЯ",
+  "folkloreNarrativeTitle": "ФОЛЬКЛОРНОЕ ПОВЕСТВОВАНИЕ",
+  "culinaryGapPairingEngineTitle": "ДВИЖОК СОЧЕТАНИЙ И НЕДОСТАЮЩИХ БЛЮД",
+  "carbsLabel": "Углеводы",
+  "savorLankaShareText": "Посмотрите рецепт {name}, который я нашёл в Hidden Gems SL.ai! Это настоящий шри-ланкийский деликатес. \n\nОценка оракула: {score}%",
+  "@savorLankaShareText": {"placeholders":{"name":{"type":"String"},"score":{"type":"String"}}},
+  "savorLankaShareSubject": "Hidden Gems SL.ai — рецепт Savor Lanka",
+  "visuallySimilarAlternativesLabel": "ВИЗУАЛЬНО ПОХОЖИЕ АЛЬТЕРНАТИВЫ",
+  "popularLabel": "Популярный",
+  "newPartnerDiscountsMessage": "Новые скидки от партнёров добавляются регулярно — загляните позже.",
+  "shareCollectibleButton": "Поделиться коллекционным предметом",
+  "shareCollectibleMessage": "I just earned the {placeName} heritage stamp ({rarity}) on Hidden Gems SL!",
+  "@shareCollectibleMessage": {"placeholders":{"placeName":{"type":"String"},"rarity":{"type":"String"}}},
+  "stampRarityCommon": "Обычный",
+  "stampRarityRare": "Редкий",
+  "stampRarityMythic": "Мифический",
+  "groupTourStartedCodeLabel": "Групповой тур начался! Код: {code}",
+  "@groupTourStartedCodeLabel": {"placeholders":{"code":{"type":"String"}}},
+  "ptsRarityLabel": "+{points} ОЧК • {rarity}",
+  "@ptsRarityLabel": {"placeholders":{"points":{"type":"int"},"rarity":{"type":"String"}}},
+  "tourTypeBoatSafari": "Лодочное сафари",
+  "tourTypeWildlifeSafari": "Сафари по дикой природе",
+  "reportReasonHarassment": "Оскорбления",
+  "filterClearButton": "Очистить",
+  "weatherConditionClear": "Ясно",
+  "familyShareTitle": "Семейный доступ",
+  "tapWaterWarning": "Качество воды различается; при сомнении используйте кипячёную, фильтрованную или запечатанную воду"
 }

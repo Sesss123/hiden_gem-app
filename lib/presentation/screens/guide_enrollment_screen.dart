@@ -108,6 +108,8 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
       final XFile? image = await _picker.pickImage(
         source: source,
         imageQuality: 70,
+        maxWidth: 2048,
+        maxHeight: 2048,
         preferredCameraDevice:
             type == 'selfie' ? CameraDevice.front : CameraDevice.rear,
       );
@@ -163,18 +165,21 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
             ),
             const SizedBox(height: 32),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                _photoOption(
-                    Icons.camera_alt_outlined,
-                    AppLocalizations.of(context)!.cameraOptionLabel,
-                    ImageSource.camera,
-                    type),
-                _photoOption(
-                    Icons.photo_library_outlined,
-                    AppLocalizations.of(context)!.galleryOptionLabel,
-                    ImageSource.gallery,
-                    type),
+                Expanded(
+                  child: _photoOption(
+                      Icons.camera_alt_outlined,
+                      AppLocalizations.of(context)!.cameraOptionLabel,
+                      ImageSource.camera,
+                      type),
+                ),
+                Expanded(
+                  child: _photoOption(
+                      Icons.photo_library_outlined,
+                      AppLocalizations.of(context)!.galleryOptionLabel,
+                      ImageSource.gallery,
+                      type),
+                ),
               ],
             ),
             const SizedBox(height: 16),
@@ -204,6 +209,9 @@ class _GuideEnrollmentScreenState extends State<GuideEnrollmentScreen> {
           const SizedBox(height: 12),
           Text(
             label,
+            textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
             style: GoogleFonts.inter(
               color: AppTheme.textSecondary(context),
               fontSize: 11,

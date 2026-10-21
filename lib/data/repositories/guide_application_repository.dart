@@ -9,6 +9,7 @@ import '../models/guide_status.dart';
 import '../../core/config/app_config.dart';
 import '../../core/network/secure_http_client.dart';
 import '../../core/utils/secure_logger.dart';
+import '../../core/utils/image_upload_validator.dart';
 
 class GuideApplicationRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -21,6 +22,7 @@ class GuideApplicationRepository {
   Future<String?> uploadDocument(
       {required XFile file, required String docType}) async {
     try {
+      await ImageUploadValidator.validate(file);
       final client = SecureHttpClient(http.Client());
       final uri =
           Uri.parse('${AppConfig.laravelUrl}/guide-applications/documents');
@@ -40,10 +42,12 @@ class GuideApplicationRepository {
         return data['data']['full_url'] as String?;
       }
       SecureLogger.error(
-          "Document upload returned status ${response.statusCode}: ${response.body}");
-    } catch (e) {
+          'Document upload returned status ${response.statusCode}');
+    } on ImageValidationException {
+      rethrow;
+    } catch (e, stackTrace) {
       SecureLogger.error(
-          "Failed to upload guide document to Laravel Backend: $e");
+          'Failed to upload guide document to Laravel Backend', e, stackTrace);
     }
     return null;
   }

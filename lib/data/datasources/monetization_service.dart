@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import '../../core/config/app_config.dart';
 import '../../core/utils/secure_logger.dart';
+import '../../core/services/secure_entitlements.dart';
 
 class MonetizationService {
   static final MonetizationService _instance = MonetizationService._internal();
@@ -29,6 +30,20 @@ class MonetizationService {
 
   /// Whether ads are remotely enabled by the administrator.
   bool get isAdsEnabled => _isAdsEnabled;
+
+  static const AdRequest _privacySafeRequest =
+      AdRequest(nonPersonalizedAds: true);
+
+  Future<bool> _isPremiumUser() async {
+    final isPremium = await SecureEntitlements().verifyPremium();
+    if (isPremium) {
+      _interstitialAd?.dispose();
+      _rewardedAd?.dispose();
+      _interstitialAd = null;
+      _rewardedAd = null;
+    }
+    return isPremium;
+  }
 
   void _applyAdsEnabled(bool enabled) {
     if (_isAdsEnabled == enabled) return;
@@ -56,7 +71,8 @@ class MonetizationService {
 
       // 2. Query remote endpoint with a quick 4s timeout
       final remoteUrl = Uri.parse('${AppConfig.laravelUrl}/config/ads');
-      final response = await (client?.get(remoteUrl) ?? http.get(remoteUrl)).timeout(const Duration(seconds: 4));
+      final response = await (client?.get(remoteUrl) ?? http.get(remoteUrl))
+          .timeout(const Duration(seconds: 4));
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -64,15 +80,18 @@ class MonetizationService {
           final remoteEnabled = data['ads_enabled'] == true;
           _applyAdsEnabled(remoteEnabled);
           await prefs.setBool(_prefAdsEnabledKey, remoteEnabled);
-          debugPrint("[MonetizationService] Remote Ads Master Switch: ${_isAdsEnabled ? 'ENABLED (ON)' : 'DISABLED (OFF)'}");
+          debugPrint(
+              "[MonetizationService] Remote Ads Master Switch: ${_isAdsEnabled ? 'ENABLED (ON)' : 'DISABLED (OFF)'}");
         }
       }
     } catch (e) {
-      SecureLogger.info("[MonetizationService] Remote ads config fetch fallback to cache: $e");
+      SecureLogger.info(
+          "[MonetizationService] Remote ads config fetch fallback to cache: $e");
     }
   }
 
-  void startRemoteConfigPolling({Duration interval = const Duration(seconds: 30)}) {
+  void startRemoteConfigPolling(
+      {Duration interval = const Duration(seconds: 30)}) {
     _remoteConfigTimer?.cancel();
     _remoteConfigTimer = Timer.periodic(interval, (_) => syncRemoteAdConfig());
   }
@@ -108,33 +127,49 @@ class MonetizationService {
     if (!_isAdsEnabled) return false;
     if (_interstitialShownThisSession >= _interstitialSessionCap) return false;
     if (_lastInterstitialShownAt != null &&
-        DateTime.now().difference(_lastInterstitialShownAt!) < _interstitialMinGap) {
+        DateTime.now().difference(_lastInterstitialShownAt!) <
+            _interstitialMinGap) {
       return false;
     }
     return true;
   }
 
   // Real Ad Units would go here. For dev, we use test IDs.
-  String get bannerAdUnitId => kDebugMode 
-    ? ((!kIsWeb && defaultTargetPlatform == TargetPlatform.android) ? 'ca-app-pub-3940256099942544/6300978111' : 'ca-app-pub-3940256099942544/2934735716')
-    : const String.fromEnvironment('ADMOB_BANNER_ID', defaultValue: 'YOUR_REAL_BANNER_ID');
+  String get bannerAdUnitId => kDebugMode
+      ? ((!kIsWeb && defaultTargetPlatform == TargetPlatform.android)
+          ? 'ca-app-pub-3940256099942544/6300978111'
+          : 'ca-app-pub-3940256099942544/2934735716')
+      : const String.fromEnvironment('ADMOB_BANNER_ID',
+          defaultValue: 'YOUR_REAL_BANNER_ID');
 
   String get interstitialAdUnitId => kDebugMode
-    ? ((!kIsWeb && defaultTargetPlatform == TargetPlatform.android) ? 'ca-app-pub-3940256099942544/1033173712' : 'ca-app-pub-3940256099942544/4411468910')
-    : const String.fromEnvironment('ADMOB_INTERSTITIAL_ID', defaultValue: 'YOUR_REAL_INTERSTITIAL_ID');
+      ? ((!kIsWeb && defaultTargetPlatform == TargetPlatform.android)
+          ? 'ca-app-pub-3940256099942544/1033173712'
+          : 'ca-app-pub-3940256099942544/4411468910')
+      : const String.fromEnvironment('ADMOB_INTERSTITIAL_ID',
+          defaultValue: 'YOUR_REAL_INTERSTITIAL_ID');
 
   String get rewardedAdUnitId => kDebugMode
-    ? ((!kIsWeb && defaultTargetPlatform == TargetPlatform.android) ? 'ca-app-pub-3940256099942544/5224354917' : 'ca-app-pub-3940256099942544/1712485313')
-    : const String.fromEnvironment('ADMOB_REWARDED_ID', defaultValue: 'YOUR_REAL_REWARDED_ID');
+      ? ((!kIsWeb && defaultTargetPlatform == TargetPlatform.android)
+          ? 'ca-app-pub-3940256099942544/5224354917'
+          : 'ca-app-pub-3940256099942544/1712485313')
+      : const String.fromEnvironment('ADMOB_REWARDED_ID',
+          defaultValue: 'YOUR_REAL_REWARDED_ID');
 
   String get nativeAdUnitId => kDebugMode
-    ? ((!kIsWeb && defaultTargetPlatform == TargetPlatform.android) ? 'ca-app-pub-3940256099942544/2247696110' : 'ca-app-pub-3940256099942544/3986624511')
-    : const String.fromEnvironment('ADMOB_NATIVE_ID', defaultValue: 'YOUR_REAL_NATIVE_ID');
+      ? ((!kIsWeb && defaultTargetPlatform == TargetPlatform.android)
+          ? 'ca-app-pub-3940256099942544/2247696110'
+          : 'ca-app-pub-3940256099942544/3986624511')
+      : const String.fromEnvironment('ADMOB_NATIVE_ID',
+          defaultValue: 'YOUR_REAL_NATIVE_ID');
 
   // --- Banner Ads ---
   Future<BannerAd> createBannerAd() async {
     if (!_isAdsEnabled) {
       throw Exception("Advertisements are remotely paused by administrator.");
+    }
+    if (await _isPremiumUser()) {
+      throw StateError('Advertisements are disabled for premium users.');
     }
 
     int retryCount = 0;
@@ -143,7 +178,7 @@ class MonetizationService {
       final ad = BannerAd(
         adUnitId: bannerAdUnitId,
         size: AdSize.banner,
-        request: const AdRequest(),
+        request: _privacySafeRequest,
         listener: BannerAdListener(
           onAdLoaded: (ad) => completer.complete(ad as BannerAd),
           onAdFailedToLoad: (ad, error) {
@@ -163,7 +198,8 @@ class MonetizationService {
           rethrow;
         }
         final delaySeconds = 1 << retryCount; // Exponential backoff: 2s, 4s, 8s
-        debugPrint("Banner Ad load failed ($e). Retrying in ${delaySeconds}s (attempt $retryCount/3)...");
+        debugPrint(
+            "Banner Ad load failed ($e). Retrying in ${delaySeconds}s (attempt $retryCount/3)...");
         await Future.delayed(Duration(seconds: delaySeconds));
       }
     }
@@ -171,10 +207,15 @@ class MonetizationService {
   }
 
   // --- Native Ads ---
-  Future<NativeAd> createNativeAd({required Function() onAdLoaded, required Function() onAdFailed}) async {
+  Future<NativeAd> createNativeAd(
+      {required Function() onAdLoaded, required Function() onAdFailed}) async {
     if (!_isAdsEnabled) {
       onAdFailed();
       throw Exception("Advertisements are remotely paused by administrator.");
+    }
+    if (await _isPremiumUser()) {
+      onAdFailed();
+      throw StateError('Advertisements are disabled for premium users.');
     }
 
     int retryCount = 0;
@@ -183,7 +224,7 @@ class MonetizationService {
       final ad = NativeAd(
         adUnitId: nativeAdUnitId,
         factoryId: 'adFactoryExample',
-        request: const AdRequest(),
+        request: _privacySafeRequest,
         listener: NativeAdListener(
           onAdLoaded: (ad) {
             debugPrint("Native Ad Loaded");
@@ -209,7 +250,8 @@ class MonetizationService {
           rethrow;
         }
         final delaySeconds = 1 << retryCount;
-        debugPrint("Native Ad load failed ($e). Retrying in ${delaySeconds}s (attempt $retryCount/3)...");
+        debugPrint(
+            "Native Ad load failed ($e). Retrying in ${delaySeconds}s (attempt $retryCount/3)...");
         await Future.delayed(Duration(seconds: delaySeconds));
       }
     }
@@ -218,12 +260,13 @@ class MonetizationService {
   }
 
   // --- Interstitial Ads ---
-  void loadInterstitialAd() {
+  Future<void> loadInterstitialAd() async {
     if (!_isAdsEnabled) return;
+    if (await _isPremiumUser()) return;
 
     InterstitialAd.load(
       adUnitId: interstitialAdUnitId,
-      request: const AdRequest(),
+      request: _privacySafeRequest,
       adLoadCallback: InterstitialAdLoadCallback(
         onAdLoaded: (ad) {
           _interstitialAd = ad;
@@ -234,12 +277,14 @@ class MonetizationService {
           if (_interstitialRetryCount < 3) {
             _interstitialRetryCount++;
             final delaySeconds = 1 << _interstitialRetryCount;
-            debugPrint("Retrying Interstitial ad load in ${delaySeconds}s (attempt $_interstitialRetryCount/3)...");
+            debugPrint(
+                "Retrying Interstitial ad load in ${delaySeconds}s (attempt $_interstitialRetryCount/3)...");
             Future.delayed(Duration(seconds: delaySeconds), () {
               loadInterstitialAd();
             });
           } else {
-            debugPrint("Interstitial ad load failed after 3 retries. Stopping pre-load attempts.");
+            debugPrint(
+                "Interstitial ad load failed after 3 retries. Stopping pre-load attempts.");
           }
         },
       ),
@@ -249,10 +294,12 @@ class MonetizationService {
   /// Shows an interstitial IF ads are active, frequency caps allow, AND one is preloaded.
   /// Returns false (and shows nothing) when capped or ads disabled — callers should treat a
   /// false as "carry on, no ad" rather than an error.
-  Future<bool> showInterstitialAd({BuildContext? context, bool respectFrequencyCap = true}) async {
+  Future<bool> showInterstitialAd(
+      {BuildContext? context, bool respectFrequencyCap = true}) async {
     if (!_isAdsEnabled) {
       return false; // Zero ads shown when toggled off
     }
+    if (await _isPremiumUser()) return false;
 
     if (respectFrequencyCap && !canShowInterstitial) {
       return false; // Too soon / session cap hit — skip silently, no annoyance.
@@ -281,9 +328,11 @@ class MonetizationService {
       _interstitialAd = null;
       return await completer.future;
     } else {
-      if (context != null) {
+      if (context != null && context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Aethereal connection buffering... Please wait for ad to preload.")),
+          const SnackBar(
+              content: Text(
+                  "Aethereal connection buffering... Please wait for ad to preload.")),
         );
       }
       loadInterstitialAd();
@@ -292,12 +341,13 @@ class MonetizationService {
   }
 
   // --- Rewarded Ads ---
-  void loadRewardedAd() {
+  Future<void> loadRewardedAd() async {
     if (!_isAdsEnabled) return;
+    if (await _isPremiumUser()) return;
 
     RewardedAd.load(
       adUnitId: rewardedAdUnitId,
-      request: const AdRequest(),
+      request: _privacySafeRequest,
       rewardedAdLoadCallback: RewardedAdLoadCallback(
         onAdLoaded: (ad) {
           _rewardedAd = ad;
@@ -308,12 +358,14 @@ class MonetizationService {
           if (_rewardedRetryCount < 3) {
             _rewardedRetryCount++;
             final delaySeconds = 1 << _rewardedRetryCount;
-            debugPrint("Retrying Rewarded ad load in ${delaySeconds}s (attempt $_rewardedRetryCount/3)...");
+            debugPrint(
+                "Retrying Rewarded ad load in ${delaySeconds}s (attempt $_rewardedRetryCount/3)...");
             Future.delayed(Duration(seconds: delaySeconds), () {
               loadRewardedAd();
             });
           } else {
-            debugPrint("Rewarded ad load failed after 3 retries. Stopping pre-load attempts.");
+            debugPrint(
+                "Rewarded ad load failed after 3 retries. Stopping pre-load attempts.");
           }
         },
       ),
@@ -321,12 +373,19 @@ class MonetizationService {
   }
 
   /// Shows a rewarded ad. If ads are turned OFF from the Admin Panel, automatically
-  /// grants the reward immediately so the tourist is never locked out of AR/AI features!
-  Future<bool> showRewardedAd({required Function(RewardItem) onRewardEarned, BuildContext? context}) async {
+  /// grants the reward immediately so the tourist is never locked out of metered features.
+  Future<bool> showRewardedAd(
+      {required Function(RewardItem) onRewardEarned,
+      BuildContext? context}) async {
     // If ads are remotely turned OFF, automatically grant reward without showing an ad!
     if (!_isAdsEnabled) {
-      debugPrint("[MonetizationService] Ads are turned OFF: Granting reward automatically without ad!");
+      debugPrint(
+          "[MonetizationService] Ads are turned OFF: Granting reward automatically without ad!");
       onRewardEarned(RewardItem(1, 'bonus_unlocked'));
+      return true;
+    }
+    if (await _isPremiumUser()) {
+      onRewardEarned(RewardItem(1, 'premium_bonus_unlocked'));
       return true;
     }
 
@@ -348,13 +407,16 @@ class MonetizationService {
           });
         },
       );
-      _rewardedAd!.show(onUserEarnedReward: (ad, reward) => onRewardEarned(reward));
+      _rewardedAd!
+          .show(onUserEarnedReward: (ad, reward) => onRewardEarned(reward));
       _rewardedAd = null;
       return await completer.future;
     } else {
-      if (context != null) {
+      if (context != null && context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Oracle reward loading... Please try again in a moment.")),
+          const SnackBar(
+              content: Text(
+                  "Oracle reward loading... Please try again in a moment.")),
         );
       }
       loadRewardedAd();
@@ -372,7 +434,8 @@ class MonetizationService {
     Duration timeout = const Duration(seconds: 10),
   }) async {
     if (_verifiedReceiptSignatures.contains(signature)) {
-      debugPrint("[MonetizationService] Security Alert: Replay attack detected! Receipt signature already verified: $signature");
+      debugPrint(
+          "[MonetizationService] Security Alert: Replay attack detected! Receipt signature already verified: $signature");
       return false;
     }
 
@@ -387,7 +450,8 @@ class MonetizationService {
       }).timeout(
         timeout,
         onTimeout: () {
-          debugPrint("[MonetizationService] Receipt verification timed out after ${timeout.inSeconds}s.");
+          debugPrint(
+              "[MonetizationService] Receipt verification timed out after ${timeout.inSeconds}s.");
           return false;
         },
       );

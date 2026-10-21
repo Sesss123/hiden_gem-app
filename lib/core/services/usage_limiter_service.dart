@@ -11,7 +11,7 @@ class UsageLimiterService {
 
   // Plan limits (Firestore `plans/{planId}`) change only when an admin
   // edits a tier — not per-user, not per-action. Caching them in memory
-  // avoids a fresh Firestore read on every AI-trip/AR-session/offline-download
+  // avoids a fresh Firestore read on every AI-trip/offline-download
   // check and every UsageMeterWidget mount, which otherwise re-fetches the
   // same 3 possible plan docs constantly within a session.
   static final Map<String, Map<String, dynamic>> _planLimitsCache = {};
@@ -33,21 +33,18 @@ class UsageLimiterService {
       'ai_plans_per_month': 3,
       'saved_plans': 2,
       'offline_downloads_per_month': 2,
-      'ar_sessions_per_month': 1,
       'oracle_chats_per_month': 10,
     },
     'explorer': {
       'ai_plans_per_month': 20,
       'saved_plans': 10,
       'offline_downloads_per_month': 10,
-      'ar_sessions_per_month': 3,
       'oracle_chats_per_month': 40,
     },
     'premium': {
       'ai_plans_per_month': 50,
       'saved_plans': 25,
       'offline_downloads_per_month': 9999, // Unlimited
-      'ar_sessions_per_month': 9999, // Unlimited
       'oracle_chats_per_month': 9999, // Unlimited
     }
   };
@@ -56,11 +53,12 @@ class UsageLimiterService {
   static Future<void> checkAndResetLimits(UserProfile profile) async {
     final now = DateTime.now();
 
-    if (profile.usageResetDate == null || now.isAfter(profile.usageResetDate!)) {
-      debugPrint("UsageLimiterService: Resetting counters for new billing period.");
-      
+    if (profile.usageResetDate == null ||
+        now.isAfter(profile.usageResetDate!)) {
+      debugPrint(
+          "UsageLimiterService: Resetting counters for new billing period.");
+
       profile.aiTripsUsedThisMonth = 0;
-      profile.arSessionsUsedThisMonth = 0;
       profile.offlineDownloadsUsed = 0;
       profile.oracleChatsUsedThisMonth = 0;
 
@@ -74,7 +72,6 @@ class UsageLimiterService {
       if (user != null) {
         await _firestore.collection('users').doc(user.uid).update({
           'aiTripsUsedThisMonth': 0,
-          'arSessionsUsedThisMonth': 0,
           'offlineDownloadsUsed': 0,
           'oracleChatsUsedThisMonth': 0,
           'usageResetDate': profile.usageResetDate?.toIso8601String(),
@@ -102,9 +99,11 @@ class UsageLimiterService {
   }
 
   /// Get the limit mapped to the current plan role
-  static Future<int> _getLimitForFeature(String featureKey, UserProfile profile) async {
+  static Future<int> _getLimitForFeature(
+      String featureKey, UserProfile profile) async {
     final bool hasValidPremium = await _isPremiumValid(profile);
-    final String effectivePlan = hasValidPremium ? _planKeyFor(profile.premiumPlan) : 'user';
+    final String effectivePlan =
+        hasValidPremium ? _planKeyFor(profile.premiumPlan) : 'user';
 
     final limits = await _getPlanLimits(effectivePlan);
     if (limits != null && limits.containsKey(featureKey)) {
@@ -112,7 +111,8 @@ class UsageLimiterService {
     }
 
     // Fallback if remote fetch fails
-    final fallbackPlan = _defaultLimits.containsKey(effectivePlan) ? effectivePlan : 'user';
+    final fallbackPlan =
+        _defaultLimits.containsKey(effectivePlan) ? effectivePlan : 'user';
     return _defaultLimits[fallbackPlan]![featureKey];
   }
 
@@ -120,21 +120,25 @@ class UsageLimiterService {
   /// fresh. Falls back to Firestore on a cache miss/expiry.
   static Future<Map<String, dynamic>?> _getPlanLimits(String planId) async {
     final cachedAt = _planLimitsCachedAt[planId];
-    if (cachedAt != null && DateTime.now().difference(cachedAt) < _planLimitsCacheWindow) {
+    if (cachedAt != null &&
+        DateTime.now().difference(cachedAt) < _planLimitsCacheWindow) {
       return _planLimitsCache[planId];
     }
 
     try {
       final doc = await _firestore.collection('plans').doc(planId).get();
-      final limits = doc.exists ? (doc.data()?['limits'] as Map<String, dynamic>?) : null;
+      final limits =
+          doc.exists ? (doc.data()?['limits'] as Map<String, dynamic>?) : null;
       if (limits != null) {
         _planLimitsCache[planId] = limits;
         _planLimitsCachedAt[planId] = DateTime.now();
       }
       return limits;
     } catch (e) {
-      debugPrint("UsageLimiterService: Fallback triggered. Error fetching Firestore limits: $e");
-      return _planLimitsCache[planId]; // Serve stale cache over hitting fallback constants, if we have it
+      debugPrint(
+          "UsageLimiterService: Fallback triggered. Error fetching Firestore limits: $e");
+      return _planLimitsCache[
+          planId]; // Serve stale cache over hitting fallback constants, if we have it
     }
   }
 
@@ -172,7 +176,8 @@ class UsageLimiterService {
         return true;
       });
     } catch (e) {
-      debugPrint("UsageLimiterService: Atomic increment failed for $counterField: $e");
+      debugPrint(
+          "UsageLimiterService: Atomic increment failed for $counterField: $e");
       return false;
     }
   }
@@ -186,7 +191,8 @@ class UsageLimiterService {
     await checkAndResetLimits(profile);
     final limit = await _getLimitForFeature('ai_plans_per_month', profile);
 
-    final allowed = await _atomicCheckAndIncrement(counterField: 'aiTripsUsedThisMonth', limit: limit);
+    final allowed = await _atomicCheckAndIncrement(
+        counterField: 'aiTripsUsedThisMonth', limit: limit);
     if (allowed) {
       profile.aiTripsUsedThisMonth++;
       await UserPreferenceService.saveProfile(profile);
@@ -199,7 +205,7 @@ class UsageLimiterService {
   /// SECURITY: This is the gate for every usage limit in this service, so it
   /// must not trust the raw local profile alone — a locally-patched profile
   /// (rooted device, tampered APK) could otherwise set isPremium: true and
-  /// bypass every AI-trip/AR-session/offline-download/saved-plan limit.
+  /// bypass every AI-trip/offline-download/saved-plan limit.
   /// SecureEntitlements().verifyPremium() re-validates against the server
   /// (with its own 5-minute memory / 24-hour disk cache, so this isn't a
   /// fresh network call on every check) and cryptographically verifies the
@@ -216,7 +222,7 @@ class UsageLimiterService {
     if (profile.aiTripsUsedThisMonth > 0) {
       profile.aiTripsUsedThisMonth--;
       await UserPreferenceService.saveProfile(profile);
-      
+
       final user = FirebaseAuth.instance.currentUser;
       if (user != null) {
         await _firestore.collection('users').doc(user.uid).update({
@@ -224,58 +230,6 @@ class UsageLimiterService {
         });
       }
     }
-  }
-
-  /// Provides one-time bonus access to AR session
-  static Future<void> provideBonusArSession() async {
-    final profile = UserPreferenceService.getProfile();
-    if (profile.arSessionsUsedThisMonth > 0) {
-      profile.arSessionsUsedThisMonth--;
-      await UserPreferenceService.saveProfile(profile);
-      
-      final user = FirebaseAuth.instance.currentUser;
-      if (user != null) {
-        await _firestore.collection('users').doc(user.uid).update({
-          'arSessionsUsedThisMonth': profile.arSessionsUsedThisMonth,
-        });
-      }
-    }
-  }
-
-  /// Checks if AR session access is allowed within the user's limit constraints
-  static Future<bool> canAccessArSession() async {
-    final profile = UserPreferenceService.getProfile();
-    
-    // Core Logic: Valid Premium users have unlimited AR
-    if (await _isPremiumValid(profile)) return true;
-    
-    await checkAndResetLimits(profile);
-    final limit = await _getLimitForFeature('ar_sessions_per_month', profile);
-    return profile.arSessionsUsedThisMonth < limit;
-  }
-
-  /// Marks an AR session as launched and increments the usage meter.
-  /// Atomic against concurrent calls — see _atomicCheckAndIncrement. Returns
-  /// whether the increment was actually allowed.
-  static Future<bool> incrementArSession() async {
-    final profile = UserPreferenceService.getProfile();
-    if (await _isPremiumValid(profile)) {
-      final allowed = await _atomicCheckAndIncrement(counterField: 'arSessionsUsedThisMonth', limit: 9999);
-      if (allowed) {
-        profile.arSessionsUsedThisMonth++;
-        await UserPreferenceService.saveProfile(profile);
-      }
-      return allowed;
-    }
-
-    await checkAndResetLimits(profile);
-    final limit = await _getLimitForFeature('ar_sessions_per_month', profile);
-    final allowed = await _atomicCheckAndIncrement(counterField: 'arSessionsUsedThisMonth', limit: limit);
-    if (allowed) {
-      profile.arSessionsUsedThisMonth++;
-      await UserPreferenceService.saveProfile(profile);
-    }
-    return allowed;
   }
 
   /// Provides one-time bonus access to Oracle chat (e.g. after watching a rewarded ad)
@@ -314,7 +268,8 @@ class UsageLimiterService {
   static Future<bool> incrementOracleChat() async {
     final profile = UserPreferenceService.getProfile();
     if (await _isPremiumValid(profile)) {
-      final allowed = await _atomicCheckAndIncrement(counterField: 'oracleChatsUsedThisMonth', limit: 9999);
+      final allowed = await _atomicCheckAndIncrement(
+          counterField: 'oracleChatsUsedThisMonth', limit: 9999);
       if (allowed) {
         profile.oracleChatsUsedThisMonth++;
         await UserPreferenceService.saveProfile(profile);
@@ -324,7 +279,8 @@ class UsageLimiterService {
 
     await checkAndResetLimits(profile);
     final limit = await _getLimitForFeature('oracle_chats_per_month', profile);
-    final allowed = await _atomicCheckAndIncrement(counterField: 'oracleChatsUsedThisMonth', limit: limit);
+    final allowed = await _atomicCheckAndIncrement(
+        counterField: 'oracleChatsUsedThisMonth', limit: limit);
     if (allowed) {
       profile.oracleChatsUsedThisMonth++;
       await UserPreferenceService.saveProfile(profile);
@@ -335,7 +291,7 @@ class UsageLimiterService {
   // --- Saved Plans ---
 
   /// Checks whether the tourist can save another trip plan. Unlike the AI
-  /// trip / AR session / offline download counters, saved plans don't reset
+  /// trip and offline download counters, saved plans don't reset
   /// monthly — the limit is a running total of how many plans exist in
   /// TripCacheService.savedPlanCount, which is decremented naturally when
   /// the tourist deletes an old saved plan.
@@ -353,10 +309,11 @@ class UsageLimiterService {
   static Future<bool> canDownloadOffline() async {
     final profile = UserPreferenceService.getProfile();
     if (await _isPremiumValid(profile)) return true;
-    
+
     await checkAndResetLimits(profile);
     // Use 'offline_downloads_per_month' explicitly rather than 'saved_plans' key
-    final limit = await _getLimitForFeature('offline_downloads_per_month', profile);
+    final limit =
+        await _getLimitForFeature('offline_downloads_per_month', profile);
     return profile.offlineDownloadsUsed < limit;
   }
 
@@ -366,7 +323,8 @@ class UsageLimiterService {
   static Future<bool> incrementOfflineDownload() async {
     final profile = UserPreferenceService.getProfile();
     if (await _isPremiumValid(profile)) {
-      final allowed = await _atomicCheckAndIncrement(counterField: 'offlineDownloadsUsed', limit: 9999);
+      final allowed = await _atomicCheckAndIncrement(
+          counterField: 'offlineDownloadsUsed', limit: 9999);
       if (allowed) {
         profile.offlineDownloadsUsed++;
         await UserPreferenceService.saveProfile(profile);
@@ -375,8 +333,10 @@ class UsageLimiterService {
     }
 
     await checkAndResetLimits(profile);
-    final limit = await _getLimitForFeature('offline_downloads_per_month', profile);
-    final allowed = await _atomicCheckAndIncrement(counterField: 'offlineDownloadsUsed', limit: limit);
+    final limit =
+        await _getLimitForFeature('offline_downloads_per_month', profile);
+    final allowed = await _atomicCheckAndIncrement(
+        counterField: 'offlineDownloadsUsed', limit: limit);
     if (allowed) {
       profile.offlineDownloadsUsed++;
       await UserPreferenceService.saveProfile(profile);
@@ -390,7 +350,7 @@ class UsageLimiterService {
     if (profile.offlineDownloadsUsed > 0) {
       profile.offlineDownloadsUsed--;
       await UserPreferenceService.saveProfile(profile);
-      
+
       final user = FirebaseAuth.instance.currentUser;
       if (user != null) {
         await _firestore.collection('users').doc(user.uid).update({

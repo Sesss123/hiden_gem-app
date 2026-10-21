@@ -11,6 +11,7 @@ import '../../core/config/app_config.dart';
 import 'package:hidden_gems_sl/core/utils/secure_logger.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/theme/oracle_ui_system.dart';
+import '../widgets/ai_output_report_button.dart';
 
 /// Models representing server response payloads from ws://YOUR_BACKEND_IP:8000/ws/scan
 class FoodComponent {
@@ -28,7 +29,8 @@ class FoodComponent {
     return FoodComponent(
       name: json['name']?.toString() ?? 'Unknown item',
       estimatedPortion: json['estimated_portion']?.toString() ?? '1 portion',
-      portionConfidence: (json['portion_confidence'] as num?)?.toDouble() ?? 0.0,
+      portionConfidence:
+          (json['portion_confidence'] as num?)?.toDouble() ?? 0.0,
     );
   }
 }
@@ -56,21 +58,21 @@ class NutritionFacts {
   }
 }
 
-class ARBoundingBox {
+class DetectionBoundingBox {
   final double x;
   final double y;
   final double width;
   final double height;
 
-  ARBoundingBox({
+  DetectionBoundingBox({
     required this.x,
     required this.y,
     required this.width,
     required this.height,
   });
 
-  factory ARBoundingBox.fromJson(Map<String, dynamic> json) {
-    return ARBoundingBox(
+  factory DetectionBoundingBox.fromJson(Map<String, dynamic> json) {
+    return DetectionBoundingBox(
       x: (json['x'] as num?)?.toDouble() ?? 0.1,
       y: (json['y'] as num?)?.toDouble() ?? 0.15,
       width: (json['width'] as num?)?.toDouble() ?? 0.8,
@@ -79,22 +81,22 @@ class ARBoundingBox {
   }
 }
 
-class AROverlayData {
-  final ARBoundingBox boundingBox;
+class DetectionOverlayData {
+  final DetectionBoundingBox boundingBox;
   final String badgeColorHex;
   final String label;
   final String confidenceState;
 
-  AROverlayData({
+  DetectionOverlayData({
     required this.boundingBox,
     required this.badgeColorHex,
     required this.label,
     required this.confidenceState,
   });
 
-  factory AROverlayData.fromJson(Map<String, dynamic> json) {
-    return AROverlayData(
-      boundingBox: ARBoundingBox.fromJson(json['bounding_box'] ?? {}),
+  factory DetectionOverlayData.fromJson(Map<String, dynamic> json) {
+    return DetectionOverlayData(
+      boundingBox: DetectionBoundingBox.fromJson(json['bounding_box'] ?? {}),
       badgeColorHex: json['badge_color']?.toString() ?? '#00F0FF',
       label: json['label']?.toString() ?? 'Detected Dish',
       confidenceState: json['confidence_state']?.toString() ?? 'high',
@@ -119,7 +121,7 @@ class ScannerResponse {
   final List<FoodComponent> components;
   final NutritionFacts nutrition;
   final String recommendation;
-  final AROverlayData? arOverlay;
+  final DetectionOverlayData? detectionOverlay;
   final double processingTimeMs;
 
   ScannerResponse({
@@ -129,7 +131,7 @@ class ScannerResponse {
     required this.components,
     required this.nutrition,
     required this.recommendation,
-    this.arOverlay,
+    this.detectionOverlay,
     required this.processingTimeMs,
   });
 
@@ -148,8 +150,9 @@ class ScannerResponse {
       components: compsList,
       nutrition: NutritionFacts.fromJson(json['nutrition'] ?? {}),
       recommendation: json['recommendation']?.toString() ?? '',
-      arOverlay: json['ar_overlay'] != null
-          ? AROverlayData.fromJson(json['ar_overlay'] as Map<String, dynamic>)
+      detectionOverlay: json['detection_overlay'] != null
+          ? DetectionOverlayData.fromJson(
+              json['detection_overlay'] as Map<String, dynamic>)
           : null,
       processingTimeMs: (json['processing_time_ms'] as num?)?.toDouble() ?? 0.0,
     );
@@ -161,19 +164,21 @@ class RealTimeFoodScannerScreen extends StatefulWidget {
   const RealTimeFoodScannerScreen({super.key});
 
   @override
-  State<RealTimeFoodScannerScreen> createState() => _RealTimeFoodScannerScreenState();
+  State<RealTimeFoodScannerScreen> createState() =>
+      _RealTimeFoodScannerScreenState();
 }
 
 class _RealTimeFoodScannerScreenState extends State<RealTimeFoodScannerScreen>
     with WidgetsBindingObserver {
   CameraController? _cameraController;
   bool _isCameraInitialized = false;
-  
+
   // WebSocket Bi-directional connection
   WebSocketChannel? _channel;
   StreamSubscription? _socketSubscription;
   bool _isConnected = false;
-  String _serverIp = '192.168.8.168'; // Default for physical device testing over Wi-Fi
+  String _serverIp =
+      '192.168.8.168'; // Default for physical device testing over Wi-Fi
   String _serverPort = '8000';
 
   // Throttling timer (1 frame per second)
@@ -183,7 +188,12 @@ class _RealTimeFoodScannerScreenState extends State<RealTimeFoodScannerScreen>
 
   // Selected User Mode: normal, weight_loss, muscle_gain, diabetic
   String _userMode = 'muscle_gain';
-  final List<String> _availableModes = ['normal', 'weight_loss', 'muscle_gain', 'diabetic'];
+  final List<String> _availableModes = [
+    'normal',
+    'weight_loss',
+    'muscle_gain',
+    'diabetic'
+  ];
 
   // Latest AI Result
   ScannerResponse? _latestResponse;
@@ -195,8 +205,6 @@ class _RealTimeFoodScannerScreenState extends State<RealTimeFoodScannerScreen>
     _initCameraAndSocket();
   }
 
-
-
   Future<void> _initCameraAndSocket() async {
     // Request camera permission
     final status = await Permission.camera.request();
@@ -207,7 +215,8 @@ class _RealTimeFoodScannerScreenState extends State<RealTimeFoodScannerScreen>
 
     _cameraController = CameraController(
       cameras.first,
-      ResolutionPreset.medium, // Medium resolution ensures fast frame streaming at 1 FPS
+      ResolutionPreset
+          .medium, // Medium resolution ensures fast frame streaming at 1 FPS
       enableAudio: false,
     );
 
@@ -218,7 +227,8 @@ class _RealTimeFoodScannerScreenState extends State<RealTimeFoodScannerScreen>
         _connectWebSocket();
       }
     } catch (e, st) {
-      SecureLogger.error("Camera initialization error", e, st, "RealTimeFoodScanner");
+      SecureLogger.error(
+          "Camera initialization error", e, st, "RealTimeFoodScanner");
     }
   }
 
@@ -226,6 +236,14 @@ class _RealTimeFoodScannerScreenState extends State<RealTimeFoodScannerScreen>
   Future<void> _connectWebSocket() async {
     _disconnectWebSocket();
     final url = AppConfig.foodScannerWsUrl;
+    if (url == null) {
+      if (mounted) setState(() => _isConnected = false);
+      SecureLogger.warning(
+        'Real-time food scanner is disabled because FOOD_SCANNER_WS_URL is not configured.',
+        tag: 'RealTimeFoodScanner',
+      );
+      return;
+    }
     SecureLogger.network("Connecting to Real-Time AI Scanner WebSocket: $url");
 
     try {
@@ -240,14 +258,16 @@ class _RealTimeFoodScannerScreenState extends State<RealTimeFoodScannerScreen>
           _handleServerMessage(data);
         },
         onDone: () {
-          SecureLogger.info("WebSocket disconnected", tag: "RealTimeFoodScanner");
+          SecureLogger.info("WebSocket disconnected",
+              tag: "RealTimeFoodScanner");
           if (mounted) {
             setState(() => _isConnected = false);
             _reconnectWebSocketWithDelay();
           }
         },
         onError: (err) {
-          SecureLogger.error("WebSocket error", err, null, "RealTimeFoodScanner");
+          SecureLogger.error(
+              "WebSocket error", err, null, "RealTimeFoodScanner");
           if (mounted) {
             setState(() => _isConnected = false);
             _reconnectWebSocketWithDelay();
@@ -257,7 +277,8 @@ class _RealTimeFoodScannerScreenState extends State<RealTimeFoodScannerScreen>
 
       _startFrameThrottler();
     } catch (e, st) {
-      SecureLogger.error("WebSocket connection failed", e, st, "RealTimeFoodScanner");
+      SecureLogger.error(
+          "WebSocket connection failed", e, st, "RealTimeFoodScanner");
       if (mounted) {
         setState(() => _isConnected = false);
         _reconnectWebSocketWithDelay();
@@ -304,14 +325,16 @@ class _RealTimeFoodScannerScreenState extends State<RealTimeFoodScannerScreen>
         }
       }
     } catch (e, st) {
-      SecureLogger.error("Error parsing WebSocket response", e, st, "RealTimeFoodScanner");
+      SecureLogger.error(
+          "Error parsing WebSocket response", e, st, "RealTimeFoodScanner");
     }
   }
 
   /// Streams camera frames throttled to exactly 1 frame per 1.5 seconds
   void _startFrameThrottler() {
     _frameTimer?.cancel();
-    _frameTimer = Timer.periodic(const Duration(milliseconds: 1500), (timer) async {
+    _frameTimer =
+        Timer.periodic(const Duration(milliseconds: 1500), (timer) async {
       if (!_isConnected ||
           _isProcessingFrame ||
           _cameraController == null ||
@@ -323,11 +346,13 @@ class _RealTimeFoodScannerScreenState extends State<RealTimeFoodScannerScreen>
       try {
         final imageFile = await _cameraController!.takePicture();
         final bytes = await File(imageFile.path).readAsBytes();
-        
+
         // Clean up temporary image file to avoid storage buildup
         try {
           await File(imageFile.path).delete();
-        } catch (e) { SecureLogger.error("Exception caught: $e"); }
+        } catch (e) {
+          SecureLogger.error("Exception caught: $e");
+        }
 
         final base64Image = 'data:image/jpeg;base64,${base64Encode(bytes)}';
         final requestPayload = jsonEncode({
@@ -337,7 +362,8 @@ class _RealTimeFoodScannerScreenState extends State<RealTimeFoodScannerScreen>
 
         _channel?.sink.add(requestPayload);
       } catch (e, st) {
-        SecureLogger.error("Error capturing/sending frame", e, st, "RealTimeFoodScanner");
+        SecureLogger.error(
+            "Error capturing/sending frame", e, st, "RealTimeFoodScanner");
       } finally {
         _isProcessingFrame = false;
       }
@@ -346,12 +372,14 @@ class _RealTimeFoodScannerScreenState extends State<RealTimeFoodScannerScreen>
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.inactive || state == AppLifecycleState.paused) {
+    if (state == AppLifecycleState.inactive ||
+        state == AppLifecycleState.paused) {
       _disconnectWebSocket();
       final controller = _cameraController;
       _cameraController = null;
       if (controller != null) {
-        if (controller.value.isInitialized && controller.value.isStreamingImages) {
+        if (controller.value.isInitialized &&
+            controller.value.isStreamingImages) {
           controller.stopImageStream().catchError((_) {});
         }
         controller.dispose();
@@ -380,7 +408,8 @@ class _RealTimeFoodScannerScreenState extends State<RealTimeFoodScannerScreen>
     final controller = _cameraController;
     _cameraController = null;
     if (controller != null) {
-      if (controller.value.isInitialized && controller.value.isStreamingImages) {
+      if (controller.value.isInitialized &&
+          controller.value.isStreamingImages) {
         controller.stopImageStream().catchError((_) {});
       }
       controller.dispose();
@@ -396,20 +425,25 @@ class _RealTimeFoodScannerScreenState extends State<RealTimeFoodScannerScreen>
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: AppPaletteDark.card,
-        title: OracleUI.neonText("BACKEND WS CONFIG", style: GoogleFonts.outfit(fontSize: 18)),
+        title: OracleUI.neonText("BACKEND WS CONFIG",
+            style: GoogleFonts.outfit(fontSize: 18)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             TextField(
               controller: ipController,
               style: TextStyle(color: AppTheme.colors.white),
-              decoration: InputDecoration(labelText: "Server IP (e.g. 192.168.1.5)", labelStyle: TextStyle(color: AppTheme.colors.white70)),
+              decoration: InputDecoration(
+                  labelText: "Server IP (e.g. 192.168.1.5)",
+                  labelStyle: TextStyle(color: AppTheme.colors.white70)),
             ),
             const SizedBox(height: 12),
             TextField(
               controller: portController,
               style: TextStyle(color: AppTheme.colors.white),
-              decoration: InputDecoration(labelText: "Port (e.g. 8000)", labelStyle: TextStyle(color: AppTheme.colors.white70)),
+              decoration: InputDecoration(
+                  labelText: "Port (e.g. 8000)",
+                  labelStyle: TextStyle(color: AppTheme.colors.white70)),
               keyboardType: TextInputType.number,
             ),
           ],
@@ -417,7 +451,8 @@ class _RealTimeFoodScannerScreenState extends State<RealTimeFoodScannerScreen>
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: Text("CANCEL", style: TextStyle(color: AppTheme.colors.white54)),
+            child: Text("CANCEL",
+                style: TextStyle(color: AppTheme.colors.white54)),
           ),
           ElevatedButton(
             onPressed: () {
@@ -428,8 +463,11 @@ class _RealTimeFoodScannerScreenState extends State<RealTimeFoodScannerScreen>
               Navigator.pop(ctx);
               _connectWebSocket();
             },
-            style: ElevatedButton.styleFrom(backgroundColor: AppTheme.colors.cyanAccent),
-            child: Text("CONNECT", style: TextStyle(color: AppTheme.colors.black, fontWeight: FontWeight.bold)),
+            style: ElevatedButton.styleFrom(
+                backgroundColor: AppTheme.colors.cyanAccent),
+            child: Text("CONNECT",
+                style: TextStyle(
+                    color: AppTheme.colors.black, fontWeight: FontWeight.bold)),
           ),
         ],
       ),
@@ -451,7 +489,8 @@ class _RealTimeFoodScannerScreenState extends State<RealTimeFoodScannerScreen>
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                OracleUI.neonText("PORTION BREAKDOWN", style: GoogleFonts.outfit(fontSize: 18)),
+                OracleUI.neonText("PORTION BREAKDOWN",
+                    style: GoogleFonts.outfit(fontSize: 18)),
                 IconButton(
                   icon: Icon(Icons.close, color: AppTheme.colors.white70),
                   onPressed: () => Navigator.pop(ctx),
@@ -468,18 +507,27 @@ class _RealTimeFoodScannerScreenState extends State<RealTimeFoodScannerScreen>
                   children: [
                     Text(
                       comp.name.toUpperCase(),
-                      style: GoogleFonts.inter(color: AppTheme.colors.white, fontWeight: FontWeight.bold, fontSize: 14),
+                      style: GoogleFonts.inter(
+                          color: AppTheme.colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14),
                     ),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 4),
                       decoration: BoxDecoration(
-                        color: AppTheme.colors.cyanAccent.withValues(alpha: 0.2),
+                        color:
+                            AppTheme.colors.cyanAccent.withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: AppTheme.colors.cyanAccent, width: 1),
+                        border: Border.all(
+                            color: AppTheme.colors.cyanAccent, width: 1),
                       ),
                       child: Text(
                         comp.estimatedPortion,
-                        style: GoogleFonts.outfit(color: AppTheme.colors.cyanAccent, fontWeight: FontWeight.w800, fontSize: 13),
+                        style: GoogleFonts.outfit(
+                            color: AppTheme.colors.cyanAccent,
+                            fontWeight: FontWeight.w800,
+                            fontSize: 13),
                       ),
                     ),
                   ],
@@ -503,14 +551,17 @@ class _RealTimeFoodScannerScreenState extends State<RealTimeFoodScannerScreen>
           Positioned.fill(
             child: _isCameraInitialized && _cameraController != null
                 ? CameraPreview(_cameraController!)
-                : Center(child: CircularProgressIndicator(color: AppTheme.colors.cyanAccent)),
+                : Center(
+                    child: CircularProgressIndicator(
+                        color: AppTheme.colors.cyanAccent)),
           ),
 
-          // 2. AR Bounding Box Overlay
-          if (_latestResponse?.arOverlay != null)
+          // 2. Detection Bounding Box Overlay
+          if (_latestResponse?.detectionOverlay != null)
             Positioned.fill(
               child: CustomPaint(
-                painter: ARBoundingBoxPainter(_latestResponse!.arOverlay!),
+                painter: DetectionBoundingBoxPainter(
+                    _latestResponse!.detectionOverlay!),
               ),
             ),
 
@@ -570,7 +621,11 @@ class _RealTimeFoodScannerScreenState extends State<RealTimeFoodScannerScreen>
             children: [
               OracleUI.neonText(
                 "LIVE AI FOOD SCANNER",
-                style: GoogleFonts.outfit(color: AppTheme.colors.white, fontWeight: FontWeight.w900, letterSpacing: 3, fontSize: 14),
+                style: GoogleFonts.outfit(
+                    color: AppTheme.colors.white,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 3,
+                    fontSize: 14),
               ),
               const SizedBox(height: 4),
               Row(
@@ -580,21 +635,31 @@ class _RealTimeFoodScannerScreenState extends State<RealTimeFoodScannerScreen>
                     width: 8,
                     height: 8,
                     decoration: BoxDecoration(
-                      color: _isConnected ? AppTheme.colors.greenAccent : AppTheme.colors.redAccent,
+                      color: _isConnected
+                          ? AppTheme.colors.greenAccent
+                          : AppTheme.colors.redAccent,
                       shape: BoxShape.circle,
                     ),
                   ),
                   const SizedBox(width: 6),
                   Text(
-                    _isConnected ? "STREAMING 1 FPS (${_latestResponse?.processingTimeMs.toStringAsFixed(0) ?? 0}ms)" : "DISCONNECTED",
-                    style: GoogleFonts.inter(color: _isConnected ? AppTheme.colors.greenAccent : AppTheme.colors.redAccent, fontSize: 10, fontWeight: FontWeight.bold),
+                    _isConnected
+                        ? "STREAMING 1 FPS (${_latestResponse?.processingTimeMs.toStringAsFixed(0) ?? 0}ms)"
+                        : "DISCONNECTED",
+                    style: GoogleFonts.inter(
+                        color: _isConnected
+                            ? AppTheme.colors.greenAccent
+                            : AppTheme.colors.redAccent,
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold),
                   ),
                 ],
               ),
             ],
           ),
           IconButton(
-            icon: Icon(Icons.settings_ethernet, color: AppTheme.colors.cyanAccent),
+            icon: Icon(Icons.settings_ethernet,
+                color: AppTheme.colors.cyanAccent),
             onPressed: _showServerIpDialog,
           ),
         ],
@@ -617,14 +682,22 @@ class _RealTimeFoodScannerScreenState extends State<RealTimeFoodScannerScreen>
               margin: const EdgeInsets.only(right: 10),
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
               decoration: BoxDecoration(
-                color: isSelected ? AppTheme.colors.cyanAccent : AppTheme.colors.black.withValues(alpha: 0.6),
+                color: isSelected
+                    ? AppTheme.colors.cyanAccent
+                    : AppTheme.colors.black.withValues(alpha: 0.6),
                 borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: isSelected ? AppTheme.colors.cyanAccent : AppTheme.colors.white30, width: 1.5),
+                border: Border.all(
+                    color: isSelected
+                        ? AppTheme.colors.cyanAccent
+                        : AppTheme.colors.white30,
+                    width: 1.5),
               ),
               child: Text(
                 displayName,
                 style: GoogleFonts.outfit(
-                  color: isSelected ? AppTheme.colors.black : AppTheme.colors.white70,
+                  color: isSelected
+                      ? AppTheme.colors.black
+                      : AppTheme.colors.white70,
                   fontWeight: FontWeight.w800,
                   fontSize: 11,
                   letterSpacing: 1,
@@ -644,16 +717,20 @@ class _RealTimeFoodScannerScreenState extends State<RealTimeFoodScannerScreen>
       decoration: BoxDecoration(
         color: AppTheme.colors.black.withValues(alpha: 0.7),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppTheme.colors.cyanAccent.withValues(alpha: 0.3)),
+        border: Border.all(
+            color: AppTheme.colors.cyanAccent.withValues(alpha: 0.3)),
       ),
       child: Column(
         children: [
           CircularProgressIndicator(color: AppTheme.colors.cyanAccent),
           const SizedBox(height: 12),
           Text(
-            _isConnected ? "Point camera at food plate for live analysis..." : "Connecting to Backend WebSocket server...",
+            _isConnected
+                ? "Point camera at food plate for live analysis..."
+                : "Connecting to Backend WebSocket server...",
             textAlign: TextAlign.center,
-            style: GoogleFonts.inter(color: AppTheme.colors.white, fontSize: 13),
+            style:
+                GoogleFonts.inter(color: AppTheme.colors.white, fontSize: 13),
           ),
         ],
       ),
@@ -686,7 +763,8 @@ class _RealTimeFoodScannerScreenState extends State<RealTimeFoodScannerScreen>
               color: AppTheme.colors.cyanAccent.withValues(alpha: 0.2),
               shape: BoxShape.circle,
             ),
-            child: Icon(Icons.auto_awesome, color: AppTheme.colors.cyanAccent, size: 22),
+            child: Icon(Icons.auto_awesome,
+                color: AppTheme.colors.cyanAccent, size: 22),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -695,15 +773,29 @@ class _RealTimeFoodScannerScreenState extends State<RealTimeFoodScannerScreen>
               children: [
                 Text(
                   "AI DIET COACH (${_userMode.replaceAll('_', ' ').toUpperCase()})",
-                  style: GoogleFonts.outfit(color: AppTheme.colors.cyanAccent, fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 1.5),
+                  style: GoogleFonts.outfit(
+                      color: AppTheme.colors.cyanAccent,
+                      fontSize: 10,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 1.5),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   _latestResponse!.recommendation,
-                  style: GoogleFonts.inter(color: AppTheme.colors.white, fontSize: 12, height: 1.3),
+                  style: GoogleFonts.inter(
+                      color: AppTheme.colors.white, fontSize: 12, height: 1.3),
                 ),
               ],
             ),
+          ),
+          AiOutputReportButton(
+            feature: 'food_scan',
+            outputId:
+                '${_latestResponse!.dishName}-${_latestResponse!.processingTimeMs.toStringAsFixed(0)}',
+            outputText:
+                '${_latestResponse!.dishName}: ${_latestResponse!.recommendation}',
+            color: AppTheme.colors.white,
+            compact: true,
           ),
         ],
       ),
@@ -730,7 +822,10 @@ class _RealTimeFoodScannerScreenState extends State<RealTimeFoodScannerScreen>
                 Expanded(
                   child: Text(
                     _latestResponse!.dishName.toUpperCase(),
-                    style: GoogleFonts.outfit(color: AppTheme.colors.white, fontSize: 15, fontWeight: FontWeight.w900),
+                    style: GoogleFonts.outfit(
+                        color: AppTheme.colors.white,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w900),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -739,9 +834,13 @@ class _RealTimeFoodScannerScreenState extends State<RealTimeFoodScannerScreen>
                   children: [
                     Text(
                       "TAP FOR PORTIONS",
-                      style: GoogleFonts.inter(color: AppTheme.colors.cyanAccent, fontSize: 10, fontWeight: FontWeight.bold),
+                      style: GoogleFonts.inter(
+                          color: AppTheme.colors.cyanAccent,
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold),
                     ),
-                    Icon(Icons.chevron_right, color: AppTheme.colors.cyanAccent, size: 16),
+                    Icon(Icons.chevron_right,
+                        color: AppTheme.colors.cyanAccent, size: 16),
                   ],
                 ),
               ],
@@ -750,10 +849,16 @@ class _RealTimeFoodScannerScreenState extends State<RealTimeFoodScannerScreen>
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _buildMacroItem("CALORIES", "${nut.calories.toStringAsFixed(0)} kcal", AppTheme.colors.orangeAccent),
-                _buildMacroItem("PROTEIN", "${nut.protein.toStringAsFixed(1)}g", AppTheme.colors.cyanAccent),
-                _buildMacroItem("CARBS", "${nut.carbs.toStringAsFixed(1)}g", AppTheme.colors.greenAccent),
-                _buildMacroItem("FAT", "${nut.fat.toStringAsFixed(1)}g", AppTheme.colors.pinkAccent),
+                _buildMacroItem(
+                    "CALORIES",
+                    "${nut.calories.toStringAsFixed(0)} kcal",
+                    AppTheme.colors.orangeAccent),
+                _buildMacroItem("PROTEIN", "${nut.protein.toStringAsFixed(1)}g",
+                    AppTheme.colors.cyanAccent),
+                _buildMacroItem("CARBS", "${nut.carbs.toStringAsFixed(1)}g",
+                    AppTheme.colors.greenAccent),
+                _buildMacroItem("FAT", "${nut.fat.toStringAsFixed(1)}g",
+                    AppTheme.colors.pinkAccent),
               ],
             ),
           ],
@@ -767,28 +872,33 @@ class _RealTimeFoodScannerScreenState extends State<RealTimeFoodScannerScreen>
       children: [
         Text(
           value,
-          style: GoogleFonts.outfit(color: color, fontSize: 16, fontWeight: FontWeight.w900),
+          style: GoogleFonts.outfit(
+              color: color, fontSize: 16, fontWeight: FontWeight.w900),
         ),
         const SizedBox(height: 2),
         Text(
           label,
-          style: GoogleFonts.inter(color: AppTheme.colors.white70, fontSize: 9, fontWeight: FontWeight.bold, letterSpacing: 1),
+          style: GoogleFonts.inter(
+              color: AppTheme.colors.white70,
+              fontSize: 9,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 1),
         ),
       ],
     );
   }
 }
 
-/// Custom AR Bounding Box Painter drawing glowing neon frames around detected food
-class ARBoundingBoxPainter extends CustomPainter {
-  final AROverlayData overlay;
+/// Custom bounding-box painter drawing glowing neon frames around detected food
+class DetectionBoundingBoxPainter extends CustomPainter {
+  final DetectionOverlayData overlay;
 
-  ARBoundingBoxPainter(this.overlay);
+  DetectionBoundingBoxPainter(this.overlay);
 
   @override
   void paint(Canvas canvas, Size size) {
     final box = overlay.boundingBox;
-    
+
     // Convert normalized coordinates (0.0 to 1.0) to screen pixel coordinates
     final rect = Rect.fromLTWH(
       box.x * size.width,
@@ -816,7 +926,7 @@ class ARBoundingBoxPainter extends CustomPainter {
     canvas.drawRect(rect, glowPaint);
     canvas.drawRect(rect, borderPaint);
 
-    // Draw futuristic AR corner brackets
+    // Draw futuristic detection corner brackets
     final bracketLength = 20.0;
     final cornerPaint = Paint()
       ..color = AppTheme.colors.white
@@ -824,17 +934,25 @@ class ARBoundingBoxPainter extends CustomPainter {
       ..strokeWidth = 4.0;
 
     // Top-left
-    canvas.drawLine(rect.topLeft, rect.topLeft + Offset(bracketLength, 0), cornerPaint);
-    canvas.drawLine(rect.topLeft, rect.topLeft + Offset(0, bracketLength), cornerPaint);
+    canvas.drawLine(
+        rect.topLeft, rect.topLeft + Offset(bracketLength, 0), cornerPaint);
+    canvas.drawLine(
+        rect.topLeft, rect.topLeft + Offset(0, bracketLength), cornerPaint);
     // Top-right
-    canvas.drawLine(rect.topRight, rect.topRight + Offset(-bracketLength, 0), cornerPaint);
-    canvas.drawLine(rect.topRight, rect.topRight + Offset(0, bracketLength), cornerPaint);
+    canvas.drawLine(
+        rect.topRight, rect.topRight + Offset(-bracketLength, 0), cornerPaint);
+    canvas.drawLine(
+        rect.topRight, rect.topRight + Offset(0, bracketLength), cornerPaint);
     // Bottom-left
-    canvas.drawLine(rect.bottomLeft, rect.bottomLeft + Offset(bracketLength, 0), cornerPaint);
-    canvas.drawLine(rect.bottomLeft, rect.bottomLeft + Offset(0, -bracketLength), cornerPaint);
+    canvas.drawLine(rect.bottomLeft, rect.bottomLeft + Offset(bracketLength, 0),
+        cornerPaint);
+    canvas.drawLine(rect.bottomLeft,
+        rect.bottomLeft + Offset(0, -bracketLength), cornerPaint);
     // Bottom-right
-    canvas.drawLine(rect.bottomRight, rect.bottomRight + Offset(-bracketLength, 0), cornerPaint);
-    canvas.drawLine(rect.bottomRight, rect.bottomRight + Offset(0, -bracketLength), cornerPaint);
+    canvas.drawLine(rect.bottomRight,
+        rect.bottomRight + Offset(-bracketLength, 0), cornerPaint);
+    canvas.drawLine(rect.bottomRight,
+        rect.bottomRight + Offset(0, -bracketLength), cornerPaint);
 
     // Draw label badge above the bounding box
     final textSpan = TextSpan(
@@ -860,11 +978,13 @@ class ARBoundingBoxPainter extends CustomPainter {
     );
 
     final badgePaint = Paint()..color = neonColor;
-    canvas.drawRRect(RRect.fromRectAndRadius(labelRect, const Radius.circular(6)), badgePaint);
+    canvas.drawRRect(
+        RRect.fromRectAndRadius(labelRect, const Radius.circular(6)),
+        badgePaint);
 
     textPainter.paint(canvas, Offset(labelRect.left, labelRect.top + 3));
   }
 
   @override
-  bool shouldRepaint(covariant ARBoundingBoxPainter oldDelegate) => true;
+  bool shouldRepaint(covariant DetectionBoundingBoxPainter oldDelegate) => true;
 }

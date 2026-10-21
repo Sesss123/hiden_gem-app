@@ -81,11 +81,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get savedJourneyHubTitle => '저장한 장소와 여행';
 
   @override
-  String bookmarkedCount(int count) {
-    return '북마크 ($count)';
-  }
-
-  @override
   String wantToVisitCount(int count) {
     return '가고 싶은 곳 ($count)';
   }
@@ -97,12 +92,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get savedPlacesLoadError => '저장한 장소를 불러오지 못했습니다.';
-
-  @override
-  String get noBookmarkedPlaces => '북마크한 장소가 없습니다';
-
-  @override
-  String get noBookmarkedPlacesHint => '장소의 북마크 아이콘을 눌러 저장하세요.';
 
   @override
   String get wantToVisitEmpty => '가고 싶은 곳 목록이 비어 있습니다';
@@ -161,9 +150,6 @@ class AppLocalizationsKo extends AppLocalizations {
       '가격은 서비스에서 제공되며 변경될 수 있습니다. 구매 전에 확인하세요.';
 
   @override
-  String get hydrationSummary => '현지 음료 · 밀봉 생수 · 안전한 얼음 안내';
-
-  @override
   String get appTitle => 'Hidden Gems SL';
 
   @override
@@ -209,9 +195,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get language => '언어';
 
   @override
-  String get itinerary => '일정';
-
-  @override
   String get style => '스타일';
 
   @override
@@ -234,9 +217,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get discovery => '발견';
-
-  @override
-  String get nearYou => '내 근처';
 
   @override
   String get aiReason => '이 장소의 이유는?';
@@ -288,28 +268,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get discoveryHeader => '발견';
 
   @override
-  String get searchHint => '숨겨진 명소 검색...';
-
-  @override
   String get picksForYou => 'Hidden Gems SL 추천';
-
-  @override
-  String get exploreInAr => 'AR에서 탐색';
-
-  @override
-  String get bestNatureNearby => '근처 최고의 자연 명소';
 
   @override
   String get topCultureSpots => '최고의 문화 명소';
 
   @override
   String get villageStayTitle => '마을과 진정한 숙박';
-
-  @override
-  String get allNearbyPlacesTitle => '주변의 모든 장소';
-
-  @override
-  String get noMatchesNearby => '근처에 일치하는 결과가 없습니다';
 
   @override
   String get tryIncreasingDistance => '거리를 늘리거나 필터를 제거해 보세요.';
@@ -337,9 +302,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get filterBudget => '저예산 💸';
-
-  @override
-  String get filterAr => 'AR 장소 🏛';
 
   @override
   String get categoryNature => '자연';
@@ -374,9 +336,6 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String get arHeritageReady => 'AR 유산 준비 완료';
-
-  @override
   String get theKnowledge => '지식';
 
   @override
@@ -407,28 +366,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get reality => '현실';
 
   @override
-  String get aerDimensionReady => 'AER 차원 준비 완료';
-
-  @override
-  String get invokeAr => 'AR 실행';
-
-  @override
   String get addToDestiny => '여정에 추가';
-
-  @override
-  String get distanceLockTitle => '거리 제한';
-
-  @override
-  String distanceLockMessage(Object distance) {
-    return '현재 $distance KM 떨어져 있습니다. AER 차원은 해당 장소의 500M 이내에서만 접근할 수 있습니다.';
-  }
-
-  @override
-  String get arCoreNotDetected => 'AR CORE 미감지';
-
-  @override
-  String get arCoreMessage =>
-      '여행자여, 고대 비전을 보려면 ARCore가 필요합니다. 기기에 설치 및 업데이트되었는지 확인하세요.';
 
   @override
   String get road => '도로';
@@ -437,75 +375,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get access => '접근';
 
   @override
-  String get parking => '주차';
-
-  @override
-  String get syncingResonance => '고대 공명과 동기화 중...';
-
-  @override
-  String get resonanceLost => '공명 끊김';
-
-  @override
   String get gpsRequired => '위치를 확인할 수 없습니다. GPS가 켜져 있는지 확인하세요.';
-
-  @override
-  String get unlockTeleport => '텔레포트 잠금 해제';
 
   @override
   String get close => '닫기';
 
   @override
   String get understood => '이해함';
-
-  @override
-  String get ancestralPortalOpen => '조상의 포털이 열렸습니다';
-
-  @override
-  String get stepIntoHistory => '역사 속으로 들어가기';
-
-  @override
-  String viewEraIn360(Object era) {
-    return '360도로 $era 보기';
-  }
-
-  @override
-  String get arDemoLabel => '10초 AR 데모';
-
-  @override
-  String get fullHeritageAr => '전체 유산 AR';
-
-  @override
-  String get ancientHeritageSite => '고대 유적지';
-
-  @override
-  String get arTipPlace => '표면을 탭하여 3D 재구성 배치';
-
-  @override
-  String get arTipTime => '시간 여행을 하려면 \'과거/현재\'를 스와이프하세요';
-
-  @override
-  String get arTipAudio => '싱할라어 및 영어 오디오 가이드 제공';
-
-  @override
-  String get arTipGroup => '그룹 AR 투어 주최 또는 참여';
-
-  @override
-  String get openArPortal => 'AR 포털 열기';
-
-  @override
-  String get enterDemo => '데모 입장 (10초)';
-
-  @override
-  String get offlineReady => '오프라인 준비 완료';
-
-  @override
-  String get assetsCached => '오프라인 사용을 위해 유산 애셋이 캐시되었습니다!';
-
-  @override
-  String get downloadFailed => '다운로드 실패. 연결을 확인하세요.';
-
-  @override
-  String get downloadForOffline => '오프라인용 다운로드';
 
   @override
   String get initiateTravel => '여행 시퀀스 시작';
@@ -534,7 +410,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get couldNotOpenEmail =>
-      '이메일 클라이언트를 열 수 없습니다. support@hiddengems.lk로 이메일을 보내주세요.';
+      '이메일 클라이언트를 열 수 없습니다. pathiranasehas3@gmail.com로 이메일을 보내주세요.';
 
   @override
   String get getDirections => 'Get Directions';
@@ -552,15 +428,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get travelModeBike => 'Bike';
 
   @override
-  String get travelModeCar => 'Car';
-
-  @override
   String get openInMaps => 'Open in Maps';
-
-  @override
-  String nearbyNowLabel(String km) {
-    return '$km km away — nearby now';
-  }
 
   @override
   String get photosLabel => 'Photos';
@@ -601,7 +469,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get privacySection5Body =>
-      '개인정보보호법 No. 9 of 2022에 따라, 귀하는 개인정보에 관한 기본적인 권리를 보유합니다:\n\n• 접근 및 정정 권리: 앱의 프로필 화면에서 직접 계정 정보와 프로필 데이터를 검토, 다운로드, 편집할 수 있습니다.\n• 동의 철회: 기기 설정에서 위치 권한을 비활성화하거나 활성화된 가족 공유 링크를 철회하여 언제든지 위치 추적 또는 데이터 처리에 대한 동의를 철회할 수 있습니다.\n• 삭제 권리(잊혀질 권리): 프로필 > 개인정보 보호 > 계정 삭제를 통해, 또는 데이터 보호 담당자 이메일(support@hiddengems.lk)로 연락하여 계정의 영구 삭제를 요청할 수 있습니다.';
+      '개인정보보호법 No. 9 of 2022에 따라, 귀하는 개인정보에 관한 기본적인 권리를 보유합니다:\n\n• 접근 및 정정 권리: 앱의 프로필 화면에서 직접 계정 정보와 프로필 데이터를 검토, 다운로드, 편집할 수 있습니다.\n• 동의 철회: 기기 설정에서 위치 권한을 비활성화하거나 활성화된 가족 공유 링크를 철회하여 언제든지 위치 추적 또는 데이터 처리에 대한 동의를 철회할 수 있습니다.\n• 삭제 권리(잊혀질 권리): 프로필 > 개인정보 보호 > 계정 삭제를 통해, 또는 데이터 보호 담당자 이메일(pathiranasehas3@gmail.com)로 연락하여 계정의 영구 삭제를 요청할 수 있습니다.';
 
   @override
   String get privacySection6Title => '6. 데이터 보관 및 파기';
@@ -636,7 +504,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get privacyFooterAddress =>
-      '등록 사무소: 콜롬보, 스리랑카 • support@hiddengems.lk';
+      '등록 사무소: 콜롬보, 스리랑카 • pathiranasehas3@gmail.com';
 
   @override
   String get termsAndPrivacyTitle => '약관 및 개인정보처리방침';
@@ -687,7 +555,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get updateRequiredBody => '여정을 계속하려면 앱을 업데이트해 주세요.';
 
   @override
-  String get updateReadyBody => '더 나은 지도, 더 빠른 AI 여행, 향상된 AR이 기다리고 있습니다.';
+  String get updateReadyBody => '더 나은 지도, 더 빠른 AI 여행, 새로운 여행 도구가 기다리고 있습니다.';
 
   @override
   String get updateNow => '지금 업데이트';
@@ -742,9 +610,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get insufficientComplexity => '비밀번호가 너무 단순합니다';
-
-  @override
-  String get atLeast6Chars => '6자 이상 입력하세요';
 
   @override
   String get forgotPassword => '비밀번호를 잊으셨나요?';
@@ -848,12 +713,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get foodAiAction => '음식 AI';
 
   @override
-  String get arPortalsAction => 'AR 포털';
-
-  @override
-  String get localGemsNearby => '근처의 로컬 명소';
-
-  @override
   String get todayInSriLanka => '오늘의 스리랑카';
 
   @override
@@ -861,9 +720,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get letOracleGuide => '오라클이 당신의 길을 안내하게 하세요';
-
-  @override
-  String get searchSecretLocations => '숨겨진 장소 검색...';
 
   @override
   String get offlineModeLabel => '오프라인 모드';
@@ -928,19 +784,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get step1Subtitle => '기본 정보';
 
   @override
-  String get startingPointLabel => '출발지';
-
-  @override
-  String get startingPointHint => '공항, 콜롬보...';
-
-  @override
   String get destinationLabel => '목적지';
 
   @override
   String get destinationHint => '엘라, 골, 캔디...';
-
-  @override
-  String get startDateLabel => '출발 날짜';
 
   @override
   String get step2Title => '여행의 분위기를 정해보세요.';
@@ -955,9 +802,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String tripLengthDaysValue(int days) {
     return '$days일';
   }
-
-  @override
-  String get travelStandardLabel => '여행 등급';
 
   @override
   String get step3Title => '누구와 함께 여행하시나요?';
@@ -1069,12 +913,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get priceRangePremium => '프리미엄';
 
   @override
-  String get heritageArSearchTitle => '유산 AR 검색';
-
-  @override
-  String get onlyShowArEnabledSpots => 'AR 사용 가능한 장소만 표시';
-
-  @override
   String get revealDestinies => '운명 드러내기';
 
   @override
@@ -1094,12 +932,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get seeAll => '전체 보기';
 
   @override
-  String get arBadge => 'AR';
-
-  @override
-  String get heritageArBadge => '유산 AR';
-
-  @override
   String tripDurationStyleLabel(int days, String style) {
     return '$days일 $style 여행';
   }
@@ -1109,11 +941,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get mapTabLabel => '지도';
-
-  @override
-  String premiumFeatureSnackbar(String featureName) {
-    return '$featureName은(는) 프리미엄 기능입니다.';
-  }
 
   @override
   String get savedPlansFeatureName => '저장된 일정';
@@ -1236,9 +1063,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get localizationError => '언어 설정 오류';
 
   @override
-  String get appearance => '화면 테마';
-
-  @override
   String get settingsSectionLabel => '설정';
 
   @override
@@ -1273,28 +1097,16 @@ class AppLocalizationsKo extends AppLocalizations {
   String get goPremium => '프리미엄으로 전환';
 
   @override
-  String get fullArAiAccessGranted => 'AR 및 AI 전체 이용 권한이 부여되었습니다';
-
-  @override
-  String get unlockArAiFeatures => 'AR 및 AI 기능 잠금 해제';
-
-  @override
   String get upgrade => '업그레이드';
 
   @override
   String get themeLight => '라이트';
 
   @override
-  String get themeDark => '다크';
-
-  @override
   String get journeyHub => '여정 허브';
 
   @override
   String get aiBudgetConcierge => 'AI 예산 컨시어지';
-
-  @override
-  String get smartExpenseAdvisor => '스마트 지출 어드바이저';
 
   @override
   String get heritagePassport => '헤리티지 패스포트';
@@ -1323,61 +1135,8 @@ class AppLocalizationsKo extends AppLocalizations {
       '윤리적 여행 점수는 스리랑카 전역의 지역 사회와 유산 보존에 대한 귀하의 긍정적인 영향을 측정합니다.';
 
   @override
-  String get howToEarnPointsHeading => '포인트 적립 방법:';
-
-  @override
-  String get earnPointsReviewsTitle => '장소 리뷰 남기기';
-
-  @override
-  String get earnPointsReviewsAmount => '+10점';
-
-  @override
-  String get earnPointsReviewsSubtitle => '현지 가이드와 여행자를 응원하세요';
-
-  @override
-  String get earnPointsFoodTitle => '현지 음식 맛보기';
-
-  @override
-  String get earnPointsFoodAmount => '+15점';
-
-  @override
-  String get earnPointsFoodSubtitle => '진정한 현지 식당에 힘을 실어주세요';
-
-  @override
-  String get earnPointsHeritageTitle => '유적지 방문하기';
-
-  @override
-  String get earnPointsHeritageAmount => '+20점';
-
-  @override
-  String get earnPointsHeritageSubtitle => '문화 보존을 촉진하세요';
-
-  @override
-  String get rewardsPerksHeading => '잠금 해제되는 보상 및 혜택:';
-
-  @override
-  String get rewardEcoGuardianBadgeTitle => '에코 가디언 배지';
-
-  @override
-  String get rewardEcoGuardianBadgeSubtitle => '리더보드와 리뷰에서 돋보이세요';
-
-  @override
-  String get rewardPartnerDiscountsTitle => '파트너 할인';
-
-  @override
-  String get rewardPartnerDiscountsSubtitle => '인증된 친환경 숙소 및 카페에서 5%~15% 할인';
-
-  @override
-  String get rewardFreePremiumPerksTitle => '무료 프리미엄 혜택';
-
-  @override
-  String get rewardFreePremiumPerksSubtitle => '포인트로 AR 가이드와 오프라인 지도를 잠금 해제하세요';
-
-  @override
-  String get rewardRealWorldImpactTitle => '현실 세계의 영향';
-
-  @override
-  String get rewardRealWorldImpactSubtitle => '500점을 달성하면 스리랑카에 나무를 심어드립니다!';
+  String get rewardFreePremiumPerksSubtitle =>
+      '포인트로 오프라인 지도와 프리미엄 도구를 잠금 해제하세요';
 
   @override
   String get gotItKeepExploring => '알겠습니다, 계속 탐험하기';
@@ -1390,18 +1149,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get activeStatusBadge => '활성';
-
-  @override
-  String get tourDashboard => '투어 대시보드';
-
-  @override
-  String get tourDashboardSubtitle => '진행 중인 투어, QR, 등록 정보 및 안전';
-
-  @override
-  String get earnings => '수익';
-
-  @override
-  String get earningsSubtitle => '정산 및 통계';
 
   @override
   String get clients => '고객';
@@ -1448,9 +1195,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get myBookings => '내 예약';
 
   @override
-  String get familySharing => '가족 공유';
-
-  @override
   String get scanGuideQr => '가이드 QR 스캔';
 
   @override
@@ -1489,21 +1233,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get confirmSignOutMessage => '정말 로그아웃 하시겠습니까?';
 
   @override
-  String get shareAppMessage =>
-      'Hidden Gems SL에 참여하세요! 🌍 https://hiddengems.lk';
-
-  @override
-  String get shareAppSubject => 'Hidden Gems SL에서 함께해요!';
-
-  @override
   String get somethingWentWrong => '문제가 발생했습니다. 앱을 다시 시작해 주세요.';
 
   @override
   String get cameraPermissionRequiredTitle => '카메라 권한이 필요합니다';
-
-  @override
-  String get cameraPermissionRequiredMessage =>
-      '스캐너를 사용하려면 앱 설정에서 카메라 접근을 허용해 주세요.';
 
   @override
   String get openSettings => '설정 열기';
@@ -1513,20 +1246,7 @@ class AppLocalizationsKo extends AppLocalizations {
       '실시간 스캔 기능이 곧 제공됩니다.\n\n카메라를 통한 실시간 랜드마크 및 사물 인식 기능을 준비 중입니다. 준비가 완료되면 바로 알려드릴게요.';
 
   @override
-  String get landmarkScannerTitle => '랜드마크 스캐너';
-
-  @override
   String get identifyingLabel => '식별 중…';
-
-  @override
-  String get analyzeLandmarkButton => '랜드마크 분석';
-
-  @override
-  String get unlockLandmarkScanningTitle => '랜드마크 스캔 잠금 해제';
-
-  @override
-  String get unlockLandmarkScanningSubtitle =>
-      '카메라를 어느 장소든 비추면 숨겨진 이야기가 펼쳐집니다.';
 
   @override
   String get oracleVerifiedLabel => '오라클 인증됨';
@@ -1534,17 +1254,6 @@ class AppLocalizationsKo extends AppLocalizations {
   @override
   String mapLoadErrorMessage(String error) {
     return '지도 데이터를 불러오지 못했습니다: $error';
-  }
-
-  @override
-  String get guideLiveMarkerLabel => '가이드 (실시간)';
-
-  @override
-  String get vehicleMarkerLabel => '탑승 차량';
-
-  @override
-  String meetingPointMarkerLabel(String pointName) {
-    return '만남의 장소: $pointName';
   }
 
   @override
@@ -1588,11 +1297,6 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String mapMarkerDaySnippet(int day, String time) {
-    return '$day일차 • $time';
-  }
-
-  @override
   String get visualRouteTitle => '경로 시각화';
 
   @override
@@ -1610,19 +1314,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get focusButtonLabel => '포커스';
 
   @override
-  String get planRemovedSnackbar => '오라클 캐시에서 일정이 삭제되었습니다';
-
-  @override
-  String get viewInArLabel => 'AR로 보기';
-
-  @override
   String get savedTripsTitle => '저장된 여행';
-
-  @override
-  String get clearSavedTripsTitle => '저장된 여행 삭제';
-
-  @override
-  String get clearSavedTripsMessage => '이 기기에 저장된 모든 여행이 영구적으로 삭제됩니다.';
 
   @override
   String get eraseAllButton => '전체 삭제';
@@ -1635,9 +1327,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get unknownDateLabel => '날짜 미상';
-
-  @override
-  String get noArSpotsSnackbar => '이 일정에는 AR 명소가 없습니다';
 
   @override
   String tripRouteLabel(String fromCity, String destinationCity) {
@@ -1659,9 +1348,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String tripBudgetChip(String amount) {
     return 'Rs $amount';
   }
-
-  @override
-  String get arBadgeLabel => 'AR';
 
   @override
   String savedTimeAgoLabel(String timeAgo) {
@@ -1783,25 +1469,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get etiquetteTipNoSoapInPools => '자연 풀장에서는 비누/샴푸 사용을 삼가세요';
 
   @override
-  String get arTierHeritageShort => '유적';
-
-  @override
-  String get arTierExploreShort => '탐험';
-
-  @override
-  String get arTierStoryShort => '이야기';
-
-  @override
   String get notAvailableShort => '해당 없음';
-
-  @override
-  String get arBadgeHeritage => '유적 AR';
-
-  @override
-  String get arBadgeExplore => '탐험 AR';
-
-  @override
-  String get arBadgeStory => '스토리 뷰';
 
   @override
   String get noRiskTagsFound => '감지된 위험 요소가 없습니다.';
@@ -1819,9 +1487,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get fieldNoteActivities => '액티비티';
 
   @override
-  String get fieldNotePopularity => '인기도';
-
-  @override
   String get fieldNoteFamilyFriendly => '가족 친화적';
 
   @override
@@ -1831,9 +1496,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get fieldNoteToilets => '화장실';
 
   @override
-  String get fieldNoteFoodNearby => '주변 식당';
-
-  @override
   String get fieldNoteWheelchairAccess => '휠체어 접근성';
 
   @override
@@ -1841,9 +1503,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get fieldNoteSafetyLevel => '안전 수준';
-
-  @override
-  String get fieldNoteWildlifeHazard => '야생동물 위험';
 
   @override
   String get fieldNoteGuideRequired => '가이드 필요';
@@ -1864,52 +1523,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get fieldNoteLength => '길이';
 
   @override
-  String get bookmarkAddedSnackbar => '✨ 여정에 표시되었습니다!';
-
-  @override
-  String get bookmarkRemovedSnackbar => '북마크에서 삭제되었습니다.';
-
-  @override
-  String itineraryAddedSnackbar(String placeName) {
-    return '🗺️ $placeName이(가) 당신의 여정에 추가되었습니다!';
-  }
-
-  @override
-  String get itineraryRemovedSnackbar => '일정에서 삭제되었습니다.';
-
-  @override
   String get featureNameHeritageSessions => '유적 탐방 세션';
 
   @override
   String get featureNameOracleQueries => 'Oracle Queries';
 
   @override
-  String get bonusSessionUnlockedSnackbar => '보너스 세션이 잠금 해제되었습니다! 다시 실행해 보세요.';
-
-  @override
-  String get oracleRewardActiveSnackbar =>
-      '✨ 오라클 보상이 적용되었습니다! AR 세션이 잠금 해제되었습니다.';
-
-  @override
   String get okButton => '확인';
-
-  @override
-  String get arComingSoonTitle => 'AR Experience Coming Soon';
-
-  @override
-  String arComingSoonMessage(String placeName) {
-    return 'We\'re putting the finishing touches on the AR experience for $placeName. Check back in a future update.';
-  }
-
-  @override
-  String get arBrandNameHeritage => '유적 AR';
-
-  @override
-  String get arBrandNameExplore => '탐험 AR';
-
-  @override
-  String get bonusDownloadUnlockedSnackbar =>
-      '보너스 다운로드가 잠금 해제되었습니다! 다시 다운로드해 보세요.';
 
   @override
   String get featureNameOfflineDownloads => '오프라인 다운로드';
@@ -2045,37 +1665,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get noBookingsToSyncMessage => '아직 동기화할 수락된 예약이 없습니다.';
 
   @override
-  String calendarEventTitle(String touristName, int guestCount) {
-    return '투어: $touristName (게스트 $guestCount명)';
-  }
-
-  @override
   String get defaultTouristName => '여행자';
-
-  @override
-  String calendarSyncSuccessMessage(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '예약 $count건을 캘린더에 동기화했습니다.',
-      one: '예약 1건을 캘린더에 동기화했습니다.',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String calendarSyncFailedMessage(String error) {
-    return '캘린더 동기화 실패: $error';
-  }
 
   @override
   String get loginRequiredMessage => '예약 요청을 보려면 로그인해 주세요.';
 
   @override
   String get bookingsScreenTitle => '예약';
-
-  @override
-  String get syncToCalendarTooltip => '캘린더에 동기화';
 
   @override
   String inboxLoadErrorMessage(String error) {
@@ -2130,17 +1726,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get payoutPendingLabel => 'Pending';
 
   @override
-  String earningsAwaitingConfirmationNote(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count bookings',
-      one: '1 booking',
-    );
-    return '$_temp0 still awaiting server payout confirmation';
-  }
-
-  @override
   String get tourNotesLabel => '투어 메모 / 요청사항';
 
   @override
@@ -2153,9 +1738,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get acceptButtonLabel => '수락';
-
-  @override
-  String get startTourSessionButtonLabel => '투어 세션 시작 / 실행';
 
   @override
   String get bookingAcceptedMessage => '🎉 예약이 수락되었으며 투어 세션이 생성되었습니다!';
@@ -2252,113 +1834,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get transmitFeedbackButton => '피드백 전송';
 
   @override
-  String familyShareLinkLimitReached(int maxLinks) {
-    return '⚠️ 활성 공유 링크 한도($maxLinks개)에 도달했습니다. 새로 만들려면 기존 링크를 삭제해 주세요.';
-  }
-
-  @override
-  String get familyShareRecipientNameRequired => '⚠️ 수신자 이름을 입력해 주세요.';
-
-  @override
-  String get familyShareNoActiveSessionError =>
-      '⚠️ 먼저 활성 투어 세션을 시작해 주세요 — 아직 공유할 내용이 없습니다.';
-
-  @override
-  String familyShareLinkGeneratedSuccess(String name) {
-    return '✅ \"$name\"님을 위한 미션 링크가 생성되었습니다!';
-  }
-
-  @override
-  String get familyShareActiveLinksTitle => '활성 링크';
-
-  @override
-  String get familyShareNewLinkButton => '+ 새로 만들기';
-
-  @override
-  String get familyShareAppBarTitle => '가족 공유';
-
-  @override
-  String get familyShareHeroSubtitle => '가족이 안전하게 여행 상태를 확인할 수 있도록 하세요';
-
-  @override
-  String get familyShareNoActiveSessionNotice =>
-      '현재 진행 중인 투어가 없습니다 — 투어를 시작하거나 참여하면 실시간 공유 링크를 생성할 수 있습니다.';
-
-  @override
-  String get familyShareEmptyStateMessage => '활성 공유 링크가 없습니다';
-
-  @override
-  String get familyShareExpiredBadge => '만료됨';
-
-  @override
-  String familyShareViewedCountBadge(int count) {
-    return '$count회 조회됨';
-  }
-
-  @override
-  String get familyShareLinkNoLongerValid => '더 이상 유효하지 않음';
-
-  @override
-  String familyShareLinkExpiresAt(String time) {
-    return '만료: $time';
-  }
-
-  @override
-  String get familyShareCopyLinkSnackbar => '📋 초대 코드가 클립보드에 복사되었습니다!';
-
-  @override
-  String get familyShareRemoveLinkDialogTitle => '링크를 삭제하시겠습니까?';
-
-  @override
-  String familyShareRemoveLinkDialogBody(String recipientName) {
-    return '\"$recipientName\"님의 공유 접근 권한이 취소됩니다.';
-  }
-
-  @override
-  String familyShareLinkRemovedSnackbar(String recipientName) {
-    return '\"$recipientName\"님의 링크가 삭제되었습니다.';
-  }
-
-  @override
-  String get familyShareRemoveButton => '삭제';
-
-  @override
-  String get familyShareCreateSheetTitle => '공유 링크 생성';
-
-  @override
-  String get familyShareRecipientNameLabel => '수신자 이름';
-
-  @override
-  String get familyShareRecipientNameHint => '예: 엄마, 아빠, 사무실';
-
-  @override
-  String get familyShareExpiryLabel => '만료 기한';
-
-  @override
-  String get familyShareDuration4Hours => '4시간';
-
-  @override
-  String get familyShareDuration12Hours => '12시간';
-
-  @override
-  String get familyShareDuration24Hours => '24시간';
-
-  @override
-  String get familyShareToggleStatusLabel => '실시간 상태 공유';
-
-  @override
-  String get familyShareToggleIdentityLabel => '가이드 신원 공유';
-
-  @override
-  String get familyShareToggleMeetingPointLabel => '만남 장소 공유';
-
-  @override
-  String get familyShareToggleEmergencyLabel => '긴급 알림 공유';
-
-  @override
-  String get familyShareGenerateLinkButton => '링크 생성';
-
-  @override
   String get categoryAll => '전체';
 
   @override
@@ -2378,9 +1853,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get categoryPhotography => '사진 촬영';
-
-  @override
-  String get marketplaceSearchHint => '이름, 언어 또는 도시로 검색...';
 
   @override
   String get verifiedGuidesEyebrow => '인증된 가이드';
@@ -2422,7 +1894,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String couldNotGetLocationMessage(String error) {
-    return '위치를 가져올 수 없습니다. 기본 좌표를 사용합니다. ($error)';
+    return '위치를 가져올 수 없습니다. 잘못된 위치 사용을 방지하기 위해 작업을 취소했습니다. ($error)';
   }
 
   @override
@@ -2456,15 +1928,9 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String get vehiclePositionMarkedMessage => '차량 위치가 표시되었습니다';
-
-  @override
   String failedToUpdateVehicleLocationMessage(String error) {
     return '차량 위치 업데이트 실패: $error';
   }
-
-  @override
-  String get tourDashboardTitle => '투어 대시보드';
 
   @override
   String get bottomNavTour => '투어';
@@ -2504,12 +1970,6 @@ class AppLocalizationsKo extends AppLocalizations {
       '여행자와 집합 장소가 확정되었습니다. 아래 버튼을 눌러 본인과 여행자가 집합 장소에 도착했을 때 타이머와 위치 추적을 공식적으로 시작하세요.';
 
   @override
-  String get startTourSessionButton => '투어 세션 시작';
-
-  @override
-  String get tourSessionStartedMessage => '🚀 투어 세션이 시작되었습니다!';
-
-  @override
   String get statLabelTravelers => '여행자';
 
   @override
@@ -2523,9 +1983,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get setPointButton => '지점 설정';
-
-  @override
-  String get markVehicleButton => '차량 표시';
 
   @override
   String get joinStatusLabel => '참가 상태';
@@ -2586,9 +2043,6 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String get weatherHazardLoggedMessage => '✅ 기상 위험이 안전 콘솔에 기록되었습니다!';
-
-  @override
   String errorLoggingIncidentMessage(String error) {
     return '사고 기록 오류: $error';
   }
@@ -2606,18 +2060,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get defaultMonsoonAlertMessage => '투어 지역에 악천후 경보가 발령되었습니다.';
 
   @override
-  String get earningsTitle => '수익';
-
-  @override
-  String get pleaseLogInViewEarningsMessage => '수익을 보려면 로그인하세요.';
-
-  @override
   String errorLoadingFinancialDataMessage(String error) {
     return '재무 데이터 로드 오류: $error';
   }
-
-  @override
-  String get totalNetEarningsLabel => '총 순수익';
 
   @override
   String get netPercentageLabel => '순수익 90%';
@@ -2889,11 +2334,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get bookingHistoryTitle => '예약 내역';
 
   @override
-  String guestCountParenthesesLabel(int count) {
-    return '게스트 $count명';
-  }
-
-  @override
   String get becomeAGuideTitle => '가이드 되기';
 
   @override
@@ -2983,12 +2423,6 @@ class AppLocalizationsKo extends AppLocalizations {
   @override
   String get approvedGuideMessage =>
       '축하합니다! 가이드 신원이 활성화되었습니다. 프로필에서 가이드 대시보드에 접근할 수 있습니다.';
-
-  @override
-  String get shareLocalKnowledgeTitle => '현지 지식을 공유하세요';
-
-  @override
-  String get guideTravelersEarnSubtitle => '여행자를 안내하고 원하는 일정에 맞춰 수익을 올리세요.';
 
   @override
   String get guideCategoryLabel => '가이드 분류';
@@ -3157,9 +2591,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get broadcastTypeDelay => '지연';
 
   @override
-  String get broadcastTypeDeparture => '출발';
-
-  @override
   String get broadcastTypeVehicleChange => '차량 변경';
 
   @override
@@ -3263,9 +2694,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get tapPackageToBookMessage => '패키지를 탭하여 바로 예약하세요';
 
   @override
-  String get standardPackageLabel => '기본 패키지';
-
-  @override
   String durationHoursShortLabel(String hours) {
     return '$hours시간';
   }
@@ -3283,11 +2711,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get experienceStatLabel => '경력';
-
-  @override
-  String yearsExperienceLabel(String years) {
-    return '$years년';
-  }
 
   @override
   String get ratingStatLabel => '평점';
@@ -3323,9 +2746,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get categorySpecialtiesTitle => '카테고리 및 전문 분야';
-
-  @override
-  String get primaryCategoryLabel => '주요 카테고리';
 
   @override
   String get languagesCommaLabel => '구사 언어(쉼표로 구분)';
@@ -3370,9 +2790,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String coverPhotosCountTitle(int count) {
     return '커버 사진($count장)';
   }
-
-  @override
-  String get availabilityCalendarTitle => '예약 가능 일정';
 
   @override
   String get visibilityBoostTitle => '노출도 향상';
@@ -3472,9 +2889,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get noCriticalIncidentsTitle => '중대한 사건이 없습니다';
-
-  @override
-  String get sessionWithinSafetyParamsMessage => '세션 운영이 안전 기준 범위 내에 있습니다.';
 
   @override
   String get reportIncidentButton => '사건 신고';
@@ -3727,9 +3141,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get criticalContactsTitle => '긴급 연락처';
 
   @override
-  String get medicalFacilitiesNearbyTitle => '근처 의료 시설';
-
-  @override
   String get emergencyProtocolLabel => '비상 프로토콜';
 
   @override
@@ -3760,16 +3171,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get contactNameFireDept => '소방서';
 
   @override
-  String get privateGuardiansTitle => '개인 보호자';
-
-  @override
-  String get noGuardiansAssignedMessage =>
-      '지정된 보호자가 없습니다. 신호는 기본적으로 긴급 서비스로 전송됩니다.';
-
-  @override
-  String get nearestHospitalTitle => '어디에 있든 가장 가까운 병원';
-
-  @override
   String get checkingLocationAccessMessage => '위치 접근 권한 확인 중…';
 
   @override
@@ -3779,22 +3180,6 @@ class AppLocalizationsKo extends AppLocalizations {
   @override
   String get hospitalMapsExplanationMessage =>
       '실시간 GPS를 사용해 Google 지도를 엽니다 — 스리랑카 어디에 있든 근처의 모든 공립 및 사립 병원을 보여줍니다.';
-
-  @override
-  String get findNearestHospitalButton => '지도에서 가장 가까운 병원 찾기';
-
-  @override
-  String get addGuardianTitle => '보호자 추가';
-
-  @override
-  String get guardianPhoneNumberHint => '보호자 전화번호';
-
-  @override
-  String get addGuardianButton => '보호자 추가';
-
-  @override
-  String get sosAlertsPreparedLoggedMessage =>
-      '전화/SMS 앱을 열었습니다. 통화를 완료하거나 전송을 누르세요. 긴급 서비스에 자동으로 연락되지는 않습니다.';
 
   @override
   String get sosCriticalAlertTitle => '긴급 SOS 경보';
@@ -3815,9 +3200,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get viewPlansButton => '요금제 보기';
-
-  @override
-  String get monsoonHazardAlertTitle => '몬순 위험 경보';
 
   @override
   String districtLabel(String district) {
@@ -3846,9 +3228,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get tourActiveTitle => '투어 진행 중';
-
-  @override
-  String get preparingTourTitle => '투어 준비 중';
 
   @override
   String get everythingOnTrackMessage => '모든 것이 순조롭습니다';
@@ -3886,9 +3265,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get findVehicleLabel => '차량 찾기';
 
   @override
-  String get parkedSpotLabel => '주차 위치';
-
-  @override
   String get meetingPointLabel => '집합 장소';
 
   @override
@@ -3911,9 +3287,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get moreLabel => '더보기';
-
-  @override
-  String get shareLiveLabel => '실시간 공유';
 
   @override
   String get familyAccessLabel => '가족 접근 권한';
@@ -3997,9 +3370,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get categoryFestival => '축제';
 
   @override
-  String get categoryParty => '파티';
-
-  @override
   String get availableEventsTitle => '이용 가능한 이벤트';
 
   @override
@@ -4025,16 +3395,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get syncPreferencesButton => '취향 동기화';
-
-  @override
-  String failedToShareTimelineMessage(String error) {
-    return '타임라인 공유 실패: $error';
-  }
-
-  @override
-  String hazardWarningMessage(String message) {
-    return '🚨 위험 경고: $message';
-  }
 
   @override
   String get extremeWeatherAlertFallback => '극한 기상 경보!';
@@ -4111,9 +3471,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get recentTransactionsTitle => '최근 거래 내역';
 
   @override
-  String get totalSpentSoFarLabel => '현재까지 총 지출액';
-
-  @override
   String approxUsdLabel(String amount) {
     return '≈ US\$ $amount';
   }
@@ -4154,9 +3511,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String planLabel(String planId) {
     return '플랜: $planId';
   }
-
-  @override
-  String get startedLabel => '시작일';
 
   @override
   String get expiresLabel => '만료일';
@@ -4212,9 +3566,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get featureVerifiedBadge => '인증 배지';
 
   @override
-  String get featureStandardSos => '기본 SOS';
-
-  @override
   String get proCommanderTitle => '프로 커맨더';
 
   @override
@@ -4240,9 +3591,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get featureTeamManagement => '팀 관리';
-
-  @override
-  String get featureOperatorDashboard => '운영자 대시보드';
 
   @override
   String get featureWhiteLabelBranding => '화이트 라벨 브랜딩';
@@ -4271,9 +3619,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get manageButton => '관리';
 
   @override
-  String get mostPopularLabel => '가장 인기';
-
-  @override
   String get perMonthSlashLabel => '/월';
 
   @override
@@ -4284,16 +3629,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get goPremiumTitle => '프리미엄으로 전환';
-
-  @override
-  String get fullArUnlimitedAiTripsMessage => '전체 AR 및 무제한 AI 여행';
-
-  @override
-  String get heritageArModeTitle => '헤리티지 AR 모드';
-
-  @override
-  String get heritageArModeDescription =>
-      '고대 유적을 1:1 비율로 재현하고 역사 오디오 가이드와 함께 감상하세요.';
 
   @override
   String get oracleAiTripIntelligenceTitle => '오라클 AI 여행 인텔리전스';
@@ -4313,13 +3648,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get exclusiveCuratorDealsDescription => '엄선된 부티크 숙소의 회원 전용 할인 혜택 이용.';
-
-  @override
-  String get guardianEmergencyTranslatorTitle => '가디언 긴급 번역기';
-
-  @override
-  String get guardianEmergencyTranslatorDescription =>
-      'SOS 상황에서 스리랑카 경찰이나 병원 직원에게 상황을 구두 싱할라어로 즉시 설명해 드립니다.';
 
   @override
   String premiumActiveLabel(String plan) {
@@ -4349,31 +3677,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get premiumResetMessage => '프리미엄이 초기화되었습니다. 요금제가 다시 표시됩니다.';
 
   @override
-  String get smartTravelerTitle => '스마트 트래블러';
-
-  @override
   String get billedMonthlyLabel => '월 단위 결제';
-
-  @override
-  String get featureAiItineraries20 => '월 20회 AI 일정';
-
-  @override
-  String get featureSelectedArPlaces => '선택된 AR 장소';
 
   @override
   String get featureOfflineMapsBasic => '오프라인 지도 (기본)';
 
   @override
   String get heritagePremiumTitle => '헤리티지 프리미엄';
-
-  @override
-  String get billedYearlySaveLabel => '연 단위 결제 · 약 17% 절약';
-
-  @override
-  String get featureUnlimitedAiItineraries => '무제한 AI 일정';
-
-  @override
-  String get featureFullHeritageArAccess => '헤리티지 AR 전체 이용';
 
   @override
   String get featureAllOfflineFeatures => '모든 오프라인 기능';
@@ -4414,9 +3724,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get monthlyLabel => '월간';
-
-  @override
-  String get yearlySaveLabel => '연간 · 17% 절약';
 
   @override
   String get lockedLabelShort => '잠금';
@@ -4464,17 +3771,6 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String trialYearsLabel(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '무료 체험 $count년',
-      one: '무료 체험 1년',
-    );
-    return '$_temp0';
-  }
-
-  @override
   String trialPeriodLabel(int count) {
     return '무료 체험 $count기간';
   }
@@ -4488,9 +3784,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get savorLankaAiTitle => '세이버랑카 AI';
 
   @override
-  String get culinaryVisionEngineLabel => '요리 비전 엔진 V2';
-
-  @override
   String get liveRealTimeScannerLabel => '실시간 라이브 스캐너';
 
   @override
@@ -4502,18 +3795,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get neuralReasoningLabel => '신경망 추론';
 
   @override
-  String aiVisualMarkersFallback(String label) {
-    return 'AI가 $label과 일치하는 시각적 요리 특징을 식별했습니다.';
-  }
-
-  @override
   String get authenticityIntelligenceTitle => '정통성 인텔리전스';
 
   @override
   String get ingredientCertaintyTitle => '재료 확실성';
-
-  @override
-  String get manualCulinaryOverrideTitle => '수동 요리 재정의';
 
   @override
   String get refineIngredientsHint => '재료를 다듬어 주세요 (쉼표로 구분)...';
@@ -4560,19 +3845,10 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String get heritageNarrativeEngineTitle => '헤리티지 내러티브 엔진';
-
-  @override
   String get verifiedLegacyTitle => '검증된 유산';
 
   @override
   String get regionalTraditionTitle => '지역 전통';
-
-  @override
-  String get folkloreNarrativeTitle => '설화 이야기';
-
-  @override
-  String get culinaryGapPairingEngineTitle => '요리 공백 및 페어링 엔진';
 
   @override
   String get missingCompanionsLabel => '빠진 곁들임 요리:';
@@ -4600,9 +3876,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get proteinLabel => '단백질';
-
-  @override
-  String get carbsLabel => '탄수화물';
 
   @override
   String get fatLabel => '지방';
@@ -4653,18 +3926,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get voiceGuideLabel => '음성 가이드';
 
   @override
-  String savorLankaShareText(String name, String score) {
-    return 'Hidden Gems SL.ai에서 발견한 이 $name 레시피를 확인해 보세요! 정통 스리랑카 별미입니다. \n\n오라클 점수: $score%';
-  }
-
-  @override
-  String get savorLankaShareSubject => 'Hidden Gems SL.ai - 세이버랑카 레시피';
-
-  @override
   String get phase3CrossMatchTitle => '3단계: 교차 매칭 대체';
-
-  @override
-  String get visuallySimilarAlternativesLabel => '시각적으로 유사한 대안';
 
   @override
   String get aiCrossMatchReasoningLabel => 'AI 교차 매칭 추론:';
@@ -4679,17 +3941,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get integrityLabel => '무결성';
 
   @override
-  String get popularLabel => '인기';
-
-  @override
   String get curatorDealsTitle => '큐레이터 특가';
 
   @override
   String get noDealsRightNowTitle => '현재 이용 가능한 특가 없음';
-
-  @override
-  String get newPartnerDiscountsMessage =>
-      '새로운 파트너 할인이 정기적으로 추가됩니다 — 나중에 다시 확인해 주세요.';
 
   @override
   String percentOffLabel(int percent) {
@@ -4726,23 +3981,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get verifiableHashLabel => '검증 가능한 해시';
 
   @override
-  String get shareCollectibleButton => '수집품 공유';
-
-  @override
-  String shareCollectibleMessage(String placeName, String rarity) {
-    return 'I just earned the $placeName heritage stamp ($rarity) on Hidden Gems SL!';
-  }
-
-  @override
-  String get stampRarityCommon => '일반';
-
-  @override
-  String get stampRarityRare => '희귀';
-
-  @override
-  String get stampRarityMythic => '신화';
-
-  @override
   String get audioGuideLabel => '오디오 가이드';
 
   @override
@@ -4767,14 +4005,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get joinButtonUppercase => '참가';
 
   @override
-  String get tapFlatSurfaceMessage => '👆 평평한 표면을 탭하여 모델을 배치하세요';
-
-  @override
-  String groupTourStartedCodeLabel(String code) {
-    return '그룹 투어가 시작되었습니다! 코드: $code';
-  }
-
-  @override
   String get invalidSessionCodeMessage => '잘못된 세션 코드';
 
   @override
@@ -4791,58 +4021,6 @@ class AppLocalizationsKo extends AppLocalizations {
   @override
   String codeColonLabel(String code) {
     return '코드: $code';
-  }
-
-  @override
-  String get thenLabel => '이전';
-
-  @override
-  String get nowLabel => '현재';
-
-  @override
-  String get resetLabel => '초기화';
-
-  @override
-  String get scalePlusLabel => '확대+';
-
-  @override
-  String get scaleMinusLabel => '축소-';
-
-  @override
-  String get memoryLabel => '메모리';
-
-  @override
-  String get removeLabel => '제거';
-
-  @override
-  String get placeLabel => '배치';
-
-  @override
-  String get historicalInfoComingSoonMessage => '역사 정보가 곧 제공될 예정입니다.';
-
-  @override
-  String get preparingHeritageAssetsMessage => '유산 자산 준비 중...';
-
-  @override
-  String progressSizeLabel(int progress, String size) {
-    return '$progress% • $size MB';
-  }
-
-  @override
-  String get arModelPlacementFailedMessage =>
-      '이 모델을 배치할 수 없습니다. 파일이 없거나 손상되었을 수 있습니다. 다시 시도하세요.';
-
-  @override
-  String arSessionErrorMessage(String message) {
-    return 'AR 오류: $message';
-  }
-
-  @override
-  String get largeDownloadWarningTitle => '대용량 다운로드';
-
-  @override
-  String largeDownloadWarningMessage(String size) {
-    return '이 3D 모델은 약 $size MB입니다. 모바일 데이터를 사용하여 계속할까요?';
   }
 
   @override
@@ -4873,24 +4051,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get premiumHeritageSessionLabel => '프리미엄 유산 세션';
 
   @override
-  String get artifactDiscoveredLabel => '유물 발견!';
-
-  @override
-  String ptsRarityLabel(int points, String rarity) {
-    return '+$points 포인트 • $rarity';
-  }
-
-  @override
-  String get hiddenGemsSlWatermark => 'HIDDEN GEMS SL';
-
-  @override
-  String get heritageArWatermark => 'HERITAGE AR';
-
-  @override
   String get captureSuccessfulTitle => '캡처 성공!';
-
-  @override
-  String get shareDiscoveryMessage => '당신의 역사적 발견을 세상과 공유하세요';
 
   @override
   String get instagramLabel => '인스타그램';
@@ -4902,24 +4063,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get savedLabelShort => '저장됨';
 
   @override
-  String sharePlatformCaptionInstagram(String placeName) {
-    return '#HiddenGemsSL과 함께 AR로 $placeName을(를) 탐험하고 있어요';
-  }
-
-  @override
-  String get sharePlatformCaptionTiktok =>
-      '역사가 살아납니다! #HiddenGemsSL #HeritageAR';
-
-  @override
   String get photoSavedGalleryMessage => '사진이 갤러리에 저장되었습니다!';
-
-  @override
-  String get backToArButton => 'AR로 돌아가기';
-
-  @override
-  String distanceToTargetLabel(String distance, String placeName) {
-    return '$placeName까지 ${distance}m';
-  }
 
   @override
   String get recommendedLabel => '추천';
@@ -4933,12 +4077,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get viewButtonUppercase => '보기';
 
   @override
-  String get loginToLeaveMemoryMessage => 'AR 메모리를 남기려면 로그인하세요!';
-
-  @override
-  String get leaveArMemoryTitle => 'AR 메모리 남기기';
-
-  @override
   String get whatDoYouSeeHereHint => '여기서 무엇이 보이나요?';
 
   @override
@@ -4946,9 +4084,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get dropButton => '남기기';
-
-  @override
-  String get memoryDroppedMessage => '메모리가 AR 세계에 남겨졌습니다!';
 
   @override
   String get explorerFallback => '탐험가';
@@ -4959,41 +4094,13 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String get searchingLabel => '검색 중...';
-
-  @override
   String get cameraAccessNeededTitle => '카메라 접근 권한이 필요합니다';
-
-  @override
-  String get arNotAvailableDeviceTitle => '이 기기에서는 AR을 사용할 수 없습니다';
-
-  @override
-  String get arCouldntLoadTitle => '이번에는 AR을 불러올 수 없습니다';
-
-  @override
-  String get cameraAccessNeededMessage =>
-      'AR 기능을 사용하려면 카메라 접근 권한이 필요합니다. 대신 영화 같은 재구성을 보여드립니다.';
-
-  @override
-  String get arNotAvailableMessage => '대신 같은 시대의 영화 같은 360° 뷰를 보여드립니다.';
-
-  @override
-  String get arCouldntLoadMessage =>
-      '역사적인 3D 모델을 불러올 수 없었습니다. 대신 영화 같은 대체 화면을 보여드립니다.';
 
   @override
   String get closeButtonLabel => '닫기';
 
   @override
   String get watchAdToUnlockButton => '광고를 보고 잠금 해제';
-
-  @override
-  String get oracleRewardFallbackMessage =>
-      '✨ 오라클 보상이 활성화되었습니다! 대체 모드와 프리미엄 콘텐츠가 잠금 해제되었습니다.';
-
-  @override
-  String get arNotAvailableInfoBarMessage =>
-      '이 기기에서는 AR을 사용할 수 없습니다 · 360° 뷰 표시 중';
 
   @override
   String get cinematicPreviewUnavailableMessage => '영화 같은 미리보기를 사용할 수 없습니다';
@@ -5018,37 +4125,16 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String get listenToNarrationLabel => '내레이션 듣기';
-
-  @override
   String get sinhalaEnglishAvailableLabel => '싱할라어 및 영어 제공';
 
   @override
   String get illustrationCaptionLabel => '삽화: 고대 공학 (컨셉 아트)';
 
   @override
-  String get mode360Label => '360°';
-
-  @override
   String get mode3dLabel => '3D';
 
   @override
   String get modeStoryLabel => '이야기';
-
-  @override
-  String get unlockArHeritageModeTitle => 'AR 유산 모드 잠금 해제';
-
-  @override
-  String get arHeritageModeSubtitle => '수천 년 전 모습 그대로의 스리랑카를 경험하세요.';
-
-  @override
-  String get featureAncient3dReconstruction => '고대 3D 재구성';
-
-  @override
-  String get featureAudioNarrationBilingual => '오디오 내레이션 (සිංහල / English)';
-
-  @override
-  String get featureArPhotoCapture => 'AR 사진 캡처 및 소셜 공유';
 
   @override
   String get pricingTrialLabel => '스토어에서 제공하는 경우 무료 체험';
@@ -5064,9 +4150,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get notNowButtonLabel => '나중에';
-
-  @override
-  String get ancientArtifactsLabel => '고대 유물';
 
   @override
   String get adminGuideVerificationTile => '가이드 인증';
@@ -5176,12 +4259,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get tourTypesSectionTitle => '제공 투어';
 
   @override
-  String get tourTypeBoatSafari => '보트 사파리';
-
-  @override
-  String get tourTypeWildlifeSafari => '야생동물 사파리';
-
-  @override
   String get tourTypeHiking => '하이킹';
 
   @override
@@ -5203,9 +4280,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get reportReasonSpam => '스팸';
 
   @override
-  String get reportReasonHarassment => '괴롭힘';
-
-  @override
   String get reportReasonOther => '기타';
 
   @override
@@ -5224,9 +4298,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get filterApplyButton => '필터 적용';
 
   @override
-  String get filterClearButton => '지우기';
-
-  @override
   String get filterRegionLabel => '지역';
 
   @override
@@ -5240,9 +4311,6 @@ class AppLocalizationsKo extends AppLocalizations {
   @override
   String get sosFailedAppLaunch =>
       '전화 또는 SMS 앱을 열 수 없습니다. 지금 119 또는 1990으로 전화하십시오.';
-
-  @override
-  String get weatherConditionClear => '맑음';
 
   @override
   String get weatherConditionClouds => '구름 많음';
@@ -5266,7 +4334,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get moreToolsTitle => '추가 도구 및 경험';
 
   @override
-  String get moreToolsSubtitle => '음식 AI, AR 포털, 오라클, 패스포트 및 예산 관리';
+  String get moreToolsSubtitle => '음식 AI, 오라클, 패스포트 및 예산 관리';
 
   @override
   String get savedPlacesHubTitle => '저장된 장소 및 위시리스트';
@@ -5282,9 +4350,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get foodScannerTooltip => '음식 스캐너';
-
-  @override
-  String get familyShareTitle => '가족 공유';
 
   @override
   String get waterSafetyTitle => '식수 및 현지 천연 음료';
@@ -5324,10 +4389,6 @@ class AppLocalizationsKo extends AppLocalizations {
       '얼음 모양만으로 안전을 보장할 수 없습니다. 식수로 만들었는지 확인하거나 얼음을 피하세요';
 
   @override
-  String get tapWaterWarning =>
-      '수질은 장소마다 다릅니다. 확실하지 않으면 끓이거나 여과한 물 또는 밀봉 생수를 사용하세요';
-
-  @override
   String get jeewaniTip => '등록된 ORS를 약사에게 문의하고 포장 지침을 따르세요. 심한 증상은 진료를 받으세요';
 
   @override
@@ -5363,4 +4424,624 @@ class AppLocalizationsKo extends AppLocalizations {
   @override
   String get foodSafetyDisclaimer =>
       '일반적인 안내일 뿐입니다. 증상이 지속되거나 심한 경우 전문의의 진료를 받으세요.';
+
+  @override
+  String bookmarkedCount(int count) {
+    return '북마크 ($count)';
+  }
+
+  @override
+  String get noBookmarkedPlaces => '북마크한 장소가 없습니다';
+
+  @override
+  String get noBookmarkedPlacesHint => '장소의 북마크 아이콘을 눌러 저장하세요.';
+
+  @override
+  String get hydrationSummary => '현지 음료 · 밀봉 생수 · 안전한 얼음 안내';
+
+  @override
+  String get itinerary => '일정';
+
+  @override
+  String get nearYou => '내 근처';
+
+  @override
+  String get searchHint => '숨겨진 명소 검색...';
+
+  @override
+  String get bestNatureNearby => '근처 최고의 자연 명소';
+
+  @override
+  String get allNearbyPlacesTitle => '주변의 모든 장소';
+
+  @override
+  String get noMatchesNearby => '근처에 일치하는 결과가 없습니다';
+
+  @override
+  String get parking => '주차';
+
+  @override
+  String get travelModeCar => 'Car';
+
+  @override
+  String nearbyNowLabel(String km) {
+    return '$km km away — nearby now';
+  }
+
+  @override
+  String get atLeast6Chars => '6자 이상 입력하세요';
+
+  @override
+  String get localGemsNearby => '근처의 로컬 명소';
+
+  @override
+  String get searchSecretLocations => '숨겨진 장소 검색...';
+
+  @override
+  String get startingPointLabel => '출발지';
+
+  @override
+  String get startingPointHint => '공항, 콜롬보...';
+
+  @override
+  String get startDateLabel => '출발 날짜';
+
+  @override
+  String get travelStandardLabel => '여행 등급';
+
+  @override
+  String premiumFeatureSnackbar(String featureName) {
+    return '$featureName은(는) 프리미엄 기능입니다.';
+  }
+
+  @override
+  String get appearance => '화면 테마';
+
+  @override
+  String get themeDark => '다크';
+
+  @override
+  String get smartExpenseAdvisor => '스마트 지출 어드바이저';
+
+  @override
+  String get howToEarnPointsHeading => '포인트 적립 방법:';
+
+  @override
+  String get earnPointsReviewsTitle => '장소 리뷰 남기기';
+
+  @override
+  String get earnPointsReviewsAmount => '+10점';
+
+  @override
+  String get earnPointsReviewsSubtitle => '현지 가이드와 여행자를 응원하세요';
+
+  @override
+  String get earnPointsFoodTitle => '현지 음식 맛보기';
+
+  @override
+  String get earnPointsFoodAmount => '+15점';
+
+  @override
+  String get earnPointsFoodSubtitle => '진정한 현지 식당에 힘을 실어주세요';
+
+  @override
+  String get earnPointsHeritageTitle => '유적지 방문하기';
+
+  @override
+  String get earnPointsHeritageAmount => '+20점';
+
+  @override
+  String get earnPointsHeritageSubtitle => '문화 보존을 촉진하세요';
+
+  @override
+  String get rewardsPerksHeading => '잠금 해제되는 보상 및 혜택:';
+
+  @override
+  String get rewardEcoGuardianBadgeTitle => '에코 가디언 배지';
+
+  @override
+  String get rewardEcoGuardianBadgeSubtitle => '리더보드와 리뷰에서 돋보이세요';
+
+  @override
+  String get rewardPartnerDiscountsTitle => '파트너 할인';
+
+  @override
+  String get rewardPartnerDiscountsSubtitle => '인증된 친환경 숙소 및 카페에서 5%~15% 할인';
+
+  @override
+  String get rewardFreePremiumPerksTitle => '무료 프리미엄 혜택';
+
+  @override
+  String get rewardRealWorldImpactTitle => '현실 세계의 영향';
+
+  @override
+  String get rewardRealWorldImpactSubtitle => '500점을 달성하면 스리랑카에 나무를 심어드립니다!';
+
+  @override
+  String get tourDashboard => '투어 대시보드';
+
+  @override
+  String get tourDashboardSubtitle => '진행 중인 투어, QR, 등록 정보 및 안전';
+
+  @override
+  String get earnings => '수익';
+
+  @override
+  String get earningsSubtitle => '정산 및 통계';
+
+  @override
+  String get familySharing => '가족 공유';
+
+  @override
+  String get shareAppMessage =>
+      'Hidden Gems SL에 참여하세요! 🌍 https://hiddengems.lk';
+
+  @override
+  String get shareAppSubject => 'Hidden Gems SL에서 함께해요!';
+
+  @override
+  String get landmarkScannerTitle => '랜드마크 스캐너';
+
+  @override
+  String get analyzeLandmarkButton => '랜드마크 분석';
+
+  @override
+  String get unlockLandmarkScanningTitle => '랜드마크 스캔 잠금 해제';
+
+  @override
+  String get unlockLandmarkScanningSubtitle =>
+      '카메라를 어느 장소든 비추면 숨겨진 이야기가 펼쳐집니다.';
+
+  @override
+  String get guideLiveMarkerLabel => '가이드 (실시간)';
+
+  @override
+  String get vehicleMarkerLabel => '탑승 차량';
+
+  @override
+  String meetingPointMarkerLabel(String pointName) {
+    return '만남의 장소: $pointName';
+  }
+
+  @override
+  String mapMarkerDaySnippet(int day, String time) {
+    return '$day일차 • $time';
+  }
+
+  @override
+  String get planRemovedSnackbar => '오라클 캐시에서 일정이 삭제되었습니다';
+
+  @override
+  String get clearSavedTripsTitle => '저장된 여행 삭제';
+
+  @override
+  String get clearSavedTripsMessage => '이 기기에 저장된 모든 여행이 영구적으로 삭제됩니다.';
+
+  @override
+  String get fieldNotePopularity => '인기도';
+
+  @override
+  String get fieldNoteFoodNearby => '주변 식당';
+
+  @override
+  String get fieldNoteWildlifeHazard => '야생동물 위험';
+
+  @override
+  String get bookmarkAddedSnackbar => '✨ 여정에 표시되었습니다!';
+
+  @override
+  String get bookmarkRemovedSnackbar => '북마크에서 삭제되었습니다.';
+
+  @override
+  String itineraryAddedSnackbar(String placeName) {
+    return '🗺️ $placeName이(가) 당신의 여정에 추가되었습니다!';
+  }
+
+  @override
+  String get itineraryRemovedSnackbar => '일정에서 삭제되었습니다.';
+
+  @override
+  String get bonusSessionUnlockedSnackbar => '보너스 세션이 잠금 해제되었습니다! 다시 실행해 보세요.';
+
+  @override
+  String get bonusDownloadUnlockedSnackbar =>
+      '보너스 다운로드가 잠금 해제되었습니다! 다시 다운로드해 보세요.';
+
+  @override
+  String calendarEventTitle(String touristName, int guestCount) {
+    return '투어: $touristName (게스트 $guestCount명)';
+  }
+
+  @override
+  String calendarSyncSuccessMessage(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '예약 $count건을 캘린더에 동기화했습니다.',
+      one: '예약 1건을 캘린더에 동기화했습니다.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String calendarSyncFailedMessage(String error) {
+    return '캘린더 동기화 실패: $error';
+  }
+
+  @override
+  String get syncToCalendarTooltip => '캘린더에 동기화';
+
+  @override
+  String earningsAwaitingConfirmationNote(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count bookings',
+      one: '1 booking',
+    );
+    return '$_temp0 still awaiting server payout confirmation';
+  }
+
+  @override
+  String get startTourSessionButtonLabel => '투어 세션 시작 / 실행';
+
+  @override
+  String familyShareLinkLimitReached(int maxLinks) {
+    return '⚠️ 활성 공유 링크 한도($maxLinks개)에 도달했습니다. 새로 만들려면 기존 링크를 삭제해 주세요.';
+  }
+
+  @override
+  String get familyShareRecipientNameRequired => '⚠️ 수신자 이름을 입력해 주세요.';
+
+  @override
+  String get familyShareNoActiveSessionError =>
+      '⚠️ 먼저 활성 투어 세션을 시작해 주세요 — 아직 공유할 내용이 없습니다.';
+
+  @override
+  String familyShareLinkGeneratedSuccess(String name) {
+    return '✅ \"$name\"님을 위한 미션 링크가 생성되었습니다!';
+  }
+
+  @override
+  String get familyShareActiveLinksTitle => '활성 링크';
+
+  @override
+  String get familyShareNewLinkButton => '+ 새로 만들기';
+
+  @override
+  String get familyShareAppBarTitle => '가족 공유';
+
+  @override
+  String get familyShareHeroSubtitle => '가족이 안전하게 여행 상태를 확인할 수 있도록 하세요';
+
+  @override
+  String get familyShareNoActiveSessionNotice =>
+      '현재 진행 중인 투어가 없습니다 — 투어를 시작하거나 참여하면 실시간 공유 링크를 생성할 수 있습니다.';
+
+  @override
+  String get familyShareEmptyStateMessage => '활성 공유 링크가 없습니다';
+
+  @override
+  String get familyShareExpiredBadge => '만료됨';
+
+  @override
+  String familyShareViewedCountBadge(int count) {
+    return '$count회 조회됨';
+  }
+
+  @override
+  String get familyShareLinkNoLongerValid => '더 이상 유효하지 않음';
+
+  @override
+  String familyShareLinkExpiresAt(String time) {
+    return '만료: $time';
+  }
+
+  @override
+  String get familyShareCopyLinkSnackbar => '📋 초대 코드가 클립보드에 복사되었습니다!';
+
+  @override
+  String get familyShareRemoveLinkDialogTitle => '링크를 삭제하시겠습니까?';
+
+  @override
+  String familyShareRemoveLinkDialogBody(String recipientName) {
+    return '\"$recipientName\"님의 공유 접근 권한이 취소됩니다.';
+  }
+
+  @override
+  String familyShareLinkRemovedSnackbar(String recipientName) {
+    return '\"$recipientName\"님의 링크가 삭제되었습니다.';
+  }
+
+  @override
+  String get familyShareRemoveButton => '삭제';
+
+  @override
+  String get familyShareCreateSheetTitle => '공유 링크 생성';
+
+  @override
+  String get familyShareRecipientNameLabel => '수신자 이름';
+
+  @override
+  String get familyShareRecipientNameHint => '예: 엄마, 아빠, 사무실';
+
+  @override
+  String get familyShareExpiryLabel => '만료 기한';
+
+  @override
+  String get familyShareDuration4Hours => '4시간';
+
+  @override
+  String get familyShareDuration12Hours => '12시간';
+
+  @override
+  String get familyShareDuration24Hours => '24시간';
+
+  @override
+  String get familyShareToggleStatusLabel => '실시간 상태 공유';
+
+  @override
+  String get familyShareToggleIdentityLabel => '가이드 신원 공유';
+
+  @override
+  String get familyShareToggleMeetingPointLabel => '만남 장소 공유';
+
+  @override
+  String get familyShareToggleEmergencyLabel => '긴급 알림 공유';
+
+  @override
+  String get familyShareGenerateLinkButton => '링크 생성';
+
+  @override
+  String get marketplaceSearchHint => '이름, 언어 또는 도시로 검색...';
+
+  @override
+  String get vehiclePositionMarkedMessage => '차량 위치가 표시되었습니다';
+
+  @override
+  String get tourDashboardTitle => '투어 대시보드';
+
+  @override
+  String get startTourSessionButton => '투어 세션 시작';
+
+  @override
+  String get tourSessionStartedMessage => '🚀 투어 세션이 시작되었습니다!';
+
+  @override
+  String get markVehicleButton => '차량 표시';
+
+  @override
+  String get weatherHazardLoggedMessage => '✅ 기상 위험이 안전 콘솔에 기록되었습니다!';
+
+  @override
+  String get earningsTitle => '수익';
+
+  @override
+  String get pleaseLogInViewEarningsMessage => '수익을 보려면 로그인하세요.';
+
+  @override
+  String get totalNetEarningsLabel => '총 순수익';
+
+  @override
+  String guestCountParenthesesLabel(int count) {
+    return '게스트 $count명';
+  }
+
+  @override
+  String get shareLocalKnowledgeTitle => '현지 지식을 공유하세요';
+
+  @override
+  String get guideTravelersEarnSubtitle => '여행자를 안내하고 원하는 일정에 맞춰 수익을 올리세요.';
+
+  @override
+  String get broadcastTypeDeparture => '출발';
+
+  @override
+  String get standardPackageLabel => '기본 패키지';
+
+  @override
+  String yearsExperienceLabel(String years) {
+    return '$years년';
+  }
+
+  @override
+  String get primaryCategoryLabel => '주요 카테고리';
+
+  @override
+  String get availabilityCalendarTitle => '예약 가능 일정';
+
+  @override
+  String get sessionWithinSafetyParamsMessage => '세션 운영이 안전 기준 범위 내에 있습니다.';
+
+  @override
+  String get medicalFacilitiesNearbyTitle => '근처 의료 시설';
+
+  @override
+  String get privateGuardiansTitle => '개인 보호자';
+
+  @override
+  String get noGuardiansAssignedMessage =>
+      '지정된 보호자가 없습니다. 신호는 기본적으로 긴급 서비스로 전송됩니다.';
+
+  @override
+  String get nearestHospitalTitle => '어디에 있든 가장 가까운 병원';
+
+  @override
+  String get findNearestHospitalButton => '지도에서 가장 가까운 병원 찾기';
+
+  @override
+  String get addGuardianTitle => '보호자 추가';
+
+  @override
+  String get guardianPhoneNumberHint => '보호자 전화번호';
+
+  @override
+  String get addGuardianButton => '보호자 추가';
+
+  @override
+  String get sosAlertsPreparedLoggedMessage =>
+      '전화/SMS 앱을 열었습니다. 통화를 완료하거나 전송을 누르세요. 긴급 서비스에 자동으로 연락되지는 않습니다.';
+
+  @override
+  String get monsoonHazardAlertTitle => '몬순 위험 경보';
+
+  @override
+  String get preparingTourTitle => '투어 준비 중';
+
+  @override
+  String get parkedSpotLabel => '주차 위치';
+
+  @override
+  String get shareLiveLabel => '실시간 공유';
+
+  @override
+  String get categoryParty => '파티';
+
+  @override
+  String failedToShareTimelineMessage(String error) {
+    return '타임라인 공유 실패: $error';
+  }
+
+  @override
+  String hazardWarningMessage(String message) {
+    return '🚨 위험 경고: $message';
+  }
+
+  @override
+  String get totalSpentSoFarLabel => '현재까지 총 지출액';
+
+  @override
+  String get startedLabel => '시작일';
+
+  @override
+  String get featureStandardSos => '기본 SOS';
+
+  @override
+  String get featureOperatorDashboard => '운영자 대시보드';
+
+  @override
+  String get mostPopularLabel => '가장 인기';
+
+  @override
+  String get guardianEmergencyTranslatorTitle => '가디언 긴급 번역기';
+
+  @override
+  String get guardianEmergencyTranslatorDescription =>
+      'SOS 상황에서 스리랑카 경찰이나 병원 직원에게 상황을 구두 싱할라어로 즉시 설명해 드립니다.';
+
+  @override
+  String get smartTravelerTitle => '스마트 트래블러';
+
+  @override
+  String get featureAiItineraries20 => '월 20회 AI 일정';
+
+  @override
+  String get billedYearlySaveLabel => '연 단위 결제 · 약 17% 절약';
+
+  @override
+  String get featureUnlimitedAiItineraries => '무제한 AI 일정';
+
+  @override
+  String get yearlySaveLabel => '연간 · 17% 절약';
+
+  @override
+  String trialYearsLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '무료 체험 $count년',
+      one: '무료 체험 1년',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get culinaryVisionEngineLabel => '요리 비전 엔진 V2';
+
+  @override
+  String aiVisualMarkersFallback(String label) {
+    return 'AI가 $label과 일치하는 시각적 요리 특징을 식별했습니다.';
+  }
+
+  @override
+  String get manualCulinaryOverrideTitle => '수동 요리 재정의';
+
+  @override
+  String get heritageNarrativeEngineTitle => '헤리티지 내러티브 엔진';
+
+  @override
+  String get folkloreNarrativeTitle => '설화 이야기';
+
+  @override
+  String get culinaryGapPairingEngineTitle => '요리 공백 및 페어링 엔진';
+
+  @override
+  String get carbsLabel => '탄수화물';
+
+  @override
+  String savorLankaShareText(String name, String score) {
+    return 'Hidden Gems SL.ai에서 발견한 이 $name 레시피를 확인해 보세요! 정통 스리랑카 별미입니다. \n\n오라클 점수: $score%';
+  }
+
+  @override
+  String get savorLankaShareSubject => 'Hidden Gems SL.ai - 세이버랑카 레시피';
+
+  @override
+  String get visuallySimilarAlternativesLabel => '시각적으로 유사한 대안';
+
+  @override
+  String get popularLabel => '인기';
+
+  @override
+  String get newPartnerDiscountsMessage =>
+      '새로운 파트너 할인이 정기적으로 추가됩니다 — 나중에 다시 확인해 주세요.';
+
+  @override
+  String get shareCollectibleButton => '수집품 공유';
+
+  @override
+  String shareCollectibleMessage(String placeName, String rarity) {
+    return 'I just earned the $placeName heritage stamp ($rarity) on Hidden Gems SL!';
+  }
+
+  @override
+  String get stampRarityCommon => '일반';
+
+  @override
+  String get stampRarityRare => '희귀';
+
+  @override
+  String get stampRarityMythic => '신화';
+
+  @override
+  String groupTourStartedCodeLabel(String code) {
+    return '그룹 투어가 시작되었습니다! 코드: $code';
+  }
+
+  @override
+  String ptsRarityLabel(int points, String rarity) {
+    return '+$points 포인트 • $rarity';
+  }
+
+  @override
+  String get tourTypeBoatSafari => '보트 사파리';
+
+  @override
+  String get tourTypeWildlifeSafari => '야생동물 사파리';
+
+  @override
+  String get reportReasonHarassment => '괴롭힘';
+
+  @override
+  String get filterClearButton => '지우기';
+
+  @override
+  String get weatherConditionClear => '맑음';
+
+  @override
+  String get familyShareTitle => '가족 공유';
+
+  @override
+  String get tapWaterWarning =>
+      '수질은 장소마다 다릅니다. 확실하지 않으면 끓이거나 여과한 물 또는 밀봉 생수를 사용하세요';
 }

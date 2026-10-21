@@ -52,20 +52,8 @@ class BookingRepository {
       isPriority = await _checkPriorityLeads(request.guideId!);
     }
 
-    final newRequest = BookingRequest(
+    final newRequest = request.asPendingSubmission(
       bookingId: doc.id,
-      touristId: request.touristId,
-      guideId: request.guideId,
-      operatorId: request.operatorId,
-      packageId: request.packageId,
-      requestedDate: request.requestedDate,
-      guestCount: request.guestCount,
-      notes: request.notes,
-      currency: request.currency ?? 'LKR',
-      packageSnapshot: request.packageSnapshot,
-      includedItemsSnapshot: request.includedItemsSnapshot,
-      status: 'pending',
-      createdAt: DateTime.now(),
       isPriority: isPriority,
     );
 
@@ -290,8 +278,7 @@ class BookingRepository {
       ).timeout(const Duration(seconds: 10));
 
       if (response.statusCode != 200) {
-        SecureLogger.warning(
-            "Quota check failed (${response.statusCode})",
+        SecureLogger.warning("Quota check failed (${response.statusCode})",
             tag: "Booking");
         throw Exception('Quota check failed (${response.statusCode})');
       }
@@ -365,6 +352,25 @@ class BookingRepository {
         .timeout(const Duration(seconds: 15));
     if (response.statusCode != 200) {
       throw Exception('Could not accept booking (${response.statusCode}).');
+    }
+  }
+
+  Future<void> cancelByTourist(String bookingId) async {
+    final response = await SecureHttpClient(http.Client()).post(
+      Uri.parse(
+          '${AppConfig.laravelUrl}/bookings/$bookingId/cancel-by-tourist'),
+      headers: {
+        'Accept': 'application/json',
+        'X-API-KEY': AppConfig.hiddenGemsApiKey,
+      },
+    ).timeout(const Duration(seconds: 10));
+    if (response.statusCode != 200) {
+      String message = 'Could not cancel booking (${response.statusCode}).';
+      try {
+        final data = json.decode(response.body) as Map<String, dynamic>;
+        message = data['error'] as String? ?? message;
+      } catch (_) {}
+      throw Exception(message);
     }
   }
 }

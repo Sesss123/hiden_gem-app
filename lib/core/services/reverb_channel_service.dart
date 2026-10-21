@@ -9,7 +9,7 @@ import '../utils/secure_logger.dart';
 ///
 /// Reused by any repository/service that wants a live push update for data
 /// it already fetches via a cached HTTP endpoint (see MarketplaceRepository,
-/// ARVideoRepository) — the WebSocket push is purely an optimization layered
+/// marketplace repositories) — the WebSocket push is an optimization layered
 /// on top of that existing HTTP-cache path, never a replacement for it: if
 /// the socket never connects or drops, callers keep working exactly as they
 /// did before this class existed.

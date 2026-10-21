@@ -14,8 +14,6 @@ class DashboardController extends Controller
     public function index()
     {
         $totalPlaces = Place::count();
-        $arPlaces = Place::where('ar_supported', true)->count();
-
         $totalUsers = User::count();
         $hasSubTier = Schema::hasColumn('users', 'subscription_tier');
         $proUsers = $hasSubTier ? User::where('subscription_tier', 'PRO')->count() : 0;
@@ -55,7 +53,7 @@ class DashboardController extends Controller
         $duplicatesCount = DB::table(DB::raw('(select 1 from places where is_deleted = 0 group by name, district having count(*) > 1) as dup_groups'))->count();
 
         return view('admin.dashboard', compact(
-            'totalPlaces', 'arPlaces',
+            'totalPlaces',
             'totalUsers', 'proUsers', 'vipUsers',
             'totalWishlists', 'byDistrict', 'byCategory', 'recentPlaces', 'duplicates', 'duplicatesCount'
         ));

@@ -6,7 +6,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:hidden_gems_sl/l10n/app_localizations.dart';
-import '../../core/config/app_config.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/theme/oracle_ui_system.dart';
 import '../../core/utils/secure_logger.dart';
@@ -42,6 +41,7 @@ import 'family_share_screen.dart';
 import 'budget_tracker_screen.dart';
 import 'budget_concierge_screen.dart';
 import '../../core/services/weather_localization_service.dart';
+import '../../core/services/current_location_service.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   final bool isOffline;
@@ -51,7 +51,8 @@ class HomeScreen extends ConsumerStatefulWidget {
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends ConsumerState<HomeScreen> {
+class _HomeScreenState extends ConsumerState<HomeScreen>
+    with WidgetsBindingObserver {
   int _selectedIndex = 0; // For bottom navigation
   String?
       _discoveryCategoryFilter; // Pending category tapped from "Explore by Category"
@@ -61,6 +62,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   List<DiscoveryPlace> _localGems = [];
   WeatherSnapshot? _weather;
   bool _showNearbyNowBanner = true;
+  Position? _currentPosition;
+  StreamSubscription<Position>? _positionSubscription;
+  int _locationLoadGeneration = 0;
+
+  static const double _nearbyRadiusKm = 100;
+  static const int _locationUpdateDistanceMeters = 250;
 
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = "";
@@ -100,16 +107,57 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _checkTodayEvents();
-    _loadLocalGems();
+    _startLocationTracking();
   }
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _startLocationTracking();
+    }
   }
 
-  Future<void> _loadLocalGems() async {
+  Future<void> _startLocationTracking() async {
+    await _loadLocalGems();
+    final permission = await Geolocator.checkPermission();
+    if (permission != LocationPermission.always &&
+        permission != LocationPermission.whileInUse) {
+      return;
+    }
+    if (!mounted) return;
+
+    await _positionSubscription?.cancel();
+    _positionSubscription = Geolocator.getPositionStream(
+      locationSettings: const LocationSettings(
+        accuracy: LocationAccuracy.high,
+        distanceFilter: _locationUpdateDistanceMeters,
+      ),
+    ).listen(
+      _handleTrackedPosition,
+      onError: (Object error) {
+        SecureLogger.warning('Live location tracking paused: $error');
+      },
+    );
+  }
+
+  void _handleTrackedPosition(Position position) {
+    final previous = _currentPosition;
+    if (previous != null) {
+      final movedMeters = Geolocator.distanceBetween(
+        previous.latitude,
+        previous.longitude,
+        position.latitude,
+        position.longitude,
+      );
+      if (movedMeters < _locationUpdateDistanceMeters) return;
+    }
+    unawaited(_loadLocalGems(position: position));
+  }
+
+  Future<void> _loadLocalGems({Position? position}) async {
+    final generation = ++_locationLoadGeneration;
     try {
       final repo = ref.read(discoveryRepositoryProvider);
       // Without a user position, getDiscoveryPlaces() skips its
@@ -117,37 +165,83 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       // order — so "Local Gems Nearby" and the Featured card (which uses
       // _localGems.first) were effectively showing a random place instead
       // of the closest one.
-      Position? position;
-      try {
-        position =
-            await repo.getCurrentLocation().timeout(const Duration(seconds: 8));
-      } catch (_) {
-        // Location unavailable/denied — fall through with unsorted places
-        // rather than blocking the home screen on a permission prompt.
+      if (position == null) {
+        try {
+          position = await repo.getCurrentLocation();
+        } catch (_) {
+          // Location unavailable/denied. Do not keep stale nearby data.
+        }
+      }
+      if (position == null) {
+        if (mounted && generation == _locationLoadGeneration) {
+          setState(() {
+            _currentPosition = null;
+            _localGems = [];
+            _weather = null;
+          });
+        }
+        return;
       }
       final result = await repo.getDiscoveryPlaces(
-          userLat: position?.latitude, userLng: position?.longitude);
-      if (mounted) {
+          userLat: position.latitude, userLng: position.longitude);
+      if (mounted && generation == _locationLoadGeneration) {
         setState(() {
-          _localGems = result.valueOrNull ?? [];
+          _currentPosition = position;
+          _localGems = (result.valueOrNull ?? [])
+              .where((place) => place.distanceKm <= _nearbyRadiusKm)
+              .toList();
+          _weather = null;
         });
       }
-      if (position != null) {
-        _loadWeather(position.latitude, position.longitude);
-      }
+      await _loadWeather(
+        position.latitude,
+        position.longitude,
+        generation: generation,
+      );
     } catch (e) {
       SecureLogger.error("Failed to load local gems in HomeScreen: $e");
-      if (mounted) {
+      if (mounted && generation == _locationLoadGeneration) {
         setState(() {
+          _currentPosition = null;
           _localGems = [];
+          _weather = null;
         });
       }
     }
   }
 
-  Future<void> _loadWeather(double lat, double lng) async {
+  Future<void> _openMapAtCurrentLocation() async {
+    Haptics.medium();
+    try {
+      final position = await CurrentLocationService.getRequiredPosition();
+      if (!mounted) return;
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => MapExplorerScreen(
+            initialPosition: LatLng(position.latitude, position.longitude),
+          ),
+        ),
+      );
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!
+              .couldNotGetLocationMessage(error.toString())),
+          backgroundColor: Theme.of(context).colorScheme.error,
+        ),
+      );
+    }
+  }
+
+  Future<void> _loadWeather(
+    double lat,
+    double lng, {
+    required int generation,
+  }) async {
     final snapshot = await WeatherService.getCurrentWeather(lat: lat, lng: lng);
-    if (mounted && snapshot != null) {
+    if (mounted && generation == _locationLoadGeneration && snapshot != null) {
       setState(() => _weather = snapshot);
     }
   }
@@ -181,6 +275,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _positionSubscription?.cancel();
     _searchController.dispose();
     super.dispose();
   }
@@ -518,17 +614,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 l10n.mapActionLabel,
                 Icons.map_rounded,
                 const Color(0xFF29B6F6),
-                () {
-                  Haptics.medium();
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const MapExplorerScreen(
-                        initialPosition: LatLng(6.9271, 79.8612),
-                      ),
-                    ),
-                  );
-                },
+                _openMapAtCurrentLocation,
               ),
             ),
             // 4. Safety
@@ -1046,7 +1132,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           _buildHomeContent(l10n, isOffline),
           DiscoveryScreen(
               key: ValueKey('discovery_$_discoveryCategoryFilter'),
-              initialFilter: _discoveryCategoryFilter),
+              initialFilter: _discoveryCategoryFilter,
+              currentPosition: _currentPosition),
           const EventCalendarScreen(),
           const ProfileScreen(),
         ],

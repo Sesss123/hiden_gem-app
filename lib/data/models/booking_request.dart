@@ -1,19 +1,21 @@
 class BookingRequest {
   final String bookingId;
   final String touristId;
-  final String? touristDisplayName; // Snapshot at booking time — guides can't read tourist user docs
+  final String?
+      touristDisplayName; // Snapshot at booking time — guides can't read tourist user docs
   final String? guideId;
   final String? operatorId;
   final String? packageId;
-  
+
   // Details
   final DateTime requestedDate;
   final int guestCount;
   final String? notes;
-  
+
   // Status Lifecycle
-  final String status; // pending, accepted, declined, expired, cancelled_by_tourist, cancelled_by_guide, cancelled_by_admin, session_ready, completed
-  
+  final String
+      status; // pending, accepted, declined, expired, cancelled_by_tourist, cancelled_by_guide, cancelled_by_admin, session_ready, completed
+
   // Pricing & Snapshot (Frozen at booking time)
   final double? quotedPrice;
   final String? currency;
@@ -35,7 +37,7 @@ class BookingRequest {
   final DateTime createdAt;
   final DateTime? respondedAt;
   final String? responseNote;
-  
+
   // Tracking
   final String? linkedSessionId;
   final String? deviceHash;
@@ -73,63 +75,88 @@ class BookingRequest {
     this.isPriority = false,
   });
 
+  BookingRequest asPendingSubmission({
+    required String bookingId,
+    required bool isPriority,
+  }) =>
+      BookingRequest(
+        bookingId: bookingId,
+        touristId: touristId,
+        touristDisplayName: touristDisplayName,
+        guideId: guideId,
+        operatorId: operatorId,
+        packageId: packageId,
+        requestedDate: requestedDate,
+        guestCount: guestCount,
+        notes: notes,
+        currency: currency ?? 'LKR',
+        packageSnapshot: packageSnapshot,
+        includedItemsSnapshot: includedItemsSnapshot,
+        status: 'pending',
+        createdAt: DateTime.now(),
+        isPriority: isPriority,
+      );
+
   Map<String, dynamic> toJson() => {
-    'bookingId': bookingId,
-    'touristId': touristId,
-    'touristDisplayName': touristDisplayName,
-    'guideId': guideId,
-    'operatorId': operatorId,
-    'packageId': packageId,
-    'requestedDate': requestedDate.toIso8601String(),
-    'guestCount': guestCount,
-    'notes': notes,
-    'status': status,
-    'quotedPrice': quotedPrice,
-    'currency': currency,
-    'packageSnapshot': packageSnapshot,
-    'includedItemsSnapshot': includedItemsSnapshot,
-    'commissionAmount': commissionAmount,
-    'guideNetAmount': guideNetAmount,
-    'operatorNetAmount': operatorNetAmount,
-    'payoutStatus': payoutStatus,
-    'paidAt': paidAt?.toIso8601String(),
-    'paymentId': paymentId,
-    'paidAmount': paidAmount,
-    'createdAt': createdAt.toIso8601String(),
-    'respondedAt': respondedAt?.toIso8601String(),
-    'responseNote': responseNote,
-    'linkedSessionId': linkedSessionId,
-    'deviceHash': deviceHash,
-    'isPriority': isPriority,
-  };
+        'bookingId': bookingId,
+        'touristId': touristId,
+        'touristDisplayName': touristDisplayName,
+        'guideId': guideId,
+        'operatorId': operatorId,
+        'packageId': packageId,
+        'requestedDate': requestedDate.toIso8601String(),
+        'guestCount': guestCount,
+        'notes': notes,
+        'status': status,
+        'quotedPrice': quotedPrice,
+        'currency': currency,
+        'packageSnapshot': packageSnapshot,
+        'includedItemsSnapshot': includedItemsSnapshot,
+        'commissionAmount': commissionAmount,
+        'guideNetAmount': guideNetAmount,
+        'operatorNetAmount': operatorNetAmount,
+        'payoutStatus': payoutStatus,
+        'paidAt': paidAt?.toIso8601String(),
+        'paymentId': paymentId,
+        'paidAmount': paidAmount,
+        'createdAt': createdAt.toIso8601String(),
+        'respondedAt': respondedAt?.toIso8601String(),
+        'responseNote': responseNote,
+        'linkedSessionId': linkedSessionId,
+        'deviceHash': deviceHash,
+        'isPriority': isPriority,
+      };
 
   factory BookingRequest.fromJson(Map<String, dynamic> json) => BookingRequest(
-    bookingId: json['bookingId'],
-    touristId: json['touristId'],
-    touristDisplayName: json['touristDisplayName'],
-    guideId: json['guideId'],
-    operatorId: json['operatorId'],
-    packageId: json['packageId'],
-    requestedDate: DateTime.parse(json['requestedDate']),
-    guestCount: json['guestCount'] ?? 1,
-    notes: json['notes'],
-    status: json['status'] ?? 'pending',
-    quotedPrice: (json['quotedPrice'] as num?)?.toDouble(),
-    currency: json['currency'],
-    packageSnapshot: json['packageSnapshot'],
-    includedItemsSnapshot: List<String>.from(json['includedItemsSnapshot'] ?? []),
-    commissionAmount: (json['commissionAmount'] as num?)?.toDouble(),
-    guideNetAmount: (json['guideNetAmount'] as num?)?.toDouble(),
-    operatorNetAmount: (json['operatorNetAmount'] as num?)?.toDouble(),
-    payoutStatus: json['payoutStatus'] ?? 'pending',
-    paidAt: json['paidAt'] != null ? DateTime.parse(json['paidAt']) : null,
-    paymentId: json['paymentId'],
-    paidAmount: (json['paidAmount'] as num?)?.toDouble(),
-    createdAt: DateTime.parse(json['createdAt']),
-    respondedAt: json['respondedAt'] != null ? DateTime.parse(json['respondedAt']) : null,
-    responseNote: json['responseNote'],
-    linkedSessionId: json['linkedSessionId'],
-    deviceHash: json['deviceHash'],
-    isPriority: json['isPriority'] ?? false,
-  );
+        bookingId: json['bookingId'],
+        touristId: json['touristId'],
+        touristDisplayName: json['touristDisplayName'],
+        guideId: json['guideId'],
+        operatorId: json['operatorId'],
+        packageId: json['packageId'],
+        requestedDate: DateTime.parse(json['requestedDate']),
+        guestCount: json['guestCount'] ?? 1,
+        notes: json['notes'],
+        status: json['status'] ?? 'pending',
+        quotedPrice: (json['quotedPrice'] as num?)?.toDouble(),
+        currency: json['currency'],
+        packageSnapshot: json['packageSnapshot'],
+        includedItemsSnapshot:
+            List<String>.from(json['includedItemsSnapshot'] ?? []),
+        commissionAmount: (json['commissionAmount'] as num?)?.toDouble(),
+        guideNetAmount: (json['guideNetAmount'] as num?)?.toDouble(),
+        operatorNetAmount: (json['operatorNetAmount'] as num?)?.toDouble(),
+        payoutStatus: json['payoutStatus'] ?? 'pending',
+        paidAt: json['paidAt'] != null ? DateTime.parse(json['paidAt']) : null,
+        paymentId: json['paymentId'],
+        paidAmount: (json['paidAmount'] as num?)?.toDouble(),
+        createdAt: DateTime.parse(json['createdAt']),
+        respondedAt: json['respondedAt'] != null
+            ? DateTime.parse(json['respondedAt'])
+            : null,
+        responseNote: json['responseNote'],
+        linkedSessionId: json['linkedSessionId'],
+        deviceHash: json['deviceHash'],
+        isPriority: json['isPriority'] ?? false,
+      );
 }

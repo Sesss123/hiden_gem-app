@@ -97,28 +97,6 @@ subprojects {
                         }
                     }
 
-                    val defaultConfig = android.javaClass.getMethod("getDefaultConfig").invoke(android)
-                    if (defaultConfig != null) {
-                        defaultConfig.javaClass.methods.find { it.name == "setTargetSdk" }?.let { method ->
-                            try {
-                                method.invoke(defaultConfig, 35)
-                            } catch (e: Exception) {
-                                try {
-                                    method.invoke(defaultConfig, "35")
-                                } catch (e2: Exception) {}
-                            }
-                        }
-                        
-                        defaultConfig.javaClass.methods.find { it.name == "setMinSdk" }?.let { method ->
-                            try {
-                                method.invoke(defaultConfig, 24)
-                            } catch (e: Exception) {
-                                try {
-                                    method.invoke(defaultConfig, "24")
-                                } catch (e2: Exception) {}
-                            }
-                        }
-                    }
                 } catch (e: Exception) {
                     println("[Fix] Failed to enforce SDK for ${project.name}: ${e.message}")
                 }

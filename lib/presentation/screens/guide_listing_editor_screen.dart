@@ -38,6 +38,7 @@ class _GuideListingEditorScreenState
   final _languagesController = TextEditingController();
   final _specializationsController = TextEditingController();
   final _regionsController = TextEditingController();
+  final _yearsExperienceController = TextEditingController();
 
   String _guideCategory = 'Chauffeur';
   String _currency = 'USD';
@@ -51,6 +52,7 @@ class _GuideListingEditorScreenState
   bool _isFeaturedRequested = false;
   bool _canFeature = false;
   bool _isInsured = false;
+  GuideAvailability? _availability;
 
   final _picker = ImagePicker();
 
@@ -92,6 +94,8 @@ class _GuideListingEditorScreenState
         _languagesController.text = listing.languages.join(', ');
         _specializationsController.text = listing.specializations.join(', ');
         _regionsController.text = listing.regions.join(', ');
+        _yearsExperienceController.text = listing.yearsExperience.toString();
+        _availability = listing.availability;
         _selectedTourTypes
           ..clear()
           ..addAll(
@@ -104,6 +108,7 @@ class _GuideListingEditorScreenState
         }
         _languagesController.text = 'English, Sinhala';
         _regionsController.text = 'Central, Southern, Western';
+        _yearsExperienceController.text = '1';
       }
 
       // The license number is a verified credential set at enrollment time
@@ -138,7 +143,10 @@ class _GuideListingEditorScreenState
   Future<void> _pickAndUploadCoverPhoto() async {
     try {
       final XFile? image = await _picker.pickImage(
-          source: ImageSource.gallery, imageQuality: 75);
+          source: ImageSource.gallery,
+          imageQuality: 75,
+          maxWidth: 2048,
+          maxHeight: 2048);
       if (image == null) return;
 
       if (!mounted) return;
@@ -189,7 +197,10 @@ class _GuideListingEditorScreenState
   Future<void> _pickAndUploadVehiclePhoto() async {
     try {
       final XFile? image = await _picker.pickImage(
-          source: ImageSource.gallery, imageQuality: 75);
+          source: ImageSource.gallery,
+          imageQuality: 75,
+          maxWidth: 2048,
+          maxHeight: 2048);
       if (image == null) return;
 
       if (!mounted) return;
@@ -235,9 +246,12 @@ class _GuideListingEditorScreenState
 
   Future<void> _saveListing({required String status}) async {
     if (!_formKey.currentState!.validate()) return;
-    if (status == 'published' && FirebaseAuth.instance.currentUser?.phoneNumber == null) {
+    if (status == 'published' &&
+        FirebaseAuth.instance.currentUser?.phoneNumber == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context)!.verifyPhoneBeforePublish)),
+        SnackBar(
+            content:
+                Text(AppLocalizations.of(context)!.verifyPhoneBeforePublish)),
       );
       return;
     }
@@ -289,7 +303,7 @@ class _GuideListingEditorScreenState
         ratingAverage: _existingListing?.ratingAverage ?? 5.0,
         reviewCount: _existingListing?.reviewCount ?? 0,
         trustTierPublic: _existingListing?.trustTierPublic ?? 'Strong',
-        yearsExperience: _existingListing?.yearsExperience ?? 2,
+        yearsExperience: int.parse(_yearsExperienceController.text.trim()),
         vehicleAvailable: _vehicleAvailable,
         vehicleType:
             _vehicleAvailable ? _vehicleTypeController.text.trim() : null,
@@ -308,8 +322,7 @@ class _GuideListingEditorScreenState
         // Any guide-authored edit must return to moderation. Keeping the old
         // approved flag would publish changed identity/rates without review.
         moderationStatus: 'pending',
-        availability:
-            _existingListing?.availability ?? GuideAvailability(listingId: uid),
+        availability: _availability ?? GuideAvailability(listingId: uid),
         isFeatured: _existingListing?.isFeatured ?? false,
         featuredUntil: _existingListing?.featuredUntil,
         isFeaturedRequested: _canFeature && _isFeaturedRequested,
@@ -328,7 +341,7 @@ class _GuideListingEditorScreenState
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(status == 'published'
-                ? l10n.listingPublishedMessage
+                ? '${l10n.listingPublishedMessage} Pending moderation approval.'
                 : l10n.draftSavedMessage),
             backgroundColor: status == 'published'
                 ? AppTheme.colors.green
@@ -364,6 +377,7 @@ class _GuideListingEditorScreenState
     _languagesController.dispose();
     _specializationsController.dispose();
     _regionsController.dispose();
+    _yearsExperienceController.dispose();
     super.dispose();
   }
 
@@ -462,6 +476,21 @@ class _GuideListingEditorScreenState
                   hint: l10n.serviceRegionsHint,
                   icon: Icons.map_outlined,
                 ),
+                const SizedBox(height: 16),
+                _buildTextField(
+                  controller: _yearsExperienceController,
+                  label: l10n.experienceStatLabel,
+                  hint: '5',
+                  icon: Icons.workspace_premium_outlined,
+                  keyboardType: TextInputType.number,
+                  validator: (value) {
+                    final years = int.tryParse(value?.trim() ?? '');
+                    if (years == null || years < 0 || years > 80) {
+                      return l10n.requiredFieldMessage;
+                    }
+                    return null;
+                  },
+                ),
                 const SizedBox(height: 24),
                 _buildSectionTitle(l10n.pricingVehicleTitle),
                 const SizedBox(height: 12),
@@ -478,7 +507,9 @@ class _GuideListingEditorScreenState
                         validator: (v) {
                           final rate = double.tryParse(v?.trim() ?? '');
                           if (rate == null) return l10n.validPriceRequired;
-                          if (rate <= 0 || rate > 1000000) return l10n.guideRateRangeError;
+                          if (rate <= 0 || rate > 1000000) {
+                            return l10n.guideRateRangeError;
+                          }
                           return null;
                         },
                       ),
@@ -838,41 +869,76 @@ class _GuideListingEditorScreenState
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: (verified ? AppTheme.colors.greenAccent : AppTheme.warningAmber).withValues(alpha: 0.08),
+        color: (verified ? AppTheme.colors.greenAccent : AppTheme.warningAmber)
+            .withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: (verified ? AppTheme.colors.greenAccent : AppTheme.warningAmber).withValues(alpha: 0.35)),
+        border: Border.all(
+            color:
+                (verified ? AppTheme.colors.greenAccent : AppTheme.warningAmber)
+                    .withValues(alpha: 0.35)),
       ),
       child: Row(children: [
-        Icon(verified ? Icons.verified_user_rounded : Icons.phone_android_rounded,
-          color: verified ? AppTheme.colors.greenAccent : AppTheme.warningAmber),
+        Icon(
+            verified
+                ? Icons.verified_user_rounded
+                : Icons.phone_android_rounded,
+            color:
+                verified ? AppTheme.colors.greenAccent : AppTheme.warningAmber),
         const SizedBox(width: 12),
-        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(verified ? l10n.guidePhoneVerified : l10n.guidePhoneVerificationRequired,
-            style: GoogleFonts.outfit(fontWeight: FontWeight.w700, color: AppTheme.textPrimary(context))),
+        Expanded(
+            child:
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text(
+              verified
+                  ? l10n.guidePhoneVerified
+                  : l10n.guidePhoneVerificationRequired,
+              style: GoogleFonts.outfit(
+                  fontWeight: FontWeight.w700,
+                  color: AppTheme.textPrimary(context))),
           const SizedBox(height: 3),
-          Text(verified ? _maskedPhone(phone) : l10n.guidePhoneVerificationReason,
-            style: GoogleFonts.inter(fontSize: 11, color: AppTheme.textSecondary(context))),
+          Text(
+              verified
+                  ? _maskedPhone(phone)
+                  : l10n.guidePhoneVerificationReason,
+              style: GoogleFonts.inter(
+                  fontSize: 11, color: AppTheme.textSecondary(context))),
         ])),
-        TextButton(onPressed: _isSaving ? null : _verifyGuidePhone,
-          child: Text(verified ? l10n.changePhoneAction : l10n.verifyPhoneAction)),
+        TextButton(
+            onPressed: _isSaving ? null : _verifyGuidePhone,
+            child: Text(
+                verified ? l10n.changePhoneAction : l10n.verifyPhoneAction)),
       ]),
     );
   }
 
   String _maskedPhone(String phone) => phone.length < 7
-      ? phone : '${phone.substring(0, 4)}••••${phone.substring(phone.length - 3)}';
+      ? phone
+      : '${phone.substring(0, 4)}••••${phone.substring(phone.length - 3)}';
 
   Future<void> _verifyGuidePhone() async {
     final l10n = AppLocalizations.of(context)!;
-    final phoneController = TextEditingController(text: FirebaseAuth.instance.currentUser?.phoneNumber ?? '+94');
-    final phone = await showDialog<String>(context: context, builder: (dialogContext) => AlertDialog(
-      title: Text(l10n.verifyGuidePhoneTitle),
-      content: TextField(controller: phoneController, keyboardType: TextInputType.phone,
-        autofillHints: const [AutofillHints.telephoneNumber],
-        decoration: InputDecoration(labelText: l10n.phoneWithCountryCodeLabel)),
-      actions: [TextButton(onPressed: () => Navigator.pop(dialogContext), child: Text(l10n.cancel)),
-        FilledButton(onPressed: () => Navigator.pop(dialogContext, phoneController.text.trim()), child: Text(l10n.sendOtpAction))],
-    ));
+    final phoneController = TextEditingController(
+        text: FirebaseAuth.instance.currentUser?.phoneNumber ?? '+94');
+    final phone = await showDialog<String>(
+        context: context,
+        builder: (dialogContext) => AlertDialog(
+              title: Text(l10n.verifyGuidePhoneTitle),
+              content: TextField(
+                  controller: phoneController,
+                  keyboardType: TextInputType.phone,
+                  autofillHints: const [AutofillHints.telephoneNumber],
+                  decoration: InputDecoration(
+                      labelText: l10n.phoneWithCountryCodeLabel)),
+              actions: [
+                TextButton(
+                    onPressed: () => Navigator.pop(dialogContext),
+                    child: Text(l10n.cancel)),
+                FilledButton(
+                    onPressed: () => Navigator.pop(
+                        dialogContext, phoneController.text.trim()),
+                    child: Text(l10n.sendOtpAction))
+              ],
+            ));
     phoneController.dispose();
     if (phone == null || phone.isEmpty || !mounted) return;
     setState(() => _isSaving = true);
@@ -881,25 +947,49 @@ class _GuideListingEditorScreenState
       final challenge = await auth.startGuidePhoneLink(phone);
       if (challenge.verificationId != null && mounted) {
         final codeController = TextEditingController();
-        final code = await showDialog<String>(context: context, barrierDismissible: false,
-          builder: (dialogContext) => AlertDialog(title: Text(l10n.enterOtpTitle),
-            content: TextField(controller: codeController, keyboardType: TextInputType.number,
-              maxLength: 6, inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-              decoration: InputDecoration(labelText: l10n.otpCodeLabel)),
-            actions: [TextButton(onPressed: () => Navigator.pop(dialogContext), child: Text(l10n.cancel)),
-              FilledButton(onPressed: () => Navigator.pop(dialogContext, codeController.text.trim()), child: Text(l10n.verifyPhoneAction))]));
+        final code = await showDialog<String>(
+            context: context,
+            barrierDismissible: false,
+            builder: (dialogContext) => AlertDialog(
+                    title: Text(l10n.enterOtpTitle),
+                    content: TextField(
+                        controller: codeController,
+                        keyboardType: TextInputType.number,
+                        maxLength: 6,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly
+                        ],
+                        decoration:
+                            InputDecoration(labelText: l10n.otpCodeLabel)),
+                    actions: [
+                      TextButton(
+                          onPressed: () => Navigator.pop(dialogContext),
+                          child: Text(l10n.cancel)),
+                      FilledButton(
+                          onPressed: () => Navigator.pop(
+                              dialogContext, codeController.text.trim()),
+                          child: Text(l10n.verifyPhoneAction))
+                    ]));
         codeController.dispose();
         if (code == null) return;
         await auth.confirmGuidePhoneLink(challenge, code);
       }
       if (mounted) {
         setState(() {});
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.phoneVerifiedSuccess)));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(l10n.phoneVerifiedSuccess)));
       }
     } on FirebaseAuthException catch (error) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.phoneVerificationFailed(error.message ?? error.code))));
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(
+                l10n.phoneVerificationFailed(error.message ?? error.code))));
+      }
     } catch (error) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.phoneVerificationFailed(error.toString()))));
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(l10n.phoneVerificationFailed(error.toString()))));
+      }
     } finally {
       if (mounted) setState(() => _isSaving = false);
     }
@@ -997,14 +1087,17 @@ class _GuideListingEditorScreenState
 
   Widget _buildAvailabilityButton(BuildContext context) {
     return GestureDetector(
-      onTap: () {
+      onTap: () async {
         HapticFeedback.mediumImpact();
-        Navigator.push(
+        final updatedAvailability = await Navigator.push<GuideAvailability>(
           context,
           MaterialPageRoute(
             builder: (_) => GuideAvailabilityScreen(listing: _existingListing),
           ),
         );
+        if (updatedAvailability != null && mounted) {
+          setState(() => _availability = updatedAvailability);
+        }
       },
       child: Container(
         padding: const EdgeInsets.all(16),

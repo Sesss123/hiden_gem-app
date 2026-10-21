@@ -6,6 +6,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/services/emergency_translator_service.dart';
 import '../../l10n/app_localizations.dart';
+import '../widgets/ai_output_report_button.dart';
 
 /// Full-screen, hand-to-a-stranger emergency communicator. Opened right
 /// after SOS is triggered: picks a situation type, translates it to
@@ -16,10 +17,12 @@ import '../../l10n/app_localizations.dart';
 class EmergencyTranslatorScreen extends StatefulWidget {
   final EmergencySituationType initialType;
 
-  const EmergencyTranslatorScreen({super.key, this.initialType = EmergencySituationType.other});
+  const EmergencyTranslatorScreen(
+      {super.key, this.initialType = EmergencySituationType.other});
 
   @override
-  State<EmergencyTranslatorScreen> createState() => _EmergencyTranslatorScreenState();
+  State<EmergencyTranslatorScreen> createState() =>
+      _EmergencyTranslatorScreenState();
 }
 
 class _EmergencyTranslatorScreenState extends State<EmergencyTranslatorScreen> {
@@ -40,7 +43,8 @@ class _EmergencyTranslatorScreenState extends State<EmergencyTranslatorScreen> {
     setState(() => _isTranslating = true);
     try {
       _position = await Geolocator.getCurrentPosition(
-        locationSettings: const LocationSettings(accuracy: LocationAccuracy.high),
+        locationSettings:
+            const LocationSettings(accuracy: LocationAccuracy.high),
       ).timeout(const Duration(seconds: 8));
     } catch (_) {
       _position = null;
@@ -76,7 +80,8 @@ class _EmergencyTranslatorScreenState extends State<EmergencyTranslatorScreen> {
 
   Future<void> _openMap() async {
     if (_position == null) return;
-    final uri = Uri.parse('https://www.google.com/maps/search/?api=1&query=${_position!.latitude},${_position!.longitude}');
+    final uri = Uri.parse(
+        'https://www.google.com/maps/search/?api=1&query=${_position!.latitude},${_position!.longitude}');
     await launchUrl(uri, mode: LaunchMode.externalApplication);
   }
 
@@ -93,7 +98,10 @@ class _EmergencyTranslatorScreenState extends State<EmergencyTranslatorScreen> {
         ),
         title: Text(
           AppLocalizations.of(context)!.emergencyTranslatorTitle,
-          style: GoogleFonts.outfit(color: AppTheme.colors.white, fontWeight: FontWeight.w800, fontSize: 17),
+          style: GoogleFonts.outfit(
+              color: AppTheme.colors.white,
+              fontWeight: FontWeight.w800,
+              fontSize: 17),
         ),
       ),
       body: SafeArea(
@@ -105,7 +113,10 @@ class _EmergencyTranslatorScreenState extends State<EmergencyTranslatorScreen> {
               Text(
                 AppLocalizations.of(context)!.showScreenToBystanderMessage,
                 textAlign: TextAlign.center,
-                style: GoogleFonts.inter(color: AppTheme.colors.white70, fontSize: 12.5, height: 1.5),
+                style: GoogleFonts.inter(
+                    color: AppTheme.colors.white70,
+                    fontSize: 12.5,
+                    height: 1.5),
               ),
               const SizedBox(height: 18),
               _buildTypeSelector(),
@@ -140,7 +151,9 @@ class _EmergencyTranslatorScreenState extends State<EmergencyTranslatorScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               alignment: Alignment.center,
               decoration: BoxDecoration(
-                color: isSelected ? AppTheme.errorRed : AppTheme.colors.white.withValues(alpha: 0.08),
+                color: isSelected
+                    ? AppTheme.errorRed
+                    : AppTheme.colors.white.withValues(alpha: 0.08),
                 borderRadius: BorderRadius.circular(100),
               ),
               child: Text(
@@ -160,7 +173,8 @@ class _EmergencyTranslatorScreenState extends State<EmergencyTranslatorScreen> {
 
   Widget _buildSinhalaBanner() {
     if (_isTranslating || _result == null) {
-      return const Center(child: CircularProgressIndicator(color: AppPalette.rust));
+      return const Center(
+          child: CircularProgressIndicator(color: AppPalette.rust));
     }
     return Container(
       width: double.infinity,
@@ -191,7 +205,20 @@ class _EmergencyTranslatorScreenState extends State<EmergencyTranslatorScreen> {
             Text(
               _result!.englishText,
               textAlign: TextAlign.center,
-              style: GoogleFonts.inter(color: AppTheme.textSecondary(context), fontSize: 13, height: 1.5),
+              style: GoogleFonts.inter(
+                  color: AppTheme.textSecondary(context),
+                  fontSize: 13,
+                  height: 1.5),
+            ),
+            Align(
+              alignment: Alignment.centerRight,
+              child: AiOutputReportButton(
+                feature: 'translation',
+                outputId: _selectedType.name,
+                outputText: '${_result!.sinhalaText}\n${_result!.englishText}',
+                color: AppPalette.ink,
+                compact: true,
+              ),
             ),
           ],
         ),
@@ -210,17 +237,26 @@ class _EmergencyTranslatorScreenState extends State<EmergencyTranslatorScreen> {
         ),
         child: Row(
           children: [
-            Icon(Icons.my_location_rounded, color: AppPalette.heroOchre, size: 18),
+            Icon(Icons.my_location_rounded,
+                color: AppPalette.heroOchre, size: 18),
             const SizedBox(width: 10),
             Expanded(
               child: Text(
                 _position != null
-                    ? AppLocalizations.of(context)!.locationCoordinatesTapMapsLabel(_position!.latitude.toStringAsFixed(5), _position!.longitude.toStringAsFixed(5))
+                    ? AppLocalizations.of(context)!
+                        .locationCoordinatesTapMapsLabel(
+                            _position!.latitude.toStringAsFixed(5),
+                            _position!.longitude.toStringAsFixed(5))
                     : AppLocalizations.of(context)!.locationUnavailableMessage,
-                style: GoogleFonts.inter(color: AppTheme.colors.white70, fontSize: 12, fontWeight: FontWeight.w600),
+                style: GoogleFonts.inter(
+                    color: AppTheme.colors.white70,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600),
               ),
             ),
-            if (_position != null) Icon(Icons.chevron_right_rounded, color: AppTheme.colors.white38, size: 18),
+            if (_position != null)
+              Icon(Icons.chevron_right_rounded,
+                  color: AppTheme.colors.white38, size: 18),
           ],
         ),
       ),
@@ -233,15 +269,22 @@ class _EmergencyTranslatorScreenState extends State<EmergencyTranslatorScreen> {
       height: 56,
       child: ElevatedButton.icon(
         onPressed: (_isTranslating || _isSpeaking) ? null : _speak,
-        icon: Icon(_isSpeaking ? Icons.volume_up_rounded : Icons.replay_rounded, color: AppTheme.colors.white),
+        icon: Icon(_isSpeaking ? Icons.volume_up_rounded : Icons.replay_rounded,
+            color: AppTheme.colors.white),
         label: Text(
-          _isSpeaking ? AppLocalizations.of(context)!.speakingEllipsisMessage : AppLocalizations.of(context)!.playAgainButton,
-          style: GoogleFonts.inter(color: AppTheme.colors.white, fontWeight: FontWeight.w700, fontSize: 15),
+          _isSpeaking
+              ? AppLocalizations.of(context)!.speakingEllipsisMessage
+              : AppLocalizations.of(context)!.playAgainButton,
+          style: GoogleFonts.inter(
+              color: AppTheme.colors.white,
+              fontWeight: FontWeight.w700,
+              fontSize: 15),
         ),
         style: ElevatedButton.styleFrom(
           backgroundColor: AppPalette.rust,
           disabledBackgroundColor: AppPalette.rust.withValues(alpha: 0.5),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
         ),
       ),
     );

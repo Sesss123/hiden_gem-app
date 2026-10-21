@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/broadcast_message.dart';
+import '../../core/services/content_moderation_service.dart';
 
 final broadcastRepositoryProvider = Provider((ref) => BroadcastRepository());
 
@@ -8,6 +9,11 @@ class BroadcastRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   Future<void> sendBroadcast(BroadcastMessage message) async {
+    ContentModerationService.validateAndNormalize(
+      message.body,
+      fieldName: 'Broadcast message',
+      maxLength: 500,
+    );
     await _firestore
         .collection('tour_sessions')
         .doc(message.sessionId)
@@ -16,7 +22,8 @@ class BroadcastRepository {
         .set(message.toJson());
   }
 
-  Future<void> acknowledgeMessage(String sessionId, String messageId, String userId) async {
+  Future<void> acknowledgeMessage(
+      String sessionId, String messageId, String userId) async {
     await _firestore
         .collection('tour_sessions')
         .doc(sessionId)

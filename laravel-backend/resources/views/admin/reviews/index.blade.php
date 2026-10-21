@@ -60,7 +60,7 @@
                             </td>
                             <td class="px-6 py-5 text-right">
                                 <div class="flex items-center justify-end gap-2">
-                                    @if($mst !== 'hidden')
+                                    @if($mst === 'active')
                                         <button type="button" onclick="document.getElementById('hide-modal-{{ $review['id'] }}').classList.remove('hidden')"
                                             class="text-slate-400 hover:text-red-400 p-1.5 hover:bg-slate-800 rounded-lg transition" title="Hide">
                                             <i class="fa-solid fa-eye-slash"></i>
@@ -68,8 +68,8 @@
                                     @else
                                         <form action="{{ route('admin.reviews.restore', $review['id']) }}" method="POST" class="inline">
                                             @csrf
-                                            <button type="submit" class="text-slate-400 hover:text-emerald-400 p-1.5 hover:bg-slate-800 rounded-lg transition" title="Restore">
-                                                <i class="fa-solid fa-rotate-left"></i>
+                                            <button type="submit" class="text-slate-400 hover:text-emerald-400 p-1.5 hover:bg-slate-800 rounded-lg transition" title="{{ $mst === 'under_review' ? 'Approve' : 'Restore' }}">
+                                                <i class="fa-solid {{ $mst === 'under_review' ? 'fa-check' : 'fa-rotate-left' }}"></i>
                                             </button>
                                         </form>
                                     @endif

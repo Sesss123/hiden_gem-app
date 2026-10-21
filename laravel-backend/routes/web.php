@@ -22,6 +22,7 @@ use App\Http\Controllers\Admin\PartnerController;
 use App\Http\Controllers\Admin\IncidentController;
 use App\Http\Controllers\Admin\BookingController;
 use App\Http\Controllers\Admin\ReviewController;
+use App\Http\Controllers\Admin\SafetyReportController;
 use App\Http\Controllers\Admin\SubscriptionController;
 use App\Http\Controllers\Admin\AuditLogController;
 use App\Http\Controllers\Admin\FamilyShareController;
@@ -136,6 +137,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/bookings', [BookingController::class, 'index'])->name('bookings.index');
         Route::get('/bookings/{id}', [BookingController::class, 'show'])->name('bookings.show');
         Route::get('/reviews', [ReviewController::class, 'index'])->name('reviews.index');
+        Route::get('/safety-reports', [SafetyReportController::class, 'index'])->name('safety-reports.index');
         Route::get('/subscriptions', [SubscriptionController::class, 'index'])->name('subscriptions.index');
         Route::get('/family-share', [FamilyShareController::class, 'index'])->name('family-share.index');
         Route::get('/audit-log', [AuditLogController::class, 'index'])->name('audit-log.index');
@@ -181,6 +183,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
             Route::post('/reviews/{id}/hide', [ReviewController::class, 'hide'])->name('reviews.hide');
             Route::post('/reviews/{id}/restore', [ReviewController::class, 'restore'])->name('reviews.restore');
+            Route::post('/safety-reports/{type}/{id}', [SafetyReportController::class, 'update'])->name('safety-reports.update');
             Route::post('/subscriptions/{uid}/revoke', [SubscriptionController::class, 'revoke'])->name('subscriptions.revoke');
             Route::post('/family-share/{shareId}/revoke', [FamilyShareController::class, 'revoke'])->name('family-share.revoke');
             Route::delete('/audit-log/clear', [AuditLogController::class, 'clear'])->name('audit-log.clear');

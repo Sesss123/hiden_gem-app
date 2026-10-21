@@ -40,7 +40,7 @@
                     </div>
                     <p class="text-xs text-slate-400 max-w-xl leading-relaxed">
                         Master switch controlling Banner Ads, Native Ads, Interstitials, and Rewarded Video Ads across Android and iOS builds.
-                        When set to <strong class="text-slate-200">PAUSED</strong>, the mobile app hides all ads immediately, and rewarded feature unlocks (like AR and AI tools) are granted automatically without forcing users to wait.
+                        When set to <strong class="text-slate-200">PAUSED</strong>, the mobile app hides all ads immediately, and rewarded feature unlocks are granted automatically without forcing users to wait.
                     </p>
 
                     @if($adsSetting && $adsSetting->updater)

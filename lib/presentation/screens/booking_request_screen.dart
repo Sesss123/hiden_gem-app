@@ -12,17 +12,39 @@ import '../../l10n/app_localizations.dart';
 class BookingRequestScreen extends ConsumerStatefulWidget {
   final String guideId;
   final String? packageId;
-  const BookingRequestScreen({super.key, required this.guideId, this.packageId});
+  const BookingRequestScreen(
+      {super.key, required this.guideId, this.packageId});
 
   @override
-  ConsumerState<BookingRequestScreen> createState() => _BookingRequestScreenState();
+  ConsumerState<BookingRequestScreen> createState() =>
+      _BookingRequestScreenState();
 }
 
 class _BookingRequestScreenState extends ConsumerState<BookingRequestScreen> {
   DateTime _selectedDate = DateTime.now().add(const Duration(days: 1));
   int _guestCount = 1;
+  int _maxGuestCount = 20;
   final TextEditingController _notesController = TextEditingController();
   bool _isSubmitting = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadPackageCapacity();
+  }
+
+  Future<void> _loadPackageCapacity() async {
+    final packageId = widget.packageId;
+    if (packageId == null || packageId.isEmpty) return;
+    final package =
+        await ref.read(packageRepositoryProvider).getPackage(packageId);
+    if (!mounted || package == null) return;
+    if (package.ownerId != widget.guideId || !package.isActive) return;
+    setState(() {
+      _maxGuestCount = package.maxGuests.clamp(1, 20);
+      if (_guestCount > _maxGuestCount) _guestCount = _maxGuestCount;
+    });
+  }
 
   @override
   void dispose() {
@@ -39,12 +61,16 @@ class _BookingRequestScreenState extends ConsumerState<BookingRequestScreen> {
         backgroundColor: AppTheme.colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new, size: 20, color: AppTheme.textPrimary(context)),
+          icon: Icon(Icons.arrow_back_ios_new,
+              size: 20, color: AppTheme.textPrimary(context)),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
           l10n.requestBookingTitle,
-          style: GoogleFonts.outfit(fontWeight: FontWeight.w800, fontSize: 18, color: AppTheme.textPrimary(context)),
+          style: GoogleFonts.outfit(
+              fontWeight: FontWeight.w800,
+              fontSize: 18,
+              color: AppTheme.textPrimary(context)),
         ),
       ),
       body: SafeArea(
@@ -74,7 +100,11 @@ class _BookingRequestScreenState extends ConsumerState<BookingRequestScreen> {
   Widget _buildSectionLabel(BuildContext context, String label) {
     return Text(
       label,
-      style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontSize: 15, fontWeight: FontWeight.w700, letterSpacing: -0.2),
+      style: GoogleFonts.outfit(
+          color: AppTheme.textPrimary(context),
+          fontSize: 15,
+          fontWeight: FontWeight.w700,
+          letterSpacing: -0.2),
     );
   }
 
@@ -83,16 +113,21 @@ class _BookingRequestScreenState extends ConsumerState<BookingRequestScreen> {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(18),
-        boxShadow: [BoxShadow(color: AppTheme.colors.black.withValues(alpha: 0.05), blurRadius: 14, offset: const Offset(0, 5))],
+        boxShadow: [
+          BoxShadow(
+              color: AppTheme.colors.black.withValues(alpha: 0.05),
+              blurRadius: 14,
+              offset: const Offset(0, 5))
+        ],
       ),
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       child: Theme(
         data: Theme.of(context).copyWith(
           colorScheme: Theme.of(context).colorScheme.copyWith(
-            primary: AppPalette.rust,
-            onPrimary: AppTheme.colors.white,
-            onSurface: AppTheme.textPrimary(context),
-          ),
+                primary: AppPalette.rust,
+                onPrimary: AppTheme.colors.white,
+                onSurface: AppTheme.textPrimary(context),
+              ),
         ),
         child: CalendarDatePicker(
           initialDate: _selectedDate,
@@ -107,28 +142,40 @@ class _BookingRequestScreenState extends ConsumerState<BookingRequestScreen> {
   Widget _buildGuestSelector(BuildContext context, AppLocalizations l10n) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      decoration: BoxDecoration(color: AppTheme.surfaceMuted(context), borderRadius: BorderRadius.circular(16)),
+      decoration: BoxDecoration(
+          color: AppTheme.surfaceMuted(context),
+          borderRadius: BorderRadius.circular(16)),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(l10n.numberOfGuestsLabel, style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontWeight: FontWeight.w600)),
+          Text(l10n.numberOfGuestsLabel,
+              style: GoogleFonts.outfit(
+                  color: AppTheme.textPrimary(context),
+                  fontWeight: FontWeight.w600)),
           Row(
             children: [
               IconButton(
-                icon: Icon(Icons.remove_circle_outline_rounded, color: AppTheme.textPrimary(context)),
-                onPressed: _guestCount > 1 ? () => setState(() => _guestCount--) : null,
+                icon: Icon(Icons.remove_circle_outline_rounded,
+                    color: AppTheme.textPrimary(context)),
+                onPressed: _guestCount > 1
+                    ? () => setState(() => _guestCount--)
+                    : null,
               ),
               Text(
                 '$_guestCount',
-                style: GoogleFonts.outfit(color: AppTheme.textPrimary(context), fontSize: 16, fontWeight: FontWeight.w800),
+                style: GoogleFonts.outfit(
+                    color: AppTheme.textPrimary(context),
+                    fontSize: 16,
+                    fontWeight: FontWeight.w800),
               ),
-              // BUG-9 FIX: Cap guest count at 20 to prevent unrealistic bookings.
               IconButton(
                 icon: Icon(Icons.add_circle_outline_rounded,
-                    color: _guestCount >= 20
+                    color: _guestCount >= _maxGuestCount
                         ? AppTheme.textSecondary(context).withValues(alpha: 0.3)
                         : Theme.of(context).colorScheme.primary),
-                onPressed: _guestCount < 20 ? () => setState(() => _guestCount++) : null,
+                onPressed: _guestCount < _maxGuestCount
+                    ? () => setState(() => _guestCount++)
+                    : null,
               ),
             ],
           ),
@@ -144,8 +191,11 @@ class _BookingRequestScreenState extends ConsumerState<BookingRequestScreen> {
       style: GoogleFonts.inter(color: AppTheme.textPrimary(context)),
       decoration: InputDecoration(
         hintText: l10n.notesFieldHint,
-        hintStyle: GoogleFonts.inter(color: AppTheme.textSecondary(context).withValues(alpha: 0.6)),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
+        hintStyle: GoogleFonts.inter(
+            color: AppTheme.textSecondary(context).withValues(alpha: 0.6)),
+        border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(14),
+            borderSide: BorderSide.none),
         filled: true,
         fillColor: AppTheme.surfaceMuted(context),
       ),
@@ -161,12 +211,20 @@ class _BookingRequestScreenState extends ConsumerState<BookingRequestScreen> {
         style: ElevatedButton.styleFrom(
           backgroundColor: Theme.of(context).colorScheme.primary,
           foregroundColor: Theme.of(context).colorScheme.onPrimary,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
           elevation: 0,
         ),
         child: _isSubmitting
-            ? SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Theme.of(context).colorScheme.onPrimary))
-            : Text(l10n.sendRequestButton, style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 14)),
+            ? SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: Theme.of(context).colorScheme.onPrimary))
+            : Text(l10n.sendRequestButton,
+                style: GoogleFonts.inter(
+                    fontWeight: FontWeight.w700, fontSize: 14)),
       ),
     );
   }
@@ -184,24 +242,38 @@ class _BookingRequestScreenState extends ConsumerState<BookingRequestScreen> {
         // silently no-ops (nothing to increment bookingRequestsCount on) —
         // catch that up front instead of letting the request go to a guide
         // who can never see it counted.
-        final listing = await ref.read(marketplaceRepositoryProvider).getListing(widget.guideId);
+        final listing = await ref
+            .read(marketplaceRepositoryProvider)
+            .getListing(widget.guideId);
         if (!mounted) return;
         if (listing == null) {
           throw Exception(l10n.noGuideListingError);
         }
 
-        final quotaExceeded = await ref.read(bookingRepositoryProvider).checkMonthlyQuota(widget.guideId);
+        final quotaExceeded = await ref
+            .read(bookingRepositoryProvider)
+            .checkMonthlyQuota(widget.guideId);
         if (!mounted) return;
         if (quotaExceeded) {
-           throw Exception(l10n.guideQuotaExceededError);
+          throw Exception(l10n.guideQuotaExceededError);
         }
       }
 
       Map<String, dynamic>? packageSnapshot;
       if (widget.packageId != null && widget.packageId!.isNotEmpty) {
-        final package = await ref.read(packageRepositoryProvider).getPackage(widget.packageId!);
+        final package = await ref
+            .read(packageRepositoryProvider)
+            .getPackage(widget.packageId!);
         if (!mounted) return;
-        packageSnapshot = package?.toJson();
+        if (package == null ||
+            package.ownerId != widget.guideId ||
+            !package.isActive) {
+          throw Exception(l10n.somethingWentWrong);
+        }
+        if (_guestCount > package.maxGuests) {
+          throw Exception('${l10n.maxGuestsLabel}: ${package.maxGuests}');
+        }
+        packageSnapshot = package.toJson();
       }
 
       final request = BookingRequest(
@@ -250,20 +322,30 @@ class _BookingRequestScreenState extends ConsumerState<BookingRequestScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Container(
-                width: 64, height: 64,
-                decoration: BoxDecoration(color: AppPalette.rust.withValues(alpha: 0.12), shape: BoxShape.circle),
-                child: Icon(Icons.check_rounded, color: AppPalette.rust, size: 32),
+                width: 64,
+                height: 64,
+                decoration: BoxDecoration(
+                    color: AppPalette.rust.withValues(alpha: 0.12),
+                    shape: BoxShape.circle),
+                child:
+                    Icon(Icons.check_rounded, color: AppPalette.rust, size: 32),
               ),
               const SizedBox(height: 20),
               Text(
                 l10n.requestSentTitle,
-                style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.w800, color: AppTheme.textPrimary(dialogContext)),
+                style: GoogleFonts.outfit(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800,
+                    color: AppTheme.textPrimary(dialogContext)),
               ),
               const SizedBox(height: 10),
               Text(
                 l10n.requestSentMessage,
                 textAlign: TextAlign.center,
-                style: GoogleFonts.inter(color: AppTheme.textSecondary(dialogContext), fontSize: 13, height: 1.5),
+                style: GoogleFonts.inter(
+                    color: AppTheme.textSecondary(dialogContext),
+                    fontSize: 13,
+                    height: 1.5),
               ),
               const SizedBox(height: 24),
               SizedBox(
@@ -277,15 +359,19 @@ class _BookingRequestScreenState extends ConsumerState<BookingRequestScreen> {
                     // previously left the booking screen stuck open because
                     // dialogContext is already invalid after the first pop.
                     Navigator.pop(dialogContext); // Close dialog
-                    Navigator.pop(context);       // Close BookingRequestScreen
+                    Navigator.pop(context); // Close BookingRequestScreen
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Theme.of(dialogContext).colorScheme.primary,
-                    foregroundColor: Theme.of(dialogContext).colorScheme.onPrimary,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
+                    backgroundColor:
+                        Theme.of(dialogContext).colorScheme.primary,
+                    foregroundColor:
+                        Theme.of(dialogContext).colorScheme.onPrimary,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(100)),
                     elevation: 0,
                   ),
-                  child: Text(l10n.closeButton, style: const TextStyle(fontWeight: FontWeight.w700)),
+                  child: Text(l10n.closeButton,
+                      style: const TextStyle(fontWeight: FontWeight.w700)),
                 ),
               ),
             ],

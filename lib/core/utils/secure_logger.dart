@@ -5,98 +5,160 @@ class LogEntry {
   final String level;
   final String tag;
   final String message;
-  final dynamic error;
+  final Object? error;
   final bool isBackground;
 
-  LogEntry(this.level, this.tag, this.message, [this.error, this.isBackground = false]) : timestamp = DateTime.now();
+  LogEntry(
+    this.level,
+    this.tag,
+    this.message, [
+    this.error,
+    this.isBackground = false,
+  ]) : timestamp = DateTime.now();
 
   @override
   String toString() {
-    final timeStr = "${timestamp.hour.toString().padLeft(2, '0')}:${timestamp.minute.toString().padLeft(2, '0')}:${timestamp.second.toString().padLeft(2, '0')}.${timestamp.millisecond.toString().padLeft(3, '0')}";
-    final typeAligned = level.padRight(12);
-    final tagAligned = tag.length > 15 ? tag.substring(0, 15) : tag.padRight(15);
-    final bgTag = isBackground ? "[⚙️ BG]" : "[📱 FG]";
-    return "[$timeStr] $bgTag $typeAligned [$tagAligned] 💬 $message${error != null ? ' | Error: $error' : ''}";
+    final time = timestamp.toIso8601String();
+    final context = isBackground ? 'BG' : 'FG';
+    return '[$time] [$context] $level [$tag] $message'
+        '${error == null ? '' : ' | Error: $error'}';
   }
 }
 
 class SecureLogger {
+  static const String _errorLevel = 'ERROR';
   static final List<LogEntry> _history = [];
   static const int maxHistory = 200;
 
-  static void _record(String level, String tag, String message, [dynamic error, StackTrace? st, bool isBackground = false]) {
-    if (kReleaseMode && level != '🔴 ERROR') return;
-    
-    final entry = LogEntry(level, tag, message, error, isBackground);
+  static final RegExp _emailPattern = RegExp(
+    r'\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b',
+    caseSensitive: false,
+  );
+  static final RegExp _phonePattern = RegExp(r'(?<!\w)\+?\d[\d\s().-]{7,}\d');
+  static final RegExp _bearerPattern = RegExp(
+    r'\bBearer\s+[A-Za-z0-9._~+/=-]+',
+    caseSensitive: false,
+  );
+  static final RegExp _secretPattern = RegExp(
+    r'\b(api[_-]?key|token|password|secret|authorization|receipt|signature)\b\s*[:=]\s*[^\s,;]+',
+    caseSensitive: false,
+  );
+  static final RegExp _jwtPattern = RegExp(
+    r'\beyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\b',
+  );
+  static final RegExp _urlQueryPattern = RegExp(
+    r'(https?://[^\s?#]+)[?#][^\s]*',
+    caseSensitive: false,
+  );
+  static final RegExp _coordinatePattern = RegExp(
+    r'(?<!\d)-?\d{1,3}\.\d{4,}\s*[,/]\s*-?\d{1,3}\.\d{4,}(?!\d)',
+  );
+  static final RegExp _windowsPathPattern = RegExp(
+    r'\b[A-Za-z]:\\(?:[^\s\\]+\\)*[^\s\\]+',
+  );
+
+  static String redact(String value) {
+    return value
+        .replaceAll(_bearerPattern, 'Bearer [REDACTED]')
+        .replaceAllMapped(
+          _secretPattern,
+          (match) => '${match.group(1)}=[REDACTED]',
+        )
+        .replaceAll(_jwtPattern, '[REDACTED_TOKEN]')
+        .replaceAllMapped(
+          _urlQueryPattern,
+          (match) => '${match.group(1)}?[REDACTED]',
+        )
+        .replaceAll(_emailPattern, '[REDACTED_EMAIL]')
+        .replaceAll(_coordinatePattern, '[REDACTED_LOCATION]')
+        .replaceAll(_phonePattern, '[REDACTED_PHONE]')
+        .replaceAll(_windowsPathPattern, '[REDACTED_PATH]');
+  }
+
+  static String errorType(Object error) => error.runtimeType.toString();
+
+  static StackTrace sanitizedStackTrace(StackTrace? stackTrace) {
+    if (stackTrace == null) return StackTrace.empty;
+    return StackTrace.fromString(redact(stackTrace.toString()));
+  }
+
+  static void _record(
+    String level,
+    String tag,
+    String message, [
+    Object? error,
+    StackTrace? stackTrace,
+    bool isBackground = false,
+  ]) {
+    if (kReleaseMode && level != _errorLevel) return;
+
+    final safeMessage = redact(message);
+    final safeError = error == null
+        ? null
+        : kReleaseMode
+            ? errorType(error)
+            : redact(error.toString());
+    final entry = LogEntry(level, tag, safeMessage, safeError, isBackground);
     _history.add(entry);
-    if (_history.length > maxHistory) {
-      _history.removeAt(0);
-    }
+    if (_history.length > maxHistory) _history.removeAt(0);
 
-    if (level == '🔴 ERROR') {
-      debugPrint('╔══════════════════════════════════════════════════════════════════════════════');
-      debugPrint('║ $level [${entry.timestamp.hour.toString().padLeft(2, '0')}:${entry.timestamp.minute.toString().padLeft(2, '0')}:${entry.timestamp.second.toString().padLeft(2, '0')}.${entry.timestamp.millisecond.toString().padLeft(3, '0')}] ${isBackground ? "[⚙️ BG]" : "[📱 FG]"} Tag: [$tag]');
-      debugPrint('║ 💬 Message: $message');
-      if (error != null) debugPrint('║ ❌ Error Details: $error');
-      if (st != null)    debugPrint('║ 📚 StackTrace:\n$st');
-      debugPrint('╚══════════════════════════════════════════════════════════════════════════════');
-    } else {
-      debugPrint(entry.toString());
-      if (error != null && level != '🔴 ERROR') {
-        debugPrint('   ↳ Details: $error');
-      }
-      if (st != null && level != '🔴 ERROR') {
-        debugPrint('   ↳ StackTrace: $st');
-      }
+    debugPrint(entry.toString());
+    if (!kReleaseMode && stackTrace != null) {
+      debugPrint(redact(stackTrace.toString()));
     }
   }
 
-  /// Generic informational logs
-  static void info(String message, {String tag = 'App', bool isBackground = false}) => _record('🟢 INFO', tag, message, null, null, isBackground);
+  static void info(String message,
+          {String tag = 'App', bool isBackground = false}) =>
+      _record('INFO', tag, message, null, null, isBackground);
 
-  /// Foreground UI interactions, screen transitions, and user actions
-  static void uiEvent(String message, {String tag = 'UI'}) => _record('📱 UI-EVENT', tag, message, null, null, false);
+  static void uiEvent(String message, {String tag = 'UI'}) =>
+      _record('UI-EVENT', tag, message);
 
-  /// Background jobs, timer syncs, silent data updates, and background AI processing
-  static void bgTask(String message, {String tag = 'Background'}) => _record('⚙️ BG-TASK', tag, message, null, null, true);
+  static void bgTask(String message, {String tag = 'Background'}) =>
+      _record('BG-TASK', tag, message, null, null, true);
 
-  /// App lifecycle transitions (initState, resumed, paused, detached)
-  static void lifecycle(String message, {String tag = 'Lifecycle', bool isBackground = false}) => _record('⚡ LIFECYCLE', tag, message, null, null, isBackground);
+  static void lifecycle(String message,
+          {String tag = 'Lifecycle', bool isBackground = false}) =>
+      _record('LIFECYCLE', tag, message, null, null, isBackground);
 
-  /// Major architectural or feature milestones (creates a visual divider in USB console)
-  static void milestone(String title, {String tag = 'Milestone', bool isBackground = false}) {
+  static void milestone(String title,
+      {String tag = 'Milestone', bool isBackground = false}) {
     if (!kDebugMode) return;
-    debugPrint('──────────────────────────────────────────────────────────────────────────────');
-    _record('⭐ MILESTONE', tag, title, null, null, isBackground);
-    debugPrint('──────────────────────────────────────────────────────────────────────────────');
+    _record('MILESTONE', tag, title, null, null, isBackground);
   }
 
-  /// Network requests, responses, and API interactions
-  static void network(String message, {String tag = 'Network', bool isBackground = false}) => _record('🌐 NETWORK', tag, message, null, null, isBackground);
+  static void network(String message,
+          {String tag = 'Network', bool isBackground = false}) =>
+      _record('NETWORK', tag, message, null, null, isBackground);
 
-  /// Database, cache, and local storage operations
-  static void storage(String message, {String tag = 'Storage', bool isBackground = false}) => _record('🗄️ STORAGE', tag, message, null, null, isBackground);
+  static void storage(String message,
+          {String tag = 'Storage', bool isBackground = false}) =>
+      _record('STORAGE', tag, message, null, null, isBackground);
 
-  /// Security and integrity shield evaluations
-  static void security(String message, {String tag = 'Security', bool isBackground = false}) => _record('🛡️ SECURITY', tag, message, null, null, isBackground);
+  static void security(String message,
+          {String tag = 'Security', bool isBackground = false}) =>
+      _record('SECURITY', tag, message, null, null, isBackground);
 
-  /// Potential issues or degradations
-  static void warning(String message, {String tag = 'Warning', bool isBackground = false}) => _record('🟡 WARNING', tag, message, null, null, isBackground);
+  static void warning(String message,
+          {String tag = 'Warning', bool isBackground = false}) =>
+      _record('WARNING', tag, message, null, null, isBackground);
 
-  /// Critical errors or failures
-  static void error(String message, [dynamic error, StackTrace? stackTrace, String tag = 'Error', bool isBackground = false]) {
-    _record('🔴 ERROR', tag, message, error, stackTrace, isBackground);
+  static void error(
+    String message, [
+    Object? error,
+    StackTrace? stackTrace,
+    String tag = 'Error',
+    bool isBackground = false,
+  ]) {
+    _record(_errorLevel, tag, message, error, stackTrace, isBackground);
   }
 
-  /// Sensitive data debugging (Never output in release mode)
   static void sensitive(String tag, String data) {
-    if (kDebugMode) {
-      debugPrint('🔐 [SENSITIVE] [$tag]: $data');
-    }
+    if (kDebugMode) debugPrint('[SENSITIVE] [$tag]: ${redact(data)}');
   }
 
-  /// Retrieve recent logs for diagnostic UI tools
   static List<LogEntry> get history => List.unmodifiable(_history);
-  
+
   static void clearHistory() => _history.clear();
 }

@@ -20,7 +20,7 @@
                     Enterprise Analytics & Overview
                 </h2>
                 <p class="text-sm text-slate-400 mt-1 max-w-2xl">
-                    Real-time intelligence from your Hidden Gems Sri Lanka backend, tracking subscriptions, AR models, user wishlist bookmarks, and spatial geodata.
+                    Real-time intelligence from your Hidden Gems Sri Lanka backend, tracking subscriptions, user wishlist bookmarks, and spatial geodata.
                 </p>
             </div>
             <div class="flex flex-wrap items-center gap-3 mt-4 md:mt-0">
@@ -57,25 +57,7 @@
             <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mt-1">Total Hidden Gems</p>
             <div class="mt-3 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
                 <span>{{ $totalPlaces }} Active</span>
-                <span>{{ $arPlaces }} AR Ready</span>
-            </div>
-        </div>
-
-        <!-- AR Supported Places -->
-        <div class="glass-card p-6 rounded-2xl border border-slate-800 hover:border-cyan-500/40 transition duration-300 relative overflow-hidden group">
-            <div class="flex justify-between items-start mb-4">
-                <div class="w-12 h-12 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400 group-hover:scale-110 transition duration-300">
-                    <i class="fa-solid fa-cube text-2xl"></i>
-                </div>
-                <span class="text-xs font-bold text-cyan-400 bg-cyan-500/10 px-2.5 py-1 rounded-full border border-cyan-500/20 shrink-0 whitespace-nowrap">
-                    3D Ready
-                </span>
-            </div>
-            <h3 class="text-3xl font-black text-cyan-300 tracking-tight">{{ number_format($arPlaces) }}</h3>
-            <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mt-1">AR Supported Sites</p>
-            <div class="mt-3 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
-                <span>QR Scan Ready</span>
-                <span>{{ $totalPlaces > 0 ? round(($arPlaces / $totalPlaces) * 100) : 0 }}% of Total</span>
+                <span>Published catalog</span>
             </div>
         </div>
 
@@ -314,7 +296,6 @@
                         <th class="py-3 px-4">Place Name</th>
                         <th class="py-3 px-4">District</th>
                         <th class="py-3 px-4">Category</th>
-                        <th class="py-3 px-4">AR Supported</th>
                         <th class="py-3 px-4 text-right">Actions</th>
                     </tr>
                 </thead>
@@ -334,13 +315,6 @@
                             </td>
                             <td class="py-3.5 px-4 text-slate-300 font-medium">{{ $place->district }}</td>
                             <td class="py-3.5 px-4 text-slate-400">{{ $place->category }}</td>
-                            <td class="py-3.5 px-4">
-                                @if($place->ar_supported)
-                                    <span class="text-cyan-400 font-semibold flex items-center gap-1"><i class="fa-solid fa-cube"></i> Tier {{ $place->ar_tier }}</span>
-                                @else
-                                    <span class="text-slate-500">No</span>
-                                @endif
-                            </td>
                             <td class="py-3.5 px-4 text-right space-x-2">
                                 <a href="{{ route('admin.places.edit', $place->id) }}" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-1.5 rounded-lg border border-slate-700 font-medium transition inline-flex items-center gap-1">
                                     <i class="fa-solid fa-pen-to-square"></i> Edit

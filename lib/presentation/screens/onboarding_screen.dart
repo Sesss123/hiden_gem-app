@@ -201,7 +201,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     );
   }
 
-  // ── Slide 3: Immersive AR Viewer ──────────────────────────
+  // ── Slide 3: Confident Exploration ────────────────────────
   Widget _buildSlide3() {
     return const _OnboardingSlide(
       icon: Icons.map_rounded,

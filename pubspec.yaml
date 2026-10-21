@@ -100,15 +100,10 @@ dependencies:
   collection: ^1.19.0
 
 
-  # AR Mode — Phase 9
-  # Real ARCore/ARKit integration (plane detection, node placement).
-  vector_math: ^2.1.4
   just_audio: ^0.10.6           # Audio narration streaming
   geoflutterfire_plus: ^0.0.32
-  gal: ^2.3.2
   flutter_cache_manager: ^3.3.2
   purchases_flutter: ^10.4.0
-  panorama: ^0.4.1
   weather: ^3.0.1
   flutter_staggered_animations: ^1.1.1
   qr_flutter: ^4.1.0
@@ -121,6 +116,7 @@ dependencies:
   http_certificate_pinning: ^3.0.1
   synchronized: ^3.4.1
   device_calendar: ^4.3.3
+  app_links: ^7.0.0
 
 dev_dependencies:
   flutter_test:

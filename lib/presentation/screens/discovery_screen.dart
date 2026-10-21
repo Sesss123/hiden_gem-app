@@ -12,6 +12,7 @@ import '../../core/theme/app_theme.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/models/discovery_place.dart';
 import '../widgets/skeleton_loaders.dart';
+import '../widgets/ai_output_report_button.dart';
 import 'map_explorer_screen.dart';
 import '../../data/models/village_experience.dart';
 import '../../data/datasources/village_experience_service.dart';
@@ -21,8 +22,13 @@ import 'package:shimmer/shimmer.dart';
 
 class DiscoveryScreen extends ConsumerStatefulWidget {
   final String? initialFilter;
+  final Position? currentPosition;
 
-  const DiscoveryScreen({super.key, this.initialFilter});
+  const DiscoveryScreen({
+    super.key,
+    this.initialFilter,
+    this.currentPosition,
+  });
 
   @override
   ConsumerState<DiscoveryScreen> createState() => _DiscoveryScreenState();
@@ -42,6 +48,8 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen>
   List<VillageExperience> _villageExperiences = [];
 
   bool _isLoading = true;
+  bool _isRefreshingLocation = false;
+  Position? _pendingPosition;
   String _selectedFilter = "all";
   String _searchQuery = "";
   final TextEditingController _searchController = TextEditingController();
@@ -51,7 +59,7 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen>
   String _selectedPriceRange = "All";
 
   // Fixed, non-category filters: "all" plus the ones that key off a field
-  // other than category (ticketRange/vehicleAccess/arSupported — see
+  // other than category (ticketRange/vehicleAccess — see
   // _applyFilter). Real place categories are appended dynamically from
   // whatever's actually in _allPlaces, so an admin-added category (e.g.
   // "Beach") is filterable without a matching hand-written keyword group.
@@ -71,9 +79,6 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen>
     return cats.map((c) => '$_categoryFilterPrefix$c').toList();
   }
 
-  // AR content isn't live yet — see AppConfig.arFeatureEnabled. Drop the
-  // "ar" chip from what actually renders rather than removing it from
-  // _fixedFilters itself, so re-enabling the flag needs no further change.
   List<String> get _filters => [..._fixedFilters, ..._categoryFilters];
   List<String> get _secondaryFilters =>
       _filters.where((f) => !_primaryFilters.contains(f)).toList();
@@ -123,15 +128,56 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen>
         }
       });
     });
-    _initDiscovery();
+    _initDiscovery(position: widget.currentPosition);
   }
 
-  Future<void> _initDiscovery({bool forceRefresh = false}) async {
+  @override
+  void didUpdateWidget(covariant DiscoveryScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final nextPosition = widget.currentPosition;
+    final previousPosition = oldWidget.currentPosition;
+    if (nextPosition == null) {
+      if (previousPosition != null) {
+        setState(() {
+          _currentPosition = null;
+          _allPlaces = [];
+          _oraclePicks = [];
+          _naturePicks = [];
+          _culturePicks = [];
+          _filteredList = [];
+          _villageExperiences = [];
+          _isLoading = false;
+        });
+      }
+      return;
+    }
+    final movedMeters = previousPosition == null
+        ? double.infinity
+        : Geolocator.distanceBetween(
+            previousPosition.latitude,
+            previousPosition.longitude,
+            nextPosition.latitude,
+            nextPosition.longitude,
+          );
+    if (movedMeters >= 250) {
+      _initDiscovery(position: nextPosition);
+    }
+  }
+
+  Future<void> _initDiscovery({
+    bool forceRefresh = false,
+    Position? position,
+  }) async {
+    if (_isRefreshingLocation) {
+      if (position != null) _pendingPosition = position;
+      return;
+    }
+    _isRefreshingLocation = true;
     if (!forceRefresh) setState(() => _isLoading = true);
 
     try {
       final repo = ref.read(discoveryRepositoryProvider);
-      _currentPosition = await repo.getCurrentLocation();
+      _currentPosition = position ?? await repo.getCurrentLocation();
 
       final result = await repo.getDiscoveryPlaces(
         userLat: _currentPosition?.latitude,
@@ -163,11 +209,6 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen>
               p.category.toLowerCase().contains("village"))
           .toList();
 
-      // AR content isn't live yet — see AppConfig.arFeatureEnabled. Leave
-      // _arPicks empty so the "Explore in AR" section (gated on isNotEmpty
-      // below) never renders instead of promising an experience that isn't
-      // ready.
-
       _villageExperiences = await VillageExperienceService.getNearbyExperiences(
         lat: _currentPosition?.latitude ?? 7.8731,
         lng: _currentPosition?.longitude ?? 80.7718,
@@ -188,6 +229,13 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen>
           backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );
+    } finally {
+      _isRefreshingLocation = false;
+      final pendingPosition = _pendingPosition;
+      _pendingPosition = null;
+      if (pendingPosition != null && mounted) {
+        unawaited(_initDiscovery(position: pendingPosition));
+      }
     }
   }
 
@@ -250,8 +298,8 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen>
   }
 
   // Prefix marking a filter value as a literal Place.category match (as
-  // opposed to the fixed "all"/"budget"/"family"/"ar" special filters,
-  // which key off ticketRange/vehicleAccess/arSupported instead of category).
+  // opposed to the fixed "all"/"budget"/"family" special filters,
+  // which key off ticketRange/vehicleAccess instead of category).
   // Chosen so admin-added categories filter correctly without a matching
   // hand-written keyword group — the tag IS the filter.
   static const String _categoryFilterPrefix = 'category:';
@@ -312,9 +360,12 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen>
               numMatch != null ? int.tryParse(numMatch.group(0)!) ?? 0 : 0;
           if (_selectedPriceRange == "Free" && priceNum != 0) return false;
           if (_selectedPriceRange == "Economy" &&
-              (priceNum == 0 || priceNum > 2000)) return false;
-          if (_selectedPriceRange == "Premium" && priceNum <= 2000)
+              (priceNum == 0 || priceNum > 2000)) {
             return false;
+          }
+          if (_selectedPriceRange == "Premium" && priceNum <= 2000) {
+            return false;
+          }
         }
 
         return true;
@@ -778,24 +829,35 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen>
       if (cat.contains('waterfall')) return Icons.water_drop_outlined;
       if (cat.contains('beach') ||
           cat.contains('coast') ||
-          cat.contains('ocean')) return Icons.waves_outlined;
+          cat.contains('ocean')) {
+        return Icons.waves_outlined;
+      }
       if (cat.contains('hiking') ||
           cat.contains('mountain') ||
-          cat.contains('peak')) return Icons.directions_walk_outlined;
+          cat.contains('peak')) {
+        return Icons.directions_walk_outlined;
+      }
       if (cat.contains('temple') ||
           cat.contains('religio') ||
-          cat.contains('sacred')) return Icons.temple_hindu_outlined;
+          cat.contains('sacred')) {
+        return Icons.temple_hindu_outlined;
+      }
       if (cat.contains('histor') ||
           cat.contains('ancient') ||
           cat.contains('fort') ||
           cat.contains('palace') ||
-          cat.contains('monument')) return Icons.account_balance_outlined;
+          cat.contains('monument')) {
+        return Icons.account_balance_outlined;
+      }
       if (cat.contains('nature') ||
           cat.contains('park') ||
           cat.contains('eco') ||
-          cat.contains('wildlife')) return Icons.forest_outlined;
-      if (cat.contains('food') || cat.contains('culinary'))
+          cat.contains('wildlife')) {
+        return Icons.forest_outlined;
+      }
+      if (cat.contains('food') || cat.contains('culinary')) {
         return Icons.restaurant_outlined;
+      }
       if (cat.contains('museum')) return Icons.museum_outlined;
       if (cat.contains('tea')) return Icons.local_cafe_outlined;
     }
@@ -1099,7 +1161,7 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen>
         _buildVillageCards(_villageExperiences),
         const SizedBox(height: 32),
       ],
-      // Curated buckets above (Oracle/AR/Nature/Culture) are keyword-matched
+      // Curated buckets above (Oracle/Nature/Culture) are keyword-matched
       // on category text — a place whose category doesn't hit any of those
       // keywords (e.g. "Beach") would otherwise never appear anywhere on the
       // "All" tab. This is the full unfiltered list as a catch-all so every
@@ -1388,7 +1450,6 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen>
     List<DiscoveryPlace> places,
     AppLocalizations l10n, {
     bool isOracle = false,
-    bool isAR = false,
   }) {
     // Oracle cards reserve extra height for an AI-reason blurb, but that
     // feature is currently disabled server-side (getAiRecommendations()
@@ -1398,7 +1459,7 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen>
     // compact 230px height whenever there's no blurb to show.
     final hasAiReasonRow = isOracle && places.any((p) => p.aiReason.isNotEmpty);
     return SizedBox(
-      height: (hasAiReasonRow || isAR) ? 310 : 250,
+      height: hasAiReasonRow ? 310 : 250,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         physics: const BouncingScrollPhysics(),
@@ -1409,22 +1470,22 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen>
           // BUG-100: Assign unique key to avoid full redraws on horizontal scrolling
           return RepaintBoundary(
             key: ValueKey(
-                'horiz_card_${isOracle ? "oracle" : (isAR ? "ar" : "normal")}_${place.id}'),
+                'horiz_card_${isOracle ? "oracle" : "normal"}_${place.id}'),
             child: OracleUI.staggeredEntrance(
               index: index,
               child: GestureDetector(
                 onTap: () => _openPlaceDetails(place),
                 child: Container(
-                  width: isOracle ? 300 : (isAR ? 260 : 210),
+                  width: isOracle ? 300 : 210,
                   margin: const EdgeInsets.symmetric(horizontal: 10),
                   child: OracleUI.premiumGlassCard(
                     padding: EdgeInsets.zero,
-                    showGlow: isOracle || isAR,
+                    showGlow: isOracle,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         SizedBox(
-                          height: isOracle || isAR ? 158 : 138,
+                          height: isOracle ? 158 : 138,
                           child: Stack(
                             children: [
                               Positioned.fill(
@@ -1657,6 +1718,15 @@ class _DiscoveryScreenState extends ConsumerState<DiscoveryScreen>
                                             maxLines: 2,
                                             overflow: TextOverflow.ellipsis,
                                           ),
+                                        ),
+                                        AiOutputReportButton(
+                                          feature: 'recommendation',
+                                          outputId: place.id,
+                                          outputText: place.aiReason,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .primary,
+                                          compact: true,
                                         ),
                                       ],
                                     ),
