@@ -404,12 +404,10 @@ class AuthController extends Controller
             ['tour_links', 'guideId'],
             ['family_share_links', 'touristId'],
             ['saved_plans', 'userId'],
-            ['ar_sessions', 'hostUid'],
             ['guide_client_notes', 'guideId'],
             ['vehicles', 'guideId'],
             ['vehicles', 'operatorId'],
             ['user_progress', 'userId'],
-            ['user_gamification', 'userId'],
             ['community_memories', 'userId'],
             ['guide_listings', 'guideId'],
             ['tour_packages', 'ownerId'],
@@ -419,8 +417,11 @@ class AuthController extends Controller
             ['user_notifications', 'recipientId'],
             ['user_notifications', 'userId'],
             ['profile_view_markers', 'viewerUid'],
+            ['profile_view_markers', 'targetUid'],
             ['guide_analytics', 'guideId'],
             ['threat_notifications', 'uid'],
+            ['user_blocks', 'blockerId'],
+            ['user_blocks', 'blockedUserId'],
         ];
 
         foreach ($hardDeleteQueries as $query) {
