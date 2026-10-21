@@ -48,7 +48,6 @@ const admin = __importStar(require("firebase-admin"));
 const crypto = __importStar(require("crypto"));
 admin.initializeApp();
 __exportStar(require("./zero_trust"), exports);
-const HMAC_SECRET = process.env.HMAC_SECRET;
 async function sendToAccountDevices(accountId, accountData, title, body) {
     const tokens = new Set();
     if (typeof (accountData === null || accountData === void 0 ? void 0 : accountData.fcmToken) === 'string')
@@ -223,10 +222,8 @@ exports.escalate_security_alert = functions.firestore
 exports.verify_entitlements = functions.https.onCall(async (data, context) => {
     if (!context.auth)
         throw new functions.https.HttpsError('unauthenticated', 'Nexus login required.');
-    if (!HMAC_SECRET) {
-        console.error('verify_entitlements: HMAC_SECRET is not configured.');
-        throw new functions.https.HttpsError('failed-precondition', 'Entitlement verification is unavailable.');
-    }
+    if (!context.app)
+        throw new functions.https.HttpsError('failed-precondition', 'App verification is required.');
     const uid = context.auth.uid;
     const userDoc = await admin.firestore().collection('users').doc(uid).get();
     const userData = userDoc.data();
@@ -246,17 +243,11 @@ exports.verify_entitlements = functions.https.onCall(async (data, context) => {
             : new Date(userData.subExpiresAt).getTime();
     }
     isPremium = isPremium && premiumExpiresAt > Date.now();
-    // Generate Cryptographic Proof (Point 5)
-    const signature = crypto
-        .createHmac('sha256', HMAC_SECRET)
-        .update(`${uid}|${premiumExpiresAt}`)
-        .digest('hex');
     return {
         isPremium,
         role: userData.role || 'user',
         premiumPlanId: userData.premiumPlanId || userData.premiumPlan || userData.subscriptionPlan || 'free',
-        premiumExpiresAt,
-        signature
+        premiumExpiresAt
     };
 });
 /**

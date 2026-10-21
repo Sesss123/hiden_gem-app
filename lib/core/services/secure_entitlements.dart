@@ -43,9 +43,8 @@ class SecureEntitlements {
 
     if (claims == null) return false;
 
-    // 🛡️ POINT 5: Cryptographic Proof Verification
-    // Even if isPremium is true, we verify the backend-generated signature
-    // for the expiry date to prevent "Local Date Patching".
+    // Entitlement expiry is returned by the authenticated, App Check protected
+    // Cloud Function and is never accepted from local profile state.
     if (claims.containsKey('premiumExpiresAt')) {
       // currentUser can turn null here if the user signed out during the
       // _getVerifiedClaims() await above — fail closed (no premium) rather
@@ -173,8 +172,6 @@ class SecureEntitlements {
 
       final data = Map<String, dynamic>.from(result.data);
 
-      // The backend returns a data object along with a 'signature' (HMAC)
-      // to prove authenticity (Point 5).
       _serverClaimsCache = data;
       _cacheExpiry = DateTime.now().add(const Duration(minutes: 5));
 

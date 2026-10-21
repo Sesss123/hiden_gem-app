@@ -11,7 +11,13 @@ import Security
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
-    GMSServices.provideAPIKey("AIzaSyDN_4eZeJAeFTX-FBsuQLUvJ7l8qluPWiM")
+    if let mapsKey = Bundle.main.object(forInfoDictionaryKey: "GMSApiKey") as? String,
+       !mapsKey.isEmpty,
+       !mapsKey.contains("$(") {
+      GMSServices.provideAPIKey(mapsKey)
+    } else {
+      NSLog("Google Maps iOS API key is not configured.")
+    }
     GeneratedPluginRegistrant.register(with: self)
     if let controller = window?.rootViewController as? FlutterViewController {
       let channel = FlutterMethodChannel(name: "hidden_gems/device_keys", binaryMessenger: controller.binaryMessenger)

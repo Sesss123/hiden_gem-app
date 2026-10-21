@@ -67,14 +67,6 @@ return [
         'app_secret' => env('PAYHERE_APP_SECRET'),
     ],
 
-    // Must match AppConfig.sharedSecret (HMAC_SECRET dart-define) in the
-    // Flutter app — see VerifyZenithSignature middleware. This is a
-    // client-embedded shared secret (extractable from the APK), so it
-    // doesn't stop an attacker who has decompiled the app, but it does stop
-    // a passive network observer from replaying a captured request
-    // unmodified (nonce + timestamp window), which is the real threat this
-    // header set exists to cover.
-    'zenith_hmac_secret' => env('HMAC_SECRET'),
     // Server-to-server only. Never ship this value in a Dart define or app
     // binary; Cloud Functions uses the same secret to issue step-up tickets.
     'step_up_hmac_secret' => env('STEP_UP_HMAC_SECRET'),

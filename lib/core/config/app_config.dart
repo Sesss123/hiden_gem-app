@@ -14,12 +14,11 @@ class AppConfig {
         : "http://192.168.8.168:8888/api/v1",
   );
 
-  static const String pythonUrl = String.fromEnvironment(
-    'PYTHON_BACKEND_URL',
-    defaultValue: kReleaseMode
-        ? "https://ai.hiddengemssl.com/api"
-        : "http://192.168.8.168:8000/api",
-  );
+  static String get pythonUrl {
+    const configured = String.fromEnvironment('PYTHON_BACKEND_URL');
+    if (configured.isNotEmpty) return configured;
+    return kReleaseMode ? laravelUrl : 'http://192.168.8.168:8000/api';
+  }
 
   // Alias for backward compatibility (defaults to Laravel backend)
   static const String baseUrl = laravelUrl;
@@ -68,13 +67,18 @@ class AppConfig {
   //   --dart-define=APPLE_REDIRECT_URI=https://hiddengems.lk/callback/apple
   static const String appleServiceId = String.fromEnvironment(
     'APPLE_SERVICE_ID',
-    defaultValue: 'REPLACE_WITH_REAL_VALUE.apple.service.id',
+    defaultValue: '',
   );
 
   static const String appleRedirectUri = String.fromEnvironment(
     'APPLE_REDIRECT_URI',
-    defaultValue: 'REPLACE_WITH_REAL_VALUE/callback/apple',
+    defaultValue: '',
   );
+
+  static bool get isAppleWebSignInConfigured =>
+      !isPlaceholder(appleServiceId) &&
+      !isPlaceholder(appleRedirectUri) &&
+      Uri.tryParse(appleRedirectUri)?.hasScheme == true;
 
   static bool isPlaceholder(String value) {
     if (value.isEmpty) return true;
@@ -90,18 +94,11 @@ class AppConfig {
     return false;
   }
 
-  static String get foodScannerWsUrl {
+  static String? get foodScannerWsUrl {
     final customWs = const String.fromEnvironment('FOOD_SCANNER_WS_URL');
     if (customWs.isNotEmpty) return customWs;
-    try {
-      final uri = Uri.parse(pythonUrl);
-      final scheme = uri.scheme == 'https' ? 'wss' : 'ws';
-      return '$scheme://${uri.host}:${uri.port}/ws/scan';
-    } catch (_) {
-      return kReleaseMode
-          ? 'wss://ai.hiddengemssl.com/ws/scan'
-          : 'ws://192.168.8.168:8000/ws/scan';
-    }
+    if (kReleaseMode) return null;
+    return 'ws://192.168.8.168:8000/ws/scan';
   }
 
   // BUG-113 / Audit #15: Obfuscate raw API keys using base64 wrapper string constants.
@@ -113,16 +110,6 @@ class AppConfig {
 
   static String get tripMeApiKey => hiddenGemsApiKey;
 
-  static final String sharedSecret = const String.fromEnvironment(
-    'HMAC_SECRET',
-    defaultValue: "DEFAULT_NON_PROD_SECRET", // Non-prod placeholder
-  );
-
-  static final String vaultSignKey = const String.fromEnvironment(
-    'VAULT_SIGN_KEY',
-    defaultValue: "HIDDEN_GEMS_V1_STAGING_KEY_SHHH", // Non-prod placeholder
-  );
-
   static const String nodeProxyUrl = String.fromEnvironment(
     'NODE_PROXY_URL',
     defaultValue: kReleaseMode
@@ -130,10 +117,10 @@ class AppConfig {
         : "http://192.168.8.102:8888/api/v1",
   );
 
-  static const String cdnBaseUrl = String.fromEnvironment(
-    'CDN_BASE_URL',
-    defaultValue: "https://cdn.hiddengemssl.com",
-  );
+  static String get cdnBaseUrl {
+    const configured = String.fromEnvironment('CDN_BASE_URL');
+    return configured.isNotEmpty ? configured : webBaseUrl;
+  }
 
   static final String revenueCatApiKeyAndroid = const String.fromEnvironment(
     'REVENUECAT_API_KEY_ANDROID',
@@ -162,32 +149,13 @@ class AppConfig {
 
   static const bool ragEnabled = true;
 
-  // Heritage AR models aren't ready yet (no trained/production 3D assets) —
-  // flip to true once real AR content ships, rather than reverting every
-  // place.arSupported gate this flag guards across place_details_screen.dart.
-  static final String sharedAesKey = const String.fromEnvironment(
-    'SHARED_AES_KEY',
-    defaultValue: "DEFAULT_NON_PROD_AES_KEY", // Non-prod placeholder
-  );
-
-  static final String sharedHmacKey = const String.fromEnvironment(
-    'SHARED_HMAC_KEY',
-    defaultValue: "DEFAULT_NON_PROD_HMAC_KEY", // Non-prod placeholder
-  );
-
-  static final String hmacExpirySecret = const String.fromEnvironment(
-    'HMAC_EXPIRY_SECRET',
-    defaultValue: "DEFAULT_NON_PROD_EXPIRY_SECRET", // Non-prod placeholder
-  );
-
   static const String appStoreId = String.fromEnvironment(
     'APP_STORE_ID',
     defaultValue: "",
   );
 
   static void validate() {
-    // In production and profile modes, missing or placeholder keys will fail hard.
-    // In debug mode, allow default placeholder keys without crashing so developers/users can test locally.
+    // In debug mode, allow default placeholder keys without warnings so developers/users can test locally.
     if (kDebugMode) {
       SecureLogger.info(
           '[AppConfig] Running in debug mode. Default/placeholder environment keys allowed.');
@@ -203,8 +171,9 @@ class AppConfig {
     // regardless of what's actually passed at build time, permanently
     // failing validation no matter how the real secret was supplied. Removed.
     if (isPlaceholder(hiddenGemsApiKey)) {
-      throw AssertionError(
-          "CRITICAL: Must configure a valid HIDDEN_GEMS_API_KEY environment variable.");
+      SecureLogger.warning(
+          "HIDDEN_GEMS_API_KEY is not configured. Protected backend requests will be unavailable until it is supplied.",
+          tag: "AppConfig");
     }
     // TEMPORARY: RevenueCat/HMAC/AES secrets are not yet provisioned for this
     // build — relaxed to warnings so the app can ship with core
@@ -216,22 +185,6 @@ class AppConfig {
         isPlaceholder(revenueCatApiKeyIos)) {
       SecureLogger.warning(
           "RevenueCat API Keys not configured (BUG-Q001) — subscriptions will not work.",
-          tag: "AppConfig");
-    }
-    if (isPlaceholder(sharedSecret)) {
-      SecureLogger.warning("HMAC_SECRET not configured.", tag: "AppConfig");
-    }
-    if (isPlaceholder(vaultSignKey)) {
-      SecureLogger.warning("VAULT_SIGN_KEY not configured.", tag: "AppConfig");
-    }
-    if (isPlaceholder(sharedAesKey)) {
-      SecureLogger.warning("SHARED_AES_KEY not configured.", tag: "AppConfig");
-    }
-    if (isPlaceholder(sharedHmacKey)) {
-      SecureLogger.warning("SHARED_HMAC_KEY not configured.", tag: "AppConfig");
-    }
-    if (isPlaceholder(hmacExpirySecret)) {
-      SecureLogger.warning("HMAC_EXPIRY_SECRET not configured.",
           tag: "AppConfig");
     }
     // App Store ID only exists for the iOS listing (used to build the App

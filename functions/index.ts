@@ -13,8 +13,6 @@ admin.initializeApp();
 
 export * from './zero_trust';
 
-const HMAC_SECRET = process.env.HMAC_SECRET;
-
 async function sendToAccountDevices(
     accountId: string,
     accountData: admin.firestore.DocumentData | undefined,
@@ -184,10 +182,7 @@ export const escalate_security_alert = functions.firestore
  */
 export const verify_entitlements = functions.https.onCall(async (data: any, context: functions.https.CallableContext) => {
     if (!context.auth) throw new functions.https.HttpsError('unauthenticated', 'Nexus login required.');
-    if (!HMAC_SECRET) {
-        console.error('verify_entitlements: HMAC_SECRET is not configured.');
-        throw new functions.https.HttpsError('failed-precondition', 'Entitlement verification is unavailable.');
-    }
+    if (!context.app) throw new functions.https.HttpsError('failed-precondition', 'App verification is required.');
     
     const uid = context.auth.uid;
     const userDoc = await admin.firestore().collection('users').doc(uid).get();
@@ -209,18 +204,11 @@ export const verify_entitlements = functions.https.onCall(async (data: any, cont
     }
     isPremium = isPremium && premiumExpiresAt > Date.now();
 
-    // Generate Cryptographic Proof (Point 5)
-    const signature = crypto
-        .createHmac('sha256', HMAC_SECRET)
-        .update(`${uid}|${premiumExpiresAt}`)
-        .digest('hex');
-
     return {
         isPremium,
         role: userData.role || 'user',
         premiumPlanId: userData.premiumPlanId || userData.premiumPlan || userData.subscriptionPlan || 'free',
-        premiumExpiresAt,
-        signature
+        premiumExpiresAt
     };
 });
 

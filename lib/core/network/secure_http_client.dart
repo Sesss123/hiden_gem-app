@@ -18,17 +18,15 @@ import '../../data/datasources/sanctum_token_refresher.dart';
 /// 4. **Standard Interface**: Wraps `http.Client` for drop-in replacement.
 class SecureHttpClient extends http.BaseClient {
   final http.Client _inner;
-  final String _sharedSecret;
   final Duration requestTimeout;
   final _uuid = const Uuid();
 
   /// Create a secure client.
-  /// The [sharedSecret] must match the key on your backend validation layer.
+  /// Requests are bound to the device's hardware-backed ECDSA key.
   SecureHttpClient(
     this._inner, {
-    String? sharedSecret,
     this.requestTimeout = const Duration(seconds: 30),
-  }) : _sharedSecret = sharedSecret ?? AppConfig.sharedSecret;
+  });
 
   @override
   Future<http.StreamedResponse> send(http.BaseRequest request) async {
@@ -86,8 +84,6 @@ class SecureHttpClient extends http.BaseClient {
     final String payloadToSign =
         '${request.method}|${request.url.path}|$timestamp|$nonce|$bodyHash';
 
-    final String signature = _calculateHMAC(payloadToSign);
-
     // Asymmetric Device-Bound Signature (ECDSA P-256)
     final String deviceId = await VaultService.getDeviceId();
     final String deviceSignature =
@@ -96,7 +92,6 @@ class SecureHttpClient extends http.BaseClient {
     // Inject Security Headers
     request.headers['X-Zenith-Timestamp'] = timestamp;
     request.headers['X-Zenith-Nonce'] = nonce;
-    request.headers['X-Zenith-Signature'] = signature;
     request.headers['X-Zenith-Device-Id'] = deviceId;
     request.headers['X-Zenith-Device-Signature'] = deviceSignature;
     request.headers['X-Zenith-Version'] = '3.0';
@@ -152,7 +147,6 @@ class SecureHttpClient extends http.BaseClient {
     clone.headers.addAll(original.headers);
     clone.headers.remove('X-Zenith-Timestamp');
     clone.headers.remove('X-Zenith-Nonce');
-    clone.headers.remove('X-Zenith-Signature');
     clone.headers['Authorization'] = 'Bearer $overrideToken';
     clone.headers['X-Zenith-Retried'] = '1';
     if (original is http.Request) {
@@ -170,14 +164,6 @@ class SecureHttpClient extends http.BaseClient {
   }
 
   // --- Internal Helpers ---
-
-  String _calculateHMAC(String data) {
-    final key = utf8.encode(_sharedSecret);
-    final bytes = utf8.encode(data);
-    final hmacSha256 = Hmac(sha256, key);
-    final digest = hmacSha256.convert(bytes);
-    return digest.toString();
-  }
 
   Future<String> _getRequestBody(http.BaseRequest request) async {
     if (request is http.Request) {
